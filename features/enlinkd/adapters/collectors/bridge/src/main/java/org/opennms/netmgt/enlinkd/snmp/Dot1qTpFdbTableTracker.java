@@ -54,9 +54,20 @@ import org.opennms.netmgt.snmp.TableTracker;
  */
 public class Dot1qTpFdbTableTracker extends TableTracker {
 
-    public final static SnmpObjId DOT1Q_TP_FDB_PORT = SnmpObjId.get(".1.3.6.1.2.1.17.7.1.2.2.1.2");
-    public final static SnmpObjId DOT1Q_TP_FDB_STATUS = SnmpObjId.get(".1.3.6.1.2.1.17.7.1.2.2.1.3");
+    public final static SnmpObjId DOT1Q_TP_FDB_ADDRESS_OID = SnmpObjId.get(".1.3.6.1.2.1.17.7.1.2.2.1.1");
+    public final static SnmpObjId DOT1Q_TP_FDB_PORT_OID = SnmpObjId.get(".1.3.6.1.2.1.17.7.1.2.2.1.2");
+    public final static SnmpObjId DOT1Q_TP_FDB_STATUS_OID = SnmpObjId.get(".1.3.6.1.2.1.17.7.1.2.2.1.3");
 
+    /*
+     *    dot1qTpFdbAddress OBJECT-TYPE
+     * SYNTAX MacAddress
+     * ACCESS not-accessible
+     * STATUS mandatory
+     * DESCRIPTION "A unicast MAC address for which the device has forwarding and/or filtering information."
+     */
+    public final static String DOT1Q_TP_FDB_ADDRESS = "dot1qTpFdbAddress";
+    public final static String DOT1Q_TP_FDB_PORT = "dot1qTpFdbPort";
+    public final static String DOT1Q_TP_FDB_STATUS = "dot1qTpFdbStatus";
     public static SnmpObjId[] ms_elemList = new SnmpObjId[] {
     /*
      * dot1qTpFdbPort OBJECT-TYPE SYNTAX Integer32 (0..65535) MAX-ACCESS
@@ -71,7 +82,7 @@ public class Dot1qTpFdbTableTracker extends TableTracker {
      * value of dot1qTpFdbStatus is not learned(3)."
      */
 
-    DOT1Q_TP_FDB_PORT,
+            DOT1Q_TP_FDB_PORT_OID,
 
     /*
      * dot1qTpFdbStatus OBJECT-TYPE SYNTAX INTEGER { other(1), invalid(2),
@@ -91,7 +102,7 @@ public class Dot1qTpFdbTableTracker extends TableTracker {
      * mgmt(5) - the value of the corresponding instance of dot1qTpFdbAddress
      * is also the value of an existing instance of dot1qStaticAddress."
      */
-    DOT1Q_TP_FDB_STATUS };
+            DOT1Q_TP_FDB_STATUS_OID};
 
     public static class Dot1qTpFdbRow extends SnmpRowResult {
 
@@ -130,8 +141,8 @@ public class Dot1qTpFdbTableTracker extends TableTracker {
          * @return a int.
          */
         public Integer getDot1qTpFdbPort() {
-            if (getValue(DOT1Q_TP_FDB_PORT) != null)
-                return getValue(DOT1Q_TP_FDB_PORT).toInt();
+            if (getValue(DOT1Q_TP_FDB_PORT_OID) != null)
+                return getValue(DOT1Q_TP_FDB_PORT_OID).toInt();
             return null;
         }
 
@@ -143,8 +154,8 @@ public class Dot1qTpFdbTableTracker extends TableTracker {
          * @return a int.
          */
         public Integer getDot1qTpFdbStatus() {
-            if (getValue(DOT1Q_TP_FDB_STATUS) != null)
-                return getValue(DOT1Q_TP_FDB_STATUS).toInt();
+            if (getValue(DOT1Q_TP_FDB_STATUS_OID) != null)
+                return getValue(DOT1Q_TP_FDB_STATUS_OID).toInt();
             return null;
         }
 
@@ -192,6 +203,10 @@ public class Dot1qTpFdbTableTracker extends TableTracker {
      *            object.
      */
     public void processDot1qTpFdbRow(final Dot1qTpFdbRow row) {
+        System.out.printf("\t\t%s (%s)= %s (this is extracted from table index)\n", DOT1Q_TP_FDB_ADDRESS_OID + "." + row.getInstance().toString(), DOT1Q_TP_FDB_ADDRESS, row.getDot1qTpFdbAddress());
+        System.out.printf("\t\t%s (%s)= %s \n", DOT1Q_TP_FDB_PORT_OID + "." + row.getInstance().toString(), DOT1Q_TP_FDB_PORT, row.getDot1qTpFdbPort() );
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", DOT1Q_TP_FDB_STATUS_OID + "." + row.getInstance().toString(), DOT1Q_TP_FDB_STATUS, row.getDot1qTpFdbStatus(), BridgeDot1qTpFdbStatus.get(row.getDot1qTpFdbStatus())  );
+
     }
 
 }

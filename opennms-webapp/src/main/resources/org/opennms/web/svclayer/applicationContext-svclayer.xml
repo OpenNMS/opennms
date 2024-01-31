@@ -208,11 +208,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="statisticsReportDao" ref="statisticsReportDao"/>
     <property name="resourceDao" ref="resourceDao"/>
   </bean>
-  <!--Rancid Integration and Inventory -->
-  <bean id="inventoryService" class="org.opennms.web.svclayer.inventory.InventoryService">
-    <property name="rwsConfig" ref="rwsConfig"/>
-    <property name="nodeDao" ref="nodeDao"/>
-  </bean>
   <!-- Report repository for local community reports and OpenNMS CONNECT remote repository access -->
   <bean id="legacyLocalReportsConfigResource" class="org.springframework.core.io.UrlResource">
     <constructor-arg value="file:${opennms.home}/etc/database-reports.xml"/>

@@ -581,19 +581,4 @@ public abstract class BasicScheduleUtils {
 		return basicSchedule;
 	}
 
-	public static BasicSchedule getRancidSchedule(org.opennms.netmgt.config.rancid.adapter.Schedule schedule) {
-		if (schedule == null) return null;
-		
-		final BasicSchedule basicSchedule = new BasicSchedule();
-		basicSchedule.setName(schedule.getName());
-		basicSchedule.setType(schedule.getType());
-		final Collection<Time> times = new ArrayList<>();
-		for (final org.opennms.netmgt.config.rancid.adapter.Time time : schedule.getTimes()) {
-			times.add(new Time(time.getId().orElse(null), time.getDay().orElse(null), time.getBegins(), time.getEnds()));
-		}
-		basicSchedule.setTimeCollection(times);
-		
-		return basicSchedule;
-	}
-
 }

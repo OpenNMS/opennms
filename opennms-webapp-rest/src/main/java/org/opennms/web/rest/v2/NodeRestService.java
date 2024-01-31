@@ -51,6 +51,7 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.cxf.jaxrs.ext.search.SearchBean;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.Alias.JoinType;
@@ -90,6 +91,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @Path("nodes")
 @Transactional
+@Tag(name = "Nodes", description = "Node API")
 public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,Integer,String> {
 
     private static final Logger LOG = LoggerFactory.getLogger(NodeRestService.class);

@@ -63,6 +63,7 @@ import org.opennms.features.jest.client.credentials.CredentialsParser;
 import org.opennms.features.jest.client.credentials.CredentialsProvider;
 import org.opennms.features.jest.client.executors.LimitedRetriesRequestExecutor;
 import org.opennms.features.jest.client.executors.RequestExecutor;
+import org.opennms.netmgt.events.api.EventForwarder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,6 +72,7 @@ import com.google.gson.FieldNamingPolicy;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
 import io.searchbox.client.AbstractJestClient;
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
@@ -301,6 +303,12 @@ public class RestClientFactory {
 			this.client = new OnmsJestClient(factory.getObject(), executor);
 		}
 		return this.client;
+	}
+
+	public JestClientWithCircuitBreaker createClientWithCircuitBreaker(CircuitBreaker circuitBreaker, EventForwarder eventForwarder) {
+		final JestClientWithCircuitBreaker jestClientWithCircuitBreaker = new JestClientWithCircuitBreaker(createClient(), circuitBreaker);
+		jestClientWithCircuitBreaker.setEventForwarder(eventForwarder);
+		return jestClientWithCircuitBreaker;
 	}
 
 	private List<String> parseUrl(String elasticURL) {

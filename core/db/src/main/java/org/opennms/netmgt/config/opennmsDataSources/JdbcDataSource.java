@@ -29,6 +29,8 @@
 package org.opennms.netmgt.config.opennmsDataSources;
 
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Objects;
 
@@ -42,6 +44,8 @@ import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.swagger.v3.oas.annotations.Hidden;
 
@@ -55,9 +59,10 @@ import io.swagger.v3.oas.annotations.Hidden;
 @XmlAccessorType(XmlAccessType.NONE)
 public class JdbcDataSource implements java.io.Serializable {
     private static final long serialVersionUID = -1120653287571635877L;
+    private static final Logger LOG = LoggerFactory.getLogger(JdbcDataSource.class);
 
-    private static final String KEYSTORE_PASSWORD = System.getProperty("org.opennms.features.scv.jceks.key", "QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw");
-    private static final String KEYSTORE_FILENAME = Paths.get(System.getProperty("opennms.home"), "etc", "scv.jce").toString();
+    private static final String KEYSTORE_KEY_PROPERTY = "org.opennms.features.scv.jceks.key";
+    private static final String DEFAULT_KEYSTORE_KEY = "QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw";
 
     @XmlAttribute(name = "name", required = true)
     private String name;
@@ -85,6 +90,9 @@ public class JdbcDataSource implements java.io.Serializable {
 
     @XmlElement(name = "param")
     private java.util.List<org.opennms.netmgt.config.opennmsDataSources.Param> paramList;
+
+    private transient String keystorePassword;
+    private transient String keystoreFilename;
 
     public JdbcDataSource() {
         this.paramList = new java.util.ArrayList<>();
@@ -144,7 +152,7 @@ public class JdbcDataSource implements java.io.Serializable {
         
         if (obj instanceof JdbcDataSource) {
             JdbcDataSource temp = (JdbcDataSource)obj;
-            boolean equals = Objects.equals(temp.name, name)
+            return Objects.equals(temp.name, name)
                 && Objects.equals(temp.databaseName, databaseName)
                 && Objects.equals(temp.schemaName, schemaName)
                 && Objects.equals(temp.url, url)
@@ -153,7 +161,6 @@ public class JdbcDataSource implements java.io.Serializable {
                 && Objects.equals(temp.rawPassword, rawPassword)
                 && Objects.equals(temp.paramList, paramList)
                 && Objects.equals(temp.connectionPool, connectionPool);
-            return equals;
         }
         return false;
     }
@@ -200,7 +207,7 @@ public class JdbcDataSource implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getParam: Index value '" + index + "' not in range [0.." + (this.paramList.size() - 1) + "]");
         }
         
-        return (org.opennms.netmgt.config.opennmsDataSources.Param) paramList.get(index);
+        return paramList.get(index);
     }
 
     /**
@@ -214,7 +221,7 @@ public class JdbcDataSource implements java.io.Serializable {
      */
     public org.opennms.netmgt.config.opennmsDataSources.Param[] getParam() {
         org.opennms.netmgt.config.opennmsDataSources.Param[] array = new org.opennms.netmgt.config.opennmsDataSources.Param[0];
-        return (org.opennms.netmgt.config.opennmsDataSources.Param[]) this.paramList.toArray(array);
+        return this.paramList.toArray(array);
     }
 
     /**
@@ -278,7 +285,7 @@ public class JdbcDataSource implements java.io.Serializable {
      * @return a hash code value for the object.
      */
     public int hashCode() {
-        int hash = Objects.hash(
+        return Objects.hash(
             name, 
             databaseName, 
             schemaName, 
@@ -288,7 +295,6 @@ public class JdbcDataSource implements java.io.Serializable {
             rawPassword,
             paramList,
             connectionPool);
-        return hash;
     }
 
     /**
@@ -313,8 +319,7 @@ public class JdbcDataSource implements java.io.Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeParam(final org.opennms.netmgt.config.opennmsDataSources.Param vParam) {
-        boolean removed = paramList.remove(vParam);
-        return removed;
+        return paramList.remove(vParam);
     }
 
     /**
@@ -449,8 +454,31 @@ public class JdbcDataSource implements java.io.Serializable {
         this.rawUserName = rawUserName;
     }
 
+    protected String getKeystoreFilename() {
+        if (this.keystoreFilename == null) {
+            var opennmsHome = System.getProperty("opennms.home");
+            if (opennmsHome == null) {
+                try {
+                    LOG.warn("opennms.home is not set; using a temporary directory for scv keystore. This is very likely not what you want.");
+                    opennmsHome = Files.createTempDirectory("opennms-home-").toString();
+                } catch (final IOException e) {
+                    throw new IllegalStateException("Unable to create a temporary scv keystore home!", e);
+                }
+            }
+            this.keystoreFilename = Paths.get(opennmsHome, "etc", "scv.jce").toString();
+        }
+        return this.keystoreFilename;
+    }
+
+    protected String getKeystorePassword() {
+        if (this.keystorePassword == null) {
+            this.keystorePassword = System.getProperty(KEYSTORE_KEY_PROPERTY, DEFAULT_KEYSTORE_KEY);
+        }
+        return this.keystorePassword;
+    }
+
     public String interpolateAttribute(final String value) {
-        return interpolateAttribute(value, KEYSTORE_FILENAME, KEYSTORE_PASSWORD);
+        return interpolateAttribute(value, this.getKeystoreFilename(), this.getKeystorePassword());
     }
 
     public String interpolateAttribute(final String value, final String keystoreFile, final String password) {

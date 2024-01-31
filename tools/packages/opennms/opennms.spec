@@ -102,10 +102,18 @@ Requires(pre):	/usr/sbin/useradd
 Requires:	/usr/sbin/useradd
 Obsoletes:	opennms < 1.3.11
 Provides:	opennms-plugin-api = %{opa_version}
+Provides:	%{name}-contrib = %{version}-%{release}
+Obsoletes:	%{name}-contrib < %{version}
 Provides:	%{name}-plugin-protocol-xml = %{version}-%{release}
 Obsoletes:	%{name}-plugin-protocol-xml < %{version}
 Provides:	%{name}-plugin-protocol-dhcp = %{version}-%{release}
 Obsoletes:	%{name}-plugin-protocol-dhcp < %{version}
+Provides:	%{name}-plugin-provisioning-rancid = %{version}-%{release}
+Obsoletes:	%{name}-plugin-provisioning-rancid < %{version}
+Provides:	%{name}-plugin-ticketing-otrs = %{version}-%{release}
+Obsoletes:	%{name}-plugin-ticketing-otrs < %{version}
+Provides:	%{name}-plugin-ticketing-remedy = %{version}-%{release}
+Obsoletes:	%{name}-plugin-ticketing-remedy < %{version}
 Recommends:	haveged
 
 %description core
@@ -188,8 +196,6 @@ Requires(pre):	%{name}-plugin-northbounder-jms
 Requires:	%{name}-plugin-northbounder-jms
 Requires(pre):	%{name}-plugin-provisioning-dns
 Requires:	%{name}-plugin-provisioning-dns
-Requires(pre):	%{name}-plugin-provisioning-rancid
-Requires:	%{name}-plugin-provisioning-rancid
 Requires(pre):	%{name}-plugin-provisioning-reverse-dns
 Requires:	%{name}-plugin-provisioning-reverse-dns
 Requires(pre):	%{name}-plugin-provisioning-snmp-asset
@@ -200,8 +206,6 @@ Requires(pre):	%{name}-plugin-provisioning-snmp-hardware-inventory
 Requires:	%{name}-plugin-provisioning-snmp-hardware-inventory
 Requires(pre):	%{name}-plugin-ticketer-jira
 Requires:	%{name}-plugin-ticketer-jira
-Requires(pre):	%{name}-plugin-ticketer-otrs
-Requires:	%{name}-plugin-ticketer-otrs
 Requires(pre):	%{name}-plugin-ticketer-rt
 Requires:	%{name}-plugin-ticketer-rt
 Requires(pre):	%{name}-plugin-protocol-cifs
@@ -281,20 +285,6 @@ interface based on its reverse DNS lookup.
 %{extrainfo2}
 
 
-%package plugin-provisioning-rancid
-Summary:	RANCID Provisioning Adapter
-Group:		Applications/System
-Requires(pre):	%{name}-core = %{version}-%{release}
-Requires:	%{name}-core = %{version}-%{release}
-
-%description plugin-provisioning-rancid
-The RANCID provisioning adapter coordinates with the RANCID Web Service by updating
-RANCID's device database when %{_descr} provisions nodes.
-
-%{extrainfo}
-%{extrainfo2}
-
-
 %package plugin-provisioning-snmp-asset
 Summary:	SNMP Asset Provisioning Adapter
 Group:		Applications/System
@@ -345,20 +335,6 @@ Requires:	%{name}-core = %{version}-%{release}
 
 %description plugin-ticketer-jira
 The JIRA ticketer plugin provides the ability to automatically create JIRA
-issues from %{_descr} alarms.
-
-%{extrainfo}
-%{extrainfo2}
-
-
-%package plugin-ticketer-otrs
-Summary:	OTRS Ticketer Plugin
-Group:		Applications/System
-Requires(pre):	%{name}-core = %{version}-%{release}
-Requires:	%{name}-core = %{version}-%{release}
-
-%description plugin-ticketer-otrs
-The OTRS ticketer plugin provides the ability to automatically create OTRS
 issues from %{_descr} alarms.
 
 %{extrainfo}
@@ -627,7 +603,6 @@ find %{buildroot}%{instprefix}/etc ! -type d | \
 	grep -v 'mapsadapter-configuration.xml' | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
-	grep -v 'otrs.properties' | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'wsman-asset-adapter-configuration.xml' | \
@@ -651,7 +626,6 @@ find %{buildroot}%{sharedir}/etc-pristine ! -type d | \
 	grep -v 'mapsadapter-configuration.xml' | \
 	grep -v 'nsclient-config.xml' | \
 	grep -v 'nsclient-datacollection-config.xml' | \
-	grep -v 'otrs.properties' | \
 	grep -v '/rt.properties' | \
 	grep -v 'snmp-asset-adapter-configuration.xml' | \
 	grep -v 'wsman-asset-adapter-configuration.xml' | \
@@ -673,14 +647,10 @@ find %{buildroot}%{sharedir} ! -type d | \
 find %{buildroot}%{instprefix}/agent ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
 	sort >> %{_tmppath}/files.main
-find %{buildroot}%{instprefix}/contrib ! -type d | \
-	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
-	sort >> %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/lib ! -type d | \
 	sed -e "s|^%{buildroot}|%attr(755,opennms,opennms) |" | \
 	grep -v 'jradius' | \
 	grep -v 'opennms-alarm-northbounder-jms' | \
-	grep -v 'opennms-integration-otrs' | \
 	grep -v 'opennms-integration-rt' | \
 	grep -v 'opennms_jmx_config_generator' | \
 	grep -v 'org.opennms.features.juniper-tca-collector' | \
@@ -698,7 +668,6 @@ find %{buildroot}%{instprefix}/system ! -type d | \
 # Put the agent, bin, etc, lib, and system subdirectories into the package
 find %{buildroot}%{instprefix}/agent \
 	%{buildroot}%{instprefix}/bin \
-	%{buildroot}%{instprefix}/contrib \
 	%{buildroot}%{instprefix}/etc \
 	%{buildroot}%{instprefix}/lib \
 	%{buildroot}%{instprefix}/system \
@@ -792,10 +761,6 @@ rm -rf %{buildroot}
 %defattr(664 opennms opennms 775)
 %{instprefix}/lib/opennms-reverse-dns-provisioning-adapter*.jar
 
-%files plugin-provisioning-rancid
-%defattr(664 opennms opennms 775)
-%{instprefix}/lib/opennms-rancid-provisioning-adapter*.jar
-
 %files plugin-provisioning-snmp-asset
 %defattr(664 opennms opennms 775)
 %{instprefix}/lib/opennms-snmp-asset-provisioning-adapter*.jar
@@ -826,12 +791,6 @@ rm -rf %{buildroot}
 %{instprefix}/system/org/opennms/features/jira-client/*/jira-*.jar.sha1
 %config(noreplace) %{instprefix}/etc/jira.properties
 %{sharedir}/etc-pristine/jira.properties
-
-%files plugin-ticketer-otrs
-%defattr(664 opennms opennms 775)
-%{instprefix}/lib/opennms-integration-otrs-*.jar
-%config(noreplace) %{instprefix}/etc/otrs.properties
-%{sharedir}/etc-pristine/otrs.properties
 
 %files plugin-ticketer-rt
 %defattr(664 opennms opennms 775)
@@ -980,10 +939,20 @@ fi
 "${ROOT_INST}/bin/ensure-user-ping.sh" || echo "WARNING: Unable to enable ping by the opennms user. Try running /usr/share/opennms/bin/ensure-user-ping.sh manually."
 
 echo ""
-echo " *** Installation complete. You must still run the installer at"
+echo " *** Thanks for using OpenNMS!”
+echo " ***”
+echo " *** Consider joining our active and supportive online community through”
+echo " ***”
+echo " *** https://www.opennms.com/participate/”
+echo " ***”
+echo " *** To connect with users, testers, experts, and contributors.”
+echo " ***”
+echo " *** Or email us directly at contactus@opennms.com to learn more.”
+echo " ***”
+echo " *** Installation is complete. You must still run the installer at"
 echo " *** \$OPENNMS_HOME/bin/install -dis to be sure your database is up"
 echo " *** to date before you start OpenNMS. See the install guide and"
-echo " *** release notes for details at https://docs.opennms.com."
+echo " *** release notes for details at: https://docs.opennms.com"
 echo ""
 
 %postun -p /bin/bash core
@@ -1023,9 +992,6 @@ fi
 %post plugin-provisioning-reverse-dns
 "${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-provisioning-reverse-dns"
 
-%post plugin-provisioning-rancid
-"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-provisioning-rancid"
-
 %post plugin-provisioning-snmp-asset
 "${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-provisioning-snmp-asset"
 
@@ -1040,9 +1006,6 @@ fi
 
 %post plugin-ticketer-jira
 "${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-ticketer-jira"
-
-%post plugin-ticketer-otrs
-"${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-ticketer-otrs"
 
 %post plugin-ticketer-rt
 "${RPM_INSTALL_PREFIX0}/bin/update-package-permissions" "%{name}-plugin-ticketer-rt"

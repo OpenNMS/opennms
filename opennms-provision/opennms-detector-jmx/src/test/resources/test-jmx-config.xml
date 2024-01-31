@@ -3,7 +3,7 @@
     <mbean-server ipAddress="127.0.0.1" port="18980">
         <parameter key="protocol" value="rmi"/>
         <parameter key="urlPath" value="/jmxrmi"/>
-        <parameter key="factory" value="PASSWORD-CLEAR"/>
+        <parameter key="factory" value="PASSWORD_CLEAR"/>
         <parameter key="username" value="admin"/>
         <parameter key="password" value="admin"/>
     </mbean-server>

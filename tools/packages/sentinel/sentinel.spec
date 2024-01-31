@@ -8,8 +8,6 @@
 %{!?releasenumber:%define releasenumber 0}
 # The install prefix becomes $SENTINEL_HOME in the finished package
 %{!?sentinelinstprefix:%define sentinelinstprefix /opt/sentinel}
-# The path where the repositories will live 
-%{!?sentinelrepoprefix:%define sentinelrepoprefix /opt/sentinel/repositories}
 # Where Systemd files live
 %{!?_unitdir:%define _unitdir /lib/systemd/system}
 
@@ -151,7 +149,6 @@ sed -i \
 find %{buildroot}%{sentinelinstprefix} ! -type d | \
     grep -v %{sentinelinstprefix}/bin | \
     grep -v %{sentinelinstprefix}/etc | \
-    grep -v %{sentinelrepoprefix} | \
     sed -e "s|^%{buildroot}|%attr(644,sentinel,sentinel) |" | \
     sort > %{_tmppath}/files.sentinel
 
@@ -176,7 +173,6 @@ find %{buildroot}%{sentinelinstprefix}/bin ! -type d | \
 
 # Exclude subdirs of the repository directory
 find %{buildroot}%{sentinelinstprefix} -type d | \
-    grep -v %{sentinelrepoprefix}/ | \
     sed -e "s,^%{buildroot},%dir ," | \
     sort >> %{_tmppath}/files.sentinel
 
@@ -226,6 +222,19 @@ fi
 "${ROOT_INST}/bin/ensure-user-ping.sh" "sentinel" >/dev/null 2>&1 || echo "WARNING: Unable to enable ping by the 'sentinel' user. If you intend to run ping-related commands from the Sentinel container without running as root, try running ${ROOT_INST}/bin/ensure-user-ping.sh manually."
 
 "${ROOT_INST}/bin/update-package-permissions" "%{name}"
+
+echo ""
+echo " *** Thanks for using OpenNMS!”
+echo " ***”
+echo " *** Consider joining our active and supportive online community through”
+echo " ***”
+echo " *** https://www.opennms.com/participate/”
+echo " ***”
+echo " *** To connect with users, testers, experts, and contributors.”
+echo " ***”
+echo " *** Or email us directly at contactus@opennms.com to learn more.”
+echo " ***”
+echo ""
 
 %preun -p /bin/bash
 ROOT_INST="${RPM_INSTALL_PREFIX0}"

@@ -76,7 +76,7 @@ public class MinionRestIT {
         given().get("/jolokia/read/java.lang:type=Memory/HeapMemoryUsage")
                 .then().assertThat().body(Matchers.containsString("HeapMemoryUsage"));
 
-        given().get("/jolokia/read/org.opennms.core.ipc.sink.producer:name=*.dispatch")
+        given().get("/jolokia/read/org.opennms.core.ipc.sink.producer:name=*.dispatch,type=timers")
                 .then().assertThat().body(Matchers.containsString("Heartbeat"));
     }
 
@@ -89,7 +89,7 @@ public class MinionRestIT {
                 .statusCode(200);
 
         LOG.info("testing /minion/rest/health?tag=local .........");
-        List<String> localDescriptions = Arrays.asList("Verifying installed bundles", "Retrieving NodeDao", "DNS Lookups (Netty)");
+        List<String> localDescriptions = Arrays.asList("Verifying installed bundles", "Retrieving NodeDao", "DNS Lookups (Netty)", "Karaf extender");
         List<String> descriptions = given().get("/minion/rest/health?tag=local")
                 .then()
                 .log().ifStatusCodeIsEqualTo(200)
@@ -100,7 +100,9 @@ public class MinionRestIT {
                 .jsonPath().getList("responses.description",String.class);
 
         LOG.info("descriptions in tag 'local' is: {}", Arrays.toString(descriptions.toArray()));
-        descriptions.stream().forEach(d-> Assert.assertTrue(localDescriptions.contains(d) || d.contains("Verifying Listener")));
+        descriptions.stream().forEach(d-> Assert.assertTrue(
+                String.format("Service health description '%s' must be in %s or contain '%s'", d, localDescriptions, "Verifying Listener"),
+                localDescriptions.contains(d) || d.contains("Verifying Listener")));
 
         LOG.info("testing /minion/rest/health/probe?tag=local  .......");
         given().get("/minion/rest/health/probe?tag=local")

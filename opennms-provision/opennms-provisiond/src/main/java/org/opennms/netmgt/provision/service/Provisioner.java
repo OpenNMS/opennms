@@ -580,10 +580,10 @@ public class Provisioner implements SpringServiceDaemon {
     
             send(importSuccessEvent(monitor, url, rescanExisting, foreignSource), monitor);
     
-        } catch (final Throwable t) {
+        } catch (Exception e) {
             final String msg = "Exception importing "+url;
-            LOG.error("Exception importing {} using rescanExisting={}", url, rescanExisting, t);
-            send(importFailedEvent((msg+": "+t.getMessage()), url, rescanExisting), monitor);
+            LOG.error("Exception importing {} using rescanExisting={}", url, rescanExisting, e);
+            send(importFailedEvent((msg+": "+e), url, rescanExisting), monitor);
         }
     }
 

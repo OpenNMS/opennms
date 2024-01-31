@@ -43,6 +43,7 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.EnumUtils;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -63,6 +64,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Component("alarmRestService")
 @Path("alarms")
+@Tag(name = "Alarms", description = "Alarms API V1")
 public class AlarmRestService extends AlarmRestServiceBase {
 
     @Autowired

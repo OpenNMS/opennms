@@ -33,6 +33,7 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.provision.service.MonitorHolder;
 import org.opennms.netmgt.provision.service.TimeTrackingMonitor;
@@ -51,6 +52,7 @@ import java.util.Map;
 @Component
 @Path("provisiond")
 @Transactional
+@Tag(name = "Provisiond", description = "Provisiond API")
 public class ProvisiondStatusRestService {
     private MonitorHolder getMonitorHolder() {
         return BeanUtils.getBean("provisiondContext", "monitorHolder", MonitorHolder.class);

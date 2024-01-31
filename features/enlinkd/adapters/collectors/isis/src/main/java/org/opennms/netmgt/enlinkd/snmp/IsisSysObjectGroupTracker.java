@@ -39,7 +39,7 @@ import org.opennms.netmgt.snmp.SnmpStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class IsisSysObjectGroupTracker extends AggregateTracker {
+public class IsisSysObjectGroupTracker extends AggregateTracker {
     
     
     private static final Logger LOG = LoggerFactory.getLogger(IsisSysObjectGroupTracker.class);
@@ -146,6 +146,12 @@ public final class IsisSysObjectGroupTracker extends AggregateTracker {
     	element.setIsisSysID(getIsisSysId());
     	element.setIsisSysAdminState(IsisAdminState.get(getIsisSysAdminState()));
     	return element;
+    }
+
+    @Override
+    public void printSnmpData() {
+        System.out.printf("\t\t%s (%s)= %s \n", ISIS_SYS_ID_OID, ISIS_SYS_ID_ALIAS, getIsisSysId());
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", ISIS_SYS_ADMIN_STATE_OID, ISIS_SYS_ADMIN_STATE_ALIAS, getIsisSysAdminState(), IsisAdminState.get(getIsisSysAdminState()));
     }
 
 }

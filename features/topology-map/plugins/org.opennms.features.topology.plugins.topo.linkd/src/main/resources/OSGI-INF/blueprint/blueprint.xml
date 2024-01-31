@@ -15,7 +15,7 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <!-- Metrics -->
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
 
-    <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+    <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.jmx.JmxReporter" factory-method="forRegistry">
         <argument ref="metricRegistry"/>
     </bean>
 
@@ -45,6 +45,18 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
     <bean id="enlinkdTopologyProvider" scope="singleton" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
         <argument ref="linkdTopologyFactory"/>
         <property name="topologyProviderInfo" ref="enlinkdTopologyProviderInfo"/>
+    </bean>
+
+    <bean id="networkRouterTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
+        <property name="name" value="NetworkRouter"/>
+        <property name="description" value="This Topology Provider displays Sub Networks and Routers informations discovered by Enhanced Linkd."/>
+        <property name="supportsCategorySearch" value="true"/>
+    </bean>
+
+    <bean id="networkRouterTopologyProvider" scope="singleton" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
+        <argument value="NetworkRouter" index="0"/>
+        <argument ref="linkdTopologyFactory" index="1"/>
+        <property name="topologyProviderInfo" ref="networkRouterTopologyProviderInfo"/>
     </bean>
 
     <bean id="cdpTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
@@ -81,6 +93,18 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
         <argument value="Ospf" index="0"/>
         <argument ref="linkdTopologyFactory" index="1"/>
         <property name="topologyProviderInfo" ref="ospfTopologyProviderInfo"/>
+    </bean>
+
+    <bean id="ospfAreaTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
+        <property name="name" value="OspfArea"/>
+        <property name="description" value="This Topology Provider displays the OSPF AREA topology information discovered by the Enhanced Linkd daemon."/>
+        <property name="supportsCategorySearch" value="true"/>
+    </bean>
+
+    <bean id="ospfAreaTopologyProvider" scope="singleton" class="org.opennms.features.topology.plugins.topo.linkd.internal.LinkdTopologyProvider">
+        <argument value="OspfArea" index="0"/>
+        <argument ref="linkdTopologyFactory" index="1"/>
+        <property name="topologyProviderInfo" ref="ospfAreaTopologyProviderInfo"/>
     </bean>
 
     <bean id="isisTopologyProviderInfo" class="org.opennms.features.topology.api.topo.DefaultTopologyProviderInfo">
@@ -168,6 +192,8 @@ xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
                <ref component-id="isisTopologyProvider" />
                <ref component-id="layer3TopologyProvider" />
                <ref component-id="userTopologyProvider" />
+               <ref component-id="ospfAreaTopologyProvider" />
+               <ref component-id="networkRouterTopologyProvider" />
            </list>
         </argument>
     </bean>

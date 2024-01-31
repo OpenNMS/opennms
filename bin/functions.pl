@@ -125,7 +125,8 @@ if (not $MAVEN_OPTS =~ /Use.*GC/) {
 	# If (a) peak application performance is the first priority and (b) there are no pause time requirements or pauses
 	# of one second or longer are acceptable, then select the parallel collector with -XX:+UseParallelGC and
 	# (optionally) enable parallel compaction with -XX:+UseParallelOldGC.
-	$MAVEN_OPTS .= " -XX:+UseParallelGC -XX:+UseParallelOldGC";
+	# NOTE: we no longer enable +UseParallelOldGC as it's not supported in JDK17 anymore
+	$MAVEN_OPTS .= " -XX:+UseParallelGC";
 }
 
 if (not $MAVEN_OPTS =~ /MaxFDLimit/) {
@@ -367,7 +368,7 @@ sub get_minimum_java {
 
 # for now
 sub get_maximum_java {
-	return 12;
+	return 18;
 }
 
 sub get_version_from_java {
@@ -521,7 +522,6 @@ sub get_dependencies {
 	my @SKIP = qw(
 		org\.opennms\:jicmp-api
 		org\.opennms\:jrrd-api
-		org\.opennms\:rancid-api
 		org\.opennms\.lib
 	);
 

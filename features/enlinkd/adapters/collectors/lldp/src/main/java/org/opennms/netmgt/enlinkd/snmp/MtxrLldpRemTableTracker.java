@@ -67,6 +67,7 @@ public class MtxrLldpRemTableTracker extends LldpRemTableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker.LldpRemRow} object.
      */
     public void processMtxrLldpRemRow(final MtxrLldpRemRow row) {
+        super.processLldpRemRow(row);
     }
 
 

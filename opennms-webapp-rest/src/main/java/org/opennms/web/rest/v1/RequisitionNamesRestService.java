@@ -39,6 +39,7 @@ import javax.ws.rs.core.MediaType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.web.svclayer.api.RequisitionAccessService;
 
@@ -52,6 +53,7 @@ import org.springframework.stereotype.Component;
  */
 @Component("requisitionNamesRestService")
 @Path("requisitionNames")
+@Tag(name = "RequisitionNames", description = "Requisition Names API")
 public class RequisitionNamesRestService extends OnmsRestService {
 
     /** The m_access service. */

@@ -1,0 +1,81 @@
+
+= MinaSshMonitor
+
+The MinaSshMonitor tests the availability of an SSH service.
+During the poll, it attempts to connect on the specified port and then authenticate in.
+If the authentication is successful, then the service is considered up.
+Optionally, a remote command to execute can be provided and if that is successful, the service is considered up.
+
+== MinaSshMonitor vs. SshMonitor
+
+The MinaSshMonitor tests connecting and authenticating to a node via SSH.
+The xref:service-assurance/monitors/SshMonitor.adoc[SshMonitor] only tests that the SSH port is accepting connections.
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.MinaSshMonitor`
+|===
+
+== Configuration and Use
+
+.Optional monitor-specific parameters for the MinaSshMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| username
+| A username to authenticate with on the node.
+| n/a
+
+| password
+| A password for username to authenticate with on the node.
+| n/a
+
+| identity-file
+| An identity-file to use for passwordless authenticatition.
+| n/a
+
+| remote-command
+| A command to execute after authentication is successful on the node.
+The output is ignored, and any execution errors will mark the service as down.
+| n/a
+
+| port
+| TCP port to which SSH connection is tried.
+| 22
+
+| retry
+| Number of attempts to establish the SSH connection.
+| 0
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
+Note that you must include the `monitor` section for each service in your definition.
+
+[source, xml]
+----
+<service name="MinaSSHClient" interval="300000" user-defined="false" status="on">
+  <parameter key="retry" value="1"/>
+  <parameter key="timeout" value="5000"/>
+  <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response"/>
+  <parameter key="rrd-base-name" value="minassh"/>
+  <parameter key="ds-name" value="minassh"/>
+  <parameter key="username" value="admin"/>
+  <parameter key="password" value="admin"/>
+  <parameter key="identity-file" value="/opt/opennms/etc/sshclient_id_rsa"/>
+</service>
+
+<monitor service="MinaSSHClient" class-name="org.opennms.netmgt.poller.monitors.MinaSshMonitor"/>
+----

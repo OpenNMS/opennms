@@ -31,7 +31,6 @@ package org.opennms.netmgt.scriptd;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.StringTokenizer;
 import java.util.concurrent.ConcurrentHashMap;
@@ -210,7 +209,7 @@ public class Executor {
             loadConfig();
 
             for (final ReloadScript script : m_config.getReloadScripts()) {
-                final Optional<String> scriptContent = script.getContent();
+                final var scriptContent = script.getContent();
                 if (scriptContent.isPresent()) {
                     try {
                         m_scriptManager.exec(script.getLanguage(), "", 0, 0, scriptContent.get());

@@ -16,9 +16,6 @@
       </includes>
       <unpackOptions>
         <excludes>
-          <!-- contrib -->
-          <exclude>contrib/**/*</exclude>
-
           <!-- northbounders -->
           <exclude>lib/*alarm-northbounder-jms*</exclude>
 
@@ -26,7 +23,6 @@
           <exclude>etc/nsclient-config.xml</exclude>
 
           <!-- provisioning adapters -->
-          <exclude>lib/*rancid-provisioning-adapter*</exclude>
           <exclude>etc/*snmp-asset-adapter*</exclude>
           <exclude>lib/*snmp-asset-provisioning-adapter*</exclude>
           <exclude>etc/*snmp-hardware-inventory-adapter*</exclude>
@@ -37,8 +33,6 @@
           <!-- <exclude>lib/*wsman-asset-provisioning-adapter*</exclude> -->
 
           <!-- ticketing plugins -->
-          <exclude>etc/*otrs*</exclude>
-          <exclude>lib/*otrs*</exclude>
           <exclude>etc/rt.properties</exclude>
           <exclude>lib/*integration-rt*</exclude>
         </excludes>

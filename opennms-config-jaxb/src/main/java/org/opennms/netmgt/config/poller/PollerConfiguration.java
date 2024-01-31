@@ -95,6 +95,15 @@ public class PollerConfiguration implements Serializable {
     private Integer m_defaultCriticalPathRetries;
 
     /**
+     * Flag which indicates if the async polling engine is enabled
+     */
+    @XmlAttribute(name="asyncPollingEngineEnabled")
+    private Boolean m_asyncPollingEngineEnabled;
+
+    @XmlAttribute(name="maxConcurrentAsyncPolls")
+    private Integer m_maxConcurrentAsyncPolls;
+
+    /**
      * Configuration of node-outage functionality
      */
     @XmlElement(name="node-outage")
@@ -277,11 +286,27 @@ public class PollerConfiguration implements Serializable {
         m_defaultCriticalPathRetries = retries;
     }
 
+    public Boolean getAsyncPollingEngineEnabled() {
+        return Objects.requireNonNullElse(m_asyncPollingEngineEnabled, false);
+    }
+
+    public void setAsyncPollingEngineEnabled(Boolean asyncPollingEngineEnabled) {
+        m_asyncPollingEngineEnabled = asyncPollingEngineEnabled;
+    }
+
+    public Integer getMaxConcurrentAsyncPolls() {
+        return Objects.requireNonNullElse(m_maxConcurrentAsyncPolls, 100);
+    }
+
+    public void setMaxConcurrentAsyncPolls(Integer maxConcurrentAsyncPolls) {
+        m_maxConcurrentAsyncPolls = maxConcurrentAsyncPolls;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(getThreads(), getNextOutageId(), getServiceUnresponsiveEnabled(), getPathOutageEnabled(),
                 getDefaultCriticalPathIp(), getDefaultCriticalPathTimeout(), getDefaultCriticalPathRetries(),
-                getNodeOutage(), getPackages(), getMonitors());
+                getNodeOutage(), getPackages(), getMonitors(), getAsyncPollingEngineEnabled(), getMaxConcurrentAsyncPolls());
     }
 
     @Override
@@ -298,7 +323,9 @@ public class PollerConfiguration implements Serializable {
                 && Objects.equals(getDefaultCriticalPathRetries(), that.getDefaultCriticalPathRetries())
                 && Objects.equals(getNodeOutage(), that.getNodeOutage())
                 && Objects.equals(getPackages(), that.getPackages())
-                && Objects.equals(getMonitors(), that.getMonitors());
+                && Objects.equals(getMonitors(), that.getMonitors())
+                && Objects.equals(getAsyncPollingEngineEnabled(), that.getAsyncPollingEngineEnabled())
+                && Objects.equals(getMaxConcurrentAsyncPolls(), that.getMaxConcurrentAsyncPolls());
     }
     @Override
     public String toString() {
@@ -313,6 +340,8 @@ public class PollerConfiguration implements Serializable {
                 ",nodeOutage=" + getNodeOutage() +
                 ",packages=" + getPackages() +
                 ",monitors=" + getMonitors() +
+                ",asyncPollingEngineEnabled=" + getAsyncPollingEngineEnabled() +
+                ",maxConcurrentAsyncPolls=" + getMaxConcurrentAsyncPolls() +
                 "]";
     }
 

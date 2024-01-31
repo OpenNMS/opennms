@@ -39,9 +39,9 @@ import org.opennms.enlinkd.generator.topology.PairGenerator;
 import org.opennms.netmgt.enlinkd.model.UserDefinedLink;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class UserDefinedProtocol extends Protocol<UserDefinedLink> {
+public class UserDefinedProtocol extends Protocol {
     public static final String OWNER = TopologyGenerator.class.getCanonicalName();
-    private TopologyGenerator.Protocol protocol = TopologyGenerator.Protocol.userdefined;
+    private final TopologyGenerator.Protocol protocol = TopologyGenerator.Protocol.userdefined;
 
     public UserDefinedProtocol(TopologySettings topologySettings, TopologyContext context) {
         super(topologySettings, context);

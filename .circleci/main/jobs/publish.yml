@@ -48,9 +48,9 @@ jobs:
       - run:
           name: Publish to Cloudsmith
           command: .circleci/scripts/publish-cloudsmith.sh
-      - run:
-          name: Publish to Azure
-          command: .circleci/scripts/publish-azure.sh
+#      - run:
+#          name: Publish to Azure
+#          command: .circleci/scripts/publish-azure.sh
   publish-maven:
     executor: build-executor
     resource_class: xlarge

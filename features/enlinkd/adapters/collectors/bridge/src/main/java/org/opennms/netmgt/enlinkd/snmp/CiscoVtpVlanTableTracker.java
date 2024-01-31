@@ -44,9 +44,13 @@ public class CiscoVtpVlanTableTracker extends TableTracker {
      */
     public static final SnmpObjId CISCO_VTP_VLAN_TABLE_ENTRY = SnmpObjId.get(".1.3.6.1.4.1.9.9.46.1.3.1.1");
 
-    public static final SnmpObjId CISCO_VTP_VLAN_STATE = SnmpObjId.get(CISCO_VTP_VLAN_TABLE_ENTRY, "2");
-    public static final SnmpObjId CISCO_VTP_VLAN_TYPE = SnmpObjId.get(CISCO_VTP_VLAN_TABLE_ENTRY, "3");
-    public static final SnmpObjId CISCO_VTP_VLAN_NAME = SnmpObjId.get(CISCO_VTP_VLAN_TABLE_ENTRY, "4");
+    public static final String CISCO_VTP_VLAN_STATE ="vtpVlanState";
+    public static final String CISCO_VTP_VLAN_TYPE ="vtpVlanType";
+    public static final String CISCO_VTP_VLAN_NAME ="vtpVlanName";
+
+    public static final SnmpObjId CISCO_VTP_VLAN_STATE_OID = SnmpObjId.get(CISCO_VTP_VLAN_TABLE_ENTRY, "2");
+    public static final SnmpObjId CISCO_VTP_VLAN_TYPE_OID = SnmpObjId.get(CISCO_VTP_VLAN_TABLE_ENTRY, "3");
+    public static final SnmpObjId CISCO_VTP_VLAN_NAME_OID = SnmpObjId.get(CISCO_VTP_VLAN_TABLE_ENTRY, "4");
 
     public static SnmpObjId[] cisco_vlan_elemList = new SnmpObjId[]{
             /*
@@ -71,16 +75,26 @@ public class CiscoVtpVlanTableTracker extends TableTracker {
              * one or more of the device's trunk ports."
              *
              */
-            CISCO_VTP_VLAN_STATE,
+            CISCO_VTP_VLAN_STATE_OID,
             /*
+             * vtpVlanType OBJECT-TYPE
              * SYNTAX          VlanType
              * MAX-ACCESS      read-only
              * STATUS          current
              * DESCRIPTION
              *	"The type of this VLAN."
              */
-            CISCO_VTP_VLAN_TYPE,
-            CISCO_VTP_VLAN_NAME
+            CISCO_VTP_VLAN_TYPE_OID,
+            /*
+             * vtpVlanName OBJECT-TYPE
+             * SYNTAX          DisplayString (SIZE  (1..32))
+             * MAX-ACCESS      read-only
+             * STATUS          current
+             * DESCRIPTION
+             *   "The name of this VLAN.  This name is used as the ELAN-name
+             *   for an ATM LAN-Emulation segment of this VLAN."
+             */
+            CISCO_VTP_VLAN_NAME_OID
     };
 
     public static class CiscoVtpVlanRow extends SnmpRowResult {
@@ -90,11 +104,11 @@ public class CiscoVtpVlanTableTracker extends TableTracker {
         }
 
         public VlanStatus getVlanStatus() {
-            return VlanStatus.get(getValue(CISCO_VTP_VLAN_STATE).toInt());
+            return VlanStatus.get(getValue(CISCO_VTP_VLAN_STATE_OID).toInt());
         }
 
         public VlanType getVlanType() {
-            return VlanType.get(getValue(CISCO_VTP_VLAN_TYPE).toInt());
+            return VlanType.get(getValue(CISCO_VTP_VLAN_TYPE_OID).toInt());
         }
 
         public Integer getVlanIndex() {
@@ -102,7 +116,7 @@ public class CiscoVtpVlanTableTracker extends TableTracker {
         }
 
         public String getVlanName() {
-            return getValue(CISCO_VTP_VLAN_NAME).toDisplayString();
+            return getValue(CISCO_VTP_VLAN_NAME_OID).toDisplayString();
         }
 
         public boolean isStatusOperational() {
@@ -139,5 +153,8 @@ public class CiscoVtpVlanTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.CiscoVtpVlanTableTracker.CiscoVtpVlanRow} object.
      */
     public void processCiscoVtpVlanRow(final CiscoVtpVlanRow row) {
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", CISCO_VTP_VLAN_STATE_OID + "." + row.getVlanIndex(), CISCO_VTP_VLAN_STATE, row.getVlanStatus().getIntCode(), VlanStatus.getVlanStatusString(row.getVlanStatus().getIntCode()));
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", CISCO_VTP_VLAN_TYPE_OID + "." + row.getVlanIndex(), CISCO_VTP_VLAN_TYPE, row.getVlanType().getIntCode(), VlanType.getVlanTypeString(row.getVlanType().getIntCode()));
+        System.out.printf("\t\t%s (%s)= %s \n", CISCO_VTP_VLAN_NAME_OID + "." + row.getVlanIndex(), CISCO_VTP_VLAN_NAME, row.getVlanName());
     }
 }

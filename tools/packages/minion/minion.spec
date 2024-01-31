@@ -8,8 +8,6 @@
 %{!?releasenumber:%define releasenumber 0}
 # The install prefix becomes $MINION_HOME in the finished package
 %{!?minioninstprefix:%define minioninstprefix /opt/minion}
-# The path where the repositories will live
-%{!?minionrepoprefix:%define minionrepoprefix /opt/minion/repositories}
 # Where Systemd files live
 %{!?_unitdir:%define _unitdir /lib/systemd/system}
 
@@ -288,6 +286,19 @@ sed -i "s|id = 00000000-0000-0000-0000-000000ddba11|id = $UUID|g" "${ROOT_INST}/
 rm -rf "${ROOT_INST}/repositories/.local"
 
 "${ROOT_INST}/bin/update-package-permissions" "%{name}"
+
+echo ""
+echo " *** Thanks for using OpenNMS!”
+echo " ***”
+echo " *** Consider joining our active and supportive online community through”
+echo " ***”
+echo " *** https://www.opennms.com/participate/”
+echo " ***”
+echo " *** To connect with users, testers, experts, and contributors.”
+echo " ***”
+echo " *** Or email us directly at contactus@opennms.com to learn more.”
+echo " ***”
+echo ""
 
 ### PRE-UN-INSTALLATION ###
 

@@ -224,6 +224,8 @@ public class DevDebugUtils {
         } catch (Exception e) {
             LOG.warn("Could not retrieve or store thread dump in file {}", targetFile, e);
             return null;
+        } finally {
+            LOG.info("grabbed thread dump");
         }
     }
 

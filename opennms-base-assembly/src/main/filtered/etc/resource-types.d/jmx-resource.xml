@@ -80,14 +80,14 @@
       </storageStrategy>
    </resourceType>
 
-   <resourceType name="ALECgraph" label="ALEC Graph Stats" resourceLabel="${name}">
+   <resourceType name="ALECgraph" label="ALEC Graph Stats" resourceLabel="\${name}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
          <parameter key="sibling-column-name" value="name" />
       </storageStrategy>
    </resourceType>
 
-   <resourceType name="Eventlogs" label="Eventd Processing Stats" resourceLabel="${name}">
+   <resourceType name="Eventlogs" label="Eventd Processing Stats" resourceLabel="\${name}">
       <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
       <storageStrategy class="org.opennms.netmgt.dao.support.SiblingColumnStorageStrategy">
          <parameter key="sibling-column-name" value="name" />

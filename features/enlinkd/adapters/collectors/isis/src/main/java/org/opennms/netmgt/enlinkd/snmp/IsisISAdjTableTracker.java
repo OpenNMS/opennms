@@ -28,6 +28,7 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
+import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjNeighSysType;
 import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjState;
@@ -41,11 +42,17 @@ import org.slf4j.LoggerFactory;
 public class IsisISAdjTableTracker extends TableTracker {
 	private final static Logger LOG = LoggerFactory.getLogger(IsisISAdjTableTracker.class);
 
-    public final static SnmpObjId ISIS_IS_ADJ_STATE                = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.2");
-    public final static SnmpObjId ISIS_IS_ADJ_NBR_SNPAADDR         = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.4");
-    public final static SnmpObjId ISIS_IS_ADJ_NBR_SYSTYPE          = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.5");
-    public final static SnmpObjId ISIS_IS_ADJ_NBR_SYSID            = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.6");
-    public final static SnmpObjId ISIS_IS_ADJ_NBR_EXTENDED_CIRCID  = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.7");
+    public final static SnmpObjId ISIS_IS_ADJ_STATE_OID = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.2");
+    public final static SnmpObjId ISIS_IS_ADJ_NBR_SNPAADDR_OID = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.4");
+    public final static SnmpObjId ISIS_IS_ADJ_NBR_SYSTYPE_OID = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.5");
+    public final static SnmpObjId ISIS_IS_ADJ_NBR_SYSID_OID = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.6");
+    public final static SnmpObjId ISIS_IS_ADJ_NBR_EXTENDED_CIRCID_OID = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.7");
+
+    public final static String ISIS_IS_ADJ_STATE = "isisISAdjState";
+    public final static String ISIS_IS_ADJ_NBR_SNPAADDR = "isisISAdjNeighSNPAAddress";
+    public final static String ISIS_IS_ADJ_NBR_SYSTYPE = "isisISAdjNeighSysType";
+    public final static String ISIS_IS_ADJ_NBR_SYSID = "isisISAdjNeighSysID";
+    public final static String ISIS_IS_ADJ_NBR_EXTENDED_CIRCID = "isisISAdjNbrExtendedCircID";
 
     public static final SnmpObjId[] isisIsAdjtable_elemList = new SnmpObjId[] {
         
@@ -65,7 +72,7 @@ public class IsisISAdjTableTracker extends TableTracker {
          * REFERENCE "{ISIS.aoi adjacencyState (78)}"
          * ::= { isisISAdjEntry 2 }
          */
-        ISIS_IS_ADJ_STATE,
+            ISIS_IS_ADJ_STATE_OID,
 
         /*
          *  isisISAdjNeighSNPAAddress OBJECT-TYPE
@@ -77,7 +84,7 @@ public class IsisISAdjTableTracker extends TableTracker {
          *  REFERENCE "{ISIS.aoi neighbourSNPAAddress (79)}"
          *  ::= { isisISAdjEntry 4 }
          */
-        ISIS_IS_ADJ_NBR_SNPAADDR,
+            ISIS_IS_ADJ_NBR_SNPAADDR_OID,
         
         /*
          *  isisISAdjNeighSysType OBJECT-TYPE
@@ -95,7 +102,7 @@ public class IsisISAdjTableTracker extends TableTracker {
          *          REFERENCE "{ISIS.aoi neighbourSystemType (80)}"
          *  ::= { isisISAdjEntry 5 }
          */
-        ISIS_IS_ADJ_NBR_SYSTYPE,
+            ISIS_IS_ADJ_NBR_SYSTYPE_OID,
         
         /*
          *     isisISAdjNeighSysID OBJECT-TYPE
@@ -108,7 +115,7 @@ public class IsisISAdjTableTracker extends TableTracker {
          *     REFERENCE "{ISIS.aoi neighbourSystemIds (83)}"
          *     ::= { isisISAdjEntry 6 }
          */
-         ISIS_IS_ADJ_NBR_SYSID,
+            ISIS_IS_ADJ_NBR_SYSID_OID,
         
         /*
          * isisISAdjNbrExtendedCircID OBJECT-TYPE
@@ -120,7 +127,7 @@ public class IsisISAdjTableTracker extends TableTracker {
          *    Neighbor during 3-way handshake, or 0."
          *    ::= { isisISAdjEntry 7 }
          */
-        ISIS_IS_ADJ_NBR_EXTENDED_CIRCID
+            ISIS_IS_ADJ_NBR_EXTENDED_CIRCID_OID
 
     };
     
@@ -139,23 +146,23 @@ public class IsisISAdjTableTracker extends TableTracker {
 	    }
 	    
 	    public Integer getIsisISAdjStatus() {
-	    	return getValue(ISIS_IS_ADJ_STATE).toInt();
+	    	return getValue(ISIS_IS_ADJ_STATE_OID).toInt();
 	    }
 
 	    public String getIsisISAdjNeighSnpaAddress() {
-	        return getValue(ISIS_IS_ADJ_NBR_SNPAADDR).toHexString();
+	        return getValue(ISIS_IS_ADJ_NBR_SNPAADDR_OID).toHexString();
 	    }
 	    
 	    public Integer getIsisISAdjNeighSysType() {
-	        return getValue(ISIS_IS_ADJ_NBR_SYSTYPE).toInt();
+	        return getValue(ISIS_IS_ADJ_NBR_SYSTYPE_OID).toInt();
 	    }
 	    
 	    public String getIsisISAdjNeighSysID() {
-	        return getValue(ISIS_IS_ADJ_NBR_SYSID).toHexString();
+	        return getValue(ISIS_IS_ADJ_NBR_SYSID_OID).toHexString();
 	    }
 	    
 	    public Integer getIsisISAdjNbrExtendedCircID() {
-	        return getValue(ISIS_IS_ADJ_NBR_EXTENDED_CIRCID).toInt();
+	        return getValue(ISIS_IS_ADJ_NBR_EXTENDED_CIRCID_OID).toInt();
 	    }
 
 	    public IsIsLink getIsisLink() {
@@ -203,6 +210,11 @@ public class IsisISAdjTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker.IsIsAdjRow} object.
      */
     public void processIsisAdjRow(final IsIsAdjRow row) {
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", ISIS_IS_ADJ_STATE_OID + "." + row.getInstance().toString(), ISIS_IS_ADJ_STATE, row.getIsisISAdjStatus(), IsisISAdjState.getTypeString(row.getIsisISAdjStatus()));
+        System.out.printf("\t\t%s (%s)= %s \n", ISIS_IS_ADJ_NBR_SNPAADDR_OID + "." + row.getInstance().toString(), ISIS_IS_ADJ_NBR_SNPAADDR, row.getIsisISAdjNeighSnpaAddress());
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", ISIS_IS_ADJ_NBR_SYSTYPE_OID + "." + row.getInstance().toString(), ISIS_IS_ADJ_NBR_SYSTYPE, row.getIsisISAdjNeighSysType(), IsisISAdjNeighSysType.getTypeString(row.getIsisISAdjNeighSysType()));
+        System.out.printf("\t\t%s (%s)= %s \n", ISIS_IS_ADJ_NBR_SYSID_OID + "." + row.getInstance().toString(), ISIS_IS_ADJ_NBR_SYSID, row.getIsisISAdjNeighSysID());
+        System.out.printf("\t\t%s (%s)= %s \n", ISIS_IS_ADJ_NBR_EXTENDED_CIRCID_OID + "." + row.getInstance().toString(), ISIS_IS_ADJ_NBR_EXTENDED_CIRCID, row.getIsisISAdjNbrExtendedCircID());
     }
 
 

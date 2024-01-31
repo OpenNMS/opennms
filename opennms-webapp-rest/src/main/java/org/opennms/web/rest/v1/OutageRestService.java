@@ -44,6 +44,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.criteria.Alias.JoinType;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.restrictions.Restrictions;
@@ -77,6 +78,7 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Component("outageRestService")
 @Path("outages")
+@Tag(name = "Outages", description = "Outages API")
 public class OutageRestService extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(OutageRestService.class);
 

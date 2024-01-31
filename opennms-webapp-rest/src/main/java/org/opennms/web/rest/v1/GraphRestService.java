@@ -45,6 +45,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.netmgt.dao.api.GraphDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
@@ -69,6 +70,7 @@ import com.google.common.collect.Maps;
  */
 @Component("graphRestService")
 @Path("graphs")
+@Tag(name = "Graphs", description = "Graphs API")
 public class GraphRestService extends OnmsRestService {
 
     @Autowired

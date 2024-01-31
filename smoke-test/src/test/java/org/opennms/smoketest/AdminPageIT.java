@@ -29,6 +29,7 @@
 package org.opennms.smoketest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
 import org.junit.FixMethodOrder;
@@ -37,6 +38,10 @@ import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.Year;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class AdminPageIT extends OpenNMSSeleniumIT {
@@ -90,7 +95,7 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         new String[] { "Ops Board Configuration", "//div[@id='content']//iframe" },
         new String[] { "Surveillance Views Configuration", "//div[@id='content']//iframe" },
         new String[] { "JMX Configuration Generator", "//div[@id='content']//iframe" },
-        new String[] { "Data Choices", "//*[@id='datachoices-enable']" }
+        new String[] { "Usage Statistics Sharing", "//div[contains(@class, 'card')]//span[text()='Usage Statistics Sharing']" }
     };
 
     @Before
@@ -100,7 +105,7 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void testAllTextIsPresent() throws Exception {
-        assertEquals(10, countElementsMatchingCss("div.card-header")); // the 10th is the hidden datachoices modal
+        assertEquals(9, countElementsMatchingCss("div.card-header"));
         findElementByXpath("//span[text()='OpenNMS System']");
         findElementByXpath("//span[text()='Provisioning']");
         findElementByXpath("//span[text()='Flow Management']");
@@ -126,5 +131,20 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
             findElementByLink(entry[0]).click();
             waitForElement(By.xpath(entry[1]));
         }
+    }
+
+    @Test
+    public void testCopyrightYear() {
+        LOG.info("Starting test");
+        login();
+        String footer = findElementById("footer").getText();
+
+        Year thisYear = Year.now();
+
+        Pattern pattern = Pattern.compile("\\d{4}-" + thisYear, Pattern.CASE_INSENSITIVE);
+        Matcher matcher = pattern.matcher(footer);
+        boolean matchFound = matcher.find();
+
+        assertTrue("Is the year in the footer is equals to current? - ", matchFound);
     }
 }

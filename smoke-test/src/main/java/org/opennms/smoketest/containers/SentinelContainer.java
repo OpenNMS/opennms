@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,12 +45,14 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.io.FileUtils;
 import org.opennms.smoketest.stacks.IpcStrategy;
@@ -123,7 +125,7 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
 
         if (profile.isJvmDebuggingEnabled()) {
             withEnv("KARAF_DEBUG", "true");
-            withEnv("JAVA_DEBUG_PORT", "*:" + SENTINEL_DEBUG_PORT);
+            withEnv("JAVA_DEBUG_PORT", "" + SENTINEL_DEBUG_PORT);
         }
 
         // Help make development/debugging easier
@@ -296,6 +298,8 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
                     .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
                     .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
             LOG.info("Health check passed.");
+
+            container.assertNoKarafDestroy(Paths.get("/opt", ALIAS, "data", "log", "karaf.log"));
         }
     }
 
@@ -310,7 +314,12 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
         Path targetLogFolder = Paths.get("target", "logs", prefix, ALIAS);
         DevDebugUtils.clearLogs(targetLogFolder);
 
-        var threadDump = DevDebugUtils.gatherThreadDump(this, targetLogFolder, null);
+        AtomicReference<Path> threadDump = new AtomicReference<>();
+        await("calling gatherThreadDump")
+                .atMost(Duration.ofSeconds(120))
+                .untilAsserted(
+                        () -> { threadDump.set(DevDebugUtils.gatherThreadDump(this, targetLogFolder, null)); }
+                );
 
         LOG.info("Gathering logs...");
         // List of known log files we expect to find in the container
@@ -325,8 +334,8 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
 
         LOG.info("Log directory: {}", targetLogFolder.toUri());
         LOG.info("Console log: {}", targetLogFolder.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
-        if (threadDump != null) {
-            LOG.info("Thread dump: {}", threadDump.toUri());
+        if (threadDump.get() != null) {
+            LOG.info("Thread dump: {}", threadDump.get().toUri());
         }
     }
 

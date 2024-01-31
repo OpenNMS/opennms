@@ -252,6 +252,16 @@ public class Upgrade {
                 }
             }
         }
+        log("\n*** Thanks for using OpenNMS!\n");
+        log("***\n");
+        log("*** Consider joining our active and supportive online community through\n");
+        log("***\n");
+        log("*** https://www.opennms.com/participate/\n");
+        log("***\n");
+        log("*** To connect with users, testers, experts, and contributors.\n");
+        log("***\n");
+        log("*** Or email us directly at contactus@opennms.com to learn more.\n");
+
         log("\nUpgrade completed successfully!\n");
         Logging.setContextMap(mdc);
     }

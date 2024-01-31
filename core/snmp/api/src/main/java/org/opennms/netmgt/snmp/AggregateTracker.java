@@ -44,7 +44,7 @@ public class AggregateTracker extends CollectionTracker {
     private static final Logger LOG = LoggerFactory.getLogger(AggregateTracker.class);
 
     private static final class ChildTrackerPduBuilder extends PduBuilder {
-        private List<SnmpObjId> m_oids = new ArrayList<>();
+        private final List<SnmpObjId> m_oids = new ArrayList<>();
         private int m_nonRepeaters = 0;
         private int m_maxRepititions = 0;
         private ResponseProcessor m_responseProcessor;
@@ -226,7 +226,7 @@ public class AggregateTracker extends CollectionTracker {
         }
     }
 
-    private CollectionTracker[] m_children;
+    private final CollectionTracker[] m_children;
     
     public AggregateTracker(Collection<Collectable> children) {
         this(children, null);
@@ -296,7 +296,7 @@ public class AggregateTracker extends CollectionTracker {
         // first process the child trackers that aren't finished up to maxVars 
         int count = 0;
         int maxVars = parentBuilder.getMaxVarsPerPdu();
-        final List<ChildTrackerPduBuilder> builders = new ArrayList<ChildTrackerPduBuilder>(m_children.length);
+        final List<ChildTrackerPduBuilder> builders = new ArrayList<>(m_children.length);
         for (int i = 0; i < m_children.length && count < maxVars; i++) {
             CollectionTracker childTracker = m_children[i];
             if (!childTracker.isFinished()) {
@@ -357,18 +357,20 @@ public class AggregateTracker extends CollectionTracker {
             // Add an empty list to every index to make sure we call handleWalkResponses() on every child
             responsesByCorrelationId.put(i, new ArrayList<>());
         }
-        responses.stream().forEach(r -> CorrelationIdUtils.popIndexFromCollerationId(r, responsesByCorrelationId));
+        responses.forEach(r -> CorrelationIdUtils.popIndexFromCollerationId(r, responsesByCorrelationId));
 
         // Store the results in the appropriate child trackers
-        responsesByCorrelationId.entrySet().stream()
-            .forEach(entry -> {
-                int index = entry.getKey();
-                if (index < 0 || index > (m_children.length  -1)) {
-                    // This shouldn't happen, but just in case...
-                    LOG.warn("Invalid index on response: {}, {}, {}", index, entry.getValue(), m_children.length);
-                } else {
-                    m_children[index].handleWalkResponses(entry.getValue());
-                }
-            });
+        responsesByCorrelationId.forEach((index, value) -> {
+            if (index < 0 || index > (m_children.length - 1)) {
+                // This shouldn't happen, but just in case...
+                LOG.warn("Invalid index on response: {}, {}, {}", index, value, m_children.length);
+            } else {
+                m_children[index].handleWalkResponses(value);
+            }
+        });
+    }
+
+    public void printSnmpData() {
+
     }
 }

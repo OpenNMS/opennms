@@ -215,7 +215,6 @@
     }
     
     nodeModel.put("status", getStatusStringWithDefault(node_db));
-    nodeModel.put("showRancid","true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled")));
     
     nodeModel.put("node", node_db);
     nodeModel.put("sysName", WebSecurityUtils.sanitizeString(node_db.getSysName()));
@@ -644,14 +643,6 @@ function confirmAssetEdit() {
     </div>
   <div class="card-body">
     <ul class="list-unstyled mb-0">
-      <c:if test="${model.showRancid}">
-        <c:url var="rancidLink" value="inventory/rancid.htm">
-          <c:param name="node" value="${model.id}"/>
-        </c:url>
-        <li class="list-inline-item">
-          <a href="<c:out value="${rancidLink}"/>">View Node Rancid Inventory Info </a>
-        </li>
-      </c:if>
       <c:url var="detailLink" value="element/linkednode.jsp">
         <c:param name="node" value="${model.id}"/>
       </c:url>

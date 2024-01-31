@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,16 +29,16 @@
 package org.opennms.features.distributed.cassandra.impl;
 
 import java.util.Objects;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Future;
 
+import com.datastax.oss.driver.api.core.cql.AsyncResultSet;
+import com.datastax.oss.driver.api.core.cql.PreparedStatement;
+import com.datastax.oss.driver.api.core.cql.ResultSet;
+import com.datastax.oss.driver.api.core.cql.SimpleStatement;
+import com.datastax.oss.driver.api.core.cql.Statement;
 import org.opennms.features.distributed.cassandra.api.CassandraSession;
 import org.opennms.features.distributed.cassandra.api.CassandraSessionFactory;
-
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.RegularStatement;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.ResultSetFuture;
-import com.datastax.driver.core.Statement;
 
 /**
  * Serves the Cassandra session initiated by Newts by proxying it through our own {@link CassandraSession session}
@@ -51,19 +51,23 @@ public class NewtsCassandraSessionFactory implements CassandraSessionFactory {
         Objects.requireNonNull(newtsCassandraSession);
 
         // Map between our proxy session and the session owned by newts
-        proxySession = new CassandraSession() {
+        proxySession = NewtsCassandraSessionFactory.of(newtsCassandraSession);
+    }
+
+    public static CassandraSession of(org.opennms.newts.cassandra.CassandraSession newtsCassandraSession) {
+        return new CassandraSession() {
             @Override
             public PreparedStatement prepare(String statement) {
                 return newtsCassandraSession.prepare(statement);
             }
 
             @Override
-            public PreparedStatement prepare(RegularStatement statement) {
+            public PreparedStatement prepare(SimpleStatement statement) {
                 return newtsCassandraSession.prepare(statement);
             }
 
             @Override
-            public ResultSetFuture executeAsync(Statement statement) {
+            public CompletionStage<AsyncResultSet> executeAsync(Statement statement) {
                 return newtsCassandraSession.executeAsync(statement);
             }
 
@@ -79,7 +83,7 @@ public class NewtsCassandraSessionFactory implements CassandraSessionFactory {
 
             @Override
             public Future<Void> shutdown() {
-                return newtsCassandraSession.shutdown();
+                return newtsCassandraSession.shutdown().toCompletableFuture();
             }
         };
     }

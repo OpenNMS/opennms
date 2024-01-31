@@ -13,6 +13,7 @@
     <!-- BSD and GPL - see headers for details -->
     <suppress files="org[\\/]opennms[\\/]core[\\/]test[\\/]dns[\\/]DNSServer.java" checks=".*"/>
     <!-- APLv2 -->
+    <suppress files="org[\\/]opennms[\\/]netmgt[\\/]measurements[\\/]filters[\\/]impl[\\/]holtwinters[\\/].*" checks=".*"/>
     <suppress files="org[\\/]opennms[\\/]netmgt[\\/]snmp[\\/]snmp4j[\\/]Integer32IgnoreTooManyBytes.java" checks=".*"/>
     <suppress files="org[\\/]opennms[\\/]core[\\/]soa[\\/]support[\\/]OnmsOSGiBridgeActivator.java" checks=".*"/>
     <suppress files="org[\\/]opennms[\\/]vaadin[\\/]extender[\\/].*" checks=".*"/>

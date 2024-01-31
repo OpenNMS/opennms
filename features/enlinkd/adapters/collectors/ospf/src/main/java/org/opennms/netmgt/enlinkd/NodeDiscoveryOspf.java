@@ -35,10 +35,13 @@ import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.enlinkd.common.NodeCollector;
+import org.opennms.netmgt.enlinkd.model.OspfArea;
 import org.opennms.netmgt.enlinkd.model.OspfElement.Status;
+import org.opennms.netmgt.enlinkd.model.OspfIf;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.service.api.OspfTopologyService;
+import org.opennms.netmgt.enlinkd.snmp.OspfAreaTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfGeneralGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIfTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfIpAddrTableGetter;
@@ -139,10 +142,14 @@ public final class NodeDiscoveryOspf extends NodeCollector {
             return;
        }
 
-        List<OspfLink> localOspfPorts =  new ArrayList<>();
+        List<OspfIf> localOspfPorts =  new ArrayList<>();
         OspfIfTableTracker ospfIfTableTracker = new OspfIfTableTracker() {
             public void processOspfIfRow(final OspfIfRow row) {
-                localOspfPorts.add(row.getOspfLink());
+                if (row.getOspfIf().getOspfIfAddressLessIf() != 0) {
+                    localOspfPorts.add(row.getOspfIf());
+                } else {
+                    localOspfPorts.add(ipAddrTableGetter.get(row.getOspfIf()));
+                }
             }
         };
 
@@ -163,29 +170,57 @@ public final class NodeDiscoveryOspf extends NodeCollector {
        }
 
         for (OspfLink link : links) {
-            for (OspfLink localospfport: localOspfPorts) {
-                if (localospfport.getOspfAddressLessIndex() != 0 && link.getOspfRemAddressLessIndex() != 0) {
-                    link.setOspfIpAddr(localospfport.getOspfIpAddr());
-                    link.setOspfAddressLessIndex(localospfport.getOspfAddressLessIndex());
-                    link.setOspfIfIndex(localospfport.getOspfAddressLessIndex());
+            for (OspfIf localospfport: localOspfPorts) {
+                if (localospfport.getOspfIfAddressLessIf() != 0 && link.getOspfRemAddressLessIndex() != 0) {
+                    link.setOspfIpAddr(localospfport.getOspfIfIpaddress());
+                    link.setOspfAddressLessIndex(localospfport.getOspfIfAddressLessIf());
+                    link.setOspfIfIndex(localospfport.getOspfIfAddressLessIf());
+                    link.setOspfIfAreaId(localospfport.getOspfIfAreaId());
                     break;
                 }
-                if (localospfport.getOspfAddressLessIndex() == 0 && link.getOspfRemAddressLessIndex() != 0)
+                if (localospfport.getOspfIfAddressLessIf()== 0 && link.getOspfRemAddressLessIndex() != 0)
                     continue;
-                if (localospfport.getOspfAddressLessIndex() != 0 && link.getOspfRemAddressLessIndex() == 0)
+                if (localospfport.getOspfIfAddressLessIf() != 0 && link.getOspfRemAddressLessIndex() == 0)
                     continue;
-                localospfport = ipAddrTableGetter.get(localospfport);
-                if (InetAddressUtils.inSameNetwork(localospfport.getOspfIpAddr(),link.getOspfRemIpAddr(),localospfport.getOspfIpMask())) {
-                    link.setOspfIpAddr(localospfport.getOspfIpAddr());
-                    link.setOspfAddressLessIndex(localospfport.getOspfAddressLessIndex());
-                    link.setOspfIpMask(localospfport.getOspfIpMask());
-                    link.setOspfIfIndex(localospfport.getOspfIfIndex());
+                if (InetAddressUtils.inSameNetwork(localospfport.getOspfIfIpaddress(),link.getOspfRemIpAddr(),localospfport.getOspfIfNetmask())) {
+                    link.setOspfIpAddr(localospfport.getOspfIfIpaddress());
+                    link.setOspfAddressLessIndex(localospfport.getOspfIfAddressLessIf());
+                    link.setOspfIfAreaId(localospfport.getOspfIfAreaId());
+                    link.setOspfIpMask(localospfport.getOspfIfNetmask());
+                    link.setOspfIfIndex(localospfport.getOspfIfIfindex());
                     break;
                 }
             }
             m_ospfTopologyService.store(getNodeId(),link);
         }
 
+        // Areas
+        List<OspfArea> areas =  new ArrayList<>();
+        OspfAreaTableTracker ospfAreaTableTracker = new OspfAreaTableTracker() {
+            public void processOspfAreaRow(final OspfAreaRow row) {
+                areas.add(row.getOspfArea());
+            }
+        };
+
+        try {
+            getLocationAwareSnmpClient().walk(peer, ospfAreaTableTracker).
+                    withDescription("ospfAreaTable").
+                    withLocation(getLocation()).
+                    execute().
+                    get();
+        } catch (ExecutionException e) {
+            LOG.debug("run: node [{}]: ExecutionException: {}",
+                    getNodeId(), e.getMessage());
+            return;
+        } catch (final InterruptedException e) {
+            LOG.debug("run: node [{}]: InterruptedException: {}",
+                    getNodeId(), e.getMessage());
+            return;
+        }
+        // Areas
+        for (OspfArea area : areas) {
+            m_ospfTopologyService.store(getNodeId(),area);
+        }
         m_ospfTopologyService.reconcile(getNodeId(),now);
     }
 

@@ -29,10 +29,9 @@
 package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-
 import static org.opennms.netmgt.nb.Nms0123NetworkBuilder.ITPN0111_IP;
 import static org.opennms.netmgt.nb.Nms0123NetworkBuilder.ITPN0111_NAME;
 import static org.opennms.netmgt.nb.Nms0123NetworkBuilder.ITPN0111_SNMP_RESOURCE;
@@ -58,13 +57,10 @@ import static org.opennms.netmgt.nb.Nms0123NetworkBuilder.ITPN0202_IP;
 import static org.opennms.netmgt.nb.Nms0123NetworkBuilder.ITPN0202_NAME;
 import static org.opennms.netmgt.nb.Nms0123NetworkBuilder.ITPN0202_SNMP_RESOURCE;
 
-import java.util.List;
-
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
-import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms0123NetworkBuilder;
@@ -73,6 +69,7 @@ import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 public class Nms0123EnIT extends EnLinkdBuilderITCase {
 
     Nms0123NetworkBuilder builder = new Nms0123NetworkBuilder();
+
     /*
      *  itpn0111 -- itpn0112 --. itpn0113 -- itpn0202 -- itpn0123
      *     |                                     |
@@ -161,10 +158,7 @@ public class Nms0123EnIT extends EnLinkdBuilderITCase {
         assertNotNull(topology);
         printOnmsTopology(topology);
         assertEquals(8,topology.getVertices().size());
-//        assertEquals(8,topology.getEdges().size());
-        //FIXME should be 8
-        assertEquals(4,topology.getEdges().size());
-
+        assertEquals(8,topology.getEdges().size());
     }
 
 }

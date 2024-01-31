@@ -61,6 +61,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
@@ -78,6 +79,7 @@ import com.google.common.collect.ImmutableSet;
 
 @Component
 @Path("filesystem")
+@Tag(name = "FileSystem", description = "File System API")
 public class FilesystemRestService {
     private static final Logger LOG = LoggerFactory.getLogger(FilesystemRestService.class);
 

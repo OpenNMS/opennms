@@ -28,8 +28,9 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
-import static org.opennms.core.utils.InetAddressUtils.normalizeMacAddress;
 import static org.opennms.core.utils.InetAddressUtils.isValidBridgeAddress;
+import static org.opennms.core.utils.InetAddressUtils.normalizeMacAddress;
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 
@@ -65,14 +66,18 @@ public class IpNetToMediaTableTracker extends TableTracker
      * <P>The TABLE_OID is the object identifier that represents
      * the root of the IP Address table in the MIB forest.</P>
      */
-    public static final SnmpObjId  IPNETTOMEDIA_TABLE_ENTRY   = SnmpObjId.get(".1.3.6.1.2.1.4.22.1");    // start of table (GETNEXT)
+    public static final SnmpObjId IPNETTOMEDIA_TABLE_ENTRY_OID = SnmpObjId.get(".1.3.6.1.2.1.4.22.1");    // start of table (GETNEXT)
 	// Lookup strings for specific table entries
 	//
-	public final static	SnmpObjId	IPNETTOMEDIA_TABLE_IFINDEX	= SnmpObjId.get(IPNETTOMEDIA_TABLE_ENTRY, "1");
-	public final static	SnmpObjId	IPNETTOMEDIA_TABLE_PHYSADDR	= SnmpObjId.get(IPNETTOMEDIA_TABLE_ENTRY, "2");
-	public final static	SnmpObjId	IPNETTOMEDIA_TABLE_NETADDR	= SnmpObjId.get(IPNETTOMEDIA_TABLE_ENTRY, "3");
-	public final static	SnmpObjId	IPNETTOMEDIA_TABLE_TYPE		= SnmpObjId.get(IPNETTOMEDIA_TABLE_ENTRY, "4");
+	public final static	SnmpObjId IPNETTOMEDIA_TABLE_IFINDEX_OID = SnmpObjId.get(IPNETTOMEDIA_TABLE_ENTRY_OID, "1");
+	public final static	SnmpObjId IPNETTOMEDIA_TABLE_PHYSADDR_OID = SnmpObjId.get(IPNETTOMEDIA_TABLE_ENTRY_OID, "2");
+	public final static	SnmpObjId IPNETTOMEDIA_TABLE_NETADDR_OID = SnmpObjId.get(IPNETTOMEDIA_TABLE_ENTRY_OID, "3");
+	public final static	SnmpObjId IPNETTOMEDIA_TABLE_TYPE_OID = SnmpObjId.get(IPNETTOMEDIA_TABLE_ENTRY_OID, "4");
 
+	public final static String IPNETTOMEDIA_TABLE_IFINDEX = "ipNetToMediaIfIndex";
+	public final static String IPNETTOMEDIA_TABLE_PHYSADDR = "ipNetToMediaPhysAddress";
+	public final static String IPNETTOMEDIA_TABLE_NETADDR = "ipNetToMediaNetAddress";
+	public final static String IPNETTOMEDIA_TABLE_TYPE = "ipNetToMediaType";
 	/**
 	 * <P>The keys that will be supported by default from the 
 	 * TreeMap base class. Each of the elements in the list
@@ -81,17 +86,17 @@ public class IpNetToMediaTableTracker extends TableTracker
 	 * this class.</P>
 	 */
 	public static SnmpObjId[] ms_elemList = new SnmpObjId[] {
-		IPNETTOMEDIA_TABLE_IFINDEX,
+			IPNETTOMEDIA_TABLE_IFINDEX_OID,
 		/*
          * The media-dependent `physical' address. 
          */
-		IPNETTOMEDIA_TABLE_PHYSADDR,
+			IPNETTOMEDIA_TABLE_PHYSADDR_OID,
 
 		/*
          * The IpAddress corresponding to the media-
          * dependent `physical' address.
          */
-		IPNETTOMEDIA_TABLE_NETADDR,
+			IPNETTOMEDIA_TABLE_NETADDR_OID,
         
 		/*
 		 * ipNetToMediaType OBJECT-TYPE
@@ -117,7 +122,7 @@ public class IpNetToMediaTableTracker extends TableTracker
          *   use.  Proper interpretation of such entries requires
          *   examination of the relevant ipNetToMediaType object."         
          */
-		IPNETTOMEDIA_TABLE_TYPE
+			IPNETTOMEDIA_TABLE_TYPE_OID
 		};
 
 	public static class IpNetToMediaRow extends SnmpRowResult {
@@ -127,7 +132,7 @@ public class IpNetToMediaTableTracker extends TableTracker
 		}
 		
 		public String getIpNetToMediaPhysAddress(){
-		    SnmpValue mac = getValue(IPNETTOMEDIA_TABLE_PHYSADDR);
+		    SnmpValue mac = getValue(IPNETTOMEDIA_TABLE_PHYSADDR_OID);
 		    if ( mac == null ) {
 		        return null;
 		    }
@@ -164,7 +169,7 @@ public class IpNetToMediaTableTracker extends TableTracker
 		 * @return a {@link java.net.InetAddress} object.
 		 */
 		public InetAddress getIpNetToMediaNetAddress(){
-		    SnmpValue value = getValue(IPNETTOMEDIA_TABLE_NETADDR);
+		    SnmpValue value = getValue(IPNETTOMEDIA_TABLE_NETADDR_OID);
                     if (value == null) {
                         return null;
                     }		    
@@ -177,7 +182,7 @@ public class IpNetToMediaTableTracker extends TableTracker
 		 * @return a int.
 		 */
 		public Integer getIpNetToMediatype(){
-		    SnmpValue value = getValue(IPNETTOMEDIA_TABLE_TYPE);
+		    SnmpValue value = getValue(IPNETTOMEDIA_TABLE_TYPE_OID);
 		    if (value == null) {
 		        return null;
 		    }
@@ -185,7 +190,7 @@ public class IpNetToMediaTableTracker extends TableTracker
 		}
 		
 		public Integer getIpNetToMediaIfIndex() {
-		    SnmpValue value = getValue(IPNETTOMEDIA_TABLE_IFINDEX);
+		    SnmpValue value = getValue(IPNETTOMEDIA_TABLE_IFINDEX_OID);
                     if (value == null) {
                         return null;
                     }
@@ -234,6 +239,11 @@ public class IpNetToMediaTableTracker extends TableTracker
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker.IpNetToMediaRow} object.
      */
     public void processIpNetToMediaRow(final IpNetToMediaRow row) {
-    }
+		System.out.printf("\t\t%s (%s)= %s \n", IPNETTOMEDIA_TABLE_IFINDEX_OID + "." + row.getInstance().toString(), IPNETTOMEDIA_TABLE_IFINDEX, row.getIpNetToMediaIfIndex());
+		System.out.printf("\t\t%s (%s)= %s \n", IPNETTOMEDIA_TABLE_PHYSADDR_OID + "." + row.getInstance().toString(), IPNETTOMEDIA_TABLE_PHYSADDR, row.getIpNetToMediaPhysAddress());
+		System.out.printf("\t\t%s (%s)= %s \n", IPNETTOMEDIA_TABLE_NETADDR_OID + "." + row.getInstance().toString(), IPNETTOMEDIA_TABLE_NETADDR, str(row.getIpNetToMediaNetAddress()));
+		System.out.printf("\t\t%s (%s)= %s (%s)\n", IPNETTOMEDIA_TABLE_TYPE_OID + "." + row.getInstance().toString(), IPNETTOMEDIA_TABLE_TYPE, row.getIpNetToMediatype(), IpNetToMediaType.get(row.getIpNetToMediatype()) );
+
+	}
 
 }   

@@ -89,9 +89,6 @@
                         <li><a href="graph/index.jsp">Resource Graphs</a></li>
                         <li><a href="KSC/index.jsp">KSC Performance, Nodes, Domains</a></li>
                         <li><a href="report/database/index.jsp">Database Reports</a></li>
-                        <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled"))) {%>
-                        <li><a href="inventory/rancidReport.htm">Inventory</a></li>
-                        <% }%>
                         <li><a href="statisticsReports/index.htm">Statistics Reports</a></li>
                     </ul>
                 </div>
@@ -135,12 +132,6 @@
                 month-to-date, previous month, and last twelve months by categories.
             </p>
 
-            <% if ("true".equalsIgnoreCase(Vault.getProperty("opennms.rancidIntegrationEnabled"))) {%>
-            <p><b>Inventory Reports</b> provide html or XML report list of
-                nodes inventories and rancid devices matching at a specific date using
-                a search matching criteria .
-            </p>
-            <% } %>
             <p><b>Statistics Reports</b> provide regularly scheduled statistical
                 reports on collected numerical data (response time, SNMP performance
                 data, etc.).

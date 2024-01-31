@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2002-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -29,11 +29,14 @@
 
 --%>
 
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
+
 <%@page language="java"
 	contentType="text/html"
 	session="true"
 %>
 
+<%@ page import="org.opennms.web.account.selfService.NewPasswordActionServlet" %>
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Change Password")
@@ -49,8 +52,8 @@
     if (document.goForm.pass1.value == document.goForm.pass2.value)
     {
       let newPassword=document.goForm.pass1.value
-      const passwordRegex= /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&.*+-]).{12,128})/;
-      const sameCharacterRegex= /(.)\1{5}/;
+      const passwordRegex=/${fn:escapeXml(NewPasswordActionServlet.PASSWORD_REGEX)}/;
+      const sameCharacterRegex=/${fn:escapeXml(NewPasswordActionServlet.SAME_CHARACTER_REGEX)}/;
 
       if(newPassword.match(passwordRegex) && !newPassword.match(sameCharacterRegex) )
       {

@@ -7,14 +7,6 @@ The enhanced link daemon (enlinkd) discovers connections between nodes using dat
 This data is collected from nodes via SNMP.
 Enlinkd gathers this data regularly and uses it to generate a snapshot of a device's neighbors from its perspective, as defined by SNMP data collectors.
 
-The xref:operation:deep-dive/topology/enlinkd/layer-2/bridge-discovery.adoc[bridge domain discovery process] uses the data that the Bridge and IpNetToMedia collectors gather to generate a bridge broadcast domain layout.
-The bridge forwarding tables (BFTs) that individual nodes provide display information about the MAC addresses discovered on bridge ports.
-This is what the bridge domain discovery process considers a connection.
-It is not very useful on its own, so the process also performs domain calculations to assign each MAC address to the port where the device that holds it is effectively connected (the nearest known bridge port).
-
-Connections that the collectors and the bridge domain discovery process find are called "links."
-These links are discovered based on information that is provided by an agent's understanding of connections at the OSI Layer 2, Layer 3, or other OSI layers.
-
 NOTE: In this context, a "link" refers to more than the network OSI Layer 2 connection.
 
 The topologies are made of vertices and edges, and are used to generate a topology map.
@@ -23,8 +15,14 @@ They also allow the Kafka Producer to send TopologyMessage data.
 The following pages describe enlinkd and how to configure it, the supported discovery protocols, and the SNMP MIBs that must be exposed to gather links between nodes.
 You can view detailed information about a node's connections and supporting link data on the node detail page in the {page-component-title} web UI.
 
+[[ga-enlinkd-collectors]]
+== Enhanced linkd supported protocols
+
+Enhanced Linkd collects topology data from CDP, LLDP, OSPF, IS-IS and Bridge MIBs.
+For more information, see xref:deep-dive/topology/enlinkd/layer-2-discovery.adoc[Layer 2 Discovery] and xref:deep-dive/topology/enlinkd/layer-3-discovery.adoc[Layer 3 Discovery].
+
 [[ga-enlinkd-layers]]
-== Topology Layers
+== Topology layers
 
 The enlinkd topology map supports layered protocol maps.
 
@@ -44,9 +42,13 @@ Bridge:: Displays only Bridge links.
 
 OSPF:: Displays the Open Shortest Path First (OSPF) topology that enlinkd discovers.
 
+OSPFAREA:: Displays the OSPF Area topology that enlinkd discovers.
+
 ISIS:: Displays the Intermediate System to Intermediate System (IS-IS) topology that enlinkd discovers.
 
 Layer3:: Displays the combined OSPF and IS-IS topology that enlinkd discovers.
+
+NetworkRouter:: Displays the combined topology for subnetworks and routers.
 
 UserDefined:: Displays xref:development:rest/user-defined-links.adoc[user-defined topologies].
 

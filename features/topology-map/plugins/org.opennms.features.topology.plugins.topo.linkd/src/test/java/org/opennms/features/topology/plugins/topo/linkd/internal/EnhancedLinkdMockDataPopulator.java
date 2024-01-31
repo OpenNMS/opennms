@@ -337,7 +337,7 @@ public class EnhancedLinkdMockDataPopulator {
     }
 
     private LldpLink createLldpLink(OnmsNode node, String nodePortId, String nodePortDescr, int portIfIndex, int localPortNum, LldpPortIdSubType portIdSubType, LldpElement remLldpElement, String node2PortDescr, String node2PortId) {
-        return new LldpLink(node, localPortNum, portIfIndex, nodePortId, nodePortDescr,
+        return new LldpLink(node, localPortNum, portIfIndex, portIfIndex, nodePortId, nodePortDescr,
                 portIdSubType, remLldpElement.getLldpChassisId(), remLldpElement.getLldpSysname(), remLldpElement.getLldpChassisIdSubType(),
                 node2PortId, LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL, node2PortDescr);
     }

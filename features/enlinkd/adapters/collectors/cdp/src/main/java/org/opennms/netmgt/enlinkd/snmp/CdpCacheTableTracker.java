@@ -28,13 +28,11 @@
 
 package org.opennms.netmgt.enlinkd.snmp;
 
-import java.net.InetAddress;
-
 import static org.opennms.core.utils.InetAddressUtils.getInetAddress;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.net.InetAddress;
+
 import org.opennms.netmgt.enlinkd.model.CdpLink;
 import org.opennms.netmgt.enlinkd.model.CdpLink.CiscoNetworkProtocolType;
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -42,17 +40,26 @@ import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.SnmpValue;
 import org.opennms.netmgt.snmp.TableTracker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CdpCacheTableTracker extends TableTracker {
 	private static final Logger LOG = LoggerFactory.getLogger(CdpCacheTableTracker.class);
 
-	public final static SnmpObjId CDP_CACHE_ADDRESS_TYPE      = SnmpObjId.get(".1.3.6.1.4.1.9.9.23.1.2.1.1.3");
-	public final static SnmpObjId CDP_CACHE_ADDRESS           = SnmpObjId.get(".1.3.6.1.4.1.9.9.23.1.2.1.1.4");
-	public final static SnmpObjId CDP_CACHE_VERSION           = SnmpObjId.get(".1.3.6.1.4.1.9.9.23.1.2.1.1.5");
-	public final static SnmpObjId CDP_CACHE_DEVICE_ID         = SnmpObjId.get(".1.3.6.1.4.1.9.9.23.1.2.1.1.6");
-	public final static SnmpObjId CDP_CACHE_DEVICE_PORT       = SnmpObjId.get(".1.3.6.1.4.1.9.9.23.1.2.1.1.7");
-	public final static SnmpObjId CDP_CACHE_PLATFORM          = SnmpObjId.get(".1.3.6.1.4.1.9.9.23.1.2.1.1.8");
-                                                           
+	public final static SnmpObjId CDP_CACHE_ADDRESS_TYPE_OID = SnmpObjId.get(".1.3.6.1.4.1.9.9.23.1.2.1.1.3");
+	public final static SnmpObjId CDP_CACHE_ADDRESS_OID = SnmpObjId.get(".1.3.6.1.4.1.9.9.23.1.2.1.1.4");
+	public final static SnmpObjId CDP_CACHE_VERSION_OID = SnmpObjId.get(".1.3.6.1.4.1.9.9.23.1.2.1.1.5");
+	public final static SnmpObjId CDP_CACHE_DEVICE_ID_OID = SnmpObjId.get(".1.3.6.1.4.1.9.9.23.1.2.1.1.6");
+	public final static SnmpObjId CDP_CACHE_DEVICE_PORT_OID = SnmpObjId.get(".1.3.6.1.4.1.9.9.23.1.2.1.1.7");
+	public final static SnmpObjId CDP_CACHE_PLATFORM_OID = SnmpObjId.get(".1.3.6.1.4.1.9.9.23.1.2.1.1.8");
+
+	public final static String CDP_CACHE_ADDRESS_TYPE = "cdpCacheAddressType" ;
+	public final static String CDP_CACHE_ADDRESS = "cdpCacheAddress";
+	public final static String CDP_CACHE_VERSION = "cdpCacheVersion";
+	public final static String CDP_CACHE_DEVICE_ID = "cdpCacheDeviceId";
+	public final static String CDP_CACHE_DEVICE_PORT = "cdpCacheDevicePort";
+	public final static String CDP_CACHE_PLATFORM = "cdpCachePlatform";
+
 	/**
 	 * <P>The keys that will be supported by default from the 
 	 * TreeMap base class. Each of the elements in the list
@@ -66,7 +73,7 @@ public class CdpCacheTableTracker extends TableTracker {
 		 * <P>An indication of the type of address contained in the
 		 *  corresponding instance of cdpCacheAddress.</P>
 		 */
-		CDP_CACHE_ADDRESS_TYPE,
+			CDP_CACHE_ADDRESS_TYPE_OID,
 
 		/*
 		 * <P>The (first) network-layer address of the device's
@@ -75,7 +82,7 @@ public class CdpCacheTableTracker extends TableTracker {
 		 *  instance of cacheAddressType had the value 'ip(1)', then
 		 *  this object would be an IP-address.</P>
 		 */
-		CDP_CACHE_ADDRESS, 
+			CDP_CACHE_ADDRESS_OID,
 
 		/*
 		 *     <P>The Version string as reported in the most recent CDP
@@ -83,14 +90,14 @@ public class CdpCacheTableTracker extends TableTracker {
          *   field (TLV) was reported in the most recent CDP
          *   message.
 		 */
-		CDP_CACHE_VERSION,
+			CDP_CACHE_VERSION_OID,
 		/*
 		 * <P>The Device-ID string as reported in the most recent CDP
 		 *  message. The zero-length string indicates no Device-ID
 		 *  field (TLV) was reported in the most recent CDP
 		 *  message.</P>
 		 */
-		CDP_CACHE_DEVICE_ID,
+			CDP_CACHE_DEVICE_ID_OID,
 
 		/*
 		 * <P>The Port-ID string as reported in the most recent CDP
@@ -99,7 +106,7 @@ public class CdpCacheTableTracker extends TableTracker {
 		 *  indicates no Port-ID field (TLV) was reported in the
 		 *  most recent CDP message.</P>
 		 */
-		CDP_CACHE_DEVICE_PORT,
+			CDP_CACHE_DEVICE_PORT_OID,
 		
 		/*
 		 * The Device's Hardware Platform as reported in the most
@@ -107,7 +114,7 @@ public class CdpCacheTableTracker extends TableTracker {
          *   that no Platform field (TLV) was reported in the most
          *   recent CDP message.
 		 */
-		CDP_CACHE_PLATFORM
+			CDP_CACHE_PLATFORM_OID
 	};
 
     public static class CdpCacheRow extends SnmpRowResult {
@@ -142,7 +149,7 @@ public class CdpCacheTableTracker extends TableTracker {
 		 * @return a int.
 		 */
 		public Integer getCdpCacheAddressType() {
-		    return getValue(CDP_CACHE_ADDRESS_TYPE).toInt();
+		    return getValue(CDP_CACHE_ADDRESS_TYPE_OID).toInt();
 		}
 	
 		/**
@@ -151,7 +158,7 @@ public class CdpCacheTableTracker extends TableTracker {
 		 * @return a {@link java.lang.String} object.
 		 */
 		public byte[] getCdpCacheAddress() {
-                    return getValue(CDP_CACHE_ADDRESS).getBytes();
+                    return getValue(CDP_CACHE_ADDRESS_OID).getBytes();
 		}
 		
 		/**
@@ -164,7 +171,7 @@ public class CdpCacheTableTracker extends TableTracker {
 		}
 		
 		private String getDisplayableCdpCacheAddress() {
-                    SnmpValue cdpCacheAddressValue = getValue(CDP_CACHE_ADDRESS);
+                    SnmpValue cdpCacheAddressValue = getValue(CDP_CACHE_ADDRESS_OID);
                     try {
                         if (cdpCacheAddressValue.isDisplayable())
                             return cdpCacheAddressValue.toDisplayString();
@@ -194,7 +201,7 @@ public class CdpCacheTableTracker extends TableTracker {
 		}
 
 		public String getCdpCacheVersion() {
-			return getValue(CDP_CACHE_VERSION).toDisplayString();
+			return getValue(CDP_CACHE_VERSION_OID).toDisplayString();
 		}
 		
 		/**
@@ -203,9 +210,9 @@ public class CdpCacheTableTracker extends TableTracker {
 		 * @return a {@link java.lang.String} object.
 		 */
 		public String getCdpCacheDeviceId() {
-		    if (getValue(CDP_CACHE_DEVICE_ID).isDisplayable())
-			return getValue(CDP_CACHE_DEVICE_ID).toDisplayString();
-		    return getValue(CDP_CACHE_DEVICE_ID).toHexString();
+		    if (getValue(CDP_CACHE_DEVICE_ID_OID).isDisplayable())
+			return getValue(CDP_CACHE_DEVICE_ID_OID).toDisplayString();
+		    return getValue(CDP_CACHE_DEVICE_ID_OID).toHexString();
 		}
 		
 		/**
@@ -214,13 +221,13 @@ public class CdpCacheTableTracker extends TableTracker {
 		 * @return a {@link java.lang.String} object.
 		 */
 		public String getCdpCacheDevicePort() {
-		    if (getValue(CDP_CACHE_DEVICE_PORT).isDisplayable())
-			return 	getValue(CDP_CACHE_DEVICE_PORT).toDisplayString();
-		    return getValue(CDP_CACHE_DEVICE_PORT).toHexString();
+		    if (getValue(CDP_CACHE_DEVICE_PORT_OID).isDisplayable())
+			return 	getValue(CDP_CACHE_DEVICE_PORT_OID).toDisplayString();
+		    return getValue(CDP_CACHE_DEVICE_PORT_OID).toHexString();
 		}
 				
 		public String getCdpCachePlatform() {
-			return getValue(CDP_CACHE_PLATFORM).toDisplayString();
+			return getValue(CDP_CACHE_PLATFORM_OID).toDisplayString();
 		}
 
 		public CdpLink getLink() {
@@ -266,6 +273,12 @@ public class CdpCacheTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.CdpCacheTableTracker.CdpCacheRow} object.
      */
     public void processCdpCacheRow(final CdpCacheRow row) {
-    }
+		System.out.printf("\t\t%s (%s)= %s (%s)\n", CDP_CACHE_ADDRESS_TYPE_OID + "." + row.getInstance().toString(), CDP_CACHE_ADDRESS_TYPE, row.getCdpCacheAddressType(), CiscoNetworkProtocolType.get(row.getCdpCacheAddressType())  );
+		System.out.printf("\t\t%s (%s)= %s \n", CDP_CACHE_ADDRESS_OID + "." + row.getInstance().toString(), CDP_CACHE_ADDRESS, row.getCdpCacheAddressString());
+		System.out.printf("\t\t%s (%s)= %s \n", CDP_CACHE_VERSION_OID + "." + row.getInstance().toString(), CDP_CACHE_VERSION, row.getCdpCacheVersion());
+		System.out.printf("\t\t%s (%s)= %s \n", CDP_CACHE_DEVICE_ID_OID + "." + row.getInstance().toString(), CDP_CACHE_DEVICE_ID, row.getCdpCacheDeviceId());
+		System.out.printf("\t\t%s (%s)= %s \n", CDP_CACHE_DEVICE_PORT_OID + "." + row.getInstance().toString(), CDP_CACHE_DEVICE_PORT, row.getCdpCacheDevicePort());
+		System.out.printf("\t\t%s (%s)= %s \n", CDP_CACHE_PLATFORM_OID + "." + row.getInstance().toString(), CDP_CACHE_PLATFORM, row.getCdpCachePlatform());
+	}
 
 }

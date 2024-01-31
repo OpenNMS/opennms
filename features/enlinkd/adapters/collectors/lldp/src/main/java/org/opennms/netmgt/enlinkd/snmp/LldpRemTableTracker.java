@@ -46,14 +46,20 @@ public class LldpRemTableTracker extends TableTracker {
     private final static Logger LOG = LoggerFactory.getLogger(LldpRemTableTracker.class);
 	
     public static final SnmpObjId LLDP_REM_TABLE_ENTRY = SnmpObjId.get(".1.0.8802.1.1.2.1.4.1.1"); // start of table (GETNEXT)
-    
-    
-    public final static SnmpObjId LLDP_REM_CHASSIS_ID_SUBTYPE = SnmpObjId.get(LLDP_REM_TABLE_ENTRY,"4");
-    public final static SnmpObjId LLDP_REM_CHASSIS_ID         = SnmpObjId.get(LLDP_REM_TABLE_ENTRY,"5");
-    public final static SnmpObjId LLDP_REM_PORT_ID_SUBTYPE    = SnmpObjId.get(LLDP_REM_TABLE_ENTRY,"6");
-    public final static SnmpObjId LLDP_REM_PORT_ID            = SnmpObjId.get(LLDP_REM_TABLE_ENTRY,"7");
-    public final static SnmpObjId LLDP_REM_PORT_DESCR         = SnmpObjId.get(LLDP_REM_TABLE_ENTRY,"8");
-    public final static SnmpObjId LLDP_REM_SYSNAME            = SnmpObjId.get(LLDP_REM_TABLE_ENTRY,"9");
+
+    public final static String LLDP_REM_CHASSIS_ID_SUBTYPE = "lldpRemChassisIdSubtype";
+    public final static String LLDP_REM_CHASSIS_ID = "lldpRemChassisId";
+    public final static String LLDP_REM_PORT_ID_SUBTYPE = "lldpRemPortIdSubtype";
+    public final static String LLDP_REM_PORT_ID = "lldpRemPortId";
+    public final static String LLDP_REM_PORT_DESCR = "lldpRemPortDesc";
+    public final static String LLDP_REM_SYSNAME = "lldpRemSysName";
+
+    public final static SnmpObjId LLDP_REM_CHASSIS_ID_SUBTYPE_OID = SnmpObjId.get(LLDP_REM_TABLE_ENTRY,"4");
+    public final static SnmpObjId LLDP_REM_CHASSIS_ID_OID = SnmpObjId.get(LLDP_REM_TABLE_ENTRY,"5");
+    public final static SnmpObjId LLDP_REM_PORT_ID_SUBTYPE_OID = SnmpObjId.get(LLDP_REM_TABLE_ENTRY,"6");
+    public final static SnmpObjId LLDP_REM_PORT_ID_OID = SnmpObjId.get(LLDP_REM_TABLE_ENTRY,"7");
+    public final static SnmpObjId LLDP_REM_PORT_DESCR_OID  = SnmpObjId.get(LLDP_REM_TABLE_ENTRY,"8");
+    public final static SnmpObjId LLDP_REM_SYSNAME_OID = SnmpObjId.get(LLDP_REM_TABLE_ENTRY,"9");
 
     public static final SnmpObjId[] s_lldpremtable_elemList = new SnmpObjId[] {
         
@@ -61,37 +67,37 @@ public class LldpRemTableTracker extends TableTracker {
          *  "The type of encoding used to identify the chassis associated
          *  with the remote system."
          */
-        LLDP_REM_CHASSIS_ID_SUBTYPE,
+            LLDP_REM_CHASSIS_ID_SUBTYPE_OID,
         
         /*
          * "The string value used to identify the chassis component
          * associated with the remote system."
          */
-       LLDP_REM_CHASSIS_ID,
+            LLDP_REM_CHASSIS_ID_OID,
 
         /*
          * "The type of port identifier encoding used in the associated
          * 'lldpRemPortId' object."
          */
-        LLDP_REM_PORT_ID_SUBTYPE,
+            LLDP_REM_PORT_ID_SUBTYPE_OID,
 
         /*
          * "The string value used to identify the port component
             associated with the remote system."
          */
-        LLDP_REM_PORT_ID,
+            LLDP_REM_PORT_ID_OID,
         
         /*
          * 	"The string value used to identify the description of 
          *  the given port associated with the remote system."
          */
-        LLDP_REM_PORT_DESCR,
+        LLDP_REM_PORT_DESCR_OID,
 
         /*
          * "The string value used to identify the port component
          * associated with the remote system."
          */
-        LLDP_REM_SYSNAME
+            LLDP_REM_SYSNAME_OID
 
     };
     
@@ -181,35 +187,36 @@ public class LldpRemTableTracker extends TableTracker {
         }
 
         public Integer getLldpRemChassisidSubtype() {
-	    	return getValue(LLDP_REM_CHASSIS_ID_SUBTYPE).toInt();
+	    	return getValue(LLDP_REM_CHASSIS_ID_SUBTYPE_OID).toInt();
 	    }
 	    
 	    public SnmpValue getLldpRemChassisId() {
-	        return getValue(LLDP_REM_CHASSIS_ID);
+	        return getValue(LLDP_REM_CHASSIS_ID_OID);
 	    }
 	    
 	    public Integer getLldpRemPortidSubtype() {
-	    	return getValue(LLDP_REM_PORT_ID_SUBTYPE).toInt();
+	    	return getValue(LLDP_REM_PORT_ID_SUBTYPE_OID).toInt();
 	    }
 
 	    public String getLldpRemPortid() {
-	    	return decodeLldpPortId(getLldpRemPortidSubtype(), getValue(LLDP_REM_PORT_ID));
+	    	return decodeLldpPortId(getLldpRemPortidSubtype(), getValue(LLDP_REM_PORT_ID_OID));
 	    }
 	    
 	    public String getLldpRemPortDescr() {
-	    	if (getValue(LLDP_REM_PORT_DESCR) != null)
-	    		return getValue(LLDP_REM_PORT_DESCR).toDisplayString();
+	    	if (getValue(LLDP_REM_PORT_DESCR_OID) != null)
+	    		return getValue(LLDP_REM_PORT_DESCR_OID).toDisplayString();
 	    	return "";
 	    }
 
 	    public String getLldpRemSysname() {
-	        return getValue(LLDP_REM_SYSNAME).toDisplayString();
+	        return getValue(LLDP_REM_SYSNAME_OID).toDisplayString();
 	    }
 	    
 	    public LldpLink getLldpLink() {
 
             LldpLink lldpLink = new LldpLink();
-            lldpLink.setLldpLocalPortNum(getLldpRemIndex());
+            lldpLink.setLldpRemLocalPortNum(getLldpRemLocalPortNum());
+            lldpLink.setLldpRemIndex(getLldpRemIndex());
             lldpLink.setLldpRemChassisId(LldpLocalGroupTracker.decodeLldpChassisId(getLldpRemChassisId() , getLldpRemChassisidSubtype()));
             lldpLink.setLldpRemChassisIdSubType(LldpChassisIdSubType.get(getLldpRemChassisidSubtype()));
             lldpLink.setLldpRemSysname(getLldpRemSysname());
@@ -250,6 +257,12 @@ public class LldpRemTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker.LldpRemRow} object.
      */
     public void processLldpRemRow(final LldpRemRow row) {
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", LLDP_REM_CHASSIS_ID_SUBTYPE_OID + "." + row.getInstance().toString(), LLDP_REM_CHASSIS_ID_SUBTYPE, row.getLldpRemChassisidSubtype(), LldpChassisIdSubType.getTypeString(row.getLldpRemChassisidSubtype()));
+        System.out.printf("\t\t%s (%s)= %s \n", LLDP_REM_CHASSIS_ID_OID + "." + row.getInstance().toString(), LLDP_REM_CHASSIS_ID, LldpLocalGroupTracker.decodeLldpChassisId(row.getLldpRemChassisId() , row.getLldpRemChassisidSubtype()));
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", LLDP_REM_PORT_ID_SUBTYPE_OID + "." + row.getInstance().toString(), LLDP_REM_PORT_ID_SUBTYPE, row.getLldpRemPortidSubtype(), LldpPortIdSubType.getTypeString(row.getLldpRemPortidSubtype()));
+        System.out.printf("\t\t%s (%s)= %s \n", LLDP_REM_PORT_ID_OID + "." + row.getInstance().toString(), LLDP_REM_PORT_ID, row.getLldpRemPortid());
+        System.out.printf("\t\t%s (%s)= %s \n", LLDP_REM_PORT_DESCR_OID + "." + row.getInstance().toString(), LLDP_REM_PORT_DESCR, row.getLldpRemPortDescr());
+        System.out.printf("\t\t%s (%s)= %s \n", LLDP_REM_SYSNAME_OID + "." + row.getInstance().toString(), LLDP_REM_SYSNAME, row.getLldpRemSysname());
     }
 
 }

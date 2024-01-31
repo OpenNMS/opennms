@@ -72,8 +72,9 @@ public class OspfLink implements Serializable {
 
 	private Date m_ospfLinkCreateTime = new Date();
     private Date m_ospfLinkLastPollTime;
+	private InetAddress m_ospfIfAreaId;
 
-    public OspfLink(){}
+	public OspfLink(){}
 
     @Id
     @Column(nullable = false)
@@ -112,6 +113,12 @@ public class OspfLink implements Serializable {
     @Column(name="ospfAddressLessIndex")
 	public Integer getOspfAddressLessIndex() {
 		return m_ospfAddressLessIndex;
+	}
+
+	@Type(type="org.opennms.netmgt.model.InetAddressUserType")
+	@Column(name="ospfIfAreaId")
+	public InetAddress getOspfIfAreaId() {
+		return m_ospfIfAreaId;
 	}
 
     @Column(name="ospfIfIndex")
@@ -164,6 +171,10 @@ public class OspfLink implements Serializable {
 	public void setOspfAddressLessIndex(Integer ospfAddressLessIndex) {
 		m_ospfAddressLessIndex = ospfAddressLessIndex;
 	}
+
+	public void setOspfIfAreaId(InetAddress ospfIfAreaId) {
+		this.m_ospfIfAreaId = ospfIfAreaId;
+	}
 	
 	public void setOspfRemRouterId(InetAddress ospfRemRouterId) {
 		m_ospfRemRouterId = ospfRemRouterId;
@@ -193,7 +204,7 @@ public class OspfLink implements Serializable {
 	public String toString() {
 		return "ospflink: nodeid:[" +
 				getNode().getId() +
-				"]: id/mask/ifindex/addressless:[" +
+				"]: id/mask/ifindex/addressless/ifAreaId:[" +
 				str(getOspfIpAddr()) +
 				"/" +
 				str(getOspfIpMask()) +
@@ -201,6 +212,8 @@ public class OspfLink implements Serializable {
 				getOspfIfIndex() +
 				"/" +
 				getOspfAddressLessIndex() +
+				"/" +
+				str(getOspfIfAreaId()) +
 				"]: rem router id/ip/addressless:[" +
 				str(getOspfRemRouterId()) +
 				"/" +
@@ -218,6 +231,7 @@ public class OspfLink implements Serializable {
 		setOspfIpMask(link.getOspfIpMask());
 		setOspfIfIndex(link.getOspfIfIndex());
 		setOspfAddressLessIndex(link.getOspfAddressLessIndex());
+		setOspfIfAreaId(link.getOspfIfAreaId());
 		
 		setOspfRemRouterId(link.getOspfRemRouterId());
 		setOspfRemIpAddr(link.getOspfRemIpAddr());
@@ -225,5 +239,6 @@ public class OspfLink implements Serializable {
 		
 		setOspfLinkLastPollTime(link.getOspfLinkCreateTime());
 	}
+
 
 }

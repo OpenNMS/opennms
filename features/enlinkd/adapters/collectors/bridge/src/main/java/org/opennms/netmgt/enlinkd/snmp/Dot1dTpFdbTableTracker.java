@@ -51,10 +51,13 @@ import org.opennms.netmgt.snmp.TableTracker;
  */
 public class Dot1dTpFdbTableTracker extends TableTracker {
 
-	 public final static SnmpObjId DOT1D_TP_FDB_ADDRESS = SnmpObjId.get(".1.3.6.1.2.1.17.4.3.1.1");
-	 public final static SnmpObjId DOT1D_TP_FDB_PORT    = SnmpObjId.get(".1.3.6.1.2.1.17.4.3.1.2");
-	 public final static SnmpObjId DOT1D_TP_FDB_STATUS  = SnmpObjId.get(".1.3.6.1.2.1.17.4.3.1.3");
+	 public final static SnmpObjId DOT1D_TP_FDB_ADDRESS_OID = SnmpObjId.get(".1.3.6.1.2.1.17.4.3.1.1");
+	 public final static SnmpObjId DOT1D_TP_FDB_PORT_OID = SnmpObjId.get(".1.3.6.1.2.1.17.4.3.1.2");
+	 public final static SnmpObjId DOT1D_TP_FDB_STATUS_OID = SnmpObjId.get(".1.3.6.1.2.1.17.4.3.1.3");
 
+	 public final static String DOT1D_TP_FDB_ADDRESS = "dot1dTpFdbAddress";
+	 public final static String DOT1D_TP_FDB_PORT = "dot1dTpFdbPort";
+	 public final static String DOT1D_TP_FDB_STATUS = "dot1dTpFdbStatus";
 
 	public static final SnmpObjId[] ms_elemList = new SnmpObjId[] {
 	    /*
@@ -63,7 +66,7 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 	     *  REFERENCE
            "IEEE 802.1D-1998: clause 7.9.1, 7.9.2"
 	     */
-	    DOT1D_TP_FDB_ADDRESS,
+			DOT1D_TP_FDB_ADDRESS_OID,
 
 	    /*
 	     * Either the value '0', or the port number of the
@@ -79,7 +82,7 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 	     * for addresses for which the corresponding value of
 	     * dot1dTpFdbStatus is not learned(3).
 	     */
-	    DOT1D_TP_FDB_PORT,
+			DOT1D_TP_FDB_PORT_OID,
 
 	    /*
          *  "The status of this entry.  The meanings of the
@@ -107,7 +110,7 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
          *          dot1dTpFdbAddress is also the value of an
          *          existing instance of dot1dStaticAddress."
 	     */
-	    DOT1D_TP_FDB_STATUS
+			DOT1D_TP_FDB_STATUS_OID
 	};
 
 	public static class Dot1dTpFdbRow extends SnmpRowResult {
@@ -121,8 +124,8 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 		 * @return a {@link java.lang.String} object.
 		 */
 		public String getDot1dTpFdbAddress() {
-			if (getValue(DOT1D_TP_FDB_ADDRESS) != null)
-				return getValue(DOT1D_TP_FDB_ADDRESS).toHexString();
+			if (getValue(DOT1D_TP_FDB_ADDRESS_OID) != null)
+				return getValue(DOT1D_TP_FDB_ADDRESS_OID).toHexString();
 			return null;
 		}
 	
@@ -132,8 +135,8 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 		 * @return a int.
 		 */
 		public Integer getDot1dTpFdbPort() {
-			if (getValue(DOT1D_TP_FDB_PORT) != null)
-				return getValue(DOT1D_TP_FDB_PORT).toInt();
+			if (getValue(DOT1D_TP_FDB_PORT_OID) != null)
+				return getValue(DOT1D_TP_FDB_PORT_OID).toInt();
 			return null;
 		}
 	
@@ -143,8 +146,8 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 		 * @return a int.
 		 */
 		public Integer getDot1dTpFdbStatus() {
-			if (getValue(DOT1D_TP_FDB_STATUS) != null)
-				return getValue(DOT1D_TP_FDB_STATUS).toInt();
+			if (getValue(DOT1D_TP_FDB_STATUS_OID) != null)
+				return getValue(DOT1D_TP_FDB_STATUS_OID).toInt();
 			return null;
 		}
 
@@ -192,7 +195,10 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.Dot1dTpFdbTableTracker.Dot1dTpFdbRow} object.
      */
     public void processDot1dTpFdbRow(final Dot1dTpFdbRow row) {
-    }
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_TP_FDB_ADDRESS_OID + "." + row.getInstance().toString(), DOT1D_TP_FDB_ADDRESS, row.getDot1dTpFdbAddress());
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_TP_FDB_PORT_OID + "." + row.getInstance().toString(), DOT1D_TP_FDB_PORT, row.getDot1dTpFdbPort());
+		System.out.printf("\t\t%s (%s)= %s (%s)\n", DOT1D_TP_FDB_STATUS_OID + "." + row.getInstance().toString(), DOT1D_TP_FDB_STATUS, row.getDot1dTpFdbStatus(), BridgeDot1qTpFdbStatus.get(row.getDot1dTpFdbStatus()));
+	}
 	
 
 }

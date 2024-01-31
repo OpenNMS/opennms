@@ -97,7 +97,26 @@
             }
         }
     }
-    
+
+    function testPath() {
+        if (document.path.paths.selectedIndex === -1) {
+            alert("Please select a path to test.");
+        } else {
+            var destinationPath = encodeURIComponent(document.path.paths.options[document.path.paths.selectedIndex].value);
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function readystatechange() {
+                try {
+                    if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 202) {
+                        console.log("successfully triggered", destinationPath);
+                    }
+                } catch (err) {
+                    console.error("failed to trigger notifications", err);
+                }
+            };
+            xhr.open('POST', 'rest/notifications/destination-paths/' + destinationPath + '/trigger');
+            xhr.send();
+        }
+    }
 </script>
 
 <form method="post" name="path" action="admin/notification/destinationWizard" onsubmit="return newPath();">
@@ -126,6 +145,7 @@
             </div>
             <input type="button" class="btn btn-secondary" value="Edit" onclick="editPath()"/>
             <input type="button" class="btn btn-secondary" value="Delete" onclick="deletePath()"/>
+            <input type="button" class="btn btn-success pull-right" value="Test" onclick="testPath()"/>
         </div>
     </div>
         </div>

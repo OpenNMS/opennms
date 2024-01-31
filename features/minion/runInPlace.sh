@@ -1,7 +1,12 @@
 #!/usr/bin/env bash
-set -e
 
-test -d repository || (echo "This command must be ran from the features/minion directory" && exit 1)
+set -euo pipefail
+trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
+
+MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
+cd "${MYDIR}"
+
+test -d repository || (echo "No 'repository' directory in $(pwd) -- are we in the right place (which is container/minion if you are curious)?" && exit 1)
 
 # Inclue the bundled Maven in the $PATH
 MYDIR=$(dirname "$0")
@@ -191,9 +196,12 @@ NUM_INSTANCES=1
 DETACHED=0
 SUDO=0
 
-while [ "$1" != "" ]; do
+while [ $# -gt 0 ]; do
     case $1 in
         -n | --num-instances )  shift
+                                if [ $# -lt 1 ] ; then
+                                    echo "Must specify argument to -n | --num-instances"; exit 1
+                                fi
                                 NUM_INSTANCES=$1
                                 ;;
         -d | --detached )       DETACHED=1

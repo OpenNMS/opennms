@@ -48,6 +48,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.apache.commons.io.IOUtils;
 import org.opennms.web.utils.assets.AssetLocator;
 import org.opennms.web.utils.assets.AssetResource;
@@ -59,6 +60,7 @@ import org.springframework.util.FileCopyUtils;
 
 @Component("webAssetsRestService")
 @Path("web-assets")
+@Tag(name = "Web-Assets", description = "Web Assets API")
 public class WebAssetsRestService extends OnmsRestService {
     private static final Logger LOG = LoggerFactory.getLogger(WebAssetsRestService.class);
 

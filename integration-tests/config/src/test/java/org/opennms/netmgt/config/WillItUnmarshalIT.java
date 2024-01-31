@@ -46,8 +46,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.Difference;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.opennms.core.test.ConfigurationTestUtils;
@@ -126,6 +129,7 @@ import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
 import org.opennms.netmgt.config.wmi.agent.WmiConfig;
 import org.opennms.netmgt.config.wsman.credentials.WsmanConfig;
 import org.opennms.netmgt.config.wsman.WsmanDatacollectionConfig;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.search.providers.action.Actions;
 import org.opennms.netmgt.telemetry.config.model.TelemetrydConfig;
@@ -178,12 +182,17 @@ public class WillItUnmarshalIT {
     public static final ArrayList<Object[]> FILES = new ArrayList<>();
 
     @BeforeClass
-    public static void setUp() {
+    public static void setUpClazz() {
         XMLUnit.setIgnoreWhitespace(false);
         XMLUnit.setIgnoreAttributeOrder(false);
         XMLUnit.setIgnoreComments(true);
         XMLUnit.setIgnoreDiffBetweenTextAndCDATA(false);
         XMLUnit.setNormalize(false);
+    }
+
+    @Before
+    public void setUp() throws IOException {
+        System.setProperty("opennms.home", temporaryFolder.newFolder().getAbsolutePath());
     }
 
     /**
@@ -223,6 +232,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "enlinkd-configuration.xml", EnlinkdConfiguration.class, false, null);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, true, null);
         addFile(Source.CONFIG, "eventd-configuration.xml", EventdConfiguration.class, true, null);
+        addFile(Source.CONFIG, "foreign-sources/selfmonitor.xml", ForeignSource.class, false, null);
         addFile(Source.CONFIG, "geoip-adapter-configuration.xml", GeoIpConfig.class, false, null);
         addFile(Source.CONFIG, "groups.xml", Groupinfo.class, true, null);
         addFile(Source.CONFIG, "http-datacollection-config.xml", HttpDatacollectionConfig.class, false, null);
@@ -384,6 +394,9 @@ public class WillItUnmarshalIT {
     public static Collection<Object[]> files() {
         return FILES;
     }
+
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private final Source source;
     private final String file;

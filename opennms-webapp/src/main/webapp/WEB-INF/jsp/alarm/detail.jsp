@@ -2,8 +2,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2012-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * Copyright (C) 2012-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -612,28 +612,6 @@
                 <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
                 <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
                 <form:input class="form-control btn btn-secondary" type="submit" value="Create Ticket" disabled="<%=((alarm.getTTicketState() != null) && (alarm.getTTicketState() != TroubleTicketState.CREATE_FAILED)) ? true : false %>" />
-                <%-- Remedy Specific TroubleTicket - Start --%>
-                <% if ("org.opennms.netmgt.ticketer.remedy.RemedyTicketerPlugin".equalsIgnoreCase(Vault.getProperty("opennms.ticketer.plugin")) && (alarm.getTTicketState() == null || alarm.getTTicketState().toString().equals("CREATE_FAILED") )) { %>
-                  <input type="hidden" name="nodelabel" value="<%=alarm.getNodeLabel()%>"/>
-                  <input class="form-control" type="text" name="remedy.user.comment" value="Add a Comment here"/>
-                  <select class="form-control" name="remedy.urgency">
-                    <option value="1-Critical">1-Critical</option>
-                    <option value="2-High">2-High</option>
-                    <option value="3-Medium">3-Medium</option>
-                    <option value="4-Low" selected="selected">4-Low</option>
-                  </select>
-                  <select class="form-control" name="remedy.assignedgroup">
-                    <% String propsFile = new String(Vault.getProperty("opennms.home") + "/etc/remedy.properties");
-                       Configuration remedyConfig = null;
-                       try {
-                         remedyConfig = new PropertiesConfiguration(propsFile);
-                       } catch (final ConfigurationException e) {}
-                       for (String group: remedyConfig.getString("remedy.targetgroups").split(":")) { %>
-                         <option value="<%=group%>"><%=group%></option>
-                    <% }  %>
-                  </select>
-                <% } %>
-                <%-- Remedy Specific TroubleTicket - End --%>
             </form>
 
             <form class="form-inline mr-1" method="post" action="alarm/ticket/update.htm">

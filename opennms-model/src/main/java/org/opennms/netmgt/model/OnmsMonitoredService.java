@@ -215,7 +215,8 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable, Co
      */
     @XmlTransient
     @Transient
-    @JsonIgnore
+    @JoinColumn(name="ipInterfaceId")
+    @JsonProperty("ipAddress")
     public String getIpAddressAsString() {
         return m_ipInterface.getIpAddressAsString();
     }
@@ -449,9 +450,16 @@ public class OnmsMonitoredService extends OnmsEntity implements Serializable, Co
      */
     @XmlTransient
     @Transient
-    @JsonIgnore
+    @JsonProperty("nodeId")
     public Integer getNodeId() {
         return m_ipInterface.getNode().getId();
+    }
+
+    @XmlTransient
+    @Transient
+    @JsonProperty("nodeLabel")
+    public String getNodeLabel() {
+        return m_ipInterface.getNode().getLabel();
     }
 
     /**

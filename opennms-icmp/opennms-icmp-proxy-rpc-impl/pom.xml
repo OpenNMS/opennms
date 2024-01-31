@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms-icmp</artifactId>
-    <version>31.0.3-SNAPSHOT</version>
+    <version>32.0.7-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.icmp.proxy.rpc-impl</artifactId>

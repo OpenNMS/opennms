@@ -39,13 +39,12 @@ import org.opennms.enlinkd.generator.TopologyGenerator;
 import org.opennms.enlinkd.generator.TopologySettings;
 import org.opennms.enlinkd.generator.topology.PairGenerator;
 import org.opennms.enlinkd.generator.util.InetAddressGenerator;
-import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfLink;
 import org.opennms.netmgt.model.OnmsNode;
 
-public class OspfProtocol extends Protocol<OspfElement> {
-    private TopologyGenerator.Protocol protocol = TopologyGenerator.Protocol.ospf;
-    private InetAddressGenerator inetAddressCreator = new InetAddressGenerator();
+public class OspfProtocol extends Protocol {
+    private final TopologyGenerator.Protocol protocol = TopologyGenerator.Protocol.ospf;
+    private final InetAddressGenerator inetAddressCreator = new InetAddressGenerator();
 
     public OspfProtocol(TopologySettings topologySettings, TopologyContext context) {
         super(topologySettings, context);

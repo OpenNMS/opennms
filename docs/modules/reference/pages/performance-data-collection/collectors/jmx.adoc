@@ -205,7 +205,7 @@ To successfully collect data, you may need to do the following:
     <parameter key="url" value="service:jmx:http-remoting-jmx://$\{ipaddr}:9990"/>
     <parameter key="retry" value="2"/>
     <parameter key="timeout" value="3000"/>
-    <parameter key="factory" value="PASSWORD-CLEAR"/>
+    <parameter key="factory" value="PASSWORD_CLEAR"/>
     <parameter key="username" value="admin"/>
     <parameter key="password" value="admin"/>
     <parameter key="rrd-base-name" value="java"/>

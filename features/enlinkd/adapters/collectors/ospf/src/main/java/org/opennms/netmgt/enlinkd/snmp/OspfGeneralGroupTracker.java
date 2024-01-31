@@ -30,6 +30,7 @@ package org.opennms.netmgt.enlinkd.snmp;
 
 import java.net.InetAddress;
 
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.enlinkd.model.OspfElement;
 import org.opennms.netmgt.enlinkd.model.OspfElement.Status;
 import org.opennms.netmgt.enlinkd.model.OspfElement.TruthValue;
@@ -42,7 +43,7 @@ import org.opennms.netmgt.snmp.SnmpStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class OspfGeneralGroupTracker extends AggregateTracker {
+public class OspfGeneralGroupTracker extends AggregateTracker {
 
 	private final static Logger LOG = LoggerFactory.getLogger(OspfGeneralGroupTracker.class);
     public final static String OSPF_ROUTER_ID_ALIAS = "ospfRouterId";
@@ -211,4 +212,13 @@ public final class OspfGeneralGroupTracker extends AggregateTracker {
         LOG.info("Non-fatal error ({}) retrieving OSPF general group: {}", status, status.retry()? "Retrying." : "Giving up.");
     }
 
+    @Override
+    public void printSnmpData() {
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_ROUTER_ID_OID, OSPF_ROUTER_ID_ALIAS, InetAddressUtils.str(getOspfRouterId()));
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", OSPF_ADMIN_STAT_OID, OSPF_ADMIN_STAT_ALIAS, getOspfAdminStat(), Status.get(getOspfAdminStat()));
+        System.out.printf("\t\t%s (%s)= %s \n", OSPF_VERSION_NUMBER_OID, OSPF_VERSION_NUMBER_ALIAS, getOspfVersionNumber());
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", OSPF_AREA_BDR_RTR_STATUS_OID, OSPF_AREA_BDR_RTR_STATUS_ALIAS, getOspfBdrRtrStatus(), TruthValue.get(getOspfBdrRtrStatus()));
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", OSPF_AREA_AS_BDR_RTR_STATUS_OID, OSPF_AREA_AS_BDR_RTR_STATUS_ALIAS, getOspfASBdrRtrStatus(), TruthValue.get(getOspfASBdrRtrStatus()));
+
+    }
 }

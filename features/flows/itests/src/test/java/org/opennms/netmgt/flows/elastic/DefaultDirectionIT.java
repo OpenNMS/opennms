@@ -41,20 +41,24 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
+import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
 import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.integration.api.v1.flows.Flow;
-import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 import org.opennms.integration.api.v1.flows.FlowRepository;
+import org.opennms.netmgt.dao.mock.AbstractMockDao;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 
-import io.searchbox.client.JestClient;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 
@@ -86,8 +90,9 @@ public class DefaultDirectionIT {
         elasticSearchRule.startServer();
 
         final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
-
-        try (final JestClient jestClient = restClientFactory.createClient()) {
+        final EventForwarder eventForwarder = new AbstractMockDao.NullEventForwarder();
+        try (JestClientWithCircuitBreaker jestClient = restClientFactory.createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
+                CircuitBreakerConfig.custom().build()).circuitBreaker(ElasticFlowRepositoryRetryIT.class.getName()), eventForwarder)) {
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
                     new ElasticFlowRepository(new MetricRegistry(), jestClient, IndexStrategy.MONTHLY,
                             new MockIdentity(), new MockTracerRegistry(), new IndexSettings()), jestClient);

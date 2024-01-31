@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2022-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -75,6 +75,7 @@ public class ReplayPcap implements Action {
     public int packetCounterFrequency = 100;
 
     @Override
+    @SuppressWarnings("java:S106")
     public Object execute() throws Exception {
         final Listener listener = this.manager.getListeners().stream()
                 .filter(l -> Objects.equals(l.getName(), this.listenerName))
@@ -93,14 +94,14 @@ public class ReplayPcap implements Action {
 
 
         try (final InputStream in = new FileInputStream(pcapFile)) {
-            System.out.printf("Processing packets from '%s'.\n", pcapFile);
+            System.out.printf("Processing packets from '%s'.%n", pcapFile);
             final AtomicLong packetCount = new AtomicLong();
             final Pcap pcap = Pcap.openStream(in);
             pcap.loop(packet -> {
                 if (packet.hasProtocol(Protocol.UDP)) {
                     packetCount.getAndIncrement();
                     if (packetCounterFrequency > 0 && packetCount.get() % packetCounterFrequency == 0) {
-                        System.out.printf("Processing packet #%d.\n", packetCount.get());
+                        System.out.printf("Processing packet #%d.%n", packetCount.get());
                     }
                     final UDPPacket udp = (UDPPacket) packet.getPacket(Protocol.UDP);
 
@@ -116,7 +117,7 @@ public class ReplayPcap implements Action {
                 }
                 return true;
             });
-            System.out.printf("Done processing %d packets.\n", packetCount.get());
+            System.out.printf("Done processing %d packets.%n", packetCount.get());
         }
         return null;
     }

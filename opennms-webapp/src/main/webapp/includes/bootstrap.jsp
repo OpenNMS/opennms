@@ -118,12 +118,6 @@
     <jsp:param name="asset" value="global" />
   </jsp:include>
 
-  <c:if test="${param.storageAdmin == 'true'}">
-    <jsp:include page="/assets/load-assets.jsp" flush="false">
-      <jsp:param name="asset" value="rws-storage" />
-    </jsp:include>
-  </c:if>
-
   <%--
    Vaadin uses the window.name property to implement the preserveOnRefresh functionality.
    However if now window.name is set, a random name is generated.
