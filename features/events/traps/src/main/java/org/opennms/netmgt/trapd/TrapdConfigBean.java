@@ -78,6 +78,7 @@ public class TrapdConfigBean implements TrapdConfig, Serializable {
 		setBatchSize(trapdConfiguration.getBatchSize());
 		setQueueSize(trapdConfiguration.getQueueSize());
 		setNumThreads(trapdConfiguration.getThreads());
+		setUseAddressFromVarbind(trapdConfiguration.shouldUseAddressFromVarbind());
 		if (trapdConfiguration.getSnmpv3UserCollection() != null) {
 			setSnmpV3Users(trapdConfiguration.getSnmpv3UserCollection().stream()
 						.map(TrapdConfigBean::toSnmpV3User)
@@ -163,6 +164,7 @@ public class TrapdConfigBean implements TrapdConfig, Serializable {
 		setBatchSize(config.getBatchSize());
 		setQueueSize(config.getQueueSize());
 		setNumThreads(config.getNumThreads());
+		setUseAddressFromVarbind(config.shouldUseAddressFromVarbind());
 		setSnmpV3Users(config.getSnmpV3Users());
 	}
 
