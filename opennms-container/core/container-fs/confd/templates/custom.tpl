@@ -9,7 +9,6 @@ ENABLE_TELEMETRYD=true
 ENABLE_TELEMETRYD=false
 {{end}}
 
-
 {{range $custom := gets "/opennms/custom/*"}}
 {{base .Key}}={{.Value}}{{end}}
 {{range $custom := gets "/opennms/daemons/*"}}
