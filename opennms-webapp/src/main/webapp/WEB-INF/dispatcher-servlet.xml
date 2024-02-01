@@ -270,6 +270,10 @@
         <property name="eventConfDao" ref="eventConfDao"/>
     </bean>
 
+    <bean name="/newsfeed/newsFeedPanel.htm" class="org.opennms.web.controller.newsfeed.NewsFeedController">
+        <property name="successView" value="newsfeed/newsFeedPanel"/>
+    </bean>
+
     <bean name="mapMenuEntries" class="org.opennms.web.navigate.MenuDropdownNavBarEntry">
         <property name="name" value="Maps" />
         <property name="url" value="maps.htm" />

@@ -1,4 +1,5 @@
 = DNS Service Detector
+:description: Learn how the DNSDetector in OpenNMS {page-component-title} lets you find DNS services for monitoring in your network.
 
 The DNSDetector lets you find DNS services for monitoring in your network.
 A DNS service is detected when the node responds to a DNS query for an A resource record.

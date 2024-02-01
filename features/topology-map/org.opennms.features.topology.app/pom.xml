@@ -129,7 +129,6 @@
         <dependency>
             <groupId>org.opennms.features.topology</groupId>
             <artifactId>org.opennms.features.topology.api</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -165,6 +164,10 @@
             <artifactId>jung-visualization</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
+        </dependency>
+        <dependency>
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
             <scope>provided</scope>
@@ -179,7 +182,6 @@
         <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
-            <version>25.0-jre</version>
             <scope>provided</scope>
         </dependency>
         <dependency>

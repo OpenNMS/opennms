@@ -1,0 +1,4 @@
+confdir = "/opt/sentinel/confd"
+backend = "file"
+file = [ "/opt/sentinel/sentinel-config.yaml" ]
+log-level = "debug"

@@ -1,0 +1,7 @@
+[template]
+src = "custom.system.properties.tmpl"
+dest = "/opt/sentinel/etc/custom.system.properties"
+keys = [
+    "/org.opennms.instance.id",
+]
+reload_cmd = "/opt/sentinel/confd/scripts/remove-if-empty /opt/sentinel/etc/custom.system.properties"

@@ -35,9 +35,12 @@
   </build>
   <dependencies>
     <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jasper-dependencies</artifactId>
-      <type>pom</type>
+      <artifactId>jasper-shaded</artifactId>
     </dependency>
   </dependencies>
 </project>

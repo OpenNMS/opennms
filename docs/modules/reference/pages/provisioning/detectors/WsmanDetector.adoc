@@ -1,4 +1,5 @@
 = WS-Management Detector
+:description: Learn how the WSManDetector in OpenNMS {page-component-title} attempts to connect to the agent defined in `wsman-config.xml` and issues an identify command.
 
 The WSManDetector attempts to connect to the agent defined in `wsman-config.xml` and issues an identify command.
 If the identify command is successful, the service is marked as detected, and the product details returned by the command are optionally stored in the asset fields (see details below).

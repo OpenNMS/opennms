@@ -59,6 +59,10 @@
         <bundle dependency="true">mvn:commons-collections/commons-collections/${commonsCollectionsVersion}</bundle>
     </feature>
 
+    <feature name="commons-collections4" version="${commonsCollections4Version}" description="Apache :: commons-collections 4.x">
+        <bundle dependency="true">mvn:org.apache.commons/commons-collections4/${commonsCollections4Version}</bundle>
+    </feature>
+
     <feature name="commons-compress" version="${commonsCompressVersion}" description="Apache :: commons-compress">
         <bundle dependency="true">mvn:org.apache.commons/commons-compress/${commonsCompressVersion}</bundle>
     </feature>
@@ -183,7 +187,7 @@
     <feature name="jackson-dataformat-xml" version="${jackson2Version}" description="Jackson 2 :: XML Data Format">
         <feature version="[${jackson2Version},3)">jackson-core</feature>
         <feature>snakeyaml</feature>
-        <bundle dependency="true">mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/${jackson2Version}</bundle>
+        <bundle dependency="true">mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-xml/${jackson2Version}</bundle>
     </feature>
 
     <feature name="jackson-dataformat-yaml" version="${jackson2Version}" description="Jackson 2 :: YAML Data Format">
@@ -273,6 +277,16 @@
         </capability>
     </feature>
 
+    <feature name="jolokia" description="Jolokia monitoring support" version="${jolokiaVersion}">
+        <config name="org.jolokia.osgi">
+org.jolokia.user=karaf
+org.jolokia.realm=karaf
+org.jolokia.authMode=jaas
+        </config>
+        <bundle>mvn:org.jolokia/jolokia-osgi/${jolokiaVersion}</bundle>
+        <requirement>osgi.implementation;osgi.implementation="osgi.http";version:Version="1.1"</requirement>
+    </feature>
+
     <feature name="netty" version="${netty4Version}" description="Netty">
         <feature>bouncycastle</feature>
         <bundle dependency="true">mvn:io.netty/netty-buffer/${netty4Version}</bundle>
@@ -331,5 +345,6 @@
         <bundle start-level="${systemStartLevel}">mvn:org.apache.sshd/sshd-scp/${minaSshdVersion}</bundle>
         <bundle start-level="${systemStartLevel}">mvn:org.apache.sshd/sshd-sftp/${minaSshdVersion}</bundle>
         <bundle start-level="${systemStartLevel}">mvn:org.apache.karaf.shell/org.apache.karaf.shell.ssh/${karafVersion}</bundle>
+        <bundle start-level="${systemStartLevel}">mvn:net.i2p.crypto/eddsa/${eddsaVersion}</bundle>
     </feature>
 </features>

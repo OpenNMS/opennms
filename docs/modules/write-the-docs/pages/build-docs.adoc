@@ -1,5 +1,6 @@
 
 = Build the Documentation
+:description: Learn how to build the OpenNMS {page-component-title} documentation locally: install Antora, run in Docker.
 
 This section describes how to build the OpenNMS documentation locally.
 We recommend that you do this to test major changes, particularly if adding a lot of new content or making significant revisions to existing content.

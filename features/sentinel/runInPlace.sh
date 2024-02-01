@@ -119,6 +119,9 @@ spawn_sentinel() {
   popd > /dev/null
 
   echo "Updating configuration for Sentinel #$idx..."
+  # Enable Hawtio
+  echo 'hawtio' > "$SENTINEL_HOME/etc/featuresBoot.d/hawtio.boot"
+
   # Instance specific configuration
   set_instance_specific_configuration "$SENTINEL_HOME" "$idx"
 

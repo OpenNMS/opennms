@@ -1,5 +1,6 @@
 
 = Develop Documentation
+:description: Learn about how to write and contribute to the OpenNMS {page-component-title} documentation. We value your contribution.
 
 There are different ways to contribute documentation, each suitable for different use cases:
 
@@ -29,20 +30,20 @@ Within this directory, you will find the `./modules` directory, which contains a
 The `./modules` directory may have more nested directories to create a hierarchy for the content (for example, components and subcomponents).
 
 You will find `.adoc` files in the `./pages` directory or one of its subdirectories, and image files in the `./images` directory or one of its subdirectories.
-The following table describes the documentation modules for the Horizon project:
+The following table describes the documentation modules for the {page-component-title} project:
 
 [options="autowidth"]
 |===
 | Directory | Contents
 
 | docs/modules/deployment
-| Documentation on how to install and configure Horizon on different operating systems.
+| Documentation on how to install and configure {page-component-title} on different operating systems.
 
 | docs/modules/development
-| Documentation for those who want to develop Horizon.
+| Documentation for those who want to develop {page-component-title}.
 
 | docs/modules/operation
-| Documentation for administrators to configure, optimize, and run Horizon.
+| Documentation for administrators to configure, optimize, and run {page-component-title}.
 
 | docs/modules/reference
 | Glossary and miscellaneous configuration topics.
@@ -51,7 +52,7 @@ The following table describes the documentation modules for the Horizon project:
 | Changelog and release notes.
 
 | docs/modules/write-the-docs
-| Documentation on how to write documentation for the Horizon project.
+| Documentation on how to write documentation for the {page-component-title} project.
 |===
 
 NOTE: Documentation for other OpenNMS projects (for example, `opennms-alec`) follows a similar hierarchy, as appropriate for the project.

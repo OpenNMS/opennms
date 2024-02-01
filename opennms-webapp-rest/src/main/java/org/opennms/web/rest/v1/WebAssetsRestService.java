@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -49,8 +49,8 @@ import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.core.StreamingOutput;
 
 import org.apache.commons.io.IOUtils;
-import org.opennms.web.assets.api.AssetLocator;
-import org.opennms.web.assets.api.AssetResource;
+import org.opennms.web.utils.assets.AssetLocator;
+import org.opennms.web.utils.assets.AssetResource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

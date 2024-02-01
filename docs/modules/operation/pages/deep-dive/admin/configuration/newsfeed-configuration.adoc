@@ -1,0 +1,30 @@
+
+= News Feed Configuration
+
+:description: Learn how to configure the News Feed service in {page-component-title}.
+
+The News Feed is a panel on the main {page-component-title} page which displays information from the OpenNMS website RSS news feed.
+This can help keep users informed of the latest OpenNMS and {page-component-title} news.
+
+The {page-component-title} server makes REST queries to the https://www.opennms.com/feed/[OpenNMS RSS feed] to get the latest feed data.
+
+This feature is enabled by default, but can be disabled using the configuration below.
+Disabling will remove the panel from the front page and the server will no longer make queries for the feed.
+
+If you would like to change the feed settings, you can set the following options in `${OPENNMS_HOME}/etc/opennms.properties.d/feed.properties`.
+
+[options="autowidth"]
+|===
+| Property  | Description   | Default Value
+
+| opennms.newsFeedPanel.show
+| Whether to show the News Feed panel.
+Set to `false` to disable.
+| true
+
+| opennms.newsFeedPanel.url
+| The URL of the RSS feed used to get the feed data.
+This will default to the OpenNMS feed if omitted.
+| https://www.opennms.com/feed/
+
+|===

@@ -1,5 +1,6 @@
 
 = JDBC Detector
+:description: Learn how the JDBCDetector in OpenNMS {page-component-title} connects to a JDBC-enabled database and tries to fetch its catalog to determine its availability.
 
 The JDBCDetector connects to a JDBC-enabled database and tries to fetch its catalog.
 If the fetch is successful, it returns the `detected` value.

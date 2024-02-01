@@ -1,0 +1,100 @@
+
+[[graphs]]
+= Graphing Metrics
+:description: Overview of creating custom RRDTool graphs for metrics collected by {page-component-title}.
+
+Collecting performance data is only good if you can view the metrics that have been persisted.
+{page-component-title} can display resource graphs that have been defined using link:https://oss.oetiker.ch/rrdtool/doc/rrdgraph.en.html[RRDTool] graphing syntax.
+
+NOTE: When using the xref:deep-dive/admin/mib.adoc[MIB Compiler] to generate collection definitions, the compiler will also create graph definitions for all the numeric values found in the MIB.
+
+As an alternative to creating graphs within {page-component-title}, you can also utilize our link:https://docs.opennms.com/grafana-plugin/latest/index.html[OpenNMS Plugin for Grafana] to create dashboards displaying various resource graphs.
+
+== Graph definitions
+
+Graphs are defined in in the `$\{OPENNMS_HOME}/etc/snmp-graph.properties.d` directory via `.properties` file.
+These files are re-read whenever the "Resource Graphs" page is loaded in the Web UI and do not require restarting any daemons to apply changes.
+When the Resource Graphs page is loaded for a node, {page-component-title} will look at the available metrics for the node, and will only display graphs where there are metrics for the `columns` defined in the graph.
+Within the configuration files, each graph is referred to as a "report".
+
+NOTE: While the graph directory name says `snmp-graph`, this system is used for displaying metrics regardless of which collector class was used.
+
+The definition file should start with a `reports` property that is a comma-separated list of report names that are defined later on in the file.
+The list of report names should be followed by a group of definition properties.
+
+.Graph definition properties
+[cols="1,2"]
+|===
+| Property | Description
+
+| name
+| The name of the graph.
+This is displayed next to the graph in the Web UI.
+The `command` parameter can also include a `title` attribute that will render a title within the graph itself.
+
+| columns
+| Metric names to include in the graph.
+This is a comma-separated list of `alias` names from datacollection definitions.
+
+| type
+| The resource type that the `column` metrics belong to.
+This is often either `nodeSnmp` or `interfaceSnmp`, but may also be a custom resource type.
+
+| command
+| Parameters to feed into the graph rendering engine.
+This should be in link:https://oss.oetiker.ch/rrdtool/doc/rrdgraph.en.html[RRDTool syntax].
+
+| description
+| This is an optional property that can be used to describe the graph, however it is not rendered within the Web UI.
+
+| suppress
+| This is an optional property that can be used to suppress other graphs from rendering.
+This would be used if you have similar graphs based on different metrics and only want to display one or the other, based on the available data.
+|===
+
+=== Example report
+
+Below is an example of a graph from the default `mib2-graph.properties` file.
+The `reports=` setting at the top of the file should include a reference to `mib2.HCbits`.
+
+[source, properties]
+----
+report.mib2.HCbits.name=Bits In/Out (High Speed) <1>
+report.mib2.HCbits.suppress=mib2.bits <2>
+report.mib2.HCbits.columns=ifHCInOctets,ifHCOutOctets <3>
+report.mib2.HCbits.type=interfaceSnmp <4>
+report.mib2.HCbits.command=--title="Bits In/Out (High Speed)" \ <5>
+ --vertical-label="Bits per second" \
+ DEF:octIn={rrd1}:ifHCInOctets:AVERAGE \
+ DEF:octOut={rrd2}:ifHCOutOctets:AVERAGE \
+ CDEF:rawbitsIn=octIn,8,* \
+ CDEF:rawbitsOut=octOut,8,* \
+ CDEF:rawbitsOutNeg=0,rawbitsOut,- \
+ CDEF:bytesIn=octIn,UN,0,octIn,IF \
+ CDEF:bytesOut=octOut,UN,0,octOut,IF \
+ CDEF:outSum=bytesOut,{diffTime},* \
+ CDEF:inSum=bytesIn,{diffTime},* \
+ CDEF:totSum=outSum,inSum,+ \
+ AREA:rawbitsIn#73d216 \
+ LINE1:rawbitsIn#4e9a06:"In " \
+ GPRINT:rawbitsIn:AVERAGE:"Avg  \\: %8.2lf %s" \
+ GPRINT:rawbitsIn:MIN:"Min  \\: %8.2lf %s" \
+ GPRINT:rawbitsIn:MAX:"Max  \\: %8.2lf %s\\n" \
+ AREA:rawbitsOutNeg#729fcf \
+ LINE1:rawbitsOutNeg#3465a4:"Out" \
+ GPRINT:rawbitsOut:AVERAGE:"Avg  \\: %8.2lf %s" \
+ GPRINT:rawbitsOut:MIN:"Min  \\: %8.2lf %s" \
+ GPRINT:rawbitsOut:MAX:"Max  \\: %8.2lf %s\\n" \
+ GPRINT:inSum:AVERAGE:"  Tot In  \\: %8.2lf %sBytes" \
+ GPRINT:outSum:AVERAGE:" Tot Out  \\: %8.2lf %sBytes" \
+ GPRINT:totSum:AVERAGE:" Tot  \\: %8.2lf %sBytes\\n"
+----
+<1> The name of the graph to display.
+<2> Suppresses the `mib2.bits` graph from displaying if this graph can be rendered.
+This assumes there is another section that defines a graph with the property `report.mib2.HCbits.name`.
+<3> List of metric alias names to include.
+These are referenced in the `DEF` commands based on the order they are listed.
+In this example, `ifHCInOctets` is `\{rrd1}` and `ifHCOutOctets` is `\{rrd2}`
+<4> The resource type of the graph.
+In this example, the `columns` defined should be collected as part of the SNMP Interface.
+<5> The RRDTool command to render the graph.

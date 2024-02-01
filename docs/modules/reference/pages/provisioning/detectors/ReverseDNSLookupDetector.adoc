@@ -1,4 +1,5 @@
 = Reverse DNS Lookup Detector
+:description: Learn how the ReverseDNSLookupDetector in OpenNMS {page-component-title} tries to detect if a given IP address can be found in PTR records.
 
 The ReverseDNSLookupDetector tries to detect if a given IP address can be found in PTR records.
 

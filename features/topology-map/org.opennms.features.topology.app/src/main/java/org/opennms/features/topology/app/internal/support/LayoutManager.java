@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -36,7 +36,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.function.Function;
+import com.google.common.base.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.features.topology.api.Graph;
@@ -157,8 +157,7 @@ public class LayoutManager {
                     manualLocations.put(key, new Point((int) value.getX(), (int) value.getY()));
                 }
             });
-            final boolean layoutIsEqual = manualLocations.equals(persistedLocations);
-            return layoutIsEqual;
+            return manualLocations.equals(persistedLocations);
         }
         return false; // We don't have anything persisted, so they are not equal
     }

@@ -1,0 +1,8 @@
+[template]
+src = "confd-flows-feature.xml.tmpl"
+dest = "/opt/sentinel/deploy/confd-flows-feature.xml"
+keys = [
+    "/telemetry/flows/adapters"
+]
+
+reload_cmd = "/opt/sentinel/confd/scripts/remove-if-empty /opt/sentinel/deploy/confd-flows-feature.xml"

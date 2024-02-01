@@ -40,6 +40,7 @@ import org.junit.Test;
 import org.opennms.upgrade.api.OnmsUpgradeException;
 import org.opennms.upgrade.tests.TestUpgradeA;
 import org.opennms.upgrade.tests.TestUpgradeB;
+import org.opennms.upgrade.tests.TestUpgradeEverytime;
 import org.opennms.upgrade.tests.TestUpgradeExecuted;
 import org.opennms.upgrade.tests.TestUpgradeNothing;
 import org.opennms.upgrade.tests.bad.TestUpgradeWIthException;
@@ -69,6 +70,8 @@ public class UpgradeTest {
         p.put(new TestUpgradeExecuted().getId(), new Date().toString());
         p.store(new FileWriter(statusFile), null);
         upgradeStatus = new UpgradeStatus(statusFile);
+        UpgradeHelper.executed.clear();
+        UpgradeHelper.rolledback.clear();
     }
 
     /**
@@ -91,12 +94,26 @@ public class UpgradeTest {
         Assert.assertFalse(upgradeStatus.wasExecuted(new TestUpgradeNothing()));
         performUpgrade("org.opennms.upgrade.tests");
         Assert.assertTrue(upgradeStatus.wasExecuted(new TestUpgradeNothing()));
-        Assert.assertEquals(3, UpgradeHelper.getExecutedList().size());
+        Assert.assertEquals(4, UpgradeHelper.getExecutedList().size());
         Assert.assertEquals(TestUpgradeNothing.class.getName(), UpgradeHelper.getExecutedList().get(0));
         Assert.assertEquals(TestUpgradeA.class.getName(), UpgradeHelper.getExecutedList().get(1));
         Assert.assertEquals(TestUpgradeB.class.getName(), UpgradeHelper.getExecutedList().get(2));
         Assert.assertEquals(1, UpgradeHelper.getRolledBackList().size());
         Assert.assertEquals(TestUpgradeWIthException.class.getName(), UpgradeHelper.getRolledBackList().get(0));
+    }
+
+    @Test
+    public void testUpgradeMoreThanOnce() throws Exception {
+        Assert.assertFalse(upgradeStatus.wasExecuted(new TestUpgradeNothing()));
+        Assert.assertEquals(0, UpgradeHelper.getExecutedList().stream().filter(c -> TestUpgradeA.class.getName().equals(c)).count());
+        Assert.assertEquals(0, UpgradeHelper.getExecutedList().stream().filter(c -> TestUpgradeEverytime.class.getName().equals(c)).count());
+        performUpgrade("org.opennms.upgrade.tests");
+        Assert.assertEquals(1, UpgradeHelper.getExecutedList().stream().filter(c -> TestUpgradeA.class.getName().equals(c)).count());
+        Assert.assertEquals(1, UpgradeHelper.getExecutedList().stream().filter(c -> TestUpgradeEverytime.class.getName().equals(c)).count());
+        performUpgrade("org.opennms.upgrade.tests");
+        performUpgrade("org.opennms.upgrade.tests");
+        Assert.assertEquals(1, UpgradeHelper.getExecutedList().stream().filter(c -> TestUpgradeA.class.getName().equals(c)).count());
+        Assert.assertEquals(3, UpgradeHelper.getExecutedList().stream().filter(c -> TestUpgradeEverytime.class.getName().equals(c)).count());
     }
 
     /**

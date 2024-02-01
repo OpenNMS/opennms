@@ -1,5 +1,5 @@
 = Metadata Policies
-:description: Learn about the node and interface metadata policies in {page-component-title} to set metadata for provisioned nodes and discovered interfaces on them.
+:description: Learn about the node and interface metadata policies in OpenNMS {page-component-title} to set metadata for provisioned nodes and discovered interfaces on them.
 
 == Node metadata policy
 

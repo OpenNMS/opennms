@@ -11,7 +11,6 @@
     <name>OpenNMS :: Features :: Jest :: Feature definition</name>
     <description>Feature definition for Jest (ElasticSearch Java ReST Client)</description>
     <packaging>pom</packaging>
-    <!-- Versions below should match versions defined in module "jest-complete-osgi" to avoid problems -->
     <dependencies>
         <dependency>
             <groupId>org.opennms.features.jest</groupId>
@@ -19,9 +18,9 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>io.searchbox</groupId>
+            <groupId>org.opennms.features.jest</groupId>
             <artifactId>jest-complete-osgi</artifactId>
-            <version>${jestVersion}</version>
+            <version>${project.version}</version>
         </dependency>
         <!--
             Same dependencies as in dependencies module.
@@ -42,7 +41,6 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>1.16.0</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
