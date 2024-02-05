@@ -96,7 +96,7 @@
     </bean>
 
     <bean id="userDataCollectionSubmissionClient" class="org.opennms.features.datachoices.internal.userdatacollection.UserDataCollectionSubmissionClient">
-        <property name="endpointUrl" value="http://stats.opennms.org/datachoices/user-data-collection" />
+        <property name="endpointUrl" value="https://stats.opennms.org/datachoices/user-data-collection" />
     </bean>
 
     <bean id="userDataCollectionService" class="org.opennms.features.datachoices.internal.userdatacollection.UserDataCollectionServiceImpl">
