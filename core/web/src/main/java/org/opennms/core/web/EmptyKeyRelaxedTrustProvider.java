@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,7 +38,7 @@ public final class EmptyKeyRelaxedTrustProvider extends Provider {
     private static final long serialVersionUID = 6114330142093179790L;
 
     public EmptyKeyRelaxedTrustProvider() {
-        super(EmptyKeyRelaxedTrustSSLContext.ALGORITHM + "Provider", 1.0, null);
+        super(EmptyKeyRelaxedTrustSSLContext.ALGORITHM + "Provider", "1.0", null);
         put(
             "SSLContext." + EmptyKeyRelaxedTrustSSLContext.ALGORITHM,
             EmptyKeyRelaxedTrustSSLContext.class.getName()

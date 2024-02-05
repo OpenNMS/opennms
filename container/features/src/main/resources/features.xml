@@ -202,11 +202,13 @@
         <feature version="[4.2,4.3)">spring-web</feature>
         <feature>commons-codec</feature>
         <feature>javax.servlet</feature>
+        <bundle>wrap:mvn:org.openid4java/openid4java-nodeps/${openid4javaVersion}$Export-Package=org.openid4java*;version="${openid4javaVersion}"</bundle>
         <bundle>wrap:mvn:org.springframework.ldap/spring-ldap-core/${springLdapVersion}$Bundle-SymbolicName=org.springframework.ldap.core&amp;Bundle-Version=${springLdapVersion}&amp;Export-Package=org.springframework.ldap*;version="${springLdapVersion}"</bundle>
         <bundle>wrap:mvn:org.springframework.security/spring-security-aspects/${springSecurityVersion}$Bundle-SymbolicName=org.springframework.security.aspects&amp;Bundle-Version=${springSecurityVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-core/${springSecurityVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-config/${springSecurityVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-ldap/${springSecurityVersion}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-openid/${springSecurityVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-remoting/${springSecurityVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-web/${springSecurityVersion}</bundle>
     </feature>
@@ -244,6 +246,7 @@
     </feature>
 
     <feature name="opennms-activemq-pool" version="${project.version}" description="OpenNMS :: Features :: ActiveMQ :: Pool">
+        <feature prerequisite="true">zookeeper-dependencies</feature>
         <feature>activemq-client</feature>
         <feature>camel-core</feature>
         <feature>camel-jms</feature>
@@ -901,6 +904,7 @@
         <feature>json-simple</feature>
         <feature>jcifs</feature>
         <feature>bsf</feature>
+        <feature>ssh</feature>
         <feature>opennms-core-web</feature>
         <feature>opennms-core-ipc-rpc-api</feature>
         <feature>opennms-dhcpd</feature>
@@ -1342,6 +1346,7 @@
         <feature>opennms-core</feature>
         <feature>opennms-topology-api</feature>
         <feature>geolocation</feature>
+        <feature>commons-collections4</feature>
         <feature>commons-lang3</feature>
         <feature>commons-net</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
@@ -1529,7 +1534,7 @@
         <bundle>mvn:com.google.code.gson/gson/${jestGsonVersion}</bundle>
         <bundle>wrap:mvn:org.apache.httpcomponents/httpcore-nio/${httpcoreVersion}</bundle>
         <bundle>mvn:org.opennms.features.jest/org.opennms.features.jest.client/${project.version}</bundle>
-        <bundle>mvn:io.searchbox/jest-complete-osgi/${jestVersion}</bundle>
+        <bundle>mvn:org.opennms.features.jest/jest-complete-osgi/${project.version}</bundle>
         <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
         <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
         <bundle>mvn:org.apache.httpcomponents/httpasyncclient-osgi/${httpasyncclientVersion}</bundle>

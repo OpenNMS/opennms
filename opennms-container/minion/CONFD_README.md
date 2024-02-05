@@ -33,7 +33,7 @@ Config specified will be written to `etc/instance-id.properties`.
 ipc:
     rpc:
         kafka:
-            boostrap.servers: "127.0.0.1:9092"
+            bootstrap.servers: "127.0.0.1:9092"
             acks: 1
             max.request.size: 5000000
             # Any other keys necessary can be specified here
@@ -47,7 +47,7 @@ Config specified will be written to `etc/org.opennms.core.ipc.rpc.kafka.cfg`. Ad
 ipc:
     sink:
         kafka:
-            boostrap.servers: "127.0.0.1:9092"
+            bootstrap.servers: "127.0.0.1:9092"
             compression.type: "gzip"
             request.timeout.ms: 30000
             max.partition.fetch.bytes: 5000000

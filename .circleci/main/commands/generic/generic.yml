@@ -29,4 +29,5 @@ commands:
                 libdatetime-format-iso8601-perl \
                 libjson-pp-perl \
                 libwww-perl \
-                liblwp-protocol-https-perl
+                liblwp-protocol-https-perl \
+                liblwp-useragent-determined-perl

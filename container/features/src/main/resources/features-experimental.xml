@@ -139,7 +139,6 @@
       <bundle>wrap:mvn:org.opennms/rancid-api/${rancidApiVersion}$Bundle-SymbolicName=org.opennms.rancid-api&amp;Bundle-Version=${rancidApiVersion}</bundle>
 
       <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
-      <bundle>mvn:org.opennms.core/org.opennms.core.web-assets/${project.version}</bundle>
 
       <feature>spring-security-opennms</feature>
       <bundle>mvn:org.opennms.features/org.opennms.features.springframework-security/${project.version}</bundle>

@@ -502,9 +502,11 @@
                 <feature>opennms-config-management-osgi-del</feature>
                 <feature>opennms-config-management-osgi-cm</feature>
                 <feature>opennms-scv-rest</feature>
+
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>
                 <feature>opennms-dao-minion</feature>
+
                 <!-- Lots of deviceconfig features -->
                 <feature>opennms-deviceconfig-rest</feature>
                 <feature>opennms-deviceconfig-sink</feature>
@@ -515,6 +517,8 @@
                 
                 <feature>inmemory-timeseries-plugin</feature>
 
+                <!-- pulled in by a transient dependency, so be sure we get our newer one -->
+                <feature>zookeeper-dependencies</feature>
               </features>
               <repository>${project.build.directory}/opennms-repo</repository>
             </configuration>

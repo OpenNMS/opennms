@@ -59,7 +59,8 @@
               io.grpc.netty.shaded.io.netty.util.collection,
               io.grpc.netty.shaded.io.grpc.netty,
               io.grpc.netty.shaded.io.netty.handler.ssl,
-              io.grpc.netty.shaded.io.netty.util.collection
+              io.grpc.netty.shaded.io.netty.util.collection,
+              io.grpc.netty.shaded.io.netty.handler.ssl.util
             </Export-Package>
           </instructions>
           <unpackBundle>true</unpackBundle>
