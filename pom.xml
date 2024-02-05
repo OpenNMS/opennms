@@ -1617,6 +1617,7 @@
     <commonsValidatorVersion>1.6</commonsValidatorVersion>
     <concurrentTreesVersion>2.5.0</concurrentTreesVersion>
     <c3p0Version>0.9.5.5</c3p0Version>
+    <curatorVersion>2.13.0</curatorVersion>
     <cxfVersion>3.5.5</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
@@ -2352,6 +2353,12 @@
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.http</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.kafka</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
@@ -3442,6 +3449,50 @@
         <groupId>org.apache.camel</groupId>
         <artifactId>camel-jms</artifactId>
         <version>${camelVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.curator</groupId>
+        <artifactId>curator-client</artifactId>
+        <version>${curatorVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.curator</groupId>
+        <artifactId>curator-framework</artifactId>
+        <version>${curatorVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.curator</groupId>
+        <artifactId>curator-recipes</artifactId>
+        <version>${curatorVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.curator</groupId>
+        <artifactId>curator-test</artifactId>
+        <version>${curatorVersion}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>log4j</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.apache.cxf</groupId>
