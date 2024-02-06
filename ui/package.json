@@ -31,7 +31,7 @@
     "@featherds/list": "0.12.20",
     "@featherds/megamenu": "0.12.20",
     "@featherds/menu": "0.12.20",
-    "@featherds/navigation-rail": "0.12.20",
+    "@featherds/navigation-rail": "0.12.25",
     "@featherds/pagination": "0.12.20",
     "@featherds/progress": "0.12.20",
     "@featherds/protected-input": "0.12.20",
