@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -45,6 +45,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.distributed.coordination.api.DomainManager;
 import org.opennms.features.distributed.coordination.api.Role;
 
@@ -66,6 +67,7 @@ public class ZookeeperDomainManagerIT {
 
     @Before
     public void setup() throws Exception {
+        MockLogAppender.setupLogging(true, "DEBUG");
         int freePort;
 
         try (ServerSocket socket = new ServerSocket(0)) {
