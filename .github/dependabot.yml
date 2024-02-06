@@ -6,7 +6,7 @@ updates:
     directory: "/ui"
     target-branch: "release-33.x"
     reviewers:
-      - "mikewrosey"
+      - "synqotik"
     labels:
       - "dependency update"
     commit-message:
