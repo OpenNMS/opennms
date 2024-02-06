@@ -1834,12 +1834,14 @@
     </feature>
 
     <feature name="zookeeper-dependencies" version="${zookeeperVersion}" description="ZooKeeper Dependencies">
+        <feature prerequisite="true">wrap</feature>
+        <feature prerequisite="true">guava</feature>
         <feature>jackson-core</feature>
-        <bundle dependency="true">wrap:mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:org.apache.zookeeper/zookeeper-jute/${zookeeperVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.curator/curator-client/${curatorVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.curator/curator-framework/${curatorVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.curator/curator-recipes/${curatorVersion}</bundle>
+        <bundle>wrap:mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}$Bundle-SymbolicName=org.apache.zookeeper.zookeeper&amp;Bundle-Version=${zookeeperVersion}&amp;Export-Package=org.apache.zookeeper*;version="${zookeeperVersion}"</bundle>
+        <bundle>wrap:mvn:org.apache.zookeeper/zookeeper-jute/${zookeeperVersion}$Bundle-SymbolicName=org.apache.zookeeper.zookeeper.jute&amp;Bundle-Version=${zookeeperVersion}&amp;Export-Package=org.apache.*;version="${zookeeperVersion}"</bundle>
+        <bundle>mvn:org.apache.curator/curator-client/${curatorVersion}</bundle>
+        <bundle>mvn:org.apache.curator/curator-framework/${curatorVersion}</bundle>
+        <bundle>mvn:org.apache.curator/curator-recipes/${curatorVersion}</bundle>
     </feature>
 
 </features>
