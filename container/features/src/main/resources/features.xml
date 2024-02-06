@@ -1840,13 +1840,4 @@
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.shell/${project.version}</bundle>
     </feature>
 
-    <feature name="zookeeper-dependencies" version="${zookeeperVersion}" description="ZooKeeper Dependencies">
-        <feature>jackson-core</feature>
-        <bundle dependency="true">wrap:mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}</bundle>
-        <bundle dependency="true">wrap:mvn:org.apache.zookeeper/zookeeper-jute/${zookeeperVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.curator/curator-client/${curatorVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.curator/curator-framework/${curatorVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.curator/curator-recipes/${curatorVersion}</bundle>
-    </feature>
-
 </features>
