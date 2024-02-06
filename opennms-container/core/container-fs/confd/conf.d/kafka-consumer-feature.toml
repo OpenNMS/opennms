@@ -1,0 +1,4 @@
+[template]
+src = "kafka-consumer-feature.tpl"
+dest = "/usr/share/opennms/etc/featuresBoot.d/_confd.kafka-consumer.boot"
+keys = ["/opennms/kafka/consumer"]

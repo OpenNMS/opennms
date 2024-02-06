@@ -1,0 +1,5 @@
+[template]
+src = "custom.tpl"
+dest = "/usr/share/opennms/etc/confd.custom.cfg"
+keys = ["/opennms/custom", "/opennms/daemons", "/elastic/flows"]
+reload_cmd = "/etc/confd/scripts/custom-script.sh"

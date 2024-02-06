@@ -1,0 +1,5 @@
+[template]
+src = "timeseries-rra.tpl"
+dest = "/usr/share/opennms/etc/confd.timeseries.cfg"
+keys = ["opennms/rrd/rra"]
+reload_cmd = "/etc/confd/scripts/update-rras.sh"

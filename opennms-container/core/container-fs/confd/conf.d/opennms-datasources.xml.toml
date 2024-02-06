@@ -2,17 +2,9 @@
 src = "opennms-datasources.xml.tpl"
 dest = "/usr/share/opennms/etc/opennms-datasources.xml"
 keys = [
-    "opennms/database/connection/poolfactory",
-    "opennms/database/connection/idletimeout",
-    "opennms/database/connection/logintimeout",
-    "opennms/database/connection/minpool",
-    "opennms/database/connection/maxpool",
-    "opennms/database/connection/maxsize",
+    "opennms/database",
     "opennms/dbname",
     "opennms/dbuser",
     "opennms/dbpass",
-    "postgres/host",
-    "postgres/port",
-    "postgres/user",
-    "postgres/password"
+    "postgres",
 ]

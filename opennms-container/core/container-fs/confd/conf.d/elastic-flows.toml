@@ -1,0 +1,4 @@
+[template]
+src = "elastic-flows.tpl"
+dest = "/usr/share/opennms/etc/org.opennms.features.flows.persistence.elastic.cfg"
+keys = ["/elastic/flows/", "/opennms/instance_id"]
