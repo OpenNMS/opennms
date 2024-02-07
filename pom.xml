@@ -1,4 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?> <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<!--
+
+    Licensed to The OpenNMS Group, Inc (TOG) under one or more
+    contributor license agreements.  See the LICENSE.md file
+    distributed with this work for additional information
+    regarding copyright ownership.
+
+    TOG licenses this file to You under the GNU Affero General
+    Public License Version 3 (the "License") or (at your option)
+    any later version.  You may not use this file except in
+    compliance with the License.  You may obtain a copy of the
+    License at:
+
+         https://www.gnu.org/licenses/agpl-3.0.txt
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+    either express or implied.  See the License for the specific
+    language governing permissions and limitations under the
+    License.
+
+-->
   <!-- OpenNMS Top-Level POM -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
@@ -1057,6 +1080,87 @@
         <groupId>org.opennms.maven.plugins</groupId>
         <artifactId>structure-maven-plugin</artifactId>
         <version>1.0</version>
+      </plugin>
+      <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>4.3</version>
+        <configuration>
+          <properties>
+            <owner>The OpenNMS Group, Inc.</owner>
+            <email>license@opennms.com</email>
+          </properties>
+          <licenseSets>
+            <licenseSet>
+              <header>src/main/resources/license-header.txt</header>
+              <!-- some of these excludes are aspirational, for when we expand this beyond the basics 😅 -->
+              <excludes>
+                <!-- short term, let's exclude everything but c/c++/groovy/java/js/ts -->
+                <exclude>**/*.css</exclude>
+                <exclude>**/*.html</exclude>
+                <exclude>**/*.pl</exclude>
+                <exclude>**/*.properties</exclude>
+                <exclude>**/*.py</exclude>
+                <exclude>**/*.sh</exclude>
+                <exclude>**/*.txt</exclude>
+                <exclude>**/*.TXT</exclude>
+                <exclude>**/*.xml</exclude>
+                <exclude>**/*.xsl</exclude>
+                <exclude>**/*.yaml</exclude>
+                <exclude>**/*.yml</exclude>
+
+                <!-- other general top-level or basic excludes -->
+                <exclude>**/*.adoc</exclude>
+                <exclude>**/*.d.ts</exclude>
+                <exclude>**/*.md</exclude>
+                <exclude>**/pom.xml</exclude>
+                <exclude>**/THIRD-PARTY.properties</exclude>
+                <exclude>.version.txt</exclude>
+                <exclude>*.pl</exclude>
+                <exclude>bin/*</exclude>
+                <exclude>docs/**/*</exclude>
+                <exclude>maven/**/*</exclude>
+                <exclude>src/**/*</exclude>
+
+                <!-- don't need this can o' worms for now -->
+                <exclude>opennms-base-assembly/src/main/filtered/etc</exclude>
+                <exclude>opennms-base-assembly/src/main/resources</exclude>
+
+                <!-- BSD + GPL, see header for details -->
+                <exclude>core/test-api/dns/**/DNSServer.java</exclude>
+
+                <!-- APLv2 -->
+                <exclude>container/bridge/**/container/web/*.java</exclude>
+                <exclude>container/servlet/**/container/web/*.java</exclude>
+                <exclude>core/jstl-support/**/taglibs/standard/lang/**/*</exclude>
+                <exclude>core/snmp/impl-snmp4j/**/Integer32IgnoreTooManyBytes.java</exclude>
+                <exclude>core/soa/**/OnmsOSGiBridgeActivator.java</exclude>
+                <exclude>features/nrtg/config.properties</exclude>
+                <exclude>features/measurements/impl/**/holtwinters/*</exclude>
+                <exclude>features/osgi-jsr223/**/osgi/script/*.java</exclude>
+                <exclude>features/prometheus-collector/**/hawkular/**/*</exclude>
+                <exclude>features/topology-map/plugins/org.opennms.features.topology.plugins.sandbox/widgets/GWTTerminal/war/**/*</exclude>
+                <exclude>features/vaadin-components/extender-service/**/Activator.java</exclude>
+                <exclude>features/vaadin-components/extender-service/**/Constants.java</exclude>
+                <exclude>features/vaadin-components/extender-service/**/PaxVaadinBundleTracker.java</exclude>
+                <exclude>features/vaadin-components/extender-service/**/VaadinResourceService.java</exclude>
+                <exclude>features/vaadin-components/extender-service/**/VaadinResourceServlet.java</exclude>
+
+                <!-- BSD-style -->
+                <exclude>features/events/syslog/**/SyslogClient.java</exclude>
+
+                <!-- GPL+EPL (see headers, it's complicated) -->
+                <exclude>integrations/opennms-vmware/**/VmwareCimCollector.java</exclude>
+                <exclude>integrations/opennms-vmware/**/VmwareCimMonitor.java</exclude>
+                <exclude>integrations/opennms-vmware/**/VmwareViJavaAccess.java</exclude>
+                <exclude>integrations/opennms-vmware/**/VmwareViJavaAccessTest.java</exclude>
+
+                <!-- LGPLv3 -->
+                <exclude>features/reporting/jasper-reports-compiler/**/CustomJRJdtCompiler.java</exclude>
+              </excludes>
+            </licenseSet>
+          </licenseSets>
+        </configuration>
       </plugin>
     </plugins>
   </pluginManagement>
@@ -2257,6 +2361,11 @@
       <build>
         <plugins>
           <plugin>
+            <groupId>com.mycila</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+            <version>4.3</version>
+          </plugin>
+          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
             <version>3.3.1</version>
@@ -2279,24 +2388,6 @@
               <consoleOutput>true</consoleOutput>
             </configuration>
             <executions>
-              <execution>
-                <id>check-license</id>
-                <goals>
-                  <goal>check</goal>
-                </goals>
-                <phase>process-resources</phase>
-                <configuration>
-                  <configLocation>${opennms.build.basedir}/src/main/resources/check-license.xml</configLocation>
-                  <suppressionsLocation>${opennms.build.basedir}/src/main/resources/license-suppressions.xml</suppressionsLocation>
-                  <headerLocation>${opennms.build.basedir}/src/main/resources/AGPL-LICENSE.regexp.txt</headerLocation>
-                  <includeResources>false</includeResources>
-                  <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                  <includeTestResources>false</includeTestResources>
-                  <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
-                  <failsOnError>false</failsOnError>
-                  <consoleOutput>true</consoleOutput>
-                </configuration>
-              </execution>
               <execution>
                 <id>check-style</id>
                 <goals>
