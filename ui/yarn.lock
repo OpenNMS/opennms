@@ -489,12 +489,12 @@
     "@featherds/utils" "^0.12.20"
     vue "^3.1.0-0"
 
-"@featherds/snackbar@0.12.20":
-  version "0.12.20"
-  resolved "https://registry.yarnpkg.com/@featherds/snackbar/-/snackbar-0.12.20.tgz#13400e69773df364552ee6536d07756e9b1dcb8d"
-  integrity sha512-tEw/GaOtW2nc+ORu2XIjplN1OQRpq9VeeGoCcrzaqaCETkJ5lolcKD3/PB95mWciuSEdSTDwUh1PmnzS5XBE4g==
+"@featherds/snackbar@0.12.25":
+  version "0.12.25"
+  resolved "https://registry.yarnpkg.com/@featherds/snackbar/-/snackbar-0.12.25.tgz#aee31587963a416e0ec8d51d740b63a31fffb671"
+  integrity sha512-hBkWLqb4LIHGTyr5r+H7G0PgndikOb7bFSliN1XZa5caCQe4L6orE9XTq3Xqv4t7gh1q5CTF9q1uPOFotHCxzQ==
   dependencies:
-    "@featherds/styles" "^0.12.20"
+    "@featherds/styles" "^0.12.25"
     vue "^3.1.0-0"
 
 "@featherds/styles@0.12.20":
