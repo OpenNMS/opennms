@@ -1,4 +1,4 @@
-= Off-heap storage
+= Off-heap Storage
 :description: Off-heap storage with the OpenNMS Minion.
 
 If a Minion loses connectivity with the broker (Kafka or ActiveMQ), then any received messages (syslog, flows, SNMP traps) are queued until connectivity is restored.
@@ -28,5 +28,5 @@ config:update<5>
 <4> Path storing the queue files. If not set, it defaults to the Karaf data directory.
 <5> Save and update the configuration.
 
-You can also leave the `offHeapSize` empty or set to 0 to disable queueing off heap. 
+You can leave the `offHeapSize` empty or set to 0 to disable queueing off heap. 
 In this case, only heap memory is used for queueing.
