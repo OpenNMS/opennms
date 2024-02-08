@@ -1097,30 +1097,43 @@
               <excludes>
                 <!-- short term, let's exclude everything but c/c++/groovy/java/js/ts -->
                 <exclude>**/*.css</exclude>
+                <exclude>**/*.ftl</exclude>
+                <exclude>**/*.groovy</exclude>
                 <exclude>**/*.html</exclude>
                 <exclude>**/*.pl</exclude>
                 <exclude>**/*.properties</exclude>
+                <exclude>**/*.proto</exclude>
                 <exclude>**/*.py</exclude>
                 <exclude>**/*.sh</exclude>
                 <exclude>**/*.txt</exclude>
                 <exclude>**/*.TXT</exclude>
+                <exclude>**/*.vm</exclude>
                 <exclude>**/*.xml</exclude>
+                <exclude>**/*.xsd</exclude>
                 <exclude>**/*.xsl</exclude>
                 <exclude>**/*.yaml</exclude>
                 <exclude>**/*.yml</exclude>
 
-                <!-- other general top-level or basic excludes -->
+                <!-- other top-level or specific excludes -->
                 <exclude>**/*.adoc</exclude>
                 <exclude>**/*.d.ts</exclude>
                 <exclude>**/*.md</exclude>
                 <exclude>**/pom.xml</exclude>
                 <exclude>**/THIRD-PARTY.properties</exclude>
                 <exclude>.version.txt</exclude>
-                <exclude>*.pl</exclude>
-                <exclude>bin/*</exclude>
-                <exclude>docs/**/*</exclude>
                 <exclude>maven/**/*</exclude>
-                <exclude>src/**/*</exclude>
+                <exclude>**/static/legacy/**/*</exclude>
+                <exclude>**/lib/3rdparty/**/*</exclude>
+
+                <!-- top-level src/ contents -->
+                <exclude>src/assembly/source.xml</exclude>
+                <exclude>src/main/eclipse/ArsDigita.eclipse_formatter.xml</exclude>
+                <exclude>src/main/eclipse/org.eclipse.jdt.core.prefs</exclude>
+                <exclude>src/main/resources/checkstyle-suppressions.xml</exclude>
+                <exclude>src/main/resources/license-header.txt</exclude>
+                <exclude>src/main/resources/nms_checks.xml</exclude>
+                <exclude>src/site/site.xml</exclude>
+                <exclude>src/test/resources/test-data.sql</exclude>
 
                 <!-- don't need this can o' worms for now -->
                 <exclude>opennms-base-assembly/src/main/filtered/etc</exclude>
@@ -1130,33 +1143,37 @@
                 <exclude>core/test-api/dns/**/DNSServer.java</exclude>
 
                 <!-- APLv2 -->
-                <exclude>container/bridge/**/container/web/*.java</exclude>
-                <exclude>container/servlet/**/container/web/*.java</exclude>
-                <exclude>core/jstl-support/**/taglibs/standard/lang/**/*</exclude>
-                <exclude>core/snmp/impl-snmp4j/**/Integer32IgnoreTooManyBytes.java</exclude>
-                <exclude>core/soa/**/OnmsOSGiBridgeActivator.java</exclude>
-                <exclude>features/nrtg/config.properties</exclude>
-                <exclude>features/measurements/impl/**/holtwinters/*</exclude>
-                <exclude>features/osgi-jsr223/**/osgi/script/*.java</exclude>
-                <exclude>features/prometheus-collector/**/hawkular/**/*</exclude>
-                <exclude>features/topology-map/plugins/org.opennms.features.topology.plugins.sandbox/widgets/GWTTerminal/war/**/*</exclude>
-                <exclude>features/vaadin-components/extender-service/**/Activator.java</exclude>
-                <exclude>features/vaadin-components/extender-service/**/Constants.java</exclude>
-                <exclude>features/vaadin-components/extender-service/**/PaxVaadinBundleTracker.java</exclude>
-                <exclude>features/vaadin-components/extender-service/**/VaadinResourceService.java</exclude>
-                <exclude>features/vaadin-components/extender-service/**/VaadinResourceServlet.java</exclude>
+                <exclude>**/BlueprintCamelStateService.java</exclude>
+                <exclude>**/CaffeineDnsCache*.java</exclude>
+                <exclude>**/DroolsStreamUtils.java</exclude>
+                <exclude>**/GWTTerminal/war/**/*</exclude>
+                <exclude>**/Integer32IgnoreTooManyBytes.java</exclude>
+                <exclude>**/KafkaOffsetProvider.java</exclude>
+                <exclude>**/OnmsOSGiBridgeActivator.java</exclude>
+                <exclude>**/container/web/WebAppListener.java</exclude>
+                <exclude>**/hawkular/**/*</exclude>
+                <exclude>**/impl/holtwinters/*</exclude>
+                <exclude>**/osgi/script/*.java</exclude>
+                <exclude>**/vaadin/extender/Constants.java</exclude>
+                <exclude>**/vaadin/extender/VaadinResourceService.java</exclude>
+                <exclude>**/vaadin/extender/internal/Activator.java</exclude>
+                <exclude>**/vaadin/extender/internal/extender/PaxVaadinBundleTracker.java</exclude>
+                <exclude>**/vaadin/extender/internal/servlet/VaadinResourceServlet.java</exclude>
+
+                <!-- Sun CDDL -->
+                <exclude>**/taglibs/standard/lang/**/*</exclude>
 
                 <!-- BSD-style -->
-                <exclude>features/events/syslog/**/SyslogClient.java</exclude>
+                <exclude>**/SyslogClient.java</exclude>
 
                 <!-- GPL+EPL (see headers, it's complicated) -->
-                <exclude>integrations/opennms-vmware/**/VmwareCimCollector.java</exclude>
-                <exclude>integrations/opennms-vmware/**/VmwareCimMonitor.java</exclude>
-                <exclude>integrations/opennms-vmware/**/VmwareViJavaAccess.java</exclude>
-                <exclude>integrations/opennms-vmware/**/VmwareViJavaAccessTest.java</exclude>
+                <exclude>**/VmwareCimCollector.java</exclude>
+                <exclude>**/VmwareCimMonitor.java</exclude>
+                <exclude>**/VmwareViJavaAccess.java</exclude>
+                <exclude>**/VmwareViJavaAccessTest.java</exclude>
 
                 <!-- LGPLv3 -->
-                <exclude>features/reporting/jasper-reports-compiler/**/CustomJRJdtCompiler.java</exclude>
+                <exclude>**/CustomJRJdtCompiler.java</exclude>
               </excludes>
             </licenseSet>
           </licenseSets>
