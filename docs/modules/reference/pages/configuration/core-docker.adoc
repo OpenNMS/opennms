@@ -79,11 +79,12 @@
 |===
 | Environment variable          | Description                                                                       | Required | Default value
 | `REPLICATION_FACTOR`          | Set Cassandra replication factor for the newts keyspace if Newts is used.      | optional | `1`
-| `OPENNMS_CASSANDRA_HOSTNAMES` | A comma-separated list with Cassandra hosts for Newts                         | optional | `localhost`
+| `OPENNMS_CASSANDRA_HOSTNAME`  | A comma-separated list with Cassandra hosts for Newts                         | optional | `localhost`
 | `OPENNMS_CASSANDRA_KEYSPACE`  | Name of the keyspace used by Newts                                              | optional | `newts`
 | `OPENNMS_CASSANDRA_PORT`      | Cassandra server port                                                           | optional | `9042`
 | `OPENNMS_CASSANDRA_USERNAME`  | Username with access to Cassandra                                              | optional | `cassandra`
 | `OPENNMS_CASSANDRA_PASSWORD`  | Password for user with access to Cassandra                                      | optional | `cassandra`
+| `OPENNMS_CASSANDRA_DATACENTER` | Set this to the value of your local datacenter for the best performance                                     | optional | `datacenter1`
 |===
 
 == Directory conventions
