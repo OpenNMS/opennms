@@ -321,14 +321,7 @@
     "@featherds/styles" "^0.12.25"
     vue "^3.1.0-0"
 
-"@featherds/icon@0.12.20":
-  version "0.12.20"
-  resolved "https://registry.yarnpkg.com/@featherds/icon/-/icon-0.12.20.tgz#752a54e7f15ad9c41eb4222d8a711f25ca6be14a"
-  integrity sha512-FcNcjyU0pwLZx9iYZ9JEwFdYUN8cCQZmAiCTmyigtG6WrJvv9zzcqC+TJVcGqQYc85wh9cnbwRDhDOuW+putvQ==
-  dependencies:
-    vue "^3.1.0-0"
-
-"@featherds/icon@^0.12.20", "@featherds/icon@^0.12.25":
+"@featherds/icon@0.12.25", "@featherds/icon@^0.12.20", "@featherds/icon@^0.12.25":
   version "0.12.25"
   resolved "https://registry.yarnpkg.com/@featherds/icon/-/icon-0.12.25.tgz#1338d7fc0772bea0f20fd5fa31f6524f33d16824"
   integrity sha512-IJlhG3/Vj/AJGfuQJqV3yxRiq2pbAmcaQKh18nk5g6THeye/1HzVS021zF1fSdPS6iIBlTNazBd1OA4gr/UFaA==
