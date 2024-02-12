@@ -16,7 +16,7 @@
   },
   "dependencies": {
     "@featherds/app-bar": "0.12.20",
-    "@featherds/app-layout": "0.12.20",
+    "@featherds/app-layout": "0.12.25",
     "@featherds/autocomplete": "0.12.20",
     "@featherds/button": "0.12.20",
     "@featherds/checkbox": "0.12.20",
