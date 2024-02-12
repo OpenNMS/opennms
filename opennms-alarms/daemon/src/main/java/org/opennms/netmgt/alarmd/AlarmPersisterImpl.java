@@ -121,7 +121,7 @@ public class AlarmPersisterImpl implements AlarmPersister {
             // Process the alarm inside a transaction
             alarm = m_transactionOperations.execute((action) -> addOrReduceEventAsAlarm(event));
         } catch (Exception e) {
-            LOG.warn("Exception while reducing event {} to alarm", event);
+            LOG.warn("Exception while reducing event {} to alarm", event, e);
             return null;
         } finally {
             locks.forEach(Lock::unlock);
