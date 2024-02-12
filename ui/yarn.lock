@@ -199,13 +199,13 @@
     "@featherds/styles" "^0.12.20"
     vue "^3.1.0-0"
 
-"@featherds/app-layout@0.12.20", "@featherds/app-layout@^0.12.20":
-  version "0.12.20"
-  resolved "https://registry.yarnpkg.com/@featherds/app-layout/-/app-layout-0.12.20.tgz#e77adef0ab37e50bf50254686bda6d5dd917e56e"
-  integrity sha512-m4rSqbT6hmdJUd8a7DksmdCuw0jrrL/BeXB0LZ/Rhe6JACkW5SdRpipAIGptio+MFlIxmwDgCFhAjrqAxp+wAw==
+"@featherds/app-layout@0.12.25", "@featherds/app-layout@^0.12.20":
+  version "0.12.25"
+  resolved "https://registry.yarnpkg.com/@featherds/app-layout/-/app-layout-0.12.25.tgz#b9b18de7ca3b30f3a1c72f32cd38270a15c83f47"
+  integrity sha512-S7O08H0qci37kXISyYs/581Zs/puZtmkxMDkMugpcQBq2zeVPs62iRP+YerkA+DceI6j6FDExO1er7Zc5Fzzaw==
   dependencies:
-    "@featherds/composables" "^0.12.20"
-    "@featherds/styles" "^0.12.20"
+    "@featherds/composables" "^0.12.25"
+    "@featherds/styles" "^0.12.25"
     vue "^3.1.0-0"
 
 "@featherds/autocomplete@0.12.20":
@@ -278,7 +278,7 @@
     date-fns "^2.29.1"
     vue "^3.1.0-0"
 
-"@featherds/dialog@0.12.20", "@featherds/dialog@^0.12.20":
+"@featherds/dialog@0.12.20":
   version "0.12.20"
   resolved "https://registry.yarnpkg.com/@featherds/dialog/-/dialog-0.12.20.tgz#9187dc73738c91a24a96a4491f99a0950156f81a"
   integrity sha512-rRgzUeLdSe05vKl1Rx/IztjmPtQmcsETQVrPLRrh/5zk+8Cz84x5gZxvccPuokYhAud0ZhkKcPDA7AnyFLmbdw==
@@ -289,16 +289,27 @@
     "@featherds/utils" "^0.12.20"
     vue "^3.1.0-0"
 
-"@featherds/drawer@0.12.20":
-  version "0.12.20"
-  resolved "https://registry.yarnpkg.com/@featherds/drawer/-/drawer-0.12.20.tgz#5615ce2c106a987d9c4f36b7ec418975f9dd2443"
-  integrity sha512-dxVhmwshlRkDdh41hPkSpbBOuj3sxf1Ky0rEkOq8Ye6mOJHvoEoOLn22Mot781EcRjmFwEjReXpbGD5zs5F3sQ==
+"@featherds/dialog@^0.12.20", "@featherds/dialog@^0.12.25":
+  version "0.12.25"
+  resolved "https://registry.yarnpkg.com/@featherds/dialog/-/dialog-0.12.25.tgz#eedd64facc25692697233c6aba3bfdb93b22e6d2"
+  integrity sha512-RKr81gQ52/7SmVasMtOPxnlj2UojqByXtHQ0FDbdWUNysuGBv5rTK3Zs89gWNdXoA9dLk2ztbwzyMNqgLpyU9w==
   dependencies:
-    "@featherds/composables" "^0.12.20"
-    "@featherds/dialog" "^0.12.20"
-    "@featherds/menu" "^0.12.20"
-    "@featherds/ripple" "^0.12.20"
-    "@featherds/styles" "^0.12.20"
+    "@featherds/composables" "^0.12.25"
+    "@featherds/icon" "^0.12.25"
+    "@featherds/styles" "^0.12.25"
+    "@featherds/utils" "^0.12.25"
+    vue "^3.1.0-0"
+
+"@featherds/drawer@0.12.25":
+  version "0.12.25"
+  resolved "https://registry.yarnpkg.com/@featherds/drawer/-/drawer-0.12.25.tgz#8ded6016025ebefd2ddc681eb3ef8762ea7b3e9e"
+  integrity sha512-GrBjrehU+BF9tV0+BQ/aGqAJhatClKyOagLQNTaQyddEulCM5ud8QZOfTC9NjSTHL+znYZ7j9vjozAasOp9bwA==
+  dependencies:
+    "@featherds/composables" "^0.12.25"
+    "@featherds/dialog" "^0.12.25"
+    "@featherds/menu" "^0.12.25"
+    "@featherds/ripple" "^0.12.25"
+    "@featherds/styles" "^0.12.25"
     vue "^3.1.0-0"
 
 "@featherds/dropdown@0.12.20":
@@ -321,14 +332,7 @@
     "@featherds/styles" "^0.12.25"
     vue "^3.1.0-0"
 
-"@featherds/icon@0.12.20":
-  version "0.12.20"
-  resolved "https://registry.yarnpkg.com/@featherds/icon/-/icon-0.12.20.tgz#752a54e7f15ad9c41eb4222d8a711f25ca6be14a"
-  integrity sha512-FcNcjyU0pwLZx9iYZ9JEwFdYUN8cCQZmAiCTmyigtG6WrJvv9zzcqC+TJVcGqQYc85wh9cnbwRDhDOuW+putvQ==
-  dependencies:
-    vue "^3.1.0-0"
-
-"@featherds/icon@^0.12.20", "@featherds/icon@^0.12.25":
+"@featherds/icon@0.12.25", "@featherds/icon@^0.12.20", "@featherds/icon@^0.12.25":
   version "0.12.25"
   resolved "https://registry.yarnpkg.com/@featherds/icon/-/icon-0.12.25.tgz#1338d7fc0772bea0f20fd5fa31f6524f33d16824"
   integrity sha512-IJlhG3/Vj/AJGfuQJqV3yxRiq2pbAmcaQKh18nk5g6THeye/1HzVS021zF1fSdPS6iIBlTNazBd1OA4gr/UFaA==
@@ -388,7 +392,7 @@
     "@featherds/utils" "^0.12.20"
     vue "^3.1.0-0"
 
-"@featherds/menu@0.12.20", "@featherds/menu@^0.12.20":
+"@featherds/menu@0.12.20":
   version "0.12.20"
   resolved "https://registry.yarnpkg.com/@featherds/menu/-/menu-0.12.20.tgz#32edfba78fe0b7e9d6c682307aa6e7702f003edf"
   integrity sha512-VnA72fFVxtmtKOoUC6mjti6J7cC6gMMn/Z0IUYgPCFfHNZJ5wzDKnN8rY5xZbAWWbEiXo0ke+Jj0RJwhvuJlyA==
@@ -397,6 +401,17 @@
     "@featherds/ripple" "^0.12.20"
     "@featherds/styles" "^0.12.20"
     "@featherds/utils" "^0.12.20"
+    vue "^3.1.0-0"
+
+"@featherds/menu@^0.12.20", "@featherds/menu@^0.12.25":
+  version "0.12.25"
+  resolved "https://registry.yarnpkg.com/@featherds/menu/-/menu-0.12.25.tgz#6b60cca1abd958105d31698bb22536c85b0f910b"
+  integrity sha512-tDGAC6MCwDZZCtsxKN0WZsMK8BEoKLVaVxAF11mQ/18vlBuhtvL7McGl1N5u8J9mKMNUq8aFlc4DpjCKMsP7pA==
+  dependencies:
+    "@featherds/composables" "^0.12.25"
+    "@featherds/ripple" "^0.12.25"
+    "@featherds/styles" "^0.12.25"
+    "@featherds/utils" "^0.12.25"
     vue "^3.1.0-0"
 
 "@featherds/navigation-rail@0.12.25":
@@ -1697,10 +1712,10 @@ abbrev@^1.0.0:
   resolved "https://registry.yarnpkg.com/abbrev/-/abbrev-1.1.1.tgz#f8f2c887ad10bf67f634f005b6987fed3179aac8"
   integrity sha512-nne9/IiQ/hzIhY6pdDnbBtz7DjPTKrY00P/zvPSm5pOFkl6xuGrGnXn/VtTNNfNtAfZ9/1RtehkszU9qcTii0Q==
 
-ace-builds@^1.23.4:
-  version "1.31.0"
-  resolved "https://registry.yarnpkg.com/ace-builds/-/ace-builds-1.31.0.tgz#3b46c5e6535c8bbafe6b3ed862a8091c8d23a336"
-  integrity sha512-nitIhcUYA6wyO3lo2WZBPX5fcjllW6XFt4EFyHwcN2Fp70/IZwz8tdw6a0+8udDEwDj/ebt3aWEClIyCs/6qYA==
+ace-builds@^1.32.6:
+  version "1.32.6"
+  resolved "https://registry.yarnpkg.com/ace-builds/-/ace-builds-1.32.6.tgz#454ec8bc9235fbb960b8d8b86e698f941c104de2"
+  integrity sha512-dO5BnyDOhCnznhOpILzXq4jqkbhRXxNkf3BuVTmyxGyRLrhddfdyk6xXgy+7A8LENrcYoFi/sIxMuH3qjNUN4w==
 
 acorn-jsx@^5.3.2:
   version "5.3.2"
