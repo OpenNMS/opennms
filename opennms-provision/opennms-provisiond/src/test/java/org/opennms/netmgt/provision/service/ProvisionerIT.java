@@ -1434,6 +1434,31 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     }
 
     @Test(timeout = 300000)
+    public void testProvisionerRescanChangedPrimaryIP() throws Exception {
+        importFromResource("classpath:/tec_dump.xml.smalltest", "dbonly");
+        runPendingScans();
+
+        assertEquals(10, getNodeDao().countAll());
+        var node = getNodeDao().findByForeignId("empty", "4243");
+        assertNotNull(node);
+        var primary = node.getPrimaryInterface();
+        assertNotNull(primary);
+        assertEquals("10.136.160.1", InetAddressUtils.str(primary.getIpAddress()));
+        assertEquals(3, node.getIpInterfaces().size());
+
+        importFromResource("classpath:/tec_dump.xml.smalltest_newprimary", "dbonly");
+        runPendingScans();
+
+        assertEquals(10, getNodeDao().countAll());
+        node = getNodeDao().findByForeignId("empty", "4243");
+        primary = node.getPrimaryInterface();
+        assertNotNull(primary);
+        assertEquals("10.136.160.2", InetAddressUtils.str(primary.getIpAddress()));
+        assertNotNull(node);
+        assertEquals(3, node.getIpInterfaces().size());
+    }
+
+    @Test(timeout = 300000)
     public void testProvisionerRemoveNodeInSchedule() throws Exception {
         importFromResource("classpath:/tec_dump.xml.smalltest", Boolean.TRUE.toString());
         getScanExecutor().pause();

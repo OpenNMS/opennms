@@ -1468,14 +1468,14 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     public void mergeSnmpInterfaces(OnmsNode scannedNode, boolean deleteMissing) {
 
         // we need to skip this step if there is an indication that snmp data collection failed
-        if (scannedNode.getSnmpInterfaces().size() == 0) {
+        if (scannedNode.getSnmpInterfaces().isEmpty()) {
             // we assume here that snmp collection failed and we don't update the snmp data
             return;
         }
 
 
         // Build map of ifIndices to scanned SnmpInterfaces
-        Map<Integer, OnmsSnmpInterface> scannedInterfaceMap = new HashMap<Integer, OnmsSnmpInterface>();
+        Map<Integer, OnmsSnmpInterface> scannedInterfaceMap = new HashMap<>();
         for (OnmsSnmpInterface snmpIface : scannedNode.getSnmpInterfaces()) {
             if (snmpIface.getIfIndex() != null) {
                 scannedInterfaceMap.put(snmpIface.getIfIndex(), snmpIface);
@@ -1518,8 +1518,9 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     public void mergeIpInterfaces(OnmsNode scannedNode, EventForwarder eventForwarder, boolean deleteMissing) {
         OnmsIpInterface oldPrimaryInterface = null;
         OnmsIpInterface scannedPrimaryIf = null;
+
         // build a map of ipAddrs to ipInterfaces for the scanned node
-        Map<InetAddress, OnmsIpInterface> ipInterfaceMap = new HashMap<InetAddress, OnmsIpInterface>();
+        Map<InetAddress, OnmsIpInterface> ipInterfaceMap = new HashMap<>();
         for (OnmsIpInterface iface : scannedNode.getIpInterfaces()) {
             if(scannedPrimaryIf == null && iface.isPrimary()){
                 scannedPrimaryIf = iface;
