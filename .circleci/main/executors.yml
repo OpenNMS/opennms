@@ -4,10 +4,10 @@ executors:
       - image: cimg/base:stable-20.04
   build-executor:
     docker:
-      - image: opennms/build-env:circleci-ubuntu-jdk11
+      - image: opennms/build-env:circleci-ubuntu-jdk17
   coverage-executor:
     docker:
-      - image: opennms/build-env:circleci-ubuntu-jdk17
+      - image: opennms/build-env:circleci-ubuntu-jdk21
   docs-executor:
     docker:
       - image: opennms/antora:3.1.4-b10433
