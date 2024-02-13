@@ -104,6 +104,7 @@ The codename for Horizon 33.0.0 is https://wikipedia.org/wiki/$$Sequoia_sempervi
 * Metadata DSL: snmp-config.xml & SNMP Profiles (Issue https://issues.opennms.org/browse/NMS-16028[NMS-16028])
 * Metadata DSL: change default opennms-datasources.xml to reflect the possibility of using metadata (Issue https://issues.opennms.org/browse/NMS-16029[NMS-16029])
 * OpenShift: Document the impact of disabling allowPrivilegeEscalation (Issue https://issues.opennms.org/browse/NMS-16239[NMS-16239])
+* Update wording to Product Update Sign Up (Issue https://opennms.atlassian.net/browse/NMS-16352[NMS-16352])
 
 === Story
 
