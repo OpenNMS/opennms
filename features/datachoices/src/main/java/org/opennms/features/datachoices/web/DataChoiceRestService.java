@@ -36,8 +36,8 @@ import javax.ws.rs.core.Response;
 
 import org.opennms.features.datachoices.internal.usagestatistics.UsageStatisticsReportDTO;
 import org.opennms.features.datachoices.internal.usagestatistics.UsageStatisticsStatusDTO;
-import org.opennms.features.datachoices.internal.userdatacollection.UserDataCollectionFormData;
-import org.opennms.features.datachoices.internal.userdatacollection.UserDataCollectionStatusDTO;
+import org.opennms.features.datachoices.internal.productupdateenrollment.ProductUpdateEnrollmentFormData;
+import org.opennms.features.datachoices.internal.productupdateenrollment.ProductUpdateEnrollmentStatusDTO;
 
 @Path("/datachoices")
 public interface DataChoiceRestService {
@@ -61,17 +61,17 @@ public interface DataChoiceRestService {
     Response getMetadata() throws ServletException, IOException;
 
     @GET
-    @Path("/userdatacollection/status")
+    @Path("/productupdate/status")
     @Produces(value={MediaType.APPLICATION_JSON})
-    Response getUserDataCollectionStatus() throws ServletException, IOException;
+    Response getProductUpdateEnrollmentStatus() throws ServletException, IOException;
 
     @POST
-    @Path("/userdatacollection/status")
+    @Path("/productupdate/status")
     @Consumes({MediaType.APPLICATION_JSON})
-    Response setUserDataCollectionStatus(@Context HttpServletRequest request, UserDataCollectionStatusDTO dto) throws ServletException, IOException;
+    Response setProductUpdateEnrollmentStatu(@Context HttpServletRequest request, ProductUpdateEnrollmentStatusDTO dto) throws ServletException, IOException;
 
     @POST
-    @Path("/userdatacollection/submit")
+    @Path("/productupdate/submit")
     @Consumes({MediaType.APPLICATION_JSON})
-    Response submitUserDataCollectionData(@Context HttpServletRequest request, UserDataCollectionFormData data) throws ServletException, IOException;
+    Response submitProductUpdateEnrollmentData(@Context HttpServletRequest request, ProductUpdateEnrollmentFormData data) throws ServletException, IOException;
 }

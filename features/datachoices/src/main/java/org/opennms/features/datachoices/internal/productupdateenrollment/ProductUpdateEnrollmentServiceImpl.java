@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.features.datachoices.internal.userdatacollection;
+package org.opennms.features.datachoices.internal.productupdateenrollment;
 
 import java.io.IOException;
 
@@ -28,18 +28,18 @@ import org.codehaus.jackson.map.SerializationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UserDataCollectionServiceImpl implements UserDataCollectionService {
-    private static final Logger LOG = LoggerFactory.getLogger(UserDataCollectionServiceImpl.class);
+public class ProductUpdateEnrollmentServiceImpl implements ProductUpdateEnrollmentService {
+    private static final Logger LOG = LoggerFactory.getLogger(ProductUpdateEnrollmentServiceImpl.class);
 
-    private UserDataCollectionSubmissionClient client;
+    private ProductUpdateEnrollmentSubmissionClient client;
 
     /**
-     * The form with user data collection info has been received; validate and send to
+     * The form with product update enrollment info has been received; validate and send to
      * OpenNMS Stats endpoint for further processing.
-     * Does not update User Data Collection status in Config Management, client will make
+     * Does not update Product Update Enrollment status in Config Management, client will make
      * a separate call for that.
      */
-    public void submit(UserDataCollectionFormData data) throws Exception, IOException {
+    public void submit(ProductUpdateEnrollmentFormData data) throws Exception, IOException {
         var submissionData = createSubmissionData(data);
         String json = jsonSerialize(submissionData);
 
@@ -50,8 +50,8 @@ public class UserDataCollectionServiceImpl implements UserDataCollectionService 
         }
     }
 
-    private UserDataCollectionSubmissionData createSubmissionData(UserDataCollectionFormData data) {
-        var submissionData = new UserDataCollectionSubmissionData();
+    private ProductUpdateEnrollmentSubmissionData createSubmissionData(ProductUpdateEnrollmentFormData data) {
+        var submissionData = new ProductUpdateEnrollmentSubmissionData();
         submissionData.consent = true;
         submissionData.firstName = data.firstName;
         submissionData.lastName = data.lastName;
@@ -63,7 +63,7 @@ public class UserDataCollectionServiceImpl implements UserDataCollectionService 
         return submissionData;
     }
 
-    private String jsonSerialize(UserDataCollectionSubmissionData data) throws IOException {
+    private String jsonSerialize(ProductUpdateEnrollmentSubmissionData data) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         mapper.enable(SerializationConfig.Feature.SORT_PROPERTIES_ALPHABETICALLY);
         mapper.enable(SerializationConfig.Feature.INDENT_OUTPUT);
@@ -76,7 +76,7 @@ public class UserDataCollectionServiceImpl implements UserDataCollectionService 
         }
     }
 
-    public void setClient(UserDataCollectionSubmissionClient client) {
+    public void setClient(ProductUpdateEnrollmentSubmissionClient client) {
         this.client = client;
     }
 }

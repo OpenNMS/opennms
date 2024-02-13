@@ -19,18 +19,10 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.features.datachoices.web.internal;
+package org.opennms.features.datachoices.internal.productupdateenrollment;
 
-import org.opennms.web.navigate.PageNavEntry;
+import java.io.IOException;
 
-public class UserDataCollectionAdminPageNavEntry implements PageNavEntry {
-    @Override
-    public String getName() {
-        return "User Data Collection";
-    }
-
-    @Override
-    public String getUrl() {
-        return "admin/user-data-collection/index.jsp";
-    }
+public interface ProductUpdateEnrollmentService {
+    void submit(ProductUpdateEnrollmentFormData data) throws Exception, IOException;
 }

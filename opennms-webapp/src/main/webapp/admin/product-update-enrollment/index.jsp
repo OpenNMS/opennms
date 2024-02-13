@@ -23,20 +23,20 @@
 --%>
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
-          .headTitle("User Data Collection")
+          .headTitle("Product Update Enrollment")
           .breadcrumb("Admin", "admin/index.jsp")
-          .breadcrumb("User Data Collection")
+          .breadcrumb("Product Update Enrollment")
           .build(request);
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <style>
-    .admin-user-data-collection-form-wrapper {
+    .admin-product-update-enrollment-form-wrapper {
         margin-bottom: 50px;
         margin-top: 8px;
     }
 
-    .user-data-collection-button {
+    .product-update-enrollment-button {
         border-radius: 0;
 		box-shadow: none;
         font-size: 0.875rem;
@@ -46,14 +46,14 @@
         text-transform: uppercase;
     }
 
-	.user-data-collection-enable-button {
+	.product-update-enrollment-enable-button {
         background-color: #273180;
         border: 2px solid transparent;
         color: #fff;
         margin-right: 1rem;
     }
 
-    .user-data-collection-enable-button:hover {
+    .product-update-enrollment-enable-button:hover {
         box-shadow: 3px 1px 2px #6c757d;
         color: #fff;
     }
@@ -63,21 +63,21 @@
 If you would like to receive more information about OpenNMS Horizon, Meridian and other products, please click
 Enable below and you will be redirected to the main page where you can enter your information.
 </div>
-<div class="admin-user-data-collection-form-wrapper">
-    <form id="admin-user-data-collection-form">
-        <button id="user-data-collection-notice-enable" type="button" class="btn user-data-collection-button user-data-collection-enable-button">Enable</button>
+<div class="admin-product-update-enrollment-form-wrapper">
+    <form id="admin-product-update-enrollment-form">
+        <button id="product-update-enrollment-notice-enable" type="button" class="btn product-update-enrollment-button product-update-enrollment-enable-button">Enable</button>
     </form>
 </div>
 
 <script type="text/javascript">
 (function() {
-    function userDataCollectionEnableInitialNotice() {
+    function productUpdateEnrollmentEnableInitialNotice() {
         var data = {
             noticeAcknowledged: false
         };
 
         $.ajax({
-            url: 'rest/datachoices/userdatacollection/status',
+            url: 'rest/datachoices/productupdate/status',
             method: 'POST',
             dataType: null,
             contentType: 'application/json',
@@ -93,9 +93,9 @@ Enable below and you will be redirected to the main page where you can enter you
     }
 
     $(document).ready(function() {
-        $('#user-data-collection-notice-enable').click(function(e) {
+        $('#product-update-enrollment-notice-enable').click(function(e) {
             e.preventDefault();
-            userDataCollectionEnableInitialNotice();
+            productUpdateEnrollmentEnableInitialNotice();
         });
     });
 })();
