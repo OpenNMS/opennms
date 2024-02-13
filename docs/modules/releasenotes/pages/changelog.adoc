@@ -9,26 +9,7 @@
 Release 33.0.0 is the first major release in the 33.x series.
 It contains a bunch of changes, including metadata support in many more configs, a revamped node list, and more.
 
-The codename for Horizon 33.0.0 is https://wikipedia.org/wiki/Breakcore[_Breakcore_].
-
-=== Enhancement
-
-* special nodes availability (Issue https://issues.opennms.org/browse/NMS-9797[NMS-9797])
-* Add var-bind section into notification docs (Issue https://issues.opennms.org/browse/NMS-13273[NMS-13273])
-* Provisiond threads description discrepancies (Issue https://issues.opennms.org/browse/NMS-14766[NMS-14766])
-* Metadata DSL: Add metadata interpolation capability onto more threshold fields (Issue https://issues.opennms.org/browse/NMS-15667[NMS-15667])
-* document the asynchronous datacollection engine (Issue https://issues.opennms.org/browse/NMS-15737[NMS-15737])
-* enable async polling by default (Issue https://issues.opennms.org/browse/NMS-15738[NMS-15738])
-* Switch our Docker base to UBI (Issue https://issues.opennms.org/browse/NMS-15788[NMS-15788])
-* Docs: Add install note on DNS resolution (Issue https://issues.opennms.org/browse/NMS-15792[NMS-15792])
-* Extend PageSequenceMonitor to allow basic auth credentials (Issue https://issues.opennms.org/browse/NMS-15802[NMS-15802])
-* Expand BlueCat DNS Data Collection (Issue https://issues.opennms.org/browse/NMS-15865[NMS-15865])
-* Add confd support to Sentinel container (Issue https://issues.opennms.org/browse/NMS-16149[NMS-16149])
-* Docs: Remove deprecated resourcecli section (Issue https://issues.opennms.org/browse/NMS-16216[NMS-16216])
-* Update install script to clear Karaf cache (Issue https://issues.opennms.org/browse/NMS-16226[NMS-16226])
-* Upgrade to latest Karaf 4.3 (Issue https://issues.opennms.org/browse/NMS-16249[NMS-16249])
-* Deprecate VMware 3-5 collection/graphs (Issue https://issues.opennms.org/browse/NMS-16266[NMS-16266])
-* Fix formatting in snmp-graph.properties.d files (Issue https://issues.opennms.org/browse/NMS-16269[NMS-16269])
+The codename for Horizon 33.0.0 is https://wikipedia.org/wiki/$$Sequoia_sempervirens$$[_Coast Redwood_].
 
 === Bug
 
@@ -49,53 +30,31 @@ The codename for Horizon 33.0.0 is https://wikipedia.org/wiki/Breakcore[_Breakco
 * Fix resource types for default Postgres collection (Issue https://issues.opennms.org/browse/NMS-16165[NMS-16165])
 * Service detail page displays wrong collectd package (Issue https://issues.opennms.org/browse/NMS-16167[NMS-16167])
 * enlinkd logging hibernate errors (lack of unique index) (Issue https://issues.opennms.org/browse/NMS-16199[NMS-16199])
+* Zookeeper 3.4.6 version mismatch in Meridian 2021 (Issue https://issues.opennms.org/browse/NMS-16209[NMS-16209])
 * upgrade ActiveMQ to latest 5.15.x (Issue https://issues.opennms.org/browse/NMS-16218[NMS-16218])
 * Documentation build failing: cannot find antora/xref-validator (Issue https://issues.opennms.org/browse/NMS-16227[NMS-16227])
 * Node structure: fix sorting (Issue https://issues.opennms.org/browse/NMS-16246[NMS-16246])
 * OpenConfig Connector parameter frequency in incorrect unit (Issue https://issues.opennms.org/browse/NMS-16253[NMS-16253])
 * Container flag `-t` does not pass correct arguments (Issue https://issues.opennms.org/browse/NMS-16265[NMS-16265])
 
-=== Story
+=== Enhancement
 
-* Upgrade Spring from 4.2 to 4.3 (Issue https://issues.opennms.org/browse/NMS-12090[NMS-12090])
-* Metadata DSL: Documentation for Metadata DSL updates (Issue https://issues.opennms.org/browse/NMS-15774[NMS-15774])
-* Document change in login password behaviour (Issue https://issues.opennms.org/browse/NMS-15775[NMS-15775])
-* Smoke test for Admin password change (Issue https://issues.opennms.org/browse/NMS-15866[NMS-15866])
-* Admin Password Change: UX Review and Updates (Issue https://issues.opennms.org/browse/NMS-15867[NMS-15867])
-* Admin Password Change: Merge to develop (Issue https://issues.opennms.org/browse/NMS-15868[NMS-15868])
-* User is redirected to landing page after password change is done (Issue https://issues.opennms.org/browse/NMS-16036[NMS-16036])
-* Use pinia instead of vuex in Vue UI (Issue https://issues.opennms.org/browse/NMS-16043[NMS-16043])
-* Add pinia stores to UI but do not yet activate them (Issue https://issues.opennms.org/browse/NMS-16068[NMS-16068])
-* Metadata DSL: Persist poller parameters as meta data (Issue https://issues.opennms.org/browse/NMS-16146[NMS-16146])
-* Use a different html parser to replace jsoup and owasp functionality (Issue https://issues.opennms.org/browse/NMS-16183[NMS-16183])
-* Node structure: more query params (fs:fid, snmp, sys) (Issue https://issues.opennms.org/browse/NMS-16197[NMS-16197])
-* Remove plugin 'opennms-cloud-plugin' from installation (Issue https://issues.opennms.org/browse/NMS-16219[NMS-16219])
-* Geo Map: enable user-defined map to be the default one (Issue https://issues.opennms.org/browse/NMS-16229[NMS-16229])
-* DOCS: Document Geographical Map user-defined map (Issue https://issues.opennms.org/browse/NMS-16230[NMS-16230])
-* Add node-gyp to fix CircleCI build-ui errors (Issue https://issues.opennms.org/browse/NMS-16242[NMS-16242])
-* News Feed: UI Panel and REST Service (Issue https://issues.opennms.org/browse/NMS-16282[NMS-16282])
-
-=== New Feature
-
-* create an asynchronous datacollection engine (Issue https://issues.opennms.org/browse/NMS-15736[NMS-15736])
-* Metadata DSL: VMware Integration (Issue https://issues.opennms.org/browse/NMS-15753[NMS-15753])
-* Metadata DSL: WSMAN Integration (Issue https://issues.opennms.org/browse/NMS-15754[NMS-15754])
-* Metadata DSL: TL1D Integration (Issue https://issues.opennms.org/browse/NMS-15755[NMS-15755])
-* Metadata DSL: JMX Data-collection (Issue https://issues.opennms.org/browse/NMS-15756[NMS-15756])
-* Metadata DSL: XML Data-collection (Issue https://issues.opennms.org/browse/NMS-15757[NMS-15757])
-* Metadata DSL: HTTP/HTTPS Data-collection (Issue https://issues.opennms.org/browse/NMS-15758[NMS-15758])
-* Metadata DSL: Notification Credentials (Issue https://issues.opennms.org/browse/NMS-15759[NMS-15759])
-* Metadata DSL: Ticketer Plugins (Issue https://issues.opennms.org/browse/NMS-15760[NMS-15760])
-* Metadata DSL: Trapd Configuration (Issue https://issues.opennms.org/browse/NMS-15761[NMS-15761])
-* Metadata DSL: JCIFS Monitor (Issue https://issues.opennms.org/browse/NMS-15762[NMS-15762])
-* Metadata DSL: IFTTT Configuration (Issue https://issues.opennms.org/browse/NMS-15763[NMS-15763])
-* Metadata DSL: Repository Configuration (Issue https://issues.opennms.org/browse/NMS-15764[NMS-15764])
-* Metadata DSL: [OPTIONAL] Consistent *-config.xml Configurations (Issue https://issues.opennms.org/browse/NMS-15765[NMS-15765])
-* Metadata DSL: Evaluate feasability to support metadata in Drools rules (Issue https://issues.opennms.org/browse/NMS-15766[NMS-15766])
-* Metadata DSL: Change default poller and collectd configuration files to reflect ability to use metadata (Issue https://issues.opennms.org/browse/NMS-16016[NMS-16016])
-* Metadata DSL: snmp-config.xml & SNMP Profiles (Issue https://issues.opennms.org/browse/NMS-16028[NMS-16028])
-* Metadata DSL: change default opennms-datasources.xml to reflect the possibility of using metadata (Issue https://issues.opennms.org/browse/NMS-16029[NMS-16029])
-* OpenShift: Document the impact of disabling allowPrivilegeEscalation (Issue https://issues.opennms.org/browse/NMS-16239[NMS-16239])
+* Add var-bind section into notification docs (Issue https://issues.opennms.org/browse/NMS-13273[NMS-13273])
+* Provisiond threads description discrepancies (Issue https://issues.opennms.org/browse/NMS-14766[NMS-14766])
+* Metadata DSL: Add metadata interpolation capability onto more threshold fields (Issue https://issues.opennms.org/browse/NMS-15667[NMS-15667])
+* enable async polling by default (Issue https://issues.opennms.org/browse/NMS-15738[NMS-15738])
+* Switch our Docker base to UBI (Issue https://issues.opennms.org/browse/NMS-15788[NMS-15788])
+* Docs: Add install note on DNS resolution (Issue https://issues.opennms.org/browse/NMS-15792[NMS-15792])
+* Extend PageSequenceMonitor to allow basic auth credentials (Issue https://issues.opennms.org/browse/NMS-15802[NMS-15802])
+* Expand BlueCat DNS Data Collection (Issue https://issues.opennms.org/browse/NMS-15865[NMS-15865])
+* Add confd support to Sentinel container (Issue https://issues.opennms.org/browse/NMS-16149[NMS-16149])
+* Docs: Remove deprecated resourcecli section (Issue https://issues.opennms.org/browse/NMS-16216[NMS-16216])
+* Update install script to clear Karaf cache (Issue https://issues.opennms.org/browse/NMS-16226[NMS-16226])
+* Upgrade to latest Karaf 4.3 (Issue https://issues.opennms.org/browse/NMS-16249[NMS-16249])
+* Deprecate VMware 3-5 collection/graphs (Issue https://issues.opennms.org/browse/NMS-16266[NMS-16266])
+* Fix formatting in snmp-graph.properties.d files (Issue https://issues.opennms.org/browse/NMS-16269[NMS-16269])
+* Docs: Update install docs for monitoring database connection (Issue https://issues.opennms.org/browse/NMS-16286[NMS-16286])
+* Update container confd to default Postgres SSL to prefer (Issue https://issues.opennms.org/browse/NMS-16287[NMS-16287])
 
 === Task
 
@@ -124,3 +83,48 @@ The codename for Horizon 33.0.0 is https://wikipedia.org/wiki/Breakcore[_Breakco
 * DOCS: Document structured node list (Issue https://issues.opennms.org/browse/NMS-16210[NMS-16210])
 * Docs: Remove reference to 'opennms-cloud-plugin' plugin (Issue https://issues.opennms.org/browse/NMS-16231[NMS-16231])
 * Stalled threads in telemetryd parser (Issue https://issues.opennms.org/browse/NMS-16243[NMS-16243])
+
+=== New Feature
+
+* Metadata DSL: VMware Integration (Issue https://issues.opennms.org/browse/NMS-15753[NMS-15753])
+* Metadata DSL: WSMAN Integration (Issue https://issues.opennms.org/browse/NMS-15754[NMS-15754])
+* Metadata DSL: TL1D Integration (Issue https://issues.opennms.org/browse/NMS-15755[NMS-15755])
+* Metadata DSL: JMX Data-collection (Issue https://issues.opennms.org/browse/NMS-15756[NMS-15756])
+* Metadata DSL: XML Data-collection (Issue https://issues.opennms.org/browse/NMS-15757[NMS-15757])
+* Metadata DSL: HTTP/HTTPS Data-collection (Issue https://issues.opennms.org/browse/NMS-15758[NMS-15758])
+* Metadata DSL: Notification Credentials (Issue https://issues.opennms.org/browse/NMS-15759[NMS-15759])
+* Metadata DSL: Ticketer Plugins (Issue https://issues.opennms.org/browse/NMS-15760[NMS-15760])
+* Metadata DSL: Trapd Configuration (Issue https://issues.opennms.org/browse/NMS-15761[NMS-15761])
+* Metadata DSL: JCIFS Monitor (Issue https://issues.opennms.org/browse/NMS-15762[NMS-15762])
+* Metadata DSL: IFTTT Configuration (Issue https://issues.opennms.org/browse/NMS-15763[NMS-15763])
+* Metadata DSL: Repository Configuration (Issue https://issues.opennms.org/browse/NMS-15764[NMS-15764])
+* Metadata DSL: [OPTIONAL] Consistent *-config.xml Configurations (Issue https://issues.opennms.org/browse/NMS-15765[NMS-15765])
+* Metadata DSL: Evaluate feasability to support metadata in Drools rules (Issue https://issues.opennms.org/browse/NMS-15766[NMS-15766])
+* Metadata DSL: Change default poller and collectd configuration files to reflect ability to use metadata (Issue https://issues.opennms.org/browse/NMS-16016[NMS-16016])
+* Metadata DSL: snmp-config.xml & SNMP Profiles (Issue https://issues.opennms.org/browse/NMS-16028[NMS-16028])
+* Metadata DSL: change default opennms-datasources.xml to reflect the possibility of using metadata (Issue https://issues.opennms.org/browse/NMS-16029[NMS-16029])
+* OpenShift: Document the impact of disabling allowPrivilegeEscalation (Issue https://issues.opennms.org/browse/NMS-16239[NMS-16239])
+
+=== Story
+
+* Metadata DSL: Documentation for Metadata DSL updates (Issue https://issues.opennms.org/browse/NMS-15774[NMS-15774])
+* Document change in login password behaviour (Issue https://issues.opennms.org/browse/NMS-15775[NMS-15775])
+* Smoke test for Admin password change (Issue https://issues.opennms.org/browse/NMS-15866[NMS-15866])
+* Admin Password Change: UX Review and Updates (Issue https://issues.opennms.org/browse/NMS-15867[NMS-15867])
+* Admin Password Change: Merge to develop (Issue https://issues.opennms.org/browse/NMS-15868[NMS-15868])
+* User is redirected to landing page after password change is done (Issue https://issues.opennms.org/browse/NMS-16036[NMS-16036])
+* Use pinia instead of vuex in Vue UI (Issue https://issues.opennms.org/browse/NMS-16043[NMS-16043])
+* Add pinia stores to UI but do not yet activate them (Issue https://issues.opennms.org/browse/NMS-16068[NMS-16068])
+* Metadata DSL: Persist poller parameters as meta data (Issue https://issues.opennms.org/browse/NMS-16146[NMS-16146])
+* Node structure: more query params (fs:fid, snmp, sys) (Issue https://issues.opennms.org/browse/NMS-16197[NMS-16197])
+* Remove plugin 'opennms-cloud-plugin' from installation (Issue https://issues.opennms.org/browse/NMS-16219[NMS-16219])
+* Geo Map: enable user-defined map to be the default one (Issue https://issues.opennms.org/browse/NMS-16229[NMS-16229])
+* DOCS: Document Geographical Map user-defined map (Issue https://issues.opennms.org/browse/NMS-16230[NMS-16230])
+* Add node-gyp to fix CircleCI build-ui errors (Issue https://issues.opennms.org/browse/NMS-16242[NMS-16242])
+* News Feed: UI Panel and REST Service (Issue https://issues.opennms.org/browse/NMS-16282[NMS-16282])
+* Web UI for User Data Collection (Issue https://issues.opennms.org/browse/NMS-16283[NMS-16283])
+* User Data Collection: Database / Rest / CM work (Issue https://issues.opennms.org/browse/NMS-16284[NMS-16284])
+
+=== Epic
+
+* Opt-In User Data: Name, email and company Collection (Issue https://issues.opennms.org/browse/NMS-16279[NMS-16279])
