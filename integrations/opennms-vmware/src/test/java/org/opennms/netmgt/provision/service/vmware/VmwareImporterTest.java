@@ -24,9 +24,21 @@ package org.opennms.netmgt.provision.service.vmware;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.junit.Assert;
 import org.junit.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
 import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
+import org.opennms.protocols.vmware.VmwareViJavaAccess;
+
+import com.vmware.vim25.ManagedObjectReference;
+import com.vmware.vim25.VirtualMachineRuntimeInfo;
+import com.vmware.vim25.mo.Datastore;
+import com.vmware.vim25.mo.HostSystem;
+import com.vmware.vim25.mo.ManagedEntity;
+import com.vmware.vim25.mo.Network;
+import com.vmware.vim25.mo.VirtualMachine;
 
 public class VmwareImporterTest {
     @Test
@@ -45,5 +57,32 @@ public class VmwareImporterTest {
 
         requisitionNode.setInterfaces(requisitionInterfaces);
         vmwareImporter.getRequisitionInterface(requisitionNode, null);
+    }
+
+    @Test
+    public void testNMS16320() throws Exception {
+        Assert.assertNull(createRequisitionNodeInLocation(null).getLocation());
+        Assert.assertEquals("Pittsboro", createRequisitionNodeInLocation("Pittsboro").getLocation());
+        Assert.assertEquals("Fulda", createRequisitionNodeInLocation("Fulda").getLocation());
+    }
+
+    private RequisitionNode createRequisitionNodeInLocation(final String location) throws Exception {
+        final VmwareImportRequest vmwareImportRequest = new VmwareImportRequest();
+        vmwareImportRequest.setLocation(location);
+        vmwareImportRequest.setHostname("1.2.3.4");
+        final VmwareImporter vmwareImporter = new VmwareImporter(vmwareImportRequest);
+        final VirtualMachine virtualMachine = Mockito.mock(VirtualMachine.class);
+        final VmwareViJavaAccess vmwareViJavaAccess = Mockito.mock(VmwareViJavaAccess.class);
+        final ManagedObjectReference managedObjectReference = Mockito.mock(ManagedObjectReference.class);
+        final VirtualMachineRuntimeInfo virtualMachineRuntimeInfo = Mockito.mock(VirtualMachineRuntimeInfo.class);
+        final ManagedObjectReference host = Mockito.mock(ManagedObjectReference.class);
+        Mockito.when(managedObjectReference.getVal()).thenReturn("vm-1234");
+        Mockito.when(virtualMachine.getMOR()).thenReturn(managedObjectReference);
+        Mockito.when(virtualMachine.getDatastores()).thenReturn(new Datastore[]{});
+        Mockito.when(virtualMachine.getNetworks()).thenReturn(new Network[]{});
+        Mockito.when(virtualMachine.getRuntime()).thenReturn(virtualMachineRuntimeInfo);
+        Mockito.when(virtualMachineRuntimeInfo.getHost()).thenReturn(host);
+        Mockito.when(host.getVal()).thenReturn("host-1234");
+        return vmwareImporter.createRequisitionNode(Set.of("11.12.13.14"), virtualMachine, 7, vmwareViJavaAccess);
     }
 }
