@@ -30,6 +30,7 @@ The codename for Horizon 33.0.0 is https://wikipedia.org/wiki/$$Sequoia_sempervi
 * Fix resource types for default Postgres collection (Issue https://issues.opennms.org/browse/NMS-16165[NMS-16165])
 * Service detail page displays wrong collectd package (Issue https://issues.opennms.org/browse/NMS-16167[NMS-16167])
 * enlinkd logging hibernate errors (lack of unique index) (Issue https://issues.opennms.org/browse/NMS-16199[NMS-16199])
+* DroolsAlarmContext error - alarm facts out of sync (Issue https://opennms.atlassian.net/browse/NMS-16208[NMS-16208])
 * Zookeeper 3.4.6 version mismatch in Meridian 2021 (Issue https://issues.opennms.org/browse/NMS-16209[NMS-16209])
 * upgrade ActiveMQ to latest 5.15.x (Issue https://issues.opennms.org/browse/NMS-16218[NMS-16218])
 * Documentation build failing: cannot find antora/xref-validator (Issue https://issues.opennms.org/browse/NMS-16227[NMS-16227])
