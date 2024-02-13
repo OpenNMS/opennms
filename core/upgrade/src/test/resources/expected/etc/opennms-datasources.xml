@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasource-configuration xmlns:this="http://xmlns.opennms.org/xsd/config/opennms-datasources"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/opennms-datasources
+  http://www.opennms.org/xsd/config/opennms-datasources.xsd ">
+
+  <connection-pool factory="org.opennms.core.db.HikariCPConnectionFactory"
+    idleTimeout="600"
+    loginTimeout="3"
+    minPool="50"
+    maxPool="50"
+    maxSize="50" />
+
+  <jdbc-data-source name="opennms"
+                    database-name="testdb"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/testdb"
+                    user-name="raccoonfink"
+                    password="onbandcamp" />
+
+  <jdbc-data-source name="opennms-admin"
+                    database-name="template1"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/template1"
+                    user-name="admin"
+                    password="myadminpw">
+    <connection-pool idleTimeout="600"
+                     minPool="0"
+                     maxPool="10"
+                     maxSize="50" />
+  </jdbc-data-source>
+
+  <jdbc-data-source name="opennms-monitor"
+                    database-name="postgres"
+                    class-name="org.postgresql.Driver"
+                    url="jdbc:postgresql://localhost:5432/postgres"
+                    user-name="admin"
+                    password="myadminpw">
+    <connection-pool idleTimeout="600"
+                     minPool="0"
+                     maxPool="10"
+                     maxSize="50" />
+  </jdbc-data-source>
+</datasource-configuration>
