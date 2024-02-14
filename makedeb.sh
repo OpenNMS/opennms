@@ -233,7 +233,7 @@ function build_opennms()
 
     ./compile.pl -N install
 
-    dpkg-buildpackage "-p${TRUE_BIN}" -us -uc 
+    dpkg-buildpackage "-p${TRUE_BIN}" -us -uc -Zgzip
 }
 
 function build_minion()
@@ -271,7 +271,7 @@ function build_minion()
                 echo "- adding auto-generated changelog entry"
                 dch -b -v "${VERSION}-${RELEASE}" "${EXTRA_INFO}${EXTRA_INFO2}" || die "failed to update minion debian/changelog"
             fi
-            dpkg-buildpackage "-p${TRUE_BIN}" -us -uc
+            dpkg-buildpackage "-p${TRUE_BIN}" -us -uc -Zgzip
         popd >/dev/null 2>&1
 
         # move the build artifacts to the root
@@ -311,7 +311,7 @@ function build_sentinel() {
         mv "${DIRNAME}" "opennms-sentinel-${VERSION}"
         pushd "opennms-sentinel-${VERSION}" >/dev/null 2>&1
             dch -b -v "${VERSION}-${RELEASE}" "${EXTRA_INFO}${EXTRA_INFO2}" || die "failed to update sentinel debian/changelog"
-            dpkg-buildpackage "-p${TRUE_BIN}" -us -uc
+            dpkg-buildpackage "-p${TRUE_BIN}" -us -uc -Zgzip
         popd >/dev/null 2>&1
 
         # move the build artifacts to the root

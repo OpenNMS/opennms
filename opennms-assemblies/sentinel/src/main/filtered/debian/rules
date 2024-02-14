@@ -81,3 +81,6 @@ override_dh_auto_install:
 	# install the startup scripts
 	dh_systemd_enable --name=$(CONTAINER_TYPE) --no-enable debian/$(CONTAINER_TYPE).service
 	dh_systemd_start --name=$(CONTAINER_TYPE) --no-restart-after-upgrade
+
+override_dh_builddeb:
+	dh_builddeb -- -Zgzip

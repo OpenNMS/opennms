@@ -9,12 +9,6 @@
 
 == New features and important changes
 
-=== Asynchronous Polling Enabled By Default
-
-The new asynchronous polling scheduler introduced in Horizon 32 is now on by default, allowing OpenNMS to use fewer Pollerd threads to handle the same amount of load.
-
-If you wish to disable it and revert to the old scheduler, see xref:operation:deep-dive/service-assurance/configuration.adoc#ga-pollerd-configuration-async[the operation manual].
-
 === OpenNMS Plugin API
 
 The OpenNMS Plugin API has been updated to version 1.6.0, which includes some new APIs ported over from the Horizon codebase to simplify plugin development, as well as cleanups to dependencies.
@@ -26,11 +20,6 @@ It is now possible to use the metadata DSL in nearly all configuration files.
 For details on all of the subsystems that support the metadata DSL, see xref:operation:deep-dive/meta-data.adoc[the operation manual].
 
 == Breaking changes
-
-=== Asynchronous Polling
-
-Please note that if you rely on the node-outage critical service functionality, you may need to disable asynchronous polling, since the optimizations to thread-handling means the functionality can no longer be guaranteed.
-For details, see xref:operation:deep-dive/service-assurance/critical-service.adoc[the operation manual].
 
 === Important internal updates
 

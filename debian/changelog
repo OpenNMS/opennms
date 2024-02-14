@@ -1,3 +1,13 @@
+opennms (33.0.1-1) stable; urgency=medium
+
+  * Release 33.0.1 is a re-release of 33.0.0, reverting the change to enable
+    async polling by default, plus fixing a packaging issue on Debian.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.0.1/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 14 Feb 2024 14:01:00 -0500
+
 opennms (33.0.0-1) stable; urgency=low
 
   * Release 33.0.0 contains a bunch of changes, including metadata support in

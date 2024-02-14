@@ -2,6 +2,21 @@
 
 = Changelog
 
+[[releasenotes-changelog-33.0.1]]
+
+== Release 33.0.1
+
+Release 33.0.1 is a re-release of 33.0.0, reverting the async poller changes and fixing a packaging issue.
+
+=== Bug
+
+* Issue installing on Debian 11 Reported by Customer (Issue https://issues.opennms.org/browse/NMS-16309[NMS-16309])
+* REVERT: enable async polling by default (Issue https://issues.opennms.org/browse/NMS-15738[NMS-15738])
+
+=== Enhancement
+
+* Docs page for Info REST service (Issue https://opennms.atlassian.net/browse/NMS-16351[NMS-16351])
+
 [[releasenotes-changelog-33.0.0]]
 
 == Release 33.0.0
@@ -36,6 +51,7 @@ The codename for Horizon 33.0.0 is https://wikipedia.org/wiki/$$Sequoia_sempervi
 * Node structure: fix sorting (Issue https://issues.opennms.org/browse/NMS-16246[NMS-16246])
 * OpenConfig Connector parameter frequency in incorrect unit (Issue https://issues.opennms.org/browse/NMS-16253[NMS-16253])
 * Container flag `-t` does not pass correct arguments (Issue https://issues.opennms.org/browse/NMS-16265[NMS-16265])
+* Cortex plugin does not start automatically (Issue https://issues.opennms.org/browse/NMS-16272[NMS-16272])
 
 === Enhancement
 
