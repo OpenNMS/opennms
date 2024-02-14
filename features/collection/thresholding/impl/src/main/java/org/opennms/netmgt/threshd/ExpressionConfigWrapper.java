@@ -28,6 +28,8 @@
 
 package org.opennms.netmgt.threshd;
 
+import static java.time.Duration.ofHours;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -45,6 +47,8 @@ import org.opennms.netmgt.config.threshd.Expression;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.swrve.ratelimitedlogger.RateLimitedLog;
+
 /**
  * 
  * @author <a href="mailto:agalue@opennms.org">Alejandro Galue</a>
@@ -53,6 +57,9 @@ import org.slf4j.LoggerFactory;
  */
 public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
     private static final Logger LOG = LoggerFactory.getLogger(ExpressionConfigWrapper.class);
+
+    private static final RateLimitedLog rateLimitedLog = RateLimitedLog.withRateLimit(LOG)
+            .maxRate(5).every(ofHours(1)).build();
 
     private final Expression m_expression;
     private final Collection<String> m_datasources;
@@ -166,8 +173,9 @@ public class ExpressionConfigWrapper extends BaseThresholdDefConfigWrapper {
             // Fetch an instance of the JEXL script engine to evaluate the script expression
             Object resultObject = jexlEngine.createExpression(expression).evaluate(new MapContext(context));
             result = Double.parseDouble(resultObject.toString());
-        } catch (Throwable e) {
-            throw new ThresholdExpressionException("Error while evaluating expression " + m_expression.getExpression() + ": " + e.getMessage(), e);
+        } catch (Exception e) {
+            rateLimitedLog.error("ArithmeticException while evaluating expression " + m_expression.getExpression() + ": " + e.getMessage(), e);
+            throw new ThresholdExpressionException("Error while evaluating expression " + m_expression.getExpression() + ": " + e.getMessage());
         }
         return result;
     }
