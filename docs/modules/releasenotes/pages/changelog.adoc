@@ -13,6 +13,10 @@ Release 33.0.1 is a re-release of 33.0.0, reverting the async poller changes and
 * Issue installing on Debian 11 Reported by Customer (Issue https://issues.opennms.org/browse/NMS-16309[NMS-16309])
 * REVERT: enable async polling by default (Issue https://issues.opennms.org/browse/NMS-15738[NMS-15738])
 
+=== Enhancement
+
+* Docs page for Info REST service (Issue https://opennms.atlassian.net/browse/NMS-16351[NMS-16351])
+
 [[releasenotes-changelog-33.0.0]]
 
 == Release 33.0.0
