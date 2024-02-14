@@ -90,3 +90,5 @@ override_dh_auto_install:
 	echo "location = MINION" > $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/org.opennms.$(CONTAINER_TYPE).controller.cfg \
 		&& echo "id = 00000000-0000-0000-0000-000000ddba11" >> $$(pwd)/debian/$(PACKAGE_NAME)$(ETCDIR)/org.opennms.$(CONTAINER_TYPE).controller.cfg
 	
+override_dh_builddeb:
+	dh_builddeb -- -Zgzip
