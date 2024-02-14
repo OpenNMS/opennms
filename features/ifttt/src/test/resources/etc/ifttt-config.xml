@@ -1,4 +1,4 @@
-<ifttt-config enabled="true" key="test-key" pollInterval="2">
+<ifttt-config enabled="true" key="${scv:ifttt:password|test-key}" pollInterval="2">
 
     <trigger-package categoryFilter="Bar" reductionKeyFilter="uei.opennms.org/nodes/nodeLostService" onlyUnacknowledged="false">
         <trigger-set name="ON">

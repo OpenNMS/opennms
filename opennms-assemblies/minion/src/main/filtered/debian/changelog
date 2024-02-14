@@ -1,3 +1,13 @@
+opennms-minion (33.0.0-1) stable; urgency=low
+
+  * Release 33.0.0 contains a bunch of changes, including metadata support in
+    many more configs, a revamped node list, and more.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.0.0/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 13 Feb 2024 13:20:00 -0500
+
 opennms-minion (32.0.6-1) stable; urgency=medium
 
   * Release 32.0.6 contains a bunch of changes including UI cleanups, a number

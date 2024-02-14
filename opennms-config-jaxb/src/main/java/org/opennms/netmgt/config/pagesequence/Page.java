@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.config.pagesequence;
 
 import java.io.Serializable;
@@ -59,9 +52,33 @@ import javax.xml.bind.annotation.XmlType;
 
 @XmlRootElement(name="page")
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(propOrder={"m_method","m_httpVersion","m_userAgent","m_virtualHost","m_scheme","m_userInfo","m_host","m_requireIPv6","m_requireIPv4","m_disableSslVerification","m_port","m_path","m_query","m_fragment","m_failureMatch","m_failureMessage","m_successMatch","m_locationMatch","m_responseRange","m_dsName", "m_parameters", "m_headers", "m_sessionVariables"})
+@XmlType(propOrder={
+        "m_method",
+        "m_httpVersion",
+        "m_userAgent",
+        "m_virtualHost",
+        "m_scheme",
+        "m_userInfo",
+        "m_preemptiveAuth",
+        "m_host",
+        "m_requireIPv6",
+        "m_requireIPv4",
+        "m_disableSslVerification",
+        "m_port",
+        "m_path",
+        "m_query",
+        "m_fragment",
+        "m_failureMatch",
+        "m_failureMessage",
+        "m_successMatch",
+        "m_locationMatch",
+        "m_responseRange",
+        "m_dsName",
+        "m_parameters",
+        "m_headers",
+        "m_sessionVariables"})
 public class Page implements Serializable {
-    private static final long serialVersionUID = -8690979689322573975L;
+    private static final long serialVersionUID = -568663444768205075L;
 
     @XmlAttribute(name="method")
     private String m_method = "GET";
@@ -80,6 +97,9 @@ public class Page implements Serializable {
 
     @XmlAttribute(name="user-info")
     private String m_userInfo;
+
+    @XmlAttribute(name="preemptive-auth")
+    private String m_preemptiveAuth = null;
 
     @XmlAttribute(name="host")
     private String m_host = "${ipaddr}";
@@ -187,6 +207,14 @@ public class Page implements Serializable {
 
     public void setScheme(final String scheme) {
         m_scheme = scheme == null? null : scheme.intern();
+    }
+
+    public String getPreemptiveAuth() {
+        return m_preemptiveAuth;
+    }
+
+    public void setPreemptiveAuth(String m_preemptiveAuth) {
+        this.m_preemptiveAuth = m_preemptiveAuth;
     }
 
     public String getUserInfo() {
@@ -406,6 +434,7 @@ public class Page implements Serializable {
         result = prime * result + ((m_successMatch == null) ? 0 : m_successMatch.hashCode());
         result = prime * result + ((m_userAgent == null) ? 0 : m_userAgent.hashCode());
         result = prime * result + ((m_userInfo == null) ? 0 : m_userInfo.hashCode());
+        result = prime * result + ((m_preemptiveAuth == null) ? 0 : m_preemptiveAuth.hashCode());
         result = prime * result + ((m_virtualHost == null) ? 0 : m_virtualHost.hashCode());
         return result;
     }
@@ -569,6 +598,13 @@ public class Page implements Serializable {
         } else if (!m_userInfo.equals(other.m_userInfo)) {
             return false;
         }
+        if (m_preemptiveAuth == null) {
+            if (other.m_preemptiveAuth != null) {
+                return false;
+            }
+        } else if (!m_preemptiveAuth.equals(other.m_preemptiveAuth)) {
+            return false;
+        }
         if (m_virtualHost == null) {
             if (other.m_virtualHost != null) {
                 return false;
@@ -585,7 +621,7 @@ public class Page implements Serializable {
                 + m_userInfo + ", host=" + m_host + ", requireIPv6=" + m_requireIPv6 + ", requireIPv4=" + m_requireIPv4 + ", disableSslVerification=" + m_disableSslVerification + ", port="
                 + m_port + ", path=" + m_path + ", query=" + m_query + ", fragment=" + m_fragment + ", failureMatch=" + m_failureMatch + ", failureMessage=" + m_failureMessage
                 + ", successMatch=" + m_successMatch + ", locationMatch=" + m_locationMatch + ", responseRange=" + m_responseRange + ", dsName=" + m_dsName + ", parameters=" + m_parameters
-                + ", sessionVariables=" + m_sessionVariables + "]";
+                + ", sessionVariables=" + m_sessionVariables + ", preemptiveAuth=" + m_preemptiveAuth + "]";
     }
 
 

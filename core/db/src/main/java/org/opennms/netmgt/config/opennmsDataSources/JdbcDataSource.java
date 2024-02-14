@@ -1,37 +1,27 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
- * 
- * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
- * 
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- * 
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- * 
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- * 
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *     http://www.gnu.org/licenses/
- * 
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
+ *
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.config.opennmsDataSources;
 
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -61,9 +51,6 @@ public class JdbcDataSource implements java.io.Serializable {
     private static final long serialVersionUID = -1120653287571635877L;
     private static final Logger LOG = LoggerFactory.getLogger(JdbcDataSource.class);
 
-    private static final String KEYSTORE_KEY_PROPERTY = "org.opennms.features.scv.jceks.key";
-    private static final String DEFAULT_KEYSTORE_KEY = "QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw";
-
     @XmlAttribute(name = "name", required = true)
     private String name;
 
@@ -90,9 +77,6 @@ public class JdbcDataSource implements java.io.Serializable {
 
     @XmlElement(name = "param")
     private java.util.List<org.opennms.netmgt.config.opennmsDataSources.Param> paramList;
-
-    private transient String keystorePassword;
-    private transient String keystoreFilename;
 
     public JdbcDataSource() {
         this.paramList = new java.util.ArrayList<>();
@@ -454,35 +438,11 @@ public class JdbcDataSource implements java.io.Serializable {
         this.rawUserName = rawUserName;
     }
 
-    protected String getKeystoreFilename() {
-        if (this.keystoreFilename == null) {
-            var opennmsHome = System.getProperty("opennms.home");
-            if (opennmsHome == null) {
-                try {
-                    LOG.warn("opennms.home is not set; using a temporary directory for scv keystore. This is very likely not what you want.");
-                    opennmsHome = Files.createTempDirectory("opennms-home-").toString();
-                } catch (final IOException e) {
-                    throw new IllegalStateException("Unable to create a temporary scv keystore home!", e);
-                }
-            }
-            this.keystoreFilename = Paths.get(opennmsHome, "etc", "scv.jce").toString();
-        }
-        return this.keystoreFilename;
-    }
-
-    protected String getKeystorePassword() {
-        if (this.keystorePassword == null) {
-            this.keystorePassword = System.getProperty(KEYSTORE_KEY_PROPERTY, DEFAULT_KEYSTORE_KEY);
-        }
-        return this.keystorePassword;
-    }
-
     public String interpolateAttribute(final String value) {
-        return interpolateAttribute(value, this.getKeystoreFilename(), this.getKeystorePassword());
+        return interpolateAttribute(value, JCEKSSecureCredentialsVault.defaultScv());
     }
 
-    public String interpolateAttribute(final String value, final String keystoreFile, final String password) {
-        final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile, password);
+    public String interpolateAttribute(final String value, final SecureCredentialsVault secureCredentialsVault) {
         final Interpolator.Result result = Interpolator.interpolate(value, new SecureCredentialsVaultScope(secureCredentialsVault));
         return result.output;
     }

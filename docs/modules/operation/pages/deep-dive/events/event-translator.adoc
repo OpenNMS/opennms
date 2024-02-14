@@ -7,6 +7,8 @@ This feature enables better integration with external systems, based on data fro
 When an event is published on the event bus for which the event translator has configuration, the translator clones the event and changes the new event's attributes (fields and parameters) as defined in the translator configuration.
 These transformations can come as a result of SQL queries, regular expression matches, and string literals that are then assigned to attributes of the new event.
 
+If you would like to generate multiple events from a single source event, you can add multiple `<mapping>` elements within the `<mappings>` for a UEI.
+
 The `$\{OPENNMS_HOME}/etc/translator-configuration.xml` file contains elements and attributes that create and/or change the fields or parameters of one event and publish a new event with these changes.
 
 == Examples

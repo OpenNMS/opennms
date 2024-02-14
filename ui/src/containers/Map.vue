@@ -27,15 +27,15 @@ export default { name: 'MapKeepAlive' }
 </script>
 
 <script setup lang="ts">
-import { useStore } from 'vuex'
+import { debounce } from 'lodash'
 import { Splitpanes, Pane } from 'splitpanes'
 import 'splitpanes/dist/splitpanes.css'
 import LeafletMap from '../components/Map/LeafletMap.vue'
 import GridTabs from '@/components/Map/GridTabs.vue'
-import { debounce } from 'lodash'
 import useSpinner from '@/composables/useSpinner'
+import { useMapStore } from '@/stores/mapStore'
 
-const store = useStore()
+const mapStore = useMapStore()
 const { startSpinner, stopSpinner } = useSpinner()
 const split = ref()
 const nodesReady = ref(false)
@@ -53,13 +53,13 @@ const minimizeBottomPane = () => {
 
 onMounted(async () => {
   startSpinner()
-  await store.dispatch('mapModule/getNodes')
-  await store.dispatch('mapModule/getAlarms')
+  await mapStore.getNodes()
+  await mapStore.getAlarms()
   stopSpinner()
   resize()
   nodesReady.value = true
   // commented out until we do topology
-  // store.dispatch('mapModule/getNodesGraphEdges')
+  // mapStore.getNodesGraphEdges()
 })
 
 </script>

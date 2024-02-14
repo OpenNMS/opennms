@@ -104,7 +104,7 @@ commands:
             mkdir -p /tmp/sboms
             for IMAGE_FILE in *.oci; do
               IMAGE_ROOT="$(echo "${IMAGE_FILE}" | sed -e 's,\.oci$,,')"
-              syft packages "docker-archive:${IMAGE_FILE}" -o cyclonedx --quiet >"/tmp/sboms/${IMAGE_ROOT}-sbom.xml"
+              syft scan "docker-archive:${IMAGE_FILE}" -o cyclonedx --quiet >"/tmp/sboms/${IMAGE_ROOT}-sbom.xml"
             done
       - store_artifacts:
           path: /tmp/sboms/

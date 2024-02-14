@@ -7,7 +7,7 @@
       </span>
     </template>
     <FeatherDropdownItem
-      v-for="option of backupStatusOptions"
+      v-for="option of deviceStore.backupStatusOptions"
       :key="option"
       @click="filterByStatus(option)"
     >
@@ -22,11 +22,10 @@
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import ArrowDown from '@featherds/icon/navigation/ArrowDropDown'
-import { useStore } from 'vuex'
+import { useDeviceStore } from '@/stores/deviceStore'
 import { DeviceConfigQueryParams, status } from '@/types/deviceConfig'
 
-const store = useStore()
-const backupStatusOptions = computed<status[]>(() => store.state.deviceModule.backupStatusOptions)
+const deviceStore = useDeviceStore()
 
 const filterByStatus = (value: status) => {
   const newQueryParams: DeviceConfigQueryParams = {
@@ -35,8 +34,8 @@ const filterByStatus = (value: status) => {
     status: value
   }
 
-  store.dispatch('deviceModule/updateDeviceConfigBackupQueryParams', newQueryParams)
-  store.dispatch('deviceModule/getDeviceConfigBackups')
+  deviceStore.updateDeviceConfigBackupQueryParams(newQueryParams)
+  deviceStore.getDeviceConfigBackups()
 }
 </script>
 

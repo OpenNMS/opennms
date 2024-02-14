@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:cm="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="stheleman" id="33.0.0-update-schema-datachoices-with-user-data-collection">
+        <cm:changeSchema schemaId="org.opennms.features.datachoices">
+            <cm:put name="userDataCollectionOptedIn" type="boolean" default="false"/>
+            <cm:put name="userDataCollectionNoticeAcknowledged" type="boolean" default="false"/>
+            <cm:put name="userDataCollectionNoticeAcknowledgedAt" type="string"/>
+            <cm:put name="userDataCollectionNoticeAcknowledgedBy" type="string"/>
+        </cm:changeSchema>
+    </changeSet>
+</databaseChangeLog>

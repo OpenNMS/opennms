@@ -1,8 +1,31 @@
+///
+/// Licensed to The OpenNMS Group, Inc (TOG) under one or more
+/// contributor license agreements.  See the LICENSE.md file
+/// distributed with this work for additional information
+/// regarding copyright ownership.
+///
+/// TOG licenses this file to You under the GNU Affero General
+/// Public License Version 3 (the "License") or (at your option)
+/// any later version.  You may not use this file except in
+/// compliance with the License.  You may obtain a copy of the
+/// License at:
+///
+///      https://www.gnu.org/licenses/agpl-3.0.txt
+///
+/// Unless required by applicable law or agreed to in writing,
+/// software distributed under the License is distributed on an
+/// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+/// either express or implied.  See the License for the specific
+/// language governing permissions and limitations under the
+/// License.
+///
+
 import { mount, RouterLinkStub } from '@vue/test-utils'
+import { createTestingPinia } from '@pinia/testing'
 import dateFormatDirective from '@/directives/v-date'
 import DCB from '@/containers/DeviceConfigBackup.vue'
-import store from '@/store'
-import { test, expect } from 'vitest'
+import { useDeviceStore } from '@/stores/deviceStore'
+import { beforeAll, describe, expect, test } from 'vitest'
 import { DeviceConfigBackup } from '@/types/deviceConfig'
 
 const mockDeviceConfigBackups: DeviceConfigBackup[] = [
@@ -60,11 +83,9 @@ const mockDeviceConfigBackups: DeviceConfigBackup[] = [
   }
 ]
 
-store.commit('deviceModule/SAVE_DEVICE_CONFIG_BACKUPS', mockDeviceConfigBackups)
-
 const wrapper = mount(DCB, {
   global: {
-    plugins: [store],
+    plugins: [createTestingPinia()],
     directives: {
       date: dateFormatDirective
     },
@@ -74,53 +95,60 @@ const wrapper = mount(DCB, {
   }
 })
 
-test('action btns enable and disable correctly', async () => {
-  const viewHistoryBtn = wrapper.get('[data-test="view-history-btn"]')
-  const downloadBtn = wrapper.get('[data-test="download-btn"]')
-  const backupNowBtn = wrapper.get('[data-test="backup-now-btn"]')
-  const checkboxes = wrapper.findAll('.dcb-config-checkbox')
-  const firstDeviceConfig = wrapper.find('.dcb-config-checkbox > .feather-checkbox')
-  const checkboxArray = wrapper.findAll('.dcb-config-checkbox > .feather-checkbox')
-  const allCheckbox = wrapper.find('[data-test="all-checkbox"] > .feather-checkbox')
+describe('deviceConfigBackupStore test', () => {
+  beforeAll(() => {
+    const deviceStore = useDeviceStore()
+    deviceStore.deviceConfigBackups = mockDeviceConfigBackups
+  })
 
-  // two DCB mock records
-  expect(checkboxes.length).toBe(2)
+  test('action btns enable and disable correctly', async () => {
+    const viewHistoryBtn = wrapper.get('[data-test="view-history-btn"]')
+    const downloadBtn = wrapper.get('[data-test="download-btn"]')
+    const backupNowBtn = wrapper.get('[data-test="backup-now-btn"]')
+    const checkboxes = wrapper.findAll('.dcb-config-checkbox')
+    const firstDeviceConfig = wrapper.find('.dcb-config-checkbox > .feather-checkbox')
+    const checkboxArray = wrapper.findAll('.dcb-config-checkbox > .feather-checkbox')
+    const allCheckbox = wrapper.find('[data-test="all-checkbox"] > .feather-checkbox')
 
-  // all actions init disabled
-  expect(viewHistoryBtn.attributes('aria-disabled')).toBe('true')
-  expect(downloadBtn.attributes('aria-disabled')).toBe('true')
-  expect(backupNowBtn.attributes('aria-disabled')).toBe('true')
-  expect(allCheckbox.attributes('aria-checked')).toBe('false')
+    // two DCB mock records
+    expect(checkboxes.length).toBe(2)
 
-  // select first config
-  await firstDeviceConfig.trigger('click')
-  // all btns should be enabled
-  expect(viewHistoryBtn.attributes('aria-disabled')).toBeUndefined()
-  expect(downloadBtn.attributes('aria-disabled')).toBeUndefined()
-  expect(backupNowBtn.attributes('aria-disabled')).toBeUndefined()
+    // all actions init disabled
+    expect(viewHistoryBtn.attributes('aria-disabled')).toBe('true')
+    expect(downloadBtn.attributes('aria-disabled')).toBe('true')
+    expect(backupNowBtn.attributes('aria-disabled')).toBe('true')
+    expect(allCheckbox.attributes('aria-checked')).toBe('false')
 
-  // select 'all devices' checkbox
-  await allCheckbox.trigger('click')
-  // the view history and backup btns should be disabled. Dwnld btn enabled
-  expect(allCheckbox.attributes('aria-checked')).toBe('true')
-  expect(viewHistoryBtn.attributes('aria-disabled')).toBe('true')
-  expect(downloadBtn.attributes('aria-disabled')).toBeUndefined()
-  expect(backupNowBtn.attributes('aria-disabled')).toBeUndefined()
+    // select first config
+    await firstDeviceConfig.trigger('click')
+    // all btns should be enabled
+    expect(viewHistoryBtn.attributes('aria-disabled')).toBeUndefined()
+    expect(downloadBtn.attributes('aria-disabled')).toBeUndefined()
+    expect(backupNowBtn.attributes('aria-disabled')).toBeUndefined()
 
-  // change 'all devices' to false
-  await allCheckbox.trigger('click')
-  // all actions back to disabled
-  expect(viewHistoryBtn.attributes('aria-disabled')).toBe('true')
-  expect(downloadBtn.attributes('aria-disabled')).toBe('true')
-  expect(backupNowBtn.attributes('aria-disabled')).toBe('true')
-  expect(allCheckbox.attributes('aria-checked')).toBe('false')
+    // select 'all devices' checkbox
+    await allCheckbox.trigger('click')
+    // the view history and backup btns should be disabled. Dwnld btn enabled
+    expect(allCheckbox.attributes('aria-checked')).toBe('true')
+    expect(viewHistoryBtn.attributes('aria-disabled')).toBe('true')
+    expect(downloadBtn.attributes('aria-disabled')).toBeUndefined()
+    expect(backupNowBtn.attributes('aria-disabled')).toBeUndefined()
 
-  // select second config checkbox
-  await checkboxArray[1]?.trigger('click')
-  // expect backup btn to be disabled because the only one selected has no service name
-  expect(backupNowBtn.attributes('aria-disabled')).toBe('true')
-  // select first checkbox again
-  await firstDeviceConfig.trigger('click')
-  // expect backup btn enabled because at least one selected has a service name
-  expect(backupNowBtn.attributes('aria-disabled')).toBeUndefined()
+    // change 'all devices' to false
+    await allCheckbox.trigger('click')
+    // all actions back to disabled
+    expect(viewHistoryBtn.attributes('aria-disabled')).toBe('true')
+    expect(downloadBtn.attributes('aria-disabled')).toBe('true')
+    expect(backupNowBtn.attributes('aria-disabled')).toBe('true')
+    expect(allCheckbox.attributes('aria-checked')).toBe('false')
+
+    // select second config checkbox
+    await checkboxArray[1]?.trigger('click')
+    // expect backup btn to be disabled because the only one selected has no service name
+    expect(backupNowBtn.attributes('aria-disabled')).toBe('true')
+    // select first checkbox again
+    await firstDeviceConfig.trigger('click')
+    // expect backup btn enabled because at least one selected has a service name
+    expect(backupNowBtn.attributes('aria-disabled')).toBeUndefined()
+  })
 })

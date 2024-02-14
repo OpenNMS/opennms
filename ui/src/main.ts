@@ -1,17 +1,37 @@
+///
+/// Licensed to The OpenNMS Group, Inc (TOG) under one or more
+/// contributor license agreements.  See the LICENSE.md file
+/// distributed with this work for additional information
+/// regarding copyright ownership.
+///
+/// TOG licenses this file to You under the GNU Affero General
+/// Public License Version 3 (the "License") or (at your option)
+/// any later version.  You may not use this file except in
+/// compliance with the License.  You may obtain a copy of the
+/// License at:
+///
+///      https://www.gnu.org/licenses/agpl-3.0.txt
+///
+/// Unless required by applicable law or agreed to in writing,
+/// software distributed under the License is distributed on an
+/// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+/// either express or implied.  See the License for the specific
+/// language governing permissions and limitations under the
+/// License.
+///
+
 import { createApp, h } from 'vue'
 import { RouteRecordRaw } from 'vue-router'
-import App from './App.vue'
-import router, { isLegacyPlugin } from './router'
-import store from './store'
 import VueDiff from 'vue-diff'
+import router, { isLegacyPlugin } from './router'
 import { createPinia } from 'pinia'
 import API from '@/services'
+import App from './App.vue'
 
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-ignore
 import * as Vue from 'vue/dist/vue.esm-bundler'
 import * as Pinia from 'pinia'
-import * as Vuex from 'vuex'
 import * as VueRouter from 'vue-router'
 
 import '@featherds/styles'
@@ -30,6 +50,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 // TODO: Move to separate fil
 // See: https://fontawesome.com/docs/web/use-with/vue/ and following
 import {
+  faArrowLeftLong,
+  faArrowRightLong,
   faBell,
   faBellSlash,
   faCalendar,
@@ -48,6 +70,8 @@ import {
   faUsers
 } from '@fortawesome/free-solid-svg-icons'
 const icons = [
+  faArrowLeftLong,
+  faArrowRightLong,
   faBell,
   faBellSlash,
   faCalendar,
@@ -71,7 +95,6 @@ library.add(...icons);
 // let plugins use state mngmnt / router
 (window as any).Vue = Vue;
 (window as any).Pinia = Pinia;
-(window as any).Vuex = Vuex;
 (window as any).VueRouter = VueRouter;
 (window as any)['VRouter'] = router
 
@@ -113,7 +136,6 @@ createApp({
 })
   .use(VueDiff)
   .use(router)
-  .use(store)
   .use(createPinia())
   .component('font-awesome-icon', FontAwesomeIcon)
   .directive('date', dateFormatDirective)

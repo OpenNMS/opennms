@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2016-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.trapd;
 
 import static org.awaitility.Awaitility.await;
@@ -43,8 +36,6 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
-import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.scriptd.helper.SnmpTrapHelper;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -86,7 +77,7 @@ public class TrapdConfigReloadIT {
 	public void setUp() {
 		this.events.setSynchronous(true);
 		this.events.getEventAnticipator().reset();
-
+		this.trapd.setSecureCredentialsVault(new TrapdIT.MockSecureCredentialsVault());
 		this.trapd.onStart();
 	}
 
@@ -99,7 +90,7 @@ public class TrapdConfigReloadIT {
 
 	@Test
 	public void testSnmpV3UserUpdate() throws Exception {
-		final var user = this.trapdConfig.getConfig().getSnmpv3User(0);
+		final var user = this.trapd.interpolateUser(this.trapdConfig.getConfig().getSnmpv3User(0));
 
 		this.events.getEventAnticipator().anticipateEvent(new EventBuilder("uei.opennms.org/default/trap", "trapd")
 																  .setInterface(LOCALHOST).getEvent());

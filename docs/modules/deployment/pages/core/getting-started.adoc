@@ -18,6 +18,13 @@ ifeval::["{page-component-title}" == "Meridian"]
 endif::[]
 * Sign in to the web UI and change the `admin` account's default password.
 
+== DNS considerations
+
+If you are planning a large deployment, you may need to review your DNS configuration to ensure name lookups can be processed quickly.
+DNS lookups may be preformed by different processes, including while provisioning new nodes and when receiving syslog messages.
+It is vital that DNS lookups can be performed quickly to prevent them from becoming a bottleneck, which can happen if your deployment covers thousands of nodes.
+One way to mitigate DNS performance is to setup your {page-component-title} as a secondary DNS server so that it is able to self-host DNS records for your network.
+
 ifeval::["{page-component-title}" == "Horizon"]
 == Quick installation
 
@@ -196,9 +203,16 @@ The default user credentials are as follows:
 * *Username:* `admin`
 * *Password:* `admin`
 
-IMPORTANT: After you sign in for the first time, you should immediately change the `admin` account's password to a secure one.
+When you try to sign in with these credentials, {page-component-title} prompts you to change your password.
+Although you also have the option to skip this action and sign in with default the credentials, we strongly recommend that you change the `admin` account's password to a secure one.
 
-To change your account's password, follow these steps:
+. Type your current password.
+. Type your new password and confirm it.
+. Click *Change Password*.
+
+== Change password after first sign in
+
+To change your account's password after the first time you sign in, follow these steps:
 
 . On the top menu bar, click menu:Admin[Change Password].
 . Type your current password and new password in the appropriate fields.

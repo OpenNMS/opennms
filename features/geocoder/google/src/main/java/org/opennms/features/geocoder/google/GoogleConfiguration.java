@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.features.geocoder.google;
 
 import static org.opennms.features.geocoder.ConfigurationUtils.PROVIDE_A_VALUE_TEXT;
@@ -35,11 +28,11 @@ import static org.opennms.features.geocoder.ConfigurationUtils.getValue;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+import org.opennms.core.utils.StringUtils;
 import org.opennms.features.geocoder.GeocoderConfiguration;
 import org.opennms.features.geocoder.GeocoderConfigurationException;
-
-import com.google.common.base.Strings;
 
 public class GoogleConfiguration extends GeocoderConfiguration {
 
@@ -108,13 +101,13 @@ public class GoogleConfiguration extends GeocoderConfiguration {
     @Override
     public void validate() throws GeocoderConfigurationException {
         if (isUseEnterpriseCredentials()) {
-            if (Strings.isNullOrEmpty(clientId)) {
+            if (StringUtils.isEmpty(clientId)) {
                 throw new GeocoderConfigurationException(CLIENT_ID_KEY, PROVIDE_A_VALUE_TEXT);
             }
-            if (Strings.isNullOrEmpty(signature)) {
+            if (StringUtils.isEmpty(signature)) {
                 throw new GeocoderConfigurationException(SIGNATURE_KEY, PROVIDE_A_VALUE_TEXT);
             }
-        } else if (Strings.isNullOrEmpty(apiKey)) {
+        } else if (StringUtils.isEmpty(apiKey)) {
             throw new GeocoderConfigurationException(API_KEY_KEY, PROVIDE_A_VALUE_TEXT);
         }
         if (timeout < 0) {
@@ -144,4 +137,31 @@ public class GoogleConfiguration extends GeocoderConfiguration {
         configuration.setApiKey(getValue(properties, API_KEY_KEY, null));
         return configuration;
     }
+
+    @Override
+	public int hashCode() {
+		return 31
+				* super.hashCode()
+				+ Objects.hash(apiKey, clientId, signature, timeout, useEnterpriseCredentials, useSystemProxy);
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (!(obj instanceof GoogleConfiguration)) {
+			return false;
+		}
+		final GoogleConfiguration that = (GoogleConfiguration) obj;
+		return Objects.equals(this.apiKey, that.apiKey)
+				&& Objects.equals(this.clientId, that.clientId)
+				&& Objects.equals(this.signature, that.signature)
+				&& this.timeout == that.timeout
+				&& this.useEnterpriseCredentials == that.useEnterpriseCredentials
+				&& this.useSystemProxy == that.useSystemProxy;
+	}
 }

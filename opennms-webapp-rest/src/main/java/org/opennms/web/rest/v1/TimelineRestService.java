@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.web.rest.v1;
 
 import java.awt.Color;
@@ -349,7 +342,7 @@ public class TimelineRestService extends OnmsRestService {
     @Autowired
     private NodeDao m_nodeDao;
 
-    private OnmsOutageCollection queryOutages(final UriInfo uriInfo, final int nodeId, final String ipAddress, final String serviceName, final long start, final long end) {
+    private OnmsOutageCollection queryOutages(final UriInfo uriInfo, final int nodeId, final String ipAddress, final int serviceId, final long start, final long end) {
         OnmsOutageCollection onmsOutageCollection;
 
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
@@ -365,7 +358,7 @@ public class TimelineRestService extends OnmsRestService {
 
         builder.le("ifLostService", endDate);
 
-        builder.eq("serviceType.name", serviceName);
+        builder.eq("serviceType.id", serviceId);
         builder.eq("ipInterface.ipAddress", InetAddressUtils.addr(ipAddress));
         builder.isNull("perspective");
 
@@ -416,11 +409,11 @@ public class TimelineRestService extends OnmsRestService {
     @GET
     @Produces("text/html")
     @Transactional
-    @Path("html/{nodeId}/{ipAddress}/{serviceName}/{start}/{end}/{width}")
-    public Response html(@Context final UriInfo uriInfo, @PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceName") final String serviceName, @PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
+    @Path("html/{nodeId}/{ipAddress}/{serviceId}/{start}/{end}/{width}")
+    public Response html(@Context final UriInfo uriInfo, @PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceId") final int serviceId, @PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
         long delta = end - start;
 
-        OnmsOutageCollection onmsOutageCollection = queryOutages(uriInfo, nodeId, ipAddress, serviceName, start, end);
+        OnmsOutageCollection onmsOutageCollection = queryOutages(uriInfo, nodeId, ipAddress, serviceId, start, end);
 
         BufferedImage bufferedImage = new BufferedImage(width, 20, BufferedImage.TYPE_INT_ARGB);
 
@@ -432,7 +425,6 @@ public class TimelineRestService extends OnmsRestService {
         int numLabels = TimescaleDescriptor.computeNumberOfLabels(graphics2D, delta, width);
 
         final String encodedIpAddress = URLEncoder.encode(ipAddress, "UTF-8");
-        final String encodedServiceName = URLEncoder.encode(serviceName, "UTF-8");
 
         final StringBuffer htmlBuffer = new StringBuffer();
 
@@ -441,7 +433,7 @@ public class TimelineRestService extends OnmsRestService {
         htmlBuffer.append("/");
         htmlBuffer.append(encodedIpAddress);
         htmlBuffer.append("/");
-        htmlBuffer.append(encodedServiceName);
+        htmlBuffer.append(serviceId);
         htmlBuffer.append("/");
         htmlBuffer.append(start);
         htmlBuffer.append("/");
@@ -453,13 +445,13 @@ public class TimelineRestService extends OnmsRestService {
         htmlBuffer.append("-");
         htmlBuffer.append(encodedIpAddress);
         htmlBuffer.append("-");
-        htmlBuffer.append(encodedServiceName);
+        htmlBuffer.append(serviceId);
         htmlBuffer.append("\"><map name=\"");
         htmlBuffer.append(nodeId);
         htmlBuffer.append("-");
         htmlBuffer.append(encodedIpAddress);
         htmlBuffer.append("-");
-        htmlBuffer.append(encodedServiceName);
+        htmlBuffer.append(serviceId);
         htmlBuffer.append("\">");
 
         for (TimescaleDescriptor desc : TIMESCALE_DESCRIPTORS) {
@@ -479,11 +471,11 @@ public class TimelineRestService extends OnmsRestService {
     @GET
     @Produces("image/png")
     @Transactional
-    @Path("image/{nodeId}/{ipAddress}/{serviceName}/{start}/{end}/{width}")
-    public Response image(@Context final UriInfo uriInfo, @PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceName") final String serviceName, @PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
+    @Path("image/{nodeId}/{ipAddress}/{serviceId}/{start}/{end}/{width}")
+    public Response image(@Context final UriInfo uriInfo, @PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceId") final int serviceId, @PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
         long delta = end - start;
 
-        OnmsOutageCollection onmsOutageCollection = queryOutages(uriInfo, nodeId, ipAddress, serviceName, start, end);
+        OnmsOutageCollection onmsOutageCollection = queryOutages(uriInfo, nodeId, ipAddress, serviceId, start, end);
         OnmsNode node = m_nodeDao.get(nodeId);
 
         BufferedImage bufferedImage = new BufferedImage(width, 20, BufferedImage.TYPE_INT_ARGB);

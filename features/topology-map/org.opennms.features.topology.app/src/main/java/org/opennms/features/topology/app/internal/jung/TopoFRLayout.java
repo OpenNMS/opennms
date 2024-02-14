@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.features.topology.app.internal.jung;
 
 import java.awt.Dimension;
@@ -34,13 +27,13 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.collections4.map.LazyMap;
+
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.algorithms.layout.util.RandomLocationTransformer;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.Pair;
-import org.apache.commons.collections15.Factory;
-import org.apache.commons.collections15.map.LazyMap;
 
 public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements IterativeContext {
     private static double PERCENTAGE = 0.25;
@@ -53,11 +46,7 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
     private int mMaxIterations = 700;
 
     private Map<V, FRVertexData> frVertexData =
-            LazyMap.decorate(new HashMap<V, FRVertexData>(), new Factory<FRVertexData>() {
-                public FRVertexData create() {
-                    return new FRVertexData();
-                }
-            });
+            LazyMap.lazyMap(new HashMap<V, FRVertexData>(), FRVertexData::new);
 
     private double attraction_multiplier = 0.75;
 
@@ -174,7 +163,7 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
     protected synchronized void calcPositions(V v) {
         FRVertexData fvd = getFRData(v);
         if(fvd == null) return;
-        Point2D xyd = transform(v);
+        Point2D xyd = apply(v);
         double deltaLength = fvd.norm();
         if(deltaLength <= 0.005) return;
 
@@ -227,8 +216,8 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
             // both locked, do nothing
             return;
         }
-        Point2D p1 = transform(v1);
-        Point2D p2 = transform(v2);
+        Point2D p1 = apply(v1);
+        Point2D p2 = apply(v2);
         if(p1 == null || p2 == null) return;
         double xDelta = p1.getX() - p2.getX();
         double yDelta = p1.getY() - p2.getY();
@@ -265,8 +254,8 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
         try {
             for(V v2 : getGraph().getVertices()) {
                 if (v1 != v2) {
-                    Point2D p1 = transform(v1);
-                    Point2D p2 = transform(v2);
+                    Point2D p1 = apply(v1);
+                    Point2D p2 = apply(v2);
                     if(p1 == null || p2 == null) continue;
                     double xDelta = p1.getX() - p2.getX();
                     double yDelta = p1.getY() - p2.getY();

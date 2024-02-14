@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.container</artifactId>
-    <version>32.0.6</version>
+    <version>33.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.karaf</groupId>
@@ -299,13 +299,19 @@
                           <feature>opennms-distributed-core-jms</feature>
                           <feature>opennms-events-api</feature>
                           <feature>opennms-health</feature>
+                          <feature>opennms-events-sink-dispatcher</feature>
                           <feature>opennms-health-api</feature>
+                          <feature>opennms-mate-api</feature>
+                          <feature>opennms-mate-impl</feature>
+                          <feature>opennms-mate-shell</feature>
                           <feature>opennms-newts</feature>
                           <feature>opennms-poller-monitors-core</feature>
                           <feature>opennms-telemetry-daemon</feature>
                           <feature>opennms-timeseries-api</feature>
 
                           <!-- minion features -->
+                          <feature>dominion-grpc-client</feature>
+                          <feature>dominion-secure-credentials-vault</feature>
                           <feature>minion-api-layer</feature>
                           <feature>minion-heartbeat-producer</feature>
                           <feature>minion-snmp-proxy</feature>

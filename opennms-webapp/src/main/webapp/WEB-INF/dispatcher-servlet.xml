@@ -341,6 +341,11 @@
                                 <property name="locationMatch" value="nodelist"/>
                             </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Structured Node List"/>
+                                <property name="url" value="ui/index.html#/nodes"/>
+                                <property name="locationMatch" value="configurationManagement"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="Assets"/>
                                 <property name="url" value="asset/index.jsp"/>
                                 <property name="locationMatch" value="asset"/>

@@ -204,11 +204,13 @@
         <feature version="[4.2,4.3)">spring-web</feature>
         <feature>commons-codec</feature>
         <feature>javax.servlet</feature>
+        <bundle>wrap:mvn:org.openid4java/openid4java-nodeps/${openid4javaVersion}$Export-Package=org.openid4java*;version="${openid4javaVersion}"</bundle>
         <bundle>wrap:mvn:org.springframework.ldap/spring-ldap-core/${springLdapVersion}$Bundle-SymbolicName=org.springframework.ldap.core&amp;Bundle-Version=${springLdapVersion}&amp;Export-Package=org.springframework.ldap*;version="${springLdapVersion}"</bundle>
         <bundle>wrap:mvn:org.springframework.security/spring-security-aspects/${springSecurityVersion}$Bundle-SymbolicName=org.springframework.security.aspects&amp;Bundle-Version=${springSecurityVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-core/${springSecurityVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-config/${springSecurityVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-ldap/${springSecurityVersion}</bundle>
+        <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-openid/${springSecurityVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-remoting/${springSecurityVersion}</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-security-web/${springSecurityVersion}</bundle>
     </feature>
@@ -246,6 +248,7 @@
     </feature>
 
     <feature name="opennms-activemq-pool" version="${project.version}" description="OpenNMS :: Features :: ActiveMQ :: Pool">
+        <feature prerequisite="true">zookeeper-dependencies</feature>
         <feature>activemq-client</feature>
         <feature>asm</feature>
         <feature>camel-core</feature>
@@ -271,6 +274,7 @@
     <feature name="opennms-util" version="${project.version}" description="OpenNMS :: Util">
         <feature>owasp-encoder</feature>
         <feature>owasp-html-sanitizer</feature>
+        <feature>commons-io</feature>
         <feature>commons-jexl</feature>
         <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.api/${project.version}</bundle>
         <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.soa/${project.version}</bundle>
@@ -418,11 +422,11 @@
         <feature>commons-codec</feature>
         <feature>opennms-config-api</feature>
         <feature>opennms-core-db</feature>
+        <feature>opennms-mate-api</feature>
         <feature>opennms-poller-api</feature>
         <feature>opennms-rrd-api</feature>
         <feature>opennms-snmp</feature>
         <feature>scv-api</feature>
-        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.api/${project.version}</bundle>
         <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-locks/concurrent-locks/1.0.0$Bundle-SymbolicName=com.googlecode.concurrent-locks&amp;Bundle-Version=1.0.0</bundle>
         <bundle dependency="true">wrap:mvn:org.jasypt/jasypt/${jasyptVersion}$Bundle-SymbolicName=org.jasypt&amp;Bundle-Version=${jasyptVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-config/${project.version}</bundle>
@@ -508,18 +512,16 @@
         <feature>opennms-distributed-core-api</feature>
         <feature>opennms-health-api</feature>
         <feature>opennms-rpc-utils</feature>
-        <bundle>wrap:mvn:ch.hsr/geohash/${geohashVersion}$Bundle-SymbolicName=ch.hsr.geohash&amp;Bundle-Version=${geohashVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.xml/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.camel/${project.version}</bundle>
     </feature>
     <feature name="opennms-rpc-utils" version="${project.version}" description="OpenNMS :: Core :: IPC : RPC :: Utils">
+        <feature>opennms-mate-api</feature>
+        <feature>opennms-mate-shell</feature>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.model/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.shell-commands/${project.version}</bundle>
     </feature>
     <feature name="opennms-core-ipc-rpc-jms" version="${project.version}" description="OpenNMS :: Core :: IPC :: RPC :: JMS Impl.">
         <feature>opennms-core-ipc-rpc-api</feature>
@@ -596,6 +598,7 @@
     <feature name="opennms-events-sink-dispatcher" version="${project.version}" description="OpenNMS :: Events :: Sink Dispatcher">
         <feature>opennms-config-api</feature>
         <feature>opennms-events-api</feature>
+        <feature>opennms-mate-api</feature>
         <bundle>mvn:org.opennms.features.events.sink/org.opennms.features.events.sink.dispatcher/${project.version}</bundle>
     </feature>
 
@@ -1140,6 +1143,7 @@
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-dnsresolver-api</feature>
         <feature>opennms-kafka</feature>
+        <feature>opennms-mate-impl</feature>
         <feature>rate-limited-logger</feature>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>
@@ -1363,6 +1367,7 @@
         <feature>opennms-core</feature>
         <feature>opennms-topology-api</feature>
         <feature>geolocation</feature>
+        <feature>commons-collections4</feature>
         <feature>commons-lang3</feature>
         <feature>commons-net</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
@@ -1537,6 +1542,7 @@
         <feature>rate-limited-logger</feature>
         <feature>opennms-dao-api</feature>
         <feature>opennms-jest</feature>
+        <feature>opennms-mate-impl</feature>
         <bundle dependency="true">wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.xml/${project.version}</bundle>
@@ -1557,7 +1563,7 @@
         <bundle>mvn:com.google.code.gson/gson/${jestGsonVersion}</bundle>
         <bundle>wrap:mvn:org.apache.httpcomponents/httpcore-nio/${httpcoreVersion}</bundle>
         <bundle>mvn:org.opennms.features.jest/org.opennms.features.jest.client/${project.version}</bundle>
-        <bundle>mvn:io.searchbox/jest-complete-osgi/${jestVersion}</bundle>
+        <bundle>mvn:org.opennms.features.jest/jest-complete-osgi/${project.version}</bundle>
         <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
         <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
         <bundle>mvn:org.apache.httpcomponents/httpasyncclient-osgi/${httpasyncclientVersion}</bundle>
@@ -1569,10 +1575,28 @@
         <bundle>mvn:org.opennms.features.search/org.opennms.features.search.service/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.search/org.opennms.features.search.rest/${project.version}</bundle>
     </feature>
+    <feature name="opennms-mate-api" version="${project.version}" description="OpenNMS :: Features :: Metadata :: API">
+        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
+        <feature>opennms-core</feature>
+        <feature>scv-api</feature>
+        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.api/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-mate-impl" version="${project.version}" description="OpenNMS :: Features :: Metadata :: Implementation">
+        <feature>opennms-dao-api</feature>
+        <feature>opennms-mate-api</feature>
+        <bundle>wrap:mvn:ch.hsr/geohash/${geohashVersion}$Bundle-SymbolicName=ch.hsr.geohash&amp;Bundle-Version=${geohashVersion}</bundle>
+        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.model/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-mate-shell" version="${project.version}" description="OpenNMS :: Features :: Metadata :: Karaf Shell Commands">
+        <feature>opennms-dao-api</feature>
+        <feature>opennms-mate-api</feature>
+        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.shell-commands/${project.version}</bundle>
+    </feature>
     <feature name="ifttt-integration" version="${project.version}" description="OpenNMS :: Features :: IFTTT Integration">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
-        <feature>opennms-dao-api</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
+        <feature>opennms-dao-api</feature>
+        <feature>opennms-mate-api</feature>
         <bundle>mvn:org.opennms.features/org.opennms.features.ifttt/${project.version}</bundle>
     </feature>
     <feature name="org.opennms.features.topologies.service.api" version="${project.version}" description="OpenNMS :: Features :: Topologies :: Service :: API">
@@ -1960,6 +1984,7 @@
         <feature>opennms-collection-api</feature>
         <feature>opennms-core-ipc-rpc-api</feature>
         <feature version="${opennmsApiVersion}">opennms-integration-api</feature>
+        <feature>opennms-mate-impl</feature>
         <feature>newts-api</feature>
 
         <bundle dependency="true">mvn:com.lmax/disruptor/${lmaxDisruptorVersion}</bundle>

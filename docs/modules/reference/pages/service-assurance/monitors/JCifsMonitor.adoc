@@ -143,3 +143,6 @@ Note that you must include the `monitor` section for each service in your defini
 <3> Password to access the share.
 <4> Path to the folder inside of the share as part of the SMB URL.
 <5> Mode is set to `folder_empty`.
+
+NOTE: Metadata expressions can also be used in the parameter values.
+This allows the user to also reference credentials stored in the secure credentials vault.

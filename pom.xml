@@ -1,9 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?> <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<!--
+
+    Licensed to The OpenNMS Group, Inc (TOG) under one or more
+    contributor license agreements.  See the LICENSE.md file
+    distributed with this work for additional information
+    regarding copyright ownership.
+
+    TOG licenses this file to You under the GNU Affero General
+    Public License Version 3 (the "License") or (at your option)
+    any later version.  You may not use this file except in
+    compliance with the License.  You may obtain a copy of the
+    License at:
+
+         https://www.gnu.org/licenses/agpl-3.0.txt
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+    either express or implied.  See the License for the specific
+    language governing permissions and limitations under the
+    License.
+
+-->
   <!-- OpenNMS Top-Level POM -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>32.0.6</version>
+  <version>33.0.0</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -487,7 +510,7 @@
       <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
         <artifactId>karaf-maven-plugin</artifactId>
-        <version>${karafMavenPluginVersion}</version>
+        <version>${maven.karaf.plugin.version}</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1058,6 +1081,104 @@
         <artifactId>structure-maven-plugin</artifactId>
         <version>1.0</version>
       </plugin>
+      <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>4.3</version>
+        <configuration>
+          <properties>
+            <owner>The OpenNMS Group, Inc.</owner>
+            <email>license@opennms.com</email>
+          </properties>
+          <licenseSets>
+            <licenseSet>
+              <header>src/main/resources/license-header.txt</header>
+              <!-- some of these excludes are aspirational, for when we expand this beyond the basics 😅 -->
+              <excludes>
+                <!-- short term, let's exclude everything but c/c++/groovy/java/js/ts -->
+                <exclude>**/*.css</exclude>
+                <exclude>**/*.ftl</exclude>
+                <exclude>**/*.groovy</exclude>
+                <exclude>**/*.html</exclude>
+                <exclude>**/*.pl</exclude>
+                <exclude>**/*.properties</exclude>
+                <exclude>**/*.proto</exclude>
+                <exclude>**/*.py</exclude>
+                <exclude>**/*.sh</exclude>
+                <exclude>**/*.txt</exclude>
+                <exclude>**/*.TXT</exclude>
+                <exclude>**/*.vm</exclude>
+                <exclude>**/*.xml</exclude>
+                <exclude>**/*.xsd</exclude>
+                <exclude>**/*.xsl</exclude>
+                <exclude>**/*.yaml</exclude>
+                <exclude>**/*.yml</exclude>
+
+                <!-- other top-level or specific excludes -->
+                <exclude>**/*.adoc</exclude>
+                <exclude>**/*.d.ts</exclude>
+                <exclude>**/*.md</exclude>
+                <exclude>**/pom.xml</exclude>
+                <exclude>**/THIRD-PARTY.properties</exclude>
+                <exclude>.version.txt</exclude>
+                <exclude>maven/**/*</exclude>
+                <exclude>**/static/legacy/**/*</exclude>
+                <exclude>**/lib/3rdparty/**/*</exclude>
+
+                <!-- top-level src/ contents -->
+                <exclude>src/assembly/source.xml</exclude>
+                <exclude>src/main/eclipse/ArsDigita.eclipse_formatter.xml</exclude>
+                <exclude>src/main/eclipse/org.eclipse.jdt.core.prefs</exclude>
+                <exclude>src/main/resources/checkstyle-suppressions.xml</exclude>
+                <exclude>src/main/resources/license-header.txt</exclude>
+                <exclude>src/main/resources/nms_checks.xml</exclude>
+                <exclude>src/site/site.xml</exclude>
+                <exclude>src/test/resources/test-data.sql</exclude>
+
+                <!-- don't need this can o' worms for now -->
+                <exclude>opennms-base-assembly/src/main/filtered/etc</exclude>
+                <exclude>opennms-base-assembly/src/main/resources</exclude>
+
+                <!-- BSD + GPL, see header for details -->
+                <exclude>core/test-api/dns/**/DNSServer.java</exclude>
+
+                <!-- APLv2 -->
+                <exclude>**/BlueprintCamelStateService.java</exclude>
+                <exclude>**/CaffeineDnsCache*.java</exclude>
+                <exclude>**/DroolsStreamUtils.java</exclude>
+                <exclude>**/GWTTerminal/war/**/*</exclude>
+                <exclude>**/Integer32IgnoreTooManyBytes.java</exclude>
+                <exclude>**/KafkaOffsetProvider.java</exclude>
+                <exclude>**/OnmsOSGiBridgeActivator.java</exclude>
+                <exclude>**/container/web/WebAppListener.java</exclude>
+                <exclude>**/hawkular/**/*</exclude>
+                <exclude>**/impl/holtwinters/*</exclude>
+                <exclude>**/osgi/script/*.java</exclude>
+                <exclude>**/vaadin/extender/Constants.java</exclude>
+                <exclude>**/vaadin/extender/VaadinResourceService.java</exclude>
+                <exclude>**/vaadin/extender/internal/Activator.java</exclude>
+                <exclude>**/vaadin/extender/internal/extender/PaxVaadinBundleTracker.java</exclude>
+                <exclude>**/vaadin/extender/internal/servlet/VaadinResourceServlet.java</exclude>
+
+                <!-- Sun CDDL -->
+                <exclude>**/taglibs/standard/lang/**/*</exclude>
+
+                <!-- BSD-style -->
+                <exclude>**/SyslogClient.java</exclude>
+
+                <!-- GPL+EPL (see headers, it's complicated) -->
+                <exclude>**/VmwareCimCollector.java</exclude>
+                <exclude>**/VmwareCimMonitor.java</exclude>
+                <exclude>**/VmwareViJavaAccess.java</exclude>
+                <exclude>**/VmwareViJavaAccessTest.java</exclude>
+
+                <!-- LGPLv3 -->
+                <exclude>**/CustomJRJdtCompiler.java</exclude>
+              </excludes>
+            </licenseSet>
+          </licenseSets>
+        </configuration>
+      </plugin>
     </plugins>
   </pluginManagement>
    <plugins>
@@ -1358,7 +1479,7 @@
       <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
         <artifactId>karaf-maven-plugin</artifactId>
-        <version>${karafMavenPluginVersion}</version>
+        <version>${maven.karaf.plugin.version}</version>
         <extensions>true</extensions>
       </plugin>
     </plugins>
@@ -1532,7 +1653,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>32.0.6</opennms.osgi.version>
+    <opennms.osgi.version>33.0.0</opennms.osgi.version>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
@@ -1554,10 +1675,10 @@
 
     <install.postgresql.service>postgresql</install.postgresql.service>
     <install.database.name>opennms</install.database.name>
-    <install.database.user>opennms</install.database.user>
-    <install.database.password>opennms</install.database.password>
-    <install.database.admin.user>postgres</install.database.admin.user>
-    <install.database.admin.password/>
+    <install.database.user>${scv:postgres:username|opennms}</install.database.user>
+    <install.database.password>${scv:postgres:password|opennms}</install.database.password>
+    <install.database.admin.user>${scv:postgres-admin:username|postgres}</install.database.admin.user>
+    <install.database.admin.password>${scv:postgres-admin:password|}</install.database.admin.password>
     <install.database.driver>org.postgresql.Driver</install.database.driver>
     <install.database.bindir>/usr/bin</install.database.bindir>
     <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
@@ -1591,7 +1712,6 @@
     <hawtio.version>2.17.5</hawtio.version>
 
     <!-- dependency versions -->
-    <accessorsSmartVersion>2.4.8</accessorsSmartVersion>
     <antVersion>1.10.13</antVersion>
     <args4jVersion>2.33</args4jVersion>
     <asmVersion>9.6</asmVersion>
@@ -1612,7 +1732,7 @@
     <commonsCodecVersion>1.16.0</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
     <commonsCollections4Version>4.4</commonsCollections4Version>
-    <commonsCompressVersion>1.23.0</commonsCompressVersion>
+    <commonsCompressVersion>1.25.0</commonsCompressVersion>
     <commonsConfigurationVersion>1.10</commonsConfigurationVersion>
     <commonsCsvVersion>1.5</commonsCsvVersion>
     <commonsDaemonVersion>1.3.4</commonsDaemonVersion>
@@ -1636,7 +1756,6 @@
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.5</c3p0Version>
     <curatorVersion>5.5.0</curatorVersion>
-    <curatorTestVersion>5.5.0</curatorTestVersion>
     <cxfVersion>3.5.5</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
@@ -1702,7 +1821,7 @@
     <jcifsVersion>2.1.6</jcifsVersion>
     <jcommonVersion>1.0.24</jcommonVersion>
     <jdom2Version>2.0.6.1</jdom2Version>
-    <jettisonVersion>1.4.1</jettisonVersion>
+    <jettisonVersion>1.5.4</jettisonVersion>
     <jettyVersion>9.4.53.v20231009</jettyVersion>
     <jettyOsgiVersion>9.4.53</jettyOsgiVersion>
     <jestVersion>5.3.4</jestVersion>
@@ -1726,31 +1845,35 @@
     <jsonVersion>20231013</jsonVersion>
     <jsonPatchVersion>1.13</jsonPatchVersion>
     <jsonPathVersion>2.8.0</jsonPathVersion>
-    <jsonSmartVersion>2.4.8</jsonSmartVersion>
+    <jsonSmartVersion>2.5.0</jsonSmartVersion>
+    <!-- generally tied with json-smart -->
+    <accessorsSmartVersion>2.5.0</accessorsSmartVersion>
     <jsoupVersion>1.7.2</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
     <junit4Version>4.13.2</junit4Version>
     <junit5Version>5.9.2</junit5Version>
     <junit5PlatformVersion>1.9.2</junit5PlatformVersion>
-    <karafVersion>4.3.6</karafVersion>
-    <karafMavenPluginVersion>4.4.3</karafMavenPluginVersion>
+    <karafVersion>4.3.10</karafVersion>
     <!-- BEGIN: versions must match versions provided by embedded Karaf -->
     <eclipseOsgiVersion>3.17.200</eclipseOsgiVersion>
     <felixCmJsonVersion>1.0.6</felixCmJsonVersion>
-    <felixConfigadminVersion>1.9.22</felixConfigadminVersion>
-    <felixConfigadminPluginInterpolationVersion>1.1.4</felixConfigadminPluginInterpolationVersion>
+    <felixConfigadminVersion>1.9.26</felixConfigadminVersion>
+    <felixConfigadminPluginInterpolationVersion>1.2.8</felixConfigadminPluginInterpolationVersion>
     <felixCoordinatorVersion>1.0.2</felixCoordinatorVersion>
-    <felixConfiguratorVersion>1.0.14</felixConfiguratorVersion>
+    <felixConfiguratorVersion>1.0.16</felixConfiguratorVersion>
     <felixConverterVersion>1.0.14</felixConverterVersion>
     <felixFileinstallVersion>3.7.4</felixFileinstallVersion>
     <felixMetatypeVersion>1.2.4</felixMetatypeVersion>
-    <istackCommonsRuntimeVersion>3.0.10</istackCommonsRuntimeVersion>
+    <istackCommonsRuntimeVersion>3.0.12</istackCommonsRuntimeVersion>
     <jansiVersion>2.4.0</jansiVersion>
     <jlineVersion>3.21.0</jlineVersion>
     <osgiUtilVersion>1.2.0</osgiUtilVersion>
-    <paxUrlAetherVersion>2.6.10</paxUrlAetherVersion>
-    <slingJohnzonVersion>1.2.6</slingJohnzonVersion>
+    <paxLoggingVersion>2.0.19</paxLoggingVersion>
+    <paxSwissboxVersion>1.8.5</paxSwissboxVersion>
+    <paxUrlAetherVersion>2.6.14</paxUrlAetherVersion>
+    <paxWebVersion>7.3.29</paxWebVersion>
+    <slingJohnzonVersion>1.2.16</slingJohnzonVersion>
     <!-- END: versions must match versions provided by embedded Karaf -->
     <kafkaBundleVersion>3.5.1_1</kafkaBundleVersion>
     <kafkaVersion>3.6.0</kafkaVersion>
@@ -1770,16 +1893,13 @@
     <newtsOsgiVersion>3.0.0</newtsOsgiVersion>
     <paxCdiVersion>1.1.4</paxCdiVersion>
     <paxExamVersion>4.13.5</paxExamVersion>
-    <paxLoggingVersion>2.0.14</paxLoggingVersion>
-    <paxSwissboxVersion>1.8.3</paxSwissboxVersion>
-    <paxUrlAetherVersion>2.6.10</paxUrlAetherVersion>
-    <paxWebVersion>7.3.23</paxWebVersion>
     <pktsVersion>3.0.10</pktsVersion>
     <protobufVersion>3.22.5</protobufVersion>
     <postgresqlVersion>42.5.4</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>3.6.0</okioVersion>
+    <openid4javaVersion>0.9.6</openid4javaVersion>
     <opennmsApiVersion>1.6.0</opennmsApiVersion>
     <opennmsApiVersionOsgi>1.6.0</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
@@ -1831,7 +1951,7 @@
     <xstreamVersion>1.4.20</xstreamVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
-    <zookeeperVersion>3.5.10</zookeeperVersion>
+    <zookeeperVersion>3.7.2</zookeeperVersion>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
     <minaSshdVersion>2.11.0</minaSshdVersion>
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
@@ -1845,9 +1965,10 @@
     <springSecurityVersion>4.2.21.RELEASE_ONMS_3</springSecurityVersion>
     <springLdapVersion>2.3.8.RELEASE</springLdapVersion>
     <springSecurityKerberosVersion>1.0.1.RELEASE_ONMS_3</springSecurityKerberosVersion>
+    <springSecuritySamlVersion>1.0.10.RELEASE</springSecuritySamlVersion>
 
     <!-- moved here from topology features -->
-    <jungVersion>2.0.1</jungVersion>
+    <jungVersion>2.1.1</jungVersion>
     <vaadinVersion>8.14.3</vaadinVersion>
     <!-- Requiring a more recent plugin version which passes the classpath via ENV -->
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
@@ -1859,8 +1980,8 @@
 
     <!-- nodejs development -->
     <frontendPluginVersion>1.14.2</frontendPluginVersion>
-    <nodeVersion>v16.20.2</nodeVersion>
-    <npmVersion>8.19.4</npmVersion>
+    <nodeVersion>v18.18.2</nodeVersion>
+    <npmVersion>9.8.1</npmVersion>
     <yarnVersion>v1.22.19</yarnVersion>
 
     <!-- configuration manager -->
@@ -1915,6 +2036,32 @@
           </snapshots>
         </repository>
       </repositories>
+    </profile>
+    <profile>
+      <id>sbom</id>
+      <activation>
+        <property>
+          <name>build.sbom</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.cyclonedx</groupId>
+            <artifactId>cyclonedx-maven-plugin</artifactId>
+            <version>2.7.11</version>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>makeAggregateBom</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
     <profile>
       <id>coverage</id>
@@ -2231,6 +2378,11 @@
       <build>
         <plugins>
           <plugin>
+            <groupId>com.mycila</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+            <version>4.3</version>
+          </plugin>
+          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
             <version>3.3.1</version>
@@ -2253,24 +2405,6 @@
               <consoleOutput>true</consoleOutput>
             </configuration>
             <executions>
-              <execution>
-                <id>check-license</id>
-                <goals>
-                  <goal>check</goal>
-                </goals>
-                <phase>process-resources</phase>
-                <configuration>
-                  <configLocation>${opennms.build.basedir}/src/main/resources/check-license.xml</configLocation>
-                  <suppressionsLocation>${opennms.build.basedir}/src/main/resources/license-suppressions.xml</suppressionsLocation>
-                  <headerLocation>${opennms.build.basedir}/src/main/resources/AGPL-LICENSE.regexp.txt</headerLocation>
-                  <includeResources>false</includeResources>
-                  <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                  <includeTestResources>false</includeTestResources>
-                  <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
-                  <failsOnError>false</failsOnError>
-                  <consoleOutput>true</consoleOutput>
-                </configuration>
-              </execution>
               <execution>
                 <id>check-style</id>
                 <goals>
@@ -2522,6 +2656,12 @@
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.http</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.kafka</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
@@ -3727,7 +3867,7 @@
       <dependency>
         <groupId>org.apache.curator</groupId>
         <artifactId>curator-test</artifactId>
-        <version>${curatorTestVersion}</version>
+        <version>${curatorVersion}</version>
         <exclusions>
           <exclusion>
             <artifactId>log4j</artifactId>
@@ -5366,6 +5506,21 @@
         <groupId>org.apache.sshd</groupId>
         <artifactId>sshd-sftp</artifactId>
         <version>${minaSshdVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.zookeeper</groupId>
+        <artifactId>zookeeper</artifactId>
+        <version>${zookeeperVersion}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>log4j</artifactId>
+            <groupId>log4j</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>slf4j-log4j12</artifactId>
+            <groupId>org.slf4j</groupId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.xerial.snappy</groupId>

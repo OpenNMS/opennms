@@ -2,7 +2,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.jest</artifactId>
-    <version>32.0.6</version>
+    <version>33.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.jest</groupId>
@@ -35,9 +35,9 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>io.searchbox</groupId>
+      <groupId>org.opennms.features.jest</groupId>
       <artifactId>jest-complete-osgi</artifactId>
-      <version>${jestVersion}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
@@ -108,6 +108,10 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.mate</groupId>
+      <artifactId>org.opennms.core.mate.api</artifactId>
     </dependency>
   </dependencies>
 

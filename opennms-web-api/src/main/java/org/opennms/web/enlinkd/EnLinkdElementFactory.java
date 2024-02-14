@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.web.enlinkd;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
@@ -206,12 +199,12 @@ public class EnLinkdElementFactory implements InitializingBean,
         // set local info
         if (link.getOspfIfIndex() != null) {
             snmpiface = snmpInterfaceCache.get(nodeid, link.getOspfIfIndex());
-        } else if (link.getOspfAddressLessIndex() > 0) {
+        } else if (link.getOspfAddressLessIndex() != null && link.getOspfAddressLessIndex() > 0) {
             snmpiface = snmpInterfaceCache.get(nodeid, link.getOspfAddressLessIndex());
         }
 
         if (snmpiface != null) {
-            if (link.getOspfAddressLessIndex() > 0) {
+            if (link.getOspfAddressLessIndex() != null && link.getOspfAddressLessIndex() > 0) {
                 linknode.setOspfLocalPort(getPortString(snmpiface,
                                                         "address less", null));
             } else {
@@ -220,7 +213,7 @@ public class EnLinkdElementFactory implements InitializingBean,
             }
             linknode.setOspfLocalPortUrl(getSnmpInterfaceUrl(nodeid,
                                                              snmpiface.getIfIndex()));
-        } else if (link.getOspfAddressLessIndex() > 0) {
+        } else if (link.getOspfAddressLessIndex() != null && link.getOspfAddressLessIndex() > 0) {
             linknode.setOspfLocalPort(getPortString(link.getOspfAddressLessIndex(),
                                                     "address less", null));
         } else if (link.getOspfIfIndex() != null && ipaddr != null) {
@@ -277,7 +270,7 @@ public class EnLinkdElementFactory implements InitializingBean,
         OnmsSnmpInterface remsnmpiface = null;
 
         if (remNodeid != null) {
-            if (link.getOspfRemAddressLessIndex() > 0) {
+            if (link.getOspfRemAddressLessIndex() != null && link.getOspfRemAddressLessIndex() > 0) {
                 remsnmpiface = snmpInterfaceCache.get(remNodeid, link.getOspfAddressLessIndex());
             } else {
                 OnmsIpInterface remipiface = m_ipInterfaceDao.findByNodeIdAndIpAddress(remNodeid,
@@ -289,7 +282,7 @@ public class EnLinkdElementFactory implements InitializingBean,
         }
 
         if (remsnmpiface != null) {
-            if (link.getOspfRemAddressLessIndex() > 0) {
+            if (link.getOspfRemAddressLessIndex() != null && link.getOspfRemAddressLessIndex() > 0) {
                 linknode.setOspfRemPort(getPortString(remsnmpiface,
                                                       "address less", null));
             } else {
@@ -298,7 +291,7 @@ public class EnLinkdElementFactory implements InitializingBean,
             }
             linknode.setOspfRemPortUrl(getSnmpInterfaceUrl(remNodeid,
                                                            remsnmpiface.getIfIndex()));
-        } else if (link.getOspfAddressLessIndex() > 0) {
+        } else if (link.getOspfAddressLessIndex() != null && link.getOspfAddressLessIndex() > 0) {
             linknode.setOspfRemPort(getPortString(link.getOspfRemAddressLessIndex(),
                                                   "address less", null));
         } else if (remipaddr != null) {

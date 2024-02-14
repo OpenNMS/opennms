@@ -1,43 +1,37 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2005-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.trapd;
 
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.Set;
+import java.util.TreeMap;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -48,6 +42,8 @@ import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
@@ -86,6 +82,37 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitTemporaryDatabase
 public class TrapdIT {
 
+    public static class MockSecureCredentialsVault implements SecureCredentialsVault {
+        final Map<String, Credentials> credentials = new TreeMap<>();
+
+        public MockSecureCredentialsVault() {
+            setCredentials("auth-undefined", new Credentials("some-security-name-undefined", "0p3nNMSv3"));
+            setCredentials("auth-noAuthNoPriv", new Credentials("some-security-name-noAuthNoPriv", "0p3nNMSv3"));
+            setCredentials("auth-authNoPriv", new Credentials("some-security-name-authNoPriv", "0p3nNMSv3"));
+            setCredentials("auth-authPriv", new Credentials("some-security-name-authPriv", "0p3nNMSv3"));
+        }
+
+        @Override
+        public Set<String> getAliases() {
+            return this.credentials.keySet();
+        }
+
+        @Override
+        public Credentials getCredentials(String alias) {
+            return this.credentials.get(alias);
+        }
+
+        @Override
+        public void setCredentials(String alias, Credentials credentials) {
+            this.credentials.put(alias, credentials);
+        }
+
+        @Override
+        public void deleteCredentials(String alias) {
+            this.credentials.remove(alias);
+        }
+    }
+
     @Autowired
     private TrapdConfigFactory m_trapdConfig;
 
@@ -101,6 +128,7 @@ public class TrapdIT {
     @Before
     public void setUp() {
         m_mockEventIpcManager.setSynchronous(true);
+        m_trapd.setSecureCredentialsVault(new MockSecureCredentialsVault());
         m_trapd.onStart();
     }
 
@@ -292,10 +320,10 @@ public class TrapdIT {
 
     private void testSnmpV3NotificationWithSecurityLevel(TrapOrInform trapOrInform, SecurityLevel securityLevel) {
         // Retrieve a v3 user from the configuration
-        final Snmpv3User v3User = m_trapdConfig.getConfig().getSnmpv3UserCollection().stream()
+        final Snmpv3User v3User = this.m_trapd.interpolateUser(m_trapdConfig.getConfig().getSnmpv3UserCollection().stream()
                 .filter(u -> Objects.equals(securityLevel.getSnmpValue(), u.getSecurityLevel()))
                 .findFirst()
-                .orElseThrow(() -> new IllegalStateException("No existing SNMPv3 user configured with security level: " + securityLevel));
+                .orElseThrow(() -> new IllegalStateException("No existing SNMPv3 user configured with security level: " + securityLevel)));
 
         SnmpTrapHelper snmpTrapHelper = new SnmpTrapHelper();
         EventForwarder snmpv3EventForwarder;

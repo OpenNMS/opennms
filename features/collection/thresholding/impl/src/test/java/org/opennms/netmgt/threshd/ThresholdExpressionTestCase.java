@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.threshd;
 
 import static org.mockito.Mockito.mock;
@@ -204,28 +197,6 @@ public class ThresholdExpressionTestCase extends TestCase {
         
         //1MB free, hopefully
         assertEquals("Threshold Expression result", Double.valueOf(result), Double.valueOf(1024.0*1024.0));
-    }
-    
-    public void testThresholdEntityRequiredDataSources() throws Exception {
-        ThresholdEntity entity=new ThresholdEntity(mock(EntityScopeProvider.class));
-        expression.setExpression("(hrStorageSize-hrStorageUsed)*hrStorageAllocationUnits");
-        BaseThresholdDefConfigWrapper wrapper=BaseThresholdDefConfigWrapper.getConfigWrapper(expression);
-        assertEquals(3, wrapper.getRequiredDatasources().size());
-        for (String ds : new String[] { "hrStorageSize", "hrStorageUsed", "hrStorageAllocationUnits" }) {
-            assertTrue("Could not find expected variable: " + ds, wrapper.getRequiredDatasources().contains(ds));
-        }
-
-        entity.addThreshold(wrapper, MockSession.getSession());
-        Collection<String> dataSources=entity.getRequiredDatasources();
-        final StringBuilder dsStringBuffer = new StringBuilder();
-        for (String dataSource : dataSources) {
-            dsStringBuffer.append(dataSource).append(" ");
-        }
-        String dsString = dsStringBuffer.toString().trim();
-        
-        assertTrue("Required data sources should contain hrStorageSize: " + dsString, dataSources.contains("hrStorageSize"));
-        assertTrue("Required data sources should contain hrStorageUsed: " + dsString, dataSources.contains("hrStorageUsed"));
-        assertTrue("Required data sources should contain hrStorageAllocationUnits: " + dsString, dataSources.contains("hrStorageAllocationUnits"));
     }
 
     public void testEvaluateConditionalFalse() throws Exception {

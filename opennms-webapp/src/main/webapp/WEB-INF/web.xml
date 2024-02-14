@@ -762,6 +762,11 @@
     <servlet-name>newPasswordAction</servlet-name>
     <servlet-class>org.opennms.web.account.selfService.NewPasswordActionServlet</servlet-class>
   </servlet>
+  <!-- servlet for self-service password gate action -->
+  <servlet>
+    <servlet-name>passwordGateAction</servlet-name>
+    <servlet-class>org.opennms.web.account.selfService.PasswordGateActionServlet</servlet-class>
+  </servlet>
 
   <!-- Servlet mappings for user account self-service -->
   <servlet-mapping>
@@ -771,6 +776,10 @@
   <servlet-mapping>
     <servlet-name>newPasswordAction</servlet-name>
     <url-pattern>/account/selfService/newPasswordAction</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>passwordGateAction</servlet-name>
+    <url-pattern>/account/selfService/passwordGateAction</url-pattern>
   </servlet-mapping>
   <servlet>
     <servlet-name>nodeLabelChange</servlet-name>
@@ -1279,6 +1288,4 @@
   <welcome-file-list>
     <welcome-file>frontPage.jsp</welcome-file>
   </welcome-file-list>
-
 </web-app>
-

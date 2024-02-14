@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features.poller</groupId>
     <artifactId>org.opennms.features.poller.monitors</artifactId>
-    <version>32.0.6</version>
+    <version>33.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.poller.monitors</groupId>
@@ -232,6 +232,11 @@
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.ssh</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-inline</artifactId>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 </project>

@@ -66,7 +66,7 @@
 
     <bean id="dataSourceFactoryBean" class="org.opennms.core.db.DataSourceFactoryBean" />
 
-	<bean id="usageStatisticsReporter" class="org.opennms.features.datachoices.internal.UsageStatisticsReporter"
+	<bean id="usageStatisticsReporter" class="org.opennms.features.datachoices.internal.usagestatistics.UsageStatisticsReporter"
         init-method="init" destroy-method="destroy">
         <property name="url" value="${url}"/>
         <property name="interval" value="${interval}"/>
@@ -95,11 +95,22 @@
         <property name="notificationDao" ref="notificationDao"/>
     </bean>
 
-    <bean id="dataChoiceRestService" class="org.opennms.features.datachoices.web.internal.DataChoiceRestServiceImpl">
-        <property name="stateManager" ref="stateManager"/>
-        <property name="usageStatisticsReporter" ref="usageStatisticsReporter"/>
+    <bean id="userDataCollectionSubmissionClient" class="org.opennms.features.datachoices.internal.userdatacollection.UserDataCollectionSubmissionClient">
+        <property name="endpointUrl" value="https://stats.opennms.org/datachoices/user-data-collection" />
     </bean>
-    <service interface="org.opennms.features.datachoices.web.DataChoiceRestService" ref="dataChoiceRestService" >
+
+    <bean id="userDataCollectionService" class="org.opennms.features.datachoices.internal.userdatacollection.UserDataCollectionServiceImpl">
+        <property name="client" ref="userDataCollectionSubmissionClient" />
+    </bean>
+    <service interface="org.opennms.features.datachoices.internal.userdatacollection.UserDataCollectionService" ref="userDataCollectionService">
+    </service>
+
+    <bean id="dataChoiceRestService" class="org.opennms.features.datachoices.web.internal.DataChoiceRestServiceImpl">
+        <property name="stateManager" ref="stateManager" />
+        <property name="usageStatisticsReporter" ref="usageStatisticsReporter" />
+        <property name="userDataCollectionService" ref="userDataCollectionService" />
+    </bean>
+    <service interface="org.opennms.features.datachoices.web.DataChoiceRestService" ref="dataChoiceRestService">
         <service-properties>
             <entry key="application-path" value="/rest" />
         </service-properties>
@@ -116,6 +127,15 @@
 
     <bean id="adminPageNavEntry" class="org.opennms.features.datachoices.web.internal.AdminPageNavEntry"/>
     <service interface="org.opennms.web.navigate.PageNavEntry" ref="adminPageNavEntry">
+        <service-properties>
+            <entry key="Page" value="admin" />
+            <entry key="Category" value="operations" />
+            <entry key="registration.export" value="true" />
+        </service-properties>
+    </service>
+
+    <bean id="userDataCollectionAdminPageNavEntry" class="org.opennms.features.datachoices.web.internal.UserDataCollectionAdminPageNavEntry"/>
+    <service interface="org.opennms.web.navigate.PageNavEntry" ref="userDataCollectionAdminPageNavEntry">
         <service-properties>
             <entry key="Page" value="admin" />
             <entry key="Category" value="operations" />
@@ -140,5 +160,4 @@
             </action>
         </command>
     </command-bundle>
-
 </blueprint>

@@ -89,6 +89,20 @@
         <property name="recordStats" value="${nodeCache.recordStats}" />
     </bean>
 
+    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao"/>
+    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao"/>
+    <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils"/>
+    <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" availability="mandatory"/>
+
+    <bean id="entityScopeProvider" class="org.opennms.core.mate.model.EntityScopeProviderImpl">
+        <property name="nodeDao" ref="nodeDao"/>
+        <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
+        <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
+        <property name="sessionUtils" ref="sessionUtils"/>
+        <property name="scv" ref="secureCredentialsVault"/>
+    </bean>
+
     <!-- Proxy for the JestClientFactory -->
     <bean id="requestExecutorFactory" class="org.opennms.features.jest.client.executors.DefaultRequestExecutor">
         <argument value="${retryCooldown}"/>
@@ -97,6 +111,7 @@
         <argument value="${elasticUrl}"/>
         <argument value="${globalElasticUser}"/>
         <argument value="${globalElasticPassword}"/>
+        <property name="entityScopeProvider" ref="entityScopeProvider"/>
         <property name="defaultMaxTotalConnectionPerRoute" value="${defaultMaxTotalConnectionPerRoute}"/>
         <property name="maxTotalConnection" value="${maxTotalConnection}"/>
         <property name="discovery" value="${nodeDiscovery}" />

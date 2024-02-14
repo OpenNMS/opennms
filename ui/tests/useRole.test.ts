@@ -1,15 +1,46 @@
+///
+/// Licensed to The OpenNMS Group, Inc (TOG) under one or more
+/// contributor license agreements.  See the LICENSE.md file
+/// distributed with this work for additional information
+/// regarding copyright ownership.
+///
+/// TOG licenses this file to You under the GNU Affero General
+/// Public License Version 3 (the "License") or (at your option)
+/// any later version.  You may not use this file except in
+/// compliance with the License.  You may obtain a copy of the
+/// License at:
+///
+///      https://www.gnu.org/licenses/agpl-3.0.txt
+///
+/// Unless required by applicable law or agreed to in writing,
+/// software distributed under the License is distributed on an
+/// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+/// either express or implied.  See the License for the specific
+/// language governing permissions and limitations under the
+/// License.
+///
+
+import { assert, beforeAll, describe, test } from 'vitest'
+import { createTestingPinia } from '@pinia/testing'
 import useRole from '@/composables/useRole'
-import store from '@/store'
-import { test, assert } from 'vitest'
+import { useAuthStore } from '@/stores/authStore'
 import { WhoAmIResponse } from '@/types'
 
 const mockWhoAmI = {
   roles: ['ROLE_DEVICE_CONFIG_BACKUP']
 } as WhoAmIResponse
 
-test('returns role access correctly', () => {
-  store.commit('authModule/SAVE_WHO_AM_I_TO_STATE', mockWhoAmI)
-  const { adminRole, dcbRole } = useRole()
-  assert.equal(adminRole.value, false)
-  assert.equal(dcbRole.value, true)
+describe('useRole test', () => {
+  beforeAll(() => {
+    createTestingPinia()
+  })
+
+  test('returns role access correctly', () => {
+    const authStore = useAuthStore()
+    authStore.whoAmI = mockWhoAmI
+
+    const { adminRole, dcbRole } = useRole()
+    assert.equal(adminRole.value, false)
+    assert.equal(dcbRole.value, true)
+  })
 })
