@@ -63,6 +63,7 @@ import org.sblim.wbem.cim.CIMObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.vmware.vim25.CustomFieldDef;
 import com.vmware.vim25.CustomFieldStringValue;
 import com.vmware.vim25.CustomFieldValue;
@@ -233,7 +234,7 @@ public class VmwareImporter {
      * @param managedEntity the managed entity
      * @return the generated requisition node
      */
-    private RequisitionNode createRequisitionNode(Set<String> ipAddresses, ManagedEntity managedEntity, int apiVersion, VmwareViJavaAccess vmwareViJavaAccess) {
+    RequisitionNode createRequisitionNode(Set<String> ipAddresses, ManagedEntity managedEntity, int apiVersion, VmwareViJavaAccess vmwareViJavaAccess) {
         RequisitionNode requisitionNode = new RequisitionNode();
 
         // Setting the node label
@@ -241,6 +242,11 @@ public class VmwareImporter {
 
         // Foreign Id consisting of managed entity Id
         requisitionNode.setForeignId(managedEntity.getMOR().getVal());
+
+        // set the location
+        if (!Strings.isNullOrEmpty(request.getLocation())) {
+            requisitionNode.setLocation(request.getLocation());
+        }
 
         /*
          * Original version:

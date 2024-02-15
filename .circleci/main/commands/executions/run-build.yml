@@ -43,7 +43,7 @@ commands:
             case "${CIRCLE_BRANCH}" in
               "master-"*)
                 # "production" build should build SBOM manifests
-                MAVEN_ARGS="-Dbuild.sbom=true $MAVEN_ARGS"
+                MAVEN_ARGS="-Dbuild.sbom=false $MAVEN_ARGS"
                 ;;
             esac
             echo "export OPENNMS_VERSION=\"$OPENNMS_VERSION\"" >> $BASH_ENV

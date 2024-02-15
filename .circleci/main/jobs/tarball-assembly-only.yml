@@ -29,7 +29,7 @@ jobs:
             esac
             case "${CIRCLE_BRANCH}" in
               "master-"*)
-                MAVEN_ARGS="-Dbuild.sbom=true $MAVEN_ARGS"
+                MAVEN_ARGS="-Dbuild.sbom=false $MAVEN_ARGS"
                 ;;
             esac
             ulimit -n 65536 || :
