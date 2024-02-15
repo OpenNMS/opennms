@@ -1,5 +1,6 @@
 
 = SystemExecuteMonitor
+:description: Learn how to configure and use the SystemExecuteMonitor in OpenNMS {page-component-title} to run a system call or a script to determine a service status.
 
 If you need to run a system call or a script to determine a service status, use the SystemExecuteMonitor.
 The monitor calls a script or system command and determines service status based on the return of a `0` or a `non-0` exit code.

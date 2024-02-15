@@ -40,6 +40,12 @@ commands:
                 MAVEN_ARGS="-Dbuild.type=production $MAVEN_ARGS"
                 ;;
             esac
+            case "${CIRCLE_BRANCH}" in
+              "master-"*)
+                # "production" build should build SBOM manifests
+                MAVEN_ARGS="-Dbuild.sbom=false $MAVEN_ARGS"
+                ;;
+            esac
             echo "export OPENNMS_VERSION=\"$OPENNMS_VERSION\"" >> $BASH_ENV
             ./compile.pl -DskipTests=true -Dbuild.skip.tarball=false \
               -Daether.connector.resumeDownloads=false \

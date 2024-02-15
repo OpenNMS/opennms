@@ -1,6 +1,7 @@
 
 [[pagesequencemonitor]]
 = PageSequenceMonitor
+:description: Learn how to use and configure the PageSequenceMonitor in {page-component-title} that lets OpenNMS monitor web applications.
 
 The PageSequenceMonitor (PSM) lets OpenNMS monitor web applications.
 This monitor has several configuration options regarding IPv4, IPv6, and how to deal with name resolution.

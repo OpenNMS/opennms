@@ -95,7 +95,7 @@
       <artifactId>opennms-correlator</artifactId>
     </dependency>
     <dependency>
-      <groupId>bsh</groupId>
+      <groupId>org.apache-extras.beanshell</groupId>
       <artifactId>bsh</artifactId>
     </dependency>
     <dependency>

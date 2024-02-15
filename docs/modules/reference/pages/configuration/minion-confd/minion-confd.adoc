@@ -1,7 +1,7 @@
 
 [[minion-confd]]
 = Configuring Minion via confd
-:description: Learn how to configure the Minion via confd in OpenNMS Horizon/Meridian: mount, YAML file contents, Kafka sink, and so on.
+:description: Learn how to configure the Minion via confd in OpenNMS {page-component-title}: mount, YAML file contents, Kafka sink, and so on.
 
 For information on testing confd templates, see xref:configuration/minion-confd/test-confd.adoc#confd-template-test[Test confd templates].
 

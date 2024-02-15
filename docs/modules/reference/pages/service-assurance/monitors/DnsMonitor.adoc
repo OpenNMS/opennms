@@ -1,6 +1,7 @@
 
 [[poller-dns-resolution-monitor]]
 = DnsMonitor
+:description: Learn about the DnsMonitor in OpenNMS {page-component-title} that tests the availability of the DNS service on remote IP interfaces.
 
 This monitor tests the availability of the DNS service on remote IP interfaces.
 A DNS query is sent to check for a response of either an A or AAAA resource record.

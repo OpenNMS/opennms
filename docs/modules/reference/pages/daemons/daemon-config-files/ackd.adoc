@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-ackd]]
 = Ackd
+:description: Learn about the acknowledge daemon (ackd), which is responsible for alarm acknowledgment in OpenNMS {page-component-title}.
 
 The acknowledge daemon is responsible for alarm acknowledgment.
 

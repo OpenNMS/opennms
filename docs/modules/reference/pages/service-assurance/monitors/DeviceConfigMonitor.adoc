@@ -1,5 +1,6 @@
 
 = DeviceConfigMonitor
+:description: Learn about the DeviceConfigMonitor in OpenNMS {page-component-title} that tries to retrieve configuration from network devices and shows retrieval status.
 
 This monitor tries to retrieve configuration from the network device and shows the status of that retrieval (success, failed, and so on).
 

@@ -8,12 +8,12 @@
     DON'T EDIT THIS FILE :: GENERATED WITH CONFD
   -->
 
-  <connection-pool factory="{{getv "opennms/database/connection/poolfactory" "org.opennms.core.db.HikariCPConnectionFactory"}}"
-    idleTimeout="{{getv "opennms/database/connection/idletimeout" "600"}}"
-    loginTimeout="{{getv "opennms/database/connection/logintimeout" "3"}}"
-    minPool="{{getv "opennms/database/connection/minpool" "50"}}"
-    maxPool="{{getv "opennms/database/connection/maxpool" "50"}}"
-    maxSize="{{getv "opennms/database/connection/maxsize" "50"}}" />
+  <connection-pool factory="{{getv "/opennms/database/connection/poolfactory" "org.opennms.core.db.HikariCPConnectionFactory"}}"
+    idleTimeout="{{getv "/opennms/database/connection/idletimeout" "600"}}"
+    loginTimeout="{{getv "/opennms/database/connection/logintimeout" "3"}}"
+    minPool="{{getv "/opennms/database/connection/minpool" "25"}}"
+    maxPool="{{getv "/opennms/database/connection/maxpool" "50"}}"
+    maxSize="{{getv "/opennms/database/connection/maxsize" "50"}}" />
 
   <jdbc-data-source name="opennms"
                     database-name="{{getv "/opennms/dbname" "opennms"}}"

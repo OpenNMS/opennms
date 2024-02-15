@@ -1,6 +1,7 @@
 
 [[poller-dns-resolution-monitor]]
 = DNSResolutionMonitor
+:description: Learn about the DNSResolutionMonitor in OpenNMS {page-component-title} that tests if the node label of a node can be resolved via a DNS lookup.
 
 The DNS resolution monitor tests if the node label of a node can be resolved via a DNS lookup.
 This monitor uses the name resolver configuration from the poller configuration or from the operating system where {page-component-title} is running.

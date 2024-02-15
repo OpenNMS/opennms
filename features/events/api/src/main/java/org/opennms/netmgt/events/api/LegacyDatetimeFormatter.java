@@ -93,7 +93,14 @@ public class LegacyDatetimeFormatter implements EventDatetimeFormatter {
         return formatter;
     });
 
-    private static final List<ThreadLocal<DateFormat>> preferredOrder = Arrays.asList(FORMATTER_LONG, FORMATTER_CUSTOM, FORMATTER_FULL, FORMATTER_DEFAULT);
+    public static final ThreadLocal<DateFormat> FORMATTER_CUSTOM_LOCALE = ThreadLocal.withInitial(() -> {
+        Locale.setDefault(Locale.US);
+        final DateFormat formatter = DateFormat.getDateTimeInstance();
+        formatter.setLenient(true);
+        return formatter;
+    });
+
+    private static final List<ThreadLocal<DateFormat>> preferredOrder = Arrays.asList(FORMATTER_LONG, FORMATTER_CUSTOM, FORMATTER_CUSTOM_LOCALE, FORMATTER_FULL, FORMATTER_DEFAULT);
 
     @Override
     public Date parse(final String dateString) throws ParseException {

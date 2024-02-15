@@ -1,5 +1,6 @@
 [[adapter-wsman-asset]]
 = WS-Man Asset
+:description: Learn how to configure and use the WS-Man asset adapter to perform WS-Man queries and populate asset records for nodes in OpenNMS {page-component-title}.
 
 The WS-Man asset provisioning adapter performs WS-Man queries to populate asset records for the node.
 This can be very useful for automatically populating asset fields in a large number of managed systems.
@@ -22,9 +23,9 @@ NOTE: By default, this adapter runs 5 minutes after a provisiond `nodeScanComple
 To use this feature you have to install the WS-Man asset provisioning plugin from the repository.
 
 * For RPM-based distributions:
-** `yum install opennms-plugin-provisioning-wsman-asset`
+** `yum install {package-prefix}-plugin-provisioning-wsman-asset`
 * For Debian-based distributions:
-** `apt-get install opennms-plugin-provisioning-wsman-asset`
+** `apt-get install {package-prefix}-plugin-provisioning-wsman-asset`
 
 == Configuration
 

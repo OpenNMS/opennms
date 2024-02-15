@@ -1,5 +1,6 @@
 
 = WebMonitor
+:description: Learn how to configure and use the WebMonitor in OpenNMS {page-component-title} for performing HTTP connections using Apache HttpClient.
 
 WebMonitor is a clone of <<service-assurance/monitors/HttpMonitor.adoc#poller-http-monitor, HttpMonitor>>, that uses a different underlying library for doing HTTP connections.
 WebMonitor uses Apache HttpClient, which acts more like a real browser (follows redirects, and so on) than HttpMonitor.

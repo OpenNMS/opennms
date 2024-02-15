@@ -3,6 +3,7 @@
 
 [[vmware-handler]]
 = VMWare Handler
+:description: Learn how to use and configure the VMware adapter to pull hosts and/or virtual machines from a vCenter server into OpenNMS {page-component-title}.
 
 The VMware adapter pulls hosts and/or virtual machines from a vCenter server into {page-component-title}.
 With this adapter, you can automatically add, update, or remove nodes from your {page-component-title} based on the status of the VMware entity.

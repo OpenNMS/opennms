@@ -1,7 +1,7 @@
 
 [[time-series-storage]]
 = Time Series Database
-:description: Overview of OpenNMS time series database options: JRobin, RRDtool, Newts, ONMS Time Series DB (Meridian only). Plugins and parallel series writes.
+:description: Overview of OpenNMS time series database options: JRobin, RRDtool, and Newts. Plugins and parallel series writes.
 
 {page-component-title} stores performance data in a time series database (JRobin by default).
 For different scenarios you may want to use a different time series database.
@@ -28,19 +28,9 @@ Depending on I/O capabilities it works well for small- to medium-size installati
 | http://opennms.github.io/newts/[Newts] is an OpenNMS database schema for http://cassandra.apache.org[Cassandra].
 The time series is stored on a dedicated Cassandra cluster, which gives growth flexibility and lets time series data persist at a large scale.
 
-| OpenNMS Time Series DB
-ifeval::["{page-component-title}" == "Horizon"]
-| The Time Series DB is available only with Meridian.
-Contact sales@opennms.com to sign up for the Time Series DB.
-endif::[]
-ifeval::["{page-component-title}" == "Meridian"]
-| The OpenNMS Group now provides a limited availability cloud-hosted time series database to store performance metrics that {page-component-title} collects from the devices it monitors.
-The Time Series DB lets you move the most storage-intensive component of your network management system off-premises, for a smaller {page-component-title} footprint and improved redundancy.
-For more information, see xref:time-series-storage/timeseries/hosted-tss.adoc[].
-endif::[]
 |===
 
-This chapter describes how to configure {page-component-title} to use RRDtool, Newts, and the OpenNMS Time Series DB.
+This chapter describes how to configure {page-component-title} to use RRDtool and Newts.
 
 == Time series database plugins
 

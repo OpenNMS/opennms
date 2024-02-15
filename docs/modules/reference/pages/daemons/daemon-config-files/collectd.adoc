@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-collectd]]
 = Collectd
+:description: Learn about collectd, which collects performance data to persist node metric data over time in OpenNMS {page-component-title}.
 
 Collects xref:operation:deep-dive/performance-data-collection/introduction.adoc[performance management] data to persist node metric data over time.
 

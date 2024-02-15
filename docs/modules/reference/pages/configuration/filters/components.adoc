@@ -1,7 +1,7 @@
 
 [[filter-components]]
 = OpenNMS components that use filters
-:description: Get a list of the OpenNMS Horizon/Meridian components that use filters/rules: notfifd, collectd, pollerd, threshd, and the web UI.
+:description: Get a list of the OpenNMS {page-component-title} components that use filters/rules: notfifd, collectd, pollerd, threshd, and the web UI.
 
 == notifd
 

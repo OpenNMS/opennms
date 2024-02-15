@@ -40,12 +40,14 @@
     MissingParameterException mpe = ExceptionUtils.getRootCause(exception, MissingParameterException.class);
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Error" />
-  <jsp:param name="headTitle" value="Missing Parameter" />
-  <jsp:param name="headTitle" value="Error" />
-  <jsp:param name="breadcrumb" value="Error" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Missing Parameter")
+          .headTitle("Error")
+          .breadcrumb("Error")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 
 <h1>Missing Parameter</h1>

@@ -1,5 +1,6 @@
 
 = SshMonitor
+:description: Learn how to configure and use the SshMonitor in OpenNMS {page-component-title} to test the availability of an SSH service.
 
 The SshMonitor tests the availability of an SSH service.
 During the poll, it attempts to connect on the specified port.

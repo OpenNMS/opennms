@@ -1,5 +1,6 @@
 
 = IPFIX
+:description: Learn how the IPFIX UDP and TCP parsers in OpenNMS {page-component-title} accept packets from UDP/TCP listeners and forward them to an IPFIX adapter.
 
 The IP Flow Information Export (IPFIX) protocol is a vendor-neutral standard for transmitting traffic flow information.
 See <<operation:deep-dive/flows/introduction.adoc#ga-flow-support-introduction, Flow Support>> for details on flow support in {page-component-title}.

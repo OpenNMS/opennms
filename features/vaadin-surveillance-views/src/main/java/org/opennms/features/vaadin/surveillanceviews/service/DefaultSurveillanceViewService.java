@@ -332,6 +332,7 @@ public class DefaultSurveillanceViewService implements SurveillanceViewService {
 
                 criteriaBuilder.alias("node", "node");
                 criteriaBuilder.ne("node.type", "D");
+                criteriaBuilder.isNull("alarmAckUser");
 
                 criteriaBuilder.limit(100);
                 criteriaBuilder.distinct();

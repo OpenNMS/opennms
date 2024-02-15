@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-eventd]]
 = Eventd
+:description: Learn about eventd, a core OpenNMS {page-component-title} process that generates events.
 
 Core {page-component-title} process that generates xref:operation:deep-dive/events/introduction.adoc[events].
 

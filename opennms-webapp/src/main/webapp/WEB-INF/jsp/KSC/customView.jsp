@@ -41,16 +41,18 @@
 
 <% final String baseHref = org.opennms.web.api.Util.calculateUrlBase( request ); %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
-  <jsp:param name="headTitle" value="Performance" />
-  <jsp:param name="headTitle" value="Reports" />
-  <jsp:param name="headTitle" value="KSC" />
-  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="<a href='KSC/index.jsp'>KSC Reports</a>" />
-  <jsp:param name="breadcrumb" value="Custom View" />
-  <jsp:param name="renderGraphs" value="true" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Performance")
+          .headTitle("Reports")
+          .headTitle("KSC")
+          .breadcrumb("Reports", "report/index.jsp")
+          .breadcrumb("KSC Reports", "KSC/index.jsp")
+          .breadcrumb("Custom View")
+          .flags("renderGraphs")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <%-- A script to Save the file --%>
 <script type="text/javascript">

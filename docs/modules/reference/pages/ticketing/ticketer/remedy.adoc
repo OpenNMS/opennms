@@ -1,6 +1,7 @@
 
 [[ref-ticketing-remedy]]
 = Remedy Ticketing Plugin
+:description: Learn how to use the Remedy Ticketing Plugin to create requests in the BMC Remedy ARS Help Desk Module in response to {page-component-title} alarms.
 
 The Remedy ticketing plugin creates requests in the BMC Remedy ARS Help Desk Module in response to {page-component-title} alarms.
 

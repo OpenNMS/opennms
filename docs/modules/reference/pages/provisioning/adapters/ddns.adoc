@@ -1,5 +1,6 @@
 [[adapter-ddns]]
 = Dynamic DNS
+:description: Learn how the DDNS adapter uses the dynamic DNS protocol to send updated DNS records to your DNS system when OpenNMS {page-component-title} provisions nodes.
 
 The DDNS adapter uses the dynamic DNS protocol to send updated A/AAAA DNS records to your DNS system as nodes are provisioned into {page-component-title}.
 
@@ -10,9 +11,9 @@ For every IP address found, a corresponding forward DNS zone must exist on your 
 To use this feature you have to install the DNS provisioning plugin from the repository.
 
 * For RPM-based distributions:
-** `yum install opennms-plugin-provisioning-dns`
+** `yum install {package-prefix}-plugin-provisioning-dns`
 * For Debian-based distributions:
-** `apt-get install opennms-plugin-provisioning-dns`
+** `apt-get install {package-prefix}-plugin-provisioning-dns`
 
 == Configuration
 

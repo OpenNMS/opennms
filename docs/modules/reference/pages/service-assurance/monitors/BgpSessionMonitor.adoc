@@ -1,5 +1,6 @@
 
 = BgpSessionMonitor
+:description: Learn how to configure the BgpSessionMonitor in OpenNMS {page-component-title} to check if a BGP session to a peering partner (peer-ip) is functional.
 
 This monitor checks if a BGP session to a peering partner (peer-ip) is functional.
 The monitor uses the link:https://datatracker.ietf.org/doc/html/rfc1269[RFC1269 SNMP MIB] to monitor the BGP-Session, and uses the following OIDs to test the session status:

@@ -1,5 +1,5 @@
 = Map Search
-:description: Learn how to search the geographical map in OpenNMS Horizon/Meridian.
+:description: Learn how to search the geographical map in {page-component-title}.
 
 The search bar lets you do a simple text search, as well as searching particular fields associated with the node.
 

@@ -1,5 +1,6 @@
 [[hardware-inventory]]
 = Hardware Inventory
+:description: Learn how to configure OpenNMS {page-component-title} to import Entity-MIB information from SNMP agents and enrich node data.
 
 {page-component-title} can be extended to import Entity-MIB information from SNMP agents to enrich node data.
 There are two types of Entity-MIBs.
@@ -15,9 +16,9 @@ The optional hardware inventory extension of the provisiond service will add the
 To use this feature you have to install the SNMP hardware inventory plugin from the repository.
 
 * For RPM-based distributions:
-** `yum install opennms-plugin-provisioning-snmp-hardware-inventory`
+** `yum install {package-prefix}-plugin-provisioning-snmp-hardware-inventory`
 * For Debian-based distributions:
-** `apt-get install opennms-plugin-provisioning-snmp-hardware-inventory`
+** `apt-get install {package-prefix}-plugin-provisioning-snmp-hardware-inventory`
 
 == Configuration
 

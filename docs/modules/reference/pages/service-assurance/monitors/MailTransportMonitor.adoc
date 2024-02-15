@@ -1,5 +1,6 @@
 
 = MailTransportMonitor
+:description: Learn about the OpenNMS {page-component-title} MailTransportMonitor that runs a synthetic test of a full email transaction (sending to delivery confirmation).
 
 The MailTransportMonitor runs a synthetic test of a complete email transaction, including sending a mail and determining that it has been delivered.
 It can also use both sendmail-test and readmail-test independently to determine whether an email can be sent or a mailbox can be read.

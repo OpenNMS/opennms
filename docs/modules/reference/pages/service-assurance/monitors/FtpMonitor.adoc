@@ -1,5 +1,6 @@
 
 = FtpMonitor
+:description: Learn about the FtpMonitor in OpenNMS {page-component-title} that validates an FTP connection's login processes.
 
 The FtpMonitor validates an FTP connection's login processes.
 The monitor can test the FTP server on multiple ports with specific login data.

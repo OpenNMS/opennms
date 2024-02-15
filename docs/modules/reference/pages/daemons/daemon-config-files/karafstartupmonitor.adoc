@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-karafstartupmonitor]]
 = KarafStartupMonitor
+:description: Learn about the OpenNMS {page-component-title} KarafStartupMonitor, which tracks issues with starting the core Karaf runtime.
 
 Tracks issues with starting the core xref:reference:daemons/daemon-config-files/karaf.adoc[Karaf] runtime.
 

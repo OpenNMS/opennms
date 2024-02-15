@@ -1,8 +1,9 @@
 
 [[OmsaStorageMonitor]]
 = OmsaStorageMonitor
+:description: Learn about the OmsaStorageMonitor in OpenNMS {page-component-title} that lets you monitor your Dell OpenManaged server RAID array status.
 
-The OmsaStorageMonitor lets you monitor your https://www.dell.com/support/kbdoc/en-ca/000126778/how-to-dell-server-manage-multiple-servers-with-omsa-and-ome[Dell OpenManaged] servers RAID array status.
+The OmsaStorageMonitor lets you monitor your https://www.dell.com/support/kbdoc/en-ca/000126778/how-to-dell-server-manage-multiple-servers-with-omsa-and-ome[Dell OpenManaged] server RAID array status.
 This monitor supports the following OIDs from the https://www.dell.com/support/manuals/en-ca/dell-openmanage-software-9.1/snmp_om_9.1_reference%20guide/server-administrator-storage-management-mib?guid=guid-a067ce36-3019-4bf6-8ce4-d92ad428194d&lang=en-us[STORAGEMANAGEMENT-MIB]:
 
 [source, console]

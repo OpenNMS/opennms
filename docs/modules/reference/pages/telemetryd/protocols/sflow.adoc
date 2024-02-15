@@ -1,5 +1,6 @@
 
 = sFlow
+:description: Learn how to use and configure the sFlow UDP parser, adapter, and telemetry adapter in OpenNMS {page-component-title}.
 
 sFlow is capable of transporting both telemetry data and flow information.
 {page-component-title} can use both data types and extract and persist accordingly.

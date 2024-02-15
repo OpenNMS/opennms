@@ -1,5 +1,6 @@
 
 = TcpMonitor
+:description: Learn how to configure and use the TcpMonitor in OpenNMS {page-component-title} to use TCP to test OSI Layer 4 connectivity.
 
 This monitor uses TCP to test OSI Layer 4 connectivity.
 The monitor establishes a TCP connection to a specific port.

@@ -1,5 +1,6 @@
 
 = SmtpMonitor
+:description: Learn how to configure and use the SmtpMonitor in OpenNMS {page-component-title} to test for SMTP service availability on a node.
 
 The SMTP monitor tests for SMTP service availability on a node.
 The monitor first tries to establish a TCP connection on the specified port.

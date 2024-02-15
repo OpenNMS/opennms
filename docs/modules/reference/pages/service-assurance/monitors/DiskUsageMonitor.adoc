@@ -1,5 +1,6 @@
 
 = DiskUsageMonitor
+:description: Learn about the DiskUsageMonitor in OpenNMS {page-component-title} that tests the free space available on the specified storage disk of a monitored node.
 
 The DiskUsageMonitor tests the amount of free space available on the specified storage disk of a monitored node.
 The monitor inspects the http://tools.ietf.org/html/rfc1514[HOST-RESOURCES-MIB] hrStorageTable to get information about the available free storage space.

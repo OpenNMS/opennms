@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,11 +37,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+import org.opennms.core.utils.StringUtils;
 import org.opennms.features.geocoder.GeocoderConfiguration;
 import org.opennms.features.geocoder.GeocoderConfigurationException;
-
-import com.google.common.base.Strings;
 
 public class NominatimConfiguration extends GeocoderConfiguration {
 
@@ -111,13 +111,13 @@ public class NominatimConfiguration extends GeocoderConfiguration {
         if (!acceptUsageTerms) {
             throw new GeocoderConfigurationException(ACCEPT_USAGE_TERMS_KEY, "Please accept the usage terms");
         }
-        if (Strings.isNullOrEmpty(userAgent) && Strings.isNullOrEmpty(referer)) {
+        if (StringUtils.isEmpty(userAgent) && StringUtils.isEmpty(referer)) {
             throw new GeocoderConfigurationException(USER_AGENT_KEY, "Either 'User Agent' or 'Referer' must be provided");
         }
-        if (Strings.isNullOrEmpty(emailAddress)) {
+        if (StringUtils.isEmpty(emailAddress)) {
             throw new GeocoderConfigurationException(EMAIL_KEY, "Please provide a valid email address");
         }
-        if (Strings.isNullOrEmpty(urlTemplate)) {
+        if (StringUtils.isEmpty(urlTemplate)) {
             throw new GeocoderConfigurationException(URL_KEY, PROVIDE_A_VALUE_TEXT);
         }
 
@@ -151,4 +151,28 @@ public class NominatimConfiguration extends GeocoderConfiguration {
         configuration.setAcceptUsageTerms(getBoolean(properties, ACCEPT_USAGE_TERMS_KEY, false));
         return configuration;
     }
+
+    @Override
+	public int hashCode() {
+		return 31
+				* super.hashCode()
+				+ Objects.hash(acceptUsageTerms, emailAddress, referer, urlTemplate, useSystemProxy, userAgent);
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (!(obj instanceof NominatimConfiguration)) {
+			return false;
+		}
+		final NominatimConfiguration that = (NominatimConfiguration) obj;
+		return acceptUsageTerms == that.acceptUsageTerms && Objects.equals(emailAddress, that.emailAddress)
+				&& Objects.equals(referer, that.referer) && Objects.equals(urlTemplate, that.urlTemplate)
+				&& useSystemProxy == that.useSystemProxy && Objects.equals(userAgent, that.userAgent);
+	}
 }

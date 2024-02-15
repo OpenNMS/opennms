@@ -1,4 +1,5 @@
 = IP Interface Policy
+:description: Learn how to configure and use the IP interface policy in OpenNMS {page-component-title} to control the persistence of discovered interfaces.
 
 The `Matching IP Interface` policy controls whether discovered interfaces are persisted and if they are persisted, whether they will be forced to be managed or unmanaged.
 

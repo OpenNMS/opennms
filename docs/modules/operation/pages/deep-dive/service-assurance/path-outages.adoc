@@ -1,7 +1,7 @@
 
 [[ga-service-assurance-path-outage]]
 = Use Path Outages to Suppress Notifications
-:description: How to use path outages to suppress notifications with OpenNMS Horizon/Meridian.
+:description: How to use path outages to suppress notifications with {page-component-title}.
 
 An outage on a central network component can cause a large number of node outages.
 You can use path outages to suppress notifications based on how nodes depend on each other in the network, as outlined in a critical path definition.

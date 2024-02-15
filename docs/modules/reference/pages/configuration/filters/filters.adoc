@@ -1,7 +1,7 @@
 
 [[filters]]
 = Filters
-:description: Learn about the database schema file in OpenNMS Horizon/Meridian and how to use filters (rules) to select IP addresses from the ipinterface table.
+:description: Learn about the database schema file in OpenNMS {page-component-title} and how to use filters (rules) to select IP addresses from the ipinterface table.
 
 A filter (also known as a rule) is a shorthand expression that allows you to select IP addresses from the ipinterface table.
 The rule builds the WHERE clause of a SQL query.

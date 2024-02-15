@@ -1,6 +1,6 @@
 
 = Event Troubleshooting
-:description: How to troubleshoot events in OpenNMS Horizon/Meridian: debugging, manually send events, Karaf shell.
+:description: How to troubleshoot events in {page-component-title}: debugging, manually send events, Karaf shell.
 
 This section describes how to troubleshoot events in {page-component-title}.
 

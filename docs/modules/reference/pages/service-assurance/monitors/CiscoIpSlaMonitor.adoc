@@ -1,5 +1,6 @@
 
 = CiscoIpSlaMonitor
+:description: Learn how to configure and use the CiscoIpSlaMonitor in OpenNMS {page-component-title} to monitor IP SLA configurations on your Cisco devices.
 
 Use this monitor to monitor IP SLA configurations on your Cisco devices.
 This monitor supports the following SNMP OIDS from http://www.circitor.fr/Mibs/Html/C/CISCO-RTTMON-MIB.php[CISCO-RTT-MON-MIB]:

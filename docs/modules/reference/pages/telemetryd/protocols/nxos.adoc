@@ -1,5 +1,6 @@
 
 = Cisco NX-OS Telemetry
+:description: Learn how to enable support for Cisco NX-OS telemetry to push operational statistic asynchronously in OpenNMS {page-component-title}.
 
 The Cisco NX-OS Telemetry lets you push operational statistics asynchronously to {page-component-title}.
 {page-component-title} sends a request to stream periodic updates once to the device.

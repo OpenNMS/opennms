@@ -13,12 +13,7 @@ endif::[]
 .Install {page-component-title} Sentinel
 [source, console]
 ----
-ifeval::["{page-component-title}" == "Horizon"]
-sudo dnf -y install opennms-sentinel
-endif::[]
-ifeval::["{page-component-title}" == "Meridian"]
-sudo dnf -y install meridian-sentinel
-endif::[]
+sudo dnf -y install {package-prefix}-sentinel
 ----
 
 TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.

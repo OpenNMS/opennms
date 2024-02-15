@@ -1,7 +1,7 @@
 
 [[provisiond-integration]]
 = Integrating with Provisiond
-:description: How to use the provision daemon (provisiond) to integrate inventory systems in OpenNMS Horizon/Meridian.
+:description: How to use the provision daemon (provisiond) to integrate inventory systems in {page-component-title}.
 
 If you have another inventory system to keep track of nodes on your network, you can define a requisition to group nodes within {page-component-title}.
 There are multiple ways you can add nodes to a requisition.

@@ -1,6 +1,6 @@
 [[dcb-manage]]
 = Manage Device Configuration Backups
-:description: How to manage device configuration backups in OpenNMS Horizon/Meridian.
+:description: How to manage device configuration backups in {page-component-title}.
 
 Once you have set up device configuration backups, you can do the following in the UI:
 

@@ -42,12 +42,13 @@
 <%@ page import="org.opennms.web.filter.Filter" %>
 <%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Events" />
-  <jsp:param name="headTitle" value="Events" />
-  <jsp:param name="location" value="event" />  
-  <jsp:param name="breadcrumb" value="Events" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Events")
+          .breadcrumb("Events")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="../../taglib.tld" prefix="onms" %>

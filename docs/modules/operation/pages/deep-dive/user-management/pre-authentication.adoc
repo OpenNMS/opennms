@@ -1,6 +1,6 @@
 
 = Web UI Pre-Authentication
-:description: How to run OpenNMS Horizon/Meridian behind a proxy that provides pre-authentication.
+:description: How to run {page-component-title} behind a proxy that provides pre-authentication.
 
 You can configure your {page-component-title} instance to run behind a proxy that provides authentication.
 Authenticated users can then be directed to the {page-component-title} web UI using a header.

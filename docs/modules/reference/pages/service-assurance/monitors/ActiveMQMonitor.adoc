@@ -1,7 +1,8 @@
 
 = ActiveMQMonitor
+:description: Learn how to configure and use the ActiveMQMonitor in OpenNMS {page-component-title} to test the availability of an ActiveMQ broker.
 
-This monitor tests the availability of an ActiveMQ Broker.
+This monitor tests the availability of an ActiveMQ broker.
 The service is considered available if a successful connection is made.
 
 == Monitor facts

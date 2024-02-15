@@ -3,6 +3,7 @@
 
 [[import-handlers]]
 = Import Handlers
+:description: Learn how OpenNMS {page-component-title} supports import handlers to help provision nodes from external systems into a network inventory requisition.
 
 {page-component-title} supports import handlers to help provision nodes from an external system (foreign source) into a requisition.
 This is done through external requisitions that you specify in the External Requisitions and Thread Pools screen, or that you configure via the xref:development:rest/config_management.adoc[configuration management API].

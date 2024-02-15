@@ -1,5 +1,6 @@
 
 = PercMonitor
+:description: Learn how to configure the PercMonitor in OpenNMS {page-component-title} to test the status of a PowerEdge Expandable RAID Controller (PERC) RAID array.
 
 This monitor tests the status of a PERC RAID array.
 

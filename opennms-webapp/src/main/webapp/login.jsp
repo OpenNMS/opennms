@@ -1,7 +1,9 @@
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-  <jsp:param name="title" value="Login" />
-  <jsp:param name="quiet" value="true" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .flags("quiet")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 <%@ taglib prefix='c' uri='http://java.sun.com/jsp/jstl/core'%>
 <%--
 /*******************************************************************************
@@ -141,6 +143,12 @@
           && request.getParameter("session_expired").equals("true")
           && session != null) {
       session.removeAttribute("SPRING_SECURITY_SAVED_REQUEST");
+  }
+
+  // If login page is called in an authorized session, just redirect to dashboard
+  if (request.getUserPrincipal() != null) {
+    response.sendRedirect("index.jsp");
+    return;
   }
 %>
 <script>

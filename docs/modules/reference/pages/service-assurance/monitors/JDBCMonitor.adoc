@@ -1,5 +1,6 @@
 
 = JDBCMonitor
+:description: Learn about the JDBCMonitor in OpenNMS {page-component-title} that checks if it can connect to a database and get the catalog from the DB management system.
 
 The JDBCMonitor checks that it is able to connect to a database and if it can get the database catalog from that database management system (DBMS).
 It is based on the http://www.oracle.com/technetwork/java/javase/jdbc/index.html[JDBC] technology to connect and communicate with the database.

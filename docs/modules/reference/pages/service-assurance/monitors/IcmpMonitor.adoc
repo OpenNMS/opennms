@@ -1,6 +1,7 @@
 
 [[poller-icmp-monitor]]
 = IcmpMonitor
+:description: Learn about the IcmpMonitor in OpenNMS {page-component-title} that tests for ICMP service availability by sending echo-request ICMP messages.
 
 The ICMP monitor tests for ICMP service availability by sending echo-request ICMP messages.
 The service is considered available when the node sends back an echo-reply ICMP message within the specified amount of time.

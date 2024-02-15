@@ -78,12 +78,14 @@
     pageContext.setAttribute("addAfterFilter", "<i class=\"fa fa-toggle-left\"></i>");
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Notice List" />
-  <jsp:param name="headTitle" value="Notice List" />
-  <jsp:param name="breadcrumb" value="<a href='notification/index.jsp'>Notifications</a>" />
-  <jsp:param name="breadcrumb" value="Notice List" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Notice List")
+          .breadcrumb("Notifications", "notification/index.jsp")
+          .breadcrumb("Notice List")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script type="text/javascript" >
     function checkAllCheckboxes() {

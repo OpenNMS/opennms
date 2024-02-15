@@ -1,5 +1,6 @@
 
 = Junos Telemetry Interface
+:description: Learn how to the Junos Telemetry Interface (JTI) lets you push operational statistics asynchronously to OpenNMS {page-component-title}.
 
 The Junos Telemetry Interface (JTI) lets you push operational statistics asynchronously to {page-component-title}.
 {page-component-title} sends a request to stream periodic updates once to the device.

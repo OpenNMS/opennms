@@ -1,0 +1,55 @@
+
+= BMP Setup
+:description: Learn how to set up a BGP Monitoring Protocol (BMP) integration (core, Minions, and Sentinel) in OpenNMS Horizon/Meridian.
+
+This section describes how to set up BMP integration for advanced monitoring of the Border Gateway Protocol, with the core, Minions, and Sentinel.
+
+== Requirements
+
+* BMP-enabled router
+
+== Configure BMP in telemetryd
+
+To configure BMP, enable the BMP-TCP-5000 listener and the various BMP adapters in the `telemetryd-configuration.xml` file, as in the following example for the BMP peer status adapter:
+
+[source, xml]
+----
+     <queue name="BMP">
+        <adapter name="BMP-Peer-Status-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.bmp.adapter.BmpPeerStatusAdapter" enabled="true">
+        </adapter>
+----
+
+The adapters you choose to enable depends on the use case.
+For example, if you want to know the status of peers, you would enable the BMP peer status adapter.
+If you want to know all the BGP updates, enable the BGP persisting adapter.
+
+In addition to enabling the listener and adapters, you can configure various parameters for the parser and adapters.
+See subsequent chapters in this section for details on these optional parameters.
+
+== Configure BMP Listener on a Minion
+
+To enable and configure a TCP listener for BMP on Minion, connect to the Karaf Console and set the following properties:
+
+NOTE: You must also enable the protocol on {page-component-title} for the messages to be processed.
+
+.From the Minion Karaf console
+[source, karaf]
+----
+config:edit --alias tcp-5000 --factory org.opennms.features.telemetry.listeners
+config:property-set name BMP
+config:property-set class-name org.opennms.netmgt.telemetry.listeners.TcpListener
+config:property-set parameters.port 5000
+config:property-set parsers.0.name BMP
+config:property-set parsers.0.class-name org.opennms.netmgt.telemetry.protocols.bmp.parser.BmpParser
+config:update
+----
+
+If you do not specify the queue name, the fallback is the name of the parser.
+
+== Distributed BMP processing with Sentinel
+
+You can use Sentinel to process BMP statistics ingested by one or more Minions in order to alleviate load on the core.
+All of the BMP-related adapters can run on Sentinel, allowing you to generate events and metrics, and ingest route changes.
+In this mode, events are sent back to the message broker for the core to process and metrics are persisted directly to the time series database.
+
+For an example of how to set up BMP with Sentinel, see xref:reference:telemetryd/protocols/bmp/persisting-adapter.adoc#run-bmp-sentinel[Run BMP adapter on Sentinel].

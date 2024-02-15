@@ -1,5 +1,6 @@
 
 = NtpMonitor
+:description: Learn about the NtpMonitor in OpenNMS {page-component-title} that tests for NTP service availability.
 
 The NTP monitor tests for NTP service availability.
 During the poll, an NTP request query packet is generated.

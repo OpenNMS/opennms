@@ -1,7 +1,7 @@
 
 [[ga-events-sources-syslog]]
 = Syslog Messages
-:description: All about events and syslog messages in OpenNMS Horizon/Meridian: parsers and RadixTreeSyslogParser parameters and tokens.
+:description: All about events and syslog messages in {page-component-title}: parsers and RadixTreeSyslogParser parameters and tokens.
 
 Syslog messages sent over the network to {page-component-title} can be transformed into events according to preconfigured rules.
 

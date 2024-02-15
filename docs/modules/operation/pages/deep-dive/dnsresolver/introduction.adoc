@@ -1,7 +1,7 @@
 
 = DNS Resolver
 
-:description: Learn how OpenNMS Horizon/Meridian uses the DNS Resolver internally to provide lookup functionality as required.
+:description: Learn how {page-component-title} uses the DNS Resolver internally to provide lookup functionality as required.
 
 OpenNMS modules and functions use the DNS Resolver internally to provide lookup functionality as required.
 

@@ -1,3 +1,4 @@
 = Node Categorization Policy
+:description: Learn about the Node Categorization policy in OpenNMS {page-component-title} to set categories to assign to provisioned nodes.
 
-The Node Categorization Policy lets you set categories to assign to provisioned nodes.
+The Node Categorization policy lets you set categories to assign to provisioned nodes.

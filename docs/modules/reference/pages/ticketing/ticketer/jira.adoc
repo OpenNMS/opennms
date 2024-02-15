@@ -1,21 +1,22 @@
 
 [[ref-ticketing-jira]]
 = Jira Ticketing Plugin
+:description: Learn how to set up and use the Jira Ticketing Plugin to create Jira issues in response to {page-component-title} alarms.
 
 The Jira ticketing plugin creates Jira issues in response to {page-component-title} alarms.
 
 [[ref-ticketing-jira-setup]]
 == Setup
 
-IMPORTANT: The Jira ticketer requires the `opennms-plugin-ticketer-jira` package to be installed before use.
+IMPORTANT: The Jira ticketer requires the `{package-prefix}-plugin-ticketer-jira` package to be installed before use.
 
 ****
-To install the `opennms-plugin-ticketer-jira` package, use one of the following commands:
+To install the `{package-prefix}-plugin-ticketer-jira` package, use one of the following commands:
 
 * For RPM-based distributions:
-** `yum install opennms-plugin-ticketer-jira`
+** `yum install {package-prefix}-plugin-ticketer-jira`
 * For Debian-based distributions:
-** `apt-get install opennms-plugin-ticketer-jira`
+** `apt-get install {package-prefix}-plugin-ticketer-jira`
 ****
 
 . Once the package has been installed, set the ticketer plugin property in `$\{OPENNMS_HOME}/etc/opennms.properties.d/ticketer.properties` to enable the plugin:

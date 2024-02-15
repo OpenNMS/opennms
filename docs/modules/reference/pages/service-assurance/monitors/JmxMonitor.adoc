@@ -1,5 +1,6 @@
 [[poller-jmx-monitor]]
 = JmxMonitor
+:description: Learn about the JmxMonitor in OpenNMS {page-component-title} that lets you test the service availability of Java applications.
 
 The JMX monitor lets you test the service availability of Java applications.
 The monitor offers the following functionalities:

@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-pollerd]]
 = Pollerd
+:description: Learn about pollerd in OpenNMS {page-component-title}, which performs service assurance monitor checks to determine device availability.
 
 Performs xref:operation:deep-dive/service-assurance/introduction.adoc[service assurance] monitor checks to determine device availability.
 
@@ -30,11 +31,6 @@ A reload event loads changed configuration parameters of existing monitors, but 
 Can reload with `uei.opennms.org/internal/schedOutagesChanged`.
 | Yes
 | No
-
-| pollerd.events.xml
-| Event definitions for pollerd (for example, nodeLostService, interfaceDown, or nodeDown).
-|
-|
 |===
 
 .Pollerd log file overview

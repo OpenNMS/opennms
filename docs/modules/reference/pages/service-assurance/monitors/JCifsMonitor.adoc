@@ -1,18 +1,19 @@
 
 [[poller-jcifs-monitor]]
 = JCifsMonitor
+:description: Learn about the JCifsMonitor in OpenNMS {page-component-title} that tests a file-sharing service based on the CIFS/SMB protocol.
 
-This monitor lets you to test a file-sharing service based on the CIFS/SMB protocol.
+This monitor tests a file-sharing service based on the CIFS/SMB protocol.
 
-IMPORTANT: The use of the JCifsMonitor requires the installation of the `opennms-plugin-protocol-cifs` package before polling will start.
+IMPORTANT: The use of the JCifsMonitor requires the installation of the `{package-prefix}-plugin-protocol-cifs` package before polling will start.
 
 ****
-To install the opennms-plugin-protocol-cifspackage:
+To install the {package-prefix}-plugin-protocol-cifspackage:
 
 * For RPM-based distributions:
-** `yum install opennms-plugin-protocol-cifs`
+** `yum install {package-prefix}-plugin-protocol-cifs`
 * For Debian-based distributions:
-** `apt-get install opennms-plugin-protocol-cifs`
+** `apt-get install {package-prefix}-plugin-protocol-cifs`
 ****
 
 With the JCifsMonitor, you can run tests for the following use cases:

@@ -1,19 +1,20 @@
 
 = RadiusAuthMonitor
+:description: Learn how to configure and use the RadiusAuthMonitor in OpenNMS {page-component-title} to test the functionality of the RADIUS authentication system.
 
 This monitor lets you test the functionality of the link:http://freeradius.org/rfc/rfc2865.html[RADIUS] authentication system.
 The availability is tested by sending an AUTH packet to the RADIUS server.
 If a valid ACCEPT response is received, the RADIUS service is up and considered available.
 
-IMPORTANT: The use of the RadiusAuthMonitor requires the installation of the `opennms-plugin-protocol-radius` package before polling will start.
+IMPORTANT: The use of the RadiusAuthMonitor requires the installation of the `{package-prefix}-plugin-protocol-radius` package before polling will start.
 
 ****
-To install the opennms-plugin-protocol-radius package:
+To install the {package-prefix}-plugin-protocol-radius package:
 
 * For RPM-based distributions:
-** `yum install opennms-plugin-protocol-radius`
+** `yum install {package-prefix}-plugin-protocol-radius`
 * For Debian-based distributions:
-** `apt-get install opennms-plugin-protocol-radius`
+** `apt-get install {package-prefix}-plugin-protocol-radius`
 ****
 
 This monitor performs similar tests to using the radtest tool to check the status of a RADIUS server.

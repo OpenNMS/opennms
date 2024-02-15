@@ -1,4 +1,5 @@
 = StrafePingMonitor
+:description: Learn how to configure and use the StrafePingMonitor in OpenNMS {page-component-title} to use ICMP to monitor a specific endpoint and visualize packet loss.
 
 This monitor uses ICMP to monitor http://en.wikipedia.org/wiki/Packet_delay_variation[packet delay variation] to a specific endpoint.
 The main use case is to monitor a WAN endpoint and visualize packet loss and ICMP packet round-trip time deviation.

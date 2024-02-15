@@ -1,5 +1,6 @@
 [[ref-ticketer]]
 = Ticketer
+:description: Overview of the ticketing section in the OpenNMS {page-component-title} documentation.
 
 This section describes all available built-in ticketers for use with our xref:operation:deep-dive/ticketing/introduction.adoc[ticketing] service.
 

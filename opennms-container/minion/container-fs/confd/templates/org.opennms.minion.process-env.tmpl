@@ -5,7 +5,7 @@ are used by this template. */ -}}
 #
 # DON'T EDIT THIS FILE :: GENERATED WITH CONFD
 #
-JAVA_OPTS=
+CUSTOM_JAVA_OPTS=
     {{- range $index, $element := getvs "/process-env/java-opts/*" -}}
         {{- if $index}} {{end -}}
         {{- $element -}}

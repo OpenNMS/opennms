@@ -260,15 +260,17 @@
 
 <%@page import="org.opennms.core.resource.Vault"%>
 <%@ page import="org.opennms.core.utils.WebSecurityUtils" %>
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Node" />
-  <jsp:param name="headTitle" value="${model.label}" />
-  <jsp:param name="headTitle" value="ID ${model.id}" />
-  <jsp:param name="headTitle" value="Availability" />
-  <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-  <jsp:param name="breadcrumb" value="<a href='${fn:escapeXml(nodeLink)}'>Node</a>" />
-  <jsp:param name="breadcrumb" value="Availability" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("${model.label}")
+          .headTitle("ID ${model.id}")
+          .headTitle("Availability")
+          .breadcrumb("Search", "element/index.jsp")
+          .breadcrumb("Node", "${nodeLink}")
+          .breadcrumb("Availability")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="onms">
   <h2>Node: <%=WebSecurityUtils.sanitizeString((String) nodeModel.get("label")) %> (ID: ${model.id})</h2>

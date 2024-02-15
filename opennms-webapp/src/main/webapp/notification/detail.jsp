@@ -82,12 +82,14 @@
 	String nodeLocation = NetworkElementFactory.getInstance(getServletContext()).getNodeLocation(notice.getNodeId());
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Notice Detail" />
-  <jsp:param name="headTitle" value="Notice Detail" />
-  <jsp:param name="breadcrumb" value="<a href='notification/index.jsp'>Notifications</a>" />
-  <jsp:param name="breadcrumb" value='<%="Notice " + notice.getId()%>' />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Notice Detail")
+          .breadcrumb("Notifications", "notification/index.jsp")
+          .breadcrumb("Notice " + notice.getId())
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="card">
   <div class="card-header">

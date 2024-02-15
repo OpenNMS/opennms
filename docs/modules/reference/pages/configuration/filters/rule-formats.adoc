@@ -1,7 +1,7 @@
 
 [[filter-rule-format]]
 = Rule formats
-:description: View the formats for filters/rules in OpenNMS Horizon/Meridian: CDATA construct, GUI construct, and catinc.
+:description: View the formats for filters/rules in OpenNMS {page-component-title}: CDATA construct, GUI construct, and catinc.
 
 There are at least two formats for these rules in xml (GUI format follows).
 

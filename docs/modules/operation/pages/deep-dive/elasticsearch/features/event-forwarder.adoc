@@ -1,6 +1,6 @@
 
 = Event Forwarder
-:description: Learn how to configure the Event Forwarder in OpenNMS Horizon/Meridian to send events to Elasticsearch.
+:description: Learn how to configure the Event Forwarder in {page-component-title} to send events to Elasticsearch.
 
 The Event Forwarder (formerly known as the Elasticsearch REST plugin) forwards events to https://github.com/elastic/elasticsearch[Elasticsearch].
 The events in Elasticsearch can then be used for indexing, long-time archival, plotting with Grafana, and browsing with Kibana.

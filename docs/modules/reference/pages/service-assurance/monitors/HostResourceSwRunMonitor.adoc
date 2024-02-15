@@ -1,5 +1,6 @@
 
 = HostResourceSwRunMonitor
+:description: Learn about the HostResourceSwRunMonitor in OpenNMS {page-component-title} that tests the running state of one or more processes, via SNMP.
 
 This monitor tests the running state of one or more processes.
 It does this via SNMP by inspecting the http://www.ietf.org/rfc/rfc2790[HOST-RESOURCES-MIB] hrSwRunTable.

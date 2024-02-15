@@ -1,9 +1,118 @@
 
 [[ga-events-sources-tl1]]
 = TL1 Autonomous Messages
-:description: Overview of retrieving autonomous messages from TL1-enabled equipment in OpenNMS Horizon/Meridian.
+:description: Overview of retrieving autonomous messages from TL1-enabled equipment in {page-component-title}.
 
 Autonomous messages can be retrieved from certain TL1-enabled equipment and transformed into events.
+TL1 (http://en.wikipedia.org/wiki/Transaction_Language_1[Transaction Language 1]) is a management protocol commonly used in the telecommunications industry.
+It is an ASCII-based protocol that is both machine-readable and human-readable.
 
-IMPORTANT: The `Tl1d` service daemon, which enables {page-component-title} to receive TL1 autonomous messages, must be enabled for this functionality to work.
+IMPORTANT: The xref:reference:daemons/daemon-config-files/tl1d.adoc[`Tl1d` service daemon], which enables {page-component-title} to receive TL1 autonomous messages, must be enabled for this functionality to work.
 This service daemon is *disabled* by default.
+
+TL1 messages are only supported over TCP, and cannot be retrieved over RS-232 serial connections.
+There also is no mechanism to filter which messages get translated into {page-component-title} events.
+
+== Configuration
+
+Tl1d needs to have one or more "elements" defined with which to communicate.
+In TL1 terminology, an element is a node that has a TL1 interface.
+This might be an individual switch or concentrator, or it might be an element management system (EMS) that serves as a proxy for many other elements.
+The default `tl1d-configuration.xml` file has no elements defined, so in order to start receiving TL1 messages you must define at least one element.
+
+.Example `tl1d-configuration.xml` with a single element defined
+[source, xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<tl1d-configuration
+   xmlns:this="http://xmlns.opennms.org/xsd/config/tl1d-configuration"
+   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+   xsi:schemaLocation="http://xmlns.opennms.org/xsd/config/tl1d-configuration">
+
+   <tl1-element host="10.21.31.41" port="502"
+      userid="opennms" password="rulz"
+      reconnect-delay="30000" />
+
+</tl1d-configuration>
+----
+
+.TL1d configuration parameters
+[options="header"]
+[cols="1,3a,2"]
+|===
+| Parameter
+| Description
+| Default
+
+3+|*Required*
+
+| host
+| The hostname or IP address of the node to which Tl1d will connect.
+| n/a
+
+3+|*Optional*
+
+| port
+| The TCP port on the node identified by the host attribute on which Tl1d will connect.
+| 502
+
+| userid
+| A user ID with which to authenticate to the element.
+| opennms
+
+| password
+| The password corresponding to the user identified by the userid attribute.
+| opennms
+
+| reconnect-delay
+| The time (in milliseconds) that Tl1d should wait before reconnecting to this element if it becomes disconnected.
+| 30000
+
+| tl1-client-api^1^
+| The fully qualified Java class name of a class that provides methods for communicating with this element.
+| org.opennms.netmgt.tl1d.Tl1ClientImpl
+
+| tl1-message-parser^1^
+| The fully qualified Java class name of a class that provides methods for parsing messages received from this element.
+| org.opennms.netmgt.tl1d.Tl1AutonomousMessageProcessor
+|===
+^1^ These two attributes should rarely, if ever, need to be changed from their defaults.
+
+== Event format
+
+Tl1d automatically subscribes to and recognizes TL1 autonomous messages received from elements to which it has successfully connected and authenticated.
+It parses these autonomous messages and creates {page-component-title} events.
+These events have a UEI of `uei.opennms.org/api/tl1d/message/autonomous`, and convey information from the autonomous message with the following event parameters:
+
+raw-message:: The original, unprocessed TL1 autonomous message.
+alarm-code:: The alarm-code field from the received TL1 autonomous message.
+atag:: The Autonomous Tag (ATAG) field from the received TL1 autonomous message.
+verb:: The Verb field from the received TL1 autonomous message; one of REPT (report), EVT (event), or SESSION.
+autoblock:: The Auto Block field from the received TL1 autonomous message.
+aid:: The Access Identifier (AID) field from the received TL1 autonomous message.
+additionalParams:: Any parameters from the Auto Block of the received TL1 autonomous message beyond AID, notification code (if present), and severity.
+
+== Handling events
+
+As all Tl1d events come in with a uniform UEI, here are some ways you could handle the received events.
+
+* Event translation and passive status
++
+A common use case might be to represent individual TL1 elements, which are typically not reachable directly via IP, as passive nodes in {page-component-title}.
+The xref:operation:deep-dive/events/event-translator.adoc[Event Translator] and xref:reference:service-assurance/monitors/PassiveStatusMonitor.adoc[Passive Status Keeper] features allow the state of various services to be updated through a specifically crafted event.
+
+* Alarms, automations, and trouble ticketing
++
+The default TL1 autonomous message event in {page-component-title} is annotated with alarm data.
+By customizing that alarm data to your needs, you can enable sophisticated automations that perform event enrichment and integrate with external systems.
+One such example is to create xref:operation:deep-dive/ticketing/introduction.adoc[trouble tickets], either automatically or manually, in an external help desk system via {page-component-title}'s ticketer interface.
+
+* Translation to SNMP traps
++
+{page-component-title} can easily translate and forward TL1 events as SNMP traps.
+The `SnmpTrapHelper` class, typically used from a Scriptd script, has a method specifically built for this purpose:
++
+[source]
+----
+public void sendTL1AutonomousMsgTrap(Event event, String destAddr, int destPort, String trapVersion, String community) throws SnmpTrapHelperException, UnknownHostException
+----

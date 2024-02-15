@@ -1,6 +1,7 @@
 
 [[poller-ldap-monitor]]
 = LdapMonitor
+:description: Learn about the LdapMonitor in OpenNMS {page-component-title} that tests for LDAP service availability.
 
 The LDAP monitor tests for LDAP service availability.
 The LDAP monitor first tries to establish a TCP connection on the specified port.

@@ -1,8 +1,8 @@
 
 = NetFlow v5
+:description: Learn how to use and configure NetFLow v5 UDP parser and adapter in OpenNMS {page-component-title}.
 
 See <<operation:deep-dive/flows/introduction.adoc#ga-flow-support-introduction, Flow Support>> for details on flow support in {page-component-title}.
-
 
 [[telemetryd-netflow5-parser-udp]]
 == Netflow v5 UDP parser

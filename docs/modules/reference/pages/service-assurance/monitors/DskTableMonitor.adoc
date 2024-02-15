@@ -1,5 +1,6 @@
 
 = DskTableMonitor
+:description: Learn about the DskTableMonitor in OpenNMS {page-component-title} that tests if a disk or partition is under the minimum required space configured for it.
 
 The DskTableMonitor tests the `dskErrorFlag` signaling that the disk or partition is under the minimum required space configured for it.
 The monitor expects the value `1` to fail and provides the content of `dskErrorMsg` as event reason.

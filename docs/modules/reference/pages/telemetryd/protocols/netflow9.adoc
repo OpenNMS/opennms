@@ -1,8 +1,8 @@
 
 = NetFlow v9
+:description: Learn how to use and configure NetFLow v9 UDP parser and adapter in OpenNMS {page-component-title}.
 
 See <<operation:deep-dive/flows/introduction.adoc#ga-flow-support-introduction, Flow Support>> for details on flow support in {page-component-title}.
-
 
 [[telemetryd-netflow9-parser-udp]]
 == Netflow v9 UDP Parser

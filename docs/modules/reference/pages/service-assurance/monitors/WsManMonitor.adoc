@@ -1,5 +1,6 @@
 
 = WsManMonitor
+:description: Learn about the WsManMonitor in OpenNMS {page-component-title} to issue a WS-Man GET command and validate the results using a Spring language expression.
 
 Use this monitor to issue a WS-Man GET command and validate the results using a link:http://docs.spring.io/spring/docs/current/spring-framework-reference/html/expressions.html[SPEL] expression.
 
