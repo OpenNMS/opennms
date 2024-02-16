@@ -44,7 +44,7 @@ RUN chmod -R g-w /opt/usr-share/sentinel && \
 
 FROM ${BASE_IMAGE} as sentinel-base
 
-ARG REQUIRED_RPMS="hostname uuid"
+ARG REQUIRED_RPMS="hostname uuid procps"
 
 SHELL ["/bin/bash", "-c"]
 
