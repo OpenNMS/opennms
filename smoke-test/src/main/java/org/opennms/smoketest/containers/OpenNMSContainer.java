@@ -399,8 +399,8 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
             props.put("JAEGER_ENDPOINT", JaegerContainer.getThriftHttpURL());
         }
 
-        // disable User Data Collection
-        props.put("opennms.userDataCollection.show", "false");
+        // disable Product Update Enrollment
+        props.put("opennms.productUpdateEnrollment.show", "false");
 
         // output Karaf logs to the console to help in debugging intermittent container startup failures
         props.put("karaf.log.console", "INFO");

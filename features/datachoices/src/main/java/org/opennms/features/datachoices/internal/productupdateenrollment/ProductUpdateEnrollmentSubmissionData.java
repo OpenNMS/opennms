@@ -19,15 +19,17 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.features.datachoices.internal.userdatacollection;
+package org.opennms.features.datachoices.internal.productupdateenrollment;
 
 /**
- * Data received from user UI input, sent to DataChoiceRestService.
+ * Data sent to Product Update Enrollment submission endpoint.
  */
-public class UserDataCollectionFormData {
-    public Boolean consent;
+public class ProductUpdateEnrollmentSubmissionData {
+    public boolean consent;
     public String firstName;
     public String lastName;
     public String email;
     public String company;
+    public String product;
+    public String systemId;
 }

@@ -95,20 +95,20 @@
         <property name="notificationDao" ref="notificationDao"/>
     </bean>
 
-    <bean id="userDataCollectionSubmissionClient" class="org.opennms.features.datachoices.internal.userdatacollection.UserDataCollectionSubmissionClient">
+    <bean id="productUpdateEnrollmentSubmissionClient" class="org.opennms.features.datachoices.internal.productupdateenrollment.ProductUpdateEnrollmentSubmissionClient">
         <property name="endpointUrl" value="https://stats.opennms.org/datachoices/user-data-collection" />
     </bean>
 
-    <bean id="userDataCollectionService" class="org.opennms.features.datachoices.internal.userdatacollection.UserDataCollectionServiceImpl">
-        <property name="client" ref="userDataCollectionSubmissionClient" />
+    <bean id="productUpdateEnrollmentService" class="org.opennms.features.datachoices.internal.productupdateenrollment.ProductUpdateEnrollmentServiceImpl">
+        <property name="client" ref="productUpdateEnrollmentSubmissionClient" />
     </bean>
-    <service interface="org.opennms.features.datachoices.internal.userdatacollection.UserDataCollectionService" ref="userDataCollectionService">
+    <service interface="org.opennms.features.datachoices.internal.productupdateenrollment.ProductUpdateEnrollmentService" ref="productUpdateEnrollmentService">
     </service>
 
     <bean id="dataChoiceRestService" class="org.opennms.features.datachoices.web.internal.DataChoiceRestServiceImpl">
         <property name="stateManager" ref="stateManager" />
         <property name="usageStatisticsReporter" ref="usageStatisticsReporter" />
-        <property name="userDataCollectionService" ref="userDataCollectionService" />
+        <property name="productUpdateEnrollmentService" ref="productUpdateEnrollmentService" />
     </bean>
     <service interface="org.opennms.features.datachoices.web.DataChoiceRestService" ref="dataChoiceRestService">
         <service-properties>
@@ -134,8 +134,8 @@
         </service-properties>
     </service>
 
-    <bean id="userDataCollectionAdminPageNavEntry" class="org.opennms.features.datachoices.web.internal.UserDataCollectionAdminPageNavEntry"/>
-    <service interface="org.opennms.web.navigate.PageNavEntry" ref="userDataCollectionAdminPageNavEntry">
+    <bean id="productUpdateEnrollmentAdminPageNavEntry" class="org.opennms.features.datachoices.web.internal.ProductUpdateEnrollmentAdminPageNavEntry"/>
+    <service interface="org.opennms.web.navigate.PageNavEntry" ref="productUpdateEnrollmentAdminPageNavEntry">
         <service-properties>
             <entry key="Page" value="admin" />
             <entry key="Category" value="operations" />
