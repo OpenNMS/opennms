@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.features.datachoices.internal.userdatacollection;
+package org.opennms.features.datachoices.internal.productupdateenrollment;
 
 import java.io.IOException;
 import java.net.URI;
@@ -31,8 +31,8 @@ import java.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class UserDataCollectionSubmissionClient {
-    private static final Logger LOG = LoggerFactory.getLogger(UserDataCollectionSubmissionClient.class);
+public class ProductUpdateEnrollmentSubmissionClient {
+    private static final Logger LOG = LoggerFactory.getLogger(ProductUpdateEnrollmentSubmissionClient.class);
 
     private String endpointUrl;
 
@@ -46,14 +46,14 @@ public class UserDataCollectionSubmissionClient {
                 .uri(URI.create(endpointUrl))
                 .header("Content-Type", "application/json")
                 .POST(HttpRequest.BodyPublishers.ofString(json))
-                .setHeader("User-Agent", "OpenNMS UserDataCollection")
+                .setHeader("User-Agent", "OpenNMS Product Update Enrollment")
                 .build();
 
-        LOG.info("Sending User Data Collection submission form data to: {}", endpointUrl);
+        LOG.info("Sending Product Update Enrollment submission form data to: {}", endpointUrl);
         final HttpResponse<String> response = httpClient.send(httpRequest, HttpResponse.BodyHandlers.ofString());
 
         if (response.statusCode() == 200) {
-           LOG.info("User Data Collection submission accepted.");
+           LOG.info("Product Update Enrollment submission accepted.");
         } else {
             LOG.error("Received error response from submission endpoint. Status code: {}. Body: {}.", response.statusCode(), response.body());
             throw new Exception("Received error response from submission endpoint.");

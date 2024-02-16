@@ -69,16 +69,16 @@ public class StateManager {
     private static final String INITIAL_NOTICE_ACKNOWLEDGED_BY_KEY = "initialNoticeAcknowledgedBy";
 
     /**
-     * Whether a user opted-in to User Data Collection.
+     * Whether a user opted-in to Product Update Enrollment.
      */
-    private static final String USER_DATA_COLLECTION_OPTED_IN_KEY = "userDataCollectionOptedIn";
+    private static final String PRODUCT_UPDATE_ENROLLMENT_OPTED_IN_KEY = "userDataCollectionOptedIn";
 
     /**
-     * Whether the User Data Collection notice was acknowledged.
+     * Whether the Product Update Enrollment notice was acknowledged.
      */
-    private static final String USER_DATA_COLLECTION_NOTICE_ACKNOWLEDGED_KEY = "userDataCollectionNoticeAcknowledged";
-    private static final String USER_DATA_COLLECTION_NOTICE_ACKNOWLEDGED_AT_KEY = "userDataCollectionNoticeAcknowledgedAt";
-    private static final String USER_DATA_COLLECTION_NOTICE_ACKNOWLEDGED_BY_KEY = "userDataCollectionNoticeAcknowledgedBy";
+    private static final String PRODUCT_UPDATE_ENROLLMENT_NOTICE_ACKNOWLEDGED_KEY = "userDataCollectionNoticeAcknowledged";
+    private static final String PRODUCT_UPDATE_ENROLLMENT_NOTICE_ACKNOWLEDGED_AT_KEY = "userDataCollectionNoticeAcknowledgedAt";
+    private static final String PRODUCT_UPDATE_ENROLLMENT_NOTICE_ACKNOWLEDGED_BY_KEY = "userDataCollectionNoticeAcknowledgedBy";
 
     private final List<StateChangeHandler> m_listeners = Lists.newArrayList();
     private final CmProperties propertiesCache;
@@ -116,22 +116,22 @@ public class StateManager {
         propertiesCache.setProperty(INITIAL_NOTICE_ACKNOWLEDGED_AT_KEY, new Date().toString());
     }
 
-    public Boolean isUserDataCollectionNoticeAcknowledged() throws IOException {
-        return (Boolean) propertiesCache.getProperty(USER_DATA_COLLECTION_NOTICE_ACKNOWLEDGED_KEY);
+    public Boolean isProductUpdateEnrollmentNoticeAcknowledged() throws IOException {
+        return (Boolean) propertiesCache.getProperty(PRODUCT_UPDATE_ENROLLMENT_NOTICE_ACKNOWLEDGED_KEY);
     }
 
-    public void setUserDataCollectionNoticeAcknowledged(boolean status, String user) throws Exception {
-        propertiesCache.setProperty(USER_DATA_COLLECTION_NOTICE_ACKNOWLEDGED_KEY, status);
-        propertiesCache.setProperty(USER_DATA_COLLECTION_NOTICE_ACKNOWLEDGED_BY_KEY, user == null ? "" : user);
-        propertiesCache.setProperty(USER_DATA_COLLECTION_NOTICE_ACKNOWLEDGED_AT_KEY, new Date().toString());
+    public void setProductUpdateEnrollmentNoticeAcknowledged(boolean status, String user) throws Exception {
+        propertiesCache.setProperty(PRODUCT_UPDATE_ENROLLMENT_NOTICE_ACKNOWLEDGED_KEY, status);
+        propertiesCache.setProperty(PRODUCT_UPDATE_ENROLLMENT_NOTICE_ACKNOWLEDGED_BY_KEY, user == null ? "" : user);
+        propertiesCache.setProperty(PRODUCT_UPDATE_ENROLLMENT_NOTICE_ACKNOWLEDGED_AT_KEY, new Date().toString());
     }
 
-    public Boolean isUserDataCollectionOptedIn() throws IOException {
-        return (Boolean) propertiesCache.getProperty(USER_DATA_COLLECTION_OPTED_IN_KEY);
+    public Boolean isProductUpdateEnrollmentOptedIn() throws IOException {
+        return (Boolean) propertiesCache.getProperty(PRODUCT_UPDATE_ENROLLMENT_OPTED_IN_KEY);
     }
 
-    public void setUserDataCollectionOptedIn(boolean status) throws Exception {
-        propertiesCache.setProperty(USER_DATA_COLLECTION_OPTED_IN_KEY, status);
+    public void setProductUpdateEnrollmentOptedIn(boolean status) throws Exception {
+        propertiesCache.setProperty(PRODUCT_UPDATE_ENROLLMENT_OPTED_IN_KEY, status);
     }
 
     public String getOrGenerateSystemId() throws IOException {

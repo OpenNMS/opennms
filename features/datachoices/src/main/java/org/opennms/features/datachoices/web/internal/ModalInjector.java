@@ -46,7 +46,7 @@ import freemarker.template.TemplateException;
  * Create Data Choices markup to be injected into web pages.
  * See opennms-webapp bootstrap-footer.jsp, HtmlInjectHandler.
  *
- * We optionally inject markup for a Usage Sharing Statistics notice and a User Data Collection input dialog.
+ * We optionally inject markup for a Usage Sharing Statistics notice and a Product Update Enrollment input dialog.
  */
 public class ModalInjector implements HtmlInjector {
     public static final String CONSENT_TEXT = "I agree to receive email communications from OpenNMS";
@@ -57,9 +57,9 @@ public class ModalInjector implements HtmlInjector {
     @Override
     public String inject(HttpServletRequest request) throws TemplateException, IOException {
         String usageStatisticsSharingHtml = getUsageStatisticsSharingModalHtml(request);
-        String userDataCollectionHtml = getUserDataCollectionModalHtml(request);
+        String productUpdateEnrollmentHtml = getProductUpdateEnrollmentModalHtml(request);
 
-        List<String> items = Stream.of(usageStatisticsSharingHtml, userDataCollectionHtml)
+        List<String> items = Stream.of(usageStatisticsSharingHtml, productUpdateEnrollmentHtml)
             .filter(Objects::nonNull)
             .collect(Collectors.toList());
 
@@ -85,16 +85,17 @@ public class ModalInjector implements HtmlInjector {
         return null;
     }
 
-    protected String getUserDataCollectionModalHtml(HttpServletRequest request) throws TemplateException, IOException {
-        String show = System.getProperty("opennms.userDataCollection.show", "true");
-
-        // don't display User Data Collection form if disabled by configuration
-        if (show != null && show.toLowerCase().equals("false")) {
+    protected String getProductUpdateEnrollmentModalHtml(HttpServletRequest request) throws TemplateException, IOException {
+        // don't display Product Update Enrollment form if disabled by configuration
+        // also respect backward compatibility for earlier naming convention
+        if (Stream.of("opennms.productUpdateEnrollment.show", "opennms.userDataCollection.show")
+            .map(key -> System.getProperty(key, "true"))
+            .anyMatch(key -> key != null && key.equalsIgnoreCase("false"))) {
             return null;
         }
 
-        // don't display User Data Collection form if already seen
-        boolean noticeSeen = m_stateManager.isUserDataCollectionNoticeAcknowledged();
+        // don't display Product Update Enrollment form if already seen
+        boolean noticeSeen = m_stateManager.isProductUpdateEnrollmentNoticeAcknowledged();
 
         if (!noticeSeen &&
                 isPage("/opennms/index.jsp", request) &&
@@ -103,7 +104,7 @@ public class ModalInjector implements HtmlInjector {
             data.put("consentText", CONSENT_TEXT);
             data.put("legalConsentCommunication", LEGAL_CONSENT_COMMUNICATION_TEXT);
 
-            return generateModalHtml("user-data-collection.ftl.html", data);
+            return generateModalHtml("product-update-enrollment.ftl.html", data);
         }
 
         return null;

@@ -19,9 +19,9 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.features.datachoices.internal.userdatacollection;
+package org.opennms.features.datachoices.internal.productupdateenrollment;
 
-public class UserDataCollectionStatusDTO {
+public class ProductUpdateEnrollmentStatusDTO {
     // note, these can be null (user never chose a status)
     private Boolean optedIn;
 
