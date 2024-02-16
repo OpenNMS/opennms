@@ -59,7 +59,7 @@ RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
 ##
 FROM ${BASE_IMAGE}
 
-ARG REQUIRED_RPMS="hostname uuid"
+ARG REQUIRED_RPMS="hostname uuid procps"
 
 # Collect generic steps in a layer for caching
 
