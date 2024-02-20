@@ -106,12 +106,9 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
             }
         }
 
-        if (Strings.isNullOrEmpty(parameters.get("username"))) {
-            logger.error("Error getting username for VMware management server '{}'.", parameters.get("host"));
-        }
-
-        if (Strings.isNullOrEmpty(parameters.get("password"))) {
-            logger.error("Error getting password for VMware management server '{}'.", parameters.get("host"));
+        if (Strings.isNullOrEmpty(parameters.get("username")) || Strings.isNullOrEmpty(parameters.get("password"))) {
+            logger.error("Error getting username/password for VMware management server '{}'.", parameters.get("host"));
+            throw new IllegalArgumentException("Username and password must not be empty or null");
         }
     }
 
