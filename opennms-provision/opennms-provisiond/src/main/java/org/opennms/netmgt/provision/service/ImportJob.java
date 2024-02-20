@@ -21,6 +21,8 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
 import org.quartz.Job;
 import org.quartz.JobExecutionContext;
@@ -48,11 +50,13 @@ public class ImportJob implements Job {
 
     private ProvisionMonitor provisionMonitor;
 
+    private EntityScopeProvider entityScopeProvider;
+
     /** {@inheritDoc} */
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         try {
-            String url = context.getJobDetail().getJobDataMap().getString(URL);
+            String url = Interpolator.interpolate(context.getJobDetail().getJobDataMap().getString(URL), entityScopeProvider.getScopeForScv()).output;
             Assert.notNull(url);
             Assert.notNull(provisionMonitor);
             String rescanExisting = context.getJobDetail().getJobDataMap().getString(RESCAN_EXISTING);
@@ -77,5 +81,13 @@ public class ImportJob implements Job {
 
     public void setMonitor(ProvisionMonitor provisionMonitor) {
         this.provisionMonitor = provisionMonitor;
+    }
+
+    public EntityScopeProvider getEntityScopeProvider() {
+        return entityScopeProvider;
+    }
+
+    public void setEntityScopeProvider(EntityScopeProvider entityScopeProvider) {
+        this.entityScopeProvider = entityScopeProvider;
     }
 }

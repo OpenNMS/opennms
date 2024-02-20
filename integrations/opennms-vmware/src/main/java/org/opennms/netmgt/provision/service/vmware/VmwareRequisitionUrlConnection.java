@@ -24,22 +24,26 @@ package org.opennms.netmgt.provision.service.vmware;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.rmi.RemoteException;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
+import java.util.concurrent.ExecutionException;
 
-import javax.xml.bind.JAXBException;
-
-import org.apache.commons.io.IOExceptionWithCause;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.url.GenericURLConnection;
-import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
+import org.opennms.core.xml.XmlHandler;
+import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.netmgt.config.vmware.VmwareServer;
+import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
+import org.opennms.netmgt.provision.persist.LocationAwareRequisitionClient;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 /**
  * The Class VmwareRequisitionUrlConnection
@@ -55,47 +59,60 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
      * the logger
      */
     private static final Logger logger = LoggerFactory.getLogger(VmwareRequisitionUrlConnection.class);
-
-    private final VmwareImportRequest importRequest;
+    private static LocationAwareRequisitionClient s_requisitionProviderClient;
+    private static SecureCredentialsVault s_secureCredentialsVault;
+    private static VmwareConfigDao s_vmwareConfigDao;
+    private final Map<String, String> parameters = new TreeMap<>();
+    private static final XmlHandler<Requisition> s_xmlHandler = new XmlHandler<>(Requisition.class);
 
     /**
      * Constructor for creating an instance of this class.
      *
      * @param url the URL to use
-     * @throws MalformedURLException
-     * @throws RemoteException
      */
-    public VmwareRequisitionUrlConnection(URL url) throws MalformedURLException, RemoteException {
+    public VmwareRequisitionUrlConnection(final URL url) {
         super(url);
 
         logger.debug("Initializing URL Connection for host {}", url.getHost());
 
-        Map<String, String> requestParameters = new HashMap<>();
-        requestParameters.put("host", url.getHost());
-        requestParameters.put("path", url.getPath());
+        parameters.put("host", url.getHost());
+        parameters.put("path", url.getPath());
 
         // Old or new user credentials handling scheme
         if (url.getUserInfo() != null && !url.getUserInfo().isEmpty()) {
             logger.warn("Old user credentials handling scheme detected. I'm gonna use it but you'd better adapt your URL to the new query parameter scheme 'vmware://<vcenter_server_fqdn>?username=<username>;password=<password>;....'");
-            requestParameters.put("username", getUsername());
-            requestParameters.put("password", getPassword());
+            parameters.put("username", getUsername());
+            parameters.put("password", getPassword());
         }
-        requestParameters.putAll(getQueryArgs());
 
-        importRequest = new VmwareImportRequest(requestParameters);
-    }
+        parameters.putAll(getQueryArgs());
 
-    protected Requisition getExistingRequisition(String foreignSource) {
-        Requisition curReq = null;
-        try {
-            ForeignSourceRepository repository = BeanUtils.getBean("daoContext", "deployedForeignSourceRepository", ForeignSourceRepository.class);
-            if (repository != null) {
-                curReq = repository.getRequisition(foreignSource);
+        if (getVmwareConfigDao() == null) {
+            logger.error("vmwareConfigDao should be a non-null value.");
+        } else {
+            Map<String, VmwareServer> serverMap = getVmwareConfigDao().getServerMap();
+            if (serverMap == null) {
+                logger.error("Error getting vmware-config.xml's server map.");
+            } else {
+                VmwareServer vmwareServer = serverMap.get(parameters.get("host"));
+
+                if (vmwareServer == null) {
+                    logger.error("Error getting credentials for VMware management server '{}'.", parameters.get("host"));
+                } else {
+                    final Scope scvScope = new SecureCredentialsVaultScope(getSecureCredentialsVault());
+                    parameters.put("username", Interpolator.interpolate(vmwareServer.getUsername(), scvScope).output);
+                    parameters.put("password", Interpolator.interpolate(vmwareServer.getPassword(), scvScope).output);
+                }
             }
-        } catch (Exception e) {
-            logger.warn("Can't retrieve requisition {}", foreignSource, e);
         }
-        return curReq;
+
+        if (Strings.isNullOrEmpty(parameters.get("username"))) {
+            logger.error("Error getting username for VMware management server '{}'.", parameters.get("host"));
+        }
+
+        if (Strings.isNullOrEmpty(parameters.get("password"))) {
+            logger.error("Error getting password for VMware management server '{}'.", parameters.get("host"));
+        }
     }
 
     @Override
@@ -103,42 +120,67 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
         // pass
     }
 
-    /**
-     * {@inheritDoc}
-     * <p/>
-     * Creates a ByteArrayInputStream implementation of InputStream of the XML
-     * marshaled version of the Requisition class. Calling close on this stream
-     * is safe.
-     */
     @Override
     public InputStream getInputStream() throws IOException {
-
-        InputStream stream = null;
         try {
-            final Requisition existingRequisition = getExistingRequisition(importRequest.getForeignSource());
-            importRequest.setExistingRequisition(existingRequisition);
-            final VmwareImporter importer = new VmwareImporter(importRequest);
-            stream = new ByteArrayInputStream(jaxBMarshal(importer.getRequisition()).getBytes());
-        } catch (Throwable e) {
-            logger.warn("Problem getting input stream: '{}'", e);
-            throw new IOExceptionWithCause("Problem getting input stream: " + e, e);
-        }
+            final Requisition requisition = getClient().requisition()
+                    .withRequisitionProviderType(VmwareRequisitionProvider.TYPE_NAME)
+                    .withParameters(parameters)
+                    .execute()
+                    .get();
 
-        return stream;
+            if (requisition == null) {
+                throw new IOException(String.format("Invalid (null) requisition was returned by the provider for type '%s'", VmwareRequisitionProvider.TYPE_NAME));
+            }
+
+            // The XmlHandler is not thread safe
+            // Marshaling is quick, so we opt to use a single instance of the handler
+            // instead of using thread-local variables
+            final String requisitionXml;
+            synchronized(s_xmlHandler) {
+                requisitionXml = s_xmlHandler.marshal(requisition);
+            }
+
+            return new ByteArrayInputStream(requisitionXml.getBytes());
+        } catch (ExecutionException | InterruptedException e) {
+            throw new IOException(e);
+        }
     }
 
-    /**
-     * Utility to marshal the Requisition class into XML.
-     *
-     * @param r the requisition object
-     * @return a String of XML encoding the Requisition class
-     * @throws javax.xml.bind.JAXBException
-     */
-    private String jaxBMarshal(Requisition r) throws JAXBException {
-        return JaxbUtils.marshal(r);
+    private static LocationAwareRequisitionClient getClient() {
+        if (s_requisitionProviderClient == null) {
+            s_requisitionProviderClient = BeanUtils.getBean("daoContext", "locationAwareRequisitionClient", LocationAwareRequisitionClient.class);
+        }
+        return s_requisitionProviderClient;
+    }
+
+    private static VmwareConfigDao getVmwareConfigDao() {
+        if (s_vmwareConfigDao == null) {
+            s_vmwareConfigDao = BeanUtils.getBean("daoContext", "vmwareConfigDao", VmwareConfigDao.class);
+        }
+        return s_vmwareConfigDao;
+    }
+
+    private static SecureCredentialsVault getSecureCredentialsVault() {
+        if (s_secureCredentialsVault == null) {
+            s_secureCredentialsVault = BeanUtils.getBean("jceksScvContext", "jceksSecureCredentialsVault", SecureCredentialsVault.class);
+        }
+        return s_secureCredentialsVault;
+    }
+
+    public static void setRequisitionProviderClient(LocationAwareRequisitionClient s_requisitionProviderClient) {
+        VmwareRequisitionUrlConnection.s_requisitionProviderClient = s_requisitionProviderClient;
+    }
+
+    public static void setSecureCredentialsVault(SecureCredentialsVault s_secureCredentialsVault) {
+        VmwareRequisitionUrlConnection.s_secureCredentialsVault = s_secureCredentialsVault;
+    }
+
+    public static void setVmwareConfigDao(VmwareConfigDao s_vmwareConfigDao) {
+        VmwareRequisitionUrlConnection.s_vmwareConfigDao = s_vmwareConfigDao;
     }
 
     public VmwareImportRequest getImportRequest() {
-        return importRequest;
+        return new VmwareImportRequest(parameters);
     }
 }

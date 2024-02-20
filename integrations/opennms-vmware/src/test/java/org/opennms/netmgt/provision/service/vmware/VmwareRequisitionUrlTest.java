@@ -22,26 +22,41 @@
 package org.opennms.netmgt.provision.service.vmware;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.when;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.junit.runners.Parameterized.Parameters;
 import org.opennms.core.utils.url.GenericURLFactory;
+import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
+import org.opennms.netmgt.config.vmware.VmwareServer;
+import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
 import org.opennms.netmgt.provision.service.requisition.RequisitionUrlConnection;
 
 @RunWith(Parameterized.class)
 public class VmwareRequisitionUrlTest {
     private final String vmwareUrl;
     private final String requisitionUrl;
+
+    @Rule
+    public TemporaryFolder tempFolder = new TemporaryFolder();
+    private final SecureCredentialsVault secureCredentialsVault;
 
     @Parameters
     public static Collection<Object[]> data() {
@@ -78,13 +93,23 @@ public class VmwareRequisitionUrlTest {
         GenericURLFactory.initialize();
     }
 
-    public VmwareRequisitionUrlTest(String vmwareUrl, String requisitionUrl) {
+    public VmwareRequisitionUrlTest(String vmwareUrl, String requisitionUrl) throws IOException {
+        tempFolder.create();
+
         this.vmwareUrl = vmwareUrl;
         this.requisitionUrl = requisitionUrl;
+
+        final File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
+        secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
     }
 
     @Test
     public void compareGeneratedRequests() throws MalformedURLException, RemoteException {
+        final VmwareConfigDao vmwareConfigDao = mock(VmwareConfigDao.class);
+        when(vmwareConfigDao.getServerMap()).thenReturn(new HashMap<String, VmwareServer>());
+
+        VmwareRequisitionUrlConnection.setSecureCredentialsVault(secureCredentialsVault);
+        VmwareRequisitionUrlConnection.setVmwareConfigDao(vmwareConfigDao);
         VmwareRequisitionUrlConnection vmwareUrlConnection = new VmwareRequisitionUrlConnection(new URL(vmwareUrl));
         VmwareImportRequest vmwareUrlImportRequest = vmwareUrlConnection.getImportRequest();
 

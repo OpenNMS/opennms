@@ -21,7 +21,6 @@
  */
 package org.opennms.netmgt.provision.service.vmware;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.InetAddress;
@@ -180,23 +179,12 @@ public class VmwareImporter {
      * @return the requisition object
      */
     private Requisition buildVMwareRequisition() {
-        VmwareViJavaAccess vmwareViJavaAccess = null;
-
         // for now, set the foreign source to the specified vcenter host
         m_requisition = new Requisition(request.getForeignSource());
 
         logger.debug("Creating new VIJava access object for host {} ...", request.getHostname());
-        if ((request.getHostname() == null || "".equals(request.getHostname())) || (request.getPassword() == null || "".equals(request.getPassword()))) {
-            logger.info("No credentials found for connecting to host {}, trying anonymously...", request.getHostname());
-            try {
-                vmwareViJavaAccess = new VmwareViJavaAccess(request.getHostname());
-            } catch (IOException e) {
-                logger.warn("Error initialising VMware connection to '{}': '{}'", request.getHostname(), e.getMessage());
-                return null;
-            }
-        } else {
-            vmwareViJavaAccess = new VmwareViJavaAccess(request.getHostname(), request.getUsername(), request.getPassword());
-        }
+        final VmwareViJavaAccess vmwareViJavaAccess = new VmwareViJavaAccess(request.getHostname(), request.getUsername(), request.getPassword());
+
         logger.debug("Successfully created new VIJava access object for host {}", request.getHostname());
 
         logger.debug("Connecting VIJava access for host {} ...", request.getHostname());

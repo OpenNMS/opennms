@@ -43,7 +43,6 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.netmgt.config.vmware.VmwareConfig;
 import org.opennms.netmgt.config.vmware.VmwareServer;
-import org.opennms.netmgt.provision.persist.requisition.Requisition;
 
 /**
  * The Class VmwareRequisitionTool
@@ -94,17 +93,7 @@ public abstract class VmwareRequisitionTool {
             }
         }
 
-        VmwareRequisitionUrlConnection c = new VmwareRequisitionUrlConnection(url) {
-            @Override
-            protected Requisition getExistingRequisition(String foreignSource) {
-                // This is not elegant but it is necessary to avoid booting Spring
-                File req = new File(ConfigFileConstants.getFilePathString(), "imports" + File.separator + foreignSource + ".xml");
-                if (req.exists()) {
-                    return JaxbUtils.unmarshal(Requisition.class, req);
-                }
-                return null;
-            }
-        };
+        final VmwareRequisitionUrlConnection c = new VmwareRequisitionUrlConnection(url);
         c.connect();
         InputStream is = c.getInputStream();
         if (is == null) {
