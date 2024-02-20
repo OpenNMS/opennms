@@ -658,6 +658,18 @@
             <attrib name="TotalConnections" alias="HkriTotlConn" type="gauge"/>
             <attrib name="ThreadsAwaitingConnection" alias="HkriThrdWaitConn" type="gauge"/>
          </mbean>
+         <!-- Snmp Interface Poller -->
+         <mbean name="OpenNMS SnmpPoller" objectname="OpenNMS:Name=SnmpPoller">
+            <attrib name="ActiveThreads" alias="ONMSSIPCountThrdAct" type="gauge"/>
+            <attrib name="NumPoolThreads" alias="ONMSSIPPoolThrd" type="gauge"/>
+            <attrib name="CorePoolThreads" alias="ONMSSIPPoolCore" type="gauge"/>
+            <attrib name="MaxPoolThreads" alias="ONMSSIPPoolMax" type="gauge"/>
+            <attrib name="PeakPoolThreads" alias="ONMSSIPPoolPeak" type="gauge"/>
+            <attrib name="TasksTotal" alias="ONMSSIPTasksTot" type="counter"/>
+            <attrib name="TasksCompleted" alias="ONMSSIPTasksCpt" type="counter"/>
+            <attrib name="TaskQueuePendingCount" alias="ONMSSIPTskQPCnt" type="gauge"/>
+            <attrib name="TaskQueueRemainingCapacity" alias="ONMSSIPTskQRCap" type="gauge"/>
+         </mbean>
       </mbeans>
    </jmx-collection>
 </jmx-datacollection-config>
