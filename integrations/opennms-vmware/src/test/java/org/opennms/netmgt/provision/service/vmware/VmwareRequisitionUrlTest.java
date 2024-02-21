@@ -62,28 +62,28 @@ public class VmwareRequisitionUrlTest {
     public static Collection<Object[]> data() {
         return Arrays.asList(new Object[][] {     
              {
-               "vmware://vcenter.mydomain.org?importHostPoweredOff=true",
-               "requisition://vmware?host=vcenter.mydomain.org&importHostPoweredOff=true"
+               "vmware://vcenter.mydomain.org?importHostPoweredOff=true&username=username&password=password",
+               "requisition://vmware?host=vcenter.mydomain.org&importHostPoweredOff=true&username=username&password=password"
              },
              {
-               "vmware://172.16.123.100/vCenterImport?key=shouldImport;value=1",
-               "requisition://vmware/vCenterImport?host=172.16.123.100&key=shouldImport;value=1"
+               "vmware://172.16.123.100/vCenterImport?key=shouldImport;value=1&username=username&password=password",
+               "requisition://vmware/vCenterImport?host=172.16.123.100&key=shouldImport;value=1&username=username&password=password"
              },
              {
-               "vmware://172.16.123.100/vCenterImport?_shouldImport=1",
-               "requisition://vmware/vCenterImport?host=172.16.123.100&_shouldImport=1"
+               "vmware://172.16.123.100/vCenterImport?_shouldImport=1&username=username&password=password",
+               "requisition://vmware/vCenterImport?host=172.16.123.100&_shouldImport=1&username=username&password=password"
              },
              {
                "vmware://172.16.123.100/vCenterImport?_shouldImport=1;username=opennms;password=secret",
                "requisition://vmware/vCenterImport?host=172.16.123.100&_shouldImport=1&username=opennms&password=secret"
              },
              {
-               "vmware://[2001:db8:0:8d3:0:8a2e:70:7344]?virtualMachineServices=VM-SERVICE1,VM-SERVICE2",
-               "requisition://vmware?host=[2001:db8:0:8d3:0:8a2e:70:7344]&virtualMachineServices=VM-SERVICE1,VM-SERVICE2"
+               "vmware://[2001:db8:0:8d3:0:8a2e:70:7344]?virtualMachineServices=VM-SERVICE1,VM-SERVICE2&username=username&password=password",
+               "requisition://vmware?host=[2001:db8:0:8d3:0:8a2e:70:7344]&virtualMachineServices=VM-SERVICE1,VM-SERVICE2&username=username&password=password"
              },
              {
-                "vmware://vcenter.mydomain.org?importHostPoweredOff=true&timeout=3050&cimTimeout=3100",
-                "requisition://vmware?host=vcenter.mydomain.org&importHostPoweredOff=true&timeout=3050&cimTimeout=3100"
+                "vmware://vcenter.mydomain.org?importHostPoweredOff=true&timeout=3050&cimTimeout=3100&username=username&password=password",
+                "requisition://vmware?host=vcenter.mydomain.org&importHostPoweredOff=true&timeout=3050&cimTimeout=3100&username=username&password=password"
              }
        });
     }
