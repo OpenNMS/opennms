@@ -54,5 +54,10 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-snmp-metadata-provisioning-adapter</artifactId>
     </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
