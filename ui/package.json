@@ -48,7 +48,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.5.1",
     "@fortawesome/free-solid-svg-icons": "^6.4.2",
     "@fortawesome/vue-fontawesome": "^3.0.3",
-    "@vueuse/core": "^9.13.0",
+    "@vueuse/core": "^10.8.0",
     "ace-builds": "^1.32.6",
     "axios": "^0.27.2",
     "chart.js": "^3.9.1",
