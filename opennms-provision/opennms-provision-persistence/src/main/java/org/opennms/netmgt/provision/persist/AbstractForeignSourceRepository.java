@@ -63,11 +63,20 @@ public abstract class AbstractForeignSourceRepository implements ForeignSourceRe
     public Requisition importResourceRequisition(final Resource resource) throws ForeignSourceRepositoryException {
         Assert.notNull(resource);
 
-        LOG.debug("importing requisition from {}", resource);
+        LOG.debug("importing requisition from {}", stripCredentials(resource));
         final Requisition requisition = JaxbUtils.unmarshal(Requisition.class, resource);
         requisition.setResource(resource);
         save(requisition);
         return requisition;
+    }
+
+    static String stripCredentials(final Object object) {
+        if (object == null) {
+            return null;
+        } else {
+            return String.valueOf(object).replaceAll("(username=)[^;&]*(;&)?", "$1***$2")
+                                         .replaceAll("(password=)[^;&]*(;&)?", "$1***$2");
+        }
     }
 
     /**
