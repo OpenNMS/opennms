@@ -132,8 +132,25 @@ commands:
         - run:
             name: Extract Maven POM version
             command: .circleci/scripts/pom2version.sh pom.xml > pom-version-cache.key
-  cached-checkout:
-      description: "Checkout with caching"
+  setup-github:
+     description: "Set Up Github SSH Access"
+     steps:
+        - run:
+            command: |
+              install -d -m 700 ~/.ssh
+              ssh-keyscan github.com >> ~/.ssh/known_hosts
+              ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
+              chmod 600 ~/.ssh/known_hosts
+  shallow-clone:
+      description: "Quick shallow checkout"
+      steps:
+        - setup-github
+        - run:
+            name: git clone
+            command: |
+              git clone --depth 20 "${CIRCLE_REPOSITORY_URL}" --branch "${CIRCLE_BRANCH}" .
+  cached-checkout-readonly:
+      description: "Checkout from cache"
       steps:
         - restore_cache:
             keys:
@@ -148,6 +165,10 @@ commands:
             command: |
               git remote prune origin || :
               git fetch origin
+  cached-checkout:
+      description: "Checkout with cache (updates cache)"
+      steps:
+        - cached-checkout-readonly
         - save_cache:
             key: source-v2-{{ .Branch }}-{{ .Revision }}
             paths:
@@ -219,6 +240,9 @@ commands:
   save-nodejs-cache:
     description: "NodeJS: Save cache"
     steps:
+      - run:
+          description: clean up cache tmp directory
+          command: rm -rf ~/.npm/_cacache/tmp
       - save_cache:
           key: nodejs-dependencies-v4-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
           paths:
@@ -1457,6 +1481,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - setup-github
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
@@ -1501,6 +1526,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - setup-github
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
@@ -1531,6 +1557,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - setup-github
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
@@ -1574,6 +1601,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - setup-github
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
@@ -1620,6 +1648,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - setup-github
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
@@ -1648,6 +1677,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - setup-github
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
