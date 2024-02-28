@@ -136,16 +136,22 @@ commands:
         - run:
             name: Extract Maven POM version
             command: .circleci/scripts/pom2version.sh pom.xml > pom-version-cache.key
-  shallow-clone:
-      description: "Quick shallow checkout"
-      steps:
+  setup-github:
+     description: "Set Up Github SSH Access"
+     steps:
         - run:
-            name: git clone
             command: |
               install -d -m 700 ~/.ssh
               ssh-keyscan github.com >> ~/.ssh/known_hosts
               ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
               chmod 600 ~/.ssh/known_hosts
+  shallow-clone:
+      description: "Quick shallow checkout"
+      steps:
+        - setup-github
+        - run:
+            name: git clone
+            command: |
               git clone --depth 20 "${CIRCLE_REPOSITORY_URL}" --branch "${CIRCLE_BRANCH}" .
   cached-checkout-readonly:
       description: "Checkout from cache"
@@ -1569,6 +1575,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - setup-github
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
@@ -1613,6 +1620,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - setup-github
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
@@ -1643,6 +1651,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - setup-github
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
@@ -1686,6 +1695,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - setup-github
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
@@ -1732,6 +1742,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - setup-github
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
@@ -1760,6 +1771,7 @@ jobs:
     steps:
       - attach_workspace:
           at: ~/
+      - setup-github
       - sign-packages/setup-env:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
