@@ -391,15 +391,15 @@ public class UsageStatisticsReporter implements StateChangeHandler {
                 .filter(req -> !req.getForeignSource().equals(defaultFS.getName())).count();
     }
 
-    private void setDatasourceInfo(UsageStatisticsReportDTO usageStatisticsReport) {
+    void setDatasourceInfo(final UsageStatisticsReportDTO usageStatisticsReport) {
         try {
-            DataSource datasource = m_dataSourceFactoryBean.getObject();
-            Connection connection = datasource.getConnection();
-            DatabaseMetaData metaData = connection.getMetaData();
+            final DataSource datasource = m_dataSourceFactoryBean.getObject();
+            try (final Connection connection = datasource.getConnection()) {
+                final DatabaseMetaData metaData = connection.getMetaData();
 
-            usageStatisticsReport.setDatabaseProductName(metaData.getDatabaseProductName());
-            usageStatisticsReport.setDatabaseProductVersion(metaData.getDatabaseProductVersion());
-
+                usageStatisticsReport.setDatabaseProductName(metaData.getDatabaseProductName());
+                usageStatisticsReport.setDatabaseProductVersion(metaData.getDatabaseProductVersion());
+            }
         } catch (Exception e) {
             LOG.error("Error retrieving datasource information", e);
         }
