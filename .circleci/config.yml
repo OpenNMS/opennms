@@ -15,10 +15,10 @@ executors:
       - image: opennms/antora:2.3.4-b7274
   integration-test-executor:
     machine:
-      image: ubuntu-2004:202010-01
+      image: ubuntu-2004:latest
   smoke-test-executor:
     machine:
-      image: ubuntu-2004:202010-01
+      image: ubuntu-2004:latest
 
 # NOTE: the "_label" versions of these are for the case when your source or target
 # branches have slashes in them, that way the merge branch gets created properly
@@ -1388,10 +1388,11 @@ jobs:
           destination: site.zip
   tarball-assembly:
     machine:
-      image: ubuntu-2004:202010-01
+      image: ubuntu-2004:latest
     resource_class: xlarge
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
+      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
     parameters:
       number-vcpu:
         default: 4
@@ -1491,7 +1492,7 @@ jobs:
       architecture:
         type: string
     machine:
-      image: ubuntu-2004:202010-01
+      image: ubuntu-2004:latest
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
@@ -1525,7 +1526,7 @@ jobs:
 
   minion-image-multi-arch:
     machine:
-      image: ubuntu-2004:202010-01
+      image: ubuntu-2004:latest
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
@@ -1828,6 +1829,8 @@ jobs:
     executor: integration-test-executor
     parallelism: 8
     resource_class: xlarge
+    environment:
+      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
     steps:
       - attach_workspace:
           at: ~/
@@ -1837,6 +1840,8 @@ jobs:
     executor: integration-test-executor
     parallelism: 10
     resource_class: xlarge
+    environment:
+      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
     steps:
       - attach_workspace:
           at: ~/
@@ -1879,6 +1884,8 @@ jobs:
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
+    environment:
+      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
     steps:
       - run:
           name: "skip if flaky tests are enabled"
@@ -1900,6 +1907,8 @@ jobs:
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
+    environment:
+      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
     steps:
       - run:
           name: "run if flaky tests are enabled"
@@ -1920,6 +1929,8 @@ jobs:
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
+    environment:
+      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
     steps:
       - run:
           name: "skip if flaky tests are enabled"
@@ -1941,6 +1952,8 @@ jobs:
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
+    environment:
+      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
     steps:
       - run:
           name: "skip if flaky tests are enabled"
@@ -1958,6 +1971,8 @@ jobs:
                 suite: sentinel
   smoke-test-minimal:
     executor: smoke-test-executor
+    environment:
+      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
     steps:
       - attach_workspace:
           at: ~/
