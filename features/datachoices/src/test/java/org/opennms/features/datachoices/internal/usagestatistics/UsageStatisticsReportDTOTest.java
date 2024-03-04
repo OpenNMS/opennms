@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.features.datachoices.internal;
+package org.opennms.features.datachoices.internal.usagestatistics;
 
 import static org.junit.Assert.assertEquals;
 
@@ -27,7 +27,6 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.junit.Test;
-import org.opennms.features.datachoices.internal.usagestatistics.UsageStatisticsReportDTO;
 
 import com.google.common.collect.Maps;
 
