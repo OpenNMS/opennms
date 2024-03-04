@@ -1392,7 +1392,7 @@ jobs:
     resource_class: xlarge
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
-      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
+      JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
     parameters:
       number-vcpu:
         default: 4
@@ -1830,7 +1830,7 @@ jobs:
     parallelism: 8
     resource_class: xlarge
     environment:
-      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
+      JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
     steps:
       - attach_workspace:
           at: ~/
@@ -1841,7 +1841,7 @@ jobs:
     parallelism: 10
     resource_class: xlarge
     environment:
-      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
+      JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
     steps:
       - attach_workspace:
           at: ~/
@@ -1885,7 +1885,7 @@ jobs:
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
     environment:
-      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
+      JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
     steps:
       - run:
           name: "skip if flaky tests are enabled"
@@ -1908,7 +1908,7 @@ jobs:
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
     environment:
-      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
+      JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
     steps:
       - run:
           name: "run if flaky tests are enabled"
@@ -1930,7 +1930,7 @@ jobs:
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
     environment:
-      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
+      JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
     steps:
       - run:
           name: "skip if flaky tests are enabled"
@@ -1953,7 +1953,7 @@ jobs:
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
     environment:
-      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
+      JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
     steps:
       - run:
           name: "skip if flaky tests are enabled"
@@ -1972,7 +1972,7 @@ jobs:
   smoke-test-minimal:
     executor: smoke-test-executor
     environment:
-      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
+      JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
     steps:
       - attach_workspace:
           at: ~/
