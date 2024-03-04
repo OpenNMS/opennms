@@ -875,6 +875,7 @@ jobs:
     resource_class: xlarge
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
+      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
     parameters:
       number-vcpu:
         default: 4
@@ -1257,6 +1258,8 @@ jobs:
     executor: integration-test-executor
     parallelism: 8
     resource_class: xlarge
+    environment:
+      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
     steps:
       - attach_workspace:
           at: ~/
@@ -1266,6 +1269,8 @@ jobs:
     executor: integration-test-executor
     parallelism: 10
     resource_class: xlarge
+    environment:
+      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
     steps:
       - attach_workspace:
           at: ~/
@@ -1300,6 +1305,8 @@ jobs:
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
+    environment:
+      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
     steps:
       - run:
           name: "skip if flaky tests are enabled"
@@ -1321,6 +1328,8 @@ jobs:
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
+    environment:
+      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
     steps:
       - run:
           name: "run if flaky tests are enabled"
@@ -1341,6 +1350,8 @@ jobs:
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
+    environment:
+      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
     steps:
       - run:
           name: "skip if flaky tests are enabled"
@@ -1362,6 +1373,8 @@ jobs:
     # No resource class support for machine executors, we're constrained to use the default
     # medium class which has 2 vCPUs and 8 GB RAM
     #resource_class: large
+    environment:
+      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
     steps:
       - run:
           name: "skip if flaky tests are enabled"
@@ -1379,6 +1392,8 @@ jobs:
                 suite: sentinel
   smoke-test-minimal:
     executor: smoke-test-executor
+    environment:
+      JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
     steps:
       - attach_workspace:
           at: ~/
