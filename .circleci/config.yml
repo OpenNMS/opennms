@@ -1396,7 +1396,7 @@ jobs:
       architecture:
         type: string
     machine:
-      image: ubuntu-2004:latest
+      image: ubuntu-2004:current
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
@@ -1430,7 +1430,7 @@ jobs:
 
   minion-image-multi-arch:
     machine:
-      image: ubuntu-2004:latest
+      image: ubuntu-2004:current
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
