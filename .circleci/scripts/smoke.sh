@@ -65,6 +65,8 @@ else
   IT_TESTS="$(< /tmp/this_node_it_tests paste -s -d, -)"
 fi
 
+sudo apt update && sudo apt -y install openjdk-11-jdk-headless
+
 ../compile.pl \
   -DskipTests=false \
   -DskipITs=false \
