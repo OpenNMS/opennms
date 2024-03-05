@@ -1830,8 +1830,6 @@ jobs:
     executor: integration-test-executor
     parallelism: 8
     resource_class: xlarge
-    environment:
-      JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
     steps:
       - attach_workspace:
           at: ~/
@@ -1841,8 +1839,6 @@ jobs:
     executor: integration-test-executor
     parallelism: 10
     resource_class: xlarge
-    environment:
-      JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
     steps:
       - attach_workspace:
           at: ~/
