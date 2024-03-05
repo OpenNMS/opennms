@@ -13,10 +13,10 @@ executors:
       - image: docker:20.10-git
   integration-test-executor:
     machine:
-      image: ubuntu-2004:latest
+      image: ubuntu-2004:current
   smoke-test-executor:
     machine:
-      image: ubuntu-2004:latest
+      image: ubuntu-2004:current
 
 # NOTE: the "_label" versions of these are for the case when your source or target
 # branches have slashes in them, that way the merge branch gets created properly
@@ -868,7 +868,7 @@ jobs:
 
   tarball-assembly:
     machine:
-      image: ubuntu-2004:latest
+      image: ubuntu-2004:current
     resource_class: xlarge
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
