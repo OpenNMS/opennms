@@ -15,10 +15,10 @@ executors:
       - image: opennms/antora:2.3.4-b7274
   integration-test-executor:
     machine:
-      image: ubuntu-2004:latest
+      image: ubuntu-2204:current
   smoke-test-executor:
     machine:
-      image: ubuntu-2004:latest
+      image: ubuntu-2204:current
 
 # NOTE: the "_label" versions of these are for the case when your source or target
 # branches have slashes in them, that way the merge branch gets created properly
@@ -1291,8 +1291,8 @@ jobs:
           destination: site.zip
   tarball-assembly:
     machine:
-      image: ubuntu-2004:latest
-    resource_class: xlarge
+      image: ubuntu-2204:current
+    resource_class: large
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
       JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
@@ -1396,7 +1396,7 @@ jobs:
       architecture:
         type: string
     machine:
-      image: ubuntu-2004:latest
+      image: ubuntu-2204:current
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
@@ -1430,7 +1430,7 @@ jobs:
 
   minion-image-multi-arch:
     machine:
-      image: ubuntu-2004:latest
+      image: ubuntu-2204:current
     environment:
       DOCKER_CLI_EXPERIMENTAL: enabled
     steps:
@@ -1734,7 +1734,7 @@ jobs:
   integration-test:
     executor: integration-test-executor
     parallelism: 8
-    resource_class: xlarge
+    resource_class: large
     environment:
       JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
     steps:
@@ -1745,7 +1745,7 @@ jobs:
   integration-test-with-coverage:
     executor: integration-test-executor
     parallelism: 10
-    resource_class: xlarge
+    resource_class: large
     environment:
       JAVA_HOME: /usr/lib/jvm/java-8-openjdk-amd64
     steps:
