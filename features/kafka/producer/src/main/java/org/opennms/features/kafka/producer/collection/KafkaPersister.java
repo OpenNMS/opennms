@@ -85,7 +85,7 @@ public class KafkaPersister implements Persister {
 
     void bisectAndSendMessageToKafka(CollectionSetProtos.CollectionSet collectionSetProto) {
 
-        if (!disableMetricsSplitting && checkForMaxSize(collectionSetProto.toByteArray().length)) {
+        if (!getDisableMetricsSplitting() && checkForMaxSize(collectionSetProto.toByteArray().length)) {
 
             if(collectionSetProto.getResourceCount() == 1) {
                 /// Handle the case where resource is only one with too many attributes that can cross max buffer size.
@@ -272,5 +272,9 @@ public class KafkaPersister implements Persister {
 
     public void setDisableMetricsSplitting(Boolean disableMetricsSplitting) {
         this.disableMetricsSplitting = disableMetricsSplitting;
+    }
+
+    public Boolean getDisableMetricsSplitting() {
+        return disableMetricsSplitting;
     }
 }
