@@ -65,6 +65,8 @@ else
   IT_TESTS="$(< /tmp/this_node_it_tests paste -s -d, -)"
 fi
 
+sudo apt update && sudo apt -y install openjdk-11-jdk-headless
+
 # When we are ready to collect coverge on smoke tests, add "-Pcoverage" below
 ionice nice ../compile.pl \
   -DskipTests=false \
