@@ -46,6 +46,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
+import org.opennms.core.rpc.mock.MockEntityScopeProvider;
 import org.opennms.core.test.Level;
 import org.opennms.core.test.LoggingEvent;
 import org.opennms.core.test.MockLogAppender;
@@ -240,6 +241,8 @@ public class DuplicatePrimaryAddressIT {
                 Assert.fail("Invalid event received: "+ e.getMessage());
             }
         };
+
+        m_collectd.setEntityScopeProvider(new MockEntityScopeProvider());
 
         OnmsServiceType snmp = new OnmsServiceType("SNMP");
         NetworkBuilder netBuilder = new NetworkBuilder();

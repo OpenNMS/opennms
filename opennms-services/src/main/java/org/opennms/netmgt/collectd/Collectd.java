@@ -1534,4 +1534,8 @@ public class Collectd extends AbstractServiceDaemon implements
     public void setPollOutagesDao(ReadablePollOutagesDao pollOutagesDao) {
         this.pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
     }
+
+    public void setEntityScopeProvider(EntityScopeProvider entityScopeProvider) {
+        this.entityScopeProvider = entityScopeProvider;
+    }
 }
