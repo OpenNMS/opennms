@@ -1419,6 +1419,9 @@
           </systemPropertyVariables>
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
+          <rerunFailingTestsCount>${ci.rerunFailingTestsCount}</rerunFailingTestsCount>
+          <runOrder>alphabetical</runOrder>
+          <shutdown>kill</shutdown>
           <useModulePath>false</useModulePath>
           <forkedProcessExitTimeoutInSeconds>120</forkedProcessExitTimeoutInSeconds>
         </configuration>
