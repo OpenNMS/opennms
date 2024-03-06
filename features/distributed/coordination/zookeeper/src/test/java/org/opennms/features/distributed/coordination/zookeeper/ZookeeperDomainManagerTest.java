@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,9 +31,9 @@ package org.opennms.features.distributed.coordination.zookeeper;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertThat;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
@@ -55,8 +55,11 @@ import org.apache.curator.framework.recipes.leader.CancelLeadershipException;
 import org.apache.curator.framework.recipes.leader.LeaderSelector;
 import org.apache.curator.framework.recipes.leader.LeaderSelectorListener;
 import org.apache.curator.framework.state.ConnectionState;
+import org.junit.After;
 import org.junit.Test;
 import org.opennms.features.distributed.coordination.api.Role;
+
+import com.jayway.awaitility.Duration;
 
 /**
  * Tests for {@link ZookeeperDomainManager}.
@@ -67,6 +70,14 @@ public class ZookeeperDomainManagerTest {
     private final List<CompletableFuture<Void>> activeFutures = new CopyOnWriteArrayList<>();
     private final List<CompletableFuture<Void>> standbyFutures = new CopyOnWriteArrayList<>();
     private ZookeeperDomainManager manager;
+
+    @After
+    public void tearDown() throws Exception {
+        if (manager != null) {
+            manager.disconnect();
+            await().atMost(Duration.TEN_SECONDS).until(() -> { return !manager.isConnected(); });
+        }
+    }
 
     /**
      * Test that the registered callbacks are called when ZooKeeper informs the manager to take leadership. Also tests

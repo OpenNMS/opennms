@@ -135,14 +135,23 @@ public class JUnitKafkaServer extends ExternalResource {
     @After
     public void after() {
         if (kafkaServer != null) {
-            kafkaServer.shutdown();
+            try {
+                kafkaServer.shutdown();
+            } catch (final Exception e) {
+                LOG.error("Failed to stop the Kafka server. This could mess up future tests.", e);
+            }
         }
 
         if (zkServer != null) {
             try {
+                zkServer.stop();
+            } catch (final Exception e) {
+                LOG.error("Failed to stop the ZooKeeper server. This could mess up future tests.", e);
+            }
+            try {
                 zkServer.close();
-            } catch (IOException e) {
-                LOG.warn("Failed to stop the ZooKeeper server.", e);
+            } catch (final Exception e) {
+                LOG.error("Failed to close the ZooKeeper server. This could mess up future tests.", e);
             }
             zkServer = null;
         }
