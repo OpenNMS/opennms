@@ -39,7 +39,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.core.test.MockLogAppender;
-import org.opennms.features.distributed.coordination.api.DomainManager;
 import org.opennms.features.distributed.coordination.api.Role;
 
 import org.awaitility.core.ConditionTimeoutException;
@@ -56,7 +55,7 @@ public class ZookeeperDomainManagerIT {
     private final CompletableFuture<String> standbyFuture = new CompletableFuture<>();
     private ZookeeperDomainManagerFactory managerFactory;
     private TestingServer testServer;
-    private DomainManager manager;
+    private ZookeeperDomainManager manager;
 
     @Before
     public void setup() throws Exception {
@@ -70,12 +69,13 @@ public class ZookeeperDomainManagerIT {
 
         testServer = new TestingServer(freePort, tempFolder.getRoot(), false);
         managerFactory = new ZookeeperDomainManagerFactory(testServer.getConnectString(), "test.namespace");
-        manager = managerFactory.getManagerForDomain(domain);
+        manager = (ZookeeperDomainManager) managerFactory.getManagerForDomain(domain);
     }
 
     @After
     public void cleanup() throws Exception {
         testServer.stop();
+        testServer.close();
     }
 
     /**
@@ -177,6 +177,9 @@ public class ZookeeperDomainManagerIT {
                 activeFuture.complete(domain);
             } else if (role == Role.STANDBY) {
                 standbyFuture.complete(domain);
+            } else {
+                activeFuture.cancel(true);
+                standbyFuture.cancel(true);
             }
         });
     }

@@ -21,11 +21,14 @@
  */
 package org.opennms.features.distributed.coordination.zookeeper;
 
+import static com.jayway.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.instanceOf;
-import static org.junit.Assert.assertThat;
+import static org.hamcrest.MatcherAssert.assertThat;
 
 import org.junit.Test;
 import org.opennms.features.distributed.coordination.api.DomainManagerFactory;
+
+import com.jayway.awaitility.Duration;
 
 /**
  * Tests for {@link ZookeeperDomainManagerFactory}.
@@ -38,7 +41,13 @@ public class ZookeeperDomainManagerFactoryTest {
     public void checkInstance() {
         DomainManagerFactory managerFactory = new ZookeeperDomainManagerFactory("127.0.0.1:2181",
                 "coordination");
-        assertThat(managerFactory.getManagerForDomain("test.domain"),
-                instanceOf(ZookeeperDomainManager.class));
+        final var manager = managerFactory.getManagerForDomain("test.domain");
+        try {
+            assertThat(manager, instanceOf(ZookeeperDomainManager.class));
+        } finally {
+            final var m = (ZookeeperDomainManager)manager;
+            m.disconnect();
+            await().atMost(Duration.TEN_SECONDS).until(() -> { return !m.isConnected(); });
+        }
     }
 }
