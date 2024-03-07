@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
@@ -50,6 +51,7 @@ import kafka.server.KafkaConfig;
 import kafka.server.KafkaServer;
 import scala.Option;
 import scala.collection.JavaConverters;
+import scala.collection.mutable.Buffer;
 
 /**
  * This class starts up an embedded Kafka server for use in integration
@@ -128,23 +130,14 @@ public class JUnitKafkaServer extends ExternalResource {
     @After
     public void after() {
         if (kafkaServer != null) {
-            try {
-                kafkaServer.shutdown();
-            } catch (final Exception e) {
-                LOG.error("Failed to stop the Kafka server. This could mess up future tests.", e);
-            }
+            kafkaServer.shutdown();
         }
 
         if (zkServer != null) {
             try {
-                zkServer.stop();
-            } catch (final Exception e) {
-                LOG.error("Failed to stop the ZooKeeper server. This could mess up future tests.", e);
-            }
-            try {
                 zkServer.close();
-            } catch (final Exception e) {
-                LOG.error("Failed to close the ZooKeeper server. This could mess up future tests.", e);
+            } catch (IOException e) {
+                LOG.warn("Failed to stop the ZooKeeper server.", e);
             }
             zkServer = null;
         }
