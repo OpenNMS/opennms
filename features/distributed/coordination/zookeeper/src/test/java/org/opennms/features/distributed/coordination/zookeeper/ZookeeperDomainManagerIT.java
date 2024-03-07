@@ -48,6 +48,7 @@ import org.junit.rules.TemporaryFolder;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.distributed.coordination.api.Role;
 
+import com.jayway.awaitility.Duration;
 import com.jayway.awaitility.core.ConditionTimeoutException;
 
 /**
@@ -81,8 +82,8 @@ public class ZookeeperDomainManagerIT {
 
     @After
     public void cleanup() throws Exception {
-        testServer.stop();
         testServer.close();
+        await().atMost(Duration.TEN_SECONDS).until(() -> { return !manager.isConnected(); });
     }
 
     /**
@@ -184,9 +185,6 @@ public class ZookeeperDomainManagerIT {
                 activeFuture.complete(domain);
             } else if (role == Role.STANDBY) {
                 standbyFuture.complete(domain);
-            } else {
-                activeFuture.cancel(true);
-                standbyFuture.cancel(true);
             }
         });
     }
