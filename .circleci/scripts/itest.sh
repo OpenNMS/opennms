@@ -1,6 +1,7 @@
 #!/bin/bash
 
 set -e
+set -o pipefail
 
 FIND_TESTS_DIR="target/find-tests"
 
@@ -106,7 +107,7 @@ MAVEN_ARGS=()
 
 case "${CIRCLE_BRANCH}" in
   "master"*|"release-"*|develop)
-    MAVEN_ARGS=("-Dbuild.type=production" "${MAVEN_ARGS[@]}")
+    MAVEN_ARGS+=("-Dbuild.type=production")
   ;;
 esac
 
@@ -118,6 +119,10 @@ fi
 # if node ITs does not exist or is empty, skip surefire
 if [ ! -s /tmp/this_node_it_tests ]; then
   MAVEN_ARGS+=("-DskipFailsafe=true")
+fi
+
+if [ "${CCI_FAILURE_OPTION:--fail-fast}" = "--fail-fast" ]; then
+  MAVEN_ARGS+=("-Dfailsafe.skipAfterFailureCount=1")
 fi
 
 MAVEN_COMMANDS=("install")
@@ -132,7 +137,7 @@ echo "#### Building Assembly Dependencies"
            -DskipTests=true \
            -DskipITs=true \
            --batch-mode \
-           "${CCI_FAILURE_OPTION:--fae}" \
+           "${CCI_FAILURE_OPTION:--fail-fast}" \
            --also-make \
            --projects "$(< /tmp/this_node_projects paste -s -d, -)" \
            install
@@ -148,7 +153,7 @@ echo "#### Executing tests"
            -DskipITs=false \
            -Dci.rerunFailingTestsCount="${CCI_RERUN_FAILTEST:-0}" \
            --batch-mode \
-           "${CCI_FAILURE_OPTION:--fae}" \
+           "${CCI_FAILURE_OPTION:--fail-fast}" \
            -Dorg.opennms.core.test-api.dbCreateThreads=1 \
            -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false \
            -Dtest="$(< /tmp/this_node_tests paste -s -d, -)" \
