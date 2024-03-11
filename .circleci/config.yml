@@ -503,7 +503,7 @@ commands:
             free -m -c 500 -s 30
       - run:
           name: Integration Tests
-          no_output_timeout: 15m
+          no_output_timeout: 1.0h
           command: |
             export CCI_CODE_COVERAGE=<< parameters.run-code-coverage >>
             export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
