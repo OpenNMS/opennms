@@ -22,6 +22,7 @@
       <cm:property name="alarmFeedbackTopic" value="alarmFeedback"/>
       <cm:property name="metricTopic" value="metrics"/>
       <cm:property name="forward.metrics" value="true"/>
+      <cm:property name="disable.metrics.splitting" value="false"/>
       <cm:property name="nodeRefreshTimeoutMs" value="300000"/> <!-- 5 minutes -->
       <cm:property name="alarmSync" value="true"/>
       <cm:property name="eventFilter" value=""/>
