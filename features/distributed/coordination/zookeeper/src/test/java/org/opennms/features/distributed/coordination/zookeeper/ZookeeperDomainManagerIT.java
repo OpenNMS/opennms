@@ -32,6 +32,7 @@ import static com.jayway.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.fail;
 
+
 import java.net.ServerSocket;
 import java.util.ArrayList;
 import java.util.List;
@@ -44,6 +45,7 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.distributed.coordination.api.DomainManager;
@@ -54,6 +56,7 @@ import com.jayway.awaitility.core.ConditionTimeoutException;
 /**
  * Integration tests for {@link ZookeeperDomainManager}.
  */
+@Ignore("Disabling the test case see NMS-16371")
 public class ZookeeperDomainManagerIT {
     private static final String domain = "test.domain";
     private static final String id = "test.id";

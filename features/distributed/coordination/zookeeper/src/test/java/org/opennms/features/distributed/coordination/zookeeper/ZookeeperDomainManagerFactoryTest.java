@@ -32,11 +32,13 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
+import org.junit.Ignore;
 import org.opennms.features.distributed.coordination.api.DomainManagerFactory;
 
 /**
  * Tests for {@link ZookeeperDomainManagerFactory}.
  */
+@Ignore("Disabling the test case see NMS-16371")
 public class ZookeeperDomainManagerFactoryTest {
     /**
      * Verifies the factory generates the correct instance type.

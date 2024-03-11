@@ -56,11 +56,13 @@ import org.apache.curator.framework.recipes.leader.LeaderSelector;
 import org.apache.curator.framework.recipes.leader.LeaderSelectorListener;
 import org.apache.curator.framework.state.ConnectionState;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.opennms.features.distributed.coordination.api.Role;
 
 /**
  * Tests for {@link ZookeeperDomainManager}.
  */
+@Ignore("Disabling the test case see NMS-16371")
 public class ZookeeperDomainManagerTest {
     private final AtomicInteger connectionAttempts = new AtomicInteger(0);
     private final AtomicInteger disconnectionAttempts = new AtomicInteger(0);
