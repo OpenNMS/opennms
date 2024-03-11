@@ -48,6 +48,7 @@ import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 
+@Ignore("Disabling the test case see NMS-16371")
 public class XmpCollectorTest {
 
     private XmpCollector xmpCollector;
@@ -58,7 +59,7 @@ public class XmpCollectorTest {
     }
 
     @Test
-    public void DISABLEDcanDetermineAppropriateResourceType() throws CollectionException {
+    public void canDetermineAppropriateResourceType() throws CollectionException {
         NodeLevelResource nodeLevelResource = new NodeLevelResource(1);
 
         // Define the resource type
