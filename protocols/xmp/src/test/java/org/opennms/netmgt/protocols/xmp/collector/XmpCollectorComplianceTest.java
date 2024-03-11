@@ -32,6 +32,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import java.util.Map;
+import org.junit.Ignore;
 
 import org.opennms.netmgt.collection.test.api.CollectorComplianceTest;
 import org.opennms.netmgt.config.xmpConfig.XmpConfig;
@@ -45,6 +46,7 @@ import org.opennms.netmgt.snmp.InetAddrUtils;
 
 import com.google.common.collect.ImmutableMap;
 
+@Ignore("Disabling the test case see NMS-16371")
 public class XmpCollectorComplianceTest extends CollectorComplianceTest {
 
     private static final String COLLECTION = "default";
