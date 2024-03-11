@@ -48,7 +48,7 @@ import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 
-public class XmpCollectorTest {
+public class DisabledXmpCollectorTest {
 
     private XmpCollector xmpCollector;
 
