@@ -28,9 +28,6 @@
 
 package org.opennms.features.kafka.producer.collection;
 
-import java.util.Dictionary;
-import java.util.Hashtable;
-
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ResourceDao;
@@ -41,6 +38,9 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Dictionary;
+import java.util.Hashtable;
+
 public class KafkaPersisterActivator implements BundleActivator {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaPersisterActivator.class);
@@ -48,11 +48,14 @@ public class KafkaPersisterActivator implements BundleActivator {
     public static final String PRODUCER_CONFIG = "org.opennms.features.kafka.producer";
     private static final String METRIC_TOPIC = "metricTopic";
 
+    private static final String DISABLE_METRIC_SPLITTING = "disable.metrics.splitting";
+
     @Override
     public void start(BundleContext context) throws Exception {
         ConfigurationAdmin configAdmin = null;
         Boolean forwardMetrics = false;
         String metricTopic = null;
+        boolean disableMetricsSplitting = false;
         try {
             configAdmin = context.getService(context.getServiceReference(ConfigurationAdmin.class));
             if (configAdmin != null) {
@@ -63,6 +66,9 @@ public class KafkaPersisterActivator implements BundleActivator {
                     }
                     if (properties.get(METRIC_TOPIC) instanceof String) {
                         metricTopic = (String) properties.get(METRIC_TOPIC);
+                    }
+                    if (properties.get(DISABLE_METRIC_SPLITTING) instanceof String) {
+                        disableMetricsSplitting = Boolean.parseBoolean((String) properties.get(DISABLE_METRIC_SPLITTING));
                     }
                 }
             }
@@ -83,6 +89,7 @@ public class KafkaPersisterActivator implements BundleActivator {
                 kafkaPersisterFactory.setConfigAdmin(configAdmin);
                 kafkaPersisterFactory.init();
                 kafkaPersisterFactory.setTopicName(metricTopic);
+                kafkaPersisterFactory.setDisableMetricsSplitting(disableMetricsSplitting);
                 Dictionary<String, String> props = new Hashtable<String, String>();
                 // needed to register to onms registry.
                 props.put("strategy", "kafka");
