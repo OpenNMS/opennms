@@ -2,6 +2,32 @@
 
 = Changelog
 
+[[releasenotes-changelog-33.0.2]]
+
+== Release 33.0.2
+
+Release 33.0.2 contains a bunch of bug fixes and enhancements.
+
+The codename for Horizon 33.0.2 is https://wikipedia.org/wiki/$$Chionanthus_virginicus$$[_Old Man's Beard_].
+
+=== Bug
+
+* Access Denied when deleting a node with admin user (Issue https://issues.opennms.org/browse/NMS-15746[NMS-15746])
+* Device config upload failed with org.apache.sshd.common.SshException: EdDSA provider not supported (Issue https://issues.opennms.org/browse/NMS-16131[NMS-16131])
+* Event parameters with `<>` not rendering in event/alarm views (Issue https://issues.opennms.org/browse/NMS-16157[NMS-16157])
+* Hikari CP leaking threads (Issue https://issues.opennms.org/browse/NMS-16345[NMS-16345])
+* LdapMonitor does not work when a Minion is the poller (Issue https://issues.opennms.org/browse/NMS-16349[NMS-16349])
+* The script showing the Karaf process status in our container image requires "ps" (Issue https://issues.opennms.org/browse/NMS-16356[NMS-16356])
+* VMware credentials exposed in provisiond log file (Issue https://issues.opennms.org/browse/NMS-16357[NMS-16357])
+* Collectd can't persist time series data and throwing a NPE with "java.util.List.size()" because "rraList" is null (Issue https://issues.opennms.org/browse/NMS-16358[NMS-16358])
+
+=== Enhancement
+
+* Update install script to clear Karaf cache (Issue https://issues.opennms.org/browse/NMS-16226[NMS-16226])
+* Add option to import-requisition command to block until import is done (Issue https://issues.opennms.org/browse/NMS-16343[NMS-16343])
+* Rename User Data Collection feature to Product Update Enrollment (Issue https://issues.opennms.org/browse/NMS-16353[NMS-16353])
+* Configurable option for Kafka Producer CollectionSet buffer size (Issue https://issues.opennms.org/browse/NMS-16366[NMS-16366])
+
 [[releasenotes-changelog-33.0.1]]
 
 == Release 33.0.1
