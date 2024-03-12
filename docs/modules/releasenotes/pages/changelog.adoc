@@ -28,7 +28,6 @@ The codename for Horizon 33.0.2 is https://wikipedia.org/wiki/$$Chionanthus_virg
 * Rename User Data Collection feature to Product Update Enrollment (Issue https://issues.opennms.org/browse/NMS-16353[NMS-16353])
 * Configurable option for Kafka Producer CollectionSet buffer size (Issue https://issues.opennms.org/browse/NMS-16366[NMS-16366])
 
-
 [[releasenotes-changelog-33.0.1]]
 
 == Release 33.0.1
