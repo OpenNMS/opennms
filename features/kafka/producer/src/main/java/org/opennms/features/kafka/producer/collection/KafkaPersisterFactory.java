@@ -21,11 +21,6 @@
  */
 package org.opennms.features.kafka.producer.collection;
 
-import java.io.IOException;
-import java.util.Dictionary;
-import java.util.Enumeration;
-import java.util.Properties;
-
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
@@ -40,6 +35,11 @@ import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
+import java.util.Dictionary;
+import java.util.Enumeration;
+import java.util.Properties;
+
 public class KafkaPersisterFactory implements PersisterFactory {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaPersisterFactory.class);
@@ -48,6 +48,7 @@ public class KafkaPersisterFactory implements PersisterFactory {
     private KafkaProducer<String, byte[]> producer;
     private ConfigurationAdmin configAdmin;
     private String topicName;
+    private boolean disableMetricsSplitting = false;
 
     @Override
     public Persister createPersister(ServiceParameters params, RrdRepository repository, boolean dontPersistCounters,
@@ -61,6 +62,7 @@ public class KafkaPersisterFactory implements PersisterFactory {
         persister.setCollectionSetMapper(collectionSetMapper);
         persister.setProducer(producer);
         persister.setTopicName(topicName);
+        persister.setDisableMetricsSplitting(disableMetricsSplitting);
         return persister;
     }
 
@@ -104,4 +106,8 @@ public class KafkaPersisterFactory implements PersisterFactory {
         this.topicName = topicName;
     }
 
+
+    public void setDisableMetricsSplitting(boolean disableMetricsSplitting) {
+        this.disableMetricsSplitting = disableMetricsSplitting;
+    }
 }
