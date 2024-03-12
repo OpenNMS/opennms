@@ -36,6 +36,7 @@ import org.opennms.core.mate.api.ContextKey;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
@@ -50,6 +51,8 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -168,5 +171,29 @@ public class EntityScopeProviderIT {
         Assert.assertEquals(interpolatedAttributes.get("username"), "horizon");
         Assert.assertEquals(interpolatedAttributes.get("password"), "OpenNMS@30");
 
+    }
+
+    @Test
+    public final void testScopeProviders() {
+        // set meta-data of node
+        final OnmsNode node = this.populator.getNode1();
+        OnmsMetaData metaData = new OnmsMetaData("context", "key", "value1");
+        node.getMetaData().add(metaData);
+        this.populator.getNodeDao().saveOrUpdate(node);
+
+        // get an scope provider
+        final ScopeProvider scope = this.provider.getScopeProviderForNode(this.populator.getNode1().getId());
+
+        // this will retrieve the meta-data set before
+        assertThat(scope.getScope().get(new ContextKey("context", "key")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE, "value1"))));
+
+        // now update the meta-data
+        node.getMetaData().removeAll(Lists.newArrayList(metaData));
+        metaData = new OnmsMetaData("context", "key", "value2");
+        node.getMetaData().add(metaData);
+        this.populator.getNodeDao().saveOrUpdate(node);
+
+        // the provider will again retrieve the current meta-data
+        assertThat(scope.getScope().get(new ContextKey("context", "key")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE, "value2"))));
     }
 }

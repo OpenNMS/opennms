@@ -48,6 +48,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
+import org.opennms.core.rpc.mock.MockEntityScopeProvider;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.netmgt.collection.api.CollectionSet;
@@ -173,6 +174,7 @@ public class CollectdMoreIT {
         };
         
         m_collectd.setPollOutagesDao(m_pollOutagesDao);
+        m_collectd.setEntityScopeProvider(new MockEntityScopeProvider());
 
         ThresholdingService mockThresholdingService = mock(ThresholdingService.class);
         ThresholdingSession mockThresholdingSession = mock(ThresholdingSession.class);

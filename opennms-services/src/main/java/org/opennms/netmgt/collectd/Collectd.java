@@ -39,9 +39,17 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import javax.swing.text.html.parser.Entity;
+
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.logging.Logging;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.FallBackScopeProvider;
+import org.opennms.core.mate.api.FallbackScope;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionInstrumentation;
@@ -191,6 +199,9 @@ public class Collectd extends AbstractServiceDaemon implements
     
     @Autowired
     private ReadablePollOutagesDao pollOutagesDao;
+
+    @Autowired
+    private EntityScopeProvider entityScopeProvider;
 
     private AtomicInteger sessionID = new AtomicInteger();
 
@@ -541,7 +552,11 @@ public class Collectd extends AbstractServiceDaemon implements
             final var collector = m_collectdConfigFactory.getCollectors().stream().filter(c->c.getService().equals(svcName)).findFirst().orElse(null);
             String className = collector == null? null : collector.getClassName();
             if(className != null) {
-                matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName), instrumentation(), m_locationAwareCollectorClient, pollOutagesDao, className));
+                final ScopeProvider scopeProvider = new FallBackScopeProvider(
+                    entityScopeProvider.getScopeProviderForNode(iface.getNodeId()),
+                    entityScopeProvider.getScopeProviderForInterface(iface.getNodeId(), InetAddressUtils.toIpAddrString(iface.getIpAddress()))
+                );
+                matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName), instrumentation(), m_locationAwareCollectorClient, pollOutagesDao, className, scopeProvider));
             } else {
                 LOG.warn("The class for collector {} is not available yet.", svcName);
             }
@@ -1518,5 +1533,9 @@ public class Collectd extends AbstractServiceDaemon implements
     @VisibleForTesting
     public void setPollOutagesDao(ReadablePollOutagesDao pollOutagesDao) {
         this.pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
+    }
+
+    public void setEntityScopeProvider(EntityScopeProvider entityScopeProvider) {
+        this.entityScopeProvider = entityScopeProvider;
     }
 }

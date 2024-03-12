@@ -123,10 +123,6 @@ public class CollectableService implements ReadyRunnable {
 
     private final IpInterfaceDao m_ifaceDao;
 
-    private final ServiceParameters m_params;
-    
-    private final RrdRepository m_repository;
-
     private final PersisterFactory m_persisterFactory;
 
     private ThresholdingSession m_thresholdingSession;
@@ -163,11 +159,8 @@ public class CollectableService implements ReadyRunnable {
 
         m_spec.initialize(m_agent);
 
-        m_params = m_spec.getServiceParameters();
-        m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
-
         try {
-            m_thresholdingSession = thresholdingService.createSession(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_params);
+            m_thresholdingSession = thresholdingService.createSession(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getServiceParameters());
         } catch (ThresholdInitializationException e) {
             LOG.error("Error when initializing Thresholding. No Thresholding will be performed on this service.", e);
         }
@@ -412,11 +405,13 @@ public class CollectableService implements ReadyRunnable {
         LOG.info("run: starting new collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
         CollectionSet result = null;
         try {
+            final ServiceParameters serviceParameters = m_spec.getServiceParameters();
+            final RrdRepository rrdRepository = m_spec.getRrdRepository(serviceParameters.getCollectionName());
             result = m_spec.collect(m_agent);
             if (result != null) {
                 Collectd.instrumentation().beginPersistingServiceData(m_spec.getPackageName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
                 try {
-                    CollectionSetVisitor persister = m_persisterFactory.createPersister(m_params, m_repository, result.ignorePersist(), false, false);
+                    CollectionSetVisitor persister = m_persisterFactory.createPersister(serviceParameters, rrdRepository, result.ignorePersist(), false, false);
                     if (Boolean.getBoolean(USE_COLLECTION_START_TIME_SYS_PROP)) {
                         final ConstantTimeKeeper timeKeeper = new ConstantTimeKeeper(new Date(m_lastScheduledCollectionTime));
                         // Wrap the persister visitor such that calls to CollectionResource.getTimeKeeper() return the given timeKeeper

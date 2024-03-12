@@ -123,4 +123,24 @@ public class MetaDataUtilsTest {
         assertEquals("val4", result.parts.get(1).value.value);
         assertEquals("foo-${aaa}-bar-val1-bla-val4-blupp-${bbb}", result.output);
     }
+
+    @Test
+    public void testFallBackScopeProvider() {
+        final Map<ContextKey, String> map1 = new TreeMap<>();
+        map1.put(new ContextKey("foobar", "key1"), "value1");
+        map1.put(new ContextKey("foobar", "key2"), "value2");
+        map1.put(new ContextKey("foobar", "key3"), "value3");
+
+        final Map<ContextKey, String> map2 = new TreeMap<>();
+        map2.put(new ContextKey("foobar", "key3"), "new3");
+
+        final FallBackScopeProvider fallBackScopeProvider = new FallBackScopeProvider(
+                () -> new MapScope(Scope.ScopeName.NODE, map1),
+                () -> new MapScope(Scope.ScopeName.INTERFACE, map2)
+        );
+
+        assertEquals("value1", Interpolator.interpolate("${foobar:key1}", fallBackScopeProvider.getScope()).output);
+        assertEquals("value2", Interpolator.interpolate("${foobar:key2}", fallBackScopeProvider.getScope()).output);
+        assertEquals("new3", Interpolator.interpolate("${foobar:key3}", fallBackScopeProvider.getScope()).output);
+    }
 }

@@ -49,6 +49,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
+import org.opennms.core.rpc.mock.MockEntityScopeProvider;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -175,6 +176,7 @@ public class CollectdIT {
         m_collectd.setServiceCollectorRegistry(new DefaultServiceCollectorRegistry());
         m_collectd.setLocationAwareCollectorClient(CollectorTestUtils.createLocationAwareCollectorClient());
         m_collectd.setPollOutagesDao(m_pollOutagesDao);
+        m_collectd.setEntityScopeProvider(new MockEntityScopeProvider());
 
         m_thresholdingDao.overrideConfig(ConfigurationTestUtils.getInputStreamForConfigFile("thresholds.xml"));
     }
