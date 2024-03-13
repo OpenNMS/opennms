@@ -546,11 +546,14 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
 
             Tracer.SpanBuilder spanBuilder = buildSpanFromSinkMessage(sinkMessage);
 
-            try (Scope scope = spanBuilder.startActive(true);
+            final Span span = spanBuilder.start();
+            try (Scope scope = getTracer().scopeManager().activate(span);
                  Timer.Context context = dispatchTime.time()) {
-                scope.span().setTag(TracerConstants.TAG_MESSAGE_SIZE, sinkMessage.getSerializedSize());
-                scope.span().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
+                span.setTag(TracerConstants.TAG_MESSAGE_SIZE, sinkMessage.getSerializedSize());
+                span.setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
                 dispatch(sinkModule, message);
+            } finally {
+                span.finish();
             }
         }
     }

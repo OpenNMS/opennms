@@ -14,9 +14,6 @@
   <name>OpenNMS :: Core :: Tracing :: Jaeger :: OSGi wrapper</name>
   <description>OSGi wrapper for Jaeger Tracer.</description>
 
-  <properties>
-    <apacheThriftVersion>0.19.0</apacheThriftVersion>
-  </properties>
   <build>
     <defaultGoal>install</defaultGoal>
     <plugins>
@@ -37,7 +34,6 @@
                   <exclude>io.opentracing:opentracing-util</exclude>
                   <exclude>io.opentracing:opentracing-noop</exclude>
                   <exclude>io.opentracing.contrib:opentracing-tracerresolver</exclude>
-                  <exclude>io.jaegertracing:jaeger-tracerresolver</exclude>
                   <exclude>org.apache.httpcomponents:httpclient</exclude>
                   <exclude>org.apache.httpcomponents:httpcore</exclude>
                   <exclude>commons-codec:commons-codec</exclude>
@@ -61,6 +57,7 @@
           <instructions>
             <Import-Package>
               io.opentracing.util,
+              io.opentracing.noop,
               io.opentracing,
               io.opentracing.propagation,
               io.opentracing.tag,
@@ -68,11 +65,16 @@
               javax.net.ssl
             </Import-Package>
             <Export-Package>
-              io.jaegertracing,
-              io.jaegertracing.internal,
-              io.jaegertracing.internal.propagation,
-              io.jaegertracing.internal.reporters,
-              io.jaegertracing.spi
+              io.opentelemetry.api,
+              io.opentelemetry.api.common,
+              io.opentelemetry.api.trace.propagation,
+              io.opentelemetry.context.propagation,
+              io.opentelemetry.extension.trace.propagation,
+              io.opentelemetry.opentracingshim,
+              io.opentelemetry.sdk,
+              io.opentelemetry.sdk.resources,
+              io.opentelemetry.sdk.trace,
+              io.opentelemetry.semconv.resource.attributes,
             </Export-Package>
           </instructions>
           <unpackBundle>true</unpackBundle>
@@ -83,24 +85,36 @@
 
   <dependencies>
     <dependency>
-      <groupId>io.jaegertracing</groupId>
-      <artifactId>jaeger-client</artifactId>
-      <version>${jaegertracingVersion}</version>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.apache.thrift</groupId>
-      <artifactId>libthrift</artifactId>
-      <version>${apacheThriftVersion}</version>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-sdk</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.jaegertracing</groupId>
-      <artifactId>jaeger-core</artifactId>
-      <version>${jaegertracingVersion}</version>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-exporter-otlp</artifactId>
     </dependency>
     <dependency>
-      <groupId>io.jaegertracing</groupId>
-      <artifactId>jaeger-thrift</artifactId>
-      <version>${jaegertracingVersion}</version>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-exporter-jaeger</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-extension-trace-propagators</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-semconv</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-opentracing-shim</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.opentelemetry</groupId>
+      <artifactId>opentelemetry-sdk-extension-autoconfigure</artifactId>
     </dependency>
   </dependencies>
 </project>

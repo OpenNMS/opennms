@@ -43,6 +43,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 
 import io.opentracing.Scope;
+import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
@@ -75,17 +76,20 @@ public class CamelSinkServerProcessor implements Processor {
         Tracer.SpanBuilder spanBuilder = buildSpanFromHeaders(exchange.getIn(), tracingInfo);
         // Update metrics.
         messageSize.update(messageBytes.length);
-        try (Scope scope = spanBuilder.startActive(true);
+        final Span span = spanBuilder.start();
+        try (Scope scope = tracerRegistry.getTracer().scopeManager().activate(span);
              Timer.Context context = dispatchTime.time()) {
             // Set tags for this span.
-            scope.span().setTag(TracerConstants.TAG_MESSAGE_SIZE, messageBytes.length);
-            scope.span().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
+            span.setTag(TracerConstants.TAG_MESSAGE_SIZE, messageBytes.length);
+            span.setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
             if (exchange.getIn().getHeader(JMS_QUEUE_NAME_HEADER) instanceof String) {
                 String topic = exchange.getIn().getHeader(JMS_QUEUE_NAME_HEADER, String.class);
-                scope.span().setTag(TracerConstants.TAG_TOPIC, topic);
+                span.setTag(TracerConstants.TAG_TOPIC, topic);
             }
             final Message message = module.unmarshal(messageBytes);
             consumerManager.dispatch(module, message);
+        } finally {
+            span.finish();
         }
     }
 

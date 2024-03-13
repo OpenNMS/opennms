@@ -33,8 +33,6 @@ import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
 import org.opennms.smoketest.utils.DevDebugUtils;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
 import org.opennms.smoketest.utils.TestContainerUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.Network;
 import org.testcontainers.lifecycle.TestDescription;
 import org.testcontainers.lifecycle.TestLifecycleAware;
@@ -44,8 +42,6 @@ import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 
 public class PostgreSQLContainer extends org.testcontainers.containers.PostgreSQLContainer<PostgreSQLContainer> implements TestLifecycleAware {
-    private static final Logger LOG = LoggerFactory.getLogger(PostgreSQLContainer.class);
-
     private LoadingCache<Integer, HibernateDaoFactory> daoFactoryCache = CacheBuilder.newBuilder()
             .expireAfterWrite(10, TimeUnit.MINUTES)
             .build(new CacheLoader<Integer, HibernateDaoFactory>() {
@@ -100,7 +96,7 @@ public class PostgreSQLContainer extends org.testcontainers.containers.PostgreSQ
 
     private void retainLogsfNeeded(String prefix, boolean succeeded) {
         if (!succeeded) {
-            LOG.info("Gathering logs...");
+            logger().info("Gathering logs...");
             Path targetLogFolder = Paths.get("target", "logs", prefix, "postgresql");
             DevDebugUtils.clearLogs(targetLogFolder);
             DevDebugUtils.copyLogs(this,

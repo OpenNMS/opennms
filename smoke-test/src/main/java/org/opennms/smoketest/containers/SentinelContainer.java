@@ -74,7 +74,6 @@ import org.testcontainers.utility.MountableFile;
 import com.google.common.collect.ImmutableMap;
 
 public class SentinelContainer extends GenericContainer<SentinelContainer> implements KarafContainer<SentinelContainer>, TestLifecycleAware {
-    private static final Logger LOG = LoggerFactory.getLogger(SentinelContainer.class);
     private static final int SENTINEL_DEBUG_PORT = 5005;
     private static final int SENTINEL_SSH_PORT = 8301;
     private static final int SENTINEL_JETTY_PORT = 8181;
@@ -273,6 +272,11 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
         return SENTINEL_JETTY_PORT;
     }
 
+    @Override
+    protected Logger logger() {
+        return LoggerFactory.getLogger(MinionContainer.getLoggerName(getDockerImageName()) + " " + profile.getId());
+    }
+
     private static class WaitForSentinel extends org.testcontainers.containers.wait.strategy.AbstractWaitStrategy {
         private final SentinelContainer container;
 
@@ -282,7 +286,7 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
 
         @Override
         protected void waitUntilReady() {
-            LOG.info("Waiting for Sentinel health check...");
+            container.logger().info("Waiting for Sentinel health check...");
             RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
             await("waiting for good health check probe")
                     .atMost(5, MINUTES)
@@ -290,7 +294,7 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
                     .failFast("container is no longer running", () -> !container.isRunning())
                     .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
                     .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
-            LOG.info("Health check passed.");
+            container.logger().info("Health check passed.");
 
             container.assertNoKarafDestroy(Paths.get("/opt", ALIAS, "data", "log", "karaf.log"));
         }
@@ -314,7 +318,7 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
                         () -> { threadDump.set(DevDebugUtils.gatherThreadDump(this, targetLogFolder, null)); }
                 );
 
-        LOG.info("Gathering logs...");
+        logger().info("Gathering logs...");
         // List of known log files we expect to find in the container
         final List<String> logFiles = Arrays.asList("karaf.log");
         DevDebugUtils.copyLogs(this,
@@ -325,10 +329,10 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
                 // log files
                 logFiles);
 
-        LOG.info("Log directory: {}", targetLogFolder.toUri());
-        LOG.info("Console log: {}", targetLogFolder.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
+        logger().info("Log directory: {}", targetLogFolder.toUri());
+        logger().info("Console log: {}", targetLogFolder.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
         if (threadDump.get() != null) {
-            LOG.info("Thread dump: {}", threadDump.get().toUri());
+            logger().info("Thread dump: {}", threadDump.get().toUri());
         }
     }
 

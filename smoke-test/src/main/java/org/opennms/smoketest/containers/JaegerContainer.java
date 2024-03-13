@@ -32,8 +32,6 @@ import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
 import org.opennms.core.utils.SystemInfoUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.Network;
 import org.testcontainers.lifecycle.TestDescription;
@@ -43,8 +41,8 @@ public class JaegerContainer extends GenericContainer<JaegerContainer> implement
     public static final String ALIAS = "jaeger";
     public static final int WEB_PORT = 16686;
     public static final int THRIFT_HTTP_PORT = 14268;
+    public static final int GRPC_HTTP_PORT = 14268;
     public static final String IMAGE = "jaegertracing/all-in-one:1.39";
-    private static final Logger LOG = LoggerFactory.getLogger(JaegerContainer.class);
 
     public JaegerContainer() {
         super(IMAGE);
@@ -66,6 +64,14 @@ public class JaegerContainer extends GenericContainer<JaegerContainer> implement
         return String.format("http://%s:%d/api/traces", ALIAS, THRIFT_HTTP_PORT);
     }
 
+    /**
+     * Gets the gRPC HTTP URL.
+     * @return String suitable to pass to OpenTelemetry otel.exporter.jaeger.endpoint
+     */
+    public static String getGrpcHttpURL() {
+        return String.format("http://%s:%d/", ALIAS, GRPC_HTTP_PORT);
+    }
+
     @Override
     public void afterTest(final TestDescription description, final Optional<Throwable> throwable) {
         retainLogsIfNeeded(description.getFilesystemFriendlyName(), !throwable.isPresent());
@@ -79,7 +85,15 @@ public class JaegerContainer extends GenericContainer<JaegerContainer> implement
                 FileUtils.copyURLToFile(getURL("/api/traces?service=" +
                         URLEncoder.encode(SystemInfoUtils.getInstanceId(), Charset.defaultCharset())),
                         opennms.toFile());
-                LOG.info("OpenNMS Jaeger trace JSON: {}", opennms.toUri());
+                logger().info("OpenNMS Jaeger trace JSON: {}", opennms.toUri());
+
+                Path minion = Paths.get("target", "logs", prefix, ALIAS, "minion-traces.json");
+                FileUtils.copyURLToFile(getURL("/api/traces?service=Minion"), minion.toFile());
+                logger().info("Minion Jaeger trace JSON: {}", minion.toUri());
+
+                Path sentinel = Paths.get("target", "logs", prefix, ALIAS, "sentinel-traces.json");
+                FileUtils.copyURLToFile(getURL("/api/traces?service=Sentinel"), sentinel.toFile());
+                logger().info("Sentinel Jaeger trace JSON: {}", sentinel.toUri());
             } catch (Exception e) {
                 System.err.println("Received exception while trying to save all Jaeger traces");
                 e.printStackTrace(System.err);

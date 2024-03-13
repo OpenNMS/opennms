@@ -175,7 +175,9 @@ public class TrapListener implements TrapNotificationListener {
 
     public void stop() {
         try {
-            m_twinSubscription.close();
+            if (m_twinSubscription != null) {
+                m_twinSubscription.close();
+            }
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
