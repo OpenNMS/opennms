@@ -174,6 +174,8 @@ The SnmpInfo schema is defined as follows:
       <xs:element name="timeout" type="xs:int" minOccurs="0"/>
       <xs:element name="version" type="xs:string" minOccurs="0"/>
       <xs:element name="writeCommunity" type="xs:string" minOccurs="0"/>
+      <xs:element name="location" type="xs:string" minOccurs="0"/>
+      <xs:element name="ttl" type="xs:int" minOccurs="0"/>
     </xs:sequence>
   </xs:complexType>
 </xs:schema>
@@ -306,6 +308,18 @@ See note below table for an explanation of these values.
 | enterprise-id
 | _Blank_
 | v3
+| _None_
+
+| location
+| location
+| _Default Location_
+| _None_
+| _None_
+
+| ttl
+| ttl
+| _None_
+| _None_
 | _None_
 |===
 
