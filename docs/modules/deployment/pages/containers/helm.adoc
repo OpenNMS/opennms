@@ -1,6 +1,6 @@
 
-[[container-deployment]]
-= Containerized Deployment
+[[helm-charts]]
+= Helm Charts
 :description: Learn how to install OpenNMS Horizon/Meridian in a containerized environment like Kubernetes or Red Hat OpenShift.
 
 If your organization uses Kubernetes or Red Hat OpenShift, OpenNMS makes a Helm chart available to simplify {page-component-title} deployment.
@@ -87,4 +87,3 @@ To install {page-component-title} on OpenShift, follow these steps:
 11.	Wait for the pods to come up. This may take a few minutes.
 
 NOTE: The process to install the Minion is similar.
-

@@ -94,4 +94,4 @@ Components marked with an asterisk are required:
 |===
 
 == Containerized environments
-See xref:deployment:core/containers.adoc[containerized deployment] for information on deploying {page-component-title} via Kubernetes or OpenShift.
+See xref:deployment:containers/introduction.adoc[containerized deployment] for information on deploying {page-component-title} via Docker, Kubernetes, or OpenShift.

@@ -22,8 +22,6 @@
 * A Minion server can access desired message broker nodes (for example, ActiveMQ `61616/tcp`, Apache Kafka `9092/tcp`).
 * A system user with administrative permissions (sudo) to perform the installation tasks.
 ifeval::["{page-component-title}" == "Horizon"]
-* If you are running the services in link:https://docs.docker.com/[Docker], you also need link:https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples.
-
 NOTE: If you run Debian, you must install and configure `sudo` yourself (see the link:https://wiki.debian.org/sudo/[Debian Wiki]).
 endif::[]
 
@@ -48,12 +46,6 @@ CentOS/RHEL 7::
 +
 --
 include::centos-rhel7/install-minion.adoc[]
---
-
-Docker::
-+
---
-include::docker/minion.adoc[]
 --
 
 ifeval::["{page-component-title}" == "Horizon"]
@@ -83,14 +75,6 @@ Linux::
 --
 include::secure-karaf.adoc[]
 --
-
-ifeval::["{page-component-title}" == "Horizon"]
-Docker::
-+
---
-include::docker/secure-karaf.adoc[]
---
-endif::[]
 ====
 
 Changes to the password and encryption algorithm are applied immediately.
