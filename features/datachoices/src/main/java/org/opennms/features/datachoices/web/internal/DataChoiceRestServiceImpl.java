@@ -34,9 +34,9 @@ import org.opennms.features.datachoices.internal.usagestatistics.UsageStatistics
 import org.opennms.features.datachoices.internal.usagestatistics.UsageStatisticsReportDTO;
 import org.opennms.features.datachoices.internal.usagestatistics.UsageStatisticsReporter;
 import org.opennms.features.datachoices.internal.usagestatistics.UsageStatisticsStatusDTO;
-import org.opennms.features.datachoices.internal.userdatacollection.UserDataCollectionFormData;
-import org.opennms.features.datachoices.internal.userdatacollection.UserDataCollectionService;
-import org.opennms.features.datachoices.internal.userdatacollection.UserDataCollectionStatusDTO;
+import org.opennms.features.datachoices.internal.productupdateenrollment.ProductUpdateEnrollmentFormData;
+import org.opennms.features.datachoices.internal.productupdateenrollment.ProductUpdateEnrollmentService;
+import org.opennms.features.datachoices.internal.productupdateenrollment.ProductUpdateEnrollmentStatusDTO;
 import org.opennms.features.datachoices.web.DataChoiceRestService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -50,9 +50,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  * GET /opennms/rest/datachoices/status
  * POST /opennms/rest/datachoices/status
  * GET /opennms/rest/datachoices/meta
- * GET /opennms/rest/datachoices/userdatacollection/status
- * POST /opennms/rest/datachoices/userdatacollection/status
- * POST /opennms/rest/datachoices/userdatacollection/submit
+ * GET /opennms/rest/datachoices/productupdate/status
+ * POST /opennms/rest/datachoices/productupdate/status
+ * POST /opennms/rest/datachoices/productupdate/submit
  *
  * These are no longer supported:
  * POST /opennms/rest/datachoices?action=enable
@@ -66,7 +66,7 @@ public class DataChoiceRestServiceImpl implements DataChoiceRestService {
     private StateManager m_stateManager;
     private UsageStatisticsReporter m_usageStatisticsReporter;
 
-    private UserDataCollectionService userDataCollectionService;
+    private ProductUpdateEnrollmentService productUpdateEnrollmentService;
 
     private static final String METADATA_RESOURCE_PATH = "web/datachoicesMetadata.json";
 
@@ -109,33 +109,33 @@ public class DataChoiceRestServiceImpl implements DataChoiceRestService {
     }
 
     @Override
-    public Response getUserDataCollectionStatus() throws ServletException, IOException {
-        UserDataCollectionStatusDTO dto = new UserDataCollectionStatusDTO();
+    public Response getProductUpdateEnrollmentStatus() throws ServletException, IOException {
+        ProductUpdateEnrollmentStatusDTO dto = new ProductUpdateEnrollmentStatusDTO();
 
         try {
-            dto.setNoticeAcknowledged(m_stateManager.isUserDataCollectionNoticeAcknowledged());
-            dto.setOptedIn(m_stateManager.isUserDataCollectionOptedIn());
+            dto.setNoticeAcknowledged(m_stateManager.isProductUpdateEnrollmentNoticeAcknowledged());
+            dto.setOptedIn(m_stateManager.isProductUpdateEnrollmentOptedIn());
         } catch (Exception e) {
-            return getExceptionResponse("Error getting User Data Collection status.", e);
+            return getExceptionResponse("Error getting Product Update Enrollment status.", e);
         }
 
         return Response.ok(dto).build();
     }
 
     @Override
-    public Response setUserDataCollectionStatus(HttpServletRequest request, UserDataCollectionStatusDTO dto) throws ServletException, IOException {
+    public Response setProductUpdateEnrollmentStatu(HttpServletRequest request, ProductUpdateEnrollmentStatusDTO dto) throws ServletException, IOException {
         try {
             final String remoteUser = request.getRemoteUser();
 
             if (dto.getOptedIn() != null) {
-                m_stateManager.setUserDataCollectionOptedIn(dto.getOptedIn());
+                m_stateManager.setProductUpdateEnrollmentOptedIn(dto.getOptedIn());
             }
 
             if (dto.getNoticeAcknowledged() != null) {
-                m_stateManager.setUserDataCollectionNoticeAcknowledged(dto.getNoticeAcknowledged(), remoteUser);
+                m_stateManager.setProductUpdateEnrollmentNoticeAcknowledged(dto.getNoticeAcknowledged(), remoteUser);
             }
         } catch (Exception e) {
-            return getExceptionResponse("Error setting User Data Collection status.", e);
+            return getExceptionResponse("Error setting Product Update Enrollment status.", e);
         }
 
         return Response.accepted().build();
@@ -156,19 +156,19 @@ public class DataChoiceRestServiceImpl implements DataChoiceRestService {
     }
 
     @Override
-    public Response submitUserDataCollectionData(HttpServletRequest request, UserDataCollectionFormData data) throws ServletException, IOException {
-        String show = System.getProperty("opennms.userDataCollection.show", "true");
+    public Response submitProductUpdateEnrollmentData(HttpServletRequest request, ProductUpdateEnrollmentFormData data) throws ServletException, IOException {
+        String show = System.getProperty("opennms.productUpdateEnrollment.show", "true");
 
-        // don't process User Data Collection if disabled by configuration
+        // don't process Product Update Enrollment if disabled by configuration
         if (show != null && show.equalsIgnoreCase("false")) {
-            String msg = "User Data Collection has been disabled by the 'opennms.userDataCollection.show' configuration point.";
+            String msg = "Product Update Enrollment has been disabled by the 'opennms.productUpdateEnrollment.show' configuration point.";
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(msg).build();
         }
 
         try {
-            userDataCollectionService.submit(data);
+            productUpdateEnrollmentService.submit(data);
         } catch (Exception e) {
-            return getExceptionResponse("Error submitting User Data Collection form data.", e);
+            return getExceptionResponse("Error submitting Product Update Enrollment form data.", e);
         }
 
         return Response.accepted().build();
@@ -182,8 +182,8 @@ public class DataChoiceRestServiceImpl implements DataChoiceRestService {
         m_usageStatisticsReporter = Objects.requireNonNull(usageStatisticsReporter);
     }
 
-    public void setUserDataCollectionService(UserDataCollectionService service) {
-        this.userDataCollectionService = service;
+    public void setProductUpdateEnrollmentService(ProductUpdateEnrollmentService service) {
+        this.productUpdateEnrollmentService = service;
     }
 
     private Response getExceptionResponse(String msg, Throwable e) {

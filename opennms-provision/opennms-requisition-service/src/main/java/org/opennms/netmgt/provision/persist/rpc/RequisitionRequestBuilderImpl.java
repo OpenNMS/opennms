@@ -44,7 +44,7 @@ public class RequisitionRequestBuilderImpl implements RequisitionRequestBuilder 
 
     private final LocationAwareRequisitionClientImpl client;
 
-    private final Map<String, String> parameters = new HashMap<>();
+    protected final Map<String, String> parameters = new HashMap<>();
 
     private RequisitionProvider provider;
 

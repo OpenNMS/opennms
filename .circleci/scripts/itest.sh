@@ -97,6 +97,7 @@ retry sudo apt update && \
                 jrrd2 \
                 jicmp \
                 jicmp6 \
+                openjdk-11-jdk-headless \
             || exit 1
 
 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64

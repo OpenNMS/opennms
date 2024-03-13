@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.collection.core;
 
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -28,6 +29,12 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 
+import org.opennms.core.mate.api.EmptyScope;
+import org.opennms.core.mate.api.EmptyScopeProvider;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.core.rpc.api.RpcExceptionHandler;
 import org.opennms.core.rpc.api.RpcExceptionUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -52,6 +59,8 @@ import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.introspect.TypeResolutionContext;
+
 /**
  * <p>CollectionSpecification class.</p>
  *
@@ -71,8 +80,9 @@ public class CollectionSpecification {
     private final LocationAwareCollectorClient m_locationAwareCollectorClient;
     private final ReadablePollOutagesDao m_pollOutagesDao;
     private final String collectorImplClassName;
+    private final ScopeProvider scopeProvider;
 
-    public CollectionSpecification(Package wpkg, String svcName, ServiceCollector collector, CollectionInstrumentation instrumentation, LocationAwareCollectorClient locationAwareCollectorClient, ReadablePollOutagesDao pollOutagesDao, String collectorImplClassName) {
+    public CollectionSpecification(Package wpkg, String svcName, ServiceCollector collector, CollectionInstrumentation instrumentation, LocationAwareCollectorClient locationAwareCollectorClient, ReadablePollOutagesDao pollOutagesDao, String collectorImplClassName, final ScopeProvider scopeProvider) {
         m_package = Objects.requireNonNull(wpkg);
         m_svcName = Objects.requireNonNull(svcName);
         m_collector = Objects.requireNonNull(collector);
@@ -80,7 +90,12 @@ public class CollectionSpecification {
         m_locationAwareCollectorClient = Objects.requireNonNull(locationAwareCollectorClient);
         m_pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
         this.collectorImplClassName = collectorImplClassName;
+        this.scopeProvider = scopeProvider;
         initializeParameters();
+    }
+
+    public CollectionSpecification(Package wpkg, String svcName, ServiceCollector collector, CollectionInstrumentation instrumentation, LocationAwareCollectorClient locationAwareCollectorClient, ReadablePollOutagesDao pollOutagesDao, String collectorImplClassName) {
+        this(wpkg, svcName, collector, instrumentation, locationAwareCollectorClient,pollOutagesDao,collectorImplClassName, EmptyScopeProvider.EMPTY);
     }
 
     /**
@@ -164,7 +179,7 @@ public class CollectionSpecification {
      * @return A read only Map instance
      */
     public ServiceParameters getServiceParameters() {
-        return new ServiceParameters(Collections.unmodifiableMap(m_parameters));
+        return new ServiceParameters(Collections.unmodifiableMap(Interpolator.interpolateObjects(m_parameters, scopeProvider.getScope())));
     }
 
     private boolean isTrue(String stg) {

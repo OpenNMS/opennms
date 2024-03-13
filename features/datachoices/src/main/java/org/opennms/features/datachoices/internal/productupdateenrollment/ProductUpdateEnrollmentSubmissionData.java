@@ -19,12 +19,12 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.features.datachoices.internal.userdatacollection;
+package org.opennms.features.datachoices.internal.productupdateenrollment;
 
 /**
- * Data sent to User Data Collection submission endpoint.
+ * Data sent to Product Update Enrollment submission endpoint.
  */
-public class UserDataCollectionSubmissionData {
+public class ProductUpdateEnrollmentSubmissionData {
     public boolean consent;
     public String firstName;
     public String lastName;

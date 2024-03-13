@@ -37,6 +37,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.opennms.core.rpc.mock.MockEntityScopeProvider;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
@@ -182,6 +183,7 @@ public class ThresholdIT implements TemporaryDatabaseAware<MockDatabase> {
         collectd.setPersisterFactory(persisterFactory);
         collectd.setThresholdingService(thresholdingService);
         collectd.setPollOutagesDao(pollOutagesDao);
+        collectd.setEntityScopeProvider(new MockEntityScopeProvider());
         collectd.init();
         collectd.start();
 

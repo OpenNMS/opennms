@@ -29,16 +29,22 @@ parameters:
 setup: true
 
 commands:
-  shallow-clone:
-      description: "Quick shallow checkout (if possible)"
-      steps:
+  setup-github:
+     description: "Set Up Github SSH Access"
+     steps:
         - run:
-            name: git clone
             command: |
               install -d -m 700 ~/.ssh
               ssh-keyscan github.com >> ~/.ssh/known_hosts
               ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
               chmod 600 ~/.ssh/known_hosts
+  shallow-clone:
+      description: "Quick shallow checkout (if possible)"
+      steps:
+        - setup-github
+        - run:
+            name: git clone
+            command: |
               git clone --no-checkout --filter=tree:0 "${CIRCLE_REPOSITORY_URL}" .
               if [ -n "${CIRCLE_TAG}" ]; then
                 git checkout --force "${CIRCLE_TAG}"

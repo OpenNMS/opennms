@@ -31,6 +31,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
@@ -50,6 +51,7 @@ import kafka.server.KafkaConfig;
 import kafka.server.KafkaServer;
 import scala.Option;
 import scala.collection.JavaConverters;
+import scala.collection.mutable.Buffer;
 
 /**
  * This class starts up an embedded Kafka server for use in integration

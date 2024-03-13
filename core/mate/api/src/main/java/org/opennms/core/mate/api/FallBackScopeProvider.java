@@ -19,15 +19,27 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.features.datachoices.internal.userdatacollection;
+package org.opennms.core.mate.api;
 
-/**
- * Data received from user UI input, sent to DataChoiceRestService.
- */
-public class UserDataCollectionFormData {
-    public Boolean consent;
-    public String firstName;
-    public String lastName;
-    public String email;
-    public String company;
+import java.util.List;
+import java.util.stream.Collectors;
+
+import com.google.common.collect.ImmutableList;
+
+public class FallBackScopeProvider implements ScopeProvider {
+    private final List<ScopeProvider> scopeProviders;
+
+    public FallBackScopeProvider(final List<ScopeProvider> scopeProviders) {
+        this.scopeProviders = ImmutableList.copyOf(scopeProviders);
+    }
+
+    public FallBackScopeProvider(final ScopeProvider... scopeProviders) {
+        this.scopeProviders = ImmutableList.copyOf(scopeProviders);
+    }
+
+
+    @Override
+    public Scope getScope() {
+        return new FallbackScope(scopeProviders.stream().map(ScopeProvider::getScope).collect(Collectors.toList()));
+    }
 }

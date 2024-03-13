@@ -89,7 +89,7 @@ public class ShowImport implements Action {
                     Requisition requisition = future.get(1, TimeUnit.SECONDS);
                     if(importRequisition) {
                         System.out.println();
-                        ImportRequisition.sendImportRequisitionEvent(eventForwarder, type, parameters, null);
+                        ImportRequisition.sendImportRequisitionEvent(eventForwarder, type, parameters, null, false, null);
                         System.out.println();
                     }
                     if (xmlOutput) {

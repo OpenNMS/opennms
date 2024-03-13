@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import org.opennms.core.mate.api.EntityScopeProvider;
 import org.quartz.Job;
 import org.quartz.JobDetail;
 import org.quartz.Scheduler;
@@ -42,6 +43,9 @@ public class ImportJobFactory implements JobFactory {
     @Autowired
     private MonitorHolder monitorHolder;
 
+    @Autowired
+    private EntityScopeProvider entityScopeProvider;
+
     /** {@inheritDoc} */
     @Override
     public Job newJob(final TriggerFiredBundle bundle, final Scheduler scheduler) throws SchedulerException {
@@ -55,6 +59,7 @@ public class ImportJobFactory implements JobFactory {
             job = jobClass.getDeclaredConstructor().newInstance();
             job.setProvisioner(getProvisioner());
             job.setMonitor(monitorHolder.createMonitor(jobDetail.getKey().getName(), job));
+            job.setEntityScopeProvider(entityScopeProvider);
 
             return job;
         } catch (Exception e) {

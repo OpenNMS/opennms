@@ -19,10 +19,10 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.features.datachoices.internal.userdatacollection;
+package org.opennms.features.datachoices.internal.productupdateenrollment;
 
 import java.io.IOException;
 
-public interface UserDataCollectionService {
-    void submit(UserDataCollectionFormData data) throws Exception, IOException;
+public interface ProductUpdateEnrollmentService {
+    void submit(ProductUpdateEnrollmentFormData data) throws Exception, IOException;
 }

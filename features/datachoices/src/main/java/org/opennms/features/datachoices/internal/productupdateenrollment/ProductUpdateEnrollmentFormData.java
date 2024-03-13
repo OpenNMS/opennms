@@ -19,18 +19,15 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.features.datachoices.web.internal;
+package org.opennms.features.datachoices.internal.productupdateenrollment;
 
-import org.opennms.web.navigate.PageNavEntry;
-
-public class UserDataCollectionAdminPageNavEntry implements PageNavEntry {
-    @Override
-    public String getName() {
-        return "User Data Collection";
-    }
-
-    @Override
-    public String getUrl() {
-        return "admin/user-data-collection/index.jsp";
-    }
+/**
+ * Data received from user UI input, sent to DataChoiceRestService.
+ */
+public class ProductUpdateEnrollmentFormData {
+    public Boolean consent;
+    public String firstName;
+    public String lastName;
+    public String email;
+    public String company;
 }

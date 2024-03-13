@@ -19,27 +19,8 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.features.datachoices.internal.userdatacollection;
+package org.opennms.core.mate.api;
 
-public class UserDataCollectionStatusDTO {
-    // note, these can be null (user never chose a status)
-    private Boolean optedIn;
-
-    private Boolean noticeAcknowledged;
-
-    public Boolean getOptedIn() {
-        return optedIn;
-    }
-
-    public void setOptedIn(Boolean status) {
-        optedIn = status;
-    }
-
-    public Boolean getNoticeAcknowledged() {
-        return noticeAcknowledged;
-    }
-
-    public void setNoticeAcknowledged(Boolean status) {
-        this.noticeAcknowledged = status;
-    }
+public interface ScopeProvider {
+    Scope getScope();
 }
