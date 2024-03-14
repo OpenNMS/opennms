@@ -102,6 +102,7 @@ public abstract class VmwareRequisitionTool {
         } else {
             System.out.println(IOUtils.toString(is, StandardCharsets.UTF_8));
         }
+        System.exit(0);
     }
 
     private static void usage(final Options options, final CommandLine cmd, final String error, final Exception e) {
