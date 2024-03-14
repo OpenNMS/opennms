@@ -27,11 +27,13 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Properties;
 
+import org.opennms.core.mate.api.EmptyScope;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.FatalBeanException;
@@ -58,6 +60,7 @@ public abstract class JavaMailerConfig {
             } catch (FatalBeanException e) {
                 e.printStackTrace();
                 LOG.warn("JavaMailConfig: Error retrieving EntityScopeProvider bean");
+                secureCredentialsVaultScope = EmptyScope.EMPTY;
             }
         }
 
@@ -74,14 +77,18 @@ public abstract class JavaMailerConfig {
      * @return a Properties object representing the configuration properties
      * @throws java.io.IOException if any.
      */
-    public static synchronized Properties getProperties() throws IOException {
+    public static synchronized Properties getProperties(final Scope scope) throws IOException {
         LOG.debug("JavaMailConfig: Loading javamail properties");
         Properties properties = new Properties();
         File configFile = ConfigFileConstants.getFile(ConfigFileConstants.JAVA_MAIL_CONFIG_FILE_NAME);
         InputStream in = new FileInputStream(configFile);
         properties.load(in);
         in.close();
-        return interpolate(properties);
+        return interpolate(properties, scope);
+    }
+
+    public static synchronized Properties getProperties() throws IOException {
+        return getProperties(getSecureCredentialsScope());
     }
 
     private static Properties interpolate(final Properties properties, final String key, final Scope scope) {
@@ -94,9 +101,7 @@ public abstract class JavaMailerConfig {
         return properties;
     }
 
-    private static Properties interpolate(final Properties properties) {
-        final Scope scope = getSecureCredentialsScope();
-
+    private static Properties interpolate(final Properties properties, final Scope scope) {
         if (scope == null) {
             LOG.warn("JavaMailConfig: Scope is null, cannot interpolate metadata of properties");
             return properties;
