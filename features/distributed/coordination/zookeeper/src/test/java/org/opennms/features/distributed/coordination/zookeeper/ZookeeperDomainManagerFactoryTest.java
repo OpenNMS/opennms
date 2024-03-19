@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,13 +32,11 @@ import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.Assert.assertThat;
 
 import org.junit.Test;
-import org.junit.Ignore;
 import org.opennms.features.distributed.coordination.api.DomainManagerFactory;
 
 /**
  * Tests for {@link ZookeeperDomainManagerFactory}.
  */
-@Ignore("Disabling the test case see NMS-16371")
 public class ZookeeperDomainManagerFactoryTest {
     /**
      * Verifies the factory generates the correct instance type.

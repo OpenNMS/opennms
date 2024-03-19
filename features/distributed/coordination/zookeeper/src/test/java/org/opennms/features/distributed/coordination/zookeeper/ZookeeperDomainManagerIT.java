@@ -30,6 +30,7 @@ package org.opennms.features.distributed.coordination.zookeeper;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 
@@ -45,7 +46,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.Ignore;
 import org.junit.rules.TemporaryFolder;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.distributed.coordination.api.DomainManager;
@@ -56,7 +56,6 @@ import com.jayway.awaitility.core.ConditionTimeoutException;
 /**
  * Integration tests for {@link ZookeeperDomainManager}.
  */
-@Ignore("Disabling the test case see NMS-16371")
 public class ZookeeperDomainManagerIT {
     private static final String domain = "test.domain";
     private static final String id = "test.id";
@@ -85,7 +84,14 @@ public class ZookeeperDomainManagerIT {
 
     @After
     public void cleanup() throws Exception {
+        if (manager != null) {
+            manager.deregister(id);
+        }
         testServer.stop();
+        testServer.close();
+        if (manager != null) {
+            assertFalse(manager.isAnythingRegistered());
+        }
     }
 
     /**
@@ -179,6 +185,7 @@ public class ZookeeperDomainManagerIT {
             standbyFutures.get(futureIndex.get()).get(10, TimeUnit.SECONDS);
             futureIndex.incrementAndGet();
         }
+        assertEquals(numFlaps, futureIndex.get());
     }
     
     private void register() {
