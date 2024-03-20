@@ -1429,7 +1429,7 @@
           <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
-            <version>${junitVintageEngineVersion}</version>
+            <version>${junit5Version}</version>
           </dependency>
         </dependencies>
       </plugin>
@@ -1468,7 +1468,7 @@
           <dependency>
             <groupId>org.junit.vintage</groupId>
             <artifactId>junit-vintage-engine</artifactId>
-            <version>${junitVintageEngineVersion}</version>
+            <version>${junit5Version}</version>
           </dependency>
         </dependencies>
       </plugin>
