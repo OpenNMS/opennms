@@ -11,16 +11,6 @@ commands:
         default: true
         type: boolean
     steps:
-      - run:
-          name: Monitor JVM processes
-          background: true
-          command: |
-            .circleci/scripts/jvmprocmon-start.sh
-      - run:
-          name: Monitor memory usage
-          background: true
-          command: |
-            free -m -c 500 -s 30
       - restore-maven-cache
       - run:
           name: Integration Tests
@@ -64,7 +54,6 @@ commands:
             (dmesg || :) > ~/test-results/system-logs/dmesg 2>&1
             (ps auxf || :) > ~/test-results/system-logs/ps 2>&1
             (free -m || :) > ~/test-results/system-logs/free 2>&1
-            cp -R /tmp/jvmprocmon ~/test-results/system-logs/ || :
 
             (date '+%T' || :)                       > ~/test-results/system-logs/docker_stats 2>&1
             (docker stats --all --no-stream || :) >> ~/test-results/system-logs/docker_stats 2>&1
