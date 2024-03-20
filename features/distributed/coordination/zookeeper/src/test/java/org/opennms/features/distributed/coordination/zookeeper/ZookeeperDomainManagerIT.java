@@ -23,6 +23,7 @@ package org.opennms.features.distributed.coordination.zookeeper;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 import java.net.ServerSocket;
@@ -75,7 +76,14 @@ public class ZookeeperDomainManagerIT {
 
     @After
     public void cleanup() throws Exception {
+        if (manager != null) {
+            manager.deregister(id);
+        }
         testServer.stop();
+        testServer.close();
+        if (manager != null) {
+            assertFalse(manager.isAnythingRegistered());
+        }
     }
 
     /**
@@ -169,6 +177,7 @@ public class ZookeeperDomainManagerIT {
             standbyFutures.get(futureIndex.get()).get(10, TimeUnit.SECONDS);
             futureIndex.incrementAndGet();
         }
+        assertEquals(numFlaps, futureIndex.get());
     }
     
     private void register() {
