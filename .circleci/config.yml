@@ -127,27 +127,6 @@ commands:
         - run:
             name: Remove old artifacts to keep workspace size down
             command: .circleci/scripts/clean-m2.sh
-  update-maven-cache:
-      description: "Maven: Refresh local repository from POM files"
-      steps:
-        - run:
-            name: Collect Maven Dependencies
-            command: |
-              ulimit -n 65536 || :
-              ./compile.pl -t \
-                -Dbuild.skip.tarball=true \
-                -DupdatePolicy=never \
-                --update-plugins \
-                -Daether.connector.resumeDownloads=false \
-                -Daether.connector.basic.threads=1 \
-                -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
-                -Pbuild-bamboo \
-                -Prun-expensive-tasks \
-                -Psmoke \
-                -Denable.license=true \
-                --batch-mode \
-                dependency:resolve-plugins \
-                de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
   save-maven-cache:
     description: "Maven: Save cache"
     steps:
@@ -222,16 +201,6 @@ commands:
       - load-oci:
           key: sentinel
       - run:
-          name: Monitor JVM processes
-          background: true
-          command: |
-            .circleci/scripts/jvmprocmon-start.sh
-      - run:
-          name: Monitor memory usage
-          background: true
-          command: |
-            free -m -c 500 -s 30
-      - run:
           name: Smoke Tests
           no_output_timeout: 30m
           command: |
@@ -245,7 +214,6 @@ commands:
             (ps auxf || :) > ~/test-results/system-logs/ps 2>&1
             (free -m || :) > ~/test-results/system-logs/free 2>&1
             (docker stats --no-stream || :) > ~/test-results/system-logs/docker_stats 2>&1
-            cp -R /tmp/jvmprocmon ~/test-results/system-logs/ || :
             ls -alh ~/project/smoke-test/ || :
       - run:
           name: Gather test artifacts
@@ -334,7 +302,6 @@ commands:
                 -s ../.circleci/settings.xml \
                 install || exit 1
             popd
-      - update-maven-cache
       - run:
           name: Remove Extra Maven Repository OpenNMS Files
           command: |
@@ -1155,7 +1122,6 @@ jobs:
             (ps auxf || :) > ~/build-results/system-logs/ps 2>&1
             (free -m || :) > ~/build-results/system-logs/free 2>&1
             (docker stats --no-stream || :) > ~/build-results/system-logs/docker_stats 2>&1
-            cp -R /tmp/jvmprocmon ~/build-results/system-logs/ || :
       - store_artifacts:
           when: always
           path: ~/build-results
