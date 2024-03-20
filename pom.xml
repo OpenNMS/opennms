@@ -1318,6 +1318,13 @@
           <useModulePath>false</useModulePath>
           <forkedProcessExitTimeoutInSeconds>120</forkedProcessExitTimeoutInSeconds>
         </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junitVintageEngineVersion}</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1350,6 +1357,13 @@
             </goals>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junitVintageEngineVersion}</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
           <groupId>org.apache.karaf.tooling</groupId>
@@ -1633,7 +1647,13 @@
     <concurrentTreesVersion>2.6.1</concurrentTreesVersion>
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.5</c3p0Version>
+<<<<<<< HEAD
     <curatorVersion>5.5.0</curatorVersion>
+||||||| aee3c231570
+    <curatorVersion>2.13.0</curatorVersion>
+=======
+    <curatorVersion>5.6.0</curatorVersion>
+>>>>>>> origin/foundation-2022
     <cxfVersion>3.5.5</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
