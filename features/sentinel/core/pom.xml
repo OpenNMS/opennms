@@ -22,7 +22,7 @@
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Import-Package>*</Import-Package>
-                        <Karaf-Commands>*</Karaf-Commands>
+                        <Karaf-Commands>org.opennms.*</Karaf-Commands>
                     </instructions>
                 </configuration>
             </plugin>
@@ -39,6 +39,11 @@
             <artifactId>osgi.core</artifactId>
             <version>${osgiVersion}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.core</artifactId>
+            <version>${karafVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>

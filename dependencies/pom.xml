@@ -20,6 +20,7 @@
     <module>cxf</module>
     <module>dnsjava</module>
     <module>drools</module>
+    <module>eclipse-npn-alpn</module>
     <module>felix</module>
     <module>groovy</module>
     <module>hibernate</module>

@@ -259,10 +259,6 @@
                           <feature>fst</feature>
                           <feature>guava</feature>
                           <feature>guava-dependencies</feature>
-                          <feature>guava17</feature>
-                          <feature>guava18</feature>
-                          <feature>guava21</feature>
-                          <feature>guava31</feature>
                           <feature>jackson-core</feature>
                           <feature>jackson-dataformat-xml</feature>
                           <feature>jackson-dataformat-yaml</feature>
@@ -960,16 +956,15 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>spring-dependencies</artifactId>
+      <artifactId>jackson1-dependencies</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jackson1-dependencies</artifactId>
+      <artifactId>eclipse-npn-alpn</artifactId>
       <version>${project.version}</version>
-      <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
