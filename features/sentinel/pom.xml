@@ -12,8 +12,7 @@
     <name>OpenNMS :: Features :: Sentinel</name>
 
     <modules>
-	    <module>core</module>
-        <module>repository</module>
+        <module>core</module>
     </modules>
 
     <build>
