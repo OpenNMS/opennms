@@ -78,6 +78,7 @@
     </feature>
 
     <feature name="minion-shell-provision" description="Minion :: Shell :: Provision" version="${project.version}">
+      <feature prerequisite="true">shell-compat</feature>
       <feature>commons-lang</feature>
       <feature>opennms-core</feature>
       <feature>opennms-model</feature>
@@ -87,6 +88,7 @@
     </feature>
     
     <feature name="minion-shell-poller" description="Minion :: Shell :: Poller" version="${project.version}">
+      <feature prerequisite="true">shell-compat</feature>
       <feature>minion-poller</feature>
       <bundle>mvn:org.opennms.features.minion.shell/org.opennms.features.minion.shell.poller/${project.version}</bundle>
     </feature>
@@ -126,6 +128,7 @@
     </feature>
 
     <feature name="minion-shell-collection" description="Minion :: Shell :: Collection" version="${project.version}">
+      <feature prerequisite="true">shell-compat</feature>
       <feature>minion-collection</feature>
       <bundle>mvn:org.opennms.features.minion.shell/org.opennms.features.minion.shell.collection/${project.version}</bundle>
     </feature>

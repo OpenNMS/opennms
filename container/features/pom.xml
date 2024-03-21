@@ -260,9 +260,6 @@
                           <feature>fst</feature>
                           <feature>guava</feature>
                           <feature>guava-dependencies</feature>
-                          <feature>guava17</feature>
-                          <feature>guava18</feature>
-                          <feature>guava21</feature>
                           <feature>jackson-core</feature>
                           <feature>jackson-dataformat-xml</feature>
                           <feature>jackson-dataformat-yaml</feature>
@@ -406,6 +403,12 @@
     <dependency>
       <groupId>org.opennms.features.config.osgi</groupId>
       <artifactId>org.opennms.features.config.osgi.cm</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.dnsresolver</groupId>
+      <artifactId>org.opennms.features.dnsresolver.netty</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -972,16 +975,15 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>spring-dependencies</artifactId>
+      <artifactId>jackson1-dependencies</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jackson1-dependencies</artifactId>
+      <artifactId>eclipse-npn-alpn</artifactId>
       <version>${project.version}</version>
-      <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>

@@ -64,7 +64,7 @@
                   <groupId>org.opennms.core</groupId>
                   <artifactId>org.opennms.core.cli</artifactId>
                   <version>${project.version}</version>
-                  <excludes>META-INF,META-INF/**/*</excludes>
+                  <includes>bin/*</includes>
                 </artifactItem>
               </artifactItems>
             </configuration>

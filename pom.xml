@@ -1809,6 +1809,7 @@
     <grpcVersion>1.46.0</grpcVersion>
     <gsonVersion>2.9.1</gsonVersion>
     <guavaVersion>31.1-jre</guavaVersion>
+    <guava32Version>32.1.3-jre</guava32Version>
     <guavaOsgiVersion>31.1</guavaOsgiVersion>
     <guavagRPCVersion>30.1-jre</guavagRPCVersion>
     <gwtVersion>2.9.0</gwtVersion>
@@ -1979,7 +1980,7 @@
     <xmlgraphicsCommonsVersion>2.9</xmlgraphicsCommonsVersion>
     <xstreamVersion>1.4.20</xstreamVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
-    <wsmanVersion>1.2.3</wsmanVersion>
+    <wsmanVersion>1.3.0</wsmanVersion>
     <zookeeperVersion>3.7.2</zookeeperVersion>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
     <minaSshdVersion>2.11.0</minaSshdVersion>
@@ -5030,6 +5031,26 @@
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-transport</artifactId>
+        <version>${netty4Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport-classes-epoll</artifactId>
+        <version>${netty4Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport-native-epoll</artifactId>
+        <version>${netty4Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport-classes-kqueue</artifactId>
+        <version>${netty4Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport-native-kqueue</artifactId>
         <version>${netty4Version}</version>
       </dependency>
       <dependency>
