@@ -69,10 +69,6 @@ parameters:
     description: whether to enable running code coverage
     type: boolean
     default: false
-  trigger-flaky:
-    description: whether to enable running flaky smoke tests
-    type: boolean
-    default: false
   is_pr:
     description: whether this build is a pull request (only valid in non-setup workflows)
     type: boolean
@@ -741,7 +737,6 @@ workflows:
             - sentinel-deb-build
             - integration-test
             - smoke-test-core
-            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
           filters:
@@ -920,30 +915,6 @@ workflows:
                     equal: [ true, << pipeline.parameters.is_pr >> ]
                 steps:
                   - jira/notify
-      - smoke-test-flaky:
-          context:
-            - "CircleCI"
-          requires:
-            - tarball-assembly
-            - horizon-rpm-build
-            - sentinel-rpm-build
-          filters:
-            branches:
-              only:
-                - develop
-                - /^dependabot.*/
-                - /^features.*/
-                - /^foundation.*/
-                - /^master-.*/
-                - /^release-.*/
-                - /.*smoke.*/
-          post-steps:
-            - when:
-                condition:
-                  not:
-                    equal: [ true, << pipeline.parameters.is_pr >> ]
-                steps:
-                  - jira/notify
       - smoke-test-minion:
           context:
             - "CircleCI"
@@ -1004,7 +975,6 @@ workflows:
             - integration-test
             - code-coverage
             - smoke-test-core
-            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
           filters:
@@ -1032,7 +1002,6 @@ workflows:
             - integration-test
             - code-coverage
             - smoke-test-core
-            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
           filters:
@@ -1116,7 +1085,6 @@ workflows:
             - integration-test
             - code-coverage
             - smoke-test-core
-            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
           filters:
@@ -1140,7 +1108,6 @@ workflows:
             - integration-test
             - code-coverage
             - smoke-test-core
-            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
           filters:
@@ -1152,7 +1119,6 @@ workflows:
           requires:
             - horizon-deb-build
             - smoke-test-core
-            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
             - integration-test
@@ -1174,7 +1140,6 @@ workflows:
             - integration-test
             - code-coverage
             - smoke-test-core
-            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
           filters:
@@ -1835,42 +1800,10 @@ jobs:
     environment:
       JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
     steps:
-      - run:
-          name: "skip if flaky tests are enabled"
-          command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky >>"
-      - when:
-          condition:
-            not:
-              or:
-                - << pipeline.parameters.trigger-flaky >>
-                - matches: { pattern: "^.*flaky.*$", value: << pipeline.git.branch >> }
-          steps:
-            - attach_workspace:
-                at: ~/
-            - run-smoke-tests:
-                suite: core
-  smoke-test-flaky:
-    executor: smoke-test-executor
-    parallelism: 5
-    # No resource class support for machine executors, we're constrained to use the default
-    # medium class which has 2 vCPUs and 8 GB RAM
-    #resource_class: large
-    environment:
-      JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
-    steps:
-      - run:
-          name: "run if flaky tests are enabled"
-          command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky >>"
-      - when:
-          condition:
-            or:
-              - << pipeline.parameters.trigger-flaky >>
-              - matches: { pattern: "^.*flaky.*$", value: << pipeline.git.branch >> }
-          steps:
-            - attach_workspace:
-                at: ~/
-            - run-smoke-tests:
-                suite: flaky
+      - attach_workspace:
+          at: ~/
+      - run-smoke-tests:
+          suite: core
   smoke-test-minion:
     executor: smoke-test-executor
     parallelism: 4
@@ -1880,20 +1813,10 @@ jobs:
     environment:
       JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
     steps:
-      - run:
-          name: "skip if flaky tests are enabled"
-          command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky >>"
-      - when:
-          condition:
-            not:
-              or:
-                - << pipeline.parameters.trigger-flaky >>
-                - matches: { pattern: "^.*flaky.*$", value: << pipeline.git.branch >> }
-          steps:
-            - attach_workspace:
-                at: ~/
-            - run-smoke-tests:
-                suite: minion
+      - attach_workspace:
+          at: ~/
+      - run-smoke-tests:
+          suite: minion
   smoke-test-sentinel:
     executor: smoke-test-executor
     parallelism: 4
@@ -1903,20 +1826,10 @@ jobs:
     environment:
       JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
     steps:
-      - run:
-          name: "skip if flaky tests are enabled"
-          command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky >>"
-      - when:
-          condition:
-            not:
-              or:
-                - << pipeline.parameters.trigger-flaky >>
-                - matches: { pattern: "^.*flaky.*$", value: << pipeline.git.branch >> }
-          steps:
-            - attach_workspace:
-                at: ~/
-            - run-smoke-tests:
-                suite: sentinel
+      - attach_workspace:
+          at: ~/
+      - run-smoke-tests:
+          suite: sentinel
   smoke-test-minimal:
     executor: smoke-test-executor
     environment:
