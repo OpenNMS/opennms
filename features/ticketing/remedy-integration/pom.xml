@@ -68,7 +68,6 @@
 			<plugin>
 				<groupId>com.google.code.maven-replacer-plugin</groupId>
 				<artifactId>maven-replacer-plugin</artifactId>
-				<version>1.4.1</version>
 				<executions>
 					<execution>
 						<phase>process-sources</phase>
