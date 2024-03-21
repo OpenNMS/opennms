@@ -124,7 +124,7 @@
                   <token>apache-cxf/[\d\.]+</token>
                   <value>apache-cxf/${cxfVersion}</value>
                 </replacement>
-                <!-- fix an issue with resolving multiple versions of spring by forcing the dep to force spring 4.2 -->
+                <!-- fix an issue with resolving multiple versions of spring by forcing the dep to spring 4.2 -->
                 <replacement>
                   <token>\[4\.\d,5\)</token>
                   <value>[4.2,4.3)</value>
@@ -191,6 +191,11 @@
                   <type>xml</type>
                   <classifier>camel</classifier>
                 </artifact>
+                <artifact>
+                  <file>${project.build.outputDirectory}/overrides.properties</file>
+                  <type>properties</type>
+                  <classifier>overrides</classifier>
+                </artifact>
               </artifacts>
             </configuration>
           </execution>
@@ -213,9 +218,6 @@
                   <configuration>
                       <javase>11</javase>
                       <descriptors>
-                          <descriptor>mvn:org.apache.karaf.features/framework/${karafVersion}/xml/features</descriptor>
-                          <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
-                          <descriptor>mvn:org.opennms.newts/newts-karaf/${newtsVersion}/xml/features</descriptor>
                           <descriptor>file:${project.build.directory}/classes/features.xml</descriptor>
                           <descriptor>file:${project.build.directory}/classes/features-core.xml</descriptor>
                           <descriptor>file:${project.build.directory}/classes/features-experimental.xml</descriptor>
