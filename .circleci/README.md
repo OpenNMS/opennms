@@ -29,7 +29,6 @@ The user has ability to modify the build path by
       | ------------- | ------------- |
       | !build-deploy | Runs build-deploy path |
       | !smoke        | Runs smoke tests |
-      | !smoke-flaky  | Runs flaky smoke tests|
       | !oci          | Runs Docker Container jobs |
       | !doc          | Runs doc job  |
       | !ui           | Runs ui job |
