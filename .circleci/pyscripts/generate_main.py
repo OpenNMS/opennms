@@ -162,8 +162,6 @@ for e in main_yml_content:
                     workflow_name = "build-deploy"
                 elif build_components["experimental"]:
                     workflow_name = "experimental"
-                elif build_components["smoke-flaky"]:
-                    workflow_name = "build-with-flaky"
                 else:
                     workflow_name = "build"
             else:
@@ -208,14 +206,6 @@ for e in main_yml_content:
 
                 workflow_path = print_add(
                     workflow_path, level, filters_enabled, "smoke"
-                )
-
-            if build_components["smoke-flaky"]:
-                if filters_enabled:
-                    tmp_filters_enabled = False
-
-                workflow_path = print_add(
-                    workflow_path, level, filters_enabled, "smoke-test-flaky"
                 )
 
             if build_components["debs"]:

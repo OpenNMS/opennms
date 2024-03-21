@@ -5,7 +5,6 @@
     "ui": false,
     "integration": false,
     "smoke": false,
-    "smoke-flaky": false,
     "rpms": false,
     "debs": false,
     "oci": false,

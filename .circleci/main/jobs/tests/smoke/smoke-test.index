@@ -1,5 +1,4 @@
   #jobs:tests/smoke/smoke-test-core#
-  #jobs:tests/smoke/smoke-test-flaky#
   #jobs:tests/smoke/smoke-test-minion#
   #jobs:tests/smoke/smoke-test-sentinel#
   #jobs:tests/smoke/smoke-test-minimal#
