@@ -67,8 +67,7 @@
 			<!-- Mark all wsdl2java-generated classes with @SuppressWarnings -->
 			<plugin>
 				<groupId>com.google.code.maven-replacer-plugin</groupId>
-				<artifactId>maven-replacer-plugin</artifactId>
-				<version>1.4.1</version>
+				<artifactId>replacer</artifactId>
 				<executions>
 					<execution>
 						<phase>process-sources</phase>
