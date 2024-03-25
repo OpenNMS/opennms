@@ -30,7 +30,6 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser;
 
 import static org.hamcrest.CoreMatchers.is;
 import static org.junit.Assert.assertThat;
-import static org.junit.Assert.fail;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
 import java.net.InetAddress;
@@ -43,6 +42,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedValue;
@@ -59,6 +59,11 @@ import io.netty.buffer.Unpooled;
 
 public class NMS13006_Test {
     private final static Path FOLDER = Paths.get("src/test/resources/flows");
+
+    @BeforeClass
+    public static void beforeClass() {
+        System.setProperty("karaf.etc", "src/test/resources");
+    }
 
     @Test
     public void firstAndLastSwitchedTest() throws Exception {

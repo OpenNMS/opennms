@@ -70,7 +70,8 @@ public class InformationElementXmlProvider implements InformationElementDatabase
         try {
             files = getFiles();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            LOG.error("Error reading files in directory etc/ipfix.d", e);
+            return;
         }
 
         for(final File file : files) {
