@@ -1,0 +1,607 @@
+/*******************************************************************************
+ * This file is part of OpenNMS(R).
+ *
+ * Copyright (C) 2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *
+ * OpenNMS(R) is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU Affero General Public License as published
+ * by the Free Software Foundation, either version 3 of the License,
+ * or (at your option) any later version.
+ *
+ * OpenNMS(R) is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * GNU Affero General Public License for more details.
+ *
+ * You should have received a copy of the GNU Affero General Public License
+ * along with OpenNMS(R).  If not, see:
+ *      http://www.gnu.org/licenses/
+ *
+ * For more information contact:
+ *     OpenNMS(R) Licensing <license@opennms.org>
+ *     http://www.opennms.org/
+ *     http://www.opennms.com/
+ *******************************************************************************/
+package org.opennms.netmgt.telemetry.protocols.netflow.transport;
+
+/**
+ * Protobuf type {@code FloatValue}
+ */
+public final class FloatValue extends
+    com.google.protobuf.GeneratedMessageV3 implements
+    // @@protoc_insertion_point(message_implements:FloatValue)
+    FloatValueOrBuilder {
+private static final long serialVersionUID = 0L;
+  // Use FloatValue.newBuilder() to construct.
+  private FloatValue(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    super(builder);
+  }
+  private FloatValue() {
+  }
+
+  @java.lang.Override
+  @SuppressWarnings({"unused"})
+  protected java.lang.Object newInstance(
+      UnusedPrivateParameter unused) {
+    return new FloatValue();
+  }
+
+  @java.lang.Override
+  public final com.google.protobuf.UnknownFieldSet
+  getUnknownFields() {
+    return this.unknownFields;
+  }
+  public static final com.google.protobuf.Descriptors.Descriptor
+      getDescriptor() {
+    return org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowProtos.internal_static_FloatValue_descriptor;
+  }
+
+  @java.lang.Override
+  protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internalGetFieldAccessorTable() {
+    return org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowProtos.internal_static_FloatValue_fieldAccessorTable
+        .ensureFieldAccessorsInitialized(
+            org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue.class, org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue.Builder.class);
+  }
+
+  public static final int DOUBLE_FIELD_NUMBER = 1;
+  private com.google.protobuf.DoubleValue double_;
+  /**
+   * <code>.google.protobuf.DoubleValue double = 1;</code>
+   * @return Whether the double field is set.
+   */
+  @java.lang.Override
+  public boolean hasDouble() {
+    return double_ != null;
+  }
+  /**
+   * <code>.google.protobuf.DoubleValue double = 1;</code>
+   * @return The double.
+   */
+  @java.lang.Override
+  public com.google.protobuf.DoubleValue getDouble() {
+    return double_ == null ? com.google.protobuf.DoubleValue.getDefaultInstance() : double_;
+  }
+  /**
+   * <code>.google.protobuf.DoubleValue double = 1;</code>
+   */
+  @java.lang.Override
+  public com.google.protobuf.DoubleValueOrBuilder getDoubleOrBuilder() {
+    return getDouble();
+  }
+
+  private byte memoizedIsInitialized = -1;
+  @java.lang.Override
+  public final boolean isInitialized() {
+    byte isInitialized = memoizedIsInitialized;
+    if (isInitialized == 1) return true;
+    if (isInitialized == 0) return false;
+
+    memoizedIsInitialized = 1;
+    return true;
+  }
+
+  @java.lang.Override
+  public void writeTo(com.google.protobuf.CodedOutputStream output)
+                      throws java.io.IOException {
+    if (double_ != null) {
+      output.writeMessage(1, getDouble());
+    }
+    getUnknownFields().writeTo(output);
+  }
+
+  @java.lang.Override
+  public int getSerializedSize() {
+    int size = memoizedSize;
+    if (size != -1) return size;
+
+    size = 0;
+    if (double_ != null) {
+      size += com.google.protobuf.CodedOutputStream
+        .computeMessageSize(1, getDouble());
+    }
+    size += getUnknownFields().getSerializedSize();
+    memoizedSize = size;
+    return size;
+  }
+
+  @java.lang.Override
+  public boolean equals(final java.lang.Object obj) {
+    if (obj == this) {
+     return true;
+    }
+    if (!(obj instanceof org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue)) {
+      return super.equals(obj);
+    }
+    org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue other = (org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue) obj;
+
+    if (hasDouble() != other.hasDouble()) return false;
+    if (hasDouble()) {
+      if (!getDouble()
+          .equals(other.getDouble())) return false;
+    }
+    if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+    return true;
+  }
+
+  @java.lang.Override
+  public int hashCode() {
+    if (memoizedHashCode != 0) {
+      return memoizedHashCode;
+    }
+    int hash = 41;
+    hash = (19 * hash) + getDescriptor().hashCode();
+    if (hasDouble()) {
+      hash = (37 * hash) + DOUBLE_FIELD_NUMBER;
+      hash = (53 * hash) + getDouble().hashCode();
+    }
+    hash = (29 * hash) + getUnknownFields().hashCode();
+    memoizedHashCode = hash;
+    return hash;
+  }
+
+  public static org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue parseFrom(
+      java.nio.ByteBuffer data)
+      throws com.google.protobuf.InvalidProtocolBufferException {
+    return PARSER.parseFrom(data);
+  }
+  public static org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue parseFrom(
+      java.nio.ByteBuffer data,
+      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+      throws com.google.protobuf.InvalidProtocolBufferException {
+    return PARSER.parseFrom(data, extensionRegistry);
+  }
+  public static org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue parseFrom(
+      com.google.protobuf.ByteString data)
+      throws com.google.protobuf.InvalidProtocolBufferException {
+    return PARSER.parseFrom(data);
+  }
+  public static org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue parseFrom(
+      com.google.protobuf.ByteString data,
+      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+      throws com.google.protobuf.InvalidProtocolBufferException {
+    return PARSER.parseFrom(data, extensionRegistry);
+  }
+  public static org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue parseFrom(byte[] data)
+      throws com.google.protobuf.InvalidProtocolBufferException {
+    return PARSER.parseFrom(data);
+  }
+  public static org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue parseFrom(
+      byte[] data,
+      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+      throws com.google.protobuf.InvalidProtocolBufferException {
+    return PARSER.parseFrom(data, extensionRegistry);
+  }
+  public static org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue parseFrom(java.io.InputStream input)
+      throws java.io.IOException {
+    return com.google.protobuf.GeneratedMessageV3
+        .parseWithIOException(PARSER, input);
+  }
+  public static org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue parseFrom(
+      java.io.InputStream input,
+      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+      throws java.io.IOException {
+    return com.google.protobuf.GeneratedMessageV3
+        .parseWithIOException(PARSER, input, extensionRegistry);
+  }
+  public static org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue parseDelimitedFrom(java.io.InputStream input)
+      throws java.io.IOException {
+    return com.google.protobuf.GeneratedMessageV3
+        .parseDelimitedWithIOException(PARSER, input);
+  }
+  public static org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue parseDelimitedFrom(
+      java.io.InputStream input,
+      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+      throws java.io.IOException {
+    return com.google.protobuf.GeneratedMessageV3
+        .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+  }
+  public static org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue parseFrom(
+      com.google.protobuf.CodedInputStream input)
+      throws java.io.IOException {
+    return com.google.protobuf.GeneratedMessageV3
+        .parseWithIOException(PARSER, input);
+  }
+  public static org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue parseFrom(
+      com.google.protobuf.CodedInputStream input,
+      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+      throws java.io.IOException {
+    return com.google.protobuf.GeneratedMessageV3
+        .parseWithIOException(PARSER, input, extensionRegistry);
+  }
+
+  @java.lang.Override
+  public Builder newBuilderForType() { return newBuilder(); }
+  public static Builder newBuilder() {
+    return DEFAULT_INSTANCE.toBuilder();
+  }
+  public static Builder newBuilder(org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue prototype) {
+    return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+  }
+  @java.lang.Override
+  public Builder toBuilder() {
+    return this == DEFAULT_INSTANCE
+        ? new Builder() : new Builder().mergeFrom(this);
+  }
+
+  @java.lang.Override
+  protected Builder newBuilderForType(
+      com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+    Builder builder = new Builder(parent);
+    return builder;
+  }
+  /**
+   * Protobuf type {@code FloatValue}
+   */
+  public static final class Builder extends
+      com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+      // @@protoc_insertion_point(builder_implements:FloatValue)
+      org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValueOrBuilder {
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowProtos.internal_static_FloatValue_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowProtos.internal_static_FloatValue_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue.class, org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue.Builder.class);
+    }
+
+    // Construct using org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue.newBuilder()
+    private Builder() {
+
+    }
+
+    private Builder(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      super(parent);
+
+    }
+    @java.lang.Override
+    public Builder clear() {
+      super.clear();
+      if (doubleBuilder_ == null) {
+        double_ = null;
+      } else {
+        double_ = null;
+        doubleBuilder_ = null;
+      }
+      return this;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Descriptors.Descriptor
+        getDescriptorForType() {
+      return org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowProtos.internal_static_FloatValue_descriptor;
+    }
+
+    @java.lang.Override
+    public org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue getDefaultInstanceForType() {
+      return org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue.getDefaultInstance();
+    }
+
+    @java.lang.Override
+    public org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue build() {
+      org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue result = buildPartial();
+      if (!result.isInitialized()) {
+        throw newUninitializedMessageException(result);
+      }
+      return result;
+    }
+
+    @java.lang.Override
+    public org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue buildPartial() {
+      org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue result = new org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue(this);
+      if (doubleBuilder_ == null) {
+        result.double_ = double_;
+      } else {
+        result.double_ = doubleBuilder_.build();
+      }
+      onBuilt();
+      return result;
+    }
+
+    @java.lang.Override
+    public Builder clone() {
+      return super.clone();
+    }
+    @java.lang.Override
+    public Builder setField(
+        com.google.protobuf.Descriptors.FieldDescriptor field,
+        java.lang.Object value) {
+      return super.setField(field, value);
+    }
+    @java.lang.Override
+    public Builder clearField(
+        com.google.protobuf.Descriptors.FieldDescriptor field) {
+      return super.clearField(field);
+    }
+    @java.lang.Override
+    public Builder clearOneof(
+        com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+      return super.clearOneof(oneof);
+    }
+    @java.lang.Override
+    public Builder setRepeatedField(
+        com.google.protobuf.Descriptors.FieldDescriptor field,
+        int index, java.lang.Object value) {
+      return super.setRepeatedField(field, index, value);
+    }
+    @java.lang.Override
+    public Builder addRepeatedField(
+        com.google.protobuf.Descriptors.FieldDescriptor field,
+        java.lang.Object value) {
+      return super.addRepeatedField(field, value);
+    }
+    @java.lang.Override
+    public Builder mergeFrom(com.google.protobuf.Message other) {
+      if (other instanceof org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue) {
+        return mergeFrom((org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue)other);
+      } else {
+        super.mergeFrom(other);
+        return this;
+      }
+    }
+
+    public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue other) {
+      if (other == org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue.getDefaultInstance()) return this;
+      if (other.hasDouble()) {
+        mergeDouble(other.getDouble());
+      }
+      this.mergeUnknownFields(other.getUnknownFields());
+      onChanged();
+      return this;
+    }
+
+    @java.lang.Override
+    public final boolean isInitialized() {
+      return true;
+    }
+
+    @java.lang.Override
+    public Builder mergeFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              input.readMessage(
+                  getDoubleFieldBuilder().getBuilder(),
+                  extensionRegistry);
+
+              break;
+            } // case 10
+            default: {
+              if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                done = true; // was an endgroup tag
+              }
+              break;
+            } // default:
+          } // switch (tag)
+        } // while (!done)
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.unwrapIOException();
+      } finally {
+        onChanged();
+      } // finally
+      return this;
+    }
+
+    private com.google.protobuf.DoubleValue double_;
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.google.protobuf.DoubleValue, com.google.protobuf.DoubleValue.Builder, com.google.protobuf.DoubleValueOrBuilder> doubleBuilder_;
+    /**
+     * <code>.google.protobuf.DoubleValue double = 1;</code>
+     * @return Whether the double field is set.
+     */
+    public boolean hasDouble() {
+      return doubleBuilder_ != null || double_ != null;
+    }
+    /**
+     * <code>.google.protobuf.DoubleValue double = 1;</code>
+     * @return The double.
+     */
+    public com.google.protobuf.DoubleValue getDouble() {
+      if (doubleBuilder_ == null) {
+        return double_ == null ? com.google.protobuf.DoubleValue.getDefaultInstance() : double_;
+      } else {
+        return doubleBuilder_.getMessage();
+      }
+    }
+    /**
+     * <code>.google.protobuf.DoubleValue double = 1;</code>
+     */
+    public Builder setDouble(com.google.protobuf.DoubleValue value) {
+      if (doubleBuilder_ == null) {
+        if (value == null) {
+          throw new NullPointerException();
+        }
+        double_ = value;
+        onChanged();
+      } else {
+        doubleBuilder_.setMessage(value);
+      }
+
+      return this;
+    }
+    /**
+     * <code>.google.protobuf.DoubleValue double = 1;</code>
+     */
+    public Builder setDouble(
+        com.google.protobuf.DoubleValue.Builder builderForValue) {
+      if (doubleBuilder_ == null) {
+        double_ = builderForValue.build();
+        onChanged();
+      } else {
+        doubleBuilder_.setMessage(builderForValue.build());
+      }
+
+      return this;
+    }
+    /**
+     * <code>.google.protobuf.DoubleValue double = 1;</code>
+     */
+    public Builder mergeDouble(com.google.protobuf.DoubleValue value) {
+      if (doubleBuilder_ == null) {
+        if (double_ != null) {
+          double_ =
+            com.google.protobuf.DoubleValue.newBuilder(double_).mergeFrom(value).buildPartial();
+        } else {
+          double_ = value;
+        }
+        onChanged();
+      } else {
+        doubleBuilder_.mergeFrom(value);
+      }
+
+      return this;
+    }
+    /**
+     * <code>.google.protobuf.DoubleValue double = 1;</code>
+     */
+    public Builder clearDouble() {
+      if (doubleBuilder_ == null) {
+        double_ = null;
+        onChanged();
+      } else {
+        double_ = null;
+        doubleBuilder_ = null;
+      }
+
+      return this;
+    }
+    /**
+     * <code>.google.protobuf.DoubleValue double = 1;</code>
+     */
+    public com.google.protobuf.DoubleValue.Builder getDoubleBuilder() {
+      
+      onChanged();
+      return getDoubleFieldBuilder().getBuilder();
+    }
+    /**
+     * <code>.google.protobuf.DoubleValue double = 1;</code>
+     */
+    public com.google.protobuf.DoubleValueOrBuilder getDoubleOrBuilder() {
+      if (doubleBuilder_ != null) {
+        return doubleBuilder_.getMessageOrBuilder();
+      } else {
+        return double_ == null ?
+            com.google.protobuf.DoubleValue.getDefaultInstance() : double_;
+      }
+    }
+    /**
+     * <code>.google.protobuf.DoubleValue double = 1;</code>
+     */
+    private com.google.protobuf.SingleFieldBuilderV3<
+        com.google.protobuf.DoubleValue, com.google.protobuf.DoubleValue.Builder, com.google.protobuf.DoubleValueOrBuilder> 
+        getDoubleFieldBuilder() {
+      if (doubleBuilder_ == null) {
+        doubleBuilder_ = new com.google.protobuf.SingleFieldBuilderV3<
+            com.google.protobuf.DoubleValue, com.google.protobuf.DoubleValue.Builder, com.google.protobuf.DoubleValueOrBuilder>(
+                getDouble(),
+                getParentForChildren(),
+                isClean());
+        double_ = null;
+      }
+      return doubleBuilder_;
+    }
+    @java.lang.Override
+    public final Builder setUnknownFields(
+        final com.google.protobuf.UnknownFieldSet unknownFields) {
+      return super.setUnknownFields(unknownFields);
+    }
+
+    @java.lang.Override
+    public final Builder mergeUnknownFields(
+        final com.google.protobuf.UnknownFieldSet unknownFields) {
+      return super.mergeUnknownFields(unknownFields);
+    }
+
+
+    // @@protoc_insertion_point(builder_scope:FloatValue)
+  }
+
+  // @@protoc_insertion_point(class_scope:FloatValue)
+  private static final org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue DEFAULT_INSTANCE;
+  static {
+    DEFAULT_INSTANCE = new org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue();
+  }
+
+  public static org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue getDefaultInstance() {
+    return DEFAULT_INSTANCE;
+  }
+
+  private static final com.google.protobuf.Parser<FloatValue>
+      PARSER = new com.google.protobuf.AbstractParser<FloatValue>() {
+    @java.lang.Override
+    public FloatValue parsePartialFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      Builder builder = newBuilder();
+      try {
+        builder.mergeFrom(input, extensionRegistry);
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(builder.buildPartial());
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(e)
+            .setUnfinishedMessage(builder.buildPartial());
+      }
+      return builder.buildPartial();
+    }
+  };
+
+  public static com.google.protobuf.Parser<FloatValue> parser() {
+    return PARSER;
+  }
+
+  @java.lang.Override
+  public com.google.protobuf.Parser<FloatValue> getParserForType() {
+    return PARSER;
+  }
+
+  @java.lang.Override
+  public org.opennms.netmgt.telemetry.protocols.netflow.transport.FloatValue getDefaultInstanceForType() {
+    return DEFAULT_INSTANCE;
+  }
+
+}
+
