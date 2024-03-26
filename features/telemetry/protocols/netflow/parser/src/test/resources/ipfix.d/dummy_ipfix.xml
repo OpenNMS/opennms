@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ipfix-elements>
+    <scope>
+        <pen>9999</pen>
+        <name>Dummy Org</name>
+        <biflow mode="none"></biflow>
+    </scope>
+
+    <element>
+        <id>901</id>
+        <name>foo-octets</name>
+        <dataType>unsigned32</dataType>
+    </element>
+
+    <element>
+        <id>902</id>
+        <name>bar-octets</name>
+        <dataType>unsigned64</dataType>
+    </element>
+</ipfix-elements>
