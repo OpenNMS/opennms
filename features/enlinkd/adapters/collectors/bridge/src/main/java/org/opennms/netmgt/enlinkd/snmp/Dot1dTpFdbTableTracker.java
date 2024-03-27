@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.netmgt.enlinkd.service.api.BridgeForwardingTableEntry;
@@ -51,10 +44,13 @@ import org.opennms.netmgt.snmp.TableTracker;
  */
 public class Dot1dTpFdbTableTracker extends TableTracker {
 
-	 public final static SnmpObjId DOT1D_TP_FDB_ADDRESS = SnmpObjId.get(".1.3.6.1.2.1.17.4.3.1.1");
-	 public final static SnmpObjId DOT1D_TP_FDB_PORT    = SnmpObjId.get(".1.3.6.1.2.1.17.4.3.1.2");
-	 public final static SnmpObjId DOT1D_TP_FDB_STATUS  = SnmpObjId.get(".1.3.6.1.2.1.17.4.3.1.3");
+	 public final static SnmpObjId DOT1D_TP_FDB_ADDRESS_OID = SnmpObjId.get(".1.3.6.1.2.1.17.4.3.1.1");
+	 public final static SnmpObjId DOT1D_TP_FDB_PORT_OID = SnmpObjId.get(".1.3.6.1.2.1.17.4.3.1.2");
+	 public final static SnmpObjId DOT1D_TP_FDB_STATUS_OID = SnmpObjId.get(".1.3.6.1.2.1.17.4.3.1.3");
 
+	 public final static String DOT1D_TP_FDB_ADDRESS = "dot1dTpFdbAddress";
+	 public final static String DOT1D_TP_FDB_PORT = "dot1dTpFdbPort";
+	 public final static String DOT1D_TP_FDB_STATUS = "dot1dTpFdbStatus";
 
 	public static final SnmpObjId[] ms_elemList = new SnmpObjId[] {
 	    /*
@@ -63,7 +59,7 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 	     *  REFERENCE
            "IEEE 802.1D-1998: clause 7.9.1, 7.9.2"
 	     */
-	    DOT1D_TP_FDB_ADDRESS,
+			DOT1D_TP_FDB_ADDRESS_OID,
 
 	    /*
 	     * Either the value '0', or the port number of the
@@ -79,7 +75,7 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 	     * for addresses for which the corresponding value of
 	     * dot1dTpFdbStatus is not learned(3).
 	     */
-	    DOT1D_TP_FDB_PORT,
+			DOT1D_TP_FDB_PORT_OID,
 
 	    /*
          *  "The status of this entry.  The meanings of the
@@ -107,7 +103,7 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
          *          dot1dTpFdbAddress is also the value of an
          *          existing instance of dot1dStaticAddress."
 	     */
-	    DOT1D_TP_FDB_STATUS
+			DOT1D_TP_FDB_STATUS_OID
 	};
 
 	public static class Dot1dTpFdbRow extends SnmpRowResult {
@@ -121,8 +117,8 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 		 * @return a {@link java.lang.String} object.
 		 */
 		public String getDot1dTpFdbAddress() {
-			if (getValue(DOT1D_TP_FDB_ADDRESS) != null)
-				return getValue(DOT1D_TP_FDB_ADDRESS).toHexString();
+			if (getValue(DOT1D_TP_FDB_ADDRESS_OID) != null)
+				return getValue(DOT1D_TP_FDB_ADDRESS_OID).toHexString();
 			return null;
 		}
 	
@@ -132,8 +128,8 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 		 * @return a int.
 		 */
 		public Integer getDot1dTpFdbPort() {
-			if (getValue(DOT1D_TP_FDB_PORT) != null)
-				return getValue(DOT1D_TP_FDB_PORT).toInt();
+			if (getValue(DOT1D_TP_FDB_PORT_OID) != null)
+				return getValue(DOT1D_TP_FDB_PORT_OID).toInt();
 			return null;
 		}
 	
@@ -143,8 +139,8 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
 		 * @return a int.
 		 */
 		public Integer getDot1dTpFdbStatus() {
-			if (getValue(DOT1D_TP_FDB_STATUS) != null)
-				return getValue(DOT1D_TP_FDB_STATUS).toInt();
+			if (getValue(DOT1D_TP_FDB_STATUS_OID) != null)
+				return getValue(DOT1D_TP_FDB_STATUS_OID).toInt();
 			return null;
 		}
 
@@ -192,7 +188,10 @@ public class Dot1dTpFdbTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.Dot1dTpFdbTableTracker.Dot1dTpFdbRow} object.
      */
     public void processDot1dTpFdbRow(final Dot1dTpFdbRow row) {
-    }
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_TP_FDB_ADDRESS_OID + "." + row.getInstance().toString(), DOT1D_TP_FDB_ADDRESS, row.getDot1dTpFdbAddress());
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_TP_FDB_PORT_OID + "." + row.getInstance().toString(), DOT1D_TP_FDB_PORT, row.getDot1dTpFdbPort());
+		System.out.printf("\t\t%s (%s)= %s (%s)\n", DOT1D_TP_FDB_STATUS_OID + "." + row.getInstance().toString(), DOT1D_TP_FDB_STATUS, row.getDot1dTpFdbStatus(), BridgeDot1qTpFdbStatus.get(row.getDot1dTpFdbStatus()));
+	}
 	
 
 }

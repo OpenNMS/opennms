@@ -3,7 +3,7 @@
   <parent>
     <artifactId>dependencies</artifactId>
     <groupId>org.opennms</groupId>
-    <version>31.0.3-SNAPSHOT</version>
+    <version>33.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -44,10 +44,6 @@
           <groupId>log4j</groupId>
           <artifactId>log4j</artifactId>
         </exclusion>
-        <exclusion>
-          <groupId>org.cassandraunit</groupId>
-          <artifactId>*</artifactId>
-        </exclusion>
         <!-- let this get pulled in by the "real" newts dependencies -->
         <exclusion>
           <groupId>org.opennms.newts</groupId>
@@ -70,45 +66,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.cassandraunit</groupId>
-      <artifactId>cassandra-unit</artifactId>
-      <version>${cassandraUnitVersion}</version>
-      <scope>compile</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>net.java.dev.jna</groupId>
-          <artifactId>jna</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>com.boundary</groupId>
-          <artifactId>high-scale-lib</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <!-- replaces com.boundary:high-scale-lib,
-         removes overridden java.util.concurrent.* junk that breaks things -->
-    <dependency>
-      <groupId>com.raccoonfink</groupId>
-      <artifactId>high-scale-lib</artifactId>
-      <version>2.0.0</version>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jna-dependencies</artifactId>
       <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <!-- can't go past 25 for now, this should only apply to scope=test
-           see: https://github.com/jsevellec/cassandra-unit/issues/336 -->
-      <version>25.1-jre</version>
-      <scope>compile</scope>
     </dependency>
     <dependency>
       <groupId>junit</groupId>
@@ -123,16 +83,7 @@
     <dependency>
       <groupId>com.datastax.oss</groupId>
       <artifactId>java-driver-core</artifactId>
-      <version>4.17.0</version>
-      <scope>compile</scope>
+      <version>${cassandraVersion}</version>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>com.datastax.cassandra</groupId>
-      <artifactId>cassandra-driver-core</artifactId>
-      <version>3.11.2</version>
-      <scope>compile</scope>
-    </dependency>
-    -->
   </dependencies>
 </project>

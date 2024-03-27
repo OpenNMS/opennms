@@ -26,7 +26,6 @@
           <include>etc/nsclient-config.xml</include>
 
           <!-- provisioning adapters -->
-          <include>lib/*rancid-provisioning-adapter*</include>
           <include>etc/*snmp-asset-adapter*</include>
           <include>lib/*snmp-asset-provisioning-adapter*</include>
           <include>etc/*snmp-hardware-inventory-adapter*</include>
@@ -37,8 +36,6 @@
           <!-- <include>lib/*wsman-asset-provisioning-adapter*</include> -->
 
           <!-- ticketing plugins -->
-          <include>etc/*otrs*</include>
-          <include>lib/*otrs*</include>
           <include>etc/rt.properties</include>
           <include>lib/*integration-rt*</include>
         </includes>

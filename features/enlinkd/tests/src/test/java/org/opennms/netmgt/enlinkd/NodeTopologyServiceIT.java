@@ -1,44 +1,40 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.enlinkd;
 
 import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import java.net.InetAddress;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.junit.Test;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.enlinkd.model.IpInterfaceTopologyEntity;
 import org.opennms.netmgt.enlinkd.model.NodeTopologyEntity;
 import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
@@ -65,15 +61,21 @@ import org.opennms.netmgt.nb.Nms7563NetworkBuilder;
 import org.opennms.netmgt.nb.Nms7777DWNetworkBuilder;
 import org.opennms.netmgt.nb.Nms7918NetworkBuilder;
 import org.opennms.netmgt.nb.Nms8000NetworkBuilder;
+import org.opennms.netmgt.topologies.service.api.OnmsTopology;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
 
     private final static Logger LOG = LoggerFactory.getLogger(NodeTopologyServiceIT.class);
 
+    @Autowired
+    private NetworkRouterTopologyUpdater networkRouterTopologyUpdater;
+
     @Test
     public void nms0001SubnetworksTest() {
+        assertNotNull(networkRouterTopologyUpdater);
         final Nms0001NetworkBuilder builder = new Nms0001NetworkBuilder();
         m_nodeDao.save(builder.getFroh());
         m_nodeDao.save(builder.getOedipus());
@@ -99,8 +101,12 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
 
         final Set<SubNetwork> ptpLegalsubnets = m_nodeTopologyService.findAllLegalPointToPointSubNetwork();
         System.err.println("---All Legal PointToPointSubnetwork");
-        ptpLegalsubnets.forEach(System.err::println);
+        ptpLegalsubnets.forEach(ptps -> {
+            System.err.println(ptps);
+            assertThat(ptps.getNodeIds(), hasSize(2));
+        });
         assertThat(ptpLegalsubnets, hasSize(3));
+        int nlinks = 3; //number of links 3 from point to point
 
         final Set<SubNetwork> lpbsubnets = m_nodeTopologyService.findAllLoopbacks();
         System.err.println("---All Loopbacks ");
@@ -115,13 +121,30 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         final Set<SubNetwork> legalsubnets = m_nodeTopologyService.findAllLegalSubNetwork();
         System.err.println("---All Legal Subnetwork");
         legalsubnets.forEach(System.err::println);
-        assertThat(legalsubnets, hasSize(4));
+        assertThat(legalsubnets, hasSize(33));
 
         System.err.println("---Priority Map ");
         Map<Integer,Integer> priorityMap = m_nodeTopologyService.getNodeidPriorityMap(ProtocolSupported.NODES);
         LOG.info("{}", priorityMap);
         assertThat(priorityMap.keySet(),hasSize(3));
         priorityMap.values().forEach(v -> assertEquals(0,v.intValue()));
+
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        assertThat(multibet, hasSize(7));
+        System.err.println("---All Legal Subnetwork with ipv4prefix < 30 and ipv6prefix < 126" );
+        for (SubNetwork s: multibet) {
+            System.err.println(s);
+            assertTrue(s.isIpV4Subnetwork());
+            nlinks+= s.getNodeIds().size();
+        };
+
+        assertEquals(12, nlinks);
+
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(7+3));
+        assertThat(topo.getEdges(), hasSize(nlinks));
     }
 
     @Test
@@ -149,8 +172,16 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
 
         final Set<SubNetwork> subnets = m_nodeTopologyService.findAllSubNetwork();
         System.err.println("---All Subnetwork " + subnets.size());
-        subnets.forEach(System.err::println);
         assertThat(subnets, hasSize(115));
+        System.err.println("---All Subnetwork with duplicated ip");
+        subnets.stream().filter(s-> s.hasDuplicatedAddress()).forEach(System.err::println);
+        System.err.println("---All Subnetworkloopback");
+        subnets.stream().filter(s-> InetAddressUtils.inSameNetwork(s.getNetwork(), InetAddress.getLoopbackAddress(), s.getNetmask())).forEach(System.err::println);
+
+        final Set<SubNetwork> legalsubnets = m_nodeTopologyService.findAllLegalSubNetwork();
+        System.err.println("---All Legal Subnetwork " + legalsubnets.size());
+        legalsubnets.forEach(System.err::println);
+        assertThat(legalsubnets, hasSize(113));
 
         final Set<SubNetwork> ptpsubnets = m_nodeTopologyService.findAllPointToPointSubNetwork();
         System.err.println("---All PointToPointSubnetwork " + ptpsubnets.size());
@@ -159,12 +190,10 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
 
         final Set<SubNetwork> ptpLegalsubnets = m_nodeTopologyService.findAllLegalPointToPointSubNetwork();
         System.err.println("---All Legal PointToPointSubnetwork " + ptpLegalsubnets.size());
-        ptpLegalsubnets.forEach(System.err::println);
         assertThat(ptpLegalsubnets, hasSize(0));
 
         final Set<SubNetwork> lpbsubnets = m_nodeTopologyService.findAllLoopbacks();
         System.err.println("---All Loopbacks " + lpbsubnets.size());
-        lpbsubnets.forEach(System.err::println);
         assertThat(lpbsubnets,hasSize(12));
 
         final Set<SubNetwork> lpblegalsubnets = m_nodeTopologyService.findAllLegalLoopbacks();
@@ -172,19 +201,25 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         lpblegalsubnets.forEach(System.err::println);
         assertThat(lpblegalsubnets,hasSize(12));
 
-        final Set<SubNetwork> legalsubnets = m_nodeTopologyService.findAllLegalSubNetwork();
-        System.err.println("---All Legal Subnetwork " + legalsubnets.size());
-        legalsubnets.forEach(System.err::println);
-        int n = 0;
-        assertThat(legalsubnets, hasSize(3));
-        for (SubNetwork subnet: legalsubnets) {
-            n = n + subnet.getNodeIds().size();
-        }
-        assertEquals(9,n);
-
         Map<Integer,Integer> priorityMap = m_nodeTopologyService.getNodeidPriorityMap(ProtocolSupported.NODES);
         assertEquals(9,priorityMap.size());
         LOG.info("{}", priorityMap);
+
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        System.err.println("---All Legal Subnetwork with prefix < 30");
+        assertThat(multibet, hasSize(95));
+        //count the links:
+        int nlinks=ptpLegalsubnets.size();
+        assertEquals(0, nlinks);
+        for (SubNetwork s : multibet) {
+            nlinks+=s.getNodeIds().size();
+        }
+        assertEquals(101, nlinks);
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(multibet.size()+m_nodeDao.countAll()));
+        assertThat(topo.getEdges(), hasSize(nlinks));
     }
 
     @Test
@@ -203,13 +238,30 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
 
         final Set<SubNetwork> subnets = m_nodeTopologyService.findAllLegalSubNetwork();
         subnets.forEach(System.err::println);
-        assertThat(subnets, hasSize(1));
-        assertThat(subnets.iterator().next().getNodeIds(), hasSize(3));
+        assertThat(subnets, hasSize(4));
+        assertThat(m_nodeTopologyService.findAllPointToPointSubNetwork(), hasSize(0));
 
         Map<Integer,Integer> priorityMap = m_nodeTopologyService.getNodeidPriorityMap(ProtocolSupported.NODES);
         assertEquals(3,priorityMap.size());
         priorityMap.values().forEach(v -> assertEquals(0, v.intValue()));
         LOG.info("{}", priorityMap);
+
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        System.err.println("---All Legal Subnetwork with prefix < 30");
+        assertThat(multibet, hasSize(4));
+        //count the links:
+        int nlinks=0;
+        for (SubNetwork s : multibet) {
+            nlinks+=s.getNodeIds().size();
+        }
+        assertEquals(6, nlinks);
+
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(3+4)); //nodes + networks
+        assertThat(topo.getEdges(), hasSize(nlinks)); //link network to node...just count the nodeids in the subnetwork
+
     }
 
     @Test
@@ -253,7 +305,7 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         final Set<SubNetwork> legalsubnets = m_nodeTopologyService.findAllLegalSubNetwork();
         System.err.println("---All Legal Subnetworks---");
         legalsubnets.forEach(System.err::println);
-        assertThat(legalsubnets, hasSize(6));
+        assertThat(legalsubnets, hasSize(16));
 
 
         final Set<Integer> nodeids = new HashSet<>();
@@ -264,6 +316,22 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         assertEquals(9, priorityMap.size());
         priorityMap.values().forEach(v -> assertTrue(v <6));
         LOG.info("{}", priorityMap);
+
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        System.err.println("---All Legal Subnetwork with prefix < 30");
+        assertThat(multibet, hasSize(7));
+        //count the links:
+        int nlinks=0;
+        for (SubNetwork s : multibet) {
+            nlinks+=s.getNodeIds().size();
+        }
+        assertEquals(15, nlinks);
+
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(9+7)); //nodes + networks
+        assertThat(topo.getEdges(), hasSize(nlinks)); //link network to node...just count the nodeids in the subnetwork
 
     }
 
@@ -289,37 +357,51 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         assertThat(ips, hasSize(20));
 
         final Set<SubNetwork> subnets = m_nodeTopologyService.findAllSubNetwork();
+        System.err.println("---All Subnetwork " + subnets.size());
         subnets.forEach(System.err::println);
         assertThat(subnets, hasSize(11));
 
         final Set<SubNetwork> ptpsubnets = m_nodeTopologyService.findAllPointToPointSubNetwork();
         System.err.println("---All PointToPointSubnetwork " + ptpsubnets.size());
-        ptpsubnets.forEach(System.err::println);
         assertThat(ptpsubnets, hasSize(0));
 
         final Set<SubNetwork> ptpLegalsubnets = m_nodeTopologyService.findAllLegalPointToPointSubNetwork();
         System.err.println("---All Legal PointToPointSubnetwork " + ptpLegalsubnets.size());
-        ptpLegalsubnets.forEach(System.err::println);
         assertThat(ptpLegalsubnets, hasSize(0));
 
         final Set<SubNetwork> lpbsubnets = m_nodeTopologyService.findAllLoopbacks();
         System.err.println("---All Loopbacks " + lpbsubnets.size());
-        lpbsubnets.forEach(System.err::println);
         assertThat(lpbsubnets,hasSize(0));
 
         final Set<SubNetwork> lpblegalsubnets = m_nodeTopologyService.findAllLegalLoopbacks();
         System.err.println("---All Legal Loopbacks " + lpblegalsubnets.size());
-        lpblegalsubnets.forEach(System.err::println);
         assertThat(lpblegalsubnets,hasSize(0));
 
         final Set<SubNetwork> legalsubnets = m_nodeTopologyService.findAllLegalSubNetwork();
+        System.err.println("---All Legal " + legalsubnets.size());
         legalsubnets.forEach(System.err::println);
-        assertThat(legalsubnets, hasSize(6));
+        assertThat(legalsubnets, hasSize(9));
 
         Map<Integer,Integer> priorityMap = m_nodeTopologyService.getNodeidPriorityMap(ProtocolSupported.NODES);
         assertEquals(6, priorityMap.size());
         priorityMap.values().forEach(v -> assertTrue(v <6));
         LOG.info("{}", priorityMap);
+
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        System.err.println("---All Legal Subnetwork with prefix < 30");
+        assertThat(multibet, hasSize(9));
+        //count the links:
+        int nlinks=0;
+        for (SubNetwork s : multibet) {
+            nlinks+=s.getNodeIds().size();
+        }
+        assertEquals(15, nlinks);
+
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(9+9)); //nodes + networks
+        assertThat(topo.getEdges(), hasSize(nlinks)); //link network to node...just count the nodeids in the subnetwork
 
     }
 
@@ -344,15 +426,37 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         assertThat(subnets, hasSize(2));
 
         final Set<SubNetwork> legalsubnets = m_nodeTopologyService.findAllLegalSubNetwork();
-        legalsubnets.forEach(System.err::println);
-        assertThat(legalsubnets, hasSize(1));
+        assertThat(legalsubnets, hasSize(2));
 
-        assertThat(legalsubnets.iterator().next().getNodeIds(),hasSize(4));
+        legalsubnets.stream().filter(s -> s.getNodeIds().size() > 1).forEach(s ->{
+            assertEquals("192.168.0.0/24", s.getCidr());
+            assertEquals(4,s.getNodeIds().size());
+        } );
+
+        legalsubnets.stream().filter(s -> s.getNodeIds().size() == 1).forEach(s ->{
+            assertEquals("10.129.16.0/21", s.getCidr());
+            assertEquals(1,s.getNodeIds().size());
+        } );
 
         Map<Integer,Integer> priorityMap = m_nodeTopologyService.getNodeidPriorityMap(ProtocolSupported.NODES);
         assertEquals(4, priorityMap.size());
         priorityMap.values().forEach(v -> assertEquals(0, v.intValue()));
         LOG.info("{}", priorityMap);
+
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        assertThat(multibet, hasSize(2));
+        //count the links:
+        int nlinks=0;
+        for (SubNetwork s : multibet) {
+            nlinks+=s.getNodeIds().size();
+        }
+        assertEquals(5, nlinks);
+
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(4+2)); //nodes + networks
+        assertThat(topo.getEdges(), hasSize(nlinks)); //link network to node...just count the nodeids in the subnetwork
 
     }
 
@@ -386,6 +490,22 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         priorityMap.values().forEach(v -> assertEquals(0, v.intValue()));
         LOG.info("{}", priorityMap);
 
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        assertThat(multibet, hasSize(1));
+        //count the links:
+        int nlinks=0;
+        for (SubNetwork s : multibet) {
+            nlinks+=s.getNodeIds().size();
+        }
+        assertEquals(8, nlinks);
+
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(8+1)); //nodes + networks
+        assertThat(topo.getEdges(), hasSize(nlinks)); //link network to node...just count the nodeids in the subnetwork
+
+
     }
 
     @Test
@@ -408,6 +528,7 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         assertThat(ips, hasSize(80));
 
         final Set<SubNetwork> subnets = m_nodeTopologyService.findAllSubNetwork();
+        System.err.println("---All Subnetwork " + subnets.size());
         subnets.forEach(System.err::println);
         assertThat(subnets, hasSize(43));
 
@@ -432,15 +553,31 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         assertThat(lpblegalsubnets,hasSize(28));
 
         final Set<SubNetwork> legalsubnets = m_nodeTopologyService.findAllLegalSubNetwork();
-        System.err.println("---");
+        System.err.println("---All Legal Subnets " + legalsubnets.size());
         legalsubnets.forEach(System.err::println);
-        assertThat(legalsubnets, hasSize(7));
+        assertThat(legalsubnets, hasSize(38));
 
         Map<Integer,Integer> priorityMap = m_nodeTopologyService.getNodeidPriorityMap(ProtocolSupported.NODES);
         LOG.info("{}", priorityMap);
         assertEquals(6, priorityMap.size());
         priorityMap.values().forEach(v -> assertEquals(0, v.intValue()));
 
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        assertThat(multibet, hasSize(3));
+        //count the links:
+        int nlinks=ptpLegalsubnets.size();
+        System.err.println("---All Good Topology Subnets " );
+        for (SubNetwork s : multibet) {
+            System.err.println(s);
+            nlinks+=s.getNodeIds().size();
+        }
+        assertEquals(14, nlinks);
+
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(6+3)); //nodes + networks
+        assertThat(topo.getEdges(), hasSize(nlinks)); //link network to node...just count the nodeids in the subnetwork
     }
 
     @Test
@@ -460,38 +597,51 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         assertThat(ips, hasSize(9));
 
         final Set<SubNetwork> subnets = m_nodeTopologyService.findAllSubNetwork();
-        subnets.forEach(System.err::println);
+        System.err.println("---All Subnetwork " + subnets.size());
         assertThat(subnets, hasSize(5));
+
+        final Set<SubNetwork> legalsubnets = m_nodeTopologyService.findAllLegalSubNetwork();
+        System.err.println("---All Legal SubNetwork " + legalsubnets.size());
+        legalsubnets.forEach(System.err::println);
+        assertThat(legalsubnets, hasSize(5));
 
         final Set<SubNetwork> ptpsubnets = m_nodeTopologyService.findAllPointToPointSubNetwork();
         System.err.println("---All PointToPointSubnetwork " + ptpsubnets.size());
-        ptpsubnets.forEach(System.err::println);
         assertThat(ptpsubnets, hasSize(0));
 
         final Set<SubNetwork> ptpLegalsubnets = m_nodeTopologyService.findAllLegalPointToPointSubNetwork();
         System.err.println("---All Legal PointToPointSubnetwork " + ptpLegalsubnets.size());
-        ptpLegalsubnets.forEach(System.err::println);
         assertThat(ptpLegalsubnets, hasSize(0));
 
         final Set<SubNetwork> lpbsubnets = m_nodeTopologyService.findAllLoopbacks();
         System.err.println("---All Loopbacks " + lpbsubnets.size());
-        lpbsubnets.forEach(System.err::println);
         assertThat(lpbsubnets,hasSize(0));
 
         final Set<SubNetwork> lpblegalsubnets = m_nodeTopologyService.findAllLegalLoopbacks();
         System.err.println("---All Legal Loopbacks " + lpblegalsubnets.size());
-        lpblegalsubnets.forEach(System.err::println);
         assertThat(lpblegalsubnets,hasSize(0));
-
-        System.err.println("---");
-        final Set<SubNetwork> legalsubnets = m_nodeTopologyService.findAllLegalSubNetwork();
-        legalsubnets.forEach(System.err::println);
-        assertThat(legalsubnets, hasSize(4));
 
         Map<Integer,Integer> priorityMap = m_nodeTopologyService.getNodeidPriorityMap(ProtocolSupported.NODES);
         LOG.info("{}", priorityMap);
         assertEquals(4, priorityMap.size());
         priorityMap.values().forEach(v -> assertTrue(v < 3));
+
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        assertThat(multibet, hasSize(5));
+        //count the links:
+        int nlinks=ptpLegalsubnets.size();
+        System.err.println("---All Good Topology Subnets " );
+        for (SubNetwork s : multibet) {
+            System.err.println(s);
+            nlinks+=s.getNodeIds().size();
+        }
+        assertEquals(9, nlinks);
+
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(m_nodeDao.countAll()+multibet.size())); //nodes + networks
+        assertThat(topo.getEdges(), hasSize(nlinks)); //link network to node...just count the nodeids in the subnetwork
 
     }
 
@@ -512,22 +662,20 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         assertThat(ips, hasSize(7));
 
         final Set<SubNetwork> subnets = m_nodeTopologyService.findAllSubNetwork();
+        System.err.println("---All Subnetworks " + subnets.size());
         subnets.forEach(System.err::println);
         assertThat(subnets, hasSize(4));
 
         final Set<SubNetwork> ptpsubnets = m_nodeTopologyService.findAllPointToPointSubNetwork();
         System.err.println("---All PointToPointSubnetwork " + ptpsubnets.size());
-        ptpsubnets.forEach(System.err::println);
         assertThat(ptpsubnets, hasSize(0));
 
         final Set<SubNetwork> ptpLegalsubnets = m_nodeTopologyService.findAllLegalPointToPointSubNetwork();
         System.err.println("---All Legal PointToPointSubnetwork " + ptpLegalsubnets.size());
-        ptpLegalsubnets.forEach(System.err::println);
         assertThat(ptpLegalsubnets, hasSize(0));
 
         final Set<SubNetwork> lpbsubnets = m_nodeTopologyService.findAllLoopbacks();
         System.err.println("---All Loopbacks " + lpbsubnets.size());
-        lpbsubnets.forEach(System.err::println);
         assertThat(lpbsubnets,hasSize(0));
 
         final Set<SubNetwork> lpblegalsubnets = m_nodeTopologyService.findAllLegalLoopbacks();
@@ -535,15 +683,30 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         lpblegalsubnets.forEach(System.err::println);
         assertThat(lpblegalsubnets,hasSize(0));
 
-        System.err.println("---");
         final Set<SubNetwork> legalsubnets = m_nodeTopologyService.findAllLegalSubNetwork();
-        legalsubnets.forEach(System.err::println);
-        assertThat(legalsubnets, hasSize(1));
+        System.err.println("---All Legal Subnets " + legalsubnets.size());
+        assertThat(legalsubnets, hasSize(4));
 
         Map<Integer,Integer> priorityMap = m_nodeTopologyService.getNodeidPriorityMap(ProtocolSupported.NODES);
         LOG.info("{}", priorityMap);
         assertEquals(4, priorityMap.size());
         priorityMap.values().forEach(v -> assertEquals(0, v.intValue()));
+
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        assertThat(multibet, hasSize(4));
+        //count the links:
+        int nlinks=ptpLegalsubnets.size();
+        System.err.println("---All Good Topology Subnets " + multibet.size());
+        for (SubNetwork s : multibet) {
+            nlinks+=s.getNodeIds().size();
+        }
+        assertEquals(7, nlinks);
+
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(m_nodeDao.countAll()+multibet.size())); //nodes + networks
+        assertThat(topo.getEdges(), hasSize(nlinks)); //link network to node...just count the nodeids in the subnetwork
 
     }
 
@@ -561,7 +724,23 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
 
         final Set<SubNetwork> legalsubnets = m_nodeTopologyService.findAllLegalSubNetwork();
         legalsubnets.forEach(System.err::println);
-        assertThat(legalsubnets, hasSize(0));
+        assertThat(legalsubnets, hasSize(1));
+
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        assertThat(multibet, hasSize(1));
+        //count the links:
+        int nlinks=0;
+        System.err.println("---All Good Topology Subnets " + multibet.size());
+        for (SubNetwork s : multibet) {
+            nlinks+=s.getNodeIds().size();
+        }
+        assertEquals(1, nlinks);
+
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(m_nodeDao.countAll()+multibet.size())); //nodes + networks
+        assertThat(topo.getEdges(), hasSize(nlinks)); //link network to node...just count the nodeids in the subnetwork
 
     }
 
@@ -586,16 +765,33 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         subnets.forEach(System.err::println);
         assertThat(subnets, hasSize(8));
 
-        System.err.println("---");
+        System.err.println("---Legal Subnets");
         final Set<SubNetwork> legalsubnets = m_nodeTopologyService.findAllLegalSubNetwork();
         legalsubnets.forEach(System.err::println);
-        assertThat(legalsubnets, hasSize(1));
-        assertThat(legalsubnets.iterator().next().getNodeIds(),hasSize(5));
+        assertThat(legalsubnets, hasSize(7));
 
         Map<Integer,Integer> priorityMap = m_nodeTopologyService.getNodeidPriorityMap(ProtocolSupported.NODES);
         LOG.info("{}", priorityMap);
         assertEquals(5, priorityMap.size());
         priorityMap.values().forEach(v -> assertEquals(0, v.intValue()));
+
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        assertThat(multibet, hasSize(6));
+        //count the links:
+        int nlinks=m_nodeTopologyService.findAllLegalPointToPointSubNetwork().size();
+        assertEquals(0,nlinks);
+        System.err.println("---All Good Topology Subnets " + multibet.size());
+        for (SubNetwork s : multibet) {
+            System.err.println(s);
+            nlinks+=s.getNodeIds().size();
+        }
+        assertEquals(10, nlinks);
+
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(m_nodeDao.countAll()+multibet.size())); //nodes + networks
+        assertThat(topo.getEdges(), hasSize(nlinks)); //link network to node...just count the nodeids in the subnetwork
 
     }
 
@@ -621,12 +817,30 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
 
         final Set<SubNetwork> legalsubnets = m_nodeTopologyService.findAllLegalSubNetwork();
         legalsubnets.forEach(System.err::println);
-        assertThat(legalsubnets, hasSize(1));
+        assertThat(legalsubnets, hasSize(3));
 
         Map<Integer,Integer> priorityMap = m_nodeTopologyService.getNodeidPriorityMap(ProtocolSupported.NODES);
         LOG.info("{}", priorityMap);
         assertEquals(3, priorityMap.size());
         priorityMap.values().forEach(v -> assertEquals(0, v.intValue()));
+
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        assertThat(multibet, hasSize(3));
+        //count the links:
+        int nlinks=m_nodeTopologyService.findAllLegalPointToPointSubNetwork().size();
+        assertEquals(0,nlinks);
+        System.err.println("---All Good Topology Subnets " + multibet.size());
+        for (SubNetwork s : multibet) {
+            System.err.println(s);
+            nlinks+=s.getNodeIds().size();
+        }
+        assertEquals(5, nlinks);
+
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(m_nodeDao.countAll()+multibet.size())); //nodes + networks
+        assertThat(topo.getEdges(), hasSize(nlinks)); //link network to node...just count the nodeids in the subnetwork
 
     }
 
@@ -649,7 +863,26 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
 
         final Set<SubNetwork> legalsubnets = m_nodeTopologyService.findAllLegalSubNetwork();
         legalsubnets.forEach(System.err::println);
-        assertThat(legalsubnets, hasSize(0));
+        assertThat(legalsubnets, hasSize(1));
+
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        assertThat(multibet, hasSize(1));
+        //count the links:
+        int nlinks=m_nodeTopologyService.findAllLegalPointToPointSubNetwork().size();
+        assertEquals(0,nlinks);
+        System.err.println("---All Good Topology Subnets " + multibet.size());
+        for (SubNetwork s : multibet) {
+            System.err.println(s);
+            nlinks+=s.getNodeIds().size();
+        }
+        assertEquals(1, nlinks);
+
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(m_nodeDao.countAll()+multibet.size())); //nodes + networks
+        assertThat(topo.getEdges(), hasSize(nlinks)); //link network to node...just count the nodeids in the subnetwork
+
     }
 
     @Test
@@ -685,11 +918,28 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         assertEquals(6, priorityMap.size());
         priorityMap.values().forEach(v -> assertEquals(0, v.intValue()));
 
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        assertThat(multibet, hasSize(1));
+        //count the links:
+        int nlinks=m_nodeTopologyService.findAllLegalPointToPointSubNetwork().size();
+        assertEquals(0,nlinks);
+        System.err.println("---All Good Topology Subnets " + multibet.size());
+        for (SubNetwork s : multibet) {
+            System.err.println(s);
+            nlinks+=s.getNodeIds().size();
+        }
+        assertEquals(6, nlinks);
+
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(m_nodeDao.countAll()+multibet.size())); //nodes + networks
+        assertThat(topo.getEdges(), hasSize(nlinks)); //link network to node...just count the nodeids in the subnetwork
 
     }
 
     @Test
-    public void nms8000SubbnetworksTest() {
+    public void nms8000SubnetworksTest() {
         final Nms8000NetworkBuilder builder = new Nms8000NetworkBuilder();
 
         m_nodeDao.save(builder.getNMMR1());
@@ -710,16 +960,32 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         subnets.forEach(System.err::println);
         assertThat(subnets, hasSize(6));
 
-        System.err.println("---");
         final Set<SubNetwork> legalsubnets = m_nodeTopologyService.findAllLegalSubNetwork();
-        legalsubnets.forEach(System.err::println);
-        assertThat(legalsubnets, hasSize(4));
+        System.err.println("---Legal subneys " + legalsubnets.size());
+        assertThat(legalsubnets, hasSize(6));
 
         Map<Integer,Integer> priorityMap = m_nodeTopologyService.getNodeidPriorityMap(ProtocolSupported.NODES);
         LOG.info("{}", priorityMap);
         assertEquals(5, priorityMap.size());
         priorityMap.values().forEach(v -> assertTrue(v < 3));
 
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        assertThat(multibet, hasSize(6));
+        //count the links:
+        int nlinks=m_nodeTopologyService.findAllLegalPointToPointSubNetwork().size();
+        assertEquals(0,nlinks);
+        System.err.println("---All Good Topology Subnets " + multibet.size());
+        for (SubNetwork s : multibet) {
+            System.err.println(s);
+            nlinks+=s.getNodeIds().size();
+        }
+        assertEquals(12, nlinks);
+
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(m_nodeDao.countAll()+multibet.size())); //nodes + networks
+        assertThat(topo.getEdges(), hasSize(nlinks)); //link network to node...just count the nodeids in the subnetwork
 
     }
 
@@ -749,9 +1015,9 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         assertThat(ips, hasSize(108));
 
         final Set<SubNetwork> subnets = m_nodeTopologyService.findAllSubNetwork();
+        System.err.println("---All subnets " + subnets.size());
         subnets.forEach(System.err::println);
         assertThat(subnets, hasSize(42));
-        System.err.println("---");
 
         final Set<SubNetwork> ptpsubnets = m_nodeTopologyService.findAllPointToPointSubNetwork();
         System.err.println("---All PointToPointSubnetwork " + ptpsubnets.size());
@@ -773,16 +1039,33 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         lpblegalsubnets.forEach(System.err::println);
         assertThat(lpblegalsubnets,hasSize(9));
 
-        System.err.println("---All Legal ");
         final Set<SubNetwork> legalsubnets = m_nodeTopologyService.findAllLegalSubNetwork();
+        System.err.println("---All Legal " + legalsubnets.size());
         legalsubnets.forEach(System.err::println);
-        assertThat(legalsubnets, hasSize(16));
+        assertThat(legalsubnets, hasSize(35));
 
         Map<Integer,Integer> priorityMap = m_nodeTopologyService.getNodeidPriorityMap(ProtocolSupported.NODES);
         LOG.info("{}", priorityMap);
         assertEquals(12, priorityMap.size());
         priorityMap.values().forEach(v -> assertEquals(0, (int) v));
 
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        assertThat(multibet, hasSize(9));
+        //count the links:
+        int nlinks=m_nodeTopologyService.findAllLegalPointToPointSubNetwork().size();
+        assertEquals(15,nlinks);
+        System.err.println("---All Good Topology Subnets " + multibet.size());
+        for (SubNetwork s : multibet) {
+            System.err.println(s);
+            nlinks+=s.getNodeIds().size();
+        }
+        assertEquals(35, nlinks);
+
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(m_nodeDao.countAll()+multibet.size())); //nodes + networks
+        assertThat(topo.getEdges(), hasSize(nlinks)); //link network to node...just count the nodeids in the subnetwork
 
     }
 
@@ -809,8 +1092,8 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         assertThat(ips, hasSize(92));
 
         final Set<SubNetwork> subnets = m_nodeTopologyService.findAllSubNetwork();
+        System.err.println("---All Subnets " + subnets.size());
         subnets.forEach(System.err::println);
-        System.err.println("---");
         assertThat(subnets, hasSize(39));
 
         final Set<SubNetwork> ptpsubnets = m_nodeTopologyService.findAllPointToPointSubNetwork();
@@ -833,15 +1116,33 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         lpblegalsubnets.forEach(System.err::println);
         assertThat(lpblegalsubnets,hasSize(9));
 
-        System.err.println("---All Legal ");
         final Set<SubNetwork> legalsubnets = m_nodeTopologyService.findAllLegalSubNetwork();
+        System.err.println("---All Legal " + legalsubnets.size());
         legalsubnets.forEach(System.err::println);
-        assertThat(legalsubnets, hasSize(14));
+        assertThat(legalsubnets, hasSize(32));
 
         Map<Integer,Integer> priorityMap = m_nodeTopologyService.getNodeidPriorityMap(ProtocolSupported.NODES);
         LOG.info("{}", priorityMap);
         assertEquals(9, priorityMap.size());
         priorityMap.values().forEach(v -> assertEquals(0, (int) v));
+
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        assertThat(multibet, hasSize(6));
+        //count the links:
+        int nlinks=m_nodeTopologyService.findAllLegalPointToPointSubNetwork().size();
+        assertEquals(13,nlinks);
+        System.err.println("---All Good Topology Subnets " + multibet.size());
+        for (SubNetwork s : multibet) {
+            System.err.println(s);
+            nlinks+=s.getNodeIds().size();
+        }
+        assertEquals(27, nlinks);
+
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(m_nodeDao.countAll()+multibet.size())); //nodes + networks
+        assertThat(topo.getEdges(), hasSize(nlinks)); //link network to node...just count the nodeids in the subnetwork
 
     }
 
@@ -872,6 +1173,23 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         assertEquals(2, priorityMap.size());
         priorityMap.values().forEach(v -> assertEquals(0, (int) v));
 
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        assertThat(multibet, hasSize(1));
+        //count the links:
+        int nlinks=m_nodeTopologyService.findAllLegalPointToPointSubNetwork().size();
+        assertEquals(0,nlinks);
+        System.err.println("---All Good Topology Subnets " + multibet.size());
+        for (SubNetwork s : multibet) {
+            System.err.println(s);
+            nlinks+=s.getNodeIds().size();
+        }
+        assertEquals(2, nlinks);
+
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(m_nodeDao.countAll()+multibet.size())); //nodes + networks
+        assertThat(topo.getEdges(), hasSize(nlinks)); //link network to node...just count the nodeids in the subnetwork
 
 
     }
@@ -894,17 +1212,33 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         assertThat(ips, hasSize(4));
 
         final Set<SubNetwork> subnets = m_nodeTopologyService.findAllSubNetwork();
-        subnets.forEach(System.err::println);
         assertThat(subnets, hasSize(2));
 
         final Set<SubNetwork> legalsubnets = m_nodeTopologyService.findAllLegalSubNetwork();
-        legalsubnets.forEach(System.err::println);
-        assertThat(legalsubnets, hasSize(1));
+        assertThat(legalsubnets, hasSize(2));
 
         Map<Integer,Integer> priorityMap = m_nodeTopologyService.getNodeidPriorityMap(ProtocolSupported.NODES);
         LOG.info("{}", priorityMap);
         assertEquals(3, priorityMap.size());
         priorityMap.values().forEach(v -> assertEquals(0, (int) v));
+
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        assertThat(multibet, hasSize(2));
+        //count the links:
+        int nlinks=m_nodeTopologyService.findAllLegalPointToPointSubNetwork().size();
+        assertEquals(0,nlinks);
+        System.err.println("---All Good Topology Subnets " + multibet.size());
+        for (SubNetwork s : multibet) {
+            System.err.println(s);
+            nlinks+=s.getNodeIds().size();
+        }
+        assertEquals(4, nlinks);
+
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(m_nodeDao.countAll()+multibet.size())); //nodes + networks
+        assertThat(topo.getEdges(), hasSize(nlinks)); //link network to node...just count the nodeids in the subnetwork
 
     }
 
@@ -927,7 +1261,26 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         assertThat(subnets, hasSize(1));
 
         final Set<SubNetwork> legalsubnets = m_nodeTopologyService.findAllLegalSubNetwork();
-        assertThat(legalsubnets, hasSize(0));
+        assertThat(legalsubnets, hasSize(1));
+
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        assertThat(multibet, hasSize(1));
+        //count the links:
+        int nlinks=m_nodeTopologyService.findAllLegalPointToPointSubNetwork().size();
+        assertEquals(0,nlinks);
+        System.err.println("---All Good Topology Subnets " + multibet.size());
+        for (SubNetwork s : multibet) {
+            System.err.println(s);
+            nlinks+=s.getNodeIds().size();
+        }
+        assertEquals(1, nlinks);
+
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(m_nodeDao.countAll()+multibet.size())); //nodes + networks
+        assertThat(topo.getEdges(), hasSize(nlinks)); //link network to node...just count the nodeids in the subnetwork
+
     }
 
     @Test
@@ -951,9 +1304,13 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
         ips.forEach(System.err::println);
         assertThat(ips, hasSize(18));
 
+        final Set<SubNetwork> subnets = m_nodeTopologyService.findAllSubNetwork();
+        System.err.println("---All  Subnets " + subnets.size());
+        subnets.forEach(System.err::println);
+        assertThat(subnets, hasSize(9));
+
         final Set<SubNetwork> ptpsubnets = m_nodeTopologyService.findAllPointToPointSubNetwork();
         System.err.println("---All PointToPointSubnetwork " + ptpsubnets.size());
-        ptpsubnets.forEach(System.err::println);
         assertThat(ptpsubnets, hasSize(3));
 
         final Set<SubNetwork> ptpLegalsubnets = m_nodeTopologyService.findAllLegalPointToPointSubNetwork();
@@ -963,29 +1320,38 @@ public class NodeTopologyServiceIT extends EnLinkdBuilderITCase {
 
         final Set<SubNetwork> lpbsubnets = m_nodeTopologyService.findAllLoopbacks();
         System.err.println("---All Loopbacks " + lpbsubnets.size());
-        lpbsubnets.forEach(System.err::println);
         assertThat(lpbsubnets,hasSize(0));
 
         final Set<SubNetwork> lpblegalsubnets = m_nodeTopologyService.findAllLegalLoopbacks();
         System.err.println("---All Legal Loopbacks " + lpblegalsubnets.size());
-        lpblegalsubnets.forEach(System.err::println);
         assertThat(lpblegalsubnets,hasSize(0));
-
-        final Set<SubNetwork> subnets = m_nodeTopologyService.findAllSubNetwork();
-        System.err.println("---All  " + subnets.size());
-        subnets.forEach(System.err::println);
-        assertThat(subnets, hasSize(9));
 
         final Set<SubNetwork> legalsubnets = m_nodeTopologyService.findAllLegalSubNetwork();
         System.err.println("---All legal --- " + subnets.size());
-        legalsubnets.forEach(System.err::println);
-        assertThat(legalsubnets, hasSize(6));
+        assertThat(legalsubnets, hasSize(9));
 
         Map<Integer,Integer> priorityMap = m_nodeTopologyService.getNodeidPriorityMap(ProtocolSupported.NODES);
         LOG.info("{}", priorityMap);
         assertEquals(9, priorityMap.size());
         priorityMap.values().forEach(v -> assertTrue(v < 6));
 
+        final Set<SubNetwork> multibet = m_nodeTopologyService.findSubNetworkByNetworkPrefixLessThen(30, 126);
+        assertThat(multibet, hasSize(6));
+        //count the links:
+        int nlinks=m_nodeTopologyService.findAllLegalPointToPointSubNetwork().size();
+        assertEquals(3,nlinks);
+        System.err.println("---All Good Topology Subnets " + multibet.size());
+        for (SubNetwork s : multibet) {
+            System.err.println(s);
+            nlinks+=s.getNodeIds().size();
+        }
+        assertEquals(14, nlinks);
+
+        OnmsTopology topo = networkRouterTopologyUpdater.buildTopology();
+        System.err.println("---Topology");
+        printOnmsTopology(topo);
+        assertThat(topo.getVertices(), hasSize(m_nodeDao.countAll()+multibet.size())); //nodes + networks
+        assertThat(topo.getEdges(), hasSize(nlinks)); //link network to node...just count the nodeids in the subnetwork
 
     }
 

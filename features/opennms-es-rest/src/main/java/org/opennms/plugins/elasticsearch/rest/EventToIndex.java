@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.plugins.elasticsearch.rest;
 
 import java.io.IOException;
@@ -48,6 +41,7 @@ import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.json.simple.parser.ParseException;
 import org.opennms.features.jest.client.ConnectionPoolShutdownException;
+import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
 import org.opennms.features.jest.client.bulk.BulkException;
 import org.opennms.features.jest.client.bulk.BulkRequest;
 import org.opennms.features.jest.client.bulk.BulkWrapper;
@@ -63,7 +57,6 @@ import org.slf4j.LoggerFactory;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import io.searchbox.action.BulkableAction;
-import io.searchbox.client.JestClient;
 import io.searchbox.core.Bulk;
 import io.searchbox.core.BulkResult;
 import io.searchbox.core.BulkResult.BulkResultItem;
@@ -88,7 +81,7 @@ public class EventToIndex implements AutoCloseable {
 
 	private NodeCache nodeCache = null;
 
-	private final JestClient jestClient;
+	private final JestClientWithCircuitBreaker jestClient;
 
 	private final int bulkRetryCount;
 
@@ -108,7 +101,7 @@ public class EventToIndex implements AutoCloseable {
 			new ThreadPoolExecutor.CallerRunsPolicy()
 	);
 
-	public EventToIndex(JestClient jestClient, int bulkRetryCount) {
+	public EventToIndex(JestClientWithCircuitBreaker jestClient, int bulkRetryCount) {
 		this.jestClient = Objects.requireNonNull(jestClient);
 		this.bulkRetryCount = bulkRetryCount;
 	}

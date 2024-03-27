@@ -10,10 +10,32 @@
     <reference id="featuresService" interface="org.apache.karaf.features.FeaturesService"/>
     <reference id="karService" interface="org.apache.karaf.kar.KarService"/>
 
+    <bean id="karafExtenderHealthCheck" class="org.opennms.core.health.api.DefaultPassiveHealthCheck">
+        <argument value="Karaf extender"/>
+        <argument>
+            <list>
+                <value>local</value>
+                <value>passive</value>
+            </list>
+        </argument>
+        <argument value="Unknown"/>
+    </bean>
+
     <bean id="controller" class="org.opennms.karaf.extender.KarafExtender" init-method="init" destroy-method="destroy">
         <property name="configurationAdmin" ref="configurationAdmin" />
         <property name="mavenResolver" ref="mavenResolver" />
         <property name="featuresService" ref="featuresService" />
         <property name="karService" ref="karService" />
+        <property name="defaultPassiveHealthCheck" ref="karafExtenderHealthCheck" />
     </bean>
+
+    <service ref="karafExtenderHealthCheck">
+        <interfaces>
+            <value>org.opennms.core.health.api.HealthCheck</value>
+            <value>org.opennms.core.health.api.HealthCheckResponseCache</value>
+        </interfaces>
+        <service-properties>
+            <entry key="alias" value="opennms.karafExtenderHealthCheck"/>
+        </service-properties>
+    </service>
 </blueprint>

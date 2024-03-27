@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>31.0.3-SNAPSHOT</version>
+    <version>33.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-config</artifactId>
@@ -78,8 +78,7 @@
     </dependency>
     <dependency>
       <groupId>io.dropwizard.metrics</groupId>
-      <artifactId>metrics-core</artifactId>
-      <version>${dropwizardMetricsVersion}</version>
+      <artifactId>metrics-jmx</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>

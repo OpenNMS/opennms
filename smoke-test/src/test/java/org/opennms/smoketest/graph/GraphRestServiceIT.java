@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.smoketest.graph;
 
 import static org.awaitility.Awaitility.await;
@@ -157,12 +150,28 @@ public class GraphRestServiceIT extends OpenNMSSeleniumIT {
                 .body("[1].graphs[0].label", Matchers.is("Business Service Graph"))
                 .body("[1].graphs[0].description", Matchers.is("Displays the hierarchy of the defined Business Services and their computed operational states."))
 
-                .body("[2].id", Matchers.is("nodes"))
-                .body("[2].label", Matchers.is("All"))
-                .body("[2].graphs.size()", Matchers.is(1))
+                .body("[2].id", Matchers.is("enlinkd"))
+                .body("[2].label", Matchers.is("Enlinkd Graphs"))
+                .body("[2].graphs.size()", Matchers.is(11))
                 .body("[2].graphs[0].namespace", Matchers.is("nodes"))
                 .body("[2].graphs[0].label", Matchers.is("All"))
                 .body("[2].graphs[0].description", Matchers.is("This Topology Provider displays the topology information discovered by the Enhanced Linkd daemon. It uses the SNMP information of several protocols like OSPF, ISIS, LLDP and CDP to generate an overall topology."))
+                .body("[2].graphs[1].namespace", Matchers.is("nodes:Bridge"))
+                .body("[2].graphs[1].label", Matchers.is("Bridge"))
+                .body("[2].graphs[1].description", Matchers.is("This Topology Provider displays the Bridge topology information discovered by Enhanced Linkd daemon."))
+                .body("[2].graphs[2].namespace", Matchers.is("nodes:Cdp"))
+                .body("[2].graphs[2].label", Matchers.is("Cdp"))
+                .body("[2].graphs[2].description", Matchers.is("This Topology Provider displays the Cisco Discovery Protocol topology information discovered by the Enhanced Linkd daemon."))
+                .body("[2].graphs[3].namespace", Matchers.is("nodes:Isis"))
+                .body("[2].graphs[4].namespace", Matchers.is("nodes:Layer2"))
+                .body("[2].graphs[5].namespace", Matchers.is("nodes:Layer3"))
+                .body("[2].graphs[6].namespace", Matchers.is("nodes:Lldp"))
+                .body("[2].graphs[7].namespace", Matchers.is("nodes:NetworkRouter"))
+                .body("[2].graphs[8].namespace", Matchers.is("nodes:Ospf"))
+                .body("[2].graphs[9].namespace", Matchers.is("nodes:OspfArea"))
+                .body("[2].graphs[10].namespace", Matchers.is("nodes:UserDefined"))
+                .body("[2].graphs[10].label", Matchers.is("UserDefined"))
+                .body("[2].graphs[10].description", Matchers.is("This Topology Provider displays the User Defined topology information."))
 
                 .body("[3].id", Matchers.is(CONTAINER_ID))
                 .body("[3].label", Matchers.is(GraphMLTopologyIT.LABEL))

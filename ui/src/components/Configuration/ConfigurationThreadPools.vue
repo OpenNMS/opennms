@@ -86,7 +86,7 @@
   setup
   lang="ts"
 >
-import { useStore } from 'vuex'
+import { useConfigurationStore } from '@/stores/configurationStore'
 
 import { FeatherInput } from '@featherds/input'
 import { FeatherButton } from '@featherds/button'
@@ -95,14 +95,14 @@ import { FeatherChip, FeatherChipList } from '@featherds/chips'
 import { FeatherSpinner } from '@featherds/progress'
 import { isEqual as _isEqual } from 'lodash'
 
-import { populateProvisionD, putProvisionDService } from '@/services/configurationService'
+import { putProvisionDService } from '@/services/configurationService'
 import useSnackbar from '@/composables/useSnackbar'
 import { threadPoolKeys } from './copy/threadPoolKeys'
 import { ConfigurationHelper } from './ConfigurationHelper'
 
-/**
- * Local State
- */
+const configurationStore = useConfigurationStore()
+const { showSnackBar } = useSnackbar()
+
 const threadPoolsErrors = ref<Record<string, boolean>>({})
 const threadPoolsActive = ref(false)
 const loading = ref(false)
@@ -113,27 +113,19 @@ const snackbarErrorMessage = 'Thread pool values are outside of supported range.
 
 const threadPoolData = computed(() => {
   const localThreads: Record<string, string> = {}
-  threadPoolKeys.forEach((key) => (localThreads[key] = store?.state?.configuration?.provisionDService?.[key]))
+  threadPoolKeys.forEach((key) => (localThreads[key] = configurationStore.provisionDService?.[key]))
 
   return reactive(localThreads)
 })
 
 const unTouchedThreadPoolData = computed(() => {
   const localThreads: Record<string, string> = {}
-  threadPoolKeys.forEach((key) => (localThreads[key] = store?.state?.configuration?.provisionDService?.[key]))
+  threadPoolKeys.forEach((key) => (localThreads[key] = configurationStore.provisionDService?.[key]))
 
   return reactive(localThreads)
 })
 
-/**
- * Hooks
- */
-const store = useStore()
-const { showSnackBar } = useSnackbar()
-
-/**
- * User has opted to update threadpool data.
- */
+/** User has opted to update threadpool data.  */
 const updateThreadpools = async () => {
   loading.value = true
   // Clear Errors
@@ -141,7 +133,7 @@ const updateThreadpools = async () => {
 
   // Set Current Threadpool state.
   const currentThreadpoolState = threadPoolData.value
-  const updatedProvisionDData = store?.state?.configuration?.provisionDService
+  const updatedProvisionDData = configurationStore.provisionDService
 
   // Validate Threadpool Data
   threadPoolKeys.forEach((key) => {
@@ -181,7 +173,7 @@ const updateThreadpools = async () => {
       // Push Updates to Server
       await putProvisionDService(updatedProvisionDData)
       // Redownload + Populate Data.
-      await populateProvisionD(store)
+      await configurationStore.getProvisionDService()
 
       let messageUpdateSuccess = 'Thread pool data saved.'
 

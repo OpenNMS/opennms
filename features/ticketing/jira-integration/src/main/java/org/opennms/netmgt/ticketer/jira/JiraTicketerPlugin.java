@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.ticketer.jira;
 
 import java.io.File;
@@ -47,6 +40,9 @@ import java.util.stream.Collectors;
 import org.opennms.api.integration.ticketing.Plugin;
 import org.opennms.api.integration.ticketing.PluginException;
 import org.opennms.api.integration.ticketing.Ticket;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
 import org.opennms.netmgt.ticketer.jira.cache.Cache;
 import org.opennms.netmgt.ticketer.jira.cache.TimeoutRefreshPolicy;
 import org.opennms.netmgt.ticketer.jira.fieldmapper.FieldMapper;
@@ -90,7 +86,10 @@ public class JiraTicketerPlugin implements Plugin {
 
     private final LoadingCache<FieldSchema, FieldMapper> fieldMapFunctionCache;
 
-    public JiraTicketerPlugin() {
+    private static EntityScopeProvider entityScopeProvider;
+
+    public JiraTicketerPlugin(final EntityScopeProvider entityScopeProvider) {
+        JiraTicketerPlugin.entityScopeProvider = entityScopeProvider;
         Long cacheReloadTime = getConfig().getCacheReloadTime();
         if (cacheReloadTime == null || cacheReloadTime < 0) {
             LOG.warn("Cache Reload time was set to {} ms. Negative or null values are not supported. Setting to 5 minutes.", cacheReloadTime);
@@ -171,7 +170,7 @@ public class JiraTicketerPlugin implements Plugin {
      * @param ticketStatusName
      * @return the converted <code>org.opennms.api.integration.ticketing.Ticket.State</code>
      */
-    private static Ticket.State getStateFromStatusName(String ticketStatusName) {
+    private Ticket.State getStateFromStatusName(String ticketStatusName) {
         // Mapping of property key names to ticket states
         // The values for the properties at these keys should contain
         // a comma-separated list of known JIRA status names that map
@@ -195,8 +194,12 @@ public class JiraTicketerPlugin implements Plugin {
         return Ticket.State.OPEN;
     }
 
-    public static Config getConfig() {
-        return new Config(getProperties());
+    public static Config getConfig(final EntityScopeProvider entityScopeProvider) {
+        return new Config(getProperties(entityScopeProvider));
+    }
+
+    private Config getConfig() {
+        return getConfig(this.entityScopeProvider);
     }
 
     /**
@@ -204,7 +207,7 @@ public class JiraTicketerPlugin implements Plugin {
      *
      * @return a <code>java.util.Properties object containing jira plugin defined properties
      */
-    private static Properties getProperties() {
+    private static Properties getProperties(final EntityScopeProvider entityScopeProvider) {
         File home = new File(System.getProperty("opennms.home"));
         File etc = new File(home, "etc");
         File config = new File(etc, "jira.properties");
@@ -217,10 +220,17 @@ public class JiraTicketerPlugin implements Plugin {
             LOG.error("Unable to load {} ignoring.", config, e);
         }
 
-        LOG.debug("Loaded user: {}", props.getProperty("jira.username"));
-        LOG.debug("Loaded type: {}", props.getProperty("jira.type"));
+        final Scope scope = entityScopeProvider.getScopeForScv();
+        final Properties interpolatedProperties = new Properties();
 
-        return props;
+        for(final Entry<Object, Object> entry : props.entrySet()) {
+            interpolatedProperties.put(entry.getKey(), Interpolator.interpolate((String) entry.getValue(), scope).output);
+        }
+
+        LOG.debug("Loaded user: {}", interpolatedProperties.getProperty("jira.username"));
+        LOG.debug("Loaded type: {}", interpolatedProperties.getProperty("jira.type"));
+
+        return interpolatedProperties;
     }
 
     /*
@@ -367,5 +377,13 @@ public class JiraTicketerPlugin implements Plugin {
             LOG.error("Error while retrieving (custom) field definitions from JIRA.", ex);
             return new ArrayList<>();
         }
+    }
+
+    public EntityScopeProvider getEntityScopeProvider() {
+        return entityScopeProvider;
+    }
+
+    public void setEntityScopeProvider(final EntityScopeProvider entityScopeProvider) {
+        this.entityScopeProvider = entityScopeProvider;
     }
 }

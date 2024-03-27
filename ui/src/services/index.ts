@@ -1,3 +1,25 @@
+///
+/// Licensed to The OpenNMS Group, Inc (TOG) under one or more
+/// contributor license agreements.  See the LICENSE.md file
+/// distributed with this work for additional information
+/// regarding copyright ownership.
+///
+/// TOG licenses this file to You under the GNU Affero General
+/// Public License Version 3 (the "License") or (at your option)
+/// any later version.  You may not use this file except in
+/// compliance with the License.  You may obtain a copy of the
+/// License at:
+///
+///      https://www.gnu.org/licenses/agpl-3.0.txt
+///
+/// Unless required by applicable law or agreed to in writing,
+/// software distributed under the License is distributed on an
+/// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+/// either express or implied.  See the License for the specific
+/// language governing permissions and limitations under the
+/// License.
+///
+
 import {
   getNodes,
   getNodeById,
@@ -6,7 +28,9 @@ import {
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage
 } from './nodeService'
-import { getProvisionDService, putProvisionDService, populateProvisionD } from './configurationService'
+import { getCategories } from './categoryService'
+import { getMonitoringLocations } from './monitoringLocationService'
+import { getProvisionDService, putProvisionDService } from './configurationService'
 import {
   getGraphNodesNodes,
   getGraphDefinitionsByResourceId,
@@ -31,14 +55,20 @@ import { getAliases, getCredentialsByAlias, addCredentials, updateCredentials } 
 import { getAlarms, modifyAlarm } from './alarmService'
 import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
-import { getIpInterfaces } from './ipInterfaceService'
+import { getIpInterfaces, getNodeIpInterfaceQuery } from './ipInterfaceService'
 import { search } from './searchService'
 import { getLogs, getLog } from './logsService'
 import { getWhoAmI } from './whoAmIService'
 import { getInfo } from './infoService'
-import { getOpenApi } from './helpService'
+import { getOpenApiV1, getOpenApi } from './helpService'
 import { getResources, getResourceForNode } from './resourceService'
 import { getPlugins } from './pluginService'
+import {
+  getUsageStatistics,
+  getUsageStatisticsMetadata,
+  getUsageStatisticsStatus,
+  setUsageStatisticsStatus
+} from './usageStatisticsService'
 
 export default {
   search,
@@ -51,10 +81,13 @@ export default {
   getNodeOutages,
   getNodeIfServices,
   getIpInterfaces,
+  getNodeIpInterfaceQuery,
   getGraphNodesNodes,
   getNodeIpInterfaces,
   getNodeSnmpInterfaces,
   getNodeAvailabilityPercentage,
+  getCategories,
+  getMonitoringLocations,
   getLog,
   getLogs,
   getFile,
@@ -66,9 +99,9 @@ export default {
   getNotificationSummary,
   getFileNames,
   getFileExtensions,
+  getOpenApiV1,
   getOpenApi,
   getProvisionDService,
-  populateProvisionD,
   putProvisionDService,
   getResources,
   getGraphMetrics,
@@ -86,5 +119,9 @@ export default {
   getAliases,
   getCredentialsByAlias,
   addCredentials,
-  updateCredentials
+  updateCredentials,
+  getUsageStatistics,
+  getUsageStatisticsMetadata, 
+  getUsageStatisticsStatus,
+  setUsageStatisticsStatus
 }

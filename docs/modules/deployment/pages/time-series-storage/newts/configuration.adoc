@@ -12,7 +12,7 @@ Use the following properties, found in `$\{OPENNMS_HOME}/etc/opennms.properties`
 .Overview of Newts configuration properties
 [cols="2,2,1"]
 |===
-| Name  | Description   | Default
+| Name  | Description   | Default Value
 
 | org.opennms.newts.config.keyspace
 | Name of the keyspace to use.
@@ -43,12 +43,8 @@ If including multiple node references, separate each with a single comma.
 | Enable or disable SSL when connecting to Cassandra.
 | false
 
-| org.opennms.newts.config.core-connections-per-host
-| Core number of connections per host.
-| _Driver default_
-
-| org.opennms.newts.config.max-connections-per-host
-| Maximum number of connections per host.
+| org.opennms.newts.config.connections-per-host
+| Number of connections per host.
 | _Driver default_
 
 | org.opennms.newts.config.max-requests-per-connection
@@ -62,8 +58,14 @@ See http://docs.datastax.com/en/cassandra/2.1/cassandra/dml/dml_config_consisten
 
 | org.opennms.newts.config.write_consistency
 | Consistency level for write operations.
-See http://docs.datastax.com/en/cassandra/2.1/cassandra/dml/dml_config_consistency_c.html[Configuring Data Consistency] in the Cassandra documentation for a list of available options.
+See http://docs.datastax.com/en/cassandra/2.1/cassandra/dml/dml_config_consistency_c.html[Configuring Data Consistency] in the official Cassandra documentation for a list of available options.
 | ANY
+
+| org.opennms.newts.config.driver_settings_file
+| Cassandra driver settings file.
+The configuration settings defined in this file overwrite all other driver-related settings.
+See https://docs.datastax.com/en/developer/java-driver/4.14/manual/core/configuration/reference/[Reference Configuration] in the official DataStax documentation for details.
+| _None_
 
 | org.opennms.newts.config.max_batch_size
 | Maximum number of records to insert in a single transaction.

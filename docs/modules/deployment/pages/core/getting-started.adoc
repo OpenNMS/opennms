@@ -58,8 +58,8 @@ endif::[]
 NOTE: If you do not include the appropriate SELinux policy, {page-component-title} may generate an ICMP permissions error when starting up (see xref:reference:configuration/selinux.adoc[]).
 
 ifeval::["{page-component-title}" == "Horizon"]
-* To run services in https://docs.docker.com/[Docker], you need https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples.
-On Debian, you must install and configure `sudo` yourself.
+* To run services in Docker, you need https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples.
+* On Debian, you must install and configure `sudo` yourself.
 See the https://wiki.debian.org/sudo/[Debian Wiki] for more information.
 endif::[]
 
@@ -70,6 +70,21 @@ include::../time-sync.adoc[]
 
 TIP: PostgreSQL 14 and 15 use the `scram-sha-256` https://www.postgresql.org/docs/14/auth-password.html[password authentication] method by default.
 If you use older versions of PostgreSQL, you should change the method in `postgresql.conf` and in `pg_hba.conf` before installing the {page-component-title} core instance.
+
+== Pool size and maximum database connections
+
+You must configure the PostgreSQL https://www.postgresql.org/docs/15/runtime-config-connection.html[max_connections] setting to at least twice the maximum pool size in {page-component-title}.
+
+The default maximum pool size value in {page-component-title} is 50, but it applies to each connect in `opennms-datasources.xml`: `opennms` (the main connection used at runtime) and `opennms-admin` (the connection used during administrative operations, including installation).
+Therefore, your `max_connections` setting should be at least 100.
+
+If you change the default pool size, make sure you also update the `max_connections`.
+You typically set this in `PG_HOME/data/postgresql.conf`, but you may also use the `ALTER SYSTEM` syntax.
+You must restart the PostgreSQL server for the changes to take effect.
+
+NOTE: You may find https://pgtune.leopard.in.ua/[PGTune] useful to calculate configuration parameters for PostgreSQL.
+As with all third-party tools, we do not endorse or guarantee it.
+Use it at your own discretion.
 
 [{tabs}]
 ====
@@ -180,7 +195,7 @@ endif::[]
 ====
 
 [[ga-data-choices]]
-== First-time sign in and data choices
+== First-time sign in
 
 After you start the {page-component-title} core services, you can access the web application at `\http://core-instance-ip:8980/opennms`.
 The default user credentials are as follows:
@@ -188,30 +203,43 @@ The default user credentials are as follows:
 * *Username:* `admin`
 * *Password:* `admin`
 
-IMPORTANT: After you sign in for the first time, you should immediately change the `admin` account's password to a secure one.
+When you try to sign in with these credentials, {page-component-title} prompts you to change your password.
+Although you also have the option to skip this action and sign in with default the credentials, we strongly recommend that you change the `admin` account's password to a secure one.
 
-The first time you log in, {page-component-title} prompts for permission to allow the Data Choices module to collect and publish anonymous usage statistics to https://stats.opennms.org.
-The OpenNMS Group uses this anonymized information to help determine product use and to improve the {page-component-title} software.
-We do not share it with third parties, and we will not use it for sales purposes.
+. Type your current password.
+. Type your new password and confirm it.
+. Click *Change Password*.
 
-.Data sources collection permission prompt
-image::deployment/core/data-sources.png["Data sources collection permission prompt displaying opt-in and opt-out buttons", 500]
+== Change password after first sign in
 
-Click *Show Me What is Being Sent* to see xref:operation:deep-dive/admin/configuration/data-collection.adoc[what information we collect].
-Statistics collection and publication happen only if an admin user opts in.
-
-NOTE: Admin users can xref:operation:deep-dive/admin/configuration/data-collection.adoc#disable-data-collection[enable or disable statistics collection] at any time.
-
-To change your account's password, follow these steps:
+To change your account's password after the first time you sign in, follow these steps:
 
 . On the top menu bar, click menu:Admin[Change Password].
 . Type your current password and new password in the appropriate fields.
 . Confirm your new password, and click *Submit*.
+
 The password is updated.
 
-We encourage you to use {page-component-title} with individual user accounts instead of the `admin` account.
-If all users have individual accounts, you can see who is completing tasks like clearing or acknowledging alarms.
-For information on how to create a personalized user account, see xref:operation:quick-start/users.adoc#create-user[Create a new user] in the Quick Start guide.
+We encourage you to use {page-component-title} with individual user accounts instead of using only the `admin` account.
+If all users have individual accounts, you can see who is completing tasks (for example, clearing or acknowledging alarms).
+For information on how to create personalized user accounts, see xref:operation:quick-start/users.adoc#create-user[Create a new user] in the Quick Start guide.
+
+[[usage-statistics]]
+=== Usage statistics
+
+The first time you sign in, {page-component-title} notifies you that it collects anonymized usage statistics and publishes them to https://stats.opennms.com.
+Consent to share collected usage statistics is assumed by default.
+
+The OpenNMS Group uses this information to help determine product use and to improve the {page-component-title} software.
+We do not share it with third parties, and we will not use it for sales purposes.
+
+Click *Learn More* to view the xref:operation:deep-dive/admin/configuration/usage-statistics.adoc[information that we collect and share].
+This also hides the notification.
+
+Click *Dismiss* to simply hide the notification.
+You can view the usage statistics at any time on the admin page.
+
+NOTE: Admin users can xref:operation:deep-dive/admin/configuration/usage-statistics.adoc#disable-data-collection[opt out of sharing the statistics] at any time.
 
 == First monitored node
 

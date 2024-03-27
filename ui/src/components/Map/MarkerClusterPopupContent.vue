@@ -41,11 +41,12 @@
 
 <script setup lang ="ts">
 import { PropType } from 'vue'
-import { useStore } from 'vuex'
 import { orderBy } from 'lodash'
+import { Marker, MarkerCluster as Cluster } from 'leaflet'
 import { FeatherIcon } from '@featherds/icon'
 import Location from '@featherds/icon/action/Location'
-import { Marker, MarkerCluster as Cluster } from 'leaflet'
+import { useMapStore } from '@/stores/mapStore'
+import { useMenuStore } from '@/stores/menuStore'
 import { IpInterface, Node } from '@/types'
 import { MainMenu } from '@/types/mainMenu'
 
@@ -63,11 +64,13 @@ const props = defineProps({
   ipListForNode: { type: Function as PropType<(node: Node | null) => IpInterface[]>, required: true }
 })
 
-const store = useStore()
-const mainMenu = computed<MainMenu>(() => store.state.menuModule.mainMenu)
+const mapStore = useMapStore()
+const menuStore = useMenuStore()
+
+const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 const baseNodeUrl = computed<string>(() => `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}`)
-const nodes = computed<Node[]>(() => store.getters['mapModule/getNodes'])
-const nodeLabelAlarmSeverityMap = computed(() => store.getters['mapModule/getNodeAlarmSeverityMap'])
+const nodes = computed<Node[]>(() => mapStore.getNodes())
+const nodeLabelAlarmSeverityMap = computed(() => mapStore.getNodeAlarmSeverityMap())
 const latitude = computed(() => props.cluster.getLatLng().lat.toFixed(6))
 const longitude = computed(() => props.cluster.getLatLng().lng.toFixed(6))
 

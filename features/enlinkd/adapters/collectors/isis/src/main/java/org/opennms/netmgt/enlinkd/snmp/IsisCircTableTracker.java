@@ -1,35 +1,28 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.enlinkd.snmp;
 
-import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.IsIsElement.IsisAdminState;
+import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
@@ -40,9 +33,11 @@ import org.slf4j.LoggerFactory;
 public class IsisCircTableTracker extends TableTracker {
 	private final static Logger LOG = LoggerFactory.getLogger(IsisCircTableTracker.class);
 
-    public final static SnmpObjId ISIS_CIRC_IFINDEX     = SnmpObjId.get(".1.3.6.1.2.1.138.1.3.2.1.2");
-    public final static SnmpObjId ISIS_CIRC_ADMIN_STATE = SnmpObjId.get(".1.3.6.1.2.1.138.1.3.2.1.3");
+    public final static SnmpObjId ISIS_CIRC_IFINDEX_OID = SnmpObjId.get(".1.3.6.1.2.1.138.1.3.2.1.2");
+    public final static SnmpObjId ISIS_CIRC_ADMIN_STATE_OID = SnmpObjId.get(".1.3.6.1.2.1.138.1.3.2.1.3");
 
+    public final static String ISIS_CIRC_IFINDEX = "isisCircIfIndex";
+    public final static String ISIS_CIRC_ADMIN_STATE = "isisCircAdminState";
     public static final SnmpObjId[] isisCirctable_elemList = new SnmpObjId[] {
         /*
          *  isisCircIfIndex OBJECT-TYPE
@@ -54,8 +49,8 @@ public class IsisCircTableTracker extends TableTracker {
          *         circuit corresponds.  This object cannot be modified
          *         after creation."
          *  ::= { isisCircEntry 2 }    
-         */     
-    	ISIS_CIRC_IFINDEX,
+         */
+            ISIS_CIRC_IFINDEX_OID,
     	
     	/*
     	 *  isisCircAdminState OBJECT-TYPE
@@ -67,7 +62,7 @@ public class IsisCircTableTracker extends TableTracker {
          *      DEFVAL { off }
          *  ::= { isisCircEntry 3 }
     	 */
-    	ISIS_CIRC_ADMIN_STATE
+            ISIS_CIRC_ADMIN_STATE_OID
 
     };
     
@@ -83,11 +78,11 @@ public class IsisCircTableTracker extends TableTracker {
 	    }
 	    
 	    public Integer getIsisCircIfIndex() {
-	        return getValue(ISIS_CIRC_IFINDEX).toInt();
+	        return getValue(ISIS_CIRC_IFINDEX_OID).toInt();
 	    }
 	    
 	    public Integer getIsisCircAdminState() {
-	        return getValue(ISIS_CIRC_ADMIN_STATE).toInt();
+	        return getValue(ISIS_CIRC_ADMIN_STATE_OID).toInt();
 	    }
 	    
 	    public IsIsLink getIsisLink() {
@@ -126,6 +121,8 @@ public class IsisCircTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.IsisCircTableTracker.IsIsCircRow} object.
      */
     public void processIsisCircRow(final IsIsCircRow row) {
+        System.out.printf("\t\t%s (%s)= %s \n", ISIS_CIRC_IFINDEX_OID + "." + row.getInstance().toString(), ISIS_CIRC_IFINDEX, row.getIsisCircIfIndex());
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", ISIS_CIRC_ADMIN_STATE_OID + "." + row.getInstance().toString(), ISIS_CIRC_ADMIN_STATE, row.getIsisCircAdminState(), IsisAdminState.getTypeString(row.getIsisCircAdminState()));
     }
 
 

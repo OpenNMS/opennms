@@ -48,6 +48,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.ParameterMap;
@@ -66,9 +67,9 @@ import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.config.vmware.cim.Attrib;
 import org.opennms.netmgt.config.vmware.cim.VmwareCimCollection;
 import org.opennms.netmgt.config.vmware.cim.VmwareCimGroup;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.vmware.VmwareCimDatacollectionConfigDao;
 import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.service.vmware.VmwareImporter;
 import org.opennms.netmgt.rrd.RrdRepository;
@@ -86,7 +87,6 @@ import com.vmware.vim25.HostSystemPowerState;
 import com.vmware.vim25.mo.HostSystem;
 
 public class VmwareCimCollector extends AbstractRemoteServiceCollector {
-
     /**
      * Interface for defining methods for value modifications
      */
@@ -406,7 +406,7 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
                 if (vmwareServer == null) {
                     throw new IllegalStateException(String.format("VmwareCollector: Error getting credentials for VMware management server: %s", vmwareManagementServer));
                 }
-                runtimeAttributes.put(VmwareImporter.VMWARE_SERVER_KEY, vmwareServer);
+                runtimeAttributes.put(VmwareImporter.VMWARE_SERVER_KEY, Interpolator.pleaseInterpolate(vmwareServer));
 
                 return null;
             }
@@ -541,5 +541,4 @@ public class VmwareCimCollector extends AbstractRemoteServiceCollector {
     public void setNodeDao(NodeDao nodeDao) {
         m_nodeDao = nodeDao;
     }
-
 }

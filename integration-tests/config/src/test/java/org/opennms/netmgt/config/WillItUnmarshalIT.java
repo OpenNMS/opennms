@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2007-2023 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertEquals;
@@ -46,8 +39,11 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.custommonkey.xmlunit.Difference;
 import org.custommonkey.xmlunit.XMLUnit;
+import org.junit.Before;
 import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
 import org.opennms.core.test.ConfigurationTestUtils;
@@ -126,6 +122,7 @@ import org.opennms.netmgt.config.wmi.WmiDatacollectionConfig;
 import org.opennms.netmgt.config.wmi.agent.WmiConfig;
 import org.opennms.netmgt.config.wsman.credentials.WsmanConfig;
 import org.opennms.netmgt.config.wsman.WsmanDatacollectionConfig;
+import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
 import org.opennms.netmgt.search.providers.action.Actions;
 import org.opennms.netmgt.telemetry.config.model.TelemetrydConfig;
@@ -178,12 +175,17 @@ public class WillItUnmarshalIT {
     public static final ArrayList<Object[]> FILES = new ArrayList<>();
 
     @BeforeClass
-    public static void setUp() {
+    public static void setUpClazz() {
         XMLUnit.setIgnoreWhitespace(false);
         XMLUnit.setIgnoreAttributeOrder(false);
         XMLUnit.setIgnoreComments(true);
         XMLUnit.setIgnoreDiffBetweenTextAndCDATA(false);
         XMLUnit.setNormalize(false);
+    }
+
+    @Before
+    public void setUp() throws IOException {
+        System.setProperty("opennms.home", temporaryFolder.newFolder().getAbsolutePath());
     }
 
     /**
@@ -223,6 +225,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "enlinkd-configuration.xml", EnlinkdConfiguration.class, false, null);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, true, null);
         addFile(Source.CONFIG, "eventd-configuration.xml", EventdConfiguration.class, true, null);
+        addFile(Source.CONFIG, "foreign-sources/selfmonitor.xml", ForeignSource.class, false, null);
         addFile(Source.CONFIG, "geoip-adapter-configuration.xml", GeoIpConfig.class, false, null);
         addFile(Source.CONFIG, "groups.xml", Groupinfo.class, true, null);
         addFile(Source.CONFIG, "http-datacollection-config.xml", HttpDatacollectionConfig.class, false, null);
@@ -384,6 +387,9 @@ public class WillItUnmarshalIT {
     public static Collection<Object[]> files() {
         return FILES;
     }
+
+    @Rule
+    public TemporaryFolder temporaryFolder = new TemporaryFolder();
 
     private final Source source;
     private final String file;

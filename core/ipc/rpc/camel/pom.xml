@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core.ipc</groupId>
     <artifactId>org.opennms.core.ipc.rpc</artifactId>
-    <version>31.0.3-SNAPSHOT</version>
+    <version>33.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.ipc.rpc</groupId>
@@ -51,6 +51,10 @@
       <artifactId>core-api</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-jmx</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>

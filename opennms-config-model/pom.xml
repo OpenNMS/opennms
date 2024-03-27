@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>31.0.3-SNAPSHOT</version>
+    <version>33.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-config-model</artifactId>
@@ -68,11 +68,9 @@
               org.opennms.netmgt.config.pagesequence.*;version="${project.version}",
               org.opennms.netmgt.config.poller.*;version="${project.version}",
               org.opennms.netmgt.config.provisiond.*;version="${project.version}",
-              org.opennms.netmgt.config.rancid.adapter.*;version="${project.version}",
               org.opennms.netmgt.config.reportd.*;version="${project.version}",
               org.opennms.netmgt.config.reporting.*;version="${project.version}",
               org.opennms.netmgt.config.rtc.*;version="${project.version}",
-              org.opennms.netmgt.config.rws.*;version="${project.version}",
               org.opennms.netmgt.config.scriptd.*;version="${project.version}",
               org.opennms.netmgt.config.server.*;version="${project.version}",
               org.opennms.netmgt.config.service.*;version="${project.version}",

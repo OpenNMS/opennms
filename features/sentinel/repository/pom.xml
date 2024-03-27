@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.sentinel</groupId>
         <artifactId>sentinel-parent</artifactId>
-        <version>31.0.3-SNAPSHOT</version>
+        <version>33.0.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>repository</artifactId>
@@ -37,8 +37,6 @@
                                 <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</repository>
                                 <!-- Add Sentinel features -->
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/sentinel</descriptor>
-                                <!-- Additional tools -->
-                                <descriptor>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</descriptor>
                             </descriptors>
                             <!-- To ensure that all JAR files for a feature
                                 are included in the repository tar.gz file, add the feature to this list. -->
@@ -91,10 +89,6 @@
                                 <feature>sentinel-api-layer</feature>
                                 <feature>sentinel-timeseries-api</feature>
                                 <feature>sentinel-plugin-sample</feature>
-
-                                <!-- Other features -->
-                                <feature>cassandra-driver/${cassandraVersion}</feature>
-                                <feature>hawtio</feature>
                             </features>
                             <repository>${project.build.directory}/maven-repo</repository>
                         </configuration>
@@ -119,6 +113,28 @@
                                     <filtering>true</filtering>
                                 </resource>
                             </resources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.0.0</version>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals><goal>run</goal></goals>
+                        <configuration>
+                            <target>
+                                <delete>
+                                  <fileset dir="${project.build.directory}/maven-repo/org/eclipse/jetty" />
+                                  <dirset dir="${project.build.directory}/maven-repo/org/eclipse/jetty" />
+                                  <fileset dir="${project.build.directory}/maven-repo/org/ops4j/pax/web/pax-web-jetty" />
+                                  <dirset dir="${project.build.directory}/maven-repo/org/ops4j/pax/web/pax-web-jetty" />
+                                  <fileset dir="${project.build.directory}/maven-repo/org/ops4j/pax/web/pax-web-features" includes="**/*-jettyconfig.xml" />
+                                </delete>
+                            </target>
                         </configuration>
                     </execution>
                 </executions>

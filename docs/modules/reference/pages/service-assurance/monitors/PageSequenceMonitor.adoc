@@ -125,6 +125,12 @@ In case of an HTTPS request, this is also the virtual domain to send as part of 
 Colon-separated credentials such as USERNAME:PASSWORD.
 | n/a
 
+| preemptive-auth
+| Preselect authentication method. 
+When specified, allows only basic authentication.
+User name and password must be provided in the `user-info` attribute.
+| n/a
+
 | host
 | Set host field in HTTP header.
 | IP interface address of the service
@@ -201,6 +207,15 @@ To collect response times for individual pages in a sequence, add a ds-name attr
 The response time for each page will be stored in the same RRD file specified for the service via the rrd-base-name parameter under the specified data source name.
 
 WARNING: You need to delete existing RRD files and let them be recreated with the new list of data sources when you add a ds-name attribute to a page in a sequence that is already storing response-time data.
+
+== Preselect authentication
+When authentication is required, the first HTTP request receives a "401 Unauthorized" response with possible authentication methods. 
+The second request is sent using the selected authentication method.
+
+Using the `preemptive-auth` attribute lets you use a specific authentication on the first request.
+
+Some servers do not tell you which authentication methods they support. 
+In these cases, using the `preemptive-auth` attribute is the only option.
 
 == Examples
 

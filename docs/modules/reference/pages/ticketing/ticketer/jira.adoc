@@ -89,6 +89,9 @@ Open the Karaf shell and run the `opennms:jira-verify` command to check your con
 
 NOTE: The `jira.verify` command will not work until the `jira.properties` file has been configured.
 
+NOTE: Metadata expressions can also be used in the fields of the `jira.properties` configuration file.
+This lets the user to also reference credentials stored in the secure credentials.
+
 == Jira commands
 
 The Jira ticketing plugin includes Karaf commands for setting up the plugin on the Karaf shell.
@@ -121,7 +124,7 @@ drools-ticketer.rules-file=$OPENNMS_HOME/etc/drools-ticketer-rules.drl
 
 Finally, you must place a Drools rule file named `drools-ticketer-rules.drl` in the `$\{OPENNMS_HOME}/etc` directory.
 
-TIP: There is an example file at `$\{OPENNMS_HOME}\etc\examples` that you can use as a template.
+TIP: There is an example file in `$\{OPENNMS_HOME}/etc/examples` that you can use as a template.
 
 The following Drools example defines attributes to set custom fields:
 

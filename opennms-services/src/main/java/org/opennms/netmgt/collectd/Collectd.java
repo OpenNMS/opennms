@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2002-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.collectd;
 
 import static org.opennms.core.utils.InetAddressUtils.str;
@@ -46,9 +39,17 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
+import javax.swing.text.html.parser.Entity;
+
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.logging.Logging;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.FallBackScopeProvider;
+import org.opennms.core.mate.api.FallbackScope;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.InsufficientInformationException;
 import org.opennms.netmgt.collection.api.CollectionInitializationException;
 import org.opennms.netmgt.collection.api.CollectionInstrumentation;
@@ -198,6 +199,9 @@ public class Collectd extends AbstractServiceDaemon implements
     
     @Autowired
     private ReadablePollOutagesDao pollOutagesDao;
+
+    @Autowired
+    private EntityScopeProvider entityScopeProvider;
 
     private AtomicInteger sessionID = new AtomicInteger();
 
@@ -545,9 +549,14 @@ public class Collectd extends AbstractServiceDaemon implements
             }
 
             LOG.debug("getSpecificationsForInterface: address/service: {}/{} scheduled, interface does belong to package: {}", iface, svcName, wpkg.getName());
-            String className = m_collectdConfigFactory.getCollectors().stream().filter(c->c.getService().equals(svcName)).findFirst().orElse(null).getClassName();
+            final var collector = m_collectdConfigFactory.getCollectors().stream().filter(c->c.getService().equals(svcName)).findFirst().orElse(null);
+            String className = collector == null? null : collector.getClassName();
             if(className != null) {
-                matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName), instrumentation(), m_locationAwareCollectorClient, pollOutagesDao, className));
+                final ScopeProvider scopeProvider = new FallBackScopeProvider(
+                    entityScopeProvider.getScopeProviderForNode(iface.getNodeId()),
+                    entityScopeProvider.getScopeProviderForInterface(iface.getNodeId(), InetAddressUtils.toIpAddrString(iface.getIpAddress()))
+                );
+                matchingPkgs.add(new CollectionSpecification(wpkg, svcName, getServiceCollector(svcName), instrumentation(), m_locationAwareCollectorClient, pollOutagesDao, className, scopeProvider));
             } else {
                 LOG.warn("The class for collector {} is not available yet.", svcName);
             }
@@ -1524,5 +1533,9 @@ public class Collectd extends AbstractServiceDaemon implements
     @VisibleForTesting
     public void setPollOutagesDao(ReadablePollOutagesDao pollOutagesDao) {
         this.pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
+    }
+
+    public void setEntityScopeProvider(EntityScopeProvider entityScopeProvider) {
+        this.entityScopeProvider = entityScopeProvider;
     }
 }

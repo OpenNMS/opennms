@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.poller.pollables;
 
 import static org.mockito.ArgumentMatchers.anyInt;
@@ -35,6 +28,7 @@ import static org.mockito.ArgumentMatchers.endsWith;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -43,6 +37,8 @@ import static org.mockito.Mockito.when;
 
 import java.net.InetAddress;
 import java.nio.file.Path;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.junit.After;
 import org.junit.Before;
@@ -175,11 +171,69 @@ public class StatusStoringServiceMonitorAdaptorPersistenceTest {
         sssma.handlePollResult(monitoredService, Maps.newHashMap(ImmutableMap.<String, Object>builder()
                                                              .put("rrd-repository", getStatusRoot().toString())
                                                              .put("rrd-base-name", "smtp-base")
+                                                             .put("rrd-status", "false")
                                                              .build()), PollStatus.available(42.0));
     }
 
     public Path getStatusRoot() {
-        System.err.println(tempFolder.getRoot().toPath().resolve("status").toAbsolutePath());
         return tempFolder.getRoot().toPath().resolve("status").toAbsolutePath();
+    }
+
+    @Test
+    public void test_NMS15820() throws Exception {
+        testParameters("foo", null, "My-Custom-Service", "foo");
+        testParameters("foo", "bar", "My-Custom-Service", "foo");
+        testParameters(null, "bar", "My-Custom-Service", "bar");
+        testParameters(null, null, "My-Custom-Service", "my-custom-service");
+    }
+
+    private void testParameters(final String rrdBaseName, final String dsName, final String svcName, final String expectedName) throws Exception {
+        final Package pkg = new Package();
+
+        final MockNetwork mockNetwork = new MockNetwork().createStandardNetwork();
+        final MockPollerConfig pollerConfig = new MockPollerConfig(mockNetwork);
+
+        final StatusStoringServiceMonitorAdaptor statusStoringServiceMonitorAdaptor = new StatusStoringServiceMonitorAdaptor(pollerConfig, pkg, persisterFactory);
+
+        final MonitoredService monitoredService = new MockMonitoredService(3, "Firewall", "Default",
+                InetAddress.getByName("192.168.1.5"), svcName);
+
+        when(this.rrdStrategy.getDefaultFileExtension()).thenReturn(".jrb");
+
+        when(this.rrdStrategy.createDefinition(eq("192.168.1.5"),
+                eq(getStatusRoot().resolve("192.168.1.5").toString()),
+                eq(expectedName),
+                anyInt(),
+                anyList(),
+                anyList())).thenReturn(null);
+
+        final Map<String, Object> parameters = new TreeMap<>();
+        parameters.put("rrd-repository", getStatusRoot().toString());
+
+        if (rrdBaseName != null) {
+            parameters.put("rrd-base-name", rrdBaseName);
+        }
+
+        if (dsName != null) {
+            parameters.put("ds-name", dsName);
+        }
+
+        statusStoringServiceMonitorAdaptor.handlePollResult(monitoredService, parameters, PollStatus.available(42.0));
+        statusStoringServiceMonitorAdaptor.handlePollResult(monitoredService, parameters, PollStatus.unavailable(""));
+        statusStoringServiceMonitorAdaptor.handlePollResult(monitoredService, parameters, PollStatus.unresponsive(""));
+        statusStoringServiceMonitorAdaptor.handlePollResult(monitoredService, parameters, PollStatus.unknown(""));
+
+        verify(this.rrdStrategy, atLeastOnce()).getDefaultFileExtension();
+        verify(this.rrdStrategy, atLeastOnce()).createDefinition(eq("192.168.1.5"),
+                eq(getStatusRoot().resolve("192.168.1.5").toString()),
+                eq(expectedName),
+                anyInt(),
+                anyList(),
+                isNull());
+
+        verify(this.rrdStrategy, atLeastOnce()).createFile(anyObject());
+        verify(this.rrdStrategy, atLeastOnce()).openFile(eq(getStatusRoot().resolve("192.168.1.5").resolve(expectedName + ".jrb").toString()));
+
+        clearInvocations(this.rrdStrategy);
     }
 }

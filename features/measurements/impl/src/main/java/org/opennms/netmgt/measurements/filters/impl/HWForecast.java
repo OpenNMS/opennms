@@ -1,63 +1,52 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2010-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.measurements.filters.impl;
 
 import java.util.Date;
-import java.util.Map;
 
-import org.opennms.netmgt.integrations.R.RScriptException;
-import org.opennms.netmgt.integrations.R.RScriptExecutor;
-import org.opennms.netmgt.integrations.R.RScriptInput;
-import org.opennms.netmgt.integrations.R.RScriptOutput;
+
 import org.opennms.netmgt.measurements.api.Filter;
 import org.opennms.netmgt.measurements.api.FilterInfo;
 import org.opennms.netmgt.measurements.api.FilterParam;
 import org.opennms.netmgt.measurements.filters.impl.Utils.TableLimits;
+import org.opennms.netmgt.measurements.filters.impl.holtwinters.HoltWintersPointForecaster;
+import org.opennms.netmgt.measurements.filters.impl.holtwinters.HoltWintersPointForecasterParams;
+import org.opennms.netmgt.measurements.filters.impl.holtwinters.HoltWintersSeasonalityType;
+import org.opennms.netmgt.measurements.filters.impl.holtwinters.HoltWintersTrainingMethod;
+import org.opennms.netmgt.measurements.filters.impl.holtwinters.PointForecast;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableTable;
-import com.google.common.collect.Maps;
 import com.google.common.collect.RowSortedTable;
-import com.google.common.collect.TreeBasedTable;
 
 /**
- * Performs Holt-Winters forecasting on a given column of
- * the data source with R.
+ * Performs Holt-Winters forecasting.
  *
  * @author jwhite
  */
-@FilterInfo(name="HoltWinters", description="Performs Holt-Winters forecasting.", backend="R")
+@FilterInfo(name="HoltWinters", description="Performs Holt-Winters forecasting.")
 public class HWForecast implements Filter {
     private static final Logger LOG = LoggerFactory.getLogger(HWForecast.class);
-    private static final String PATH_TO_R_SCRIPT = "/org/opennms/netmgt/measurements/filters/impl/holtWinters.R";
 
     @FilterParam(key="inputColumn", required=true, displayName="Input", description="Input column.")
     private String m_inputColumn;
@@ -71,23 +60,18 @@ public class HWForecast implements Filter {
     @FilterParam(key="periodInSeconds", required=true, displayName="Period", description="Size of a period in seconds.")
     private long m_periodInSeconds;
 
-    @FilterParam(key="confidenceLevel", value="0.95", displayName="Level", description="Probability used for confidence bounds. Set this to 0 in order to disable the bounds.")
-    private double m_confidenceLevel;
-
     protected HWForecast() {}
 
     public HWForecast(String outputPrefix, String inputColumn,
-            int numPeriodsToForecast, long periodInSeconds,
-            double confidenceLevel) {
+            int numPeriodsToForecast, long periodInSeconds) {
         m_outputPrefix = outputPrefix;
         m_inputColumn = inputColumn;
         m_numPeriodsToForecast = numPeriodsToForecast;
         m_periodInSeconds = periodInSeconds;
-        m_confidenceLevel = confidenceLevel;
     }
 
     @Override
-    public void filter(RowSortedTable<Long, String, Double> table) throws RScriptException {
+    public void filter(RowSortedTable<Long, String, Double> table) {
         Preconditions.checkArgument(table.containsColumn(TIMESTAMP_COLUMN_NAME), String.format("Data source must have a '%s' column.", Filter.TIMESTAMP_COLUMN_NAME));
 
         // Determine the index of the first and last non-NaN values
@@ -112,57 +96,37 @@ public class HWForecast implements Filter {
         // Calculate the number of steps to forecast
         int numForecasts = numSamplesPerPeriod * m_numPeriodsToForecast;
 
-        // Script arguments
-        Map<String, Object> arguments = Maps.newHashMap();
-        arguments.put("columnToForecast", m_inputColumn);
-        arguments.put("numSamplesPerSeason", numSamplesPerPeriod);
-        arguments.put("numForecasts", numForecasts);
-        arguments.put("confidenceLevel", m_confidenceLevel);
-        // Array indices in R start at 1
-        arguments.put("firstIndex", limits.firstRowWithValues+1);
-        arguments.put("lastIndex", limits.lastRowWithValues+1);
+        HoltWintersPointForecasterParams params = new HoltWintersPointForecasterParams()
+                .setFrequency(numSamplesPerPeriod)
+                // Initial guesses, will be fitted during training
+                .setAlpha(0.5)
+                .setBeta(0.030)
+                .setGamma(0.002)
+                .setSeasonalityType(HoltWintersSeasonalityType.MULTIPLICATIVE)
+                .setWarmUpPeriod(numSamplesPerPeriod)
+                .setInitTrainingMethod(HoltWintersTrainingMethod.SIMPLE);
 
-        // Make the forecasts
-        RScriptExecutor executor = new RScriptExecutor();
-        RScriptOutput output = executor.exec(PATH_TO_R_SCRIPT, new RScriptInput(table, arguments));
-        ImmutableTable<Long, String, Double> outputTable = output.getTable();
+        var subject = new HoltWintersPointForecaster(params);
+        long firstIndexForTraining = Math.max(limits.firstRowWithValues, (limits.lastRowWithValues - (numSamplesPerPeriod * 2L)));
 
-        // The output table contains the fitted values, followed
-        // by the requested number of forecasted values
-        int numOutputRows = outputTable.rowKeySet().size();
-        int numFittedValues = numOutputRows - numForecasts;
-
-        // Add the fitted values to rows where the input column has values
-        for (long i = 0; i < numFittedValues; i++) {
-            long idxTarget = i + (numSampleRows - numFittedValues) + limits.firstRowWithValues + 1;
-            table.put(idxTarget, m_outputPrefix + "Fit", outputTable.get(i, "fit"));
+        double lastValue = Double.NaN;
+        for (long i = firstIndexForTraining; i < limits.lastRowWithValues; i++) {
+            lastValue = table.get(i, m_inputColumn);
+            subject.forecast(lastValue);
         }
 
-        // Append the forecasted values and include the time stamp with the appropriate step
-        for (long i = numFittedValues; i < numOutputRows; i++) {
-            long idxForecast = i - numFittedValues + 1;
-            long idxTarget = limits.lastRowWithValues + idxForecast;
-            if (m_confidenceLevel > 0) {
-                table.put(idxTarget, m_outputPrefix + "Fit", outputTable.get(i, "fit"));
-                table.put(idxTarget, m_outputPrefix + "Lwr", outputTable.get(i, "lwr"));
-                table.put(idxTarget, m_outputPrefix + "Upr", outputTable.get(i, "upr"));
-            }
-            table.put(idxTarget, TIMESTAMP_COLUMN_NAME, (double)new Date(lastTimestamp.getTime() + stepInMs * idxForecast).getTime());
+        for (long i = limits.lastRowWithValues + 1; i <= (limits.lastRowWithValues + numForecasts); i++) {
+            PointForecast forecast = subject.forecast(lastValue);
+            long idxForecast = i - limits.lastRowWithValues;
+            table.put(i, m_outputPrefix + "Fit", forecast.getValue());
+            table.put(i, TIMESTAMP_COLUMN_NAME, (double)new Date(lastTimestamp.getTime() + stepInMs * idxForecast).getTime());
+
+            // Save value for next iteration
+            lastValue = forecast.getValue();
         }
     }
 
-    public static void checkForecastSupport() throws RScriptException {
-        // Verify the HW filter
-        HWForecast forecastFilter = new HWForecast("HW", "X", 1, 1, 0.95);
-
-        // Use constant values for the Y column
-        RowSortedTable<Long, String, Double> table = TreeBasedTable.create();
-        for (long i = 0; i < 100; i++) {
-            table.put(i, Filter.TIMESTAMP_COLUMN_NAME, (double)(i * 1000));
-            table.put(i, "X", 1.0d);
-        }
-
-        // Apply the filter
-        forecastFilter.filter(table);
+    public static void checkForecastSupport() {
+        // noop, forecasting always supported now
     }
 }

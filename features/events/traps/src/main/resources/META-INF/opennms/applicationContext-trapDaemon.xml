@@ -1,18 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xmlns:tx="http://www.springframework.org/schema/tx"
-  xmlns:context="http://www.springframework.org/schema/context"
-  xsi:schemaLocation="
-  http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:tx="http://www.springframework.org/schema/tx"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:onms-osgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
   http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
-  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd
-">
+  http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.2.xsd http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
 
   <context:annotation-config />
   <tx:annotation-driven/>
-  
-  <bean id="daemon" class="org.opennms.netmgt.trapd.Trapd"/>
+
+  <onms-osgi:reference interface="org.opennms.features.scv.api.SecureCredentialsVault" id="jceksSecureCredentialsVault"/>
+
+  <bean id="daemon" class="org.opennms.netmgt.trapd.Trapd">
+    <property name="secureCredentialsVault" ref="jceksSecureCredentialsVault" />
+  </bean>
 
   <bean id="daemonListener" class="org.opennms.netmgt.events.api.AnnotationBasedEventListenerAdapter">
     <property name="annotatedListener" ref="daemon" />

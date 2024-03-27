@@ -1,39 +1,39 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.config;
 
+import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.Optional;
+
+import org.junit.rules.TemporaryFolder;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
+import org.opennms.core.test.ConfigurationTestUtils;
+import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 
 import junit.framework.TestCase;
-
-import org.opennms.core.test.ConfigurationTestUtils;
 
 /**
  * JUnit tests for the configureSNMP event handling and optimization of
@@ -47,6 +47,41 @@ public class WmiPeerFactoryTest extends TestCase {
         WmiPeerFactory factory = new WmiPeerFactory(ConfigurationTestUtils.getResourceForConfigWithReplacements(amiConfigXml));
         factory.afterPropertiesSet();
         return factory;
+    }
+
+    public void testMetadata() throws IOException {
+        final TemporaryFolder tempFolder = new TemporaryFolder();
+        tempFolder.create();
+        final File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
+        final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
+        secureCredentialsVault.setCredentials("wmi", new Credentials("foo", "bar"));
+
+        final String wmiConfigXml = "<?xml version=\"1.0\"?>\n" +
+                "<wmi-config retry=\"3\" timeout=\"800\"\n" +
+                "   username=\"${scv:wmi:username}\" password=\"${scv:wmi:password}\">\n" +
+                "   <definition>\n" +
+                "       <range begin=\"192.168.0.6\" end=\"192.168.0.10\"/>\n" +
+                "       <range begin=\"fe80:0000:0000:0000:0000:0000:0000:0006\" end=\"fe80:0000:0000:0000:0000:0000:0000:0010\"/>\n" +
+                "       <specific>192.168.0.5</specific>\n" +
+                "       <specific>fe80:0000:0000:0000:0000:0000:0000:0005</specific>\n" +
+                "   </definition>\n" +
+                "\n" +
+                "</wmi-config>\n" +
+                "";
+
+        final WmiPeerFactory factory = getFactory(wmiConfigXml);
+        factory.setSecureCredentialsVaultScope(new SecureCredentialsVaultScope(secureCredentialsVault));
+
+        assertEquals(Optional.of("${scv:wmi:username}"), factory.getConfig().getUsername());
+        assertEquals(Optional.of("${scv:wmi:password}"), factory.getConfig().getPassword());
+        assertEquals("foo", factory.getAgentConfig(InetAddress.getByName("192.168.0.5")).getUsername());
+        assertEquals("bar", factory.getAgentConfig(InetAddress.getByName("192.168.0.5")).getPassword());
+        assertEquals("foo", factory.getAgentConfig(InetAddress.getByName("192.168.0.6")).getUsername());
+        assertEquals("bar", factory.getAgentConfig(InetAddress.getByName("192.168.0.6")).getPassword());
+        assertEquals("foo", factory.getAgentConfig(InetAddress.getByName("fe80:0000:0000:0000:0000:0000:0000:0005")).getUsername());
+        assertEquals("bar", factory.getAgentConfig(InetAddress.getByName("fe80:0000:0000:0000:0000:0000:0000:0005")).getPassword());
+        assertEquals("foo", factory.getAgentConfig(InetAddress.getByName("fe80:0000:0000:0000:0000:0000:0000:0006")).getUsername());
+        assertEquals("bar", factory.getAgentConfig(InetAddress.getByName("fe80:0000:0000:0000:0000:0000:0000:0006")).getPassword());
     }
 
     /**

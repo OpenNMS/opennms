@@ -96,13 +96,24 @@
             "extends": [
                 "build",
                 "integration-test-with-coverage",
-                "code-coverage"
+                "code-coverage",
+                "trivy-scan"
             ]
         },
         "master-branch": {
             "extends": [
                 "tarball-assembly-only",
                 "integration-test"
+            ]
+        },
+        "trivy-scan": {
+            "extends": [
+                "horizon-image-single-arch-trivy",
+                "sentinel-image-single-arch-trivy",
+                "minion-image-single-arch-trivy",
+                "horizon-image-single-arch-linux-amd64-trivy",
+                "sentinel-image-single-arch-linux-amd64-trivy",
+                "minion-image-single-arch-linux-amd64-trivy"
             ]
         },
         "experimental": {
@@ -319,6 +330,15 @@
                 "tarball-assembly-only"
             ]
         },
+        "minion-image-single-arch-linux-amd64-trivy": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "tarball-assembly-only"
+            ]
+        },        
         "horizon-image-single-arch-linux-amd64": {
             "context": [
                 "CircleCI",
@@ -328,6 +348,15 @@
                 "tarball-assembly-only"
             ]
         },
+        "horizon-image-single-arch-linux-amd64-trivy": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "tarball-assembly-only"
+            ]
+        },        
         "sentinel-image-single-arch-linux-amd64": {
             "context": [
                 "CircleCI",
@@ -337,19 +366,51 @@
                 "tarball-assembly-only"
             ]
         },
+        "sentinel-image-single-arch-linux-amd64-trivy": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "tarball-assembly-only"
+            ]
+        },        
         "minion-image-single-arch": {
             "context": [
                 "CircleCI",
                 "docker-publish-account"
             ],
             "variations": [
-                "linux/arm64",
-                "linux/arm/v7"
+                "linux/arm64"
             ],
             "requires": [
                 "smoke-test-core",
                 "smoke-test-minion",
                 "smoke-test-sentinel"
+            ]
+        },
+        "minion-image-single-arch-trivy": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "variations": [
+                "linux/arm64"
+            ],
+            "requires": [
+                "tarball-assembly-only"
+            ]
+        },        
+        "horizon-image-single-arch-trivy":{
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "variations": [
+                "linux/arm64"
+            ],
+            "requires": [
+                "tarball-assembly-only"
             ]
         },
         "horizon-image-single-arch": {
@@ -358,13 +419,24 @@
                 "docker-publish-account"
             ],
             "variations": [
-                "linux/arm64",
-                "linux/arm/v7"
+                "linux/arm64"
             ],
             "requires": [
                 "smoke-test-core",
                 "smoke-test-minion",
                 "smoke-test-sentinel"
+            ]
+        },
+        "sentinel-image-single-arch-trivy": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "variations": [
+                "linux/arm64"
+            ],
+            "requires": [
+                "tarball-assembly-only"
             ]
         },
         "sentinel-image-single-arch": {
@@ -373,8 +445,7 @@
                 "docker-publish-account"
             ],
             "variations": [
-                "linux/arm64",
-                "linux/arm/v7"
+                "linux/arm64"
             ],
             "requires": [
                 "smoke-test-core",

@@ -1,15 +1,10 @@
-<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
-           xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
-           xsi:schemaLocation="
-		http://www.osgi.org/xmlns/blueprint/v1.0.0
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
 
 		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
-		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
-
-		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
-		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
-">
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
 
     <!-- Configuration properties -->
     <cm:property-placeholder id="alarmHistoryElastic" persistent-id="org.opennms.features.alarms.history.elastic" update-strategy="reload">
@@ -50,6 +45,12 @@
             <cm:property name="alarmReindexDurationMs" value="3600000" /> <!-- Number of milliseconds to wait before re-indexing an alarm if nothing "interesting" has changed -->
             <cm:property name="taskQueueCapacity" value="5000" />
             <cm:property name="lookbackPeriodMs" value="604800000" /> <!-- Number of milliseconds to go back when searching for alarms -->
+
+            <!-- CircuitBreaker settings -->
+            <cm:property name="circuitbreaker.failure_rate_threshold_in_percent" value="99"/>
+            <cm:property name="circuitbreaker.wait_in_open_state_milliseconds" value="60000"/>
+            <cm:property name="circuitbreaker.ring_buffer_size_in_closed.state" value="100"/>
+            <cm:property name="circuitbreaker.ring_buffer_size_in_half_open_state" value="10"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -60,7 +61,7 @@
 
     <!-- Metrics -->
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
-    <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+    <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.jmx.JmxReporter" factory-method="forRegistry">
         <argument ref="metricRegistry"/>
     </bean>
     <bean id="metricRegistryDomainedJmxReporterBuilder" factory-ref="metricRegistryJmxReporterBuilder" factory-method="inDomain">
@@ -88,6 +89,20 @@
         <property name="recordStats" value="${nodeCache.recordStats}" />
     </bean>
 
+    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao"/>
+    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao"/>
+    <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils"/>
+    <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" availability="mandatory"/>
+
+    <bean id="entityScopeProvider" class="org.opennms.core.mate.model.EntityScopeProviderImpl">
+        <property name="nodeDao" ref="nodeDao"/>
+        <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
+        <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
+        <property name="sessionUtils" ref="sessionUtils"/>
+        <property name="scv" ref="secureCredentialsVault"/>
+    </bean>
+
     <!-- Proxy for the JestClientFactory -->
     <bean id="requestExecutorFactory" class="org.opennms.features.jest.client.executors.DefaultRequestExecutor">
         <argument value="${retryCooldown}"/>
@@ -96,6 +111,7 @@
         <argument value="${elasticUrl}"/>
         <argument value="${globalElasticUser}"/>
         <argument value="${globalElasticPassword}"/>
+        <property name="entityScopeProvider" ref="entityScopeProvider"/>
         <property name="defaultMaxTotalConnectionPerRoute" value="${defaultMaxTotalConnectionPerRoute}"/>
         <property name="maxTotalConnection" value="${maxTotalConnection}"/>
         <property name="discovery" value="${nodeDiscovery}" />
@@ -112,6 +128,25 @@
 
     <!-- Actually creates the client, but only once -->
     <bean id="jestClient" factory-ref="clientFactory" factory-method="createClient" destroy-method="shutdownClient"/>
+
+    <bean id="circuitBreakerProvider"
+          class="org.opennms.features.jest.client.CircuitBreakerProvider">
+        <property name="failureRateThreshold" value="${circuitbreaker.failure_rate_threshold_in_percent}"/>
+        <property name="waitDurationInOpenStateInMills" value="${circuitbreaker.wait_in_open_state_milliseconds}"/>
+        <property name="ringBufferSizeInClosedState" value="${circuitbreaker.ring_buffer_size_in_closed.state}"/>
+        <property name="ringBufferSizeInHalfOpenState" value="${circuitbreaker.ring_buffer_size_in_half_open_state}"/>
+    </bean>
+
+    <bean id="circuitBreaker"
+          factory-ref="circuitBreakerProvider"
+          factory-method="getCircuitBreaker">
+        <argument value="Alarm"/>
+    </bean>
+
+    <bean id="jestClientWithCircuitBreaker" class="org.opennms.features.jest.client.JestClientWithCircuitBreaker">
+        <argument ref="jestClient"/>
+        <argument ref="circuitBreaker"/>
+    </bean>
 
     <bean id="indexStrategy" class="org.opennms.features.jest.client.index.IndexStrategyFactory" factory-method="createIndexStrategy">
         <argument value="${elasticIndexStrategy}"/>
@@ -135,7 +170,7 @@
     <!-- The indexer -->
     <bean id="elasticAlarmIndexer" class="org.opennms.features.alarms.history.elastic.ElasticAlarmIndexer" init-method="init" destroy-method="destroy">
         <argument ref="metricRegistry"/>
-        <argument ref="jestClient"/>
+        <argument ref="jestClientWithCircuitBreaker"/>
         <argument ref="templateInitializer" />
         <argument ref="nodeCacheConfig" />
         <argument value="${taskQueueCapacity}"/>

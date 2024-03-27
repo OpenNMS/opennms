@@ -32,9 +32,10 @@
             <attrib name="TasksCompleted" alias="ONMSPollerTasksCpt" type="counter"/>
             <attrib name="TaskQueuePendingCount" alias="ONMSPollerTskQPCnt" type="gauge"/>
             <attrib name="TaskQueueRemainingCapacity" alias="ONMSPollerTskQRCap" type="gauge"/>
+            <attrib name="NumPollsInFlight" alias="ONMSPollsInFlight" type="gauge"/>
          </mbean>
 
-         <mbean name="org.opennms.core.ipc.sink.kafka.heartbeat" resource-type="kafkaLag" objectname="org.opennms.core.ipc.sink.kafka:name=*.Lag">
+         <mbean name="org.opennms.core.ipc.sink.kafka.heartbeat" resource-type="kafkaLag" objectname="org.opennms.core.ipc.sink.kafka:name=*.Lag,type=gauges">
             <attrib name="Value" alias="Lag" type="gauge"/>
          </mbean>
 
@@ -252,19 +253,19 @@
             </comp-attrib>
          </mbean>
 	 <!-- Newts specifics beans - available when using the Newts time series strategy -->
-         <mbean name="org.opennms.newts.ring-buffer.size" objectname="org.opennms.newts:name=ring-buffer.size">
+         <mbean name="org.opennms.newts.ring-buffer.size" objectname="org.opennms.newts:name=ring-buffer.size,type=gauges">
             <attrib name="Value" alias="NewtsRingBufSize" type="gauge"/>
          </mbean>
-         <mbean name="org.opennms.newts.ring-buffer.max-size" objectname="org.opennms.newts:name=ring-buffer.max-size">
+         <mbean name="org.opennms.newts.ring-buffer.max-size" objectname="org.opennms.newts:name=ring-buffer.max-size,type=gauges">
             <attrib name="Value" alias="NewtsRingBufMaxSize" type="gauge"/>
          </mbean>
-         <mbean name="org.opennms.newts.cache.size" objectname="org.opennms.newts:name=cache.size">
+         <mbean name="org.opennms.newts.cache.size" objectname="org.opennms.newts:name=cache.size,type=gauges">
             <attrib name="Value" alias="NewtsCacheSize" type="gauge"/>
          </mbean>
-         <mbean name="org.opennms.newts.cache.max-size" objectname="org.opennms.newts:name=cache.max-size">
+         <mbean name="org.opennms.newts.cache.max-size" objectname="org.opennms.newts:name=cache.max-size,type=gauges">
             <attrib name="Value" alias="NewtsMaxCacheSize" type="gauge"/>
          </mbean>
-         <mbean name="org.opennms.newts.repository.insert-timer" objectname="org.opennms.newts:name=repository.insert-timer">
+         <mbean name="org.opennms.newts.repository.insert-timer" objectname="org.opennms.newts:name=repository.insert-timer,type=timers">
             <attrib name="50thPercentile" alias="NewtsInsert50" type="gauge"/>
             <attrib name="75thPercentile" alias="NewtsInsert75" type="gauge"/>
             <attrib name="95thPercentile" alias="NewtsInsert95" type="gauge"/>
@@ -273,7 +274,7 @@
             <attrib name="999thPercentile" alias="NewtsInsert999" type="gauge"/>
             <attrib name="Count" alias="NewtsInsertCnt" type="counter"/>
          </mbean>
-         <mbean name="org.opennms.newts.repository.measurement-select-timer" objectname="org.opennms.newts:name=repository.measurement-select-timer">
+         <mbean name="org.opennms.newts.repository.measurement-select-timer" objectname="org.opennms.newts:name=repository.measurement-select-timer,type=timers">
             <attrib name="50thPercentile" alias="NewtsMeasSelct50" type="gauge"/>
             <attrib name="75thPercentile" alias="NewtsMeasSelct75" type="gauge"/>
             <attrib name="95thPercentile" alias="NewtsMeasSelct95" type="gauge"/>
@@ -282,7 +283,7 @@
             <attrib name="999thPercentile" alias="NewtsMeasSelct999" type="gauge"/>
             <attrib name="Count" alias="NewtsMeasSelctCnt" type="counter"/>
          </mbean>
-         <mbean name="org.opennms.newts.repository.sample-select-timer" objectname="org.opennms.newts:name=repository.sample-select-timer">
+         <mbean name="org.opennms.newts.repository.sample-select-timer" objectname="org.opennms.newts:name=repository.sample-select-timer,type=timers">
             <attrib name="50thPercentile" alias="NewtsSmplSelct50" type="gauge"/>
             <attrib name="75thPercentile" alias="NewtsSmplSelct75" type="gauge"/>
             <attrib name="95thPercentile" alias="NewtsSmplSelct95" type="gauge"/>
@@ -291,13 +292,13 @@
             <attrib name="999thPercentile" alias="NewtsSmplSelct999" type="gauge"/>
             <attrib name="Count" alias="NewtsSmplSelctCnt" type="counter"/>
          </mbean>
-         <mbean name="org.opennms.newts.repository.samples-inserted" objectname="org.opennms.newts:name=repository.samples-inserted">
+         <mbean name="org.opennms.newts.repository.samples-inserted" objectname="org.opennms.newts:name=repository.samples-inserted,type=meters">
             <attrib name="Count" alias="NewtsSmplsInsertd" type="counter"/>
          </mbean>
-         <mbean name="org.opennms.newts.repository.samples-selected" objectname="org.opennms.newts:name=repository.samples-selected">
+         <mbean name="org.opennms.newts.repository.samples-selected" objectname="org.opennms.newts:name=repository.samples-selected,type=meters">
             <attrib name="Count" alias="NewtsSmplsSelctd" type="counter"/>
          </mbean>
-         <mbean name="org.opennms.newts.search.update" objectname="org.opennms.newts:name=search.update">
+         <mbean name="org.opennms.newts.search.update" objectname="org.opennms.newts:name=search.update,type=timers">
             <attrib name="50thPercentile" alias="NewtsSearchUpd50" type="gauge"/>
             <attrib name="75thPercentile" alias="NewtsSearchUpd75" type="gauge"/>
             <attrib name="95thPercentile" alias="NewtsSearchUpd95" type="gauge"/>
@@ -306,7 +307,7 @@
             <attrib name="999thPercentile" alias="NewtsSearchUpd999" type="gauge"/>
             <attrib name="Count" alias="NewtsSearchUpdCnt" type="counter"/>
          </mbean>
-         <mbean name="org.opennms.newts.search.delete" objectname="org.opennms.newts:name=search.delete">
+         <mbean name="org.opennms.newts.search.delete" objectname="org.opennms.newts:name=search.delete,type=timers">
             <attrib name="50thPercentile" alias="NewtsSearchDel50" type="gauge"/>
             <attrib name="75thPercentile" alias="NewtsSearchDel75" type="gauge"/>
             <attrib name="95thPercentile" alias="NewtsSearchDel95" type="gauge"/>
@@ -315,7 +316,7 @@
             <attrib name="999thPercentile" alias="NewtsSearchDel999" type="gauge"/>
             <attrib name="Count" alias="NewtsSearchDelCnt" type="counter"/>
          </mbean>
-         <mbean name="org.opennms.newts.search.inserts" objectname="org.opennms.newts:name=search.inserts">
+         <mbean name="org.opennms.newts.search.inserts" objectname="org.opennms.newts:name=search.inserts,type=meters">
             <attrib name="Count" alias="NewtsSearchInserts" type="counter"/>
          </mbean>
          <mbean name="cluster1-metrics.requests" objectname="cluster1-metrics:name=requests">
@@ -355,12 +356,12 @@
             <attrib name="MinEnqueueTime" alias="MintEnQTime" type="gauge"/>
             <attrib name="QueueSize" alias="DestQsize" type="gauge"/>
          </mbean>
-         <mbean name="org.opennms.netmgt.flows.flowsPersisted" objectname="org.opennms.netmgt.flows:name=flowsPersisted">
+         <mbean name="org.opennms.netmgt.flows.flowsPersisted" objectname="org.opennms.netmgt.flows:name=flowsPersisted,type=meters">
             <attrib name="Count" alias="FlowPerst" type="counter"/>
             <attrib name="OneMinuteRate" alias="FlowPerst1m" type="gauge"/>
             <attrib name="FiveMinuteRate" alias="FlowPerst5m" type="gauge"/>
          </mbean>
-         <mbean name="org.opennms.netmgt.flows.flowsPerLog" objectname="org.opennms.netmgt.flows:name=flowsPerLog">
+         <mbean name="org.opennms.netmgt.flows.flowsPerLog" objectname="org.opennms.netmgt.flows:name=flowsPerLog,type=histograms">
             <attrib name="50thPercentile" alias="FlowFlwsPerLog50" type="gauge"/>
             <attrib name="75thPercentile" alias="FlowFlwsPerLog75" type="gauge"/>
             <attrib name="95thPercentile" alias="FlowFlwsPerLog95" type="gauge"/>
@@ -369,7 +370,7 @@
             <attrib name="999thPercentile" alias="FlowFlwsPerLog999" type="gauge"/>
             <attrib name="Count" alias="FlowFlwsPerLogCnt" type="counter"/>
          </mbean>
-         <mbean name="org.opennms.netmgt.flows.logEnrichment" objectname="org.opennms.netmgt.flows:name=logEnrichment">
+         <mbean name="org.opennms.netmgt.flows.logEnrichment" objectname="org.opennms.netmgt.flows:name=logEnrichment,type=timers">
             <attrib name="50thPercentile" alias="FlowLogEnrich50" type="gauge"/>
             <attrib name="75thPercentile" alias="FlowLogEnrich75" type="gauge"/>
             <attrib name="95thPercentile" alias="FlowLogEnrich95" type="gauge"/>
@@ -379,7 +380,7 @@
             <attrib name="OneMinuteRate" alias="FlowLogEnrich1m" type="gauge"/>
             <attrib name="FiveMinuteRate" alias="FlowLogEnrich5m" type="gauge"/>
          </mbean>
-         <mbean name="org.opennms.netmgt.flows.logPersisting" objectname="org.opennms.netmgt.flows:name=logPersisting">
+         <mbean name="org.opennms.netmgt.flows.logPersisting" objectname="org.opennms.netmgt.flows:name=logPersisting,type=timers">
             <attrib name="50thPercentile" alias="FlowLogPerst50" type="gauge"/>
             <attrib name="75thPercentile" alias="FlowLogPerst75" type="gauge"/>
             <attrib name="95thPercentile" alias="FlowLogPerst95" type="gauge"/>
@@ -389,7 +390,7 @@
             <attrib name="OneMinuteRate" alias="FlowLogPerst1m" type="gauge"/>
             <attrib name="FiveMinuteRate" alias="FlowLogPerst5m" type="gauge"/>
          </mbean>
-         <mbean name="org.opennms.netmgt.telemetry.adapters.packetsPerLog" resource-type="telemetryAdapters" objectname="org.opennms.netmgt.telemetry:name=adapters.*packetsPerLog">
+         <mbean name="org.opennms.netmgt.telemetry.adapters.packetsPerLog" resource-type="telemetryAdapters" objectname="org.opennms.netmgt.telemetry:name=adapters.*packetsPerLog,type=histograms">
             <attrib name="50thPercentile" alias="TlmPktsPerLog50" type="gauge"/>
             <attrib name="75thPercentile" alias="TlmPktsPerLog75" type="gauge"/>
             <attrib name="95thPercentile" alias="TlmPktsPerLog95" type="gauge"/>
@@ -398,7 +399,7 @@
             <attrib name="999thPercentile" alias="TlmPktsPerLog999" type="gauge"/>
             <attrib name="Count" alias="TlmPktsPerLogCnt" type="counter"/>
          </mbean>
-         <mbean name="org.opennms.netmgt.telemetry.adapters.logParsing" resource-type="telemetryAdapters" objectname="org.opennms.netmgt.telemetry:name=adapters.*logParsing">
+         <mbean name="org.opennms.netmgt.telemetry.adapters.logParsing" resource-type="telemetryAdapters" objectname="org.opennms.netmgt.telemetry:name=adapters.*logParsing,type=timers">
             <attrib name="50thPercentile" alias="TlmLogParse50" type="gauge"/>
             <attrib name="75thPercentile" alias="TlmLogParse75" type="gauge"/>
             <attrib name="95thPercentile" alias="TlmLogParse95" type="gauge"/>
@@ -408,7 +409,7 @@
             <attrib name="OneMinuteRate" alias="TlmLogParse1m" type="gauge"/>
             <attrib name="FiveMinuteRate" alias="TlmLogParse5m" type="gauge"/>
          </mbean>
-         <mbean name="org.opennms.netmgt.telemetry.listeners.packetsReceived" resource-type="telemetryListeners" objectname="org.opennms.netmgt.telemetry:name=listeners.*packetsReceived">
+         <mbean name="org.opennms.netmgt.telemetry.listeners.packetsReceived" resource-type="telemetryListeners" objectname="org.opennms.netmgt.telemetry:name=listeners.*packetsReceived,type=meters">
             <attrib name="Count" alias="TlmPacketsRcvd" type="counter"/>
             <attrib name="OneMinuteRate" alias="TlmPacketsRcvd1m" type="gauge"/>
             <attrib name="FiveMinuteRate" alias="TlmPacketsRcvd5m" type="gauge"/>
@@ -416,7 +417,7 @@
 
          <!-- Sink Producer Metrics -->
 
-         <mbean name="org.opennms.core.ipc.sink.producer.dispatch" resource-type="sinkProducerMetrics" objectname="org.opennms.core.ipc.sink.producer:name=*.dispatch">
+         <mbean name="org.opennms.core.ipc.sink.producer.dispatch" resource-type="sinkProducerMetrics" objectname="org.opennms.core.ipc.sink.producer:name=*.dispatch,type=timers">
             <attrib name="50thPercentile" alias="Dispatch50" type="gauge"/>
             <attrib name="75thPercentile" alias="Dispatch75" type="gauge"/>
             <attrib name="95thPercentile" alias="Dispatch95" type="gauge"/>
@@ -428,17 +429,17 @@
             <attrib name="Count" alias="DispatchCounter" type="counter"/>
          </mbean>
 
-         <mbean name="org.opennms.core.ipc.sink.producer.queue-size" resource-type="sinkProducerMetrics" objectname="org.opennms.core.ipc.sink.producer:name=*.queue-size">
+         <mbean name="org.opennms.core.ipc.sink.producer.queue-size" resource-type="sinkProducerMetrics" objectname="org.opennms.core.ipc.sink.producer:name=*.queue-size,type=gauges">
             <attrib name="Value" alias="QueueSize" type="gauge"/>
          </mbean>
 
-         <mbean name="org.opennms.core.ipc.sink.producer.dropped" resource-type="sinkProducerMetrics" objectname="org.opennms.core.ipc.sink.producer:name=*.dropped">
+         <mbean name="org.opennms.core.ipc.sink.producer.dropped" resource-type="sinkProducerMetrics" objectname="org.opennms.core.ipc.sink.producer:name=*.dropped,type=counters">
             <attrib name="Count" alias="DroppedCounter" type="counter"/>
          </mbean>
 
          <!-- Sink Consumer Metrics -->
 
-         <mbean name="org.opennms.core.ipc.sink.consumer.dispatchTime" resource-type="sinkConsumerMetrics" objectname="org.opennms.core.ipc.sink.consumer:name=*.dispatchTime">
+         <mbean name="org.opennms.core.ipc.sink.consumer.dispatchTime" resource-type="sinkConsumerMetrics" objectname="org.opennms.core.ipc.sink.consumer:name=*.dispatchTime,type=timers">
             <attrib name="50thPercentile" alias="DispatchTime50" type="gauge"/>
             <attrib name="75thPercentile" alias="DispatchTime75" type="gauge"/>
             <attrib name="95thPercentile" alias="DispatchTime95" type="gauge"/>
@@ -450,7 +451,7 @@
             <attrib name="Count" alias="DispatchTimeCount" type="counter"/>
          </mbean>
 
-         <mbean name="org.opennms.core.ipc.sink.consumer.messageSize" resource-type="sinkConsumerMetrics" objectname="org.opennms.core.ipc.sink.consumer:name=*.messageSize">
+         <mbean name="org.opennms.core.ipc.sink.consumer.messageSize" resource-type="sinkConsumerMetrics" objectname="org.opennms.core.ipc.sink.consumer:name=*.messageSize,type=histograms">
             <attrib name="50thPercentile" alias="MessageSize50" type="gauge"/>
             <attrib name="75thPercentile" alias="MessageSize75" type="gauge"/>
             <attrib name="95thPercentile" alias="MessageSize95" type="gauge"/>
@@ -461,15 +462,15 @@
 
          
          <!-- RPC Metrics -->
-         <mbean name="org.opennms.core.ipc.rpc.requestSent" resource-type="rpcMetrics" objectname="org.opennms.core.ipc.rpc:name=*.requestSent">
+         <mbean name="org.opennms.core.ipc.rpc.requestSent" resource-type="rpcMetrics" objectname="org.opennms.core.ipc.rpc:name=*.requestSent,type=meters">
             <attrib name="FiveMinuteRate" alias="RequestSentPer5Min" type="gauge"/>
          </mbean>
 
-         <mbean name="org.opennms.core.ipc.rpc.requestFailed" resource-type="rpcMetrics" objectname="org.opennms.core.ipc.rpc:name=*.requestFailed">
+         <mbean name="org.opennms.core.ipc.rpc.requestFailed" resource-type="rpcMetrics" objectname="org.opennms.core.ipc.rpc:name=*.requestFailed,type=meters">
             <attrib name="FiveMinuteRate" alias="RequestFailed5Min" type="gauge"/>
          </mbean>
 
-         <mbean name="org.opennms.core.ipc.rpc.requestSize" resource-type="rpcMetrics" objectname="org.opennms.core.ipc.rpc:name=*.requestSize">
+         <mbean name="org.opennms.core.ipc.rpc.requestSize" resource-type="rpcMetrics" objectname="org.opennms.core.ipc.rpc:name=*.requestSize,type=histograms">
             <attrib name="50thPercentile" alias="RequestSize50" type="gauge"/>
             <attrib name="75thPercentile" alias="RequestSize75" type="gauge"/>
             <attrib name="95thPercentile" alias="RequestSize95" type="gauge"/>
@@ -478,7 +479,7 @@
             <attrib name="999thPercentile" alias="RequestSize999" type="gauge"/>
          </mbean>
 
-         <mbean name="org.opennms.core.ipc.rpc.responseSize" resource-type="rpcMetrics" objectname="org.opennms.core.ipc.rpc:name=*.responseSize">
+         <mbean name="org.opennms.core.ipc.rpc.responseSize" resource-type="rpcMetrics" objectname="org.opennms.core.ipc.rpc:name=*.responseSize,type=histograms">
             <attrib name="50thPercentile" alias="ResponseSize50" type="gauge"/>
             <attrib name="75thPercentile" alias="ResponseSize75" type="gauge"/>
             <attrib name="95thPercentile" alias="ResponseSize95" type="gauge"/>
@@ -487,7 +488,7 @@
             <attrib name="999thPercentile" alias="ResponseSize999" type="gauge"/>
          </mbean>
 
-         <mbean name="org.opennms.core.ipc.rpc.duration" resource-type="rpcMetrics" objectname="org.opennms.core.ipc.rpc:name=*.duration">
+         <mbean name="org.opennms.core.ipc.rpc.duration" resource-type="rpcMetrics" objectname="org.opennms.core.ipc.rpc:name=*.duration,type=histograms">
             <attrib name="50thPercentile" alias="Duration50" type="gauge"/>
             <attrib name="75thPercentile" alias="Duration75" type="gauge"/>
             <attrib name="95thPercentile" alias="Duration95" type="gauge"/>
@@ -498,54 +499,54 @@
 
          <!-- Twin Metrics -->
          <mbean name="org.opennms.core.ipc.twin.publisher.sinkUpdateSent" resource-type="twinMetrics"
-                objectname="org.opennms.core.ipc.twin.publisher:name=*.sinkUpdateSent">
+                objectname="org.opennms.core.ipc.twin.publisher:name=*.sinkUpdateSent,type=counters">
             <attrib name="Count" alias="SinkUpdateSent" type="counter"/>
          </mbean>
 
          <mbean name="org.opennms.core.ipc.twin.publisher.sinkUpdateSent" resource-type="twinMetrics"
-                objectname="org.opennms.core.ipc.twin.publisher:name=*.twinResponseSent">
+                objectname="org.opennms.core.ipc.twin.publisher:name=*.twinResponseSent,type=counters">
             <attrib name="Count" alias="TwinResponseSent" type="counter"/>
          </mbean>
 
          <mbean name="org.opennms.core.ipc.twin.publisher.twinEmptyResponseSent" resource-type="twinMetrics"
-                objectname="org.opennms.core.ipc.twin.publisher:name=*.twinEmptyResponseSent">
+                objectname="org.opennms.core.ipc.twin.publisher:name=*.twinEmptyResponseSent,type=counters">
             <attrib name="Count" alias="TwinEmptyResponseSent" type="counter"/>
          </mbean>
 
          <mbean name="org.opennms.core.ipc.twin.subscriber.requestSent" resource-type="twinMetrics"
-                objectname="org.opennms.core.ipc.twin.subscriber:name=*.requestSent">
+                objectname="org.opennms.core.ipc.twin.subscriber:name=*.requestSent,type=counters">
             <attrib name="Count" alias="RequestSent" type="counter"/>
          </mbean>
 
          <mbean name="org.opennms.core.ipc.twin.subscriber.updateReceived" resource-type="twinMetrics"
-                objectname="org.opennms.core.ipc.twin.subscriber:name=*.updateReceived">
+                objectname="org.opennms.core.ipc.twin.subscriber:name=*.updateReceived,type=counters">
             <attrib name="Count" alias="UpdateReceived" type="counter"/>
          </mbean>
 
          <mbean name="org.opennms.core.ipc.twin.subscriber.updateDropped" resource-type="twinMetrics"
-                objectname="org.opennms.core.ipc.twin.subscriber:name=*.updateDropped">
+                objectname="org.opennms.core.ipc.twin.subscriber:name=*.updateDropped,type=counters">
             <attrib name="Count" alias="UpdateDropped" type="counter"/>
          </mbean>
 
          <!-- Alarmd -->
-         <mbean name="drools.alarmd.facts" objectname="org.opennms.features.drools.alarmd:name=facts">
+         <mbean name="drools.alarmd.facts" objectname="org.opennms.features.drools.alarmd:name=facts,type=gauges">
             <attrib name="Value" alias="DroolsAlarmdFacts" type="gauge"/>
          </mbean>
-         <mbean name="drools.alarmd.actions" objectname="org.opennms.features.drools.alarmd:name=atomicActionsInFlight">
+         <mbean name="drools.alarmd.actions" objectname="org.opennms.features.drools.alarmd:name=atomicActionsInFlight,type=gauges">
             <attrib name="Value" alias="DroolsAlarmdActions" type="gauge"/>
          </mbean>
-         <mbean name="drools.alarmd.actions.queued" objectname="org.opennms.features.drools.alarmd:name=atomicActionsQueued">
+         <mbean name="drools.alarmd.actions.queued" objectname="org.opennms.features.drools.alarmd:name=atomicActionsQueued,type=meters">
             <attrib name="OneMinuteRate" alias="DroolsAlarmdActQu1m" type="gauge"/>
             <attrib name="FiveMinuteRate" alias="DroolsAlarmdActQu5m" type="gauge"/>
             <attrib name="Count" alias="DroolsAlarmdActQu" type="counter"/>
          </mbean>
-         <mbean name="drools.alarmd.alarms" objectname="org.opennms.features.drools.alarmd:name=numAlarmsFromLastSnapshot">
+         <mbean name="drools.alarmd.alarms" objectname="org.opennms.features.drools.alarmd:name=numAlarmsFromLastSnapshot,type=gauges">
             <attrib name="Value" alias="DroolsAlarmdAlarms" type="gauge"/>
          </mbean>
-         <mbean name="drools.alarmd.situations" objectname="org.opennms.features.drools.alarmd:name=numSituationsFromLastSnapshot">
+         <mbean name="drools.alarmd.situations" objectname="org.opennms.features.drools.alarmd:name=numSituationsFromLastSnapshot,type=gauges">
             <attrib name="Value" alias="DroolsAlarmdSitu" type="gauge"/>
          </mbean>
-         <mbean name="drools.alarmd.liveness" objectname="org.opennms.features.drools.alarmd:name=liveness">
+         <mbean name="drools.alarmd.liveness" objectname="org.opennms.features.drools.alarmd:name=liveness,type=timers">
             <attrib name="50thPercentile" alias="DroolsAlarmdLv50" type="gauge"/>
             <attrib name="75thPercentile" alias="DroolsAlarmdLv75" type="gauge"/>
             <attrib name="95thPercentile" alias="DroolsAlarmdLv95" type="gauge"/>
@@ -573,7 +574,7 @@
          </mbean>
 
          <!-- Eventd processing time -->
-         <mbean name="org.opennms.netmgt.eventd.process" resource-type="Eventlogs" objectname="org.opennms.netmgt.eventd:name=eventlogs.process*">
+         <mbean name="org.opennms.netmgt.eventd.process" resource-type="Eventlogs" objectname="org.opennms.netmgt.eventd:name=eventlogs.process*,type=timers">
             <attrib name="50thPercentile" alias="EventProcess50" type="gauge"/>
             <attrib name="75thPercentile" alias="EventProcess75" type="gauge"/>
             <attrib name="95thPercentile" alias="EventProcess95" type="gauge"/>
@@ -650,6 +651,13 @@
             <attrib name="ScheduledTaskQueueRemainingCapacity" alias="PvSchdTskQRCap" type="gauge"/>
          </mbean>
 
+         <!-- Hikari CP -->
+         <mbean name="HikariCP Pool Stats" objectname="com.zaxxer.hikari:type=Pool (opennms)">
+            <attrib name="ActiveConnections" alias="HkriActvConn" type="gauge"/>
+            <attrib name="IdleConnections" alias="HkriIdleConn" type="gauge"/>
+            <attrib name="TotalConnections" alias="HkriTotlConn" type="gauge"/>
+            <attrib name="ThreadsAwaitingConnection" alias="HkriThrdWaitConn" type="gauge"/>
+         </mbean>
       </mbeans>
    </jmx-collection>
 </jmx-datacollection-config>

@@ -1,0 +1,11 @@
+jobs:
+  minion-image-single-arch-linux-amd64-trivy:
+    executor: base-executor
+    resource_class: medium
+    steps:
+      - scan-image-trivy:
+          architecture: linux/amd64
+          container_name: minion
+          container_dir: minion
+          tarball_match: minion
+          tarball_path: /opennms-assemblies/minion/target

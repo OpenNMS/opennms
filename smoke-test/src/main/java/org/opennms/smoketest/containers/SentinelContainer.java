@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2019-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.smoketest.containers;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -45,12 +38,14 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.apache.commons.io.FileUtils;
 import org.opennms.smoketest.stacks.IpcStrategy;
@@ -123,7 +118,7 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
 
         if (profile.isJvmDebuggingEnabled()) {
             withEnv("KARAF_DEBUG", "true");
-            withEnv("JAVA_DEBUG_PORT", "*:" + SENTINEL_DEBUG_PORT);
+            withEnv("JAVA_DEBUG_PORT", "" + SENTINEL_DEBUG_PORT);
         }
 
         // Help make development/debugging easier
@@ -296,6 +291,8 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
                     .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
                     .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
             LOG.info("Health check passed.");
+
+            container.assertNoKarafDestroy(Paths.get("/opt", ALIAS, "data", "log", "karaf.log"));
         }
     }
 
@@ -310,7 +307,12 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
         Path targetLogFolder = Paths.get("target", "logs", prefix, ALIAS);
         DevDebugUtils.clearLogs(targetLogFolder);
 
-        var threadDump = DevDebugUtils.gatherThreadDump(this, targetLogFolder, null);
+        AtomicReference<Path> threadDump = new AtomicReference<>();
+        await("calling gatherThreadDump")
+                .atMost(Duration.ofSeconds(120))
+                .untilAsserted(
+                        () -> { threadDump.set(DevDebugUtils.gatherThreadDump(this, targetLogFolder, null)); }
+                );
 
         LOG.info("Gathering logs...");
         // List of known log files we expect to find in the container
@@ -325,8 +327,8 @@ public class SentinelContainer extends GenericContainer<SentinelContainer> imple
 
         LOG.info("Log directory: {}", targetLogFolder.toUri());
         LOG.info("Console log: {}", targetLogFolder.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
-        if (threadDump != null) {
-            LOG.info("Thread dump: {}", threadDump.toUri());
+        if (threadDump.get() != null) {
+            LOG.info("Thread dump: {}", threadDump.get().toUri());
         }
     }
 

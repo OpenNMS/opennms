@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.netmgt.enlinkd.model.VlanStatus;
@@ -44,9 +37,13 @@ public class CiscoVtpVlanTableTracker extends TableTracker {
      */
     public static final SnmpObjId CISCO_VTP_VLAN_TABLE_ENTRY = SnmpObjId.get(".1.3.6.1.4.1.9.9.46.1.3.1.1");
 
-    public static final SnmpObjId CISCO_VTP_VLAN_STATE = SnmpObjId.get(CISCO_VTP_VLAN_TABLE_ENTRY, "2");
-    public static final SnmpObjId CISCO_VTP_VLAN_TYPE = SnmpObjId.get(CISCO_VTP_VLAN_TABLE_ENTRY, "3");
-    public static final SnmpObjId CISCO_VTP_VLAN_NAME = SnmpObjId.get(CISCO_VTP_VLAN_TABLE_ENTRY, "4");
+    public static final String CISCO_VTP_VLAN_STATE ="vtpVlanState";
+    public static final String CISCO_VTP_VLAN_TYPE ="vtpVlanType";
+    public static final String CISCO_VTP_VLAN_NAME ="vtpVlanName";
+
+    public static final SnmpObjId CISCO_VTP_VLAN_STATE_OID = SnmpObjId.get(CISCO_VTP_VLAN_TABLE_ENTRY, "2");
+    public static final SnmpObjId CISCO_VTP_VLAN_TYPE_OID = SnmpObjId.get(CISCO_VTP_VLAN_TABLE_ENTRY, "3");
+    public static final SnmpObjId CISCO_VTP_VLAN_NAME_OID = SnmpObjId.get(CISCO_VTP_VLAN_TABLE_ENTRY, "4");
 
     public static SnmpObjId[] cisco_vlan_elemList = new SnmpObjId[]{
             /*
@@ -71,16 +68,26 @@ public class CiscoVtpVlanTableTracker extends TableTracker {
              * one or more of the device's trunk ports."
              *
              */
-            CISCO_VTP_VLAN_STATE,
+            CISCO_VTP_VLAN_STATE_OID,
             /*
+             * vtpVlanType OBJECT-TYPE
              * SYNTAX          VlanType
              * MAX-ACCESS      read-only
              * STATUS          current
              * DESCRIPTION
              *	"The type of this VLAN."
              */
-            CISCO_VTP_VLAN_TYPE,
-            CISCO_VTP_VLAN_NAME
+            CISCO_VTP_VLAN_TYPE_OID,
+            /*
+             * vtpVlanName OBJECT-TYPE
+             * SYNTAX          DisplayString (SIZE  (1..32))
+             * MAX-ACCESS      read-only
+             * STATUS          current
+             * DESCRIPTION
+             *   "The name of this VLAN.  This name is used as the ELAN-name
+             *   for an ATM LAN-Emulation segment of this VLAN."
+             */
+            CISCO_VTP_VLAN_NAME_OID
     };
 
     public static class CiscoVtpVlanRow extends SnmpRowResult {
@@ -90,11 +97,11 @@ public class CiscoVtpVlanTableTracker extends TableTracker {
         }
 
         public VlanStatus getVlanStatus() {
-            return VlanStatus.get(getValue(CISCO_VTP_VLAN_STATE).toInt());
+            return VlanStatus.get(getValue(CISCO_VTP_VLAN_STATE_OID).toInt());
         }
 
         public VlanType getVlanType() {
-            return VlanType.get(getValue(CISCO_VTP_VLAN_TYPE).toInt());
+            return VlanType.get(getValue(CISCO_VTP_VLAN_TYPE_OID).toInt());
         }
 
         public Integer getVlanIndex() {
@@ -102,7 +109,7 @@ public class CiscoVtpVlanTableTracker extends TableTracker {
         }
 
         public String getVlanName() {
-            return getValue(CISCO_VTP_VLAN_NAME).toDisplayString();
+            return getValue(CISCO_VTP_VLAN_NAME_OID).toDisplayString();
         }
 
         public boolean isStatusOperational() {
@@ -139,5 +146,8 @@ public class CiscoVtpVlanTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.CiscoVtpVlanTableTracker.CiscoVtpVlanRow} object.
      */
     public void processCiscoVtpVlanRow(final CiscoVtpVlanRow row) {
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", CISCO_VTP_VLAN_STATE_OID + "." + row.getVlanIndex(), CISCO_VTP_VLAN_STATE, row.getVlanStatus().getIntCode(), VlanStatus.getVlanStatusString(row.getVlanStatus().getIntCode()));
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", CISCO_VTP_VLAN_TYPE_OID + "." + row.getVlanIndex(), CISCO_VTP_VLAN_TYPE, row.getVlanType().getIntCode(), VlanType.getVlanTypeString(row.getVlanType().getIntCode()));
+        System.out.printf("\t\t%s (%s)= %s \n", CISCO_VTP_VLAN_NAME_OID + "." + row.getVlanIndex(), CISCO_VTP_VLAN_NAME, row.getVlanName());
     }
 }

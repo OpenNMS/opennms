@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2011-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.core.test.xml;
 
 import static org.junit.Assert.assertEquals;
@@ -42,6 +35,8 @@ import java.io.StringReader;
 import java.io.StringWriter;
 import java.net.URI;
 import java.net.URL;
+import java.nio.charset.Charset;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -49,8 +44,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.function.Predicate;
 
-import javax.xml.bind.ValidationEvent;
-import javax.xml.bind.ValidationEventHandler;
+import javax.xml.XMLConstants;
 import javax.xml.parsers.SAXParserFactory;
 import javax.xml.transform.Source;
 import javax.xml.transform.sax.SAXSource;
@@ -83,11 +77,12 @@ import org.xml.sax.InputSource;
 import org.xml.sax.XMLFilter;
 
 @RunWith(Parameterized.class)
-abstract public class XmlTest<T> {
+public abstract class XmlTest<T> {
     private static final Logger LOG = LoggerFactory.getLogger(XmlTest.class);
 
     static {
         initXmlUnit();
+        initOpennmsHome();
     }
 
     public static void initXmlUnit() {
@@ -98,11 +93,23 @@ abstract public class XmlTest<T> {
         XMLUnit.setNormalize(true);
     }
 
+    public static void initOpennmsHome() {
+        if (System.getProperty("opennms.home") == null) {
+            LOG.warn("$OPENNMS_HOME is not set, creating a temporary one for tests");
+            try {
+                final var opennmsHome = Files.createTempDirectory("opennms-home-temp");
+                System.setProperty("opennms.home", opennmsHome.normalize().toString());
+            } catch (IOException e) {
+                throw new RuntimeException("unable to create temporary $OPENNMS_HOME for tests", e);
+            }
+        }
+    }
+
     private T m_sampleObject;
     private Object m_sampleXml;
     private String m_schemaFile;
 
-    public XmlTest(final T sampleObject, final Object sampleXml, final String schemaFile) {
+    protected XmlTest(final T sampleObject, final Object sampleXml, final String schemaFile) {
         m_sampleObject = sampleObject;
         m_sampleXml = sampleXml;
         m_schemaFile = schemaFile;
@@ -120,13 +127,13 @@ abstract public class XmlTest<T> {
 
     protected String getSampleXml() throws IOException {
         if (m_sampleXml instanceof File) {
-            return IOUtils.toString(((File)m_sampleXml).toURI());
+            return IOUtils.toString(((File)m_sampleXml).toURI(), Charset.defaultCharset());
         } else if (m_sampleXml instanceof URI) {
-            return IOUtils.toString((URI)m_sampleXml);
+            return IOUtils.toString((URI)m_sampleXml, Charset.defaultCharset());
         } else if (m_sampleXml instanceof URL) {
-            return IOUtils.toString((URL)m_sampleXml);
+            return IOUtils.toString((URL)m_sampleXml, Charset.defaultCharset());
         } else if (m_sampleXml instanceof InputStream) {
-            return IOUtils.toString((InputStream)m_sampleXml);
+            return IOUtils.toString((InputStream)m_sampleXml, Charset.defaultCharset());
         } else {
             return m_sampleXml.toString();
         }
@@ -171,6 +178,8 @@ abstract public class XmlTest<T> {
         }
 
         final SchemaFactory schemaFactory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
+        schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        schemaFactory.setProperty(XMLConstants.ACCESS_EXTERNAL_SCHEMA, "");
         final File schemaFile = new File(getSchemaFile());
         LOG.debug("Validating using schema file: {}", schemaFile);
         final Schema schema = schemaFactory.newSchema(schemaFile);
@@ -234,12 +243,9 @@ abstract public class XmlTest<T> {
         final SchemaFactory factory = SchemaFactory.newInstance("http://www.w3.org/2001/XMLSchema");
         final Schema schema = factory.newSchema(new StreamSource(schemaFile));
         unmarshaller.setSchema(schema);
-        unmarshaller.setEventHandler(new ValidationEventHandler() {
-            @Override
-            public boolean handleEvent(final ValidationEvent event) {
-                LOG.warn("Received validation event: {}", event, event.getLinkedException());
-                return false;
-            }
+        unmarshaller.setEventHandler(event -> {
+            LOG.warn("Received validation event: {}", event, event.getLinkedException());
+            return false;
         });
         try {
             final InputSource inputSource = new InputSource(getSampleXmlInputStream());
@@ -272,7 +278,7 @@ abstract public class XmlTest<T> {
 
     public static void assertXmlEquals(final String expectedXml, final String actualXml) {
         final List<Difference> differences = XmlTest.getDifferencesSimple(expectedXml, actualXml);
-        if (differences.size() > 0) {
+        if (!differences.isEmpty()) {
             LOG.debug("XML:\n\n{}\n\n...does not match XML:\n\n{}", expectedXml, actualXml);
         }
         assertEquals("number of XMLUnit differences between the expected xml and the actual xml should be 0", 0, differences.size());
@@ -280,7 +286,7 @@ abstract public class XmlTest<T> {
 
     protected void _assertXmlEquals(final String expectedXml, final String actualXml) {
         final List<Difference> differences = getDifferences(expectedXml, actualXml);
-        if (differences.size() > 0) {
+        if (!differences.isEmpty()) {
             LOG.debug("XML:\n\n{}\n\n...does not match XML:\n\n{}", expectedXml, actualXml);
         }
         assertEquals("number of XMLUnit differences between the expected xml and the actual xml should be 0", 0, differences.size());
@@ -324,7 +330,7 @@ abstract public class XmlTest<T> {
         }
         final List<Difference> retDifferences = new ArrayList<>();
         @SuppressWarnings("unchecked") final List<Difference> allDifferences = myDiff.getAllDifferences();
-        if (allDifferences.size() > 0) {
+        if (!allDifferences.isEmpty()) {
             DIFFERENCES:
             for (final Difference d : allDifferences) {
                 final NodeDetail controlNodeDetail = d.getControlNodeDetail();
@@ -352,11 +358,9 @@ abstract public class XmlTest<T> {
                             continue DIFFERENCES;
                         }
                     }
-                    if (test != null && !"null".equals(test)) {
-                        if (ignorePrefix.test(test.toLowerCase())) {
-                            LOG.trace("Ignoring {}: {}", d.getDescription(), d);
-                            continue DIFFERENCES;
-                        }
+                    if (test != null && !"null".equals(test) && ignorePrefix.test(test.toLowerCase())) {
+                        LOG.trace("Ignoring {}: {}", d.getDescription(), d);
+                        continue DIFFERENCES;
                     }
                 } else if (d.getDescription().equals("xsi:schemaLocation attribute")) {
                     LOG.debug("Schema location '{}' does not match.  Ignoring.", controlNodeDetail.getValue() == null ? testNodeDetail.getValue() : controlNodeDetail.getValue());
@@ -377,24 +381,19 @@ abstract public class XmlTest<T> {
 
     protected static NodeList xpathGetNodesMatching(final String xml, final String expression) throws XPathExpressionException {
         final XPath query = XPathFactory.newInstance().newXPath();
-        StringReader sr = null;
-        InputSource is = null;
-        NodeList nodes = null;
-        try {
-            sr = new StringReader(xml);
-            is = new InputSource(sr);
-            nodes = (NodeList)query.evaluate(expression, is, XPathConstants.NODESET);
-        } finally {
-            sr.close();
-            IOUtils.closeQuietly(sr);
+        try (
+            final StringReader sr = new StringReader(xml);
+        ) {
+            final InputSource is = new InputSource(sr);
+            return (NodeList)query.evaluate(expression, is, XPathConstants.NODESET);
         }
-        return nodes;
     }
 
     public static void assertDepthEquals(final Object expected, Object actual) {
         assertDepthEquals(0, "", expected, actual);
     }
 
+    @SuppressWarnings("java:S2259") // sonar doesn't know fail() short-circuits with an AssertionError, so it thinks expected or actual could be null
     private static void assertDepthEquals(final int depth, final String propertyName, final Object expected, Object actual) {
         if (expected == null && actual == null) {
             return;
@@ -439,10 +438,12 @@ abstract public class XmlTest<T> {
                 try {
                     expectedValue = expectedWrapper.getPropertyValue(property);
                 } catch (final Exception e) {
+                    // let this fall through, the recursion should handle it
                 }
                 try {
                     actualValue = actualWrapper.getPropertyValue(property);
                 } catch (final Exception e) {
+                    // let this fall through, the recursion should handle it
                 }
 
                 assertDepthEquals(depth + 1, property, expectedValue, actualValue);

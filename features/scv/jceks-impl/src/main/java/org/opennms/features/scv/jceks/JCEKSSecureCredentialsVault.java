@@ -1,30 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
- *******************************************************************************/
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.features.scv.jceks;
 
 import java.io.ByteArrayInputStream;
@@ -38,6 +32,8 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.OutputStream;
 import java.io.Serializable;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -78,6 +74,10 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
     private final int m_iterationCount;
     private final int m_keyLength;
     private final HashMap<String, Credentials> m_credentialsCache = new HashMap<>();
+
+    public static final String KEYSTORE_KEY_PROPERTY = "org.opennms.features.scv.jceks.key";
+
+    public static final String DEFAULT_KEYSTORE_KEY = "QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw";
 
     public JCEKSSecureCredentialsVault(String keystoreFile, String password) {
         this(keystoreFile, password, new byte[]{0x0, 0xd, 0xd, 0xb, 0xa, 0x1, 0x1});
@@ -209,5 +209,26 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
         } catch (KeyStoreException e) {
             throw Throwables.propagate(e);
         }
+    }
+
+    private static String getKeystoreFilename() {
+        String opennmsHome = System.getProperty("opennms.home");
+        if (opennmsHome == null) {
+            try {
+                System.err.println("opennms.home is not set; using a temporary directory for scv keystore. This is very likely not what you want.");
+                opennmsHome = Files.createTempDirectory("opennms-home-").toString();
+            } catch (final IOException e) {
+                throw new IllegalStateException("Unable to create a temporary scv keystore home!", e);
+            }
+        }
+        return Paths.get(opennmsHome, "etc", "scv.jce").toString();
+    }
+
+    private static String getKeystorePassword() {
+        return System.getProperty(KEYSTORE_KEY_PROPERTY, DEFAULT_KEYSTORE_KEY);
+    }
+
+    public static JCEKSSecureCredentialsVault defaultScv() {
+        return new JCEKSSecureCredentialsVault(getKeystoreFilename(), getKeystorePassword());
     }
 }

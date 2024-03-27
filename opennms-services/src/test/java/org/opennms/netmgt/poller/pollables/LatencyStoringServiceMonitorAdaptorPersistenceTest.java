@@ -1,39 +1,35 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2008-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.poller.pollables;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyList;
+import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.atLeastOnce;
+import static org.mockito.Mockito.clearInvocations;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -45,6 +41,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 import org.junit.After;
 import org.junit.Before;
@@ -194,5 +191,63 @@ public class LatencyStoringServiceMonitorAdaptorPersistenceTest {
         public PollStatus poll(MonitoredService svc, Map<String, Object> parameters) {
             return m_pollStatus;
         }
+    }
+
+    @Test
+    public void test_NMS15820() throws Exception {
+        testParameters("foo", null, "My-Custom-Service", "foo");
+        testParameters("foo", "bar", "My-Custom-Service", "foo");
+        testParameters(null, "bar", "My-Custom-Service", "bar");
+        testParameters(null, null, "My-Custom-Service", "my-custom-service");
+    }
+
+    private void testParameters(final String rrdBaseName, final String dsName, final String svcName, final String expectedName) throws Exception {
+        final Package pkg = new Package();
+
+        final MockNetwork mockNetwork = new MockNetwork().createStandardNetwork();
+        final MockPollerConfig pollerConfig = new MockPollerConfig(mockNetwork);
+
+        final LatencyStoringServiceMonitorAdaptor latencyStoringServiceMonitorAdaptor = new LatencyStoringServiceMonitorAdaptor(pollerConfig, pkg, m_persisterFactory, new MockThresholdingService());
+
+        final MonitoredService monitoredService = new MockMonitoredService(3, "Firewall", "Default",
+                InetAddress.getByName("192.168.1.5"), svcName);
+
+        when(m_rrdStrategy.getDefaultFileExtension()).thenReturn(".jrb");
+
+        when(m_rrdStrategy.createDefinition(eq("192.168.1.5"),
+                eq(getResponseTimeRoot().toPath().resolve("192.168.1.5").toString()),
+                eq(expectedName),
+                anyInt(),
+                anyList(),
+                anyList())).thenReturn(null);
+
+        final Map<String, Object> parameters = new TreeMap<>();
+        parameters.put("rrd-repository", getResponseTimeRoot().toString());
+
+        if (rrdBaseName != null) {
+            parameters.put("rrd-base-name", rrdBaseName);
+        }
+
+        if (dsName != null) {
+            parameters.put("ds-name", dsName);
+        }
+
+        latencyStoringServiceMonitorAdaptor.handlePollResult(monitoredService, parameters, PollStatus.available(42.0));
+        latencyStoringServiceMonitorAdaptor.handlePollResult(monitoredService, parameters, PollStatus.unavailable(""));
+        latencyStoringServiceMonitorAdaptor.handlePollResult(monitoredService, parameters, PollStatus.unresponsive(""));
+        latencyStoringServiceMonitorAdaptor.handlePollResult(monitoredService, parameters, PollStatus.unknown(""));
+
+        verify(m_rrdStrategy, atLeastOnce()).getDefaultFileExtension();
+        verify(m_rrdStrategy, atLeastOnce()).createDefinition(eq("192.168.1.5"),
+                eq(getResponseTimeRoot().toPath().resolve("192.168.1.5").toString()),
+                eq(expectedName),
+                anyInt(),
+                anyList(),
+                isNull());
+
+        verify(m_rrdStrategy, atLeastOnce()).createFile(anyObject());
+        verify(m_rrdStrategy, atLeastOnce()).openFile(eq(getResponseTimeRoot().toPath().resolve("192.168.1.5").resolve(expectedName + ".jrb").toString()));
+
+        clearInvocations(m_rrdStrategy);
     }
 }

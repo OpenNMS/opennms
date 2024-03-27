@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
@@ -45,9 +38,13 @@ public class LldpLocPortGetter extends SnmpGetter {
 
     private final static Logger LOG = LoggerFactory.getLogger(LldpLocPortGetter.class);
 
-    public final static SnmpObjId LLDP_LOC_PORTID_SUBTYPE = SnmpObjId.get(".1.0.8802.1.1.2.1.3.7.1.2");
-    public final static SnmpObjId LLDP_LOC_PORTID         = SnmpObjId.get(".1.0.8802.1.1.2.1.3.7.1.3");
-    public final static SnmpObjId LLDP_LOC_DESCR          = SnmpObjId.get(".1.0.8802.1.1.2.1.3.7.1.4");
+    public final static String LLDP_LOC_PORTID_SUBTYPE = "lldpLocPortIdSubtype";
+    public final static String LLDP_LOC_PORTID = "lldpLocPortId";
+    public final static String LLDP_LOC_DESCR = "lldpLocPortDesc";
+
+    public final static SnmpObjId LLDP_LOC_PORTID_SUBTYPE_OID = SnmpObjId.get(".1.0.8802.1.1.2.1.3.7.1.2");
+    public final static SnmpObjId LLDP_LOC_PORTID_OID = SnmpObjId.get(".1.0.8802.1.1.2.1.3.7.1.3");
+    public final static SnmpObjId LLDP_LOC_DESCR_OID = SnmpObjId.get(".1.0.8802.1.1.2.1.3.7.1.4");
 
 	public LldpLocPortGetter(SnmpAgentConfig peer, LocationAwareSnmpClient client, String location) {
 	    super(peer, client, location);
@@ -55,7 +52,7 @@ public class LldpLocPortGetter extends SnmpGetter {
 
 	
     public List<SnmpValue> get(Integer lldpRemLocalPortNum) {
-        return get(Arrays.asList(SnmpObjId.get(LLDP_LOC_PORTID_SUBTYPE), SnmpObjId.get(LLDP_LOC_PORTID), SnmpObjId.get(LLDP_LOC_DESCR)), lldpRemLocalPortNum);
+        return get(Arrays.asList(SnmpObjId.get(LLDP_LOC_PORTID_SUBTYPE_OID), SnmpObjId.get(LLDP_LOC_PORTID_OID), SnmpObjId.get(LLDP_LOC_DESCR_OID)), lldpRemLocalPortNum);
     }
 
     public LldpLink getLldpLink(LldpRemTableTracker.LldpRemRow row) {
@@ -65,7 +62,7 @@ public class LldpLocPortGetter extends SnmpGetter {
         LldpLink lldplink = row.getLldpLink();
         if (val == null) {
             LOG.debug("getLldpLink: cannot find local instance for lldp local port number {}",
-                     lldplink.getLldpLocalPortNum());
+                     lldplink.getLldpRemLocalPortNum());
             LOG.debug("getLldpLink: setting default not found Values: portidtype \"InterfaceAlias\", portid=\"Not Found On lldpLocPortTable\"");
             lldplink.setLldpPortIdSubType(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS);
             lldplink.setLldpPortId("\"Not Found On lldpLocPortTable\"");
@@ -75,7 +72,7 @@ public class LldpLocPortGetter extends SnmpGetter {
 
         if (val.get(0) == null || val.get(0).isError() || !val.get(0).isNumeric()) {
             LOG.debug("getLldpLink: port id subtype is null or invalid for lldp local port number {}",
-                     lldplink.getLldpLocalPortNum());
+                     lldplink.getLldpRemLocalPortNum());
             LOG.debug("getLldpLink: setting default not found Values: portidtype \"InterfaceAlias\"");
             lldplink.setLldpPortIdSubType(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS);
         } else {
@@ -83,7 +80,7 @@ public class LldpLocPortGetter extends SnmpGetter {
         }
         if (val.get(1) == null || val.get(1).isError()) {
             LOG.debug("getLldpLink: port id is null for lldp local port number {}",
-                     lldplink.getLldpLocalPortNum());
+                     lldplink.getLldpRemLocalPortNum());
             LOG.debug("get: setting default not found Values: portid=\"Not Found On lldpLocPortTable\"");
             lldplink.setLldpPortId("\"Not Found On lldpLocPortTable\"");
         } else {

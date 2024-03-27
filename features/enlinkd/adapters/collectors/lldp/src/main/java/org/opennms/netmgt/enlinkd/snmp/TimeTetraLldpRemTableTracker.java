@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.enlinkd.snmp;
 
 
@@ -48,13 +41,20 @@ public class TimeTetraLldpRemTableTracker extends TableTracker {
 
     public static final SnmpObjId TIMETETRA_LLDP_REM_TABLE_ENTRY = SnmpObjId.get(".1.3.6.1.4.1.6527.3.1.2.59.4.1.1"); // start of table (GETNEXT)
 
+    public final static String TIMETETRA_LLDP_REM_CHASSIS_ID_SUBTYPE = "tmnxLldpRemChassisIdSubtype";
+    public final static String TIMETETRA_LLDP_REM_CHASSIS_ID = "tmnxLldpRemChassisId";
+    public final static String TIMETETRA_LLDP_REM_PORT_ID_SUBTYPE = "tmnxLldpRemPortIdSubtype";
+    public final static String TIMETETRA_LLDP_REM_PORT_ID = "tmnxLldpRemPortId";
+    public final static String TIMETETRA_LLDP_REM_PORT_DESCR = "tmnxLldpRemPortDesc";
+    public final static String TIMETETRA_LLDP_REM_SYSNAME = "tmnxLldpRemSysName";
 
-    public final static SnmpObjId TIMETETRA_LLDP_REM_CHASSIS_ID_SUBTYPE = SnmpObjId.get(TIMETETRA_LLDP_REM_TABLE_ENTRY,"4");
-    public final static SnmpObjId TIMETETRA_LLDP_REM_CHASSIS_ID         = SnmpObjId.get(TIMETETRA_LLDP_REM_TABLE_ENTRY,"5");
-    public final static SnmpObjId TIMETETRA_LLDP_REM_PORT_ID_SUBTYPE    = SnmpObjId.get(TIMETETRA_LLDP_REM_TABLE_ENTRY,"6");
-    public final static SnmpObjId TIMETETRA_LLDP_REM_PORT_ID            = SnmpObjId.get(TIMETETRA_LLDP_REM_TABLE_ENTRY,"7");
-    public final static SnmpObjId TIMETETRA_LLDP_REM_PORT_DESCR         = SnmpObjId.get(TIMETETRA_LLDP_REM_TABLE_ENTRY,"8");
-    public final static SnmpObjId TIMETETRA_LLDP_REM_SYSNAME            = SnmpObjId.get(TIMETETRA_LLDP_REM_TABLE_ENTRY,"9");
+
+    public final static SnmpObjId TIMETETRA_LLDP_REM_CHASSIS_ID_SUBTYPE_OID = SnmpObjId.get(TIMETETRA_LLDP_REM_TABLE_ENTRY,"4");
+    public final static SnmpObjId TIMETETRA_LLDP_REM_CHASSIS_ID_OID = SnmpObjId.get(TIMETETRA_LLDP_REM_TABLE_ENTRY,"5");
+    public final static SnmpObjId TIMETETRA_LLDP_REM_PORT_ID_SUBTYPE_OID = SnmpObjId.get(TIMETETRA_LLDP_REM_TABLE_ENTRY,"6");
+    public final static SnmpObjId TIMETETRA_LLDP_REM_PORT_ID_OID = SnmpObjId.get(TIMETETRA_LLDP_REM_TABLE_ENTRY,"7");
+    public final static SnmpObjId TIMETETRA_LLDP_REM_PORT_DESCR_OID = SnmpObjId.get(TIMETETRA_LLDP_REM_TABLE_ENTRY,"8");
+    public final static SnmpObjId TIMETETRA_LLDP_REM_SYSNAME_OID = SnmpObjId.get(TIMETETRA_LLDP_REM_TABLE_ENTRY,"9");
 
     public static final SnmpObjId[] s_timetetralldpremtable_elemList = new SnmpObjId[] {
 
@@ -62,37 +62,37 @@ public class TimeTetraLldpRemTableTracker extends TableTracker {
          *  "The type of encoding used to identify the chassis associated
          *  with the remote system."
          */
-            TIMETETRA_LLDP_REM_CHASSIS_ID_SUBTYPE,
+            TIMETETRA_LLDP_REM_CHASSIS_ID_SUBTYPE_OID,
 
         /*
          * "The string value used to identify the chassis component
          * associated with the remote system."
          */
-            TIMETETRA_LLDP_REM_CHASSIS_ID,
+            TIMETETRA_LLDP_REM_CHASSIS_ID_OID,
 
         /*
          * "The type of port identifier encoding used in the associated
          * 'lldpRemPortId' object."
          */
-            TIMETETRA_LLDP_REM_PORT_ID_SUBTYPE,
+            TIMETETRA_LLDP_REM_PORT_ID_SUBTYPE_OID,
 
         /*
          * "The string value used to identify the port component
             associated with the remote system."
          */
-            TIMETETRA_LLDP_REM_PORT_ID,
+            TIMETETRA_LLDP_REM_PORT_ID_OID,
 
         /*
          * 	"The string value used to identify the description of
          *  the given port associated with the remote system."
          */
-            TIMETETRA_LLDP_REM_PORT_DESCR,
+            TIMETETRA_LLDP_REM_PORT_DESCR_OID,
 
         /*
          * "The string value used to identify the port component
          * associated with the remote system."
          */
-            TIMETETRA_LLDP_REM_SYSNAME
+            TIMETETRA_LLDP_REM_SYSNAME_OID
 
     };
 
@@ -104,7 +104,7 @@ public class TimeTetraLldpRemTableTracker extends TableTracker {
 		}
 
 		public Integer getLldpLocalPortNum() {return getInstance().toString().hashCode();}
-	    public Integer getLldpRemLocalPortNum() {
+	    public Integer getLldpRemIndex() {
 	    	return getInstance().getSubIdAt(3);
 	    }
         public Integer getTmnxLldpRemLocalDestMACAddress() {
@@ -115,36 +115,37 @@ public class TimeTetraLldpRemTableTracker extends TableTracker {
         }
 
 	    public Integer getLldpRemChassisidSubtype() {
-	    	return getValue(TIMETETRA_LLDP_REM_CHASSIS_ID_SUBTYPE).toInt();
+	    	return getValue(TIMETETRA_LLDP_REM_CHASSIS_ID_SUBTYPE_OID).toInt();
 	    }
 
 	    public SnmpValue getLldpRemChassisId() {
-	        return getValue(TIMETETRA_LLDP_REM_CHASSIS_ID);
+	        return getValue(TIMETETRA_LLDP_REM_CHASSIS_ID_OID);
 	    }
 
 	    public Integer getLldpRemPortidSubtype() {
-	    	return getValue(TIMETETRA_LLDP_REM_PORT_ID_SUBTYPE).toInt();
+	    	return getValue(TIMETETRA_LLDP_REM_PORT_ID_SUBTYPE_OID).toInt();
 	    }
 
 	    public String getLldpRemPortid() {
-	    	return LldpRemTableTracker.decodeLldpPortId(getLldpRemPortidSubtype(), getValue(TIMETETRA_LLDP_REM_PORT_ID));
+	    	return LldpRemTableTracker.decodeLldpPortId(getLldpRemPortidSubtype(), getValue(TIMETETRA_LLDP_REM_PORT_ID_OID));
 	    }
 
 	    public String getLldpRemPortDescr() {
-	    	if (getValue(TIMETETRA_LLDP_REM_PORT_DESCR) != null)
-	    		return getValue(TIMETETRA_LLDP_REM_PORT_DESCR).toDisplayString();
+	    	if (getValue(TIMETETRA_LLDP_REM_PORT_DESCR_OID) != null)
+	    		return getValue(TIMETETRA_LLDP_REM_PORT_DESCR_OID).toDisplayString();
 	    	return "";
 	    }
 
 	    public String getLldpRemSysname() {
-	        return getValue(TIMETETRA_LLDP_REM_SYSNAME).toDisplayString();
+	        return getValue(TIMETETRA_LLDP_REM_SYSNAME_OID).toDisplayString();
 	    }
 
 
 	    public LldpLink getLldpLink() {
 
             LldpLink lldpLink = new LldpLink();
-            lldpLink.setLldpLocalPortNum(getLldpLocalPortNum());
+            lldpLink.setLldpRemLocalPortNum(getIfindex()*31+getTmnxLldpRemLocalDestMACAddress());
+            lldpLink.setLldpRemIndex(getLldpRemIndex());
             lldpLink.setLldpPortIfindex(getIfindex());
             lldpLink.setLldpRemChassisId(LldpLocalGroupTracker.decodeLldpChassisId(getLldpRemChassisId(), getLldpRemChassisidSubtype()));
             lldpLink.setLldpRemChassisIdSubType(LldpChassisIdSubType.get(getLldpRemChassisidSubtype()));
@@ -153,8 +154,8 @@ public class TimeTetraLldpRemTableTracker extends TableTracker {
             lldpLink.setLldpRemPortIdSubType(LldpPortIdSubType.get(getLldpRemPortidSubtype()));
             lldpLink.setLldpRemPortDescr(getLldpRemPortDescr());
 
-            LOG.debug( "getLldpLink: local port num: {}, ifindex: {}, TmnxLldpRemLocalDestMACAddress: {}, identifier: {}, chassis subtype: {}, \n rem sysname: {}, rem port: {}, rem port subtype: {}",
-                       lldpLink.getLldpLocalPortNum(),
+            LOG.debug( "getLldpLink: Rem Index: {}, ifindex: {}, TmnxLldpRemLocalDestMACAddress: {}, identifier: {}, chassis subtype: {}, \n rem sysname: {}, rem port: {}, rem port subtype: {}",
+                       lldpLink.getLldpRemIndex(),
                        lldpLink.getLldpPortIfindex(),
                         getTmnxLldpRemLocalDestMACAddress(),
                        lldpLink.getLldpRemChassisId(),
@@ -198,6 +199,13 @@ public class TimeTetraLldpRemTableTracker extends TableTracker {
      * @param row a {@link TimeTetraLldpRemRow} object.
      */
     public void processLldpRemRow(final TimeTetraLldpRemRow row) {
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", TIMETETRA_LLDP_REM_CHASSIS_ID_SUBTYPE_OID + "." + row.getInstance().toString(), TIMETETRA_LLDP_REM_CHASSIS_ID_SUBTYPE, row.getLldpRemChassisidSubtype(), LldpChassisIdSubType.getTypeString(row.getLldpRemChassisidSubtype()));
+        System.out.printf("\t\t%s (%s)= %s \n", TIMETETRA_LLDP_REM_CHASSIS_ID_OID + "." + row.getInstance().toString(), TIMETETRA_LLDP_REM_CHASSIS_ID, LldpLocalGroupTracker.decodeLldpChassisId(row.getLldpRemChassisId() , row.getLldpRemChassisidSubtype()));
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", TIMETETRA_LLDP_REM_PORT_ID_SUBTYPE_OID + "." + row.getInstance().toString(), TIMETETRA_LLDP_REM_PORT_ID_SUBTYPE, row.getLldpRemPortidSubtype(), LldpPortIdSubType.getTypeString(row.getLldpRemPortidSubtype()));
+        System.out.printf("\t\t%s (%s)= %s \n", TIMETETRA_LLDP_REM_PORT_ID_OID + "." + row.getInstance().toString(), TIMETETRA_LLDP_REM_PORT_ID, row.getLldpRemPortid());
+        System.out.printf("\t\t%s (%s)= %s \n", TIMETETRA_LLDP_REM_PORT_DESCR_OID + "." + row.getInstance().toString(), TIMETETRA_LLDP_REM_PORT_DESCR, row.getLldpRemPortDescr());
+        System.out.printf("\t\t%s (%s)= %s \n", TIMETETRA_LLDP_REM_SYSNAME_OID + "." + row.getInstance().toString(), TIMETETRA_LLDP_REM_SYSNAME, row.getLldpRemSysname());
+
     }
 
 }

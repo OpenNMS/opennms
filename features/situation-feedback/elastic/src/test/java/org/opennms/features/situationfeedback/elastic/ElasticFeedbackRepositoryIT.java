@@ -1,30 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.features.situationfeedback.elastic;
 
 import static org.awaitility.Awaitility.await;
@@ -43,17 +37,21 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.elastic.ElasticSearchRule;
+import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
+import org.opennms.features.jest.client.RestClientFactory;
+import org.opennms.features.jest.client.index.IndexStrategy;
+import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.features.situationfeedback.api.AlarmFeedback;
 import org.opennms.features.situationfeedback.api.AlarmFeedback.FeedbackType;
 import org.opennms.features.situationfeedback.api.FeedbackException;
 import org.opennms.features.situationfeedback.api.FeedbackRepository;
+import org.opennms.netmgt.dao.mock.AbstractMockDao;
 import org.opennms.netmgt.dao.mock.MockTransactionManager;
 import org.opennms.netmgt.dao.mock.MockTransactionTemplate;
-import org.opennms.features.jest.client.RestClientFactory;
-import org.opennms.features.jest.client.index.IndexStrategy;
-import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.netmgt.events.api.EventForwarder;
 
-import io.searchbox.client.JestClient;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 
 public class ElasticFeedbackRepositoryIT {
 
@@ -69,11 +67,14 @@ public class ElasticFeedbackRepositoryIT {
     public void setUp() throws MalformedURLException, ExecutionException, InterruptedException, FeedbackException {
         MockLogAppender.setupLogging(true, "DEBUG");
         final RestClientFactory restClientFactory = new RestClientFactory(elasticServerRule.getUrl());
-        final JestClient client = restClientFactory.createClient();
+        final EventForwarder eventForwarder = new AbstractMockDao.NullEventForwarder();
+        final JestClientWithCircuitBreaker client = restClientFactory.createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
+                CircuitBreakerConfig.custom().build()).circuitBreaker(ElasticFeedbackRepositoryIT.class.getName()), eventForwarder);
         final MockTransactionTemplate mockTransactionTemplate = new MockTransactionTemplate();
         mockTransactionTemplate.setTransactionManager(new MockTransactionManager());
         final IndexSettings settings = new IndexSettings();
         final ElasticFeedbackRepositoryInitializer initializer = new ElasticFeedbackRepositoryInitializer(client, settings);
+
         feedbackRepository = new ElasticFeedbackRepository(client, IndexStrategy.MONTHLY, 5, initializer);
         // initialize the repository manually
         initializer.initialize();

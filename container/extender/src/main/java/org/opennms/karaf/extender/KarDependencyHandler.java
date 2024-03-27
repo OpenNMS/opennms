@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.karaf.extender;
 
 import java.io.File;
@@ -56,14 +49,16 @@ public class KarDependencyHandler implements Runnable {
     private final List<Feature> features;
     private final KarService karService;
     private final FeaturesService featuresService;
+    private final KarafExtender.ExtenderStatus extenderStatus;
 
     private static final String FEATURE_CONFIG_FILE = "features.cfg";
     private static final String KAR_STORAGE = System.getProperty("karaf.data") + File.separator + "kar";
 
-    public KarDependencyHandler(List<Feature> features, KarService karService, FeaturesService featuresService) {
+    public KarDependencyHandler(List<Feature> features, KarService karService, FeaturesService featuresService, KarafExtender.ExtenderStatus extenderStatus) {
         this.features = Objects.requireNonNull(features);
         this.karService = Objects.requireNonNull(karService);
         this.featuresService = Objects.requireNonNull(featuresService);
+        this.extenderStatus = Objects.requireNonNull(extenderStatus);
     }
 
     @Override
@@ -76,13 +71,13 @@ public class KarDependencyHandler implements Runnable {
         // Wait for all the .kars to be installed
         while (true) {
             try {
-                LOG.info("Waiting on {}", karsToWaitFor);
+                extenderStatus.info("Waiting on {}", karsToWaitFor);
                 karsToWaitFor.removeAll(karService.list());
                 if (karsToWaitFor.isEmpty()) {
                     break;
                 }
             } catch (Exception e) {
-                LOG.warn("Enumerating installed .kar files failed. Will retry in {}ms.", KAR_LIST_SLEEP_MS, e);
+                extenderStatus.warn("Enumerating installed .kar files failed. Will retry in {}ms.", KAR_LIST_SLEEP_MS, e);
             }
 
             try {
@@ -101,8 +96,8 @@ public class KarDependencyHandler implements Runnable {
                 availableFeatureUris.add(repository.getURI());
             }
         } catch (Exception e) {
-            LOG.warn("Failed to retrieve feature repository details. " +
-                    "Assuming there are not feature repositories installed.", e);
+            extenderStatus.warn("Failed to retrieve feature repository details. " +
+                    "Assuming there are no feature repositories installed.", e);
         }
 
         // Ensure that all of the feature repositories for the .kar files are installed
@@ -119,7 +114,7 @@ public class KarDependencyHandler implements Runnable {
                 try {
                     featuresService.addRepository(featureUri);
                 } catch (Exception e) {
-                    LOG.error("Failed to install feature repository: {}", featureUri, e);
+                    extenderStatus.error("Failed to install feature repository: {}", featureUri, e);
                 }
             }
         }
@@ -132,8 +127,10 @@ public class KarDependencyHandler implements Runnable {
             LOG.info("Installing features: {}", featuresToInstall);
             featuresService.installFeatures(featuresToInstall, EnumSet.noneOf(FeaturesService.Option.class));
         } catch (Exception e) {
-            LOG.error("Failed to install one or more features.", e);
+            extenderStatus.error("Failed to install one or more features", e);
         }
+
+        extenderStatus.karsDone(String.format("%s KAR features installed", featuresToInstall.size()));
     }
 
     private List<URI> getFeaturesUrisForKar(String kar) {
@@ -142,7 +139,7 @@ public class KarDependencyHandler implements Runnable {
 
         if (!featureConfigFile.isFile()) {
             LOG.debug("Kar '{}' is installed, but the feature configuration is not yet written. " +
-                    "Waiting up-to 30 seconds for it to show up...");
+                    "Waiting up-to 30 seconds for it to show up...", kar);
             try {
                 for (int i = 30; i > 0 && !featureConfigFile.isFile(); i--) {
                     Thread.sleep(1000);
@@ -159,7 +156,7 @@ public class KarDependencyHandler implements Runnable {
                     .map(URI::create)
                     .collect(Collectors.toList());
         } catch (IOException e) {
-            LOG.warn("Cannot read feature repository list for kar '{}' in: {}. Assuming no feature repositories are used.",
+            extenderStatus.warn("Cannot read feature repository list for kar '{}' in: {}. Assuming no feature repositories are used.",
                     kar, featureConfig, e);
             return Collections.emptyList();
         }

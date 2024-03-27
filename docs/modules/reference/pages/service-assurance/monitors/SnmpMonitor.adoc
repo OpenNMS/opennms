@@ -176,7 +176,7 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 | $\{minimum}
 | Value of the `minimum` paramater.
 
-| $\{observedvalue}
+| $\{observedValue}
 | Polled value that made the monitor succeed or fail.
 
 | $\{oid}
@@ -252,7 +252,7 @@ Note that you must include the `monitor` section for each service in your defini
     <parameter key="oid" value=".1.3.6.1.4.1.232.6.2.6.4.0"/><1>
     <parameter key="operator" value="="/><2>
     <parameter key="operand" value="2"/><3>
-    <parameter key="reason-template" value="System fan status is not ok. The state should be ok($\{operand}) the observed value is $\{observedvalue}. Please check your HP Insight Manager. Syntax: other(1), ok(2), degraded(3), failed(4)"/> <4>
+    <parameter key="reason-template" value="System fan status is not ok. The state should be ok(${operand}) the observed value is ${observedValue}. Please check your HP Insight Manager. Syntax: other(1), ok(2), degraded(3), failed(4)"/> <4>
 </service>
 
 <monitor service="HP-Insight-Fan-System" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor" />
@@ -318,7 +318,7 @@ Note that you must include the `monitor` section for each service in your defini
     <parameter key="operator" value="="/><3>
     <parameter key="operand" value="2"/><4>
     <parameter key="match-all" value="true"/><5>
-    <parameter key="reason-template" value="One or more physical drives are not ok. The state should be ok($\{operand}) the observed value is $\{observedvalue}. Please check your HP Insight Manager. Syntax: other(1), ok(2), failed(3), predictiveFailure(4), erasing(5), eraseDone(6), eraseQueued(7)"/> <6>
+    <parameter key="reason-template" value="One or more physical drives are not ok. The state should be ok(${operand}) the observed value is ${observedValue}. Please check your HP Insight Manager. Syntax: other(1), ok(2), failed(3), predictiveFailure(4), erasing(5), eraseDone(6), eraseQueued(7)"/> <6>
 </service>
 
 <monitor service="HP-Insight-Drive-Physical" class-name="org.opennms.netmgt.poller.monitors.SnmpMonitor" />

@@ -45,7 +45,20 @@ Generates xref:operation:deep-dive/notifications/introduction.adoc[notifications
 | no
 
 | javamail-configuration.properties
-| Configuration to send notification mails via specific mail servers.
+| Configuration to send notification emails via specific mail servers.
+Metadata expression can be used for the authenticateUser and authenticatePassword fields in order to reference credentials stored in the secure credentials vault.
+| no
+| no
+
+| microblog-configuration.properties
+| Configuration to send notification emails via specific mail servers.
+Metadata expression can be used for the authen-* and oauth-* fields in order to reference credentials stored in the secure credentials vault.
+| no
+| no
+
+| xmpp-configuration.properties
+| Configuration to send notification emails via specific mail servers.
+Metadata expression can be used for the xmpp.user and xmpp.pass fields in order to reference credentials stored in the secure credentials vault.
 | no
 | no
 |===

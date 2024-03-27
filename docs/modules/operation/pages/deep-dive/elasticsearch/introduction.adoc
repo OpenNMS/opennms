@@ -133,10 +133,28 @@ Refer to link:https://www.elastic.co/guide/en/elasticsearch/reference/current/in
 | Prefix is prepended to the index and template names.
 Used in cases where you want to share the same Elasticsearch cluster with many {page-component-title} instances.
 | none
+
+|circuitbreaker.failure_rate_threshold_in_percent
+|The failure rate threshold in percentage above which the CircuitBreaker should trip open and start short-circuiting calls.
+|99
+
+|circuitbreaker.wait_in_open_state_milliseconds
+|The time, in milliseconds, that the CircuitBreaker should wait before transitioning from open to half-open.
+|60000
+
+|circuitbreaker.ring_buffer_size_in_closed.state
+|The size of the ring buffer when the CircuitBreaker is closed.
+The ring buffer needs to be filled before the failure rate is calculated.
+|100
+
+|circuitbreaker.ring_buffer_size_in_half_open_state
+|The size of the ring buffer when the CircuitBreaker is half-open.
+This ring buffer is used when the breaker transitions from open to half-open to decide whether the circuit is healthy or not.
+|10
+
 |===
 
-
-TIP: If a configuration management tool is used, the properties file can be created and is used as startup configuration
+TIP: If a configuration management tool is used, the properties file can be created and used as the startup configuration.
 
 NOTE: If credentials are provided, preemptive authorization is used for all defined Elasticsearch nodes.
 
@@ -165,3 +183,15 @@ Credentials for each node must be stored in `$OPENNMS_HOME/etc/elastic-credentia
 ----
 
 NOTE: Credentials are globally defined and will be used by all features that connect to the specified URLs.
+
+NOTE: Metadata expressions can also be used in username and password attributes of the `elastic-credentials.xml` configuration file.
+In this way, the user can also refer to the credentials stored in the secure credentials.
+
+== Circuit breaker
+
+When Elasticsearch is unavailable, a circuit breaker is used to reduce the number of blocked threads.
+After a defined number of errors, requests to the server will not be sent for the defined period of time.
+Instead, the requests are cancelled immediately with an error.
+To configure the circuit breaker, use the parameters that begin with `circuitbreaker.`.
+
+Further documentation can be found at link:https://resilience4j.readme.io/docs/circuitbreaker[here]

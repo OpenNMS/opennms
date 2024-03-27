@@ -12,7 +12,7 @@
         </FeatherButton>
       </template>
       <FeatherDropdownItem
-        v-for="option of vendorOptions"
+        v-for="option of deviceStore.vendorOptions"
         :key="option"
         @click="onGroupByOptionClick('vendor', option)"
       >{{ option }}</FeatherDropdownItem>
@@ -28,7 +28,7 @@
         </FeatherButton>
       </template>
       <FeatherDropdownItem
-        v-for="option of backupStatusOptions"
+        v-for="option of deviceStore.backupStatusOptions"
         :key="option"
         @click="onGroupByOptionClick('status', option)"
       >
@@ -46,7 +46,7 @@
         </FeatherButton>
       </template>
       <FeatherDropdownItem
-        v-for="option of osImageOptions"
+        v-for="option of deviceStore.osImageOptions"
         :key="option"
         @click="onGroupByOptionClick('osImage', option)"
       >{{ option }}</FeatherDropdownItem>
@@ -59,13 +59,10 @@ import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import ArrowDown from '@featherds/icon/navigation/ArrowDropDown'
-
-import store from '@/store'
+import { useDeviceStore } from '@/stores/deviceStore'
 import { DeviceConfigQueryParams } from '@/types/deviceConfig'
 
-const vendorOptions = computed<string[]>(() => store.state.deviceModule.vendorOptions)
-const backupStatusOptions = computed<string[]>(() => store.state.deviceModule.backupStatusOptions)
-const osImageOptions = computed<string[]>(() => store.state.deviceModule.osImageOptions)
+const deviceStore = useDeviceStore()
 
 const onGroupByOptionClick = (groupBy: string, value: string) => {
   const newQueryParams: DeviceConfigQueryParams = {
@@ -75,8 +72,8 @@ const onGroupByOptionClick = (groupBy: string, value: string) => {
     groupByValue: value
   }
 
-  store.dispatch('deviceModule/updateDeviceConfigBackupQueryParams', newQueryParams)
-  store.dispatch('deviceModule/getDeviceConfigBackups')
+  deviceStore.updateDeviceConfigBackupQueryParams(newQueryParams)
+  deviceStore.getDeviceConfigBackups()
 }
 </script>
 

@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.enlinkd;
 
 import org.junit.Assert;
@@ -52,10 +45,10 @@ import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_IP;
 import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_RESOURCE;
 import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKTROUTER2_ETHER1_MAC;
 
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_CISCO_SW01_NAME;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_CISCO_SW01_IP;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_CISCO_SW01_RESOURCE;
-import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.MKT_CISCO_SW01_LLDP_ID;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.CISCO_SW01_NAME;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.CISCO_SW01_IP;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.CISCO_SW01_RESOURCE;
+import static org.opennms.netmgt.nb.Nms13637NetworkBuilder.CISCO_SW01_LLDP_ID;
 
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertFalse;
@@ -71,7 +64,7 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
     @JUnitSnmpAgents(value={
             @JUnitSnmpAgent(host=MKTROUTER1_IP, port=161, resource=MKTROUTER1_RESOURCE),
             @JUnitSnmpAgent(host=MKTROUTER2_IP, port=161, resource=MKTROUTER2_RESOURCE),
-            @JUnitSnmpAgent(host=MKT_CISCO_SW01_IP, port=161, resource=MKT_CISCO_SW01_RESOURCE)
+            @JUnitSnmpAgent(host= CISCO_SW01_IP, port=161, resource= CISCO_SW01_RESOURCE)
     })
 
     public void testLldpLinks() {
@@ -93,7 +86,7 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
         assertFalse(m_linkdConfig.useBridgeDiscovery());
         assertFalse(m_linkdConfig.useIsisDiscovery());
 
-        final OnmsNode ciscohomesw = m_nodeDao.findByForeignId("linkd", MKT_CISCO_SW01_NAME);
+        final OnmsNode ciscohomesw = m_nodeDao.findByForeignId("linkd", CISCO_SW01_NAME);
         final OnmsNode router1 = m_nodeDao.findByForeignId("linkd", MKTROUTER1_NAME);
         final OnmsNode router2 = m_nodeDao.findByForeignId("linkd", MKTROUTER2_NAME);
 
@@ -131,7 +124,7 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
                     break;
                 case "sw01-office":
                     assertEquals(ciscohomesw.getId().intValue(), node.getNode().getId().intValue());
-                    assertEquals(MKT_CISCO_SW01_LLDP_ID, node.getLldpChassisId());
+                    assertEquals(CISCO_SW01_LLDP_ID, node.getLldpChassisId());
                     ek++;
                     break;
                 default:
@@ -153,7 +146,7 @@ public class Nms13637EnIT extends EnLinkdBuilderITCase {
                 Assert.assertEquals("", link.getLldpRemPortDescr());
             } else {
                 Assert.assertEquals(ciscohomesw.getId().intValue(), link.getNode().getId().intValue());
-                switch (link.getLldpLocalPortNum()) {
+                switch (link.getLldpRemIndex()) {
                     case 9:
                     case 73:
                     case 74:

@@ -9,6 +9,10 @@ You can use the following routing daemons to provide links-based Layer 3 informa
 * link:https://en.wikipedia.org/wiki/Open_Shortest_Path_First[Open Shortest Path First] (OSPF)
 * link:https://en.wikipedia.org/wiki/IS-IS[Intermediate System to Intermediate System] (IS-IS)
 
-SNMP agents that support the appropriate MIBs provide information on Layer 2 network links.
+SNMP agents that support the appropriate MIBs provide information on Layer 3 network links.
 For this reason, you must have a working SNMP configuration.
-The link data that enlinkd discovers is detailed in the topology user interface, and on a node's details page.
+
+The following pages describe the MIBs required to allow link discovery:
+
+* xref:operation:deep-dive/topology/enlinkd/layer-3/ospf-discovery.adoc[Layer 3 OSPF Data]
+* xref:operation:deep-dive/topology/enlinkd/layer-3/is-is-discovery.adoc[Layer 3 IS-IS Data]

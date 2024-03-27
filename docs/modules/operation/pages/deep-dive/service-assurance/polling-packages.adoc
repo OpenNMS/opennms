@@ -42,16 +42,15 @@ include::../retention.adoc[]
 
 == Service status persistence
 
-You can configure each service monitor to store the current status of the service in RRD files.
+By default service monitors store their current service status in RRD files.
 This lets you query the current status and the status history.
-This feature is disabled by default.
-You must enable it individually for each service.
-To do so, add a service parameter to the appropriate services in `poller-configuration.xml`:
+This feature is enabled by default.
+To disable this feature for individual services, add a service parameter to the appropriate services in `poller-configuration.xml`:
 
 [source, xml]
 ----
 <service name="EXAMPLE" ...>
-  <parameter key="rrd-status" value="true"/>
+  <parameter key="rrd-status" value="false"/>
 </service>
 ----
 

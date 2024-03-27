@@ -1,282 +1,173 @@
+[[release-33-changelog]]
 
-[[release-31-changelog]]
 = Changelog
 
-[[releasenotes-changelog-31.0.2]]
+[[releasenotes-changelog-33.0.2]]
 
-== Release 31.0.2
+== Release 33.0.2
 
-Release 31.0.2 is a minor release which fixes a great many bugs and security vulnerabilities, updates the versions of many library dependencies, and introduces some enhancements related to Minion Appliances.
-The official documentation has also received significant improvements.
+Release 33.0.2 contains a bunch of bug fixes and enhancements.
 
-NOTE: The documentation for enabling JAAS encryption for Minion and Sentinel has changed.
-If you have enabled encryption previously and wish to enable stronger Jasypt-based encryption, you need to reset any existing user passwords.
-
-The codename for Horizon 31.0.2 is https://wikipedia.org/wiki/$$Stroopwafel$$[_Stroopwafel_].
+The codename for Horizon 33.0.2 is https://wikipedia.org/wiki/$$Chionanthus_virginicus$$[_Old Man's Beard_].
 
 === Bug
 
-* Failures when jaeger tracing is enabled on Core server and Minion (Issue https://issues.opennms.org/browse/NMS-14550[NMS-14550])
-* Missing /run/opennms on Ubuntu (Issue https://issues.opennms.org/browse/NMS-14650[NMS-14650])
-* javadoc not being generated in H31 (Issue https://issues.opennms.org/browse/NMS-14750[NMS-14750])
-* OpenNMS opennms start fails on Ubuntu (Issue https://issues.opennms.org/browse/NMS-14838[NMS-14838])
-* Regression: install script fails if an OpenNMS directory contains root-owned lost+found directory (Issue https://issues.opennms.org/browse/NMS-14919[NMS-14919])
-* No /var/lib/opennms on 30.0.4 Docker image (Issue https://issues.opennms.org/browse/NMS-14976[NMS-14976])
-* XML Entity Expansion Injection in geolocation API (Issue https://issues.opennms.org/browse/NMS-14988[NMS-14988])
-* UI Preview: UI Plugins do not work if multiple are installed (Issue https://issues.opennms.org/browse/NMS-14996[NMS-14996])
-* OIA Pollers non-functional (Issue https://issues.opennms.org/browse/NMS-15001[NMS-15001])
-* Web UI menu item "Endpoints" not in best location (Issue https://issues.opennms.org/browse/NMS-15004[NMS-15004])
-* Icon for admin menu items missing from some items (Issue https://issues.opennms.org/browse/NMS-15005[NMS-15005])
-* Remove reference to remote pollers (Issue https://issues.opennms.org/browse/NMS-15017[NMS-15017])
-* Lock contention in SnmpPeerFactory (Issue https://issues.opennms.org/browse/NMS-15042[NMS-15042])
-* opennms rpm could get wrong jetty files (Issue https://issues.opennms.org/browse/NMS-15043[NMS-15043])
-* Horizon Karaf container not healthy after installing opennms-timeseries-api with opennms-plugins-cortex-tss (Issue https://issues.opennms.org/browse/NMS-15078[NMS-15078])
-* RHEL9/CentOS9/Rocky 9 need chkconfig package to enable service properly (Issue https://issues.opennms.org/browse/NMS-15093[NMS-15093])
-* Default limit of 10 is not working for event queries (Issue https://issues.opennms.org/browse/NMS-15123[NMS-15123])
+* Access Denied when deleting a node with admin user (Issue https://issues.opennms.org/browse/NMS-15746[NMS-15746])
+* Device config upload failed with org.apache.sshd.common.SshException: EdDSA provider not supported (Issue https://issues.opennms.org/browse/NMS-16131[NMS-16131])
+* Event parameters with `<>` not rendering in event/alarm views (Issue https://issues.opennms.org/browse/NMS-16157[NMS-16157])
+* Hikari CP leaking threads (Issue https://issues.opennms.org/browse/NMS-16345[NMS-16345])
+* LdapMonitor does not work when a Minion is the poller (Issue https://issues.opennms.org/browse/NMS-16349[NMS-16349])
+* The script showing the Karaf process status in our container image requires "ps" (Issue https://issues.opennms.org/browse/NMS-16356[NMS-16356])
+* VMware credentials exposed in provisiond log file (Issue https://issues.opennms.org/browse/NMS-16357[NMS-16357])
+* Collectd can't persist time series data and throwing a NPE with "java.util.List.size()" because "rraList" is null (Issue https://issues.opennms.org/browse/NMS-16358[NMS-16358])
 
 === Enhancement
 
-* Dependabot: leaflet from 1.7.1 to 1.8.0 (Issue https://issues.opennms.org/browse/NMS-14584[NMS-14584])
-* Error compiling Cisco MIB (Issue https://issues.opennms.org/browse/NMS-14640[NMS-14640])
-* Doc update: Enable salted hash passwords within Karaf for core/Minion/Sentinel (Issue https://issues.opennms.org/browse/NMS-14736[NMS-14736])
-* Add "admin" disambiguation to Glossary (Issue https://issues.opennms.org/browse/NMS-14914[NMS-14914])
-* simplify docker tags in H31+ (Issue https://issues.opennms.org/browse/NMS-14989[NMS-14989])
-* Update Debian/Ubuntu Upgrade Instructions (Issue https://issues.opennms.org/browse/NMS-15087[NMS-15087])
-* dependabot: Upgrade PostgreSQL dependency to 42.4.3 (or higher) (Issue https://issues.opennms.org/browse/NMS-15095[NMS-15095])
-* Update style elements in Quick Start guide (Issue https://issues.opennms.org/browse/NMS-15106[NMS-15106])
+* Update install script to clear Karaf cache (Issue https://issues.opennms.org/browse/NMS-16226[NMS-16226])
+* Add option to import-requisition command to block until import is done (Issue https://issues.opennms.org/browse/NMS-16343[NMS-16343])
+* Rename User Data Collection feature to Product Update Enrollment (Issue https://issues.opennms.org/browse/NMS-16353[NMS-16353])
+* Configurable option for Kafka Producer CollectionSet buffer size (Issue https://issues.opennms.org/browse/NMS-16366[NMS-16366])
 
-=== Unexpected Behavior
+[[releasenotes-changelog-33.0.1]]
 
-* RPM packages fail to install when FIPS Enabled (Issue https://issues.opennms.org/browse/NMS-14628[NMS-14628])
+== Release 33.0.1
 
-=== Story
-
-
-* Upgrade AngularJS to latest 1.x (Issue https://issues.opennms.org/browse/NMS-14715[NMS-14715])
-*  Apache Log4j 1.x Multiple Vulnerabilities (PB-2022, Sep 2022) (Issue https://issues.opennms.org/browse/NMS-14818[NMS-14818])
-* Modify foreign source in HeartbeatConsumer to ignore docker interfaces and detect SNMP agent (Issue https://issues.opennms.org/browse/NMS-14855[NMS-14855])
-* OpenShift test coverage (Issue https://issues.opennms.org/browse/NMS-14882[NMS-14882])
-* SNMP Community retrieval through SCV on Minion (Issue https://issues.opennms.org/browse/NMS-15008[NMS-15008])
-* Add JSON support (in additional to GBP) to the Kafka producer for flows (Issue https://issues.opennms.org/browse/NMS-15027[NMS-15027])
-* Backport deploy-base update from develop to release-31.x (upgrades JRE minor version, adds vim-tiny, less) (Issue https://issues.opennms.org/browse/NMS-15046[NMS-15046])
-* Add KPI for Appliance count by model (Issue https://issues.opennms.org/browse/NMS-15051[NMS-15051])
-
-=== Task
-
-* Quick Start: "Beyond Quick Start" chapter (Issue https://issues.opennms.org/browse/NMS-14735[NMS-14735])
-* H31 Release testing  (Issue https://issues.opennms.org/browse/NMS-14797[NMS-14797])
-* Review enlinkd documentation (Issue https://issues.opennms.org/browse/NMS-14850[NMS-14850])
-* Update Visualization topic in Quick Start guide (Issue https://issues.opennms.org/browse/NMS-15029[NMS-15029])
-* Fix Antora version differences (Issue https://issues.opennms.org/browse/NMS-15088[NMS-15088])
-* Update opennms-plugin-cloud to 1.0.4  (Issue https://issues.opennms.org/browse/NMS-15122[NMS-15122])
-
-[[releasenotes-changelog-31.0.1]]
-
-== Release 31.0.1
-
-Release 31.0.1 is a small out-of-band release to address some issues found during 31.0.0 testing.
-
-It contains a few small changes including a fix for unusually large docker images and some other small bug fixes,
-as well as some updates to the new Quick Start Guide and a fix to the installation instructions for the Cortex plugin.
-
-Please note there is a known issue that only one plugin entry shows up in the navigation bar's "Plugins" menu, even if multiple plugins are installed.
-Only ALEC users who install the cloud connector are impacted.
-ALEC users therefore should avoid the Cloud Services Connector plugin until a new release fixes the underlying bug.
-
-The codename for Horizon 31.0.1 is https://wikipedia.org/wiki/$$Oreo$$[_Oreo_].
+Release 33.0.1 is a re-release of 33.0.0, reverting the async poller changes and fixing a packaging issue.
 
 === Bug
 
-* OpenAPI Validation Errors (Issue http://issues.opennms.org/browse/NMS-14408[NMS-14408])
-* Snmp Polling Status shows Polled even though it's actually not (Issue http://issues.opennms.org/browse/NMS-14653[NMS-14653])
-* Duplicated message when alarm is not found (Issue http://issues.opennms.org/browse/NMS-14686[NMS-14686])
-* Errors while installing opennms-timeseries-api from karaf shell (Issue http://issues.opennms.org/browse/NMS-14874[NMS-14874])
-* When you delete/put memo or journal it always returns 204 even if alarm not exists (Issue http://issues.opennms.org/browse/NMS-14901[NMS-14901])
-* NoSuchElementException errors thrown by EnhancedLinkd  (Issue http://issues.opennms.org/browse/NMS-14912[NMS-14912])
-* Docs for Cortex plugin are incorrect (Issue http://issues.opennms.org/browse/NMS-14945[NMS-14945])
-* Horizon/Sentinel docker image size ballooned (Issue http://issues.opennms.org/browse/NMS-15006[NMS-15006])
-* HZN 31: Ubuntu installation issues (Issue http://issues.opennms.org/browse/NMS-15007[NMS-15007])
+* Issue installing on Debian 11 Reported by Customer (Issue https://issues.opennms.org/browse/NMS-16309[NMS-16309])
+* REVERT: enable async polling by default (Issue https://issues.opennms.org/browse/NMS-15738[NMS-15738])
 
-=== Story
+=== Enhancement
 
-* Quick Start: Review entire quick start section when complete. (Issue http://issues.opennms.org/browse/NMS-14721[NMS-14721])
-* New UI Preview: Ensure ALEC UI works (Issue http://issues.opennms.org/browse/NMS-14891[NMS-14891])
+* Docs page for Info REST service (Issue https://opennms.atlassian.net/browse/NMS-16351[NMS-16351])
+
+[[releasenotes-changelog-33.0.0]]
+
+== Release 33.0.0
+
+Release 33.0.0 is the first major release in the 33.x series.
+It contains a bunch of changes, including metadata support in many more configs, a revamped node list, and more.
+
+The codename for Horizon 33.0.0 is https://wikipedia.org/wiki/$$Sequoia_sempervirens$$[_Coast Redwood_].
+
+=== Bug
+
+* Missing information in downtime model docs (Issue https://issues.opennms.org/browse/NMS-10133[NMS-10133])
+* R-Core fails to install following the Horizon 30 Install Docs (Issue https://issues.opennms.org/browse/NMS-14777[NMS-14777])
+* Surveillance Dashboard shows acknowledged Alarms (Issue https://issues.opennms.org/browse/NMS-15448[NMS-15448])
+* Access Denied when deleting a node with admin user (Issue https://issues.opennms.org/browse/NMS-15746[NMS-15746])
+* Typo in Configuring Minion via confd README (Issue https://issues.opennms.org/browse/NMS-15901[NMS-15901])
+* "Dismiss" in Usage Statistics Sharing Notice is misleading (Issue https://issues.opennms.org/browse/NMS-16027[NMS-16027])
+* Links in node table open both in current tab and in a new tab (Issue https://issues.opennms.org/browse/NMS-16047[NMS-16047])
+* Fix Geographical Map after vue-leaflet upgrade (Issue https://issues.opennms.org/browse/NMS-16065[NMS-16065])
+* Top of page search displays 'Show nodes with severity' multiple times (Issue https://issues.opennms.org/browse/NMS-16067[NMS-16067])
+* Device config upload failed with org.apache.sshd.common.SshException: EdDSA provider not supported (Issue https://issues.opennms.org/browse/NMS-16131[NMS-16131])
+* Data choices plugin throws a NPE when user clicks on show collected data. (Issue https://issues.opennms.org/browse/NMS-16151[NMS-16151])
+* Event parameters with `<>` not rendering in event/alarm views (Issue https://issues.opennms.org/browse/NMS-16157[NMS-16157])
+* Users with ROLE_READONLY can add, modify, and delete alarm memos (Issue https://issues.opennms.org/browse/NMS-16162[NMS-16162])
+* Docs: Meridian plugins reference wrong package names (Issue https://issues.opennms.org/browse/NMS-16164[NMS-16164])
+* Fix resource types for default Postgres collection (Issue https://issues.opennms.org/browse/NMS-16165[NMS-16165])
+* Service detail page displays wrong collectd package (Issue https://issues.opennms.org/browse/NMS-16167[NMS-16167])
+* enlinkd logging hibernate errors (lack of unique index) (Issue https://issues.opennms.org/browse/NMS-16199[NMS-16199])
+* Zookeeper 3.4.6 version mismatch in Meridian 2021 (Issue https://issues.opennms.org/browse/NMS-16209[NMS-16209])
+* upgrade ActiveMQ to latest 5.15.x (Issue https://issues.opennms.org/browse/NMS-16218[NMS-16218])
+* Documentation build failing: cannot find antora/xref-validator (Issue https://issues.opennms.org/browse/NMS-16227[NMS-16227])
+* Node structure: fix sorting (Issue https://issues.opennms.org/browse/NMS-16246[NMS-16246])
+* OpenConfig Connector parameter frequency in incorrect unit (Issue https://issues.opennms.org/browse/NMS-16253[NMS-16253])
+* Container flag `-t` does not pass correct arguments (Issue https://issues.opennms.org/browse/NMS-16265[NMS-16265])
+* Cortex plugin does not start automatically (Issue https://issues.opennms.org/browse/NMS-16272[NMS-16272])
+
+=== Enhancement
+
+* Add var-bind section into notification docs (Issue https://issues.opennms.org/browse/NMS-13273[NMS-13273])
+* Provisiond threads description discrepancies (Issue https://issues.opennms.org/browse/NMS-14766[NMS-14766])
+* Metadata DSL: Add metadata interpolation capability onto more threshold fields (Issue https://issues.opennms.org/browse/NMS-15667[NMS-15667])
+* enable async polling by default (Issue https://issues.opennms.org/browse/NMS-15738[NMS-15738])
+* Switch our Docker base to UBI (Issue https://issues.opennms.org/browse/NMS-15788[NMS-15788])
+* Docs: Add install note on DNS resolution (Issue https://issues.opennms.org/browse/NMS-15792[NMS-15792])
+* Extend PageSequenceMonitor to allow basic auth credentials (Issue https://issues.opennms.org/browse/NMS-15802[NMS-15802])
+* Expand BlueCat DNS Data Collection (Issue https://issues.opennms.org/browse/NMS-15865[NMS-15865])
+* Add confd support to Sentinel container (Issue https://issues.opennms.org/browse/NMS-16149[NMS-16149])
+* Docs: Remove deprecated resourcecli section (Issue https://issues.opennms.org/browse/NMS-16216[NMS-16216])
+* Update install script to clear Karaf cache (Issue https://issues.opennms.org/browse/NMS-16226[NMS-16226])
+* Upgrade to latest Karaf 4.3 (Issue https://issues.opennms.org/browse/NMS-16249[NMS-16249])
+* Deprecate VMware 3-5 collection/graphs (Issue https://issues.opennms.org/browse/NMS-16266[NMS-16266])
+* Fix formatting in snmp-graph.properties.d files (Issue https://issues.opennms.org/browse/NMS-16269[NMS-16269])
+* Docs: Update install docs for monitoring database connection (Issue https://issues.opennms.org/browse/NMS-16286[NMS-16286])
+* Update container confd to default Postgres SSL to prefer (Issue https://issues.opennms.org/browse/NMS-16287[NMS-16287])
 
 === Task
 
-* Update Quick Start login chapter (Issue http://issues.opennms.org/browse/NMS-14984[NMS-14984])
-* Update notifications.adoc in Quick Start section (Issue http://issues.opennms.org/browse/NMS-14985[NMS-14985])
-* Update Quick Start notifications configuration chapter (Issue http://issues.opennms.org/browse/NMS-14999[NMS-14999])
+* Metadata DSL: Elasticsearch Integration (Issue https://issues.opennms.org/browse/NMS-15752[NMS-15752])
+* Update UI for Admin password change prompt (Issue https://issues.opennms.org/browse/NMS-15780[NMS-15780])
+* Create Initial Node Structure Page (Issue https://issues.opennms.org/browse/NMS-16037[NMS-16037])
+* Update UI dependencies to latest Vue3, feather, etc. (Issue https://issues.opennms.org/browse/NMS-16045[NMS-16045])
+* Node structure page: Union/Intersection category filter switch (Issue https://issues.opennms.org/browse/NMS-16058[NMS-16058])
+* Node structure: add unit tests (Issue https://issues.opennms.org/browse/NMS-16060[NMS-16060])
+* Structured Node List: Add smoke test (Issue https://issues.opennms.org/browse/NMS-16061[NMS-16061])
+* Structured node list: Export CSV/XLS (Issue https://issues.opennms.org/browse/NMS-16064[NMS-16064])
+* Unzip command is missing from UBI images (Issue https://issues.opennms.org/browse/NMS-16087[NMS-16087])
+* Convert Menu store to pinia (Issue https://issues.opennms.org/browse/NMS-16092[NMS-16092])
+* Structured node list: UX Updates (Issue https://issues.opennms.org/browse/NMS-16103[NMS-16103])
+* Structured node list: handle legacy query strings (Issue https://issues.opennms.org/browse/NMS-16116[NMS-16116])
+* Structured node list: UX updates Part 2 (Issue https://issues.opennms.org/browse/NMS-16123[NMS-16123])
+* Structured node list: Merge feature branch to develop (Issue https://issues.opennms.org/browse/NMS-16124[NMS-16124])
+* Convert NodeStructure store to pinia (Issue https://issues.opennms.org/browse/NMS-16125[NMS-16125])
+* Node structure: Add management IP address (Issue https://issues.opennms.org/browse/NMS-16126[NMS-16126])
+* Node structure: Make preferences persistent (Issue https://issues.opennms.org/browse/NMS-16130[NMS-16130])
+* Convert Node store to pinia (Issue https://issues.opennms.org/browse/NMS-16136[NMS-16136])
+* Update Vue UI README with dev workflow instructions (Issue https://issues.opennms.org/browse/NMS-16142[NMS-16142])
+* Convert more stores to pinia (Issue https://issues.opennms.org/browse/NMS-16144[NMS-16144])
+* Convert auth, usageStats and other stores to pinia (Issue https://issues.opennms.org/browse/NMS-16154[NMS-16154])
+* Convert deviceStore etc to pinia, remove vuex from project (Issue https://issues.opennms.org/browse/NMS-16156[NMS-16156])
+* DOCS: Document structured node list (Issue https://issues.opennms.org/browse/NMS-16210[NMS-16210])
+* Docs: Remove reference to 'opennms-cloud-plugin' plugin (Issue https://issues.opennms.org/browse/NMS-16231[NMS-16231])
+* Stalled threads in telemetryd parser (Issue https://issues.opennms.org/browse/NMS-16243[NMS-16243])
 
-[[releasenotes-changelog-31.0.0]]
+=== New Feature
 
-== Release 31.0.0
+* Metadata DSL: VMware Integration (Issue https://issues.opennms.org/browse/NMS-15753[NMS-15753])
+* Metadata DSL: WSMAN Integration (Issue https://issues.opennms.org/browse/NMS-15754[NMS-15754])
+* Metadata DSL: TL1D Integration (Issue https://issues.opennms.org/browse/NMS-15755[NMS-15755])
+* Metadata DSL: JMX Data-collection (Issue https://issues.opennms.org/browse/NMS-15756[NMS-15756])
+* Metadata DSL: XML Data-collection (Issue https://issues.opennms.org/browse/NMS-15757[NMS-15757])
+* Metadata DSL: HTTP/HTTPS Data-collection (Issue https://issues.opennms.org/browse/NMS-15758[NMS-15758])
+* Metadata DSL: Notification Credentials (Issue https://issues.opennms.org/browse/NMS-15759[NMS-15759])
+* Metadata DSL: Ticketer Plugins (Issue https://issues.opennms.org/browse/NMS-15760[NMS-15760])
+* Metadata DSL: Trapd Configuration (Issue https://issues.opennms.org/browse/NMS-15761[NMS-15761])
+* Metadata DSL: JCIFS Monitor (Issue https://issues.opennms.org/browse/NMS-15762[NMS-15762])
+* Metadata DSL: IFTTT Configuration (Issue https://issues.opennms.org/browse/NMS-15763[NMS-15763])
+* Metadata DSL: Repository Configuration (Issue https://issues.opennms.org/browse/NMS-15764[NMS-15764])
+* Metadata DSL: [OPTIONAL] Consistent *-config.xml Configurations (Issue https://issues.opennms.org/browse/NMS-15765[NMS-15765])
+* Metadata DSL: Evaluate feasability to support metadata in Drools rules (Issue https://issues.opennms.org/browse/NMS-15766[NMS-15766])
+* Metadata DSL: Change default poller and collectd configuration files to reflect ability to use metadata (Issue https://issues.opennms.org/browse/NMS-16016[NMS-16016])
+* Metadata DSL: snmp-config.xml & SNMP Profiles (Issue https://issues.opennms.org/browse/NMS-16028[NMS-16028])
+* Metadata DSL: change default opennms-datasources.xml to reflect the possibility of using metadata (Issue https://issues.opennms.org/browse/NMS-16029[NMS-16029])
+* OpenShift: Document the impact of disabling allowPrivilegeEscalation (Issue https://issues.opennms.org/browse/NMS-16239[NMS-16239])
+* Update wording to Product Update Sign Up (Issue https://opennms.atlassian.net/browse/NMS-16352[NMS-16352])
 
-Release 31.0.0 is a new major release.
-It contains several new features, including the Cloud Services Connector with Time Series DB support and a new quick-start guide.
-Notable enhancements include integration of the Horizon 30 "UI Preview" items into the main UI and performance improvements to network topology discovery.
-It also includes an important bug fix correcting a regression that rendered Horizon 30 unable to run in OpenShift environments, besides many other important bug and security fixes.
+=== Story
 
-The codename for Horizon 31.0.0 is https://de.wikipedia.org/wiki/$$Doppelkeks$$[_Doppelkeks_].
+* Metadata DSL: Documentation for Metadata DSL updates (Issue https://issues.opennms.org/browse/NMS-15774[NMS-15774])
+* Document change in login password behaviour (Issue https://issues.opennms.org/browse/NMS-15775[NMS-15775])
+* Smoke test for Admin password change (Issue https://issues.opennms.org/browse/NMS-15866[NMS-15866])
+* Admin Password Change: UX Review and Updates (Issue https://issues.opennms.org/browse/NMS-15867[NMS-15867])
+* Admin Password Change: Merge to develop (Issue https://issues.opennms.org/browse/NMS-15868[NMS-15868])
+* User is redirected to landing page after password change is done (Issue https://issues.opennms.org/browse/NMS-16036[NMS-16036])
+* Use pinia instead of vuex in Vue UI (Issue https://issues.opennms.org/browse/NMS-16043[NMS-16043])
+* Add pinia stores to UI but do not yet activate them (Issue https://issues.opennms.org/browse/NMS-16068[NMS-16068])
+* Metadata DSL: Persist poller parameters as meta data (Issue https://issues.opennms.org/browse/NMS-16146[NMS-16146])
+* Node structure: more query params (fs:fid, snmp, sys) (Issue https://issues.opennms.org/browse/NMS-16197[NMS-16197])
+* Remove plugin 'opennms-cloud-plugin' from installation (Issue https://issues.opennms.org/browse/NMS-16219[NMS-16219])
+* Geo Map: enable user-defined map to be the default one (Issue https://issues.opennms.org/browse/NMS-16229[NMS-16229])
+* DOCS: Document Geographical Map user-defined map (Issue https://issues.opennms.org/browse/NMS-16230[NMS-16230])
+* Add node-gyp to fix CircleCI build-ui errors (Issue https://issues.opennms.org/browse/NMS-16242[NMS-16242])
+* News Feed: UI Panel and REST Service (Issue https://issues.opennms.org/browse/NMS-16282[NMS-16282])
+* Web UI for User Data Collection (Issue https://issues.opennms.org/browse/NMS-16283[NMS-16283])
+* User Data Collection: Database / Rest / CM work (Issue https://issues.opennms.org/browse/NMS-16284[NMS-16284])
 
 === Epic
 
-* Remove the need for minion to connect via HTTP (REST) and use Object replication to accomplish this. (Issue http://issues.opennms.org/browse/NMS-13379[NMS-13379])
-* Geo Map rewrite using Vue 3 and JS (Issue http://issues.opennms.org/browse/NMS-13387[NMS-13387])
-* Add OpenAPI docs for existing Rest API (Issue http://issues.opennms.org/browse/NMS-13491[NMS-13491])
-* DCB - Implement the ability in OpenNMS to connect and retrieve configuration from devices (Issue http://issues.opennms.org/browse/NMS-13763[NMS-13763])
-* DCB - Implement the ability to store the device configuration in a repository and related activities (Issue http://issues.opennms.org/browse/NMS-13764[NMS-13764])
-* DCB - Implement the ability to select devices for backup and trigger backup (Issue http://issues.opennms.org/browse/NMS-13766[NMS-13766])
-* DCB - Implement the scheduling of config backup (Issue http://issues.opennms.org/browse/NMS-13767[NMS-13767])
-* DCB - UI implementation for the device config backup (Issue http://issues.opennms.org/browse/NMS-13966[NMS-13966])
-* Cloud Connect: Ship H31 with cloud plugin already installed (Issue http://issues.opennms.org/browse/NMS-14471[NMS-14471])
-* Create "Quick Start" guide for operations section of docs (Issue http://issues.opennms.org/browse/NMS-14611[NMS-14611])
-* Fold the H30 "UI Preview" bits into the main UI (Issue http://issues.opennms.org/browse/NMS-14730[NMS-14730])
-* Horizon core work needed to make Appliances first-class entities (Issue http://issues.opennms.org/browse/NMS-14783[NMS-14783])
-* H31 OpenShift compatibility (Issue http://issues.opennms.org/browse/NMS-14881[NMS-14881])
-* H31 Topology Discovery Improvements (Issue http://issues.opennms.org/browse/NMS-14883[NMS-14883])
-* H31 OpenAPI Improvements (Issue http://issues.opennms.org/browse/NMS-14893[NMS-14893])
-
-=== Bug
-
-* BSMAdminIT flapping (Issue http://issues.opennms.org/browse/NMS-9334[NMS-9334])
-* non-root broke openshift (Issue http://issues.opennms.org/browse/NMS-13572[NMS-13572])
-* Package description for Minion and Sentinel reference Wiki (Issue http://issues.opennms.org/browse/NMS-13864[NMS-13864])
-* Database reports need to be rebranded  (Issue http://issues.opennms.org/browse/NMS-14058[NMS-14058])
-* External Requisition UI: Obfuscate vmware password in URL (Issue http://issues.opennms.org/browse/NMS-14320[NMS-14320])
-* features/topology: right panel menu is not reactive to sublayer context menu (Issue http://issues.opennms.org/browse/NMS-14342[NMS-14342])
-* features/topology: tooltip - PowerGrid (D3/Circle layout) (Issue http://issues.opennms.org/browse/NMS-14343[NMS-14343])
-* BmpIT flapping (Issue http://issues.opennms.org/browse/NMS-14360[NMS-14360])
-* Fix Smoke Test for GraphMLTopologyIT (Issue http://issues.opennms.org/browse/NMS-14374[NMS-14374])
-* features/topology: contextmenu - PowerGrid (D3/Circle layout) (Issue http://issues.opennms.org/browse/NMS-14377[NMS-14377])
-* Rename integration tests that are currently running as unit tests (Issue http://issues.opennms.org/browse/NMS-14462[NMS-14462])
-* Provisioning - Config SMNP Community does not support for more than 10 locations (Issue http://issues.opennms.org/browse/NMS-14548[NMS-14548])
-* Unexpected interfaceDown event/alarm during a scheduled outage (Issue http://issues.opennms.org/browse/NMS-14695[NMS-14695])
-* Investigate the failure in integration-test job (Issue http://issues.opennms.org/browse/NMS-14697[NMS-14697])
-* Admin can't assign user to 'On-Call Role Schedule' (Issue http://issues.opennms.org/browse/NMS-14739[NMS-14739])
-* Error using javax.mail.* packages in plugins (Issue http://issues.opennms.org/browse/NMS-14747[NMS-14747])
-* opennms:metadata-test command is not present in Karaf shell (Issue http://issues.opennms.org/browse/NMS-14754[NMS-14754])
-* Update QS based on ONMSU feedback (Issue http://issues.opennms.org/browse/NMS-14756[NMS-14756])
-* Debian/Ubuntu gpg deprecation warning (Issue http://issues.opennms.org/browse/NMS-14760[NMS-14760])
-* Grafana Dashboard report fails on "row" (Issue http://issues.opennms.org/browse/NMS-14784[NMS-14784])
-* Topology-Map Layer broken (Issue http://issues.opennms.org/browse/NMS-14791[NMS-14791])
-* Invalid redirect when behind a reverse proxy (Issue http://issues.opennms.org/browse/NMS-14805[NMS-14805])
-* External Requisition UI - Blank pull down menus on Add (Issue http://issues.opennms.org/browse/NMS-14824[NMS-14824])
-* Geocoder webui toggle switch shows "Ye" instead of "Yes" (Issue http://issues.opennms.org/browse/NMS-14841[NMS-14841])
-* Scheduled scan fails to inform nodeScanAborted events (Issue http://issues.opennms.org/browse/NMS-14853[NMS-14853])
-* Alarms and Events: filter and advanced search / method POST is not supported (Issue http://issues.opennms.org/browse/NMS-14918[NMS-14918])
-* Docs for Cortex plugin are incorrect (Issue http://issues.opennms.org/browse/NMS-14945[NMS-14945])
-* Wrong example of snmp-graph config for `SNMP Trap Performance Data` article (Issue http://issues.opennms.org/browse/NMS-14961[NMS-14961])
-
-=== Story
-
-* Flow Thresholds: Split processing and persistence (Issue http://issues.opennms.org/browse/NMS-13770[NMS-13770])
-* Remove Vaadin-based Geographical Map  (Issue http://issues.opennms.org/browse/NMS-13856[NMS-13856])
-* Create a profile that skips building licenses (Issue http://issues.opennms.org/browse/NMS-14068[NMS-14068])
-* Upgrade JUnit from version 4 to 5 (Issue http://issues.opennms.org/browse/NMS-14302[NMS-14302])
-* Remove XMP protocol support (Issue http://issues.opennms.org/browse/NMS-14427[NMS-14427])
-* Add KPI for DCB cumulative config count (Issue http://issues.opennms.org/browse/NMS-14580[NMS-14580])
-* Add KPI for DCB cumulative backup failure count (Issue http://issues.opennms.org/browse/NMS-14581[NMS-14581])
-* Add KPI for DCB cumulative web UI entries (Issue http://issues.opennms.org/browse/NMS-14582[NMS-14582])
-* Populate Velocloud Partner Requisition with Gateway Nodes (Issue http://issues.opennms.org/browse/NMS-14593[NMS-14593])
-* Implement OIA poller configuration extension (Issue http://issues.opennms.org/browse/NMS-14610[NMS-14610])
-* Quick Start: Overview (Issue http://issues.opennms.org/browse/NMS-14612[NMS-14612])
-* Quick Start: Login and create a user (Issue http://issues.opennms.org/browse/NMS-14613[NMS-14613])
-* Quick Start: Turn on default notifications (Issue http://issues.opennms.org/browse/NMS-14614[NMS-14614])
-* Quick Start: Import inventory (Issue http://issues.opennms.org/browse/NMS-14615[NMS-14615])
-* Quick Start: Collect performance data (Issue http://issues.opennms.org/browse/NMS-14616[NMS-14616])
-* Quick Start: Set up a threshold (Issue http://issues.opennms.org/browse/NMS-14617[NMS-14617])
-* Quick Start: Establish a baseline (Issue http://issues.opennms.org/browse/NMS-14618[NMS-14618])
-* Quick Start: Determine service availability (Issue http://issues.opennms.org/browse/NMS-14619[NMS-14619])
-* Quick Start: Configure notifications (Issue http://issues.opennms.org/browse/NMS-14620[NMS-14620])
-* Quick Start: Visualize data (Issue http://issues.opennms.org/browse/NMS-14621[NMS-14621])
-* Add KPI for startup time (Issue http://issues.opennms.org/browse/NMS-14622[NMS-14622])
-* Publish images to Docker Hub (Issue http://issues.opennms.org/browse/NMS-14626[NMS-14626])
-* Implement connection manager (Issue http://issues.opennms.org/browse/NMS-14772[NMS-14772])
-* Enhance Vue UI Preview Menubar to look like OG menubar (initial version) (Issue http://issues.opennms.org/browse/NMS-14800[NMS-14800])
-* Initial Rest API endpoint and data model for Vue menubar dynamic creation (Issue http://issues.opennms.org/browse/NMS-14801[NMS-14801])
-* Wire up new Vue menubar with Rest API for dynamic menu creation (Issue http://issues.opennms.org/browse/NMS-14802[NMS-14802])
-* Remove NavRail from Vue UI Preview application (Issue http://issues.opennms.org/browse/NMS-14803[NMS-14803])
-* New UI Preview: Ensure OPA UI plugins work (Issue http://issues.opennms.org/browse/NMS-14804[NMS-14804])
-* Provide UUID for system id (Issue http://issues.opennms.org/browse/NMS-14839[NMS-14839])
-* Modify foreign source in HeartbeatConsumer to ignore docker interfaces and detect SNMP agent (Issue http://issues.opennms.org/browse/NMS-14855[NMS-14855])
-* Cloud plugin packages part of default install (Issue http://issues.opennms.org/browse/NMS-14892[NMS-14892])
-* Packaging for cloud plugin (Issue http://issues.opennms.org/browse/NMS-14894[NMS-14894])
-* Feather UIs get breadcrumbs mimicking OG UI (Issue http://issues.opennms.org/browse/NMS-14900[NMS-14900])
-* Double-shift to focus Feather nav-bar Search box (Issue http://issues.opennms.org/browse/NMS-14902[NMS-14902])
-* Nav-bar Search returns Plugin entries (Issue http://issues.opennms.org/browse/NMS-14903[NMS-14903])
-* OG and Feather nav-bars use same chromatic black (Issue http://issues.opennms.org/browse/NMS-14904[NMS-14904])
-* OG and Feather nav-bar styling match as closely as possible (Issue http://issues.opennms.org/browse/NMS-14905[NMS-14905])
-* Decorate admin-only items in nav-bar menu (Issue http://issues.opennms.org/browse/NMS-14906[NMS-14906])
-* Horizon packages provide versioned OPA dependency package (Issue http://issues.opennms.org/browse/NMS-14920[NMS-14920])
-* Support interface, service and time property for events in OpenNMS-part of OIA (Issue http://issues.opennms.org/browse/NMS-14926[NMS-14926])
-* Define event definitions (Issue http://issues.opennms.org/browse/NMS-14928[NMS-14928])
-* Create scheduled EventIngestor for Velocloud events (Issue http://issues.opennms.org/browse/NMS-14929[NMS-14929])
-* Replace 'exit' with 'quit' in Juniper DCB scripts (Issue http://issues.opennms.org/browse/NMS-14939[NMS-14939])
-* SNMP systemDef added for appliance products (Issue http://issues.opennms.org/browse/NMS-14956[NMS-14956])
-
-=== Task
-
-* Update Heatmap chapter (Issue http://issues.opennms.org/browse/NMS-13674[NMS-13674])
-* Provide guidance with debugging the flow sequence  (Issue http://issues.opennms.org/browse/NMS-14122[NMS-14122])
-* Reference: add alt text for images and tables (Issue http://issues.opennms.org/browse/NMS-14631[NMS-14631])
-* Add KPI counters for DCB successful and failed backup (Issue http://issues.opennms.org/browse/NMS-14641[NMS-14641])
-* Quick Start: move content into Deep Dive section (Issue http://issues.opennms.org/browse/NMS-14652[NMS-14652])
-* OpenNMS system needs a unique identifier for TSaaS Communication (Issue http://issues.opennms.org/browse/NMS-14684[NMS-14684])
-* UI update for DCB KPI  (Issue http://issues.opennms.org/browse/NMS-14687[NMS-14687])
-* REST API update for DCB KPI  (Issue http://issues.opennms.org/browse/NMS-14688[NMS-14688])
-* Quick Start: Review entire quick start section when complete. (Issue http://issues.opennms.org/browse/NMS-14721[NMS-14721])
-* Quick start: review related deep dive chapters (Issue http://issues.opennms.org/browse/NMS-14722[NMS-14722])
-* Quick Start: "Beyond Quick Start" chapter (Issue http://issues.opennms.org/browse/NMS-14735[NMS-14735])
-* Sonarcloud coverage for foundation-2022 (Issue http://issues.opennms.org/browse/NMS-14759[NMS-14759])
-* Refactor Enlinkd Test NetworkBuilder Class (Issue http://issues.opennms.org/browse/NMS-14762[NMS-14762])
-* H31 Release testing  (Issue http://issues.opennms.org/browse/NMS-14797[NMS-14797])
-* Update documentation to reflect removal of UI Preview (Issue http://issues.opennms.org/browse/NMS-14825[NMS-14825])
-* Documentation for Cloud Services Connector and Time Series DB (Issue http://issues.opennms.org/browse/NMS-14844[NMS-14844])
-* Changes to package-lock.json causes eslint to be not found (Issue http://issues.opennms.org/browse/NMS-14943[NMS-14943])
-* Assign sysObjectID for Appliance Mini (Issue http://issues.opennms.org/browse/NMS-14955[NMS-14955])
-* Release notes blurb about OpenShift (Issue http://issues.opennms.org/browse/NMS-14960[NMS-14960])
-* Release notes: Only one plug-in shows in UI (Issue http://issues.opennms.org/browse/NMS-14982[NMS-14982])
-
-=== Enhancement
-
-* HostResourceSwRunMonitor uncovered parameter for min-services and max-services (Issue http://issues.opennms.org/browse/NMS-11825[NMS-11825])
-* Set always ifindex for enlinkd links (Issue http://issues.opennms.org/browse/NMS-13943[NMS-13943])
-* Allow test mode flags in restart command  (Issue http://issues.opennms.org/browse/NMS-13991[NMS-13991])
-* Aruba AOS-CX datacollection config (Issue http://issues.opennms.org/browse/NMS-14056[NMS-14056])
-* Global search box: gap between input field and dropdown result list (Issue http://issues.opennms.org/browse/NMS-14315[NMS-14315])
-* features/topology: update branch with develop (Issue http://issues.opennms.org/browse/NMS-14332[NMS-14332])
-* Create Topology Providers for Combined Protocols (Issue http://issues.opennms.org/browse/NMS-14392[NMS-14392])
-* EnhancedLinkd Collection priority Scheduling (Issue http://issues.opennms.org/browse/NMS-14397[NMS-14397])
-* Enlinkd tests clean compile warnings  (Issue http://issues.opennms.org/browse/NMS-14432[NMS-14432])
-* Enlinkd  Clean Config Classes (Issue http://issues.opennms.org/browse/NMS-14433[NMS-14433])
-* Enlinkd Clean Persistence Classes (Issue http://issues.opennms.org/browse/NMS-14434[NMS-14434])
-* Enlinkd Clean Service Classes (Issue http://issues.opennms.org/browse/NMS-14435[NMS-14435])
-* Enlinkd Clean Adapters Classes (Issue http://issues.opennms.org/browse/NMS-14436[NMS-14436])
-* Simplify BridgeSimpleConnection Class (Issue http://issues.opennms.org/browse/NMS-14479[NMS-14479])
-* Move BridgeDiscovery to new project Enlinkd Adapters Discovers Bridge (Issue http://issues.opennms.org/browse/NMS-14540[NMS-14540])
-* Bridge Topology Discovery, Move BridgeTopologyException (Issue http://issues.opennms.org/browse/NMS-14541[NMS-14541])
-* standardize docker containers to use tarballs (Issue http://issues.opennms.org/browse/NMS-14573[NMS-14573])
-* Spelling correction in DEBUG discovery.log entries (Issue http://issues.opennms.org/browse/NMS-14757[NMS-14757])
-* Add Priority Executor Classes (Issue http://issues.opennms.org/browse/NMS-14763[NMS-14763])
-* Set Up Enlinkd schedule time interval based on protocols (Issue http://issues.opennms.org/browse/NMS-14764[NMS-14764])
-* Move Common Adapter Enlinkd classes to Core (Issue http://issues.opennms.org/browse/NMS-14771[NMS-14771])
-* Provide SubNetwork Classes for Enhanced Linkd (Issue http://issues.opennms.org/browse/NMS-14773[NMS-14773])
-* Add network/netmask tools to InetAddressUtils (Issue http://issues.opennms.org/browse/NMS-14774[NMS-14774])
-* Delete disabled protocol persisted data (Issue http://issues.opennms.org/browse/NMS-14798[NMS-14798])
-* Dynamic Yaml Generation, code and output clean up (Issue http://issues.opennms.org/browse/NMS-14810[NMS-14810])
-* Add support for rows in Grafana Dashboard Report (Issue http://issues.opennms.org/browse/NMS-14885[NMS-14885])
-* Move Enlinkd daemon docs to Reference section (Issue http://issues.opennms.org/browse/NMS-14913[NMS-14913])
-
-=== Upgrade
-
-* features/topology: upgrade dependencies (Issue http://issues.opennms.org/browse/NMS-14341[NMS-14341])
-
-=== Unexpected Behavior
-
-* Missing datacollection file does not bring valueable error message (Issue http://issues.opennms.org/browse/NMS-12991[NMS-12991])
-
-=== Research
-
-* Can the OG nav-bar coexist with a Feather / Vue app? (Issue http://issues.opennms.org/browse/NMS-14731[NMS-14731])
-
+* Opt-In User Data: Name, email and company Collection (Issue https://issues.opennms.org/browse/NMS-16279[NMS-16279])

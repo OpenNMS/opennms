@@ -26,6 +26,14 @@
         <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.writer_threads:16}" />
   </bean>
 
+  <bean id="cassandra.driver-settings-file" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.driver_settings_file:}" />
+  </bean>
+
+  <bean id="cassandra.datacenter" class="java.lang.String">
+    <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.datacenter:datacenter1}" />
+  </bean>
+
   <bean id="cassandra.keyspace" class="java.lang.String">
         <constructor-arg type="java.lang.String" value="${org.opennms.newts.config.keyspace:newts}" />
   </bean>
@@ -118,7 +126,7 @@
 
   <bean id="newtsMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
 
-  <bean id="newtsMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+  <bean id="newtsMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.jmx.JmxReporter" factory-method="forRegistry">
       <constructor-arg ref="newtsMetricRegistry"/>
   </bean>
 

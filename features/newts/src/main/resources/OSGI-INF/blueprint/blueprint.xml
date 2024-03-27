@@ -18,10 +18,12 @@
             <cm:property name="max_batch_size" value="16" />
             <cm:property name="ring_buffer_size" value="8192" />
             <cm:property name="writer_threads" value="16" />
+            <cm:property name="datacenter" value="datacenter1" />
             <cm:property name="keyspace" value="newts" />
             <cm:property name="hostname" value="localhost" />
             <cm:property name="port" value="9042" />
             <cm:property name="ssl" value="false" />
+            <cm:property name="driver_settings_file" value="" />
             <cm:property name="compression" value="NONE" />
             <cm:property name="username" value="cassandra" />
             <cm:property name="password" value="cassandra" />
@@ -49,7 +51,7 @@
 
     <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry" />
 
-    <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+    <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.jmx.JmxReporter" factory-method="forRegistry">
         <argument ref="metricRegistry"/>
     </bean>
 
@@ -66,6 +68,7 @@
     <bean id="resourceIdSplitter" class="org.opennms.newts.cassandra.search.EscapableResourceIdSplitter" />
 
     <bean id="cassandraSession" class="org.opennms.newts.cassandra.CassandraSessionImpl">
+        <argument value="[[datacenter]]" />
         <argument value="[[keyspace]]" />
         <argument value="[[hostname]]" />
         <argument value="[[port]]" />
@@ -73,24 +76,27 @@
         <argument value="[[username]]" />
         <argument value="[[password]]" />
         <argument value="[[ssl]]" />
+        <argument value="[[driver_settings_file]]" />
     </bean>
     <service ref="cassandraSession" interface="org.opennms.newts.cassandra.CassandraSession"/>
 
     <!-- Instantiate and advertise a copy of the Schema Manager from newts so it can be reused with the same
     settings -->
     <bean id="schemaManager" class="org.opennms.newts.cassandra.SchemaManager">
+        <argument value="[[datacenter]]" />
         <argument value="[[keyspace]]" />
         <argument value="[[hostname]]" />
         <argument value="[[port]]" />
         <argument value="[[username]]" />
         <argument value="[[password]]" />
         <argument value="[[ssl]]" />
+        <argument value="[[driver_settings_file]]" />
     </bean>
     <bean id="schemaManagerProxy" class="org.opennms.netmgt.newts.proxy.SchemaManagerProxyImpl">
         <argument ref="schemaManager"/>
     </bean>
     <service ref="schemaManagerProxy" interface="org.opennms.netmgt.newts.proxy.SchemaManagerProxy"/>
-    
+
     <bean id="cassandraSearcher" class="org.opennms.newts.cassandra.search.CassandraSearcher" >
         <argument ref="cassandraSession" />
         <argument ref="metricRegistry" />

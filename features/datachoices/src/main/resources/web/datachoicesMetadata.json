@@ -1,0 +1,430 @@
+{
+    "metadata": [
+        {
+            "key": "alarms",
+            "name": "Current alarm count",
+            "description": "Current number of alarms that exist in the system",
+            "datatype": "number"
+        },
+        {
+            "key": "applianceCounts",
+            "name": "applianceCounts",
+            "description": "",
+            "datatype": "object"
+        },
+        {
+            "key": "applications",
+            "name": "Current count of Applications",
+            "description": "Current number of Applications defined in the system",
+            "datatype": "number"
+        },
+        {
+            "key": "availableProcessors",
+            "name": "System CPU count",
+            "description": "Number of CPU cores the core OS kernel sees",
+            "datatype": "number"
+        },
+        {
+            "key": "businessEdgeCount",
+            "name": "Current business service count",
+            "description": "Number of business services defined in the system",
+            "datatype": "number"
+        },
+        {
+            "key": "cloudInstanceType",
+            "name": "Cloud instance type (Cloud VM only)",
+            "description": "Name of the instance type (e.g. t2.large, Standard_F2s, e2-standard-4, ...)",
+            "datatype": "string"
+        },
+        {
+            "key": "cloudName",
+            "name": "Cloud name (Cloud VM only)",
+            "description": "Name of the cloud environment (e.g. EC2, AzurePublicCloud, AWS GovCloud...)",
+            "datatype": "string"
+        },
+        {
+            "key": "cloudRegion",
+            "name": "Cloud region (Cloud VM only)",
+            "description": "Name of the least-granular region / location / availability zone designation of this instance's placement in the cloud (e.g. us-east-1a, eastus, ...)",
+            "datatype": "string"
+        },
+        {
+            "key": "cloudVendor",
+            "name": "Cloud vendor(Cloud VM only)",
+            "description": "Name of the cloud vendor (e.g. AWS, Azure, GCP, AlibabaCloud, OpenStack...)",
+            "datatype": "string"
+        },
+        {
+            "key": "coreFlowsPersisted",
+            "name": "Flows persisted",
+            "description": "Number of flow records persisted since the core last started up",
+            "datatype": "number"
+        },
+        {
+            "key": "coreNewtsSamplesInserted",
+            "name": "Core Newts Samples Inserted",
+            "description": "",
+            "datatype": "number"
+        },
+        {
+            "key": "coreQueuedUpdatesCompleted",
+            "name": "Metrics persisted",
+            "description": "Number of metric data items persisted to time-series storage since the core last started up",
+            "datatype": "number"
+        },
+        {
+            "key": "databaseProductName",
+            "name": "RDBMS type",
+            "description": "Whether PostgreSQL or some other RDBMS is in use",
+            "datatype": "string"
+        },
+        {
+            "key": "databaseProductVersion",
+            "name": "RDBMS version",
+            "description": "Version of RDBMS in use",
+            "datatype": "string"
+        },
+        {
+            "key": "dcbCumulativeTimeInWebUi",
+            "name": "DCB: cumulative time in web UI",
+            "description": "Total time, in seconds, that any user has spent using the DCB UI, from entry to exit; must survive a restart",
+            "datatype": "number"
+        },
+        {
+            "key": "dcbFailed",
+            "name": "DCB: cumulative backup failure count",
+            "description": "Total number of config backup attempts ever failed in this system, including deleted entries; must survive a restart",
+            "datatype": "number"
+        },
+        {
+            "key": "dcbSucceed",
+            "name": "DCB: cumulative config count",
+            "description": "Total number of device configs ever successfully stored in this system, including deleted entries; must survive a restart",
+            "datatype": "number"
+        },
+        {
+            "key": "dcbWebUiEntries",
+            "name": "DCB: cumulative web UI entries",
+            "description": "Total number of times any user has entered the DCB UI, excluding manual refreshes; must survive a restart",
+            "datatype": "number"
+        },
+        {
+            "key": "destinationPathCount",
+            "name": "Current destination path count",
+            "description": "Site's level of granularity when using notifications",
+            "datatype": "number"
+        },
+        {
+            "key": "enlinkdLinksByProtocol",
+            "name": "Enlinkd: Links by protocol",
+            "description": "Number of links found by Enlinkd, broken down by link protocol",
+            "datatype": "number"
+        },
+        {
+            "key": "enlinkdNodesWithLinks",
+            "name": "Enlinkd: Nodes with links",
+            "description": "Number of nodes having at least one link",
+            "datatype": "number"
+        },
+        {
+            "key": "eventLogsProcessed",
+            "name": "Event-logs processed",
+            "description": "Number of event-logs processed by Eventd since the core last started up",
+            "datatype": "number"
+        },
+        {
+            "key": "events",
+            "name": "Current event count",
+            "description": "Count of events have been created since the system was installed",
+            "datatype": "number"
+        },
+        {
+            "key": "freePhysicalMemorySize",
+            "name": "Free physical memory size",
+            "description": "How much physical memory does the core OS kernel see?",
+            "datatype": "number"
+        },
+        {
+            "key": "groups",
+            "name": "Current group count",
+            "description": "How many groups the system's users are organized into for notification purposes",
+            "datatype": "number"
+        },
+        {
+            "key": "inContainer",
+            "name": "Containerization status",
+            "description": "Whether or not the core appears to be running inside a containerized environment such as Docker or podman",
+            "datatype": "boolean"
+        },
+        {
+            "key": "installedFeatures",
+            "name": "List of Karaf features installed",
+            "description": "Which features are installed on the core system",
+            "datatype": "object"
+        },
+        {
+            "key": "installedOIAPlugins",
+            "name": "List of OIA plugins loaded",
+            "description": "Which OpenNMS-provided or third-party plugins are installed at the site",
+            "datatype": "string"
+        },
+        {
+            "key": "ipInterfaces",
+            "name": "Current IP interfaces count",
+            "description": "Count of IP addresses that the system knows about across all devices",
+            "datatype": "number"
+        },
+        {
+            "key": "ipInterfacesPerNodeMode",
+            "name": "ipInterfacesPerNodeMode",
+            "description": "Arithmetic mode of the number of IP interfaces per node, calculated both canonically and with zero-interface nodes excluded from consideration. The string key divides the two sets; the lists are empty if no mode exists for its considered population.",
+            "datatype": "string"
+        },
+        {
+            "key": "ipInterfacesPerNodeStats",
+            "name": "ipInterfacesPerNodeStats",
+            "description": "Statistical breakdown of the distribution of IP interfaces across nodes. For the population of nodes, characterize the number of IP interfaces per node as minimum, maximum, arithmetic mean (rounded value), and median (rounded value). Each set is calculated both canonically and with zero-interface nodes excluded from the population; the topmost string key divides the two sets.",
+            "datatype": "object"
+        },
+        {
+            "key": "metaRestEndpointForReadingKpis",
+            "name": "Meta: REST endpoint for reading all KPIs",
+            "description": "Create a REST API endpoint which exposes all the KPIs",
+            "datatype": "string"
+        },
+        {
+            "key": "minions",
+            "name": "Minion count",
+            "description": "How many Minions are registered",
+            "datatype": "number"
+        },
+        {
+            "key": "monitoredServices",
+            "name": "Monitored services count",
+            "description": "How many monitored services exist in the system's inventory",
+            "datatype": "number"
+        },
+        {
+            "key": "monitoringLocations",
+            "name": "Monitoring locations count",
+            "description": "How many monitoring locations are defined",
+            "datatype": "number"
+        },
+        {
+            "key": "nodes",
+            "name": "Node count",
+            "description": "Number of nodes being monitored",
+            "datatype": "number"
+        },
+        {
+            "key": "nodesBySysOid",
+            "name": "Top-ten sysObjectIDs",
+            "description": "Which device types dominate the set of SNMP-enabled nodes",
+            "datatype": "object"
+        },
+        {
+            "key": "nodesWithDeviceConfigBySysOid",
+            "name": "DCB: device count by sysObjectID",
+            "description": "Number of nodes with at least one config backed up, broken down by sysObjectID, including nodes that lack a sysObjectID",
+            "datatype": "object"
+        },
+        {
+            "key": "notificationEnablementStatus",
+            "name": "Notifications globally enabled",
+            "description": "Whether notifications are in use on this installation",
+            "datatype": "boolean"
+        },
+        {
+            "key": "notifications",
+            "name": "Current number of open Notifications",
+            "description": "Current number of unresolved Notifications in the system",
+            "datatype": "number"
+        },
+        {
+            "key": "onCallRoleCount",
+            "name": "Current on-call role count",
+            "description": "Whether, and to what degree, on-call roles are in use at the site",
+            "datatype": "number"
+        },
+        {
+            "key": "onmsStartupTimeSeconds",
+            "name": "OpenNMS startup time",
+            "description": "Duration of most recent app startup, from JVM start to state indicated by \"Startup complete\" in manager.log, in whole seconds",
+            "datatype": "number"
+        },
+        {
+            "key": "osArch",
+            "name": "OS architecture",
+            "description": "CPU architecture of the core system",
+            "datatype": "string"
+        },
+        {
+            "key": "osName",
+            "name": "OS name",
+            "description": "Operating system in use on the core system",
+            "datatype": "string"
+        },
+        {
+            "key": "osVersion",
+            "name": "OS version",
+            "description": "OS kernel version in use on the core system",
+            "datatype": "string"
+        },
+        {
+            "key": "outages",
+            "name": "Current number of open Outages",
+            "description": "Current number of unresolved Outages in the system",
+            "datatype": "number"
+        },
+        {
+            "key": "packageName",
+            "name": "Product name",
+            "description": "Which core product (Horizon vs. Meridian) is in use",
+            "datatype": "string"
+        },
+        {
+            "key": "pollsCompleted",
+            "name": "Polls completed",
+            "description": "Number of polls completed since the core last started up",
+            "datatype": "number"
+        },
+        {
+            "key": "provisiondImportThreadPoolSize",
+            "name": "Provisiond Import thread pool size",
+            "description": "",
+            "datatype": "number"
+        },
+        {
+            "key": "provisiondRequisitionSchemeCount",
+            "name": "Provisiond thread pool sizes, requisition-def counts",
+            "description": "Whether Provisiond's thread pools have been tuned; whether and which types of external requisitions are in use.",
+            "datatype": "object"
+        },
+        {
+            "key": "provisiondRescanThreadPoolSize",
+            "name": "Provisiond Rescan thread pool size",
+            "description": "",
+            "datatype": "number"
+        },
+        {
+            "key": "provisiondScanThreadPoolSize",
+            "name": "Provisiond Scan thread pool size",
+            "description": "",
+            "datatype": "number"
+        },
+        {
+            "key": "provisiondWriteThreadPoolSize",
+            "name": "Provisiond Write thread pool size",
+            "description": "",
+            "datatype": "number"
+        },
+        {
+            "key": "requisitionCount",
+            "name": "Current requisition count",
+            "description": "Number of requisitions present in the system",
+            "datatype": "number"
+        },
+        {
+            "key": "requisitionWithChangedFSCount",
+            "name": "Current foreign-source definition count",
+            "description": "Degree of detector / policy customization in use from one requisition to the next",
+            "datatype": "number"
+        },
+        {
+            "key": "rpcStrategy",
+            "name": "RPC strategy",
+            "description": "Whether Minions get their polling / collecting instructions via Kafka or ActiveMQ",
+            "datatype": "string"
+        },
+        {
+            "key": "services",
+            "name": "List of enabled service daemons",
+            "description": "Which optional daemon-having features are enabled at the site, and which on-by-default ones have been disabled",
+            "datatype": "object"
+        },
+        {
+            "key": "servicesPerInterfaceMode",
+            "name": "Services per interface mode",
+            "description": "Arithmetic mode of the number of services per IP interface, calculated both canonically and with zero-service interfaces excluded from consideration. The string key divides the two sets; the lists are empty if no mode exists for its considered population.",
+            "datatype": "string"
+        },
+        {
+            "key": "servicesPerInterfaceStats",
+            "name": "Services per interface stats",
+            "description": "Statistical breakdown of the distribution of IP services across IP interfaces. For the population of IP interfaces, characterize the number of services per interface as minimum, maximum, arithmetic mean (rounded value), and median (rounded value). Each set is calculated both canonically and with zero-service interfaces excluded from the population; the topmost string key divides the two sets.",
+            "datatype": "object"
+        },
+        {
+            "key": "sinkStrategy",
+            "name": "Sink strategy",
+            "description": "Whether Minions ship traps, syslogs, flows, and streaming telemetry via Kafka or ActiveMQ",
+            "datatype": "string"
+        },
+        {
+            "key": "situations",
+            "name": "Current situation count",
+            "description": "Whether ALEC is likely in use and how much work it's doing",
+            "datatype": "number"
+        },
+        {
+            "key": "snmpInterfaces",
+            "name": "Current SNMP interfaces count",
+            "description": "How many SNMP interfaces does the system know about across all devices?",
+            "datatype": "number"
+        },
+        {
+            "key": "snmpInterfacesPerNodeMode",
+            "name": "SNMP Interfaces per node mode",
+            "description": "Arithmetic mode of the number of SNMP interfaces per node, calculated both canonically and with zero-interface nodes excluded from consideration. The string key divides the two sets; the lists are empty if no mode exists for its considered population.",
+            "datatype": "string"
+        },
+        {
+            "key": "snmpInterfacesPerNodeStats",
+            "name": "SNMP Interfaces per node stats",
+            "description": "Statistical breakdown of the distribution of SNMP interfaces across nodes. For the population of nodes, characterize the number of SNMP interfaces per node as minimum, maximum, arithmetic mean (rounded value), and median (rounded value). Each set is calculated both canonically and with zero-interface nodes excluded from the population; the topmost string key divides the two sets.",
+            "datatype": "object"
+        },
+        {
+            "key": "snmpInterfacesWithFlows",
+            "name": "SNMP interfaces with flows",
+            "description": "Whether flows are being ingested, and a notion of how widely flows are exported to us",
+            "datatype": "object"
+        },
+        {
+            "key": "systemId",
+            "name": "System tracking UUID",
+            "description": "Acts as a \"primary key\" for a system's data over time",
+            "datatype": "string"
+        },
+        {
+            "key": "totalPhysicalMemorySize",
+            "name": "Total Physical Memory Size",
+            "description": "",
+            "datatype": "number"
+        },
+        {
+            "key": "tssPlugins",
+            "name": "TSS plugin loaded, if any",
+            "description": "In case time-series strategy is TSS, which TSS plugin is registered",
+            "datatype": "object"
+        },
+        {
+            "key": "tssStrategies",
+            "name": "Time-series strategy",
+            "description": "Whether the site uses RRDTool / JRobin, Newts, or a TSS plugin for time-series persisting",
+            "datatype": "string"
+        },
+        {
+            "key": "users",
+            "name": "Current user count",
+            "description": "Number of login accounts defined locally to the installation; may exclude SSO users",
+            "datatype": "number"
+        },
+        {
+            "key": "version",
+            "name": "Product version",
+            "description": "Which version of the core product in use",
+            "datatype": "string"
+        }
+   ]
+}

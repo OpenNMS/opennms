@@ -14,7 +14,8 @@ Configuring a path outage lets you suppress notifications for nodes that appear 
 For example, if a WAN link fails, all nodes at the remote site served by the WAN link will appear to be down.
 Because you get a notification that the router on the far end of the WAN link is not responding, you don't need notifications for all devices that sit behind that router.
 
-See xref:operation:deep-dive/service-assurance/path-outages.adoc[Use Path Outages to Suppress Notifications] for additional information.
+See xref:operation:deep-dive/service-assurance/path-outages.adoc[Use Path Outages to Suppress Notifications] for information on enabling this feature.
+Path outage checking is disabled by default.
 
 You can configure a path outage for an individual node by setting a parent on the node in a requisition or by doing the following:
 

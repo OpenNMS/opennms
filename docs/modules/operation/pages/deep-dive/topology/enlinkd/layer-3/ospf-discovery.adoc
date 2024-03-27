@@ -16,7 +16,7 @@ You can find generic information about the OSPF link discovery process in the OS
 
 The OSPF Topology Updater consolidates OSPF data and provides the OSPF OnmsTopology.
 Only full bidirectional connections between two OSPF-supported devices become edges in the topology.
-For example, Node A and node B are connected by an edge if, and only if, there is an OSPF link in Node A to Node B, and vice versa.
+For example, node A and node B are connected by an edge if, and only if, there is an OSPF link in Node A to Node B, and vice versa.
 
 Information gathered from supported OIDs is stored in the following database tables:
 
@@ -55,6 +55,39 @@ This object is persistent and, when written, the entity should save the change t
 | Flag that notes whether this router is configured as an autonomous system border router. +
 This object is persistent and, when written, the entity should save the change to non-volatile storage.
 | .1.3.6.1.2.1.14.1.5.0
+
+| ospfAreaId
+| A 32-bit integer uniquely identifying an area.
+Area ID `0.0.0.0` is used for the OSPF backbone.
+| .1.3.6.1.2.1.14.2.1.1
+
+| ospfAuthType
+| The authentication type specified for an area.
+| .1.3.6.1.2.1.14.2.1.2
+
+| ospfImportAsExtern
+| Indicates if an area is a stub area, NSSA, or standard
+area. Type-5 AS-external LSAs and type-11 Opaque LSAs are
+not imported into stub areas or NSSAs. NSSAs import
+AS-external data as type-7 LSAs.
+| .1.3.6.1.2.1.14.2.1.3
+
+| ospfAreaBdrRtrCount
+| The total number of area border routers reachable
+ within this area. This value is initially zero and is
+ calculated in each Shortest Path First (SPF) pass.
+| .1.3.6.1.2.1.14.2.1.5
+
+| ospfAsBdrRtrCount
+| The total number of autonomous system border
+ routers reachable within this area. This value is
+ initially zero and is calculated in each SPF
+ pass.
+| .1.3.6.1.2.1.14.2.1.6
+
+| ospfAreaLsaCount
+| The total number of link state advertisements in this area's link state database, excluding AS-external LSAs.
+| .1.3.6.1.2.1.14.2.1.7
 
 | ospfIfIpAddress
 | IP address of this OSPF interface.

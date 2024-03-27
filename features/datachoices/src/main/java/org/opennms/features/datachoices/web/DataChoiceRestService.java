@@ -1,54 +1,77 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.features.datachoices.web;
 
 import java.io.IOException;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
-import org.opennms.features.datachoices.internal.UsageStatisticsReportDTO;
+import org.opennms.features.datachoices.internal.usagestatistics.UsageStatisticsReportDTO;
+import org.opennms.features.datachoices.internal.usagestatistics.UsageStatisticsStatusDTO;
+import org.opennms.features.datachoices.internal.productupdateenrollment.ProductUpdateEnrollmentFormData;
+import org.opennms.features.datachoices.internal.productupdateenrollment.ProductUpdateEnrollmentStatusDTO;
 
 @Path("/datachoices")
 public interface DataChoiceRestService {
-
-    @POST
-    void updateCollectUsageStatisticFlag(@Context HttpServletRequest request, @QueryParam("action") String action);
-
     @GET
     @Produces(value={MediaType.APPLICATION_JSON})
     UsageStatisticsReportDTO getUsageStatistics() throws ServletException, IOException;
+
+    @GET
+    @Path("/status")
+    @Produces(value={MediaType.APPLICATION_JSON})
+    Response getStatus() throws ServletException, IOException;
+
+    @POST
+    @Path("/status")
+    @Consumes({MediaType.APPLICATION_JSON})
+    Response setStatus(@Context HttpServletRequest request, UsageStatisticsStatusDTO dto) throws ServletException, IOException;
+
+    @GET
+    @Path("/meta")
+    @Produces(value={MediaType.APPLICATION_JSON})
+    Response getMetadata() throws ServletException, IOException;
+
+    @GET
+    @Path("/productupdate/status")
+    @Produces(value={MediaType.APPLICATION_JSON})
+    Response getProductUpdateEnrollmentStatus() throws ServletException, IOException;
+
+    @POST
+    @Path("/productupdate/status")
+    @Consumes({MediaType.APPLICATION_JSON})
+    Response setProductUpdateEnrollmentStatu(@Context HttpServletRequest request, ProductUpdateEnrollmentStatusDTO dto) throws ServletException, IOException;
+
+    @POST
+    @Path("/productupdate/submit")
+    @Consumes({MediaType.APPLICATION_JSON})
+    Response submitProductUpdateEnrollmentData(@Context HttpServletRequest request, ProductUpdateEnrollmentFormData data) throws ServletException, IOException;
 }

@@ -1,33 +1,27 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.enlinkd.snmp;
 
+import org.opennms.netmgt.enlinkd.model.IsIsElement;
 import org.opennms.netmgt.enlinkd.model.IsIsLink;
 import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjNeighSysType;
 import org.opennms.netmgt.enlinkd.model.IsIsLink.IsisISAdjState;
@@ -41,11 +35,17 @@ import org.slf4j.LoggerFactory;
 public class IsisISAdjTableTracker extends TableTracker {
 	private final static Logger LOG = LoggerFactory.getLogger(IsisISAdjTableTracker.class);
 
-    public final static SnmpObjId ISIS_IS_ADJ_STATE                = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.2");
-    public final static SnmpObjId ISIS_IS_ADJ_NBR_SNPAADDR         = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.4");
-    public final static SnmpObjId ISIS_IS_ADJ_NBR_SYSTYPE          = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.5");
-    public final static SnmpObjId ISIS_IS_ADJ_NBR_SYSID            = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.6");
-    public final static SnmpObjId ISIS_IS_ADJ_NBR_EXTENDED_CIRCID  = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.7");
+    public final static SnmpObjId ISIS_IS_ADJ_STATE_OID = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.2");
+    public final static SnmpObjId ISIS_IS_ADJ_NBR_SNPAADDR_OID = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.4");
+    public final static SnmpObjId ISIS_IS_ADJ_NBR_SYSTYPE_OID = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.5");
+    public final static SnmpObjId ISIS_IS_ADJ_NBR_SYSID_OID = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.6");
+    public final static SnmpObjId ISIS_IS_ADJ_NBR_EXTENDED_CIRCID_OID = SnmpObjId.get(".1.3.6.1.2.1.138.1.6.1.1.7");
+
+    public final static String ISIS_IS_ADJ_STATE = "isisISAdjState";
+    public final static String ISIS_IS_ADJ_NBR_SNPAADDR = "isisISAdjNeighSNPAAddress";
+    public final static String ISIS_IS_ADJ_NBR_SYSTYPE = "isisISAdjNeighSysType";
+    public final static String ISIS_IS_ADJ_NBR_SYSID = "isisISAdjNeighSysID";
+    public final static String ISIS_IS_ADJ_NBR_EXTENDED_CIRCID = "isisISAdjNbrExtendedCircID";
 
     public static final SnmpObjId[] isisIsAdjtable_elemList = new SnmpObjId[] {
         
@@ -65,7 +65,7 @@ public class IsisISAdjTableTracker extends TableTracker {
          * REFERENCE "{ISIS.aoi adjacencyState (78)}"
          * ::= { isisISAdjEntry 2 }
          */
-        ISIS_IS_ADJ_STATE,
+            ISIS_IS_ADJ_STATE_OID,
 
         /*
          *  isisISAdjNeighSNPAAddress OBJECT-TYPE
@@ -77,7 +77,7 @@ public class IsisISAdjTableTracker extends TableTracker {
          *  REFERENCE "{ISIS.aoi neighbourSNPAAddress (79)}"
          *  ::= { isisISAdjEntry 4 }
          */
-        ISIS_IS_ADJ_NBR_SNPAADDR,
+            ISIS_IS_ADJ_NBR_SNPAADDR_OID,
         
         /*
          *  isisISAdjNeighSysType OBJECT-TYPE
@@ -95,7 +95,7 @@ public class IsisISAdjTableTracker extends TableTracker {
          *          REFERENCE "{ISIS.aoi neighbourSystemType (80)}"
          *  ::= { isisISAdjEntry 5 }
          */
-        ISIS_IS_ADJ_NBR_SYSTYPE,
+            ISIS_IS_ADJ_NBR_SYSTYPE_OID,
         
         /*
          *     isisISAdjNeighSysID OBJECT-TYPE
@@ -108,7 +108,7 @@ public class IsisISAdjTableTracker extends TableTracker {
          *     REFERENCE "{ISIS.aoi neighbourSystemIds (83)}"
          *     ::= { isisISAdjEntry 6 }
          */
-         ISIS_IS_ADJ_NBR_SYSID,
+            ISIS_IS_ADJ_NBR_SYSID_OID,
         
         /*
          * isisISAdjNbrExtendedCircID OBJECT-TYPE
@@ -120,7 +120,7 @@ public class IsisISAdjTableTracker extends TableTracker {
          *    Neighbor during 3-way handshake, or 0."
          *    ::= { isisISAdjEntry 7 }
          */
-        ISIS_IS_ADJ_NBR_EXTENDED_CIRCID
+            ISIS_IS_ADJ_NBR_EXTENDED_CIRCID_OID
 
     };
     
@@ -139,23 +139,23 @@ public class IsisISAdjTableTracker extends TableTracker {
 	    }
 	    
 	    public Integer getIsisISAdjStatus() {
-	    	return getValue(ISIS_IS_ADJ_STATE).toInt();
+	    	return getValue(ISIS_IS_ADJ_STATE_OID).toInt();
 	    }
 
 	    public String getIsisISAdjNeighSnpaAddress() {
-	        return getValue(ISIS_IS_ADJ_NBR_SNPAADDR).toHexString();
+	        return getValue(ISIS_IS_ADJ_NBR_SNPAADDR_OID).toHexString();
 	    }
 	    
 	    public Integer getIsisISAdjNeighSysType() {
-	        return getValue(ISIS_IS_ADJ_NBR_SYSTYPE).toInt();
+	        return getValue(ISIS_IS_ADJ_NBR_SYSTYPE_OID).toInt();
 	    }
 	    
 	    public String getIsisISAdjNeighSysID() {
-	        return getValue(ISIS_IS_ADJ_NBR_SYSID).toHexString();
+	        return getValue(ISIS_IS_ADJ_NBR_SYSID_OID).toHexString();
 	    }
 	    
 	    public Integer getIsisISAdjNbrExtendedCircID() {
-	        return getValue(ISIS_IS_ADJ_NBR_EXTENDED_CIRCID).toInt();
+	        return getValue(ISIS_IS_ADJ_NBR_EXTENDED_CIRCID_OID).toInt();
 	    }
 
 	    public IsIsLink getIsisLink() {
@@ -203,6 +203,11 @@ public class IsisISAdjTableTracker extends TableTracker {
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.IsisISAdjTableTracker.IsIsAdjRow} object.
      */
     public void processIsisAdjRow(final IsIsAdjRow row) {
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", ISIS_IS_ADJ_STATE_OID + "." + row.getInstance().toString(), ISIS_IS_ADJ_STATE, row.getIsisISAdjStatus(), IsisISAdjState.getTypeString(row.getIsisISAdjStatus()));
+        System.out.printf("\t\t%s (%s)= %s \n", ISIS_IS_ADJ_NBR_SNPAADDR_OID + "." + row.getInstance().toString(), ISIS_IS_ADJ_NBR_SNPAADDR, row.getIsisISAdjNeighSnpaAddress());
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", ISIS_IS_ADJ_NBR_SYSTYPE_OID + "." + row.getInstance().toString(), ISIS_IS_ADJ_NBR_SYSTYPE, row.getIsisISAdjNeighSysType(), IsisISAdjNeighSysType.getTypeString(row.getIsisISAdjNeighSysType()));
+        System.out.printf("\t\t%s (%s)= %s \n", ISIS_IS_ADJ_NBR_SYSID_OID + "." + row.getInstance().toString(), ISIS_IS_ADJ_NBR_SYSID, row.getIsisISAdjNeighSysID());
+        System.out.printf("\t\t%s (%s)= %s \n", ISIS_IS_ADJ_NBR_EXTENDED_CIRCID_OID + "." + row.getInstance().toString(), ISIS_IS_ADJ_NBR_EXTENDED_CIRCID, row.getIsisISAdjNbrExtendedCircID());
     }
 
 

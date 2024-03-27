@@ -14,7 +14,24 @@
   http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
-  <bean id="jiraTicketerPlugin" class="org.opennms.netmgt.ticketer.jira.JiraTicketerPlugin" />
+  <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao"/>
+  <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao"/>
+  <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
+  <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils"/>
+  <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" availability="mandatory"/>
+
+  <bean id="entityScopeProvider" class="org.opennms.core.mate.model.EntityScopeProviderImpl">
+    <property name="nodeDao" ref="nodeDao"/>
+    <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
+    <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
+    <property name="sessionUtils" ref="sessionUtils"/>
+    <property name="scv" ref="secureCredentialsVault"/>
+  </bean>
+
+  <bean id="jiraTicketerPlugin" class="org.opennms.netmgt.ticketer.jira.JiraTicketerPlugin">
+    <argument ref="entityScopeProvider"/>
+  </bean>
+
   <service id="jiraTicketerPluginService" ref="jiraTicketerPlugin" interface="org.opennms.api.integration.ticketing.Plugin">
     <service-properties>
       <entry key="registration.export" value="true" />
@@ -23,28 +40,44 @@
 
   <command-bundle xmlns="http://karaf.apache.org/xmlns/shell/v1.1.0">
     <command>
-      <action class="org.opennms.netmgt.ticketer.jira.commands.ListComponentsCommand"/>
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ListComponentsCommand">
+        <property name="entityScopeProvider" ref="entityScopeProvider"/>
+      </action>
     </command>
     <command>
-      <action class="org.opennms.netmgt.ticketer.jira.commands.ListFieldsCommand"/>
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ListFieldsCommand">
+        <property name="entityScopeProvider" ref="entityScopeProvider"/>
+      </action>
     </command>
     <command>
-      <action class="org.opennms.netmgt.ticketer.jira.commands.ListIssueTypesCommand"/>
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ListIssueTypesCommand">
+        <property name="entityScopeProvider" ref="entityScopeProvider"/>
+      </action>
     </command>
     <command>
-      <action class="org.opennms.netmgt.ticketer.jira.commands.ListPrioritiesCommand"/>
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ListPrioritiesCommand">
+        <property name="entityScopeProvider" ref="entityScopeProvider"/>
+      </action>
     </command>
     <command>
-      <action class="org.opennms.netmgt.ticketer.jira.commands.ListProjectsCommand"/>
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ListProjectsCommand">
+        <property name="entityScopeProvider" ref="entityScopeProvider"/>
+      </action>
     </command>
     <command>
-      <action class="org.opennms.netmgt.ticketer.jira.commands.ListVersionsCommand"/>
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ListVersionsCommand">
+        <property name="entityScopeProvider" ref="entityScopeProvider"/>
+      </action>
     </command>
     <command>
-      <action class="org.opennms.netmgt.ticketer.jira.commands.ShowConfigCommand"/>
+      <action class="org.opennms.netmgt.ticketer.jira.commands.ShowConfigCommand">
+        <property name="entityScopeProvider" ref="entityScopeProvider"/>
+      </action>
     </command>
     <command>
-      <action class="org.opennms.netmgt.ticketer.jira.commands.VerifyCommand"/>
+      <action class="org.opennms.netmgt.ticketer.jira.commands.VerifyCommand">
+        <property name="entityScopeProvider" ref="entityScopeProvider"/>
+      </action>
     </command>
   </command-bundle>
 

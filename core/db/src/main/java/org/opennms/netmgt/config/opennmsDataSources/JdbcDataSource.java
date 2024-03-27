@@ -1,35 +1,27 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
- * 
- * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
- * 
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- * 
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- * 
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- * 
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *     http://www.gnu.org/licenses/
- * 
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
+ *
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.config.opennmsDataSources;
 
 
-import java.nio.file.Paths;
 import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -42,6 +34,8 @@ import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import io.swagger.v3.oas.annotations.Hidden;
 
@@ -55,9 +49,7 @@ import io.swagger.v3.oas.annotations.Hidden;
 @XmlAccessorType(XmlAccessType.NONE)
 public class JdbcDataSource implements java.io.Serializable {
     private static final long serialVersionUID = -1120653287571635877L;
-
-    private static final String KEYSTORE_PASSWORD = System.getProperty("org.opennms.features.scv.jceks.key", "QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw");
-    private static final String KEYSTORE_FILENAME = Paths.get(System.getProperty("opennms.home"), "etc", "scv.jce").toString();
+    private static final Logger LOG = LoggerFactory.getLogger(JdbcDataSource.class);
 
     @XmlAttribute(name = "name", required = true)
     private String name;
@@ -144,7 +136,7 @@ public class JdbcDataSource implements java.io.Serializable {
         
         if (obj instanceof JdbcDataSource) {
             JdbcDataSource temp = (JdbcDataSource)obj;
-            boolean equals = Objects.equals(temp.name, name)
+            return Objects.equals(temp.name, name)
                 && Objects.equals(temp.databaseName, databaseName)
                 && Objects.equals(temp.schemaName, schemaName)
                 && Objects.equals(temp.url, url)
@@ -153,7 +145,6 @@ public class JdbcDataSource implements java.io.Serializable {
                 && Objects.equals(temp.rawPassword, rawPassword)
                 && Objects.equals(temp.paramList, paramList)
                 && Objects.equals(temp.connectionPool, connectionPool);
-            return equals;
         }
         return false;
     }
@@ -200,7 +191,7 @@ public class JdbcDataSource implements java.io.Serializable {
             throw new IndexOutOfBoundsException("getParam: Index value '" + index + "' not in range [0.." + (this.paramList.size() - 1) + "]");
         }
         
-        return (org.opennms.netmgt.config.opennmsDataSources.Param) paramList.get(index);
+        return paramList.get(index);
     }
 
     /**
@@ -214,7 +205,7 @@ public class JdbcDataSource implements java.io.Serializable {
      */
     public org.opennms.netmgt.config.opennmsDataSources.Param[] getParam() {
         org.opennms.netmgt.config.opennmsDataSources.Param[] array = new org.opennms.netmgt.config.opennmsDataSources.Param[0];
-        return (org.opennms.netmgt.config.opennmsDataSources.Param[]) this.paramList.toArray(array);
+        return this.paramList.toArray(array);
     }
 
     /**
@@ -278,7 +269,7 @@ public class JdbcDataSource implements java.io.Serializable {
      * @return a hash code value for the object.
      */
     public int hashCode() {
-        int hash = Objects.hash(
+        return Objects.hash(
             name, 
             databaseName, 
             schemaName, 
@@ -288,7 +279,6 @@ public class JdbcDataSource implements java.io.Serializable {
             rawPassword,
             paramList,
             connectionPool);
-        return hash;
     }
 
     /**
@@ -313,8 +303,7 @@ public class JdbcDataSource implements java.io.Serializable {
      * @return true if the object was removed from the collection.
      */
     public boolean removeParam(final org.opennms.netmgt.config.opennmsDataSources.Param vParam) {
-        boolean removed = paramList.remove(vParam);
-        return removed;
+        return paramList.remove(vParam);
     }
 
     /**
@@ -450,11 +439,10 @@ public class JdbcDataSource implements java.io.Serializable {
     }
 
     public String interpolateAttribute(final String value) {
-        return interpolateAttribute(value, KEYSTORE_FILENAME, KEYSTORE_PASSWORD);
+        return interpolateAttribute(value, JCEKSSecureCredentialsVault.defaultScv());
     }
 
-    public String interpolateAttribute(final String value, final String keystoreFile, final String password) {
-        final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile, password);
+    public String interpolateAttribute(final String value, final SecureCredentialsVault secureCredentialsVault) {
         final Interpolator.Result result = Interpolator.interpolate(value, new SecureCredentialsVaultScope(secureCredentialsVault));
         return result.output;
     }

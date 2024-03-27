@@ -158,3 +158,5 @@ This is useful for sending messages or operating LED displays via IFTTT.
     <trigger-package>
 </ifttt-config>
 ----
+NOTE: Metadata expressions can also be used in the key attribute of the `ifttt-config.xml` configuration file.
+This allows the user to also reference an API key stored in the secure credentials vault.

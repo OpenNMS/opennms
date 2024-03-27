@@ -6,7 +6,7 @@
         <relativePath>../poms/compiled/</relativePath>
         <groupId>org.opennms.features.topology.build</groupId>
         <artifactId>compiled-bundle-settings</artifactId>
-        <version>31.0.3-SNAPSHOT</version>
+        <version>33.0.3-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -176,12 +176,6 @@
             <groupId>javax.validation</groupId>
             <artifactId>validation-api</artifactId>
             <classifier>sources</classifier>
-            <scope>provided</scope>
-        </dependency>
-        <!-- jinjava needs a newer guava, we'll make sure it's pulled into the feature -->
-        <dependency>
-            <groupId>com.google.guava</groupId>
-            <artifactId>guava</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

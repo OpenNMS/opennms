@@ -38,6 +38,7 @@ import java.util.Map;
  * @author Shawn Bayern (in the style of Nathan's other classes)
  **/
 
+@SuppressWarnings("java:S2259") // sonar doesn't recognize pLogger.logError() as short-circuiting null checks
 public class FunctionInvocation
   extends Expression
 {

@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.netmgt.enlinkd.model.BridgeElement;
@@ -50,28 +43,37 @@ import org.slf4j.LoggerFactory;
  * @see <A HREF="http://www.ietf.org/rfc/rfc1213.txt">RFC1213</A>
  * @version $Id: $
  */
-public final class Dot1dBaseTracker extends AggregateTracker
+public class Dot1dBaseTracker extends AggregateTracker
 {
 	private final static Logger LOG = LoggerFactory.getLogger(Dot1dBaseTracker.class);
+
     /*
      * the bridge type
      */
 	/** Constant <code>BASE_BRIDGE_ADDRESS="dot1dBaseBridgeAddress"</code> */
 	public final static	String	BASE_BRIDGE_ADDRESS	= "dot1dBaseBridgeAddress";
+	public final static	String	BASE_BRIDGE_ADDRESS_OID	= ".1.3.6.1.2.1.17.1.1";
 	/** Constant <code>BASE_NUM_PORTS="dot1dBaseNumPorts"</code> */
 	public final static	String	BASE_NUM_PORTS		= "dot1dBaseNumPorts";
+	public final static	String	BASE_NUM_PORTS_OID	= ".1.3.6.1.2.1.17.1.2";
 	/** Constant <code>BASE_NUM_TYPE="dot1dBaseType"</code> */
 	public final static	String	BASE_NUM_TYPE		= "dot1dBaseType";
+	public final static	String	BASE_NUM_TYPE_OID	= ".1.3.6.1.2.1.17.1.3";
 	/** Constant <code>STP_PROTOCOL_SPEC="dot1dStpProtocolSpecification"</code> */
 	public final static String STP_PROTOCOL_SPEC = "dot1dStpProtocolSpecification";
+	public final static String STP_PROTOCOL_SPEC_OID = ".1.3.6.1.2.1.17.2.1";
 	/** Constant <code>STP_PRIORITY="dot1dStpPriority"</code> */
 	public final static String STP_PRIORITY = "dot1dStpPriority";
+	public final static String STP_PRIORITY_OID = ".1.3.6.1.2.1.17.2.2";
 	/** Constant <code>STP_DESIGNATED_ROOT="dot1dStpDesignatedRoot"</code> */
 	public final static String STP_DESIGNATED_ROOT = "dot1dStpDesignatedRoot";
+	public final static String STP_DESIGNATED_ROOT_OID =  ".1.3.6.1.2.1.17.2.5";
 	/** Constant <code>STP_ROOT_COST="dot1dStpRootCost"</code> */
 	public final static String STP_ROOT_COST = "dot1dStpRootCost";
+	public final static String STP_ROOT_COST_OID = ".1.3.6.1.2.1.17.2.6";
 	/** Constant <code>STP_ROOT_PORT="dot1dStpRootPort"</code> */
 	public final static String STP_ROOT_PORT = "dot1dStpRootPort";
+	public final static String STP_ROOT_PORT_OID = ".1.3.6.1.2.1.17.2.7";
 
 	/**
 	 * <P>The keys that will be supported by default from the 
@@ -95,13 +97,13 @@ public final class Dot1dBaseTracker extends AggregateTracker
 		 *  BridgeIdentifier is formed which is used in the
 		 *  Spanning Tree Protocol.</P>
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, BASE_BRIDGE_ADDRESS, ".1.3.6.1.2.1.17.1.1");
+		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, BASE_BRIDGE_ADDRESS, BASE_BRIDGE_ADDRESS_OID);
 
 		/*
 		 * <P> The number of ports controlled by this bridging entity.</P>
 		 *
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, BASE_NUM_PORTS, ".1.3.6.1.2.1.17.1.2");
+		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, BASE_NUM_PORTS, BASE_NUM_PORTS_OID);
 
 		/*
 		 * <P> Indicates what type of bridging this bridge can
@@ -114,7 +116,7 @@ public final class Dot1dBaseTracker extends AggregateTracker
 		 *  3 = sourceroute-only
 		 *  4 = srt
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, BASE_NUM_TYPE, ".1.3.6.1.2.1.17.1.3");
+		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, BASE_NUM_TYPE, BASE_NUM_TYPE_OID);
 
 		/*
 		 * <P>An indication of what version of the Spanning
@@ -126,7 +128,7 @@ public final class Dot1dBaseTracker extends AggregateTracker
 		 *  are released that are incompatible with the
 		 *  current version a new value will be defined.</P>
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_PROTOCOL_SPEC, ".1.3.6.1.2.1.17.2.1");
+		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_PROTOCOL_SPEC, STP_PROTOCOL_SPEC_OID);
 
 		/*
 		 * <P> The value of the write-able portion of the Bridge
@@ -136,7 +138,7 @@ public final class Dot1dBaseTracker extends AggregateTracker
 		 *  dot1dBaseBridgeAddress.</P>
 		 *
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_PRIORITY, ".1.3.6.1.2.1.17.2.2");
+		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_PRIORITY, STP_PRIORITY_OID);
 
 		/*
 		 * <P>The bridge identifier of the root of the spanning
@@ -145,14 +147,14 @@ public final class Dot1dBaseTracker extends AggregateTracker
 		 *  the Root Identifier parameter in all Configuration
 		 *  Bridge PDUs originated by this node.</P>
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, STP_DESIGNATED_ROOT, ".1.3.6.1.2.1.17.2.5");
+		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPOCTETSTRING, STP_DESIGNATED_ROOT, STP_DESIGNATED_ROOT_OID);
 
 		/*
 		 * <P>The cost of the path to the root as seen from
 		 * this bridge.</P>
 		 *
 		 */
-		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_ROOT_COST, ".1.3.6.1.2.1.17.2.6");
+		ms_elemList[ndx++] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_ROOT_COST, STP_ROOT_COST_OID);
 
 		/*
 		 * <P>The port number of the port which offers the
@@ -160,7 +162,7 @@ public final class Dot1dBaseTracker extends AggregateTracker
 		 * bridge.</P>
 		 *
 		 */
-		ms_elemList[ndx] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_ROOT_PORT, ".1.3.6.1.2.1.17.2.7");
+		ms_elemList[ndx] = new NamedSnmpVar(NamedSnmpVar.SNMPINT32, STP_ROOT_PORT, STP_ROOT_PORT_OID);
 	}
 
     private final SnmpStore m_store;
@@ -296,5 +298,18 @@ public final class Dot1dBaseTracker extends AggregateTracker
     	}
     	return bridge;
     }
+
+	@Override
+	public void printSnmpData() {
+		System.out.printf("\t\t%s (%s)= %s\n", BASE_BRIDGE_ADDRESS_OID, BASE_BRIDGE_ADDRESS, getBridgeAddress());
+		System.out.printf("\t\t%s (%s)= %s\n", BASE_NUM_PORTS_OID, BASE_NUM_PORTS, getNumberOfPorts());
+		System.out.printf("\t\t%s (%s)= %s (%s)\n", BASE_NUM_TYPE_OID, BASE_NUM_TYPE, getBridgeType(), BridgeDot1dBaseType.getTypeString(getBridgeType()));
+		System.out.printf("\t\t%s (%s)= %s (%s)\n", STP_PROTOCOL_SPEC_OID, STP_PROTOCOL_SPEC, getStpProtocolSpecification(), BridgeDot1dStpProtocolSpecification.getTypeString(getStpProtocolSpecification()));
+		System.out.printf("\t\t%s (%s)= %s\n", STP_PRIORITY_OID, STP_PRIORITY, getStpPriority());
+		System.out.printf("\t\t%s (%s)= %s\n", STP_DESIGNATED_ROOT_OID, STP_DESIGNATED_ROOT, getStpDesignatedRoot());
+		System.out.printf("\t\t%s (%s)= %s\n", STP_ROOT_COST_OID, STP_ROOT_COST, getStpRootCost());
+		System.out.printf("\t\t%s (%s)= %s\n", STP_ROOT_PORT_OID, STP_ROOT_PORT, getStpRootPort());
+
+	}
     
 }
