@@ -232,18 +232,6 @@
                 "minion-image-single-arch-linux-amd64"
             ]
         },
-        "smoke-test-flaky": {
-            "context": [
-                "CircleCI",
-                "docker-publish-account"
-            ],
-            "job": "smoke-test-flaky",
-            "requires": [
-                "horizon-image-single-arch-linux-amd64",
-                "minion-image-single-arch-linux-amd64",
-                "sentinel-image-single-arch-linux-amd64"
-            ]
-        },
         "smoke-test-minion": {
             "context": [
                 "CircleCI",

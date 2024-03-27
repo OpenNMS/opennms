@@ -28,10 +28,8 @@
 
 package org.opennms.features.kafka.producer.collection;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
@@ -45,14 +43,15 @@ import org.opennms.netmgt.collection.api.ServiceParameters;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
 
 public class KafkaPersister implements Persister {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaPersister.class);
 
-    private final int MAX_BUFFER_SIZE_CONFIGURED = 921600;
+    private static final int MAX_BUFFER_SIZE_CONFIGURED = 921600;
 
     private CollectionSetMapper collectionSetMapper;
 
@@ -61,6 +60,8 @@ public class KafkaPersister implements Persister {
     private KafkaProducer<String, byte[]> producer;
     
     private String topicName = "metrics";
+
+    private Boolean disableMetricsSplitting = false;
 
     public KafkaPersister(ServiceParameters params) {
         m_params = params;
@@ -84,7 +85,7 @@ public class KafkaPersister implements Persister {
 
     void bisectAndSendMessageToKafka(CollectionSetProtos.CollectionSet collectionSetProto) {
 
-        if (checkForMaxSize(collectionSetProto.toByteArray().length)) {
+        if (!getDisableMetricsSplitting() && checkForMaxSize(collectionSetProto.toByteArray().length)) {
 
             if(collectionSetProto.getResourceCount() == 1) {
                 /// Handle the case where resource is only one with too many attributes that can cross max buffer size.
@@ -269,4 +270,11 @@ public class KafkaPersister implements Persister {
         // not handled here
     }
 
+    public void setDisableMetricsSplitting(Boolean disableMetricsSplitting) {
+        this.disableMetricsSplitting = disableMetricsSplitting;
+    }
+
+    public Boolean getDisableMetricsSplitting() {
+        return disableMetricsSplitting;
+    }
 }

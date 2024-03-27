@@ -171,7 +171,6 @@ else:
         "ui": False,
         "integration": False,
         "smoke": False,
-        "smoke-flaky": False,
         "rpms": False,
         "debs": False,
         "oci": False,
@@ -249,24 +248,12 @@ if "trigger-coverage" in mappings:
     What_to_build.clear()
     git_keywords.clear()
 
-if "trigger-flaky-smoke" in mappings:
-    if not build_mappings["smoke-flaky"]:
-        build_mappings["smoke-flaky"] = mappings["trigger-flaky-smoke"]
-
 if re.match(".*smoke.*", branch_name) and (
     not build_mappings["experimental"] or "experimentalPath" not in git_keywords
 ):
     print("Detected smoke in the branch name")
     build_mappings["smoke"] = True
     print()
-
-if re.match(".*flaky.*", branch_name) and (
-    not build_mappings["experimental"] or "experimentalPath" not in git_keywords
-):
-    print("Detected smoke in the branch name")
-    build_mappings["smoke-flaky"] = True
-    print()
-
 
 if git_keywords:
     print("Detected GIT keywords:")
@@ -294,10 +281,7 @@ for keyword in git_keywords:
         if "build-deploy" in keyword:
             build_mappings["build-deploy"] = True
         if "smoke" in keyword or "smoke_tests" in What_to_build:
-            if "flaky" in str(git_keywords):
-                build_mappings["smoke-flaky"] = True
-            else:
-                build_mappings["smoke"] = True
+            build_mappings["smoke"] = True
         if "rpms" in keyword:
             build_mappings["rpms"] = True
         if "debs" in keyword:
@@ -309,10 +293,7 @@ for keyword in git_keywords:
 
 
 if "smoke" in git_keywords or "smoke_tests" in What_to_build:
-    if "flaky" in str(git_keywords):
-        build_mappings["smoke-flaky"] = True
-    else:
-        build_mappings["smoke"] = True
+    build_mappings["smoke"] = True
 if "oci" in git_keywords:
     build_mappings["oci"] = True
 

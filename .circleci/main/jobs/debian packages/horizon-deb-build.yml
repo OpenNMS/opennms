@@ -11,11 +11,6 @@ jobs:
           at: ~/
       - restore-maven-cache
       - run:
-          name: Monitor memory usage
-          background: true
-          command: |
-            free -m -c 500 -s 30
-      - run:
           name: Build Debian Packages
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
@@ -36,7 +31,6 @@ jobs:
             (ps auxf || :) > ~/build-results/system-logs/ps 2>&1
             (free -m || :) > ~/build-results/system-logs/free 2>&1
             (docker stats --no-stream || :) > ~/build-results/system-logs/docker_stats 2>&1
-            cp -R /tmp/jvmprocmon ~/build-results/system-logs/ || :
       - store_artifacts:
           when: always
           path: ~/build-results
