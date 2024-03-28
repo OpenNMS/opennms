@@ -34,6 +34,90 @@ enum NetflowVersion {
 }
 
 
+message Value {
+    string name = 1;
+    oneof oneof_value {
+        BooleanValue boolean = 2;
+        DateTimeValue datetime = 3;
+        FloatValue float = 4;
+        IPv4AddressValue ipv4address = 5;
+        IPv6AddressValue ipv6address = 6;
+        ListValue list = 7;
+        MacAddressValue macaddress = 8;
+        NullValue null = 9;
+        OctetArrayValue octetarray = 10;
+        SignedValue signed = 11;
+        StringValue string = 12;
+        UndeclaredValue undeclared = 13;
+        UnsignedValue unsigned = 14;
+    }
+}
+
+enum Semantic {
+    UNDEFINED = 0;
+    NONE_OF = 1;
+    EXACTLY_ONE_OF = 2;
+    ONE_OR_MORE_OF = 3;
+    ALL_OF = 4;
+    ORDERED = 5;
+}
+
+message BooleanValue {
+    google.protobuf.BoolValue bool = 1;
+}
+
+message DateTimeValue {
+    google.protobuf.UInt64Value uint64 = 1;
+}
+
+message FloatValue {
+    google.protobuf.DoubleValue double = 1;
+}
+
+message IPv4AddressValue {
+    google.protobuf.StringValue string = 1;
+}
+
+message IPv6AddressValue {
+    google.protobuf.StringValue string = 1;
+}
+
+message List {
+    repeated Value value = 1;
+}
+
+message ListValue {
+    Semantic semantic = 1;
+    repeated List list = 2;
+}
+
+message MacAddressValue {
+    google.protobuf.StringValue string = 1;
+}
+
+message NullValue {
+}
+
+message OctetArrayValue {
+    google.protobuf.BytesValue bytes = 1;
+}
+
+message SignedValue {
+    google.protobuf.Int64Value int64 = 1;
+}
+
+message StringValue {
+    google.protobuf.StringValue string = 1;
+}
+
+message UndeclaredValue {
+    google.protobuf.BytesValue bytes = 1;
+}
+
+message UnsignedValue {
+    google.protobuf.UInt64Value uint64 = 1;
+}
+
 message FlowMessage {
     uint64 timestamp = 1;         // Flow timestamp in milliseconds.
     google.protobuf.UInt64Value num_bytes = 2;         // Number of bytes transferred in the flow
@@ -71,4 +155,5 @@ message FlowMessage {
     NetflowVersion netflow_version = 33; // Netflow version
     google.protobuf.UInt32Value vlan = 34;                 // VLAN ID.
     string node_identifier = 35;      // node lookup identifier.
+    repeated Value rawMessage = 36;
 }
