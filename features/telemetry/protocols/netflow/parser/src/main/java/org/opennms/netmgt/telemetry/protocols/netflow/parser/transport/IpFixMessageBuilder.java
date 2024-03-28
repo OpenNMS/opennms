@@ -40,42 +40,17 @@ import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Me
 
 import java.net.InetAddress;
 import java.time.Instant;
-import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
-import org.hibernate.mapping.ValueVisitor;
-import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.RecordEnrichment;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.BooleanValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.DateTimeValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.FloatValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.IPv4AddressValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.IPv6AddressValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.ListValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.MacAddressValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.NullValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.OctetArrayValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.SignedValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.StringValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UndeclaredValue;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedValue;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.Direction;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.NetflowVersion;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.SamplingAlgorithm;
-import org.opennms.netmgt.telemetry.protocols.netflow.transport.Semantic;
 
-import com.google.common.collect.Streams;
 import com.google.common.primitives.UnsignedLong;
-import com.google.protobuf.BoolValue;
-import com.google.protobuf.ByteString;
-import com.google.protobuf.BytesValue;
-import com.google.protobuf.DoubleValue;
-import com.google.protobuf.Int64Value;
 import com.google.protobuf.UInt32Value;
-import com.google.protobuf.UInt64Value;
 
 public class IpFixMessageBuilder implements MessageBuilder {
 
@@ -627,7 +602,6 @@ public class IpFixMessageBuilder implements MessageBuilder {
         getUInt64Value(deltaSwitched).ifPresent(builder::setDeltaSwitched);
 
         builder.setNetflowVersion(NetflowVersion.IPFIX);
-
         return builder;
     }
 

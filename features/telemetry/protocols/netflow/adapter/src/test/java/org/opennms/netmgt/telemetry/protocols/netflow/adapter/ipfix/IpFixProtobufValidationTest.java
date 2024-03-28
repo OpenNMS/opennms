@@ -50,12 +50,14 @@ import org.opennms.netmgt.telemetry.protocols.netflow.adapter.Utils;
 import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ParserBase;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.SequenceNumberTracker;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.IpFixMessageBuilder;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.TransportValueVisitor;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 
 import io.netty.buffer.ByteBuf;
@@ -193,7 +195,15 @@ public class IpFixProtobufValidationTest {
                 header = new Header(slice(buffer, Header.SIZE));
                 final Packet packet = new Packet(session, header, slice(buffer, header.payloadLength()));
                 packet.getRecords().forEach(rec -> {
-                    final FlowMessage flowMessage = ParserBase.transformRawMessage(includeRawMessage, new IpFixMessageBuilder().buildMessage(rec, (address) -> Optional.empty()), rec).build();
+                    final FlowMessage.Builder builder = new IpFixMessageBuilder().buildMessage(rec, (address) -> Optional.empty());
+                    if (includeRawMessage) {
+                        for (final Value<?> value : rec) {
+                            final TransportValueVisitor transportValueVisitor = new TransportValueVisitor();
+                            value.visit(transportValueVisitor);
+                            builder.addRawMessage(transportValueVisitor.build());
+                        }
+                    }
+                    FlowMessage flowMessage = builder.build();
                     flows.add(new NetflowMessage(flowMessage, Instant.now()));
                 });
             } catch (InvalidPacketException e) {

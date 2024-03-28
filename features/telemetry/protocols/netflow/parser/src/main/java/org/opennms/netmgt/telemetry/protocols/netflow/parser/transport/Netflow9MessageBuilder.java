@@ -39,7 +39,6 @@ import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Me
 import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageUtils.setLongValue;
 
 import java.net.InetAddress;
-import java.util.stream.Collectors;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.RecordEnrichment;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
@@ -48,7 +47,6 @@ import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.NetflowVersion;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.SamplingAlgorithm;
 
-import com.google.common.collect.Streams;
 import com.google.protobuf.UInt32Value;
 
 @SuppressWarnings("java:S109")
@@ -299,7 +297,6 @@ public class Netflow9MessageBuilder implements MessageBuilder {
         getUInt64Value(deltaSwitched).ifPresent(builder::setDeltaSwitched);
 
         builder.setNetflowVersion(NetflowVersion.V9);
-
         return builder;
     }
 

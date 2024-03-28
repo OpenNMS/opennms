@@ -45,7 +45,6 @@ import java.util.concurrent.SynchronousQueue;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
@@ -56,10 +55,11 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.SequenceNumberTracker;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageBuilder;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.TransformationVisitor;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.TransportValueVisitor;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,7 +73,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
-import com.google.common.collect.Streams;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
 
 public abstract class ParserBase implements Parser {
@@ -333,9 +332,17 @@ public abstract class ParserBase implements Parser {
                         // Let's serialize
                         final FlowMessage.Builder flowMessage;
                         try {
-                            flowMessage = transformRawMessage(includeRawMessage, this.getMessageBuilder().buildMessage(record, enrichment), record);
+                            flowMessage = this.getMessageBuilder().buildMessage(record, enrichment);
                         } catch (final  Exception e) {
                             throw new RuntimeException(e);
+                        }
+
+                        if (includeRawMessage) {
+                            for (final Value<?> value : record) {
+                                final TransportValueVisitor transportValueVisitor = new TransportValueVisitor();
+                                value.visit(transportValueVisitor);
+                                flowMessage.addRawMessage(transportValueVisitor.build());
+                            }
                         }
 
                         // Check if the flow is valid (and maybe correct it)
@@ -482,20 +489,5 @@ public abstract class ParserBase implements Parser {
 
     public void setIncludeRawMessage(boolean includeRawMessage) {
         this.includeRawMessage = includeRawMessage;
-    }
-
-    public static FlowMessage.Builder transformRawMessage(final boolean includeRawMessage, final FlowMessage.Builder flowMessageBuilder, final Iterable<org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value<?>> values) {
-        if (!includeRawMessage) {
-            return flowMessageBuilder;
-        }
-
-        flowMessageBuilder.addAllRawMessage(Streams.stream(values)
-                .map(value -> {
-                    final TransformationVisitor transformationVisitor = new TransformationVisitor();
-                    value.visit(transformationVisitor);
-                    return transformationVisitor.getValue();
-                }).collect(Collectors.toList()));
-
-        return flowMessageBuilder;
     }
 }

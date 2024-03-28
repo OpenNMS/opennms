@@ -48,7 +48,7 @@ import org.opennms.netmgt.telemetry.protocols.netflow.transport.Semantic;
 
 import com.google.protobuf.ByteString;
 
-public class TransformationVisitor implements Value.Visitor {
+public class TransportValueVisitor implements Value.Visitor {
 
     org.opennms.netmgt.telemetry.protocols.netflow.transport.Value.Builder valueBuilder = org.opennms.netmgt.telemetry.protocols.netflow.transport.Value.newBuilder();
 
@@ -150,10 +150,10 @@ public class TransformationVisitor implements Value.Visitor {
         for(List<Value<?>> listOfValues : listOfListsOfValues) {
             final org.opennms.netmgt.telemetry.protocols.netflow.transport.List.Builder listBuilder = org.opennms.netmgt.telemetry.protocols.netflow.transport.List.newBuilder();
             for (Value bValue : listOfValues) {
-                TransformationVisitor transformationVisitor = new TransformationVisitor();
-                bValue.visit(transformationVisitor);
+                TransportValueVisitor transportValueVisitor = new TransportValueVisitor();
+                bValue.visit(transportValueVisitor);
 
-                listBuilder.addValue(transformationVisitor.getValue());
+                listBuilder.addValue(transportValueVisitor.build());
             }
             listValueBuilder.addList(listBuilder.build());
         }
@@ -170,7 +170,7 @@ public class TransformationVisitor implements Value.Visitor {
 
     }
 
-    public org.opennms.netmgt.telemetry.protocols.netflow.transport.Value getValue() {
+    public org.opennms.netmgt.telemetry.protocols.netflow.transport.Value build() {
         return valueBuilder.build();
     }
 }

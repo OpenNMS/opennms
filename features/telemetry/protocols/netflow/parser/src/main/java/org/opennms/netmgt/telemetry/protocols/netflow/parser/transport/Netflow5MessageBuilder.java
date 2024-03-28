@@ -39,7 +39,6 @@ import static org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Me
 
 import java.net.InetAddress;
 import java.time.Duration;
-import java.util.stream.Collectors;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.RecordEnrichment;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
@@ -47,8 +46,6 @@ import org.opennms.netmgt.telemetry.protocols.netflow.transport.Direction;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.NetflowVersion;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.SamplingAlgorithm;
-
-import com.google.common.collect.Streams;
 
 public class Netflow5MessageBuilder implements MessageBuilder {
     @Override

@@ -109,7 +109,12 @@ public class IpfixMessageBuilderTest {
         values.add(new UndeclaredValue(1, new byte[]{11,22,33,44,55,66}));
         values.add(new UnsignedValue("unsigned", 1234));
 
-        final FlowMessage.Builder builder = ParserBase.transformRawMessage(true, ipFixMessageBuilder.buildMessage(values, recordEnrichment), values);
+        final FlowMessage.Builder builder = ipFixMessageBuilder.buildMessage(values, recordEnrichment);
+        for (final Value<?> value : values) {
+            final TransportValueVisitor transportValueVisitor = new TransportValueVisitor();
+            value.visit(transportValueVisitor);
+            builder.addRawMessage(transportValueVisitor.build());
+        }
         var list = builder.getRawMessageList();
 
         Assert.assertEquals(true, list.stream()
