@@ -14,7 +14,6 @@
     <description>The Usage Analytics package will be used to store and provide with access to usage analytics data.</description>
 
     <modelVersion>4.0.0</modelVersion>
-    <version>33.0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>
