@@ -303,6 +303,7 @@
                           <feature>opennms-poller-monitors-core</feature>
                           <feature>opennms-telemetry-daemon</feature>
                           <feature>opennms-timeseries-api</feature>
+                          <feature>vaadin</feature>
 
                           <!-- minion features -->
                           <feature>dominion-grpc-client</feature>
