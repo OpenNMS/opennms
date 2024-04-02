@@ -33,6 +33,8 @@ import static org.opennms.integration.api.v1.flows.Flow.NetflowVersion;
 import static org.opennms.integration.api.v1.flows.Flow.SamplingAlgorithm;
 
 import java.time.Instant;
+import java.util.Collections;
+import java.util.Map;
 import java.util.Optional;
 
 public interface Flow {
@@ -228,4 +230,8 @@ public interface Flow {
      * * @return the identifier
      */
     String getNodeIdentifier();
+
+    default Map<String, Object> getRawMessage() {
+        return Collections.EMPTY_MAP;
+    }
 }
