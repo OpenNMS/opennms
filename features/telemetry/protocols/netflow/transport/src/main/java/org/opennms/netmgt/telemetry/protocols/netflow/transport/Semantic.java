@@ -26,37 +26,61 @@
 package org.opennms.netmgt.telemetry.protocols.netflow.transport;
 
 /**
- * Protobuf enum {@code NetflowVersion}
+ * Protobuf enum {@code Semantic}
  */
-public enum NetflowVersion
+public enum Semantic
     implements com.google.protobuf.ProtocolMessageEnum {
   /**
-   * <code>V5 = 0;</code>
+   * <code>UNDEFINED = 0;</code>
    */
-  V5(0),
+  UNDEFINED(0),
   /**
-   * <code>V9 = 1;</code>
+   * <code>NONE_OF = 1;</code>
    */
-  V9(1),
+  NONE_OF(1),
   /**
-   * <code>IPFIX = 2;</code>
+   * <code>EXACTLY_ONE_OF = 2;</code>
    */
-  IPFIX(2),
+  EXACTLY_ONE_OF(2),
+  /**
+   * <code>ONE_OR_MORE_OF = 3;</code>
+   */
+  ONE_OR_MORE_OF(3),
+  /**
+   * <code>ALL_OF = 4;</code>
+   */
+  ALL_OF(4),
+  /**
+   * <code>ORDERED = 5;</code>
+   */
+  ORDERED(5),
   UNRECOGNIZED(-1),
   ;
 
   /**
-   * <code>V5 = 0;</code>
+   * <code>UNDEFINED = 0;</code>
    */
-  public static final int V5_VALUE = 0;
+  public static final int UNDEFINED_VALUE = 0;
   /**
-   * <code>V9 = 1;</code>
+   * <code>NONE_OF = 1;</code>
    */
-  public static final int V9_VALUE = 1;
+  public static final int NONE_OF_VALUE = 1;
   /**
-   * <code>IPFIX = 2;</code>
+   * <code>EXACTLY_ONE_OF = 2;</code>
    */
-  public static final int IPFIX_VALUE = 2;
+  public static final int EXACTLY_ONE_OF_VALUE = 2;
+  /**
+   * <code>ONE_OR_MORE_OF = 3;</code>
+   */
+  public static final int ONE_OR_MORE_OF_VALUE = 3;
+  /**
+   * <code>ALL_OF = 4;</code>
+   */
+  public static final int ALL_OF_VALUE = 4;
+  /**
+   * <code>ORDERED = 5;</code>
+   */
+  public static final int ORDERED_VALUE = 5;
 
 
   public final int getNumber() {
@@ -73,7 +97,7 @@ public enum NetflowVersion
    * @deprecated Use {@link #forNumber(int)} instead.
    */
   @java.lang.Deprecated
-  public static NetflowVersion valueOf(int value) {
+  public static Semantic valueOf(int value) {
     return forNumber(value);
   }
 
@@ -81,24 +105,27 @@ public enum NetflowVersion
    * @param value The numeric wire value of the corresponding enum entry.
    * @return The enum associated with the given numeric wire value.
    */
-  public static NetflowVersion forNumber(int value) {
+  public static Semantic forNumber(int value) {
     switch (value) {
-      case 0: return V5;
-      case 1: return V9;
-      case 2: return IPFIX;
+      case 0: return UNDEFINED;
+      case 1: return NONE_OF;
+      case 2: return EXACTLY_ONE_OF;
+      case 3: return ONE_OR_MORE_OF;
+      case 4: return ALL_OF;
+      case 5: return ORDERED;
       default: return null;
     }
   }
 
-  public static com.google.protobuf.Internal.EnumLiteMap<NetflowVersion>
+  public static com.google.protobuf.Internal.EnumLiteMap<Semantic>
       internalGetValueMap() {
     return internalValueMap;
   }
   private static final com.google.protobuf.Internal.EnumLiteMap<
-      NetflowVersion> internalValueMap =
-        new com.google.protobuf.Internal.EnumLiteMap<NetflowVersion>() {
-          public NetflowVersion findValueByNumber(int number) {
-            return NetflowVersion.forNumber(number);
+      Semantic> internalValueMap =
+        new com.google.protobuf.Internal.EnumLiteMap<Semantic>() {
+          public Semantic findValueByNumber(int number) {
+            return Semantic.forNumber(number);
           }
         };
 
@@ -116,12 +143,12 @@ public enum NetflowVersion
   }
   public static final com.google.protobuf.Descriptors.EnumDescriptor
       getDescriptor() {
-    return org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowProtos.getDescriptor().getEnumTypes().get(2);
+    return org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowProtos.getDescriptor().getEnumTypes().get(3);
   }
 
-  private static final NetflowVersion[] VALUES = values();
+  private static final Semantic[] VALUES = values();
 
-  public static NetflowVersion valueOf(
+  public static Semantic valueOf(
       com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
     if (desc.getType() != getDescriptor()) {
       throw new java.lang.IllegalArgumentException(
@@ -135,10 +162,10 @@ public enum NetflowVersion
 
   private final int value;
 
-  private NetflowVersion(int value) {
+  private Semantic(int value) {
     this.value = value;
   }
 
-  // @@protoc_insertion_point(enum_scope:NetflowVersion)
+  // @@protoc_insertion_point(enum_scope:Semantic)
 }
 
