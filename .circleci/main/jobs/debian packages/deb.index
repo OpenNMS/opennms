@@ -1,3 +1,0 @@
-  #jobs:debian packages/horizon-deb-build#
-  #jobs:debian packages/minion-deb-build#
-  #jobs:debian packages/sentinel-deb-build#
