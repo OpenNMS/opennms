@@ -1,15 +1,9 @@
 jobs:
-  horizon-rpm-build:
+  build-rpm:
     executor: build-executor
     resource_class: large
     steps:
-      - sign-packages/setup-env:
-          skip_if_forked_pr: true
-          gnupg_home: ~/tmp/gpg
-      - cached-checkout
-      - attach_workspace:
-          at: ~/
-      - restore-maven-cache
+      - prep-package-build
       - run:
           name: Build RPMs
           command: |
@@ -17,6 +11,8 @@ jobs:
             export CCI_MAXCPU=2
             export MAVEN_OPTS="-Xmx5g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             .circleci/scripts/makerpm.sh tools/packages/opennms/opennms.spec
+            .circleci/scripts/makerpm.sh tools/packages/minion/minion.spec
+            .circleci/scripts/makerpm.sh tools/packages/sentinel/sentinel.spec
       - sign-packages/sign-rpms:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
@@ -26,5 +22,5 @@ jobs:
           path: ~/project/target/rpm/RPMS/noarch
           destination: rpms
       - cache-workflow-assets:
-          cache_prefix: rpm-horizon
+          cache_prefix: rpm
           source_path: target/rpm/RPMS/noarch
