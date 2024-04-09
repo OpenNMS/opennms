@@ -25,8 +25,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
-import static org.opennms.integration.api.v1.flows.Flow.Direction;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URISyntaxException;

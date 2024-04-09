@@ -43,7 +43,6 @@ import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.telemetry.protocols.netflow.adapter.Utils;
 import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ParserBase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
