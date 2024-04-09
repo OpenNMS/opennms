@@ -1606,7 +1606,7 @@
     <!-- dependency versions -->
     <antVersion>1.10.13</antVersion>
     <args4jVersion>2.33</args4jVersion>
-    <asmVersion>9.6</asmVersion>
+    <asmVersion>9.7</asmVersion>
     <activemqVersion>5.15.16</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.17</batikVersion>
