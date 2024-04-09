@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.kafka</artifactId>
-    <version>33.0.3-SNAPSHOT</version>
+    <version>33.0.3</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
