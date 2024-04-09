@@ -4,13 +4,12 @@
 
 Although the primary purpose of NetFlow and IPFIX is to analyze network flows, there are also cases where the collected data is to be analyzed in other ways.
 One example would be the use of manufacturer-specific metrics with the help of IPFIX that are not flow-related.
-These metrics can be evaluated using the telemetry scripting adapters and, if necessary, persisted.
-For this to be possible, the {page-component-title} Telemetryd parsers must not only supply the flow-related data but also all other values.
+These metrics can be evaluated using the telemetry scripting adapters and, if necessary, persisted as metrics.
+To enable this, the {page-component-title} Telemetryd parsers must be configured to parse and handle all flow data beside the flow-related values.
 
 == Enabling Raw Messages
 
-Each parser entry allows the definition of additional parameters.
-The `includeRawMessage` parameter allows to send not only flow-related fields but also all of the collected data to their corresponding adapters.
+The `includeRawMessage` parameter configures a parser to send the unprocessed flow values to the corresponding adapters. 
 The following example shows a snippet of the `telemetryd-configuration.xml` file where `includeRawMessage` is enabled for the IPFIX parser.
 
 [source, xml]
@@ -37,8 +36,9 @@ The following example shows a snippet of the `telemetryd-configuration.xml` file
 
 == Enabling Telemetry Scripting Adapter
 
-To process the additional data, Telemetryd needs to know which script should process it.
-This can be done by enabling a Telemetry Adapter and specifying a Groovy file by using the `script` parameter.
+To process the additional data, an additional Telemetryd adapter must be configured and enabled.
+This adapter specifies the processing script to use for processing the data.
+To do so, enable a Telemetry Adapter of type `org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpFixTelemetryAdapter` and specifying a Groovy file by using the `script` parameter.
 The following example shows a snippet of the `telemetryd-configuration.xml` file in which the IPFIX-Telemetry adapter is enabled and is using the script `/opt/opennms/etc/telemetryd-adapters/netflow-telemetry.groovy`.
 
 [source, xml]
@@ -78,7 +78,7 @@ The following example shows a snippet of the `telemetryd-configuration.xml` file
 == Example script
 
 The following example shows how to add a custom metric to the node-level resource.
-The raw message is passed as a simple key-value-map to the script.
+The raw message is passed as a key-value-map to the script.
 If unsure, which fields have been retrieved, just add a `System.out.println(msg.keySet());` to the script and gather the logs for the output of available fields.
 
 [source, groovy]
