@@ -50,7 +50,7 @@ for TYPE in minion; do
   export NOTARY_TARGETS_PASSPHRASE="${AZURE_DCT_REPO_MINION_KEY_PASSPHRASE}"
   for _publish_tag in "${DOCKER_TAGS[@]}"; do
     create_and_push_manifest "${DOCKER_REPO}" "${DOCKER_BRANCH_TAG}" "${_publish_tag}"
-    do_with_retries notary -d ~/.docker/trust/ -s "https://${DOCKER_SERVER}" addhash "${DOCKER_REPO}" "${_publish_tag}" "${DOCKER_IMAGE_BYTES_SIZE}" --sha256 "${DOCKER_IMAGE_SHA_256}" --publish --verbose
+    # do_with_retries notary -d ~/.docker/trust/ -s "https://${DOCKER_SERVER}" addhash "${DOCKER_REPO}" "${_publish_tag}" "${DOCKER_IMAGE_BYTES_SIZE}" --sha256 "${DOCKER_IMAGE_SHA_256}" --publish --verbose
     cosign_sign "${DOCKER_REPO}@sha256:${DOCKER_IMAGE_SHA_256}"
   done
 

@@ -62,7 +62,7 @@ for TYPE in horizon minion sentinel; do
   export NOTARY_TARGETS_PASSPHRASE="${!_key_passphrase_variable}"
   for _publish_tag in "${DOCKER_TAGS[@]}"; do
     create_and_push_manifest "${DOCKER_REPO}" "${DOCKER_BRANCH_TAG}" "${_publish_tag}"
-    do_with_retries notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${DOCKER_REPO}" "${_publish_tag}" "${DOCKER_IMAGE_BYTES_SIZE}" --sha256 "${DOCKER_IMAGE_SHA_256}" --publish --verbose
+    # do_with_retries notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${DOCKER_REPO}" "${_publish_tag}" "${DOCKER_IMAGE_BYTES_SIZE}" --sha256 "${DOCKER_IMAGE_SHA_256}" --publish --verbose
     cosign_sign "${DOCKER_REPO}@sha256:${DOCKER_IMAGE_SHA_256}"
   done
 
