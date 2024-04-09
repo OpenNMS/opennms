@@ -383,6 +383,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     }
 
     @Test
+    @Ignore("this has been flapping :( ex https://app.circleci.com/pipelines/github/OpenNMS/opennms-prime/5532/workflows/2cf99655-819e-4bec-b1ab-77ce6a4e53fb/jobs/38645/tests")
     public void testNMS14379() throws Exception {
         importGraph();
         topologyUIPage.open();
