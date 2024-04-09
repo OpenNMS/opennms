@@ -97,7 +97,7 @@ aliases:
           MINION_IMAGE_VERSION="${CIRCLE_BRANCH//\//-}"
           ;;
       esac
-      echo "export DOCKER_CONTENT_TRUST=1" >> $BASH_ENV
+      # echo "export DOCKER_CONTENT_TRUST=1" >> $BASH_ENV
       echo "export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=\"$DCT_DELEGATE_KEY_PASSPHRASE\"" >> $BASH_ENV
       echo "export MINION_IMAGE=docker.io/opennms/minion" >> $BASH_ENV
       echo "export MINION_IMAGE_VERSION=\"$MINION_IMAGE_VERSION\"" >> $BASH_ENV
@@ -1431,8 +1431,8 @@ jobs:
           name: restart Docker to find docker-buildx
           command: sudo systemctl restart docker
       - dockerhub-login
-      # - run: *setup_dct_env
-      # - run: *setup_dct_key
+      - run: *setup_dct_env
+      - run: *setup_dct_key
       - run:
           name: Single-arch build & push
           command: |
@@ -1456,8 +1456,8 @@ jobs:
       - attach_workspace:
           at: ~/
       - dockerhub-login
-      # - run: *setup_dct_env
-      # - run: *setup_dct_key
+      - run: *setup_dct_env
+      - run: *setup_dct_key
       - cached-download:
           url: https://github.com/theupdateframework/notary/releases/download/v0.6.1/notary-Linux-amd64
           file: /usr/local/bin/notary
