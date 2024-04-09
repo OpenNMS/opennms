@@ -30,6 +30,7 @@ package org.opennms.smoketest.opsboard;
 
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.equalTo;
+import static org.junit.Assert.fail;
 import static org.openqa.selenium.support.ui.ExpectedConditions.not;
 
 import java.lang.NullPointerException;
@@ -136,6 +137,36 @@ public class OpsBoardAdminPageIT extends OpenNMSSeleniumIT {
         adminPage.open("/vaadin-wallboard#!wallboard/My-Wallboard");
         waitUntil(pageContainsText("Ops Panel"));
         waitUntil(pageContainsText("Alarms: My-Alarms"));
+    }
+
+    @Test
+    public void testNMS16387() {
+        String foreignSourceXML = "<foreign-source name=\"" + OpenNMSSeleniumIT.REQUISITION_NAME + "\">\n" +
+                "<scan-interval>1d</scan-interval>\n" +
+                "<detectors/>\n" +
+                "<policies/>\n" +
+                "</foreign-source>";
+        createForeignSource(REQUISITION_NAME, foreignSourceXML);
+
+        String requisitionXML = "<model-import foreign-source=\"" + OpenNMSSeleniumIT.REQUISITION_NAME + "\">" +
+                "   <node foreign-id=\"NodeA\" node-label=\"AAA &lt; &gt; &amp; BBB\">" +
+                "       <interface ip-addr=\"10.20.30.40\" status=\"1\" snmp-primary=\"N\">" +
+                "           <monitored-service service-name=\"ICMP\"/>" +
+                "       </interface>" +
+                "   </node>" +
+                "</model-import>";
+        createRequisition(REQUISITION_NAME, requisitionXML, 1);
+
+        final OpsBoardAdminEditorPage testBoard = adminPage.createNew("My-Alarm-Details");
+        testBoard.addDashlet(new DashletBuilder()
+                .withDashlet("Alarm Details")
+                .withTitle("My-Alarm-Details")
+                .withDuration(300).build());
+
+        adminPage.open("/vaadin-wallboard#!dashboard/My-Alarm-Details");
+        waitUntil(pageContainsText("Ops Panel"));
+        waitUntil(pageContainsText("Alarm Details: My-Alarm-Details"));
+        waitUntil(pageContainsText("Node AAA < > & BBB is down."));
     }
 
     private static class OpsBoardAdminPage extends AbstractPage {
