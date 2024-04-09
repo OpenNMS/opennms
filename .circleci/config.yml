@@ -1331,8 +1331,8 @@ jobs:
             sudo chmod a+x /usr/local/bin/docker-buildx
             sudo systemctl restart docker
       - dockerhub-login
-      - run: *setup_dct_env
-      - run: *setup_dct_key
+      # - run: *setup_dct_env
+      # - run: *setup_dct_key
       - run:
           name: Single-arch build & push
           command: |
@@ -1356,8 +1356,8 @@ jobs:
       - attach_workspace:
           at: ~/
       - dockerhub-login
-      - run: *setup_dct_env
-      - run: *setup_dct_key
+      # - run: *setup_dct_env
+      # - run: *setup_dct_key
       - run:
           name: Install notary
           command: |
