@@ -1,6 +1,6 @@
 #!/bin/bash
 
-export DOCKER_CONTENT_TRUST=1
+# export DOCKER_CONTENT_TRUST=1
 
 export COSIGN_VERSION="1.13.1"
 
