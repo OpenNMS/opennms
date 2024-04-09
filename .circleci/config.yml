@@ -1380,19 +1380,12 @@ jobs:
             echo "Manifest-inspect BYTES: ${BYTES_SIZE}";
             echo "Manifest contents:\n";
             printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor | "Architecture: " + .platform.architecture + .platform.variant + ", digest: " + .digest';
-            export NOTARY_AUTH="$(printf "${DOCKERHUB_LOGIN}:${DOCKERHUB_PASS}" | base64 -w0)"
-            echo "Sign ${SHA_256} with the notary"
-            # when the multi-arch image is signed by the delegate key then docker pull reports "No valid trust data..."
-            # -> the following lines can not be used:
-            #
-            # export NOTARY_DELEGATION_PASSPHRASE="${DCT_DELEGATE_KEY_PASSPHRASE}"
-            # notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" 946 --sha256 "${SHA_256}" --roles targets/opennms-circle-delegate --publish --verbose
-            #
-            # -> use the targets key of the minion repository to sign the multi-arch image instead
-            export NOTARY_TARGETS_PASSPHRASE="${DCT_REPO_MINION_KEY_PASSPHRASE}"
-            notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE}" --sha256 "${SHA_256}" --publish --verbose
-            echo "Done!"
-            # notary -s https://notary.docker.io list "${IMAGE}"
+
+#            export NOTARY_AUTH="$(printf "${DOCKERHUB_LOGIN}:${DOCKERHUB_PASS}" | base64 -w0)"
+#            echo "Sign ${SHA_256} with the notary"
+#            export NOTARY_TARGETS_PASSPHRASE="${DCT_REPO_MINION_KEY_PASSPHRASE}"
+#            notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE}" --sha256 "${SHA_256}" --publish --verbose
+#            echo "Done!"
 
   horizon-rpm-build:
     executor: centos-build-executor
