@@ -5,7 +5,7 @@
   <parent>
     <artifactId>org.opennms.features.events.sink</artifactId>
     <groupId>org.opennms.features.events</groupId>
-    <version>33.0.3-SNAPSHOT</version>
+    <version>33.0.3</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
