@@ -27,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch;
 import org.opennms.core.criteria.restrictions.InRestriction;
@@ -62,6 +63,7 @@ import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.Table;
@@ -83,7 +85,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
     /**
      * Helper for handling criterias
      */
-    private CriteriaBuilderHelper m_criteriaBuilderHelper = new CriteriaBuilderHelper(OnmsAlarm.class, OnmsNode.class, OnmsCategory.class, OnmsEvent.class);
+    private final CriteriaBuilderHelper m_criteriaBuilderHelper = new CriteriaBuilderHelper(OnmsAlarm.class, OnmsNode.class, OnmsCategory.class, OnmsEvent.class);
     /**
      * wallboard layout
      */
@@ -128,7 +130,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
         if (m_wallboardComponent == null) {
             m_wallboardComponent = new AbstractDashletComponent() {
 
-                private VerticalLayout m_verticalLayout;
+                private final VerticalLayout m_verticalLayout;
 
                 {
                     m_verticalLayout = new VerticalLayout();
@@ -180,7 +182,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
         if (m_dashboardComponent == null) {
             m_dashboardComponent = new AbstractDashletComponent() {
 
-                private AlarmTable m_alarmTable;
+                private final AlarmTable m_alarmTable;
 
                 {
                     m_alarmTable = new AlarmTable("Alarms", new AlarmDaoContainer(m_alarmDao, m_transactionTemplate), m_alarmRepository);
@@ -228,6 +230,14 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                     m_alarmTable.addGeneratedColumn("severity", new SeverityGenerator());
                     m_alarmTable.addGeneratedColumn("id", new AlarmIdColumnLinkGenerator(m_alarmDao, "id"));
                     m_alarmTable.addGeneratedColumn("lastEventTime", new TimeColumnGenerator(m_timeformatService));
+                    m_alarmTable.addGeneratedColumn("logMsg", (Table.ColumnGenerator) (table, itemId, columnId) -> {
+                        final Property<String> property = table.getContainerProperty(itemId, columnId);
+                        if (property == null || property.getValue() == null) {
+                            return null;
+                        } else {
+                            return StringEscapeUtils.unescapeXml(property.getValue());
+                        }
+                    });
                     m_alarmTable.setVisibleColumns("id", "severity", "nodeLabel", "counter", "lastEventTime", "logMsg");
                     m_alarmTable.setColumnHeaders("ID", "Severity", "Node", "Count", "Last Event Time", "Log Message");
 
