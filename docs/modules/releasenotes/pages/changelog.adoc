@@ -10,13 +10,8 @@ Release 33.0.3 contains a number of bug fixes and a documentation update.
 
 The codename for Horizon 33.0.3 is https://www.gardenia.net/plant/fagus-sylvatica-pendula[_Weeping European Beech_].
 
-=== Enhancement
-
-* document the asynchronous datacollection engine (Issue https://issues.opennms.org/browse/NMS-15737[NMS-15737])
-
 === Bug
 
-* DroolsAlarmContext error - alarm facts out of sync (Issue https://issues.opennms.org/browse/NMS-16208[NMS-16208])
 * Running the config-tester -a throws an IllegalStateException for ActiveMQ context (Issue https://issues.opennms.org/browse/NMS-16355[NMS-16355])
 * CVE-2024-3094 investigation (Issue https://issues.opennms.org/browse/NMS-16396[NMS-16396])
 * Container image build fails with a wrong reference to deploy-base:ubi9-3.3.0.b265-jre-17 (Issue https://issues.opennms.org/browse/NMS-16399[NMS-16399])
