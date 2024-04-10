@@ -273,6 +273,7 @@
                           <feature>javax.servlet</feature>
                           <feature>javax.validation</feature>
                           <feature>jetty</feature>
+                          <feature>jung</feature>
                           <feature>netty</feature>
                           <feature>org.json</feature>
                           <feature>pax-jetty</feature>
@@ -966,6 +967,11 @@
       <artifactId>jackson1-dependencies</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jung-shaded</artifactId>
       <scope>provided</scope>
     </dependency>
   </dependencies>
