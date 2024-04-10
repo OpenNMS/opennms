@@ -317,6 +317,12 @@ org.jolokia.authMode=jaas
         <requirement>osgi.implementation;osgi.implementation="osgi.http";version:Version="1.1"</requirement>
     </feature>
 
+    <feature name="jung" version="${jungVersion}" description="JUNG">
+        <feature>wrap</feature>
+        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
+        <bundle dependency="true">wrap:mvn:org.opennms.dependencies/jung-shaded/${project.version}$Export-Package=edu.uci.ics.jung*&amp;Bundle-Version=${jungVersion}</bundle>
+    </feature>
+
     <feature name="netty" version="${netty4Version}" description="Netty">
         <feature>bouncycastle</feature>
         <bundle dependency="true">mvn:io.netty/netty-buffer/${netty4Version}</bundle>
