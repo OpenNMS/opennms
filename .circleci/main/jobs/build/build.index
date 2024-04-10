@@ -1,4 +1,6 @@
   #jobs:build/build#
+  #jobs:build/build-debian#
+  #jobs:build/build-rpm#
   #jobs:build/empty#
   #jobs:build/build-ui#
   #jobs:build/build-docs#

@@ -156,12 +156,6 @@ under the License.
       <url>http://my.repository.com/repo/path</url>
     </mirror>
      -->
-    <mirror>
-      <id>central-https</id>
-      <mirrorOf>central</mirrorOf>
-      <name>Maven Central Override</name>
-      <url>https://repo1.maven.org/maven2/</url>
-    </mirror>
   </mirrors>
 
   <!-- profiles

@@ -3,14 +3,10 @@
         "build-deploy": {
             "extends": [
                 "build",
+                "build-debian",
+                "build-rpm",
                 "integration-test",
-                "oci",
-                "horizon-deb-build",
-                "horizon-rpm-build",
-                "minion-deb-build",
-                "minion-rpm-build",
-                "sentinel-deb-build",
-                "sentinel-rpm-build"
+                "oci"
             ]
         },
         "smoke": {
@@ -29,19 +25,15 @@
         "rpms": {
             "extends": [
                 "build",
-                "integration-test",
-                "horizon-rpm-build",
-                "minion-rpm-build",
-                "sentinel-rpm-build"
+                "build-rpm",
+                "integration-test"
             ]
         },
         "debs": {
             "extends": [
                 "build",
-                "integration-test",
-                "horizon-deb-build",
-                "minion-deb-build",
-                "sentinel-deb-build"
+                "build-debian",
+                "integration-test"
             ]
         },
         "oci": {
@@ -147,6 +139,38 @@
                 "user_overridable": false
             }
         },
+        "build-debian": {
+            "context": [
+                "CircleCI",
+                "gpg-signing"
+            ],
+            "requires": [
+                "build"
+            ],
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "/^merge-foundation.*/"
+                    ]
+                }
+            }
+        },
+        "build-rpm": {
+            "context": [
+                "CircleCI",
+                "gpg-signing"
+            ],
+            "requires": [
+                "build"
+            ],
+            "filters": {
+                "branches": {
+                    "ignore": [
+                        "/^merge-foundation.*/"
+                    ]
+                }
+            }
+        },
         "docs": {
             "job": "build-docs",
             "context": [
@@ -184,54 +208,6 @@
                 "build"
             ]
         },
-        "minion-rpm-build": {
-            "context": [
-                "CircleCI",
-                "gpg-signing"
-            ],
-            "requires": [
-                "build"
-            ],
-            "filters": {
-                "branches": {
-                    "ignore": [
-                        "/^merge-foundation.*/"
-                    ]
-                }
-            }
-        },
-        "horizon-rpm-build": {
-            "context": [
-                "CircleCI",
-                "gpg-signing"
-            ],
-            "requires": [
-                "build"
-            ],
-            "filters": {
-                "branches": {
-                    "ignore": [
-                        "/^merge-foundation.*/"
-                    ]
-                }
-            }
-        },
-        "sentinel-rpm-build": {
-            "context": [
-                "CircleCI",
-                "gpg-signing"
-            ],
-            "requires": [
-                "build"
-            ],
-            "filters": {
-                "branches": {
-                    "ignore": [
-                        "/^merge-foundation.*/"
-                    ]
-                }
-            }
-        },
         "smoke-test-core": {
             "context": [
                 "CircleCI",
@@ -241,18 +217,6 @@
                 "horizon-image-single-arch-linux-amd64",
                 "sentinel-image-single-arch-linux-amd64",
                 "minion-image-single-arch-linux-amd64"
-            ]
-        },
-        "smoke-test-flaky": {
-            "context": [
-                "CircleCI",
-                "docker-publish-account"
-            ],
-            "job": "smoke-test-flaky",
-            "requires": [
-                "horizon-image-single-arch-linux-amd64",
-                "minion-image-single-arch-linux-amd64",
-                "sentinel-image-single-arch-linux-amd64"
             ]
         },
         "smoke-test-minion": {
@@ -277,22 +241,6 @@
                 "sentinel-image-single-arch-linux-amd64"
             ]
         },
-        "sentinel-deb-build": {
-            "context": [
-                "CircleCI",
-                "gpg-signing"
-            ],
-            "requires": [
-                "build"
-            ],
-            "filters": {
-                "branches": {
-                    "ignore": [
-                        "/^merge-foundation.*/"
-                    ]
-                }
-            }
-        },
         "tarball-assembly-only": {
             "context": [
                 "CircleCI"
@@ -300,38 +248,6 @@
             "requires": [
                 "build"
             ]
-        },
-        "minion-deb-build": {
-            "context": [
-                "CircleCI",
-                "gpg-signing"
-            ],
-            "requires": [
-                "build"
-            ],
-            "filters": {
-                "branches": {
-                    "ignore": [
-                        "/^merge-foundation.*/"
-                    ]
-                }
-            }
-        },
-        "horizon-deb-build": {
-            "context": [
-                "CircleCI",
-                "gpg-signing"
-            ],
-            "requires": [
-                "build"
-            ],
-            "filters": {
-                "branches": {
-                    "ignore": [
-                        "/^merge-foundation.*/"
-                    ]
-                }
-            }
         },
         "minion-image-single-arch-linux-amd64": {
             "context": [
@@ -470,14 +386,10 @@
                 "CircleCI"
             ],
             "requires": [
-                "horizon-deb-build",
-                "horizon-rpm-build",
+                "build-debian",
+                "build-rpm",
                 "horizon-image-single-arch",
-                "minion-deb-build",
-                "minion-rpm-build",
                 "minion-image-single-arch",
-                "sentinel-deb-build",
-                "sentinel-rpm-build",
                 "sentinel-image-single-arch",
                 "integration-test"
             ],
@@ -514,14 +426,10 @@
                 "CircleCI"
             ],
             "requires": [
-                "horizon-deb-build",
-                "horizon-rpm-build",
+                "build-debian",
+                "build-rpm",
                 "horizon-image-single-arch",
-                "minion-deb-build",
-                "minion-rpm-build",
                 "minion-image-single-arch",
-                "sentinel-deb-build",
-                "sentinel-rpm-build",
                 "sentinel-image-single-arch",
                 "integration-test"
             ],
@@ -536,14 +444,10 @@
         },
         "merge-poweredby-branch": {
             "requires": [
-                "horizon-deb-build",
-                "horizon-rpm-build",
+                "build-debian",
+                "build-rpm",
                 "horizon-image-single-arch",
-                "minion-deb-build",
-                "minion-rpm-build",
                 "minion-image-single-arch",
-                "sentinel-deb-build",
-                "sentinel-rpm-build",
                 "sentinel-image-single-arch",
                 "integration-test"
             ],
@@ -566,14 +470,10 @@
                 "azure-sp-dct"
             ],
             "requires": [
-                "horizon-deb-build",
-                "horizon-rpm-build",
+                "build-debian",
+                "build-rpm",
                 "horizon-image-single-arch",
-                "minion-deb-build",
-                "minion-rpm-build",
                 "minion-image-single-arch",
-                "sentinel-deb-build",
-                "sentinel-rpm-build",
                 "sentinel-image-single-arch",
                 "integration-test"
             ],

@@ -168,6 +168,18 @@
         <bundle>mvn:com.google.guava/guava/21.0</bundle>
     </feature>
 
+    <!-- don't rely on dependency="true" for things that want specific versions -->
+    <feature name="guava31" version="31.1" description="Google :: Guava">
+        <feature prerequisite="true">guava-dependencies</feature>
+        <bundle start-level="${earlyStartLevel}">mvn:com.google.guava/guava/31.1-jre</bundle>
+    </feature>
+
+    <!-- don't rely on dependency="true" for things that want specific versions -->
+    <feature name="guava32" version="32.1" description="Google :: Guava">
+        <feature prerequisite="true">guava-dependencies</feature>
+        <bundle start-level="${earlyStartLevel}">mvn:com.google.guava/guava/32.1.3-jre</bundle>
+    </feature>
+
     <feature name="jackson1" version="${jacksonVersion}" description="Jackson 1">
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
         <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
@@ -328,8 +340,8 @@ org.jolokia.authMode=jaas
     </feature>
 
     <feature name="zookeeper-dependencies" version="${zookeeperVersion}" description="ZooKeeper Dependencies">
-        <feature prerequisite="true">wrap</feature>
-        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
+        <!-- needed by curator-recipes -->
+        <feature prerequisite="true">guava32</feature>
         <feature version="[${jackson2Version},3)">jackson-core</feature>
         <bundle>wrap:mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}$Bundle-SymbolicName=org.apache.zookeeper.zookeeper&amp;Bundle-Version=${zookeeperVersion}&amp;Export-Package=org.apache.zookeeper*;version="${zookeeperVersion}"</bundle>
         <bundle>wrap:mvn:org.apache.zookeeper/zookeeper-jute/${zookeeperVersion}$Bundle-SymbolicName=org.apache.zookeeper.zookeeper.jute&amp;Bundle-Version=${zookeeperVersion}&amp;Export-Package=org.apache.*;version="${zookeeperVersion}"</bundle>
