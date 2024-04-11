@@ -167,7 +167,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                 .mapToInt(Map.Entry::getValue)
                 .toArray();
 
-        String javaOpts = "-Xms2048m -Xmx2048m -Djava.security.egd=file:/dev/./urandom";
+        String javaOpts = "-Xms4g -Xmx4g -Djava.security.egd=file:/dev/./urandom";
         if (COLLECT_COVERAGE) {
             javaOpts += " -javaagent:/opt/opennms/agent/jacoco-agent.jar=output=none,jmx=true,excludes=org.drools.*";
         }
