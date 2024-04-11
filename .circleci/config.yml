@@ -97,7 +97,7 @@ aliases:
           MINION_IMAGE_VERSION="${CIRCLE_BRANCH//\//-}"
           ;;
       esac
-      # echo "export DOCKER_CONTENT_TRUST=1" >> $BASH_ENV
+      echo "export DOCKER_CONTENT_TRUST=1" >> $BASH_ENV
       echo "export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=\"$DCT_DELEGATE_KEY_PASSPHRASE\"" >> $BASH_ENV
       echo "export MINION_IMAGE=docker.io/opennms/minion" >> $BASH_ENV
       echo "export MINION_IMAGE_VERSION=\"$MINION_IMAGE_VERSION\"" >> $BASH_ENV
@@ -1479,11 +1479,13 @@ jobs:
             echo "Manifest contents:\n";
             printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor | "Architecture: " + .platform.architecture + .platform.variant + ", digest: " + .digest';
 
-#            export NOTARY_AUTH="$(printf "${DOCKERHUB_LOGIN}:${DOCKERHUB_PASS}" | base64 -w0)"
-#            echo "Sign ${SHA_256} with the notary"
-#            export NOTARY_TARGETS_PASSPHRASE="${DCT_REPO_MINION_KEY_PASSPHRASE}"
-#            notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE}" --sha256 "${SHA_256}" --publish --verbose
-#            echo "Done!"
+            if [ "${DOCKER_CONTENT_TRUST}" -eq 1 ]; then
+              export NOTARY_AUTH="$(printf "${DOCKERHUB_LOGIN}:${DOCKERHUB_PASS}" | base64 -w0)"
+              echo "Sign ${SHA_256} with the notary"
+              export NOTARY_TARGETS_PASSPHRASE="${DCT_REPO_MINION_KEY_PASSPHRASE}"
+              notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE}" --sha256 "${SHA_256}" --publish --verbose
+              echo "Done!"
+            fi
 
   horizon-rpm-build:
     executor: centos-build-executor
