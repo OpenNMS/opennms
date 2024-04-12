@@ -21,27 +21,33 @@
  */
 package org.opennms.core.mate.api;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.XmlRootElement;
 
+import org.apache.commons.jexl2.MapContext;
+import org.opennms.core.mate.api.parser.Expression;
+import org.opennms.core.mate.api.parser.JexlExpression;
+import org.opennms.core.mate.api.parser.MateExpression;
+import org.opennms.core.mate.api.parser.MateParserException;
+import org.opennms.core.mate.api.parser.PlainTextExpression;
+import org.opennms.core.mate.api.parser.SimpleExpression;
 import org.opennms.core.sysprops.SystemProperties;
+import org.opennms.core.utils.jexl.OnmsJexlEngine;
 import org.opennms.core.xml.JaxbUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.Maps;
 
 public class Interpolator {
-    private static final String OUTER_REGEXP = "\\$\\{([^\\{\\}]+?:[^\\{\\}]+?)\\}";
-    private static final String INNER_REGEXP = "(?:([^\\|]+?:[^\\|]+)|([^\\|]+))";
-    private static final Pattern OUTER_PATTERN = Pattern.compile(OUTER_REGEXP);
-    private static final Pattern INNER_PATTERN = Pattern.compile(INNER_REGEXP);
+    private static final Logger LOG = LoggerFactory.getLogger(Interpolator.class);
 
     private static final int MAX_RECURSION_DEPTH = SystemProperties.getInteger("org.opennms.mate.maxRecursionDepth", 8);
 
@@ -116,45 +122,75 @@ public class Interpolator {
             return input;
         }
 
-        final String result = interpolateSingle(input, parts, scope);
-        if (Objects.equals(input, result)) {
-            return result;
+        try {
+            final String result = interpolateSingle(input, parts, scope);
+            if (Objects.equals(input, result)) {
+                return result;
+            }
+            return interpolateRecursive(result, parts, scope, depth + 1);
+        } catch (MateParserException e) {
+            LOG.warn("Error parsing MATE expression", e);
+            return input;
         }
-
-        return interpolateRecursive(result, parts, scope, depth + 1);
     }
 
-    private static String interpolateSingle(final String input, final ImmutableList.Builder<ResultPart> parts, final Scope scope) {
-        final StringBuilder output = new StringBuilder();
-        final Matcher outerMatcher = OUTER_PATTERN.matcher(input);
-        while (outerMatcher.find()) {
-            final Matcher innerMatcher = INNER_PATTERN.matcher(outerMatcher.group(1));
-
-            String result = "";
-            while (innerMatcher.find()) {
-                if (innerMatcher.group(1) != null) {
-                    final String[] arr = innerMatcher.group(1).split(":", 2);
-                    final ContextKey contextKey = new ContextKey(arr[0], arr[1]);
-
-                    final Optional<Scope.ScopeValue> replacement = scope.get(contextKey);
-                    if (replacement.isPresent()) {
-                        result = Matcher.quoteReplacement(replacement.get().value);
-                        parts.add(new ResultPart(outerMatcher.group(), innerMatcher.group(1), replacement.get()));
-                        break;
-                    }
-                } else if (innerMatcher.group(2) != null) {
-                    result = Matcher.quoteReplacement(innerMatcher.group(2));
-                    parts.add(new ResultPart(outerMatcher.group(), innerMatcher.group(2), new Scope.ScopeValue(Scope.ScopeName.DEFAULT, innerMatcher.group(2))));
-                    break;
-                }
+    static class ParsingVisitor implements Expression.Visitor {
+        public class Mate {
+            public String mate(final String input) {
+                return interpolate(input, scope).output;
             }
-
-            outerMatcher.appendReplacement(output, result);
         }
 
-        outerMatcher.appendTail(output);
+        private final Scope scope;
+        private String value = "";
+        private final ImmutableList.Builder<ResultPart> parts;
 
-        return output.toString();
+        ParsingVisitor(final Scope scope, final ImmutableList.Builder<ResultPart> parts) {
+            this.scope = scope;
+            this.parts = parts;
+        }
+
+        @Override
+        public void visit(final PlainTextExpression plainTextExpression) {
+            value += plainTextExpression.getContent();
+        }
+
+        @Override
+        public void visit(final SimpleExpression simpleExpression) {
+            for(org.opennms.core.mate.api.parser.ContextKey contextKey : simpleExpression.getContextKeys()) {
+                final ContextKey interpolatedContextKey = new ContextKey(interpolate(contextKey.getContext(), scope).output, interpolate(contextKey.getKey(), scope).output);
+                final Optional<Scope.ScopeValue> replacement = scope.get(interpolatedContextKey);
+                if (replacement.isPresent()) {
+                    this.value += replacement.get().value;
+                    parts.add(new ResultPart(simpleExpression.toString(), contextKey.toString(), replacement.get()));
+                    return;
+                }
+            }
+            if (simpleExpression.getDefaultValue() != null) {
+                this.value += simpleExpression.getDefaultValue();
+                parts.add(new ResultPart(simpleExpression.toString(), simpleExpression.getDefaultValue(), new Scope.ScopeValue(Scope.ScopeName.DEFAULT, simpleExpression.getDefaultValue())));
+            }
+        }
+
+        @Override
+        public void visit(JexlExpression jexlExpression) {
+            final OnmsJexlEngine parser = new OnmsJexlEngine();
+            parser.setFunctions(Collections.singletonMap(null, new Mate()));
+            parser.white(Mate.class.getName());
+            final org.apache.commons.jexl2.Expression expression = parser.createExpression(jexlExpression.getContent());
+            value += String.valueOf(expression.evaluate(new MapContext()));
+        }
+
+        public String getValue() {
+            return this.value;
+        }
+    }
+
+    private static String interpolateSingle(final String input, final ImmutableList.Builder<ResultPart> parts, final Scope scope) throws MateParserException {
+        final MateExpression mateExpression = MateExpression.of(input);
+        final ParsingVisitor parsingVisitor = new ParsingVisitor(scope, parts);
+        Expression.visit(mateExpression.getExpressions(), parsingVisitor);
+        return parsingVisitor.value;
     }
 
     public static class Result {
