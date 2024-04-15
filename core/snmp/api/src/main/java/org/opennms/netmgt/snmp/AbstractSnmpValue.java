@@ -29,10 +29,22 @@
 package org.opennms.netmgt.snmp;
 
 import java.nio.charset.Charset;
+import java.util.Arrays;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TreeSet;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.CharUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.google.common.base.Strings;
 
 public abstract class AbstractSnmpValue implements SnmpValue {
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractSnmpValue.class);
+    public static final String ADDITIONAL_PRINTABLE_CHARACTERS_PROPERTY = "org.opennms.netmgt.snmp.additionalPrintableCharacters";
+    static Set<Character> ADDITIONAL_PRINTABLE_CHARACTERS;
 
     public static boolean allBytesPlainAscii(final byte[] bytes) {
         if (bytes == null) {
@@ -44,7 +56,7 @@ public abstract class AbstractSnmpValue implements SnmpValue {
 
         for(int i = 0; i < sz; ++i) {
             // check whether character is between 31 and 127
-            final boolean isDisplayable = CharUtils.isAsciiPrintable(str.charAt(i));
+            final boolean isDisplayable = CharUtils.isAsciiPrintable(str.charAt(i)) || getAdditionalPrintableCharacters().contains(str.charAt(i));
             // check for null terminated string
             final boolean isNullTerminated = str.charAt(i) == 0 && i == sz-1;
 
@@ -173,5 +185,32 @@ public abstract class AbstractSnmpValue implements SnmpValue {
             }
         }
         return true;
+    }
+
+    static Set<Character> getAdditionalPrintableCharacters() {
+        if (ADDITIONAL_PRINTABLE_CHARACTERS == null) {
+            final String additionalCharactersString = System.getProperty(ADDITIONAL_PRINTABLE_CHARACTERS_PROPERTY, "");
+            if (Strings.isNullOrEmpty(additionalCharactersString)) {
+                ADDITIONAL_PRINTABLE_CHARACTERS = new TreeSet<>();
+            } else {
+                final String[] byteArray = additionalCharactersString.split(",");
+
+                ADDITIONAL_PRINTABLE_CHARACTERS = Arrays.stream(byteArray)
+                        .filter(Objects::nonNull)
+                        .map(string -> {
+                            if (!string.trim().isEmpty()) {
+                                try {
+                                    return (char) (Byte.decode(string) & 0xFF);
+                                } catch (NumberFormatException e) {
+                                    LOG.warn("Cannot decode '{}' to byte", string, e);
+                                }
+                            }
+                            return null;
+                        })
+                        .filter(Objects::nonNull)
+                        .collect(Collectors.toSet());
+            }
+        }
+        return ADDITIONAL_PRINTABLE_CHARACTERS;
     }
 }
