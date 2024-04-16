@@ -67,7 +67,7 @@
     "pinia": "^2.1.6",
     "rapidoc": "^9.3.4",
     "sass": "^1.64.2",
-    "sass-loader": "^13.3.2",
+    "sass-loader": "^14.1.1",
     "splitpanes": "^3.1.5",
     "vite-svg-loader": "^4.0.0",
     "vue": "^3.3.4",
