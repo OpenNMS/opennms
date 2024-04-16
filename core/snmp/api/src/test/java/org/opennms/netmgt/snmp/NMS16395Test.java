@@ -41,7 +41,7 @@ public class NMS16395Test {
         System.setProperty(AbstractSnmpValue.ADDITIONAL_PRINTABLE_CHARACTERS_PROPERTY, "");
         AbstractSnmpValue.ADDITIONAL_PRINTABLE_CHARACTERS = null;
         assertEquals("A\u0011B\u0011C\nD\u0011E\u0011F\n", checkHexString("41114211430a44114511460a", false));
-        assertEquals("A\u0011B\u0011C\nD\u0011E\u0011F\n", checkBAse64String("QRFCEUMKRBFFEUYK", false));
+        assertEquals("A\u0011B\u0011C\nD\u0011E\u0011F\n", checkBase64String("QRFCEUMKRBFFEUYK", false));
     }
 
     @Test
@@ -49,7 +49,7 @@ public class NMS16395Test {
         System.setProperty(AbstractSnmpValue.ADDITIONAL_PRINTABLE_CHARACTERS_PROPERTY, "0x0a,0x11");
         AbstractSnmpValue.ADDITIONAL_PRINTABLE_CHARACTERS = null;
         assertEquals("A\u0011B\u0011C\nD\u0011E\u0011F\n", checkHexString("41114211430a44114511460a", true));
-        assertEquals("A\u0011B\u0011C\nD\u0011E\u0011F\n", checkBAse64String("QRFCEUMKRBFFEUYK", true));
+        assertEquals("A\u0011B\u0011C\nD\u0011E\u0011F\n", checkBase64String("QRFCEUMKRBFFEUYK", true));
     }
 
     private String checkHexString(final String hexString, final boolean expected) {
@@ -58,7 +58,7 @@ public class NMS16395Test {
         return new String(bytes, Charset.defaultCharset());
     }
 
-    private String checkBAse64String(final String base64String, final boolean expected) {
+    private String checkBase64String(final String base64String, final boolean expected) {
         byte[] bytes = Base64.getDecoder().decode(base64String);
         assertEquals(expected, AbstractSnmpValue.allBytesPlainAscii(bytes));
         return new String(bytes, Charset.defaultCharset());
