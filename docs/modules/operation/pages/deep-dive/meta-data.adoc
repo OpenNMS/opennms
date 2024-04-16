@@ -204,7 +204,7 @@ If neither exist, the placeholder defaults to `admin`:
 
 [source]
 ${requisition:url|http://example.org}
-Since the last value contains a colon, the interpreter will treat this value as a context-key evaluate to an empty string in the case there is no data for the context-key `requisition:url`.
+Since the last value contains a colon, the interpreter will treat this value as a context-key which evaluates to an empty string in the case there is no data for the context-key `requisition:url`.
 
 [source]
 ${requisition:url|"http://example.org"}
