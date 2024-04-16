@@ -78,11 +78,10 @@ with open(path_to_build_components, "r", encoding="UTF-8") as file_handler:
     build_components = json.load(file_handler)
 
 
-ALIAS_FOLDER = "aliases"
 COMMANDS_FOLDER = "commands"
 WORKFLOW_FOLDER = "workflows"
 JOB_FOLDER = "jobs"
-component_folders = [ALIAS_FOLDER, COMMANDS_FOLDER, WORKFLOW_FOLDER, JOB_FOLDER]
+component_folders = [COMMANDS_FOLDER, WORKFLOW_FOLDER, JOB_FOLDER]
 
 components_path = os.path.join(working_directory.name, ".circleci", "main")
 
