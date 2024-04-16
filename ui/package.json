@@ -96,7 +96,7 @@
     "eslint-plugin-vue": "^9.22.0",
     "happy-dom": "^9.20.3",
     "prettier": "^3.2.5",
-    "typescript": "^5.2.2",
+    "typescript": "^5.4.5",
     "unplugin-auto-import": "^0.17.1",
     "unplugin-vue-components": "^0.22.12",
     "vite": "^4.3.9",
