@@ -1750,7 +1750,7 @@
     <commonsCodecVersion>1.16.0</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
     <commonsCollections4Version>4.4</commonsCollections4Version>
-    <commonsCompressVersion>1.25.0</commonsCompressVersion>
+    <commonsCompressVersion>1.26.1</commonsCompressVersion>
     <commonsConfigurationVersion>1.10</commonsConfigurationVersion>
     <commonsCsvVersion>1.5</commonsCsvVersion>
     <commonsDaemonVersion>1.3.4</commonsDaemonVersion>
