@@ -17,7 +17,7 @@
           <span class="input-group-text"><i class="fa fa-search"></i></span>
         </div>
       </div>
-      <table class="table table-sm">
+      <table class="table table-sm ip-interfaces">
         <thead>
           <tr>
             <th sort order="'ipAddress'" by="ipOrder" reverse="ipReverse">IP Address</th>
@@ -36,7 +36,7 @@
        </tbody>
       </table>
     </div>
-    <ul uib-pagination class="pagination-sm mx-3"
+    <ul uib-pagination class="pagination-sm mx-3 ip-interfaces"
       total-items="ipInterfacesTotalItems"
       num-pages="ipInterfacesNumPages"
       ng-model="ipInterfacesCurrentPage"
@@ -63,7 +63,7 @@
           <span class="input-group-text"><i class="fa fa-search"></i></span>
         </div>
       </div>
-      <table class="table table-sm">
+      <table class="table table-sm snmp-interfaces">
         <thead>
           <tr>
             <th sort order="'ifIndex'" by="snmpOrder" reverse="snmpReverse">SNMP ifIndex</th>
@@ -90,7 +90,7 @@
        </tbody>
       </table>
     </div>
-    <ul uib-pagination class="pagination-sm mx-3"
+    <ul uib-pagination class="pagination-sm mx-3 snmp-interfaces"
       total-items="snmpInterfacesTotalItems"
       num-pages="snmpInterfacesNumPages"
       ng-model="snmpInterfacesCurrentPage"

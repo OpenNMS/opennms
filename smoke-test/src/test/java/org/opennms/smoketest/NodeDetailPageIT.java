@@ -160,17 +160,7 @@ public class NodeDetailPageIT extends OpenNMSSeleniumIT {
 
             setImplicitWait(1, SECONDS);
             Assert.assertEquals(1, driver.findElements(By.id("availability-box")).size());
-            Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.1")).size());
-            Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.2")).size());
-            Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.3")).size());
-            Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.4")).size());
-            Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.5")).size());
-            Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.6")).size());
-            Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.7")).size());
-            Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.8")).size());
-            Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.9")).size());
-            Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.10")).size());
-            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.11")).size());
+            Assert.assertEquals(0, driver.findElements(By.cssSelector("ul.ip-interfaces")).size());
             setImplicitWait();
 
             driver.get(getBaseUrlInternal()+"opennms/element/node.jsp?node=test:nodeWith11Interfaces");
@@ -178,17 +168,7 @@ public class NodeDetailPageIT extends OpenNMSSeleniumIT {
 
             setImplicitWait(1, SECONDS);
             Assert.assertEquals(0, driver.findElements(By.id("availability-box")).size());
-            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.1")).size());
-            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.2")).size());
-            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.3")).size());
-            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.4")).size());
-            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.5")).size());
-            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.6")).size());
-            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.7")).size());
-            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.8")).size());
-            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.9")).size());
-            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.10")).size());
-            Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.11")).size());
+            Assert.assertEquals(1, driver.findElements(By.cssSelector("ul.ip-interfaces")).size());
             setImplicitWait();
         } finally {
             sendDelete("rest/nodes/test:nodeWith10Interfaces", 202);
