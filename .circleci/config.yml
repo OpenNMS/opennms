@@ -105,16 +105,18 @@ aliases:
   - &setup_dct_key
     name: Setup DCT key
     command: |
-      KEY_FOLDER=~/.docker/trust/private
-      mkdir -p $KEY_FOLDER
-      # the key that is used to sign single-arch images
-      echo "$DCT_DELEGATE_KEY" | base64 -d > $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key
-      # the key that is used by Notary to sign the multi-arch minion image
-      echo "$DCT_REPO_MINION_KEY" | base64 -d > $KEY_FOLDER/$DCT_REPO_MINION_KEY_NAME.key
-      chmod 600 $KEY_FOLDER/*
-      # setup_dct_env must have been run first because it provide DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE
-      # that is required for loading the
-      docker trust key load $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key
+      if [ "${DOCKER_CONTENT_TRUST}" -eq 1 ]; then
+        KEY_FOLDER=~/.docker/trust/private
+        mkdir -p $KEY_FOLDER
+        # the key that is used to sign single-arch images
+        echo "$DCT_DELEGATE_KEY" | base64 -d > $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key
+        # the key that is used by Notary to sign the multi-arch minion image
+        echo "$DCT_REPO_MINION_KEY" | base64 -d > $KEY_FOLDER/$DCT_REPO_MINION_KEY_NAME.key
+        chmod 600 $KEY_FOLDER/*
+        # setup_dct_env must have been run first because it provide DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE
+        # that is required for loading the
+        docker trust key load $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key
+      fi
 
 docker_container_config: &docker_container_config
   executor: docker-executor
