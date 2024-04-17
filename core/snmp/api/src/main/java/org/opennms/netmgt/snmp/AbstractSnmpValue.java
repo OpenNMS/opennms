@@ -39,8 +39,6 @@ import org.apache.commons.lang.CharUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Strings;
-
 public abstract class AbstractSnmpValue implements SnmpValue {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractSnmpValue.class);
     public static final String ADDITIONAL_PRINTABLE_CHARACTERS_PROPERTY = "org.opennms.netmgt.snmp.additionalPrintableCharacters";
@@ -190,7 +188,7 @@ public abstract class AbstractSnmpValue implements SnmpValue {
     static Set<Character> getAdditionalPrintableCharacters() {
         if (ADDITIONAL_PRINTABLE_CHARACTERS == null) {
             final String additionalCharactersString = System.getProperty(ADDITIONAL_PRINTABLE_CHARACTERS_PROPERTY, "");
-            if (Strings.isNullOrEmpty(additionalCharactersString)) {
+            if (additionalCharactersString == null || additionalCharactersString.isEmpty()) {
                 ADDITIONAL_PRINTABLE_CHARACTERS = new TreeSet<>();
             } else {
                 final String[] byteArray = additionalCharactersString.split(",");
