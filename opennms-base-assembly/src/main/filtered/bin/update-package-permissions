@@ -28,7 +28,7 @@ if ! id -u "${RUNAS}" >/dev/null 2>&1; then
 fi
 
 if [ "${RUNAS}" != "opennms" ]; then
-  printf '%s\n\n' "\$RUNAS has been changed from the default 'opennms' user. Assuming you know what you're doing and changing ownership of files to ${RUNAS}."
+  printf '$RUNAS has been changed from the default "opennms" user. Assuming you know what you're doing and changing ownership of files to "%s".\n\n' "${RUNAS}"
 fi
 
 RUNAS_UID="$(id -u "${RUNAS}" 2>/dev/null || :)"
