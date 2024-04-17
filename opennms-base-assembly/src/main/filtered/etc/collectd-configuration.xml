@@ -128,7 +128,7 @@
          <parameter key="driver" value="${requisition:driver|detector:driver|org.postgresql.Driver}" />
          <parameter key="user" value="${requisition:pg-user|postgres}" />
          <parameter key="password" value="${requisition:pg-pass|postgres}" />
-         <parameter key="url" value="${requisition:url|detector:url|jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms}" />
+         <parameter key="url" value="${requisition:url|detector:url|'jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms'}" />
       </service>
       <service name="Elasticsearch" interval="300000" user-defined="false" status="on">
          <parameter key="collection" value="${requisition:collection|detector:collection|xml-elasticsearch-cluster-stats}" />
