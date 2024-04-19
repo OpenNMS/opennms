@@ -286,9 +286,21 @@ They each add additional features to the `system/` directory with a series of pr
 
 Going forward, _any_ future new features should ideally be written as OSGi bundles and loaded into Karaf from features files.
 
-The existing infrastructure that builds the core, Minion, and Sentinel assemblies is overly complicated. It involves making base Karaf assemblies, and then overlaying a bunch of extra `system/` files and a few configs on top of those assemblies.
+The existing infrastructure that builds the core, Minion, and Sentinel assemblies is overly complicated.
+It involves making base Karaf assemblies, and then overlaying a bunch of extra `system/` files and a few configs on top of those assemblies.
 
 I have been working to convert our build to just 2 assemblies: one to make a full Karaf install with all necessary dependencies inside the `system/` directory (in `features/containers/<blah>`), and then one very small one that turns that into an install tarball (with init/systemd files, etc.) (in `opennms-assemblies/<blah>`).
+This is being done in the [NMS-16294](https://opennms.atlassian.net/browse/NMS-16294) JIRA issue, and additional work is documented in [NMS-16413](https://opennms.atlassian.net/browse/NMS-16413).
+
+#### Single Assembly and the Features Processing File
+
+The biggest change compared to the Karaf design in `foundation-2023` and earlier is the removal of extra "repository" Maven project(s) and making the assembly in `features/containers/(minion|sentinel)` authoritative as a complete Karaf assembly with all dependencies already put into the `system/` directory.
+
+These changes fix a number of issues with old dependencies getting pulled into `system/` (or in some cases even loaded into the runtime!!) by using a pretty-much undocumented feature of modern Karaf called a "Features Processing" file.
+
+Despite being undocumented, the file's format is reasonably easy to understand.
+It replaces the old `blacklisted.properties` and `overrides.properties` files we used to force Karaf to skip certain bundles, or to "upgrade" bundles to a different version at runtime.
+The most notable improvement over blacklisting and overriding is that it a) supports telling Karaf to load an _entirely different_ bundle when a certain bundle is requested, and b) can be used when _generating_ the assembly as well as at runtime.
 
 ### Working with Features Files
 
