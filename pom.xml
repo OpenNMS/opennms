@@ -1644,7 +1644,7 @@
     <commonsPoolVersion>1.6</commonsPoolVersion>
     <commonsPool2Version>2.4.3</commonsPool2Version>
     <commonsTextVersion>1.11.0</commonsTextVersion>
-    <commonsValidatorVersion>1.7</commonsValidatorVersion>
+    <commonsValidatorVersion>1.8.0</commonsValidatorVersion>
     <concurrentTreesVersion>2.6.1</concurrentTreesVersion>
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.5</c3p0Version>
