@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,6 +34,7 @@ import com.codahale.metrics.Timer;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import io.opentracing.Scope;
+import io.opentracing.Span;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
 import io.searchbox.client.JestClient;
@@ -204,10 +205,11 @@ public class ElasticFlowRepository implements FlowRepository {
     private void persistBulk(final List<FlowDocument> bulk) throws FlowException {
         LOG.debug("Persisting {} flow documents.", bulk.size());
         final Tracer tracer = getTracer();
+        final Span span = tracer.buildSpan(TRACER_FLOW_MODULE).start();
         try (final Timer.Context ctx = logPersistingTimer.time();
-             Scope scope = tracer.buildSpan(TRACER_FLOW_MODULE).startActive(true)) {
+                final Scope scope = getTracer().scopeManager().activate(span)) {
             // Add location and source address tags to span.
-            scope.span().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
+            span.setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
             final BulkRequest<FlowDocument> bulkRequest = new BulkRequest<>(client, bulk, (documents) -> {
                 final Bulk.Builder bulkBuilder = new Bulk.Builder();
                 for (FlowDocument flowDocument : documents) {
