@@ -1010,12 +1010,16 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
                 LOG.debug("Node {}/{}/{} has the following requisitioned categories: {}", dbNode.getId(), foreignSource, dbNode.getForeignId(), categories);
                 final List<RequisitionedCategoryAssociation> reqCats = new ArrayList<>(m_categoryAssociationDao.findByNodeId(dbNode.getId()));
+                final Set<String> listOfCategories = dbNode.getCategories().stream().map(OnmsCategory::getName).collect(Collectors.toSet());
+
                 for (final Iterator<RequisitionedCategoryAssociation> reqIter = reqCats.iterator(); reqIter.hasNext(); ) {
                     final RequisitionedCategoryAssociation reqCat = reqIter.next();
                     final String categoryName = reqCat.getCategory().getName();
                     if (categories.contains(categoryName)) {
                         // we've already stored this category before, remove it from the list of "new" categories
-                        categories.remove(categoryName);
+                        if (listOfCategories.contains(categoryName)) {
+                            categories.remove(categoryName);
+                        }
                     } else {
                         // we previously stored this category, but now it shouldn't be there anymore
                         // remove it from the category association
@@ -1033,10 +1037,12 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 for (final String cat : categories) {
                     m_categoriesAdded.add(cat);
                     final OnmsCategory onmsCat = createCategoryIfNecessary(cat);
-                    final RequisitionedCategoryAssociation r = new RequisitionedCategoryAssociation(dbNode, onmsCat);
                     node.addCategory(onmsCat);
                     dbNode.addCategory(onmsCat);
-                    m_categoryAssociationDao.saveOrUpdate(r);
+                    if (reqCats.stream().noneMatch(c->cat.equals(c.getCategory().getName()))) {
+                        final RequisitionedCategoryAssociation r = new RequisitionedCategoryAssociation(dbNode, onmsCat);
+                        m_categoryAssociationDao.saveOrUpdate(r);
+                    }
                     changed = true;
                 }
 
@@ -1324,7 +1330,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 node.setType(NodeType.ACTIVE);
                 node.setLastCapsdPoll(now);
 
-                final OnmsIpInterface iface = new OnmsIpInterface(InetAddressUtils.addr(ipAddress), node);
+                final OnmsIpInterface iface = new OnmsIpInterface(addr(ipAddress), node);
                 iface.setIsManaged("M");
                 iface.setIpHostName(hostname);
                 iface.setIsSnmpPrimary(PrimaryType.NOT_ELIGIBLE);
@@ -1493,6 +1499,17 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         if ((!Strings.isNullOrEmpty(name)) && (!Strings.isNullOrEmpty(value))) {
             span.setTag(name, value);
         }
+    }
 
+    public void setCategoryDao(CategoryDao categoryDao) {
+        this.m_categoryDao = categoryDao;
+    }
+
+    public void setTransactionManager(PlatformTransactionManager transactionManager) {
+        this.m_transactionManager = transactionManager;
+    }
+
+    public void setCategoryAssociationDao(RequisitionedCategoryAssociationDao requisitionedCategoryAssociationDao) {
+        this.m_categoryAssociationDao = requisitionedCategoryAssociationDao;
     }
 }
