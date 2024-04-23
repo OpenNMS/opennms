@@ -30,6 +30,8 @@ package org.opennms.netmgt.snmp;
 
 import java.nio.charset.Charset;
 import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TreeSet;
@@ -42,7 +44,9 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractSnmpValue implements SnmpValue {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractSnmpValue.class);
     public static final String ADDITIONAL_PRINTABLE_CHARACTERS_PROPERTY = "org.opennms.netmgt.snmp.additionalPrintableCharacters";
-    static Set<Character> ADDITIONAL_PRINTABLE_CHARACTERS;
+    private static Set<Character> ADDITIONAL_PRINTABLE_CHARACTERS;
+    public static final String MAPPED_CHARACTERS_PROPERTY = "org.opennms.netmgt.snmp.mappedCharacters";
+    private static Map<Character, Character> MAPPED_CHARACTERS;
 
     public static boolean allBytesPlainAscii(final byte[] bytes) {
         if (bytes == null) {
@@ -54,7 +58,7 @@ public abstract class AbstractSnmpValue implements SnmpValue {
 
         for(int i = 0; i < sz; ++i) {
             // check whether character is between 31 and 127
-            final boolean isDisplayable = CharUtils.isAsciiPrintable(str.charAt(i)) || getAdditionalPrintableCharacters().contains(str.charAt(i));
+            final boolean isDisplayable = CharUtils.isAsciiPrintable(str.charAt(i)) || getAdditionalPrintableCharacters().contains(str.charAt(i)) || isMappedCharacter(str.charAt(i));
             // check for null terminated string
             final boolean isNullTerminated = str.charAt(i) == 0 && i == sz-1;
 
@@ -185,6 +189,49 @@ public abstract class AbstractSnmpValue implements SnmpValue {
         return true;
     }
 
+    public static boolean isAdditionalPrintableCharacter(byte b) {
+        final char c = (char) (b & 0xFF);
+        return getAdditionalPrintableCharacters().contains(c);
+    }
+
+    static Map<Character, Character> getMappedCharacters() {
+        if (MAPPED_CHARACTERS == null) {
+            final Map<Character, Character> mappedCharacters = new HashMap<>();
+            final String[] mappings = System.getProperty(MAPPED_CHARACTERS_PROPERTY, "").split(",");
+            if (mappings == null || mappings.length == 0) {
+                return mappedCharacters;
+            }
+
+            for(final String mapping : mappings) {
+                final String[] strings = mapping.split(":");
+                if (strings != null && strings.length == 2) {
+                    final char srcChar, dstChar;
+                    try {
+                        srcChar = (char) (Byte.decode(strings[0]) & 0xFF);
+                    } catch (NumberFormatException e) {
+                        LOG.warn("Cannot decode '{}' to byte", strings[0], e);
+                        continue;
+                    }
+                    try {
+                        dstChar = (char) (Byte.decode(strings[1]) & 0xFF);
+                    } catch (NumberFormatException e) {
+                        LOG.warn("Cannot decode '{}' to byte", strings[1], e);
+                        continue;
+                    }
+                    mappedCharacters.put(srcChar, dstChar);
+                }
+            }
+
+            MAPPED_CHARACTERS = mappedCharacters;
+        }
+
+        return MAPPED_CHARACTERS;
+    }
+
+    private static boolean isMappedCharacter(char c) {
+        return getMappedCharacters().containsKey(c);
+    }
+
     static Set<Character> getAdditionalPrintableCharacters() {
         if (ADDITIONAL_PRINTABLE_CHARACTERS == null) {
             final String additionalCharactersString = System.getProperty(ADDITIONAL_PRINTABLE_CHARACTERS_PROPERTY, "");
@@ -210,5 +257,14 @@ public abstract class AbstractSnmpValue implements SnmpValue {
             }
         }
         return ADDITIONAL_PRINTABLE_CHARACTERS;
+    }
+
+    public static byte mapCharacter(byte aByte) {
+        return (byte) getMappedCharacters().computeIfAbsent((char) (aByte  & 0xFF), a -> a).charValue();
+    }
+
+    public static void invalidateAdditionalAndMappedCharacters() {
+        ADDITIONAL_PRINTABLE_CHARACTERS = null;
+        MAPPED_CHARACTERS = null;
     }
 }

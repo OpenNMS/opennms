@@ -25,23 +25,25 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.snmp;
+package org.opennms.netmgt.snmp.snmp4j;
 
 import static org.junit.Assert.assertEquals;
 
-import java.nio.charset.Charset;
-import java.util.Base64;
+import java.util.function.Function;
 
 import org.junit.Test;
+import org.opennms.netmgt.snmp.AbstractSnmpValue;
+import org.snmp4j.smi.OctetString;
 
 public class NMS16395Test {
+    private final static Function<String, AbstractSnmpValue> FUNCTION = string -> new Snmp4JValue(new OctetString(string));
 
     @Test
-    public void testAdditionalPrintableCharactersFail() {
+    public void testWithoutAdditionalPrintableCharacters() {
         System.setProperty(AbstractSnmpValue.ADDITIONAL_PRINTABLE_CHARACTERS_PROPERTY, "");
         System.setProperty(AbstractSnmpValue.MAPPED_CHARACTERS_PROPERTY, "");
         AbstractSnmpValue.invalidateAdditionalAndMappedCharacters();
-        assertEquals("A\u0011B\u0011C\nD\u0011E\u0011F\n", checkHexString("41114211430a44114511460a", false));
+        assertEquals("A.B.C.D.E.F.", FUNCTION.apply("A\u0011B\u0011C\nD\u0011E\u0011F\n").toDisplayString());
     }
 
     @Test
@@ -49,20 +51,14 @@ public class NMS16395Test {
         System.setProperty(AbstractSnmpValue.ADDITIONAL_PRINTABLE_CHARACTERS_PROPERTY, "0x0a,0x11");
         System.setProperty(AbstractSnmpValue.MAPPED_CHARACTERS_PROPERTY, "");
         AbstractSnmpValue.invalidateAdditionalAndMappedCharacters();
-        assertEquals("A\u0011B\u0011C\nD\u0011E\u0011F\n", checkHexString("41114211430a44114511460a", true));
+        assertEquals("A\u0011B\u0011C\nD\u0011E\u0011F\n", FUNCTION.apply("A\u0011B\u0011C\nD\u0011E\u0011F\n").toDisplayString());
     }
 
     @Test
-    public void testAdditionalPrintableCharactersAndMapping() {
-        System.setProperty(AbstractSnmpValue.ADDITIONAL_PRINTABLE_CHARACTERS_PROPERTY, "0x0a");
-        System.setProperty(AbstractSnmpValue.MAPPED_CHARACTERS_PROPERTY, "0x11:0x20");
+    public void testMappedCharacters() {
+        System.setProperty(AbstractSnmpValue.ADDITIONAL_PRINTABLE_CHARACTERS_PROPERTY, "0x0a,0x11");
+        System.setProperty(AbstractSnmpValue.MAPPED_CHARACTERS_PROPERTY, "0x0a:0x20,0x45:0x58");
         AbstractSnmpValue.invalidateAdditionalAndMappedCharacters();
-        checkHexString("41114211430a44114511460a", true);
-    }
-
-    private String checkHexString(final String hexString, final boolean expected) {
-        byte[] bytes = javax.xml.bind.DatatypeConverter.parseHexBinary(hexString);
-        assertEquals(expected, AbstractSnmpValue.allBytesPlainAscii(bytes));
-        return new String(bytes, Charset.defaultCharset());
+        assertEquals("A\u0011B\u0011C D\u0011X\u0011F ", FUNCTION.apply("A\u0011B\u0011C\nD\u0011E\u0011F\n").toDisplayString());
     }
 }
