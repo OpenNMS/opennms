@@ -1622,7 +1622,7 @@
     <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
     <commonsChainVersion>1.2</commonsChainVersion>
     <commonsCliVersion>1.2</commonsCliVersion>
-    <commonsCodecVersion>1.16.0</commonsCodecVersion>
+    <commonsCodecVersion>1.16.1</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
     <commonsCollections4Version>4.4</commonsCollections4Version>
     <commonsCompressVersion>1.26.1</commonsCompressVersion>
