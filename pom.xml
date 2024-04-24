@@ -1747,7 +1747,7 @@
     <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
     <commonsChainVersion>1.2</commonsChainVersion>
     <commonsCliVersion>1.2</commonsCliVersion>
-    <commonsCodecVersion>1.16.0</commonsCodecVersion>
+    <commonsCodecVersion>1.16.1</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
     <commonsCollections4Version>4.4</commonsCollections4Version>
     <commonsCompressVersion>1.26.1</commonsCompressVersion>
@@ -1972,7 +1972,7 @@
     <wsmanVersion>1.2.3</wsmanVersion>
     <zookeeperVersion>3.7.2</zookeeperVersion>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
-    <minaSshdVersion>2.11.0</minaSshdVersion>
+    <minaSshdVersion>2.12.1</minaSshdVersion>
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
 
     <springVersion>4.2.9.RELEASE_1</springVersion>
