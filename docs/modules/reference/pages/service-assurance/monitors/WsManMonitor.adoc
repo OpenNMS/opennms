@@ -60,3 +60,20 @@ Note that you must include the `monitor` section for each service in your defini
 
 <monitor service="WsMan-ServiceTag-Check" class-name="org.opennms.netmgt.poller.monitors.WsManMonitor" />
 ----
+
+The following monitor will issue a GET against the Resource URI for Windows Services and monitor them based on status.  The Service for MS SQL is being used in the example.
+
+Note that you must include the `monitor` section for each service in your definition.
+
+[source, xml]
+----
+<service name="MSSQLServer" interval="300000" user-defined="false" status="on">
+   <parameter key="retry" value="1"/>
+   <parameter key="timeout" value="5000"/>
+   <parameter key="resource-uri" value="http://schemas.microsoft.com/wbem/wsman/1/wmi/root/cimv2/Win32_Service"/>
+   <parameter key="selector.Name" value="MSSQLSERVER"/>
+   <parameter key="rule" value="#State matches 'Running' and #Status matches 'OK'"/>
+</service>
+
+<monitor service="MSSQLServer" class-name="org.opennms.netmgt.poller.monitors.WsManMonitor"/>
+----
