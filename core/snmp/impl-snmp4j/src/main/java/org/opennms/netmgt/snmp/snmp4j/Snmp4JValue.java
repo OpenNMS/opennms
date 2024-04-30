@@ -306,7 +306,7 @@ public class Snmp4JValue extends AbstractSnmpValue {
         }
         
         if (getType() == SnmpValue.SNMP_OCTET_STRING) {
-            return allBytesPlainAscii(getBytes());
+            return allBytesDisplayable(getBytes());
         }
         
         return false;
