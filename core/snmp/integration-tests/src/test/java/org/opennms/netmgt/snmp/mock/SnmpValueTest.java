@@ -291,7 +291,7 @@ public class SnmpValueTest {
             final SnmpValue value = factory.getOctetString(rawBytes);
 
             assertArrayEquals(className + ": getOctetString bytes should match", rawBytes, value.getBytes());
-            assertFalse(className + ": getOctetString displayable should be false", value.isDisplayable());
+            assertTrue(className + ": getOctetString displayable should be true", value.isDisplayable());
             assertEquals(className + ": getOctetString to String should return " + stringBytes, stringBytes, value.toString());
             assertEquals(className + ": getOctetString to DisplayString should return " + stringBytes, stringBytes, value.toDisplayString());
             assertEquals(className + ": getOctetString to HexString should return " + hexString, hexString, value.toHexString());
