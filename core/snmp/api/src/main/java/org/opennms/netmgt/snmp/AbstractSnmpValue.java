@@ -28,33 +28,16 @@
 
 package org.opennms.netmgt.snmp;
 
-import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.commons.lang.CharUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractSnmpValue implements SnmpValue {
-
-    public static boolean allBytesPlainAscii(final byte[] bytes) {
-        if (bytes == null) {
-            return false;
-        }
-
-        final String str = new String(bytes, Charset.defaultCharset());
-        final int sz = str.length();
-
-        for(int i = 0; i < sz; ++i) {
-            // check whether character is between 31 and 127
-            final boolean isDisplayable = CharUtils.isAsciiPrintable(str.charAt(i));
-            // check for null terminated string
-            final boolean isNullTerminated = str.charAt(i) == 0 && i == sz-1;
-
-            if (!isDisplayable && !isNullTerminated) {
-                return false;
-            }
-        }
-
-        return true;
-    }
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractSnmpValue.class);
+    public static final String ADDITIONAL_PRINTABLE_CHARACTERS_PROPERTY = "org.opennms.netmgt.snmp.additionalPrintableCharacters";
+    private static Map<Byte, Byte> ADDITIONAL_PRINTABLE_CHARACTERS;
 
     public static boolean allBytesDisplayable(final byte[] bytes) {
         if (allBytesUTF_8(bytes)) {
@@ -78,6 +61,10 @@ public abstract class AbstractSnmpValue implements SnmpValue {
         
         int end;
         for (int j = bytes.length; i < j; ++i) {
+            if (getAdditionalPrintableCharacters().containsKey(bytes[i])) {
+                continue;
+            }
+
             int octet = bytes[i];
 
             // ASCII
@@ -149,6 +136,11 @@ public abstract class AbstractSnmpValue implements SnmpValue {
     public static boolean allBytesISO_8859_1(byte[] bytes) {
         for (int i = 0; i < bytes.length; i++) {
             byte b = bytes[i];
+
+            if (getAdditionalPrintableCharacters().containsKey(b)) {
+                continue;
+            }
+
             // Null (0)
             if (b == 0) {
                 if (i != (bytes.length - 1)) {
@@ -173,5 +165,58 @@ public abstract class AbstractSnmpValue implements SnmpValue {
             }
         }
         return true;
+    }
+
+    public static Map<Byte, Byte> getAdditionalPrintableCharacters() {
+        if (ADDITIONAL_PRINTABLE_CHARACTERS == null) {
+            final Map<Byte, Byte> mappedCharacters = new HashMap<>();
+            final String[] mappings = System.getProperty(ADDITIONAL_PRINTABLE_CHARACTERS_PROPERTY, "").split(",");
+            if (mappings.length == 0) {
+                return mappedCharacters;
+            }
+
+            for(final String mapping : mappings) {
+                final String[] strings = mapping.split(":");
+                if (strings.length == 1) {
+                    final byte srcChar;
+                    try {
+                        srcChar = Byte.decode(strings[0]);
+                    } catch (NumberFormatException e) {
+                        LOG.warn("Cannot decode '{}' to byte", strings[0], e);
+                        continue;
+                    }
+                    mappedCharacters.put(srcChar, srcChar);
+                    continue;
+                }
+
+                if (strings.length == 2) {
+                    final byte srcChar, dstChar;
+                    try {
+                        srcChar = Byte.decode(strings[0]);
+                    } catch (NumberFormatException e) {
+                        LOG.warn("Cannot decode '{}' to byte", strings[0], e);
+                        continue;
+                    }
+                    try {
+                        dstChar = Byte.decode(strings[1]);
+                    } catch (NumberFormatException e) {
+                        LOG.warn("Cannot decode '{}' to byte", strings[1], e);
+                        continue;
+                    }
+                    mappedCharacters.put(srcChar, dstChar);
+                    continue;
+                }
+
+                LOG.warn("Cannot parse mapping '{}'", mapping);
+            }
+
+            ADDITIONAL_PRINTABLE_CHARACTERS = mappedCharacters;
+        }
+
+        return ADDITIONAL_PRINTABLE_CHARACTERS;
+    }
+
+    public static void invalidateAdditionalCharacters() {
+        ADDITIONAL_PRINTABLE_CHARACTERS = null;
     }
 }
