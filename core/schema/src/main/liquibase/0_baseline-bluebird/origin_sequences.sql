@@ -125,3 +125,9 @@ alter sequence public.bmprpkiinfonxtid owner to opennms;
 create sequence public.deviceconfignxtid;
 
 alter sequence public.deviceconfignxtid owner to opennms;
+
+
+-- TODO MVR this is new but it seems that it is not used. Verify...
+create sequence public.usage_analytics_id_seq start with 2;
+alter sequence public.usage_analytics_id_seq owned by public.usage_analytics.id;
+alter sequence public.usage_analytics_id_seq owner to opennms;

@@ -53,7 +53,7 @@ create index servicemap_ipaddr_idx
 
 create table public.service
 (
-    serviceid   integer default nextval('servicenxtid'::regclass) not null
+    serviceid   serial
         constraint pk_serviceid
             primary key,
     servicename varchar(255)                                      not null
@@ -144,7 +144,7 @@ create index events_ipaddr_idx
 
 create table public.categories
 (
-    categoryid          integer default nextval('catnxtid'::regclass) not null
+    categoryid          serial
         constraint category_pkey
             primary key,
     categoryname        text                                          not null,
@@ -172,7 +172,7 @@ create unique index applications_name_idx
 
 create table public.statisticsreport
 (
-    id               integer default nextval('opennmsnxtid'::regclass) not null
+    id               serial
         constraint pk_statisticsreport_id
             primary key,
     startdate        timestamp with time zone                          not null,
@@ -198,7 +198,7 @@ create index statisticsreport_purgedate
 
 create table public.resourcereference
 (
-    id         integer default nextval('opennmsnxtid'::regclass) not null
+    id         serial
         constraint pk_resourcereference_id
             primary key,
     resourceid varchar(255)                                      not null
@@ -212,7 +212,7 @@ create unique index resourcereference_resourceid
 
 create table public.statisticsreportdata
 (
-    id         integer default nextval('opennmsnxtid'::regclass) not null
+    id         serial
         constraint pk_statsdata_id
             primary key,
     reportid   integer                                           not null
@@ -328,8 +328,9 @@ create table public.qrtz_simple_triggers
     repeat_interval bigint       not null,
     times_triggered bigint       not null,
     sched_name      varchar(120) not null,
-    constraint pk_qrtz_simple_triggers
-        primary key (sched_name, trigger_name, trigger_group),
+-- TODO MVR this was missing
+--     constraint pk_qrtz_simple_triggers
+--         primary key (sched_name, trigger_name, trigger_group),
     constraint fk_qrtz_simple_triggers_triggers
         foreign key (sched_name, trigger_name, trigger_group) references public.qrtz_triggers
 );
@@ -457,7 +458,7 @@ alter table public.qrtz_locks
 
 create table public.acks
 (
-    id        integer                  default nextval('opennmsnxtid'::regclass) not null
+    id        serial
         primary key,
     acktime   timestamp with time zone default now()                             not null,
     ackuser   varchar(64)              default 'admin'::character varying        not null,
@@ -574,7 +575,7 @@ create unique index filternamesidx
 
 create table public.hwentityattributetype
 (
-    id          integer default nextval('opennmsnxtid'::regclass) not null
+    id          serial
         primary key,
     attribname  varchar(128)                                      not null,
     attriboid   varchar(128)                                      not null,
@@ -687,7 +688,7 @@ create index node_sysdescr_idx
 
 create table public.snmpinterface
 (
-    id                integer    default nextval('opennmsnxtid'::regclass) not null
+    id                serial
         primary key,
     nodeid            integer                                              not null
         constraint fk_nodeid2
@@ -724,7 +725,7 @@ create index snmpinterface_snmpphysaddr_idx
 
 create table public.ipinterface
 (
-    id              integer default nextval('opennmsnxtid'::regclass) not null
+    id              serial
         primary key,
     nodeid          integer                                           not null
         constraint fk_nodeid1
@@ -769,7 +770,7 @@ create index ipinterface_ipaddr_idx
 
 create table public.ifservices
 (
-    id            integer default nextval('opennmsnxtid'::regclass) not null
+    id            serial
         primary key,
     ifindex       integer,
     serviceid     integer                                           not null
@@ -842,16 +843,19 @@ create index outages_svcregainedid_idx
 create index outages_regainedservice_idx
     on public.outages (ifregainedservice);
 
-create index outages_ifserviceid_idx
-    on public.outages (ifserviceid);
+-- TODO MVR this index was missing
+-- create index outages_ifserviceid_idx
+--     on public.outages (ifserviceid);
 
 create unique index one_outstanding_outage_per_service_and_location_idx1
-    on public.outages (ifserviceid)
-    where ((perspective IS NULL) AND (ifregainedservice IS NULL));
+    on public.outages (ifserviceid);
+-- TODO MVR this condition was missing
+--     where ((perspective IS NULL) AND (ifregainedservice IS NULL));
 
 create unique index one_outstanding_outage_per_service_and_location_idx2
-    on public.outages (ifserviceid, perspective)
-    where ((NOT (perspective IS NULL)) AND (ifregainedservice IS NULL));
+    on public.outages (ifserviceid, perspective);
+-- TODO MVR this condition was missing
+-- where ((NOT (perspective IS NULL)) AND (ifregainedservice IS NULL));
 
 create table public.notifications
 (
@@ -1033,7 +1037,7 @@ create unique index alarm_attributes_aan_idx
 
 create table public.assets
 (
-    id                    integer default nextval('opennmsnxtid'::regclass) not null
+    id                    serial
         constraint pk_assetid
             primary key,
     nodeid                integer
@@ -1109,8 +1113,9 @@ create table public.assets
 alter table public.assets
     owner to opennms;
 
-create index assets_nodeid_idx
-    on public.assets (nodeid);
+-- TODO MVR this index was missing
+-- create index assets_nodeid_idx
+--     on public.assets (nodeid);
 
 create index assets_an_idx
     on public.assets (assetnumber);
@@ -1218,7 +1223,7 @@ create index inventory_status_idx
 
 create table public.lldpelement
 (
-    id                   integer default nextval('opennmsnxtid'::regclass) not null
+    id                   serial
         primary key,
     nodeid               integer                                           not null
         constraint fk_lldpelement_nodeid
@@ -1245,7 +1250,7 @@ create unique index lldpelement_unique_nodeid_idx
 
 create table public.lldplink
 (
-    id                      integer default nextval('opennmsnxtid'::regclass) not null
+    id                      serial
         primary key,
     nodeid                  integer                                           not null
         constraint fk_lldplink_nodeid
@@ -1280,7 +1285,7 @@ create index lldplink_lastpoll_idx
 
 create table public.ospfelement
 (
-    id                   integer default nextval('opennmsnxtid'::regclass) not null
+    id                   serial
         primary key,
     nodeid               integer                                           not null
         constraint fk_ospfelement_nodeid
@@ -1308,7 +1313,7 @@ create unique index ospfelement_unique_nodeid_idx
 
 create table public.ospflink
 (
-    id                      integer default nextval('opennmsnxtid'::regclass) not null
+    id                      serial
         primary key,
     nodeid                  integer                                           not null
         constraint fk_ospflink_nodeid
@@ -1340,7 +1345,7 @@ create index ospflink_pk_idx
 
 create table public.isiselement
 (
-    id                   integer default nextval('opennmsnxtid'::regclass) not null
+    id                   serial
         primary key,
     nodeid               integer                                           not null
         constraint fk_isiselement_nodeid
@@ -1363,7 +1368,7 @@ create unique index isiselement_unique_nodeid_idx
 
 create table public.isislink
 (
-    id                         integer default nextval('opennmsnxtid'::regclass) not null
+    id                         serial
         primary key,
     nodeid                     integer                                           not null
         constraint fk_isislink_nodeid
@@ -1396,7 +1401,7 @@ create index isislink_pk_idx
 
 create table public.ipnettomedia
 (
-    id            integer default nextval('opennmsnxtid'::regclass) not null
+    id            serial
         primary key,
     netaddress    text                                              not null,
     physaddress   varchar(32)                                       not null,
@@ -1429,7 +1434,7 @@ create index ipnettomedia_pk_idx
 
 create table public.bridgeelement
 (
-    id                       integer default nextval('opennmsnxtid'::regclass) not null
+    id                       serial
         primary key,
     nodeid                   integer                                           not null
         constraint fk_bridgeelement_nodeid
@@ -1463,7 +1468,7 @@ create index bridgeelement_pk_idx
 
 create table public.bridgemaclink
 (
-    id                        integer default nextval('opennmsnxtid'::regclass) not null
+    id                        serial
         primary key,
     nodeid                    integer                                           not null
         constraint fk_bridgemaclink_nodeid
@@ -1496,7 +1501,7 @@ create index bridgemaclink_pk_idx2
 
 create table public.bridgestplink
 (
-    id                        integer default nextval('opennmsnxtid'::regclass) not null
+    id                        serial
         primary key,
     nodeid                    integer                                           not null
         constraint fk_bridgestplink_nodeid
@@ -1535,7 +1540,7 @@ create index bridgestplink_pk_idx2
 
 create table public.bridgebridgelink
 (
-    id                           integer default nextval('opennmsnxtid'::regclass) not null
+    id                           serial
         primary key,
     nodeid                       integer                                           not null
         constraint fk_bridgebridgelink_nodeid
@@ -1571,7 +1576,7 @@ create index bridgebridgelink_pk_idx
 
 create table public.cdpelement
 (
-    id                      integer default nextval('opennmsnxtid'::regclass) not null
+    id                      serial
         primary key,
     nodeid                  integer                                           not null
         constraint fk_cdpelement_nodeid
@@ -1595,7 +1600,7 @@ create unique index cdpelement_unique_nodeid_idx
 
 create table public.cdplink
 (
-    id                     integer default nextval('opennmsnxtid'::regclass) not null
+    id                     serial
         primary key,
     nodeid                 integer                                           not null
         constraint fk_cdplink_nodeid
@@ -1634,7 +1639,7 @@ create index cdplink_pk_new_idx
 
 create table public.hwentity
 (
-    id                      integer default nextval('opennmsnxtid'::regclass) not null
+    id                      serial
         primary key,
     parentid                integer
         constraint fk_hwentity_parent
@@ -1674,7 +1679,7 @@ create index hwentity_nodeid_idx
 
 create table public.hwentityattribute
 (
-    id             integer default nextval('opennmsnxtid'::regclass) not null
+    id             serial
         primary key,
     hwentityid     integer                                           not null
         constraint fk_hwentity_hwentityattribute
@@ -1695,7 +1700,7 @@ create unique index hwentityattribute_unique_idx
 
 create table public.requisitioned_categories
 (
-    id         integer default nextval('opennmsnxtid'::regclass) not null
+    id         serial
         primary key,
     nodeid     integer                                           not null
         constraint requisitioned_nodeid_fkey
@@ -1971,7 +1976,7 @@ alter table public.classification_rules
 
 create table public.hwentityalias
 (
-    id         integer default nextval('opennmsnxtid'::regclass) not null
+    id         serial
         primary key,
     hwentityid integer                                           not null
         constraint fk_hwentity_hwentityalias
@@ -2704,7 +2709,7 @@ alter table public.device_config
 
 create table public.usage_analytics
 (
-    id          bigserial
+    id          bigint default nextval('usage_analytics_id_seq'::regclass) not null
         primary key,
     metric_name text   not null
         unique,
@@ -2717,7 +2722,7 @@ alter table public.usage_analytics
 
 create table public.ospfarea
 (
-    id                   bigint default nextval('opennmsnxtid'::regclass) not null
+    id                   bigserial
         primary key,
     nodeid               integer                                          not null
         constraint fk_ospfarea_nodeid
@@ -3164,4 +3169,39 @@ FROM bmp_ip_rib_log log
          JOIN bmp_routers rtr ON p.router_hash_id::text = rtr.hash_id::text;
 
 alter table public.bmp_v_ip_routes_history
+    owner to opennms;
+
+-- TODO MVR
+-- These tables were created in addition to the default ones :)
+create table public.cm_databasechangelog
+(
+    id            varchar(255) not null,
+    author        varchar(255) not null,
+    filename      varchar(255) not null,
+    dateexecuted  timestamp    not null,
+    orderexecuted integer      not null,
+    exectype      varchar(10)  not null,
+    md5sum        varchar(35),
+    description   varchar(255),
+    comments      varchar(255),
+    tag           varchar(255),
+    liquibase     varchar(20),
+    contexts      varchar(255),
+    labels        varchar(255),
+    deployment_id varchar(10)
+);
+
+alter table public.cm_databasechangelog
+    owner to opennms;
+
+create table public.cm_databasechangeloglock
+(
+    id          integer not null
+        primary key,
+    locked      boolean not null,
+    lockgranted timestamp,
+    lockedby    varchar(255)
+);
+
+alter table public.cm_databasechangeloglock
     owner to opennms;
