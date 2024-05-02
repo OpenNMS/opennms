@@ -234,7 +234,7 @@ public class Snmp4JValue extends AbstractSnmpValue {
     private String toStringDottingCntrlChars(final byte[] value) {
         final byte[] results = new byte[value.length];
         for (int i = 0; i < value.length; i++) {
-            results[i] = Character.isISOControl((char)value[i]) ? (byte)'.' : value[i];
+            results[i] = AbstractSnmpValue.getAdditionalPrintableCharacters().getOrDefault(value[i], Character.isISOControl((char)value[i]) ? (byte)'.' : value[i]);
         }
         return new String(results);
     }

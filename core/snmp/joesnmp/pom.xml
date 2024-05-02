@@ -31,4 +31,10 @@
       </plugin>
     </plugins>
   </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.opennms.core.snmp</groupId>
+      <artifactId>org.opennms.core.snmp.api</artifactId>
+    </dependency>
+  </dependencies>
 </project>
