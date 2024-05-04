@@ -2352,7 +2352,7 @@
         </createTable>
     </changeSet>
     <changeSet author="marskuh (generated)" id="1714164956965-335">
-        <createTable tableName="databasechangelog">
+        <createTable tableName="cm_databasechangelog">
             <column name="id" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
@@ -2382,9 +2382,9 @@
         </createTable>
     </changeSet>
     <changeSet author="marskuh (generated)" id="1714164956965-336">
-        <createTable tableName="databasechangeloglock">
+        <createTable tableName="cm_databasechangeloglock">
             <column name="id" type="INTEGER">
-                <constraints nullable="false" primaryKey="true" primaryKeyName="databasechangeloglock_pkey"/>
+                <constraints nullable="false" primaryKey="true" primaryKeyName="cm_databasechangeloglock_pkey"/>
             </column>
             <column name="locked" type="BOOLEAN">
                 <constraints nullable="false"/>

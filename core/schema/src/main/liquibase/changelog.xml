@@ -24,7 +24,9 @@
 <!--		</or>-->
 <!--	</preConditions>-->
 
-	<include file="0_baseline-bluebird/changelog.xml" />
+	<include file="0_baseline-bluebird/changelog-schema.xml" />
+	<include file="0_baseline-bluebird/changelog-values.xml" />
+	<include file="22.0.0/changelog-insert-rules.xml"/> <!-- TODO MVR move to 0_baseline-bluebird -->
 
 <!--	<include file="create-sequences.xml" />-->
 

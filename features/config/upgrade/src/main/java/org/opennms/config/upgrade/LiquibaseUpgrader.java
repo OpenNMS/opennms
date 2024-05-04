@@ -42,6 +42,7 @@ import liquibase.ext2.cm.executor.CmExecutor;
 import liquibase.ext2.cm.sqlgenerator.CmSqlGenerator;
 import liquibase.resource.ClassLoaderResourceAccessor;
 
+// TODO MVR this should go
 public class LiquibaseUpgrader {
 
     public final static String TABLE_NAME_DATABASECHANGELOG = "cm_databasechangelog";

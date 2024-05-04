@@ -11,8 +11,8 @@
         </sqlCheck>
         </preConditions>
         <sql>
-            INSERT INTO classification_groups (id, name, description, readonly, enabled, priority) VALUES (1, 'pre-defined',  'Classification rules defined by OpenNMS', true, true, 0);
-            INSERT INTO classification_groups (id, name, description, readonly, enabled, priority) VALUES (2, 'user-defined', 'Classification rules defined by the user', false, true, 10);
+            INSERT INTO classification_groups (id, name, description, readonly, enabled, position) VALUES (1, 'pre-defined',  'Classification rules defined by OpenNMS', true, true, 2);
+            INSERT INTO classification_groups (id, name, description, readonly, enabled, position) VALUES (2, 'user-defined', 'Classification rules defined by the user', false, true, 1);
 
             INSERT INTO classification_rules (id, name, dst_address, dst_port, protocol, position, groupid) VALUES (2, 'diagnose-proc', null, '6072', 'tcp,udp', 0, 1);
             INSERT INTO classification_rules (id, name, dst_address, dst_port, protocol, position, groupid) VALUES (3, 'saiseh', null, '1644', 'tcp,udp', 1, 1);
