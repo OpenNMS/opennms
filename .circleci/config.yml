@@ -1741,7 +1741,8 @@ jobs:
     steps:
       - add_ssh_keys:
           fingerprints:
-            - "66:9a:2d:a8:ad:7b:cc:7c:d2:ee:55:94:01:72:ac:2a"
+            - "6a:c7:42:e6:e3:26:76:95:f4:0a:7a:5b:9c:b3:19:0e"
+            #- "66:9a:2d:a8:ad:7b:cc:7c:d2:ee:55:94:01:72:ac:2a"
       - run:
           name: "Branch Merge Parameters"
           command: |
@@ -1843,7 +1844,8 @@ jobs:
           steps:
             - add_ssh_keys:
                 fingerprints:
-                  - "45:4b:bc:36:e7:c7:b3:d3:3b:b8:87:f3:b5:f2:c1:58"
+                  - "6a:c7:42:e6:e3:26:76:95:f4:0a:7a:5b:9c:b3:19:0e"
+                  #- "45:4b:bc:36:e7:c7:b3:d3:3b:b8:87:f3:b5:f2:c1:58"
             - restore_cache:
                 keys:
                   - poweredby-v1-{{ .Branch }}-{{ .Revision }}
