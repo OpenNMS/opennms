@@ -177,7 +177,7 @@ public abstract class AbstractSnmpValue implements SnmpValue {
 
             for(final String mapping : mappings) {
                 final String[] strings = mapping.split(":");
-                if (strings.length == 1) {
+                if (strings.length == 1 && !"".equals(strings[0])) {
                     final byte srcChar;
                     try {
                         srcChar = Byte.decode(strings[0]);
@@ -207,7 +207,7 @@ public abstract class AbstractSnmpValue implements SnmpValue {
                     continue;
                 }
 
-                LOG.warn("Cannot parse mapping '{}'", mapping);
+                LOG.debug("Cannot parse mapping '{}'", mapping);
             }
 
             ADDITIONAL_PRINTABLE_CHARACTERS = mappedCharacters;
