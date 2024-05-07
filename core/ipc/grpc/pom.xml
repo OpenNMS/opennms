@@ -5,7 +5,7 @@
   <parent>
     <artifactId>org.opennms.core.ipc</artifactId>
     <groupId>org.opennms.core</groupId>
-    <version>33.0.4-SNAPSHOT</version>
+    <version>33.0.4</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <name>OpenNMS :: Core :: IPC :: GRPC :: Parent</name>
