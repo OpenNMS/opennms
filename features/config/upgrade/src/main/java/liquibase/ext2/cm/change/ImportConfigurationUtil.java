@@ -29,6 +29,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
+import org.apache.commons.io.FilenameUtils;
 import org.opennms.features.config.dao.api.ConfigDefinition;
 import org.opennms.features.config.dao.api.ConfigItem;
 import org.opennms.features.config.dao.impl.util.OpenAPIBuilder;
@@ -43,7 +44,6 @@ import org.springframework.core.io.Resource;
 
 import liquibase.ext2.cm.change.converter.PropertiesToJson;
 import liquibase.ext2.cm.change.converter.XmlToJson;
-import liquibase.util.file.FilenameUtils;
 
 public class ImportConfigurationUtil {
 
