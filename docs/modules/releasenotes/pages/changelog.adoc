@@ -2,6 +2,23 @@
 
 = Changelog
 
+[[releasenotes-changelog-33.0.4]]
+
+== Release 33.0.4
+
+Release 33.0.4 contains a bunch of bug fixes and enhancements.
+
+The codename for Horizon 33.0.4 is https://wikipedia.org/wiki/$$Cordia_boissieri$$[_Anacahuita_].
+
+=== Bug
+
+* PostgreSQL monitor url parameter metadata cannot be resolved properly and collection fails consequently (Issue https://issues.opennms.org/browse/NMS-16374[NMS-16374])
+* Unable to display varbind's form feed characters and other control characters in events (Issue https://issues.opennms.org/browse/NMS-16395[NMS-16395])
+
+=== Enhancement
+
+* Allow fix-permissions and update-package-permissions scripts to set ownership for customized users (Issue https://issues.opennms.org/browse/NMS-16406[NMS-16406])
+
 [[releasenotes-changelog-33.0.3]]
 
 == Release 33.0.3
