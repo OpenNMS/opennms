@@ -456,7 +456,6 @@
                 <feature>vaadin-surveillance-views</feature>
                 <feature>jira-troubleticketer</feature>
                 <feature>tsrm-troubleticketer</feature>
-                <feature>datachoices</feature>
                 <feature>eif-adapter</feature>
                 <feature>opennms-telemetry-collection</feature>
                 <feature>opennms-telemetry-bmp</feature>
