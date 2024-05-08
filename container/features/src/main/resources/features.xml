@@ -1282,51 +1282,6 @@
         <bundle>mvn:org.opennms.features/org.opennms.features.mib-compiler/${project.version}</bundle>
         <bundle>mvn:commons-lang/commons-lang/${commonsLangVersion}</bundle>
     </feature>
-    <feature name="osgi-nrtg-api" version="${project.version}" description="OpenNMS :: Features :: NRTG :: Features :: API">
-        <details>The API contains the models for the NRTG OSGI projects. It has models for collection jobs, measurements and protocol collectors.</details>
-        <bundle>mvn:org.opennms.features.nrtg/nrtg-api/${project.version}</bundle>
-    </feature>
-    <feature name="osgi-nrtg-protocolcollector-snmp" version="${project.version}" description="OpenNMS :: Features :: NRTG :: Features :: Collectors :: SNMP">
-        <details>Plugin for the NRTCollector OSGI Satellit to collect data from snmp agents</details>
-        <feature>osgi-nrtg-api</feature>
-        <bundle>mvn:org.opennms.features.nrtg.protocolcollector/nrtg-protocolcollector-snmp/${project.version}</bundle>
-    </feature>
-    <feature name="osgi-nrtg-protocolcollector-tca" version="${project.version}" description="OpenNMS :: Features :: NRTG :: Features :: Collectors :: TCA">
-        <details>Plugin for the NRTCollector OSGI Satellite to collect data from TCA agents.</details>
-        <feature>osgi-nrtg-api</feature>
-        <bundle>mvn:org.opennms.features.nrtg.protocolcollector/nrtg-protocolcollector-tca/${project.version}</bundle>
-    </feature>
-    <feature name="osgi-nrtg-web" version="${project.version}" description="OpenNMS :: Features :: NRTG :: Features :: Web">
-        <details>NRTG Web Runtime Feature</details>
-        <feature>osgi-nrtg-api</feature>
-        <bundle>mvn:org.opennms.features.nrtg/nrtg-web/${project.version}</bundle>
-    </feature>
-    <feature name="osgi-nrtg-base" version="${project.version}" description="OpenNMS :: Features :: NRTG :: Features :: Base">
-        <details>OSGI Runtime for the NRTCollector.</details>
-        <feature>osgi-nrtg-protocolcollector-snmp</feature>
-        <feature>osgi-nrtg-protocolcollector-tca</feature>
-        <feature>osgi-nrtg-web</feature>
-    </feature>
-    <feature name="osgi-nrtg-jms" version="${project.version}" description="OpenNMS :: Features :: NRTG :: Features :: JMS">
-        <details>OSGI Runtime for the NRTCollector.</details>
-        <feature>osgi-nrtg-base</feature>
-        <feature>activemq</feature>
-        <feature>activemq-blueprint</feature>
-        <feature version="${springVersion}">spring-jms</feature>
-        <bundle>mvn:org.opennms.features.nrtg/nrtg-collector/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.nrtg/nrtg-nrtbroker-jms/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.nrtg/nrtg-broker/${project.version}</bundle>
-    </feature>
-    <feature name="osgi-nrtg-local" version="${project.version}" description="OpenNMS :: Features :: NRTG :: Features :: Local">
-        <details>OSGI Runtime for the NRTCollector.</details>
-        <feature>osgi-nrtg-base</feature>
-        <bundle>mvn:org.opennms.features.nrtg/nrtg-nrtbroker-local/${project.version}</bundle>
-    </feature>
-    <feature name="nrtg" version="${project.version}" description="OpenNMS :: Features :: NRTG :: Features :: All">
-        <details>OSGI Runtime for the NRTCollector.</details>
-        <feature>osgi-nrtg-jms</feature>
-        <feature>osgi-nrtg-local</feature>
-    </feature>
     <feature name="vaadin" version="${project.version}" description="OpenNMS :: Features :: Vaadin + Dependencies">
         <details>The Vaadin web application framework including some addons and osgi related packages.</details>
         <!-- Dependencies -->
