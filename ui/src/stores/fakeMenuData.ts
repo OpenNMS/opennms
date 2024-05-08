@@ -240,18 +240,6 @@ export const defaultMainMenu = {
           isVueLink: null,
           roles: null
         },
-        {
-          id: null,
-          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
-          name: 'KSC Reports',
-          url: 'KSC/index.jsp',
-          locationMatch: 'ksc',
-          icon: null,
-          iconType: null,
-          isIconOnly: null,
-          isVueLink: null,
-          roles: null
-        }
       ]
     },
     {

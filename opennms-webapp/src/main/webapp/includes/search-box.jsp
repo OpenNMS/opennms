@@ -37,15 +37,6 @@
     </div>
   </div>
 
-  <div class="card">
-    <div class="card-header">
-      <span><a href="KSC/index.jsp">KSC Reports</a></span>
-    </div>
-    <div class="card-body">
-      <onms-search-ksc />
-    </div>
-  </div>
-
 </div>
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">

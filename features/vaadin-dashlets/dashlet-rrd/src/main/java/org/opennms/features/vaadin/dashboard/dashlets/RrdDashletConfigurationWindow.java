@@ -22,20 +22,12 @@
 package org.opennms.features.vaadin.dashboard.dashlets;
 
 import java.util.Calendar;
-import java.util.List;
-import java.util.Map;
 
 import org.opennms.features.vaadin.dashboard.config.ui.WallboardConfigUI;
 import org.opennms.features.vaadin.dashboard.config.ui.WallboardProvider;
 import org.opennms.features.vaadin.dashboard.model.DashletConfigurationWindow;
 import org.opennms.features.vaadin.dashboard.model.DashletSpec;
-import org.opennms.netmgt.config.KSC_PerformanceReportFactory;
-import org.opennms.netmgt.config.kscReports.Graph;
-import org.opennms.netmgt.config.kscReports.Report;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsResource;
-import org.opennms.netmgt.model.OnmsResourceType;
 
 import com.vaadin.event.ShortcutAction;
 import com.vaadin.ui.Alignment;
@@ -88,11 +80,6 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
      * the grid layout instance
      */
     private GridLayout m_gridLayout;
-
-    /**
-     * the KSC report factory
-     */
-    private KSC_PerformanceReportFactory kscPerformanceReportFactory;
 
     /**
      * Constructor for instantiating new objects of this class.
@@ -260,49 +247,6 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
         middleFormLayout.addComponent(m_timeFrameType);
 
         /**
-         * KSC import stuff
-         */
-        Button importButton = new Button("KSC Import");
-        importButton.setDescription("Import KSC-report");
-        final NativeSelect selectKSCReport = new NativeSelect();
-        selectKSCReport.setDescription("KSC-report selection");
-        selectKSCReport.setCaption("KSC Report");
-        selectKSCReport.setImmediate(true);
-        selectKSCReport.setNewItemsAllowed(false);
-        selectKSCReport.setMultiSelect(false);
-        selectKSCReport.setInvalidAllowed(false);
-        selectKSCReport.setNullSelectionAllowed(false);
-        selectKSCReport.setImmediate(true);
-
-        kscPerformanceReportFactory = KSC_PerformanceReportFactory.getInstance();
-
-        Map<Integer, String> mapOfKscReports = kscPerformanceReportFactory.getReportList();
-
-        if (mapOfKscReports.size() == 0) {
-            importButton.setEnabled(false);
-        }
-
-        for (Map.Entry<Integer, String> entry : mapOfKscReports.entrySet()) {
-            selectKSCReport.addItem(entry.getKey());
-
-            selectKSCReport.setItemCaption(entry.getKey(), entry.getValue());
-
-            if (selectKSCReport.getValue() == null) {
-                selectKSCReport.setValue(entry.getKey());
-            }
-        }
-
-        importButton.addClickListener(new Button.ClickListener() {
-            @Override
-            public void buttonClick(Button.ClickEvent clickEvent) {
-                importKscReport(Integer.valueOf(selectKSCReport.getValue().toString()));
-            }
-        });
-
-        rightFormLayout.addComponent(selectKSCReport);
-        rightFormLayout.addComponent(importButton);
-
-        /**
          * setting up the layout
          */
         HorizontalLayout horizontalLayout = new HorizontalLayout();
@@ -416,125 +360,6 @@ public class RrdDashletConfigurationWindow extends DashletConfigurationWindow {
         verticalLayout.setSizeFull();
 
         setContent(verticalLayout);
-    }
-
-    private void setRrdGraphEntryFromKscReportGraph(RrdGraphEntry rrdGraphEntry, Graph graph) {
-
-        String graphLabel, graphId, graphUrl, nodeId, nodeLabel, resourceLabel, resourceTypeId, resourceTypeLabel;
-
-        String[] graphTypeArr = graph.getGraphtype().split("\\.");
-        String[] resourceIdArr = graph.getResourceId().orElse("").split("\\.");
-
-        nodeId = resourceIdArr[0].split("[\\[\\]]")[1];
-        String resourceTypeName = resourceIdArr[1].split("[\\[\\]]")[0];
-
-        OnmsNode onmsNode = m_nodeDao.get(nodeId);
-        nodeLabel = onmsNode.getLabel();
-
-        Map<OnmsResourceType, List<OnmsResource>> resourceTypeListMap = m_rrdGraphHelper.getResourceTypeMapForNodeId(nodeId);
-
-        for (Map.Entry<OnmsResourceType, List<OnmsResource>> entry : resourceTypeListMap.entrySet()) {
-            OnmsResourceType onmsResourceType = entry.getKey();
-
-            if (resourceTypeName.equals(onmsResourceType.getName())) {
-                resourceTypeId = "node[" + nodeId + "]." + resourceTypeName;
-                resourceTypeLabel = onmsResourceType.getLabel();
-                List<OnmsResource> onmsResourceList = entry.getValue();
-
-                for (OnmsResource onmsResource : onmsResourceList) {
-
-                    String onmsResourceId = onmsResource.getId().toString();
-
-                    if (onmsResourceId.equals(graph.getResourceId())) {
-                        resourceLabel = onmsResource.getLabel();
-
-                        Map<String, String> resultsMap = m_rrdGraphHelper.getGraphResultsForResourceId(onmsResource.getId());
-                        Map<String, String> nameTitleMapping = m_rrdGraphHelper.getGraphNameTitleMappingForResourceId(onmsResource.getId());
-
-                        graphId = onmsResourceId + "." + nameTitleMapping.get(graph.getGraphtype());
-
-                        graphLabel = nameTitleMapping.get(graph.getGraphtype());
-                        graphUrl = resultsMap.get(graph.getGraphtype());
-
-                        rrdGraphEntry.setNodeId(nodeId);
-                        rrdGraphEntry.setNodeLabel(nodeLabel);
-                        rrdGraphEntry.setResourceTypeId(resourceTypeId);
-                        rrdGraphEntry.setResourceTypeLabel(resourceTypeLabel);
-                        rrdGraphEntry.setResourceId(onmsResourceId);
-                        rrdGraphEntry.setResourceLabel(resourceLabel);
-                        rrdGraphEntry.setGraphId(graphId);
-                        rrdGraphEntry.setGraphLabel(graphLabel);
-                        rrdGraphEntry.setGraphUrl(graphUrl);
-
-                        break;
-                    }
-                }
-                break;
-            }
-        }
-    }
-
-    /**
-     * Import the KSC report with the given name
-     */
-    private void importKscReport(int reportId) {
-        Report report = kscPerformanceReportFactory.getReportByIndex(reportId);
-
-        int columns = Math.max(1, report.getGraphsPerLine().orElse(1));
-
-        int rows = report.getGraphs().size() / columns;
-
-        if (rows == 0) {
-            rows = 1;
-        }
-
-        if (report.getGraphs().size() % columns > 0) {
-            rows++;
-        }
-
-        for (int y = 0; y < m_gridLayout.getRows(); y++) {
-            for (int x = 0; x < m_gridLayout.getColumns(); x++) {
-                if (x >= columns || y >= rows) {
-                    m_gridLayout.removeComponent(x, y);
-                }
-            }
-        }
-
-        m_columnsSelect.setValue(columns);
-        m_rowsSelect.setValue(rows);
-
-        m_gridLayout.setColumns(columns);
-        m_gridLayout.setRows(rows);
-
-        int timeFrameValue = 1;
-        int timeFrameType = Calendar.HOUR;
-
-        int i = 0;
-
-        for (int y = 0; y < m_gridLayout.getRows(); y++) {
-            for (int x = 0; x < m_gridLayout.getColumns(); x++) {
-
-                if (m_gridLayout.getComponent(x, y) == null) {
-                    RrdGraphEntry rrdGraphEntry = new RrdGraphEntry(m_nodeDao, m_rrdGraphHelper, x, y);
-                    rrdGraphEntry.setPreviewTimeFrame(timeFrameType, timeFrameValue);
-                    m_gridLayout.addComponent(rrdGraphEntry, x, y);
-                }
-
-                RrdGraphEntry rrdGraphEntry = (RrdGraphEntry) m_gridLayout.getComponent(x, y);
-
-                /**
-                 * setting the values if defined in the KSC report
-                 */
-                if (i < report.getGraphs().size()) {
-                    final int index = i;
-                    setRrdGraphEntryFromKscReportGraph(rrdGraphEntry, report.getGraphs().get(index));
-                }
-
-                rrdGraphEntry.update();
-
-                i++;
-            }
-        }
     }
 
 

@@ -88,9 +88,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItem(reportsMenuName, "Resource Graphs", "graph/index.jsp");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//label[contains(text()[normalize-space()], 'Standard Resource')]")));
 
-        clickMenuItem(reportsMenuName, "KSC Reports", "KSC/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='Customized Reports']");
-
         final String dashboardsMenuName = "name=nav-Dashboards-top";
         clickMenuItem(dashboardsMenuName, "Dashboard", "dashboard.jsp");
         // switchTo() by xpath is much faster than by ID

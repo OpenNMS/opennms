@@ -443,11 +443,6 @@
                                 <property name="url" value="graph/index.jsp"/>
                                 <property name="locationMatch" value="performance"/>
                             </bean>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="KSC Reports"/>
-                                <property name="url" value="KSC/index.jsp"/>
-                                <property name="locationMatch" value="ksc"/>
-                            </bean>
                         </list>
                     </property>
                 </bean>
@@ -502,47 +497,6 @@
 
     <bean name="/graph/graph.png" class="org.opennms.web.controller.RrdGraphController">
         <property name="rrdGraphService" ref="rrdGraphService"/>
-    </bean>
-
-    <!-- KSC reports -->
-
-    <bean name="/KSC/formProcMain.htm" class="org.opennms.web.controller.ksc.FormProcMainController">
-        <property name="kscReportFactory" ref="kscReportFactory"/>
-    </bean>
-
-    <bean name="/KSC/formProcGraph.htm" class="org.opennms.web.controller.ksc.FormProcGraphController">
-        <property name="kscReportFactory" ref="kscReportFactory"/>
-        <property name="kscReportService" ref="kscReportService"/>
-    </bean>
-
-    <bean name="/KSC/formProcReport.htm" class="org.opennms.web.controller.ksc.FormProcReportController">
-        <property name="kscReportFactory" ref="kscReportFactory"/>
-        <property name="kscReportService" ref="kscReportService"/>
-    </bean>
-
-    <bean name="/KSC/formProcView.htm" class="org.opennms.web.controller.ksc.FormProcViewController">
-        <property name="kscReportFactory" ref="kscReportFactory"/>
-        <property name="kscReportService" ref="kscReportService"/>
-    </bean>
-
-    <bean name="/KSC/customView.htm" class="org.opennms.web.controller.ksc.CustomViewController">
-        <property name="kscReportFactory" ref="kscReportFactory"/>
-        <property name="kscReportService" ref="kscReportService"/>
-        <property name="resourceService" ref="resourceService"/>
-        <property name="defaultGraphsPerLine" value="${ksc.default.graphsPerLine}"/>
-    </bean>
-
-    <bean name="/KSC/customReport.htm" class="org.opennms.web.controller.ksc.CustomReportController">
-        <property name="kscReportFactory" ref="kscReportFactory"/>
-        <property name="kscReportService" ref="kscReportService"/>
-        <property name="resourceService" ref="resourceService"/>
-    </bean>
-
-    <bean name="/KSC/customGraphEditDetails.htm"
-          class="org.opennms.web.controller.ksc.CustomGraphEditDetailsController">
-        <property name="kscReportFactory" ref="kscReportFactory"/>
-        <property name="kscReportService" ref="kscReportService"/>
-        <property name="resourceService" ref="resourceService"/>
     </bean>
 
     <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
