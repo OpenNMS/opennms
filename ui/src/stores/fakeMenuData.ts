@@ -255,18 +255,6 @@ export const defaultMainMenu = {
         {
           id: null,
           className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
-          name: 'KSC Reports',
-          url: 'KSC/index.jsp',
-          locationMatch: 'ksc',
-          icon: null,
-          iconType: null,
-          isIconOnly: null,
-          isVueLink: null,
-          roles: null
-        },
-        {
-          id: null,
-          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Database Reports',
           url: 'report/database/index.jsp',
           locationMatch: 'database-reports',

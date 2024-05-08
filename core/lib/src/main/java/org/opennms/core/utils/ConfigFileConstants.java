@@ -274,11 +274,6 @@ public abstract class ConfigFileConstants {
     public static final int WEBUI_COLORS_FILE_NAME;
 
     /**
-     * This is the name of the path of the webui colors dtd
-     */
-    public static final int KSC_REPORT_FILE_NAME;
-
-    /**
      * The opennms surveillance views config file
      */
     public static final int SURVEILLANCE_VIEWS_FILE_NAME;
@@ -474,7 +469,6 @@ public abstract class ConfigFileConstants {
 
         WEBUI_COLORS_FILE_NAME = 45;
 
-        KSC_REPORT_FILE_NAME = 46;
         SCRIPTD_CONFIG_FILE_NAME = 47;
 
         RRD_CONFIG_FILE_NAME = 51;
@@ -584,8 +578,6 @@ public abstract class ConfigFileConstants {
         FILE_ID_TO_NAME[VIEWS_DISPLAY_CONF_FILE_NAME] = "viewsdisplay.xml";
 
         FILE_ID_TO_NAME[WEBUI_COLORS_FILE_NAME] = "webui-colors.xml";
-
-        FILE_ID_TO_NAME[KSC_REPORT_FILE_NAME] = "ksc-performance-reports.xml";
 
         FILE_ID_TO_NAME[SCRIPTD_CONFIG_FILE_NAME] = "scriptd-configuration.xml";
 

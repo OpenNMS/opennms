@@ -1474,10 +1474,6 @@
         <feature>opennms-core</feature>
         <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-rrd/${project.version}</bundle>
     </feature>
-    <feature name="dashlet-ksc" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: KSC">
-        <feature>opennms-core</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-ksc/${project.version}</bundle>
-    </feature>
     <feature name="dashlet-topology" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: Topology">
         <feature>opennms-core</feature>
         <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-topology/${project.version}</bundle>

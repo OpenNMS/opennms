@@ -216,7 +216,6 @@
 ***** xref:deep-dive/visualizations/opsboard/dashlets/charts.adoc[]
 ***** xref:deep-dive/visualizations/opsboard/dashlets/grafana.adoc[]
 ***** xref:deep-dive/visualizations/opsboard/dashlets/image.adoc[]
-***** xref:deep-dive/visualizations/opsboard/dashlets/ksc.adoc[]
 ***** xref:deep-dive/visualizations/opsboard/dashlets/map.adoc[]
 ***** xref:deep-dive/visualizations/opsboard/dashlets/rrd.adoc[]
 ***** xref:deep-dive/visualizations/opsboard/dashlets/rtc.adoc[]

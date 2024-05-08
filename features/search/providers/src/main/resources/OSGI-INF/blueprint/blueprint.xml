@@ -15,7 +15,6 @@
     <reference id="monitoringLocationDao"       interface="org.opennms.netmgt.dao.api.MonitoringLocationDao"        availability="mandatory"/>
     <reference id="alarmDao"                    interface="org.opennms.netmgt.dao.api.AlarmDao"                     availability="mandatory"/>
     <reference id="genericPersistenceAccessor"  interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor"   availability="mandatory"/>
-    <reference id="kscReportService"            interface="org.opennms.web.svclayer.api.KscReportService"           availability="mandatory"/>
     <reference id="requisitionAccessService"    interface="org.opennms.web.svclayer.api.RequisitionAccessService"   availability="mandatory"/>
     <reference id="menuProvider"                interface="org.opennms.web.api.MenuProvider"                        availability="mandatory"/>
     <reference id="entityScopeProvider" interface="org.opennms.core.mate.api.EntityScopeProvider" availability="mandatory"/>
@@ -117,10 +116,4 @@
         <argument ref="entityScopeProvider" />
     </bean>
     <service ref="filterSearchProvider" interface="org.opennms.netmgt.search.api.SearchProvider" />
-
-    <!-- KSC Database Provider -->
-    <bean id="kscReportSearchProvider" class="org.opennms.netmgt.search.providers.action.KscReportSearchProvider">
-        <argument ref="kscReportService" />
-    </bean>
-    <service ref="kscReportSearchProvider" interface="org.opennms.netmgt.search.api.SearchProvider" />
 </blueprint>

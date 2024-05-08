@@ -440,12 +440,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features.vaadin-dashlets</groupId>
-      <artifactId>dashlet-ksc</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.vaadin-dashlets</groupId>
       <artifactId>dashlet-map</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>

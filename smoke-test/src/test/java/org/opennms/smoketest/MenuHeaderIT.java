@@ -91,9 +91,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItem(reportsMenuName, "Resource Graphs", "graph/index.jsp");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//label[contains(text()[normalize-space()], 'Standard Resource')]")));
 
-        clickMenuItem(reportsMenuName, "KSC Reports", "KSC/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='Customized Reports']");
-
         clickMenuItem(reportsMenuName, "Statistics", "statisticsReports/index.htm");
         findElementByXpath("//div[@class='card-header']/span");
 
@@ -159,7 +156,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         // testAllFormsArePresent()
         reportsPage();
         findElementByName("resourceGraphs");
-        findElementByName("kscReports");
 
 
         // testAllLinks
@@ -169,7 +165,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         findElementByXpath("//div[@class='card-header']/span[text()='Network Performance Data']");
 
         reportsPage();
-        findElementByLink("KSC Performance, Nodes, Domains").click();
         findElementByXpath("//div[@class='card-header']/span[text()='Customized Reports']");
         findElementByXpath("//div[@class='card-header']/span[text()='Descriptions']");
 

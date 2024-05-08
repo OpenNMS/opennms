@@ -422,7 +422,6 @@
                 <feature>dashlet-bsm</feature>
                 <feature>dashlet-charts</feature>
                 <feature>dashlet-image</feature>
-                <feature>dashlet-ksc</feature>
                 <feature>dashlet-map</feature>
                 <feature>dashlet-rrd</feature>
                 <feature>dashlet-rtc</feature>

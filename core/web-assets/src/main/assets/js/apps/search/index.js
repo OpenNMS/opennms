@@ -29,7 +29,6 @@
 const angular = require('vendor/angular-js');
 require('lib/onms-http');
 
-const kscTemplate = require('./template.ksc.html');
 const nodesTemplate = require('./template.nodes.html');
 
 import Util from 'lib/util';
@@ -52,15 +51,6 @@ angular.module('onms-search', [
   };
 })
 
-.directive('onmsSearchKsc', function() {
-  return {
-    restrict: 'E',
-    transclude: true,
-    templateUrl: kscTemplate,
-    controller: 'KscSearchCtrl'
-  };
-})
-
 .controller('NodeSearchCtrl', ['$scope', '$window', '$http', function($scope, $window, $http) {
 
   $scope.getNodes = function(criteria) {
@@ -78,20 +68,3 @@ angular.module('onms-search', [
   }
 
 }])
-
-.controller('KscSearchCtrl', ['$scope', '$window', '$http', '$filter', function($scope, $window, $http, $filter) {
-
-  $scope.getKscReports = function(criteria) {
-    return $http({
-      url: 'rest/ksc',
-      method: 'GET'
-    }).then(function(response) {
-       return $filter('filter')(response.data.kscReport, criteria);
-    });
-  };
-
-  $scope.goToKscReport = function(ksc) {
-    $window.location.href = Util.getBaseHref() + 'KSC/customView.htm?type=custom&report=' + ksc.id;
-  }
-
-}]);
