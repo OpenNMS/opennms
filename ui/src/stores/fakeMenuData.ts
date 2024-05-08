@@ -263,30 +263,6 @@ export const defaultMainMenu = {
           isIconOnly: null,
           isVueLink: null,
           roles: null
-        },
-        {
-          id: null,
-          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
-          name: 'Database Reports',
-          url: 'report/database/index.jsp',
-          locationMatch: 'database-reports',
-          icon: null,
-          iconType: null,
-          isIconOnly: null,
-          isVueLink: null,
-          roles: null
-        },
-        {
-          id: null,
-          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
-          name: 'Statistics',
-          url: 'statisticsReports/index.htm',
-          locationMatch: 'reports',
-          icon: null,
-          iconType: null,
-          isIconOnly: null,
-          isVueLink: null,
-          roles: null
         }
       ]
     },

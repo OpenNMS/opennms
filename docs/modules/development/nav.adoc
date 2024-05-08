@@ -78,6 +78,3 @@
 ** xref:amqp/custom_processors.adoc[]
 
 * xref:ticketing/inmemory-plugin.adoc[]
-
-// TODO MVR remove me
-* xref:reporting/jasperreport-styleguide.adoc[]

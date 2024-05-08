@@ -2879,41 +2879,6 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.features.reporting</groupId>
-        <artifactId>org.opennms.features.reporting.api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.reporting</groupId>
-        <artifactId>org.opennms.features.reporting.core</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.reporting</groupId>
-        <artifactId>org.opennms.features.reporting.dao</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.reporting</groupId>
-        <artifactId>org.opennms.features.reporting.sdo</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.reporting</groupId>
-        <artifactId>org.opennms.features.reporting.model</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.reporting</groupId>
-        <artifactId>org.opennms.features.reporting.availability</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.reporting</groupId>
-        <artifactId>org.opennms.features.reporting.repository</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.opennms.features.ticketing</groupId>
         <artifactId>org.opennms.features.ticketing.api</artifactId>
         <version>${project.version}</version>
@@ -3504,11 +3469,6 @@
       <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.jstl-support</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-reportd</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

@@ -182,11 +182,6 @@
       <scope>test</scope>
     </dependency>
     -->
-    <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.model</artifactId>
-      <scope>test</scope>
-    </dependency>
 
     <!-- OpenNMS Karaf container so that we can crank it up with the pax-exam-karaf unit test framework -->
     <!--

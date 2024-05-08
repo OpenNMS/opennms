@@ -458,16 +458,6 @@
                                 <property name="url" value="KSC/index.jsp"/>
                                 <property name="locationMatch" value="ksc"/>
                             </bean>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Database Reports"/>
-                                <property name="url" value="report/database/index.jsp"/>
-                                <property name="locationMatch" value="database-reports"/>
-                            </bean>
-                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                                <property name="name" value="Statistics"/>
-                                <property name="url" value="statisticsReports/index.htm"/>
-                                <property name="locationMatch" value="reports"/>
-                            </bean>
                         </list>
                     </property>
                 </bean>
@@ -564,15 +554,6 @@
         <property name="kscReportService" ref="kscReportService"/>
         <property name="resourceService" ref="resourceService"/>
     </bean>
-
-    <bean id="statisticsReportCommandValidator" class="org.opennms.web.validator.StatisticsReportCommandValidator">
-        <property name="statisticsReportDao" ref="statisticsReportDao"/>
-    </bean>
-
-    <bean name="/statisticsReports/index.htm" class="org.opennms.web.controller.statisticsReports.ListController">
-        <property name="statisticsReportService" ref="statisticsReportService"/>
-    </bean>
-
 
     <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="staticMethod"><value>org.opennms.netmgt.config.NotifdConfigFactory.init</value></property>

@@ -135,24 +135,12 @@
     <bean id="snmpInterfaceDao" class="org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao" />
     <onmsgi:service interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" ref="snmpInterfaceDao" />
 
-    <bean id="statsdConfigResourceLocation" class="java.lang.String">
-        <constructor-arg value="classpath:/statsd-configuration.xml" />
-    </bean>
-
-    <bean id="statsdConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultStatisticsDaemonConfigDao">
-        <property name="configResource" ref="statsdConfigResourceLocation" />
-        <property name="reloadCheckInterval" value="-1" />
-    </bean>
-
     <bean id="init-snmpPeerFactory" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="staticMethod"><value>org.opennms.netmgt.config.SnmpPeerFactory.init</value></property>
     </bean>
     <bean id="snmpPeerFactory" class="org.opennms.netmgt.config.SnmpPeerFactory" depends-on="init-snmpPeerFactory" factory-method="getInstance"/>
     <onmsgi:service interface="org.opennms.netmgt.config.api.SnmpAgentConfigFactory" ref="snmpPeerFactory"/>
 
-    <bean id="statisticsReportDao" class="org.opennms.netmgt.dao.mock.MockStatisticsReportDao" />
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.StatisticsReportDao" ref="statisticsReportDao"/>
-    
     <bean id="surveillanceViewConfigResourceLocation" class="java.lang.String">
         <constructor-arg value="file:${opennms.home}/etc/surveillance-views.xml" />
     </bean>

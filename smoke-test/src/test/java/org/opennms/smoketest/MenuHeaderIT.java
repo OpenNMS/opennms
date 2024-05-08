@@ -94,6 +94,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItem(reportsMenuName, "KSC Reports", "KSC/index.jsp");
         findElementByXpath("//div[@class='card-header']/span[text()='Customized Reports']");
 
+        // TODO MVR this is probably failing, as it no longer exists :)
         clickMenuItem(reportsMenuName, "Statistics", "statisticsReports/index.htm");
         findElementByXpath("//div[@class='card-header']/span");
 

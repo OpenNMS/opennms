@@ -481,7 +481,7 @@
                 <feature>org.opennms.features.topologies.service.api</feature>
                 <feature>opennms-identity</feature>
                 <feature>opennms-endpoints-grafana</feature>
-                <feature>opennms-reporting</feature>
+<!--                <feature>opennms-reporting</feature>-->
                 <feature>opennms-send-event-command</feature>
                 <feature>opennms-search</feature>
                 <feature>opennms-dnsresolver-shell</feature>
@@ -542,7 +542,7 @@
                 <feature>opennms-activemq-component</feature>
                 <feature>opennms-discovery</feature>
                 <feature>opennms-events-daemon</feature>
-                <feature>opennms-reporting</feature>
+<!--                <feature>opennms-reporting</feature>-->
                 <feature>opennms-webapp</feature>
               </features>
               <repository>${project.build.directory}/experimental-repo</repository>

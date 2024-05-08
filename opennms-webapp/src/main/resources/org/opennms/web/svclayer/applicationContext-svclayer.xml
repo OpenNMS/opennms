@@ -147,17 +147,18 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   <bean id="categoryConfigService" class="org.opennms.web.svclayer.support.DefaultCategoryConfigService">
     <property name="categoryConfigDao" ref="categoryConfigDao"/>
   </bean>
-  <!-- Database Report Beans -->
-  <bean id="databaseReportListService" class="org.opennms.web.svclayer.support.DefaultDatabaseReportListService">
-    <property name="globalReportRepository" ref="defaultGlobalReportRepository"/>
-  </bean>
-  <onmsgi:service interface="org.opennms.web.svclayer.DatabaseReportListService" ref="databaseReportListService" />
-  <bean id="reportSchedulerService" class="org.opennms.web.svclayer.support.DefaultSchedulerService">
-    <property name="scheduler" ref="schedulerFactory"/>
-    <property name="jobDetail" ref="batchReportJobDetail"/>
-    <property name="triggerGroup" value="reporting"/>
-  </bean>
-  <onmsgi:service interface="org.opennms.web.svclayer.SchedulerService" ref="reportSchedulerService" />
+<!--  &lt;!&ndash; Database Report Beans &ndash;&gt;-->
+<!--  <bean id="databaseReportListService" class="org.opennms.web.svclayer.support.DefaultDatabaseReportListService">-->
+<!--    <property name="globalReportRepository" ref="defaultGlobalReportRepository"/>-->
+<!--  </bean>-->
+<!--  <onmsgi:service interface="org.opennms.web.svclayer.DatabaseReportListService" ref="databaseReportListService" />-->
+<!--  <bean id="reportSchedulerService" class="org.opennms.web.svclayer.support.DefaultSchedulerService">-->
+<!--    <property name="scheduler" ref="schedulerFactory"/>-->
+<!--    <property name="jobDetail" ref="batchReportJobDetail"/>-->
+<!--    <property name="triggerGroup" value="reporting"/>-->
+<!--  </bean>-->
+<!--  <onmsgi:service interface="org.opennms.web.svclayer.SchedulerService" ref="reportSchedulerService" />-->
+  <!-- TODO MVR can this go, or do we still need this? -->
   <bean id="schedulerFactory" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
     <property name="schedulerName" value="databaseReport"/>
     <property name="dataSource" ref="dataSource"/>
@@ -185,12 +186,6 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
       </props>
     </property>
   </bean>
-  <bean id="batchReportJobDetail" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">
-    <property name="jobClass">
-      <value>org.opennms.reporting.core.BatchReportJob</value>
-    </property>
-    <property name="durability" value="true"/>
-  </bean>
   <bean name="/graph/results.htm" class="org.opennms.web.controller.GraphResultsController">
     <property name="graphResultsService" ref="graphResultsService"/>
   </bean>
@@ -204,43 +199,44 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
     <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
     <property name="outageDao" ref="outageDao"/>
   </bean>
-  <bean id="statisticsReportService" class="org.opennms.web.svclayer.support.DefaultStatisticsReportService">
-    <property name="statisticsReportDao" ref="statisticsReportDao"/>
-    <property name="resourceDao" ref="resourceDao"/>
-  </bean>
+<!--  <bean id="statisticsReportService" class="org.opennms.web.svclayer.support.DefaultStatisticsReportService">-->
+<!--    <property name="statisticsReportDao" ref="statisticsReportDao"/>-->
+<!--    <property name="resourceDao" ref="resourceDao"/>-->
+<!--  </bean>-->
   <!-- Report repository for local community reports and OpenNMS CONNECT remote repository access -->
-  <bean id="legacyLocalReportsConfigResource" class="org.springframework.core.io.UrlResource">
-    <constructor-arg value="file:${opennms.home}/etc/database-reports.xml"/>
-  </bean>
-  <bean id="legacyLocalJasperReportsConfigResource" class="org.springframework.core.io.UrlResource">
-    <constructor-arg value="file:${opennms.home}/etc/jasper-reports.xml"/>
-  </bean>
-  <bean id="defaultRemoteRepositoryConfigResource" class="org.springframework.core.io.UrlResource">
-    <constructor-arg value="file:${opennms.home}/etc/remote-repository.xml"/>
-  </bean>
-  <bean id="jrTemplateResource" class="org.springframework.core.io.UrlResource">
-    <constructor-arg value="file:${opennms.home}/etc/report-templates"/>
-  </bean>
+<!--  <bean id="legacyLocalReportsConfigResource" class="org.springframework.core.io.UrlResource">-->
+<!--    <constructor-arg value="file:${opennms.home}/etc/database-reports.xml"/>-->
+<!--  </bean>-->
+<!--  <bean id="legacyLocalJasperReportsConfigResource" class="org.springframework.core.io.UrlResource">-->
+<!--    <constructor-arg value="file:${opennms.home}/etc/jasper-reports.xml"/>-->
+<!--  </bean>-->
+<!--  <bean id="defaultRemoteRepositoryConfigResource" class="org.springframework.core.io.UrlResource">-->
+<!--    <constructor-arg value="file:${opennms.home}/etc/remote-repository.xml"/>-->
+<!--  </bean>-->
+<!--  <bean id="jrTemplateResource" class="org.springframework.core.io.UrlResource">-->
+<!--    <constructor-arg value="file:${opennms.home}/etc/report-templates"/>-->
+<!--  </bean>-->
   <!-- DAO for XML configuration -->
-  <bean id="legacyLocalReportsDao" class="org.opennms.features.reporting.dao.LegacyLocalReportsDao">
-    <constructor-arg ref="legacyLocalReportsConfigResource"/>
-  </bean>
-  <bean id="legacyLocalJasperReportsDao" class="org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDao">
-    <constructor-arg ref="legacyLocalJasperReportsConfigResource"/>
-    <constructor-arg ref="jrTemplateResource"/>
-  </bean>
-  <bean id="defaultRemoteRepositoryConfigDao" class="org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDao">
-    <constructor-arg ref="defaultRemoteRepositoryConfigResource"/>
-  </bean>
-  <!-- Repository implementation for local community reports and OpenNMS CONNECT reporting -->
-  <bean id="legacyLocalReportRepository" class="org.opennms.features.reporting.repository.local.LegacyLocalReportRepository">
-    <constructor-arg name="localReportsDao" ref="legacyLocalReportsDao"/>
-    <constructor-arg name="localJasperReportsDao" ref="legacyLocalJasperReportsDao"/>
-  </bean>
-  <bean id="defaultGlobalReportRepository" class="org.opennms.features.reporting.repository.global.DefaultGlobalReportRepository">
-    <constructor-arg name="remoteRepositoryConfigDao" ref="defaultRemoteRepositoryConfigDao"/>
-    <constructor-arg name="localReportRepository" ref="legacyLocalReportRepository"/>
-  </bean>
+  <!-- TODO MVR rework this, as this may no longer work as expected -->
+<!--  <bean id="legacyLocalReportsDao" class="org.opennms.features.reporting.dao.LegacyLocalReportsDao">-->
+<!--    <constructor-arg ref="legacyLocalReportsConfigResource"/>-->
+<!--  </bean>-->
+<!--  <bean id="legacyLocalJasperReportsDao" class="org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDao">-->
+<!--    <constructor-arg ref="legacyLocalJasperReportsConfigResource"/>-->
+<!--    <constructor-arg ref="jrTemplateResource"/>-->
+<!--  </bean>-->
+<!--  <bean id="defaultRemoteRepositoryConfigDao" class="org.opennms.features.reporting.dao.remoterepository.DefaultRemoteRepositoryConfigDao">-->
+<!--    <constructor-arg ref="defaultRemoteRepositoryConfigResource"/>-->
+<!--  </bean>-->
+<!--  &lt;!&ndash; Repository implementation for local community reports and OpenNMS CONNECT reporting &ndash;&gt;-->
+<!--  <bean id="legacyLocalReportRepository" class="org.opennms.features.reporting.repository.local.LegacyLocalReportRepository">-->
+<!--    <constructor-arg name="localReportsDao" ref="legacyLocalReportsDao"/>-->
+<!--    <constructor-arg name="localJasperReportsDao" ref="legacyLocalJasperReportsDao"/>-->
+<!--  </bean>-->
+<!--  <bean id="defaultGlobalReportRepository" class="org.opennms.features.reporting.repository.global.DefaultGlobalReportRepository">-->
+<!--    <constructor-arg name="remoteRepositoryConfigDao" ref="defaultRemoteRepositoryConfigDao"/>-->
+<!--    <constructor-arg name="localReportRepository" ref="legacyLocalReportRepository"/>-->
+<!--  </bean>-->
   <bean id="foreignSourceAndRequisitionAccessService" class="org.opennms.web.svclayer.support.DefaultRequisitionAccessService"></bean>
   <onmsgi:service interface="org.opennms.web.svclayer.api.RequisitionAccessService" ref="foreignSourceAndRequisitionAccessService" />
   <bean id="snmpConfigAccessService" class="org.opennms.netmgt.config.SnmpConfigAccessService" />
