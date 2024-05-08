@@ -61,7 +61,6 @@
                             org.opennms.core.utils,
                             org.opennms.core.xml,
 
-                            org.opennms.features.reporting.model,
                             org.opennms.features.deviceconfig.persistence.api,
                             org.opennms.features.usageanalytics.api,
 
@@ -76,10 +75,7 @@
                             org.opennms.netmgt.config.javamail,
                             org.opennms.netmgt.config.microblog,
                             org.opennms.netmgt.config.provisiond,
-                            org.opennms.netmgt.config.reportd,
-                            org.opennms.netmgt.config.reporting,
                             org.opennms.netmgt.config.siteStatusViews,
-                            org.opennms.netmgt.config.statsd.model,
                             org.opennms.netmgt.config.surveillanceViews,
                             org.opennms.netmgt.config.tl1d,
                             org.opennms.netmgt.dao.api,

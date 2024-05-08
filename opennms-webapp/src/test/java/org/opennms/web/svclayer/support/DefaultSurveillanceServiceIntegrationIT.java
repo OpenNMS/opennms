@@ -50,8 +50,7 @@ import org.springframework.transaction.annotation.Transactional;
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath*:/META-INF/opennms/component-service.xml",
         "classpath:/org/opennms/web/svclayer/applicationContext-svclayer.xml",
-        "classpath:/META-INF/opennms/applicationContext-postgresJsonStore.xml",
-        "classpath:/META-INF/opennms/applicationContext-reportingCore.xml"
+        "classpath:/META-INF/opennms/applicationContext-postgresJsonStore.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase

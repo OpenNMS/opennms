@@ -790,7 +790,7 @@ public class DefaultDeviceConfigRestServiceScheduleIT {
         assertThat(responseHeaders.containsKey("Content-Disposition"), is(true));
 
         assertThat(getHeaderAsString(responseHeaders, "Content-Type"),
-            equalTo("text/plain;charset=" + DefaultDeviceConfigRestService.DEFAULT_ENCODING));
+            equalTo("text/plain; charset=" + DefaultDeviceConfigRestService.DEFAULT_ENCODING));
 
         String expectedFileName = DefaultDeviceConfigRestService.createDownloadFileName(
             "dcb-2", "192.168.3.2", CONFIG_TYPES.get(1), dc.getCreatedTime());

@@ -28,16 +28,8 @@
       <outputDirectory>etc</outputDirectory>
     </fileSet>
     <fileSet>
-      <directory>${project.build.directory}/jasper</directory>
-      <outputDirectory>etc/report-templates</outputDirectory>
-    </fileSet>
-    <fileSet>
       <directory>${project.build.outputDirectory}/logs</directory>
       <outputDirectory>logs</outputDirectory>
-    </fileSet>
-    <fileSet>
-      <directory>${project.build.directory}/jasperstudio-extension</directory>
-      <outputDirectory>bin</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>${project.build.outputDirectory}/share</directory>
@@ -96,10 +88,8 @@
       <excludes>
         <exclude>org.opennms:opennms-bootstrap</exclude>
         <exclude>org.opennms:opennms-install</exclude>
-        <exclude>org.opennms:opennms-jasperstudio-extension</exclude>
         <exclude>org.opennms.core:org.opennms.core.password</exclude>
         <exclude>org.opennms.features:org.opennms.features.system-report</exclude>
-        <exclude>org.slf4j:slf4j-jdk14</exclude>
         <exclude>io.pyroscope:agent</exclude>
         <exclude>org.jacoco:org.jacoco.agent:jar:runtime</exclude>
         <!-- Exclude the dependency POMs -->

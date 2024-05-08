@@ -419,7 +419,7 @@ public class RestClient {
                 .accept(MediaType.APPLICATION_JSON)
                 .get(String.class);
 
-        if (result == null) {
+        if (result == null || result.isEmpty()) {
             return null;
         }
 
