@@ -102,13 +102,6 @@
                   <destFileName>opennms_jmx_config_generator.jar</destFileName>
                   <outputDirectory>${project.build.directory}/jmx</outputDirectory>
                 </artifactItem>
-                <artifactItem>
-                  <groupId>org.opennms</groupId>
-                  <artifactId>opennms-jasperstudio-extension</artifactId>
-                  <type>jar</type>
-                  <classifier>jar-with-dependencies</classifier>
-                  <outputDirectory>${project.build.directory}/jasperstudio-extension</outputDirectory>
-                </artifactItem>
               </artifactItems>
             </configuration>
           </execution>
@@ -180,19 +173,9 @@
         </configuration>
         <dependencies>
           <dependency>
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>jasper-shaded</artifactId>
-            <version>${project.version}</version>
-          </dependency>
-          <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
             <version>${xercesVersion}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>jasper-extensions</artifactId>
-            <version>${project.version}</version>
           </dependency>
           <dependency>
             <groupId>org.postgresql</groupId>
@@ -771,10 +754,6 @@
       <artifactId>org.opennms.features.reporting.sdo</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.scv</groupId>
       <artifactId>org.opennms.features.scv.cli</artifactId>
       <version>${project.version}</version>
@@ -1018,47 +997,6 @@
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.request-tracker</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>jasper-extensions</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-jasperstudio-extension</artifactId>
-      <version>${project.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-expression</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-aop</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-context</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-beans</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-core</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jasper-shaded</artifactId>
-      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>

@@ -25,6 +25,7 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
 
 @XmlRootElement(name = "report")
+// TODO MVR this may also be removed
 public class LocalJasperReport {
 
     private String m_id;

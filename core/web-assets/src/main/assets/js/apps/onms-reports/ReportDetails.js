@@ -26,6 +26,7 @@ import Util from 'lib/util';
 
 const moment = require('vendor/moment-js');
 
+// TODO MVR this can be removed
 export default class ReportDetails {
 
     constructor(input = {}) {

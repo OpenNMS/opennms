@@ -45,6 +45,7 @@ import org.springframework.util.Assert;
  * @version $Id: $
  * @since 1.10.1
  */
+// TODO MVR remove me?
 public class DefaultRemoteRepositoryConfigDao implements
         RemoteRepositoryConfigDao {
     /**

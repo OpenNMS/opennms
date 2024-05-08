@@ -121,7 +121,6 @@
     <module>opennms-config</module>
     <module>opennms-config-model</module>
     <module>opennms-provision</module>
-    <module>opennms-enterprise-reporting</module>
     <module>opennms-services</module>
     <module>opennms-taglib</module>
     <module>opennms-jetty</module>
@@ -2906,11 +2905,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features.reporting</groupId>
-        <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.reporting</groupId>
         <artifactId>org.opennms.features.reporting.availability</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -3565,11 +3559,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-site</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>jasper-shaded</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
