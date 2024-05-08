@@ -224,23 +224,6 @@ We encourage you to use {page-component-title} with individual user accounts ins
 If all users have individual accounts, you can see who is completing tasks (for example, clearing or acknowledging alarms).
 For information on how to create personalized user accounts, see xref:operation:quick-start/users.adoc#create-user[Create a new user] in the Quick Start guide.
 
-[[usage-statistics]]
-=== Usage statistics
-
-The first time you sign in, {page-component-title} notifies you that it collects anonymized usage statistics and publishes them to https://stats.opennms.com.
-Consent to share collected usage statistics is assumed by default.
-
-The OpenNMS Group uses this information to help determine product use and to improve the {page-component-title} software.
-We do not share it with third parties, and we will not use it for sales purposes.
-
-Click *Learn More* to view the xref:operation:deep-dive/admin/configuration/usage-statistics.adoc[information that we collect and share].
-This also hides the notification.
-
-Click *Dismiss* to simply hide the notification.
-You can view the usage statistics at any time on the admin page.
-
-NOTE: Admin users can xref:operation:deep-dive/admin/configuration/usage-statistics.adoc#disable-data-collection[opt out of sharing the statistics] at any time.
-
 == First monitored node
 
 The default configuration will discover a single node with an interface `127.0.0.1` and detect services exposed on the loopback interface, including the `OpenNMS-JVM` service.

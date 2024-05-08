@@ -40,8 +40,6 @@ import org.opennms.features.deviceconfig.persistence.api.DeviceConfigDao;
 import org.opennms.features.deviceconfig.persistence.api.DeviceConfigStatus;
 import org.opennms.features.deviceconfig.service.DeviceConfigConstants;
 import org.opennms.features.deviceconfig.service.DeviceConfigUtil;
-import org.opennms.features.usageanalytics.api.UsageAnalyticDao;
-import org.opennms.features.usageanalytics.api.UsageAnalyticMetricName;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
@@ -80,12 +78,6 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
 
     @Autowired
     private EventForwarder eventForwarder;
-
-    @Autowired
-    private UsageAnalyticDao usageAnalyticDao;
-
-    @Autowired
-    private NodeDao nodeDao;
 
     @Autowired
     private SessionUtils sessionUtils;
@@ -174,13 +166,6 @@ public class DeviceConfigMonitorAdaptor implements ServiceMonitorAdaptor {
                 cleanupStaleConfigs(parameters, ipInterface, svc.getSvcName(), updatedId);
             }
         }
-        // UsageAnalytics
-        if (status.isUp()) {
-            usageAnalyticDao.incrementCounterByMetricName(UsageAnalyticMetricName.DCB_SUCCEED.toString());
-        } else {
-            usageAnalyticDao.incrementCounterByMetricName(UsageAnalyticMetricName.DCB_FAILED.toString());
-        }
-
         return status;
     }
 

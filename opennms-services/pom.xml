@@ -266,11 +266,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.usageanalytics</groupId>
-      <artifactId>org.opennms.features.usageanalytics.impl</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.poller.monitors</groupId>
       <artifactId>org.opennms.features.poller.monitors.core</artifactId>
       <version>${project.version}</version>

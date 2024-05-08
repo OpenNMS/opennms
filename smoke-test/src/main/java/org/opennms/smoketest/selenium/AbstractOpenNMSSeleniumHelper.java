@@ -288,7 +288,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
      * skip the password gate page and then close the Usage Statistics Sharing dialog if present.
      */
     public void login() {
-        login(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD, true, true, true, false);
+        login(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD, true, true, false);
     }
 
     /**
@@ -300,14 +300,12 @@ public abstract class AbstractOpenNMSSeleniumHelper {
      * @param username Username to use for the login
      * @param password Password to use for the login
      * @param skip If true, clicks Skip on the password gate page to avoid having to change the admin password
-     * @param closeUsageStatsSharing If true, close the Usage Statistics Sharing dialog if it appears
      * @param navigateToLoginPage If true, navigate to the login page. Set to false to navigate
      *     to a different page before calling this method, e.g. to test that redirect after login works.
      */
-    public void login(final String username, final String password, final boolean skip, final boolean closeUsageStatsSharing,
-                      final boolean navigateToLoginPage, final boolean skipCookieDeletion) {
-        LOG.debug("Login: username={}, skip={}, closeUsageStatsSharing={}, navigateToLoginPage={}, skipCookieDeletion={}",
-            username, skip, closeUsageStatsSharing, navigateToLoginPage, skipCookieDeletion);
+    public void login(final String username, final String password, final boolean skip, final boolean navigateToLoginPage, final boolean skipCookieDeletion) {
+        LOG.debug("Login: username={}, skip={}, navigateToLoginPage={}, skipCookieDeletion={}",
+            username, skip, navigateToLoginPage, skipCookieDeletion);
 
         if (navigateToLoginPage) {
             if (!skipCookieDeletion) {
@@ -335,10 +333,6 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
         if (skip) {
             skipPasswordGate(username, password);
-        }
-
-        if (closeUsageStatsSharing) {
-            closeUsageStatisticsSharingDialog();
         }
     }
 
@@ -405,24 +399,6 @@ public abstract class AbstractOpenNMSSeleniumHelper {
                 return !driver.getCurrentUrl().contains("passwordGate.jsp");
             });
         }
-    }
-
-    /**
-     * Close the Usage Statistics Sharing dialog if present.
-     */
-    protected void closeUsageStatisticsSharingDialog() {
-        invokeWithImplicitWait(0, () -> {
-            try {
-                WebElement element = findElementById("usage-statistics-sharing-modal");
-
-                if (element.isDisplayed()) { // usage statistics modal is visible
-                    findElementById("usage-statistics-sharing-notice-dismiss").click(); // close modal
-                }
-            } catch (NoSuchElementException e) {
-                // "usage-statistics-sharing-notice-dismiss" is not visible or does not exist.
-                // No further action required
-            }
-        });
     }
 
     public void assertElementDoesNotExist(final By by) {
