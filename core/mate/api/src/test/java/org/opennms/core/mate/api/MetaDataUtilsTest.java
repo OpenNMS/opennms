@@ -52,6 +52,7 @@ public class MetaDataUtilsTest {
         metaData.put(new ContextKey("ctx5", "key1"), "${ctx5:key2}");
         metaData.put(new ContextKey("ctx5", "key2"), "working");
         metaData.put(new ContextKey("ctx6", "key1"), "${ctx6:key1}a");
+        metaData.put(new ContextKey("ctx7", "key1"), "42");
     }
 
     @Test
@@ -105,7 +106,6 @@ public class MetaDataUtilsTest {
     @Test
     public void testPageSequence() {
         final PageSequence pageSequence = JaxbUtils.unmarshal(PageSequence.class, getClass().getClassLoader().getResourceAsStream("page-sequence.xml"));
-        System.err.println(pageSequence);
         final Map<String, Object> input = new HashMap<>();
         input.put("page-sequence", pageSequence);
         final Map<String, Object> output = Interpolator.interpolateObjects(input, new MapScope(Scope.ScopeName.NODE, this.metaData));
@@ -142,5 +142,49 @@ public class MetaDataUtilsTest {
         assertEquals("value1", Interpolator.interpolate("${foobar:key1}", fallBackScopeProvider.getScope()).output);
         assertEquals("value2", Interpolator.interpolate("${foobar:key2}", fallBackScopeProvider.getScope()).output);
         assertEquals("new3", Interpolator.interpolate("${foobar:key3}", fallBackScopeProvider.getScope()).output);
+    }
+
+    @Test
+    public void testParts() {
+        final Interpolator.Result result = Interpolator.interpolate("foo-${aaa}-bar-${ctx1:key1|down}-bla-${ctx2:key4|down}-blupp-${bbb}", new MapScope(Scope.ScopeName.NODE, this.metaData));
+        assertEquals(2, result.parts.size());
+        assertEquals("val1", result.parts.get(0).value.value);
+        assertEquals("${ctx1:key1|down}", result.parts.get(0).input);
+        assertEquals("ctx1:key1", result.parts.get(0).match);
+        assertEquals("val4", result.parts.get(1).value.value);
+        assertEquals("${ctx2:key4|down}", result.parts.get(1).input);
+        assertEquals("ctx2:key4", result.parts.get(1).match);
+        assertEquals("foo-${aaa}-bar-val1-bla-val4-blupp-${bbb}", result.output);
+    }
+
+    @Test
+    public void testNMS16374() {
+        assertResultOutput("${ctx1:key1|aaa:bbb|ccc:ddd}", "val1");
+        assertResultOutput("${aaa:bbb|ctx1:key1|ccc:ddd}","val1");
+        assertResultOutput("${aaa:bbb|ccc:ddd|ctx1:key1}","val1");
+        assertResultOutput("${aaa:bbb|ccc:ddd|eee:fff}","");
+        assertResultOutput("${aaa:bbb}","");
+        assertResultOutput("${ctx1:key1}", "val1");
+        assertResultOutput("${aaa:bbb|ccc:ddd|\"eee:fff\"}","eee:fff");
+        assertResultOutput("${aaa:bbb|ccc:ddd|\"ctx1:key1\"}","ctx1:key1");
+        assertResultOutput("${aaa:bbb|ccc:ddd|'eee:fff'}","eee:fff");
+        assertResultOutput("${aaa:bbb|ccc:ddd|'ctx1:key1'}","ctx1:key1");
+        assertResultOutput("${requisition:url|detector:url|'jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms'}", "jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms");
+        assertResultOutput("${requisition:url|\"http://example.org\"}", "http://example.org");
+    }
+
+    @Test
+    public void testEscaping() {
+        assertResultOutput("xxx\"$$aaa'$bbb$ccc${ctx1:key1|aaa:bbb|ccc:ddd}", "xxx\"$$aaa'$bbb$cccval1");
+        assertResultOutput("xxx\"$$\"aaa'$$'bbb$$ccc${ctx1:key1|aaa:bbb|ccc:ddd}", "xxx\"$$\"aaa'$$'bbb$$cccval1");
+        assertResultOutput("${aaa:bbb|ccc:ddd|\"eee:fff\"}","eee:fff");
+        assertResultOutput("${aaa:bbb|ccc:ddd|\"ctx1:key1\"}","ctx1:key1");
+        assertResultOutput("${aaa:bbb|ccc:ddd|'eee:fff'}","eee:fff");
+        assertResultOutput("${aaa:bbb|ccc:ddd|'ctx1:key1'}","ctx1:key1");
+    }
+
+    private void assertResultOutput(final String expression, final String expected) {
+        final Interpolator.Result result = Interpolator.interpolate(expression, new MapScope(Scope.ScopeName.NODE, this.metaData));
+        assertEquals(expected, result.output);
     }
 }
