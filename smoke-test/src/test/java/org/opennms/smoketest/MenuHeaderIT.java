@@ -85,9 +85,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         frontPage();
 
         final String reportsMenuName = "name=nav-Reports-top";
-        clickMenuItem(reportsMenuName, "Charts", "charts/index.jsp");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("include-charts")));
-
         clickMenuItem(reportsMenuName, "Resource Graphs", "graph/index.jsp");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//label[contains(text()[normalize-space()], 'Standard Resource')]")));
 

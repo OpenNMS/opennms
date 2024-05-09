@@ -81,8 +81,6 @@
   <page virtual-host="${virtualHost}" path="/opennms/asset/index.jsp" port="${port}" response-range="200"/>
   <page virtual-host="${virtualHost}" path="/opennms/asset/nodelist.jsp" query="column=address1&amp;searchvalue=" port="${port}" response-range="200"/>
 
-  <page virtual-host="${virtualHost}" path="/opennms/charts/index.jsp" port="${port}" response-range="200"/>
-
   <page virtual-host="${virtualHost}" path="/opennms/dashboard.jsp" port="${port}" response-range="200"/>
 
   <page virtual-host="${virtualHost}" path="/opennms/element/index.jsp" port="${port}" response-range="200"/>

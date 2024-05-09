@@ -902,15 +902,6 @@
   </servlet-->
 
   <servlet>
-  	<servlet-name>purdyChart</servlet-name>
-  	<servlet-class>org.opennms.web.graph.PurdyChartServlet</servlet-class>
-  	<init-param>
-  		<param-name>chart-name</param-name>
-  		<param-value>sample-bar-chart</param-value>
-  	</init-param>
-  </servlet>
-
-  <servlet>
         <servlet-name>dispatcher</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
         <load-on-startup>1</load-on-startup>
@@ -920,15 +911,6 @@
     <servlet-name>notificationStream</servlet-name>
     <servlet-class>org.opennms.web.notification.NotificationStreamServlet</servlet-class>
   </servlet>
-
-  <!-- desktop graph servlet mapping -->
-  <!-- desktop survey report servlet mapping -->
-
-  <servlet-mapping>
-  	<servlet-name>purdyChart</servlet-name>
-  	<url-pattern>/charts</url-pattern>
-  </servlet-mapping>
-
   <servlet-mapping>
     <servlet-name>queryEvent</servlet-name>
     <url-pattern>/event/query</url-pattern>
