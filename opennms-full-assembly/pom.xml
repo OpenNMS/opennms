@@ -419,7 +419,6 @@
                 <feature>opennms-jaas-login-module</feature>
                 <feature>dashlet-alarms</feature>
                 <feature>dashlet-bsm</feature>
-                <feature>dashlet-charts</feature>
                 <feature>dashlet-image</feature>
                 <feature>dashlet-ksc</feature>
                 <feature>dashlet-map</feature>

@@ -158,11 +158,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testChartConfiguration() {
-        testConfigFile("chart-configuration.xml");
-    }
-
-    @Test
     public void testCollectdConfiguration() {
         testConfigFile("collectd-configuration.xml");
     }
