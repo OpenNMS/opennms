@@ -22,21 +22,41 @@
 
 import axios from 'axios'
 
+const detectAuthHeaders = () => {
+  if (import.meta.env.VITE_BASE_USER && import.meta.env.VITE_BASE_PASSWORD) {
+    const user = import.meta.env.VITE_BASE_USER.toString()
+    const password = import.meta.env.VITE_BASE_PASSWORD.toString()
+    const credentials = `${user}:${password}`
+    return {
+      'Authorization': `Basic ${btoa(credentials)}`
+    }
+  }
+  return null;
+}
+const authHeaders = detectAuthHeaders();
+
 const v2 = axios.create({
   baseURL: import.meta.env.VITE_BASE_V2_URL?.toString() || '/opennms/api/v2',
-  withCredentials: true
+  withCredentials: authHeaders != null,
+  headers: {
+    ...authHeaders
+  }
 })
 
 const rest = axios.create({
   baseURL: import.meta.env.VITE_BASE_REST_URL?.toString() || '/opennms/rest',
-  withCredentials: true
+  withCredentials: authHeaders != null,
+  headers: {
+    ...authHeaders
+  }
 })
 
 const restFile = axios.create({
   baseURL: import.meta.env.VITE_BASE_REST_URL?.toString() || '/opennms/rest',
-  withCredentials: true,
+  withCredentials: authHeaders != null,
   headers: {
-    'Content-Type': 'multipart/form-data'
+    'Content-Type': 'multipart/form-data',
+    ...authHeaders
   }
 })
 
