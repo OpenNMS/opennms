@@ -179,10 +179,10 @@ commands:
   cached-checkout-for-pushing:
       description: "Configure a cached checkout that can push upstream"
       steps:
-        - add_ssh_keys:
-            fingerprints:
-              - "6a:c7:42:e6:e3:26:76:95:f4:0a:7a:5b:9c:b3:19:0e"
-              #- "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
+        #- add_ssh_keys:
+        #    fingerprints:
+        #      - "6a:c7:42:e6:e3:26:76:95:f4:0a:7a:5b:9c:b3:19:0e"
+        #      #- "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
         - cached-checkout
         - run:
             name: Create git identity
@@ -1841,10 +1841,10 @@ jobs:
   create-merge-foundation-branch:
     <<: *docker_container_config
     steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "6a:c7:42:e6:e3:26:76:95:f4:0a:7a:5b:9c:b3:19:0e"
-            #- "66:9a:2d:a8:ad:7b:cc:7c:d2:ee:55:94:01:72:ac:2a"
+      #- add_ssh_keys:
+      #    fingerprints:
+      #      - "6a:c7:42:e6:e3:26:76:95:f4:0a:7a:5b:9c:b3:19:0e"
+      #      #- "66:9a:2d:a8:ad:7b:cc:7c:d2:ee:55:94:01:72:ac:2a"
       - run:
           name: "Branch Merge Parameters"
           command: |
@@ -1898,10 +1898,10 @@ jobs:
       - when:
           condition: << pipeline.parameters.main_branch >>
           steps:
-            - add_ssh_keys:
-                fingerprints:
-                  - "6a:c7:42:e6:e3:26:76:95:f4:0a:7a:5b:9c:b3:19:0e"
-                  #- "4a:0a:cb:11:a3:33:b1:14:e9:cb:db:41:76:fa:a3:bf"
+            #- add_ssh_keys:
+            #    fingerprints:
+            #      - "6a:c7:42:e6:e3:26:76:95:f4:0a:7a:5b:9c:b3:19:0e"
+            #      #- "4a:0a:cb:11:a3:33:b1:14:e9:cb:db:41:76:fa:a3:bf"
             - restore_cache:
                 keys:
                   - meridian-v1-{{ .Branch }}-{{ .Revision }}
@@ -1944,10 +1944,11 @@ jobs:
       - when:
           condition: << pipeline.parameters.main_branch >>
           steps:
-            - add_ssh_keys:
-                fingerprints:
-                  - "6a:c7:42:e6:e3:26:76:95:f4:0a:7a:5b:9c:b3:19:0e"
-                  #- "48:f7:8f:b7:2f:42:50:ea:cc:5d:4f:dc:1a:45:5a:1d"
+            #- add_ssh_keys:
+            #    fingerprints:
+            #      - "6a:c7:42:e6:e3:26:76:95:f4:0a:7a:5b:9c:b3:19:0e"
+            #      #- "48:f7:8f:b7:2f:42:50:ea:cc:5d:4f:dc:1a:45:5a:1d"
+            #      #- "45:4b:bc:36:e7:c7:b3:d3:3b:b8:87:f3:b5:f2:c1:58"
             - restore_cache:
                 keys:
                   - poweredby-v1-{{ .Branch }}-{{ .Revision }}
