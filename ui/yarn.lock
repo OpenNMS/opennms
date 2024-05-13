@@ -4320,10 +4320,10 @@ vue-tsc@^1.6.5:
     "@vue/language-core" "1.8.22"
     semver "^7.5.4"
 
-vue3-ace-editor@^2.2.3:
-  version "2.2.3"
-  resolved "https://registry.yarnpkg.com/vue3-ace-editor/-/vue3-ace-editor-2.2.3.tgz#3ce7dad1e00ef2b7bd9f07f29487d04ed040a609"
-  integrity sha512-CkbiZSgIraZCBRa5egRqxDFUow5b949aHMcVgjce09O1n1TIJ8wVR++9mWg6F7lNWH47DkYSu0lwB6OocxUJ7g==
+vue3-ace-editor@^2.2.4:
+  version "2.2.4"
+  resolved "https://registry.yarnpkg.com/vue3-ace-editor/-/vue3-ace-editor-2.2.4.tgz#1f2a787f91cf7979f27fab29e0e0604bb3ee1c17"
+  integrity sha512-FZkEyfpbH068BwjhMyNROxfEI8135Sc+x8ouxkMdCNkuj/Tuw83VP/gStFQqZHqljyX9/VfMTCdTqtOnJZGN8g==
   dependencies:
     resize-observer-polyfill "^1.5.1"
 
