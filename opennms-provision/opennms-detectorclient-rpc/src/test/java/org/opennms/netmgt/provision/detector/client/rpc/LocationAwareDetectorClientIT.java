@@ -23,6 +23,8 @@ package org.opennms.netmgt.provision.detector.client.rpc;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.Dictionary;
 import java.util.Map;
 import java.util.Properties;
@@ -31,6 +33,7 @@ import java.util.concurrent.Executors;
 
 import org.apache.camel.Component;
 import org.apache.camel.util.KeyValueHolder;
+import org.apache.commons.beanutils.BeanUtils;
 import org.junit.Before;
 import org.junit.ClassRule;
 import org.junit.Test;
@@ -42,6 +45,8 @@ import org.opennms.distributed.core.api.MinionIdentity;
 import org.opennms.distributed.core.api.SystemType;
 import org.opennms.netmgt.model.OnmsDistPoller;
 import org.opennms.netmgt.provision.LocationAwareDetectorClient;
+import org.opennms.netmgt.provision.ServiceDetector;
+import org.opennms.netmgt.provision.ServiceDetectorFactory;
 import org.opennms.netmgt.provision.detector.loop.LoopDetector;
 import org.opennms.netmgt.provision.detector.registry.api.ServiceDetectorRegistry;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -199,5 +204,19 @@ public class LocationAwareDetectorClientIT extends CamelBlueprintTest {
     @Test
     public void didOverrideBodyDebug() throws Exception {
         assertEquals("-5", context.getProperty("CamelLogDebugBodyMaxChars"));
+    }
+
+    @Test
+    public void testNMS16360() throws Exception {
+        for(final String service : serviceDetectorRegistry.getServiceNames()) {
+            final String classname = serviceDetectorRegistry.getDetectorClassNameFromServiceName(service);
+            final ServiceDetectorFactory<?> factory = serviceDetectorRegistry.getDetectorFactoryByClassName(classname);
+            final ServiceDetector detector = factory.createDetector(Collections.emptyMap());
+            if (detector instanceof ExceptionalSyncServiceDetector || detector instanceof ExceptionalAsyncServiceDetector) {
+                continue;
+            }
+            BeanUtils.setProperty(detector, "collection", "foobar");
+            assertEquals("foobar", BeanUtils.getProperty(detector, "collection"));
+        }
     }
 }
