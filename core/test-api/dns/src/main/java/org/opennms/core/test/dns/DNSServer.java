@@ -620,8 +620,9 @@ public class DNSServer {
     byte[] doAXFR(final Name name, final Message query, final TSIG tsig, TSIGRecord qtsig, final Socket s) {
         final Zone zone = m_znames.get(name);
         boolean first = true;
-        if (zone == null)
+        if (zone == null) {
             return errorMessage(query, Rcode.REFUSED);
+        }
         @SuppressWarnings("unchecked")
         final Iterator<RRset> it = zone.AXFR();
         try {
