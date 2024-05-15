@@ -467,7 +467,7 @@ public class DNSServer {
             } else {
                 rrsets = cache.findRecords(name, type);
             }
-            if (rrsets == null) {
+            if (rrsets == null || rrsets.length == 0) {
                 return null;
             } else {
                 return rrsets[0]; /* not quite right */
