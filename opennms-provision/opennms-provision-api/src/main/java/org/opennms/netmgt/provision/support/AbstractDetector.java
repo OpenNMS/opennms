@@ -37,6 +37,8 @@ public abstract class AbstractDetector implements ServiceDetector {
     private int m_timeout;
     private String m_ipMatch;
     private String m_serviceName;
+    private String collection;
+
 
     /**
      * <p>Constructor for AbstractDetector.</p>
@@ -175,4 +177,11 @@ public abstract class AbstractDetector implements ServiceDetector {
         m_ipMatch = ipMatch;
     }
 
+    public String getCollection() {
+        return collection;
+    }
+
+    public void setCollection(String collection) {
+        this.collection = collection;
+    }
 }
