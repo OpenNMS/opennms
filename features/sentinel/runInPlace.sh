@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-[ "$(grep -c 'OpenNMS :: Features :: Sentinel' pom.xml)" -eq 1 ] || (echo "This command must be ran from the features/sentinel directory" && exit 1)
+[ "$(grep -c 'OpenNMS :: Features :: Sentinel' pom.xml)" -eq 1 ] || (echo "This command must be run from the features/sentinel directory" && exit 1)
 
 # Inclue the bundled Maven in the $PATH
 MYDIR=$(dirname "$0")
