@@ -5,9 +5,10 @@ jobs:
       - when:
           condition: << pipeline.parameters.main_branch >>
           steps:
-            - add_ssh_keys:
-                fingerprints:
-                  - "4a:0a:cb:11:a3:33:b1:14:e9:cb:db:41:76:fa:a3:bf"
+            #- add_ssh_keys:
+            #    fingerprints:
+            #      - "6a:c7:42:e6:e3:26:76:95:f4:0a:7a:5b:9c:b3:19:0e"
+            #      #- "4a:0a:cb:11:a3:33:b1:14:e9:cb:db:41:76:fa:a3:bf"
             - restore_cache:
                 keys:
                   - meridian-v2-{{ .Branch }}-{{ .Revision }}

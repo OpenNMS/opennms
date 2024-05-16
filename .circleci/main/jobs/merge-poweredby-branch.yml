@@ -5,9 +5,10 @@ jobs:
       - when:
           condition: << pipeline.parameters.main_branch >>
           steps:
-            - add_ssh_keys:
-                fingerprints:
-                  - "aa:e8:af:11:e4:78:e7:75:b7:a1:69:d0:c8:17:0c:7a"
+            #- add_ssh_keys:
+            #    fingerprints:
+            #      - "6a:c7:42:e6:e3:26:76:95:f4:0a:7a:5b:9c:b3:19:0e"
+            #      #- "aa:e8:af:11:e4:78:e7:75:b7:a1:69:d0:c8:17:0c:7a"
             - restore_cache:
                 keys:
                   - poweredby-v2-{{ .Branch }}-{{ .Revision }}

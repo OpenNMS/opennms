@@ -23,6 +23,7 @@ package org.opennms.protocols.snmp;
 
 import java.io.Serializable;
 
+import org.opennms.netmgt.snmp.AbstractSnmpValue;
 import org.opennms.protocols.snmp.asn1.AsnDecodingException;
 import org.opennms.protocols.snmp.asn1.AsnEncoder;
 import org.opennms.protocols.snmp.asn1.AsnEncodingException;
@@ -349,12 +350,10 @@ public class SnmpOctetString extends Object implements SnmpSyntax, Cloneable, Se
         // 
         byte[] newBytes = new byte[bytes.length];
         for (int i = 0; i < bytes.length; i++) {
-            newBytes[i] = Character.isISOControl((char)bytes[i]) ? (byte)'.' : bytes[i];
+            newBytes[i] = AbstractSnmpValue.getAdditionalPrintableCharacters().getOrDefault(bytes[i], Character.isISOControl((char)bytes[i]) ? (byte)'.' : bytes[i]);
         }
     
-        // Create string, trim any white-space and return
-        String result = new String(newBytes);
-        return result.trim();
+        return new String(newBytes);
     }
 
     // TODO: Move this to common base class
