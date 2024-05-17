@@ -8,6 +8,13 @@
             <value>sun.nio.ch, sun.misc, sun.net.dns, sun.reflect, sun.security.ssl, sun.security.x509</value>
         </edit>
 
+        <!-- see container/shared/src/main/filtered-resources/etc/startup.properties for details -->
+        <edit>
+            <file>startup.properties</file>
+            <operation>remove</operation>
+            <key>mvn:org.apache.karaf.config/org.apache.karaf.config.core/${karafVersion}</key>
+        </edit>
+
         <edit>
             <file>users.properties</file>
             <operation>remove</operation>
