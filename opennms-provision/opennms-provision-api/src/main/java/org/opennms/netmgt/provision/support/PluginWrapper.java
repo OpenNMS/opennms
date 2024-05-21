@@ -19,7 +19,8 @@
  * language governing permissions and limitations under the
  * License.
  */
- package org.opennms.netmgt.provision.support;
+
+package org.opennms.netmgt.provision.support;
 
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.Method;

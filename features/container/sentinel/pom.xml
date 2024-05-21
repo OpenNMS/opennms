@@ -7,53 +7,98 @@
         <version>34.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
+
     <groupId>org.opennms.features.container</groupId>
     <artifactId>sentinel</artifactId>
-    <packaging>pom</packaging>
+    <packaging>karaf-assembly</packaging>
     <name>OpenNMS :: Features :: Container :: Sentinel</name>
 
+    <properties>
+        <license.skipAddThirdParty>true</license.skipAddThirdParty>
+        <enforcer-skip-banned-dependencies>true</enforcer-skip-banned-dependencies>
+    </properties>
     <build>
+        <resources>
+            <resource>
+                <filtering>false</filtering>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/filtered-resources</directory>
+            </resource>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/internal</directory>
+                <targetPath>${project.build.directory}/internal</targetPath>
+            </resource>
+        </resources>
         <plugins>
+            <plugin>
+                <artifactId>maven-deploy-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-resources-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>filter-resources</id>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>copy-resources</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/filtered-resources</outputDirectory>
-                            <resources>
-                                <resource>
-                                    <directory>src/main/filtered-resources</directory>
-                                    <filtering>true</filtering>
-                                </resource>
-                            </resources>
-                        </configuration>
-                    </execution>
-                </executions>
+                <configuration>
+                     <encoding>UTF-8</encoding>
+                     <escapeString>\</escapeString>
+                     <delimiters>
+                         <delimiter>${*}</delimiter>
+                         <delimiter>@</delimiter>
+                     </delimiters>
+                     <useDefaultDelimiters>false</useDefaultDelimiters>
+                </configuration>
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-dependency-plugin</artifactId>
                 <executions>
                     <execution>
+                        <id>copy-dependencies</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <stripVersion>true</stripVersion>
+                            <stripClassifier>true</stripClassifier>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.opennms.features.scv</groupId>
+                                    <artifactId>org.opennms.features.scv.cli</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>jar-with-dependencies</classifier>
+                                    <type>jar</type>
+                                    <outputDirectory>${project.build.directory}/assembly/bin</outputDirectory>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                    <execution>
                         <id>unpack-dependencies</id>
-                        <phase>process-resources</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>unpack</goal>
                         </goals>
                         <configuration>
-                            <outputDirectory>${project.build.directory}/unpacked</outputDirectory>
                             <artifactItems>
                                 <artifactItem>
                                     <groupId>org.opennms.container</groupId>
                                     <artifactId>org.opennms.container.shared</artifactId>
                                     <version>${project.version}</version>
                                     <type>tar.gz</type>
+                                    <outputDirectory>${project.build.directory}/unpacked/container-shared</outputDirectory>
+                                </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.opennms.core</groupId>
+                                    <artifactId>org.opennms.core.cli</artifactId>
+                                    <version>${project.version}</version>
+                                    <outputDirectory>${project.build.directory}/unpacked/core-cli</outputDirectory>
+                                    <includes>bin/*</includes>
                                 </artifactItem>
                             </artifactItems>
                         </configuration>
@@ -62,6 +107,14 @@
             </plugin>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
                 <configuration>
                     <descriptors>
                         <descriptor>src/assembly/sentinel.xml</descriptor>
@@ -69,32 +122,423 @@
                     <overrideUid>0</overrideUid>
                     <overrideGid>0</overrideGid>
                     <tarLongFileMode>posix</tarLongFileMode>
+
+                    <!-- this is all a bit weird, but we are abusing the assembly plugin to augment the target/assembly created by the Karaf plugin -->
+                    <outputDirectory>${project.build.directory}</outputDirectory>
+                    <finalName>assembly</finalName>
                     <appendAssemblyId>false</appendAssemblyId>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>io.github.olivierlemasle.maven</groupId>
+                <artifactId>plaintext-maven-plugin</artifactId>
+                <version>1.0.0</version>
                 <executions>
                     <execution>
-                        <phase>package</phase>
+                        <phase>prepare-package</phase>
                         <goals>
-                            <goal>single</goal>
+                            <goal>write</goal>
                         </goals>
                     </execution>
                 </executions>
+                <configuration>
+                    <files>
+                        <file>
+                            <name>assembly/etc/org.ops4j.pax.logging.cfg</name>
+                            <append>true</append>
+                            <lines>
+                                <line>${line.separator}# Logging to be programmatically enabled when running in a container, disabled by default</line>
+                                <line>log4j2.rootLogger.appenderRef.container.ref = container</line>
+                                <line>log4j2.rootLogger.appenderRef.container.filter.threshold.type = ThresholdFilter</line>
+                                <line>log4j2.rootLogger.appenderRef.container.filter.threshold.level = ${karaf.log.container.threshold:-OFF}</line>
+
+                                <line>${line.separator}# Console appender to use when running in a container writing directly to stdout</line>
+                                <line>log4j2.appender.container.type = Console</line>
+                                <line>log4j2.appender.container.name = container</line>
+                                <line>log4j2.appender.container.layout.type = ${karaf.log.container.layout:-PatternLayout}</line>
+                                <line>log4j2.appender.container.layout.pattern = ${karaf.log.container.pattern}</line>
+
+                                <line>${line.separator}# OPENNMS: Display all INFO logs for OpenNMS code</line>
+                                <line>log4j2.logger.opennms.name = org.opennms</line>
+                                <line>log4j2.logger.opennms.level = INFO</line>
+                            </lines>
+                        </file>
+                    </files>
+                </configuration>
+            </plugin>
+            <plugin>
+                <groupId>com.google.code.maven-replacer-plugin</groupId>
+                <artifactId>replacer</artifactId>
+                <executions>
+                    <execution>
+                        <id>org.apache.karaf.features.cfg</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.build.directory}/assembly/etc/org.apache.karaf.features.cfg</file>
+                            <replacements>
+                                <!-- disable autoRefresh by default -->
+                                <replacement>
+                                    <token>autoRefresh *=.*</token>
+                                    <value>autoRefresh=false</value>
+                                </replacement>
+                            </replacements>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>org.apache.karaf.management.cfg</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.build.directory}/assembly/etc/org.apache.karaf.management.cfg</file>
+                            <replacements>
+                                <!-- change defaults so they don't conflict with core or minion -->
+                                <replacement>
+                                    <token>rmiRegistryPort *=.*</token>
+                                    <value>rmiRegistryPort = 1399</value>
+                                </replacement>
+                                <replacement>
+                                    <token>rmiServerPort *=.*</token>
+                                    <value>rmiServerPort = 46444</value>
+                                </replacement>
+                            </replacements>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>org.ops4j.pax.logging.cfg</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.build.directory}/assembly/etc/org.ops4j.pax.logging.cfg</file>
+                            <regex>false</regex>
+                            <replacements>
+                                <!-- change default audit logging -->
+                                <replacement>
+                                    <token>log4j2.appender.audit.layout.pattern = %m%n</token>
+                                    <value>log4j2.appender.audit.layout.pattern = ${log4j2.pattern}</value>
+                                </replacement>
+                                <replacement>
+                                    <token>log4j2.logger.audit.name = audit</token>
+                                    <value>log4j2.logger.audit.name = org.apache.karaf.jaas.modules.audit</value>
+                                </replacement>
+                                <replacement>
+                                    <token>log4j2.logger.audit.level = TRACE</token>
+                                    <value>log4j2.logger.audit.level = INFO</value>
+                                </replacement>
+                                <replacement>
+                                    <token>log4j2.appender.audit.fileName = ${karaf.log}/security.log</token>
+                                    <value>log4j2.appender.audit.fileName = ${karaf.data}/security/audit.log</value>
+                                </replacement>
+                                <replacement>
+                                    <token>log4j2.appender.audit.filePattern = ${karaf.log}/security-%i.log</token>
+                                    <value>log4j2.appender.audit.filePattern = ${karaf.data}/security/audit.log.%i</value>
+                                </replacement>
+                            </replacements>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>org.apache.karaf.shell.cfg</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>replace</goal>
+                        </goals>
+                        <configuration>
+                            <file>${project.build.directory}/assembly/etc/org.apache.karaf.shell.cfg</file>
+                            <replacements>
+                                <!-- change defaults so they don't conflict with core or minion -->
+                                <replacement>
+                                    <token>sshPort *=.*</token>
+                                    <value>sshPort = 8301</value>
+                                </replacement>
+                                <replacement>
+                                    <token>sshHost *=.*</token>
+                                    <value>sshHost = 127.0.0.1</value>
+                                </replacement>
+                                <replacement>
+                                    <token>sftpEnabled *=.*</token>
+                                    <value>sftpEnabled = false</value>
+                                </replacement>
+                            </replacements>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.karaf.tooling</groupId>
+                <artifactId>karaf-maven-plugin</artifactId>
+                <extensions>true</extensions>
+                <configuration>
+                    <finalName>${project.artifactId}</finalName>
+                    <archiveZip>false</archiveZip>
+                    <javase>11</javase>
+                    <featuresProcessing>${project.build.directory}/internal/features-processing.xml</featuresProcessing>
+                    <propertyFileEdits>${project.build.directory}/internal/assembly-property-edits.xml</propertyFileEdits>
+                    <generateConsistencyReport>${project.build.directory}/consistency-report</generateConsistencyReport>
+                    <system>
+                        <karaf.name>sentinel</karaf.name>
+                        <karaf.clean.cache>true</karaf.clean.cache>
+                        <karaf.local.user>admin</karaf.local.user>
+                        <karaf.require.successful.features.boot>true</karaf.require.successful.features.boot>
+                        <snmp4j.LogFactory>org.snmp4j.log.Log4jLogFactory</snmp4j.LogFactory>
+                    </system>
+
+                    <!-- repositories -->
+                    <bootRepositories>
+                        <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</repository>
+                        <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</repository>
+                        <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/features</repository>
+                        <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/sentinel</repository>
+                        <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/camel</repository>
+                        <repository>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</repository>
+                        <repository>mvn:org.ops4j.pax.cdi/pax-cdi-features/${paxCdiVersion}/xml/features</repository>
+                        <repository>mvn:org.apache.karaf.features/framework/${karafVersion}/xml/features</repository>
+                        <repository>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</repository>
+                    </bootRepositories>
+
+                    <!-- features -->
+                    <startupFeatures>
+                        <feature>eventadmin</feature>
+                    </startupFeatures>
+                    <firstStageBootFeatures>
+                        <feature>instance</feature>
+                        <feature>package</feature>
+                        <feature>log</feature>
+                        <feature>ssh/${karafSshdVersion}</feature>
+                        <feature>aries-blueprint</feature>
+                        <feature>system</feature>
+                        <feature>feature</feature>
+                        <feature>shell</feature>
+                        <feature>management</feature>
+                        <feature>service</feature>
+                        <feature>jaas</feature>
+                        <feature>jasypt-encryption</feature>
+                        <feature>shell-compat</feature>
+                        <feature>deployer</feature>
+                        <feature>diagnostic</feature>
+                        <feature>wrap</feature>
+                        <feature>bundle</feature>
+                        <feature>config</feature>
+                        <feature>kar</feature>
+                    </firstStageBootFeatures>
+                    <bootFeatures>
+                        <feature>http</feature>
+                        <feature>guava/${guavaOsgiVersion}</feature>
+                        <feature>karaf-extender</feature>
+                        <feature>hawtio/${hawtio.version}</feature>
+                        <feature>jolokia/${jolokiaVersion}</feature>
+                        <feature>scv-jceks-impl</feature>
+                        <feature>scv-shell</feature>
+                        <feature>wrapper</feature>
+                    </bootFeatures>
+                    <installedFeatures>
+                        <!-- OPENNMS: Add Spring features that we need in the base container -->
+                        <!-- These versions match the versions shipped with Apache Karaf 4.1.5 -->
+                        <feature>spring/4.0.9.RELEASE_1</feature>
+                        <feature>spring/4.1.9.RELEASE_1</feature>
+                        <feature>spring/4.2.9.RELEASE_1</feature>
+                        <feature>spring/4.3.30.RELEASE_1</feature>
+
+                        <feature>spring-jms/4.1.9.RELEASE_1</feature>
+                        <feature>spring/${springVersion}</feature>
+                        <feature>spring-jms/${springVersion}</feature>
+
+                        <!-- OpenNMS features -->
+                        <feature>opennms-core-ipc-rpc-jms</feature>
+                        <feature>opennms-core-tracing-jaeger</feature>
+                        <feature>opennms-events-sink-dispatcher</feature>
+                        <feature>opennms-core-ipc-sink-camel</feature>
+                        <feature>opennms-core-ipc-sink-kafka</feature>
+                        <feature>opennms-core-ipc-sink-camel-server</feature>
+                        <feature>opennms-core-ipc-sink-kafka-server</feature>
+                        <feature>opennms-send-event-command</feature>
+                        <feature>opennms-syslogd-listener-javanet</feature>
+                        <feature>opennms-syslogd-listener-camel-netty</feature>
+                        <feature>opennms-persistence</feature>
+                        <feature>opennms-spring-extender</feature>
+                        <feature>opennms-blobstore-shell</feature>
+                        <feature>opennms-jsonstore-shell</feature>
+                        <feature>opennms-distributed-core-impl</feature>
+                        <feature>opennms-util</feature>
+                        <feature>scv-api</feature>
+                        <feature>scv-shell</feature>
+                        <feature>scv-jceks-impl</feature>
+                        <feature>cxf-commands/${cxfVersion}</feature>
+                        <feature>opennms-health-rest-service</feature>
+
+                        <!-- Sentinel specific features -->
+                        <feature>sentinel-core</feature>
+                        <feature>sentinel-persistence</feature>
+                        <feature>sentinel-jms</feature>
+                        <feature>sentinel-telemetry</feature>
+                        <feature>sentinel-telemetry-bmp</feature>
+                        <feature>sentinel-telemetry-graphite</feature>
+                        <feature>sentinel-telemetry-jti</feature>
+                        <feature>sentinel-telemetry-nxos</feature>
+                        <feature>sentinel-flows</feature>
+                        <feature>sentinel-coordination-api</feature>
+                        <feature>sentinel-coordination-common</feature>
+                        <feature>sentinel-coordination-zookeeper</feature>
+                        <feature>sentinel-coordination-shell</feature>
+                        <feature>sentinel-newts</feature>
+                        <feature>sentinel-blobstore-noop</feature>
+                        <feature>sentinel-blobstore-cassandra</feature>
+                        <feature>sentinel-jsonstore-postgres</feature>
+                        <feature>sentinel-thresholding-service</feature>
+                        <feature>sentinel-api-layer</feature>
+                        <feature>sentinel-timeseries-api</feature>
+                        <feature>sentinel-plugin-sample</feature>
+
+                        <!-- Other features -->
+                        <feature>cassandra-driver/${cassandraVersion}</feature>
+                    </installedFeatures>
+
+                    <libraries>
+                    </libraries>
+
+                    <!-- BUNDLES -->
+                    <!-- as far as I can tell, startupFeatures and startupBundles are completely broken -->
+                    <startupBundles>
+                        <!-- Add JNA bundles to prevent jline from refreshing (KARAF-5251) -->
+                        <bundle>mvn:net.java.dev.jna/jna/${jnaVersion};start-level=5</bundle>
+                        <bundle>mvn:net.java.dev.jna/jna-platform/${jnaVersion};start-level=5</bundle>
+
+                        <!-- ...then add jline to be sure it initializes at startup as well for the config shell -->
+                        <!-- <bundle>mvn:org.jline/jline/${jlineVersion};start-level=9</bundle> -->
+
+                        <!-- Add MINA bundles to prevent mina-sshd-core from refreshing (KARAF-5384) -->
+                        <bundle>mvn:org.apache.mina/mina-core/${minaVersion};start-level=10</bundle>
+
+                        <!-- Also, for some reason eventadmin isn't getting pulled into startup.properties anymore from startupFeatures, do its bundles manually -->
+                        <bundle>mvn:org.apache.felix/org.apache.felix.metatype/${felixMetatypeVersion};start-level=5</bundle>
+                        <bundle>mvn:org.apache.karaf.services/org.apache.karaf.services.eventadmin/${karafVersion};start-level=5</bundle>
+                    </startupBundles>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>net.nicoulaj.maven.plugins</groupId>
+                <artifactId>checksum-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals><goal>files</goal></goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <algorithms><algorithm>SHA-1</algorithm></algorithms>
+                    <fileSets>
+                        <fileSet>
+                            <directory>${project.build.directory}/assembly</directory>
+                            <includes>
+                                <include>lib/**/*.jar</include>
+                                <include>system/**/*.jar</include>
+                                <include>system/**/*.pom</include>
+                                <include>system/**/*.war</include>
+                                <include>system/**/*.xml</include>
+                            </includes>
+                        </fileSet>
+                    </fileSets>
+                </configuration>
             </plugin>
         </plugins>
     </build>
-
     <dependencies>
+        <!-- Karaf direct dependencies -->
+        <dependency>
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>framework</artifactId>
+            <version>${karafVersion}</version>
+            <type>kar</type>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.features</groupId>
+            <artifactId>standard</artifactId>
+            <version>${karafVersion}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- OpenNMS dependencies for unpacking/assembling -->
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.cli</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
         <dependency>
             <groupId>org.opennms.container</groupId>
             <artifactId>org.opennms.container.shared</artifactId>
-	    <version>${project.version}</version>
+            <version>${project.version}</version>
             <type>tar.gz</type>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.sentinel</groupId>
+            <artifactId>core</artifactId>
+            <version>${project.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.scv</groupId>
+            <artifactId>org.opennms.features.scv.cli</artifactId>
+            <version>${project.version}</version>
+            <classifier>jar-with-dependencies</classifier>
+            <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>org.jacoco</groupId>
             <artifactId>org.jacoco.agent</artifactId>
             <version>${jacocoVersion}</version>
             <classifier>runtime</classifier>
+            <scope>runtime</scope>
+        </dependency>
+
+        <!-- feature dependencies for Karaf assembly resolution -->
+        <dependency>
+            <groupId>org.opennms.karaf</groupId>
+            <artifactId>opennms</artifactId>
+            <version>${project.version}</version>
+            <classifier>core</classifier>
+            <type>xml</type>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.karaf</groupId>
+            <artifactId>opennms</artifactId>
+            <version>${project.version}</version>
+            <classifier>features</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.karaf</groupId>
+            <artifactId>opennms</artifactId>
+            <version>${project.version}</version>
+            <classifier>karaf-extensions</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.karaf</groupId>
+            <artifactId>opennms</artifactId>
+            <version>${project.version}</version>
+            <classifier>sentinel</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.karaf</groupId>
+            <artifactId>opennms</artifactId>
+            <version>${project.version}</version>
+            <classifier>spring-legacy</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
         </dependency>
     </dependencies>
 </project>

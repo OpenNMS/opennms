@@ -28,9 +28,8 @@
     </build>
     <dependencies>
         <dependency>
-            <groupId>org.opennms.features.graph</groupId>
-            <artifactId>org.opennms.features.graph.jung</artifactId>
-            <version>${jungVersion}</version>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>jung-shaded</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opennms</groupId>
