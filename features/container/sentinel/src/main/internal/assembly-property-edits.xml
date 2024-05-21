@@ -1,0 +1,44 @@
+<property-edits xmlns="http://karaf.apache.org/tools/property-edits/1.0.0">
+    <edits>
+        <!-- .properties files -->
+        <edit>
+            <file>custom.properties</file>
+            <operation>put</operation>
+            <key>org.osgi.framework.system.packages.extra</key>
+            <value>sun.nio.ch, sun.misc, sun.net.dns, sun.reflect, sun.security.ssl, sun.security.x509</value>
+        </edit>
+
+        <!-- see container/shared/src/main/filtered-resources/etc/startup.properties for details -->
+        <edit>
+            <file>startup.properties</file>
+            <operation>remove</operation>
+            <key>mvn:org.apache.karaf.config/org.apache.karaf.config.core/${karafVersion}</key>
+        </edit>
+
+        <edit>
+            <file>users.properties</file>
+            <operation>remove</operation>
+            <key>karaf</key>
+        </edit>
+        <edit>
+            <file>users.properties</file>
+            <operation>put</operation>
+            <key>admin</key>
+            <value>admin,_g_:admingroup</value>
+        </edit>
+        <edit>
+            <file>users.properties</file>
+            <operation>put</operation>
+            <key>_g_:admingroup</key>
+            <value>group,admin,manager,viewer,systembundles,ssh</value>
+        </edit>
+
+        <edit>
+            <file>org.apache.cxf.osgi.cfg</file>
+            <operation>put</operation>
+            <key>org.apache.cxf.servlet.context</key>
+            <value>/sentinel</value>
+        </edit>
+
+    </edits>
+</property-edits>

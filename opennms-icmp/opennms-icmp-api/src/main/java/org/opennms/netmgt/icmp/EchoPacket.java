@@ -19,7 +19,8 @@
  * language governing permissions and limitations under the
  * License.
  */
- package org.opennms.netmgt.icmp;
+
+package org.opennms.netmgt.icmp;
 
 import java.util.concurrent.TimeUnit;
 

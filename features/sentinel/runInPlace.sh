@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-test -d repository || (echo "This command must be ran from the features/sentinel directory" && exit 1)
+[ "$(grep -c 'OpenNMS :: Features :: Sentinel' pom.xml)" -eq 1 ] || (echo "This command must be run from the features/sentinel directory" && exit 1)
 
 # Inclue the bundled Maven in the $PATH
 MYDIR=$(dirname "$0")
@@ -12,7 +12,7 @@ JAVA_OPTS="-Xmx2g -Djdk.util.zip.disableZip64ExtraFieldValidation=true"
 
 export PATH CONTAINERDIR JAVA_OPTS
 
-BUILD_PREREQUISITES="org.opennms.karaf:opennms,:org.opennms.container.shared,org.opennms.features.container:sentinel,org.opennms.features.sentinel:repository"
+BUILD_PREREQUISITES="org.opennms.karaf:opennms,:org.opennms.container.shared,org.opennms.features.container:sentinel"
 
 cleanup_and_build() {
   should_use_sudo=$1
@@ -104,31 +104,23 @@ spawn_sentinel() {
   idx=$1
   detached=$2
   should_use_sudo=$3
-  SENTINEL_HOME="${CONTAINERDIR}/target/sentinel-karaf-$idx"
+  SENTINEL_HOME="${CONTAINERDIR}/target/sentinel-karaf-${idx}"
 
-  echo "Extracting container for Sentinel #$idx..."
+  echo "Extracting container for Sentinel #${idx}..."
   # Extract the container
   pushd "${CONTAINERDIR}"/target > /dev/null
   mkdir -p "$SENTINEL_HOME"
   tar zxvf sentinel-*.tar.gz -C "$SENTINEL_HOME" --strip-components 1 > /dev/null
   popd > /dev/null
 
-  # Extract the default repository
-  pushd repository/target > /dev/null
-  tar zxvf repository-*-repo.tar.gz -C "${SENTINEL_HOME}/system" > /dev/null
-  popd > /dev/null
-
-  echo "Updating configuration for Sentinel #$idx..."
+  echo "Updating configuration for Sentinel #${idx}..."
   # Enable Hawtio
   echo 'hawtio' > "$SENTINEL_HOME/etc/featuresBoot.d/hawtio.boot"
 
   # Instance specific configuration
-  set_instance_specific_configuration "$SENTINEL_HOME" "$idx"
+  set_instance_specific_configuration "$SENTINEL_HOME" "${idx}"
 
-  # Enable Hawtio
-  echo 'hawtio' > "$SENTINEL_HOME/etc/featuresBoot.d/hawtio.boot"
-
-  echo "Starting Sentinel #$idx (detached=$detached)..."
+  echo "Starting Sentinel #${idx} (detached=$detached)..."
   KARAF_ARGS="debug"
   cmd_prefix=""
   pushd "$SENTINEL_HOME" > /dev/null

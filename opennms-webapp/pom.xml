@@ -854,30 +854,15 @@
       </exclusions>
     </dependency>
     <dependency>
-        <groupId>net.sf.jung</groupId>
-        <artifactId>jung-api</artifactId>
-        <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-        <groupId>net.sf.jung</groupId>
-        <artifactId>jung-graph-impl</artifactId>
-        <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-        <groupId>net.sf.jung</groupId>
-        <artifactId>jung-algorithms</artifactId>
-        <scope>${onmsLibScope}</scope>
-        <exclusions>
-            <exclusion>
-                <groupId>concurrent</groupId>
-                <artifactId>concurrent</artifactId>
-            </exclusion>
-        </exclusions>
-    </dependency>
-    <dependency>
-        <groupId>net.sf.jung</groupId>
-        <artifactId>jung-visualization</artifactId>
-        <scope>${onmsLibScope}</scope>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jung-shaded</artifactId>
+      <scope>${onmsLibScope}</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>concurrent</groupId>
+          <artifactId>concurrent</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.freemarker</groupId>

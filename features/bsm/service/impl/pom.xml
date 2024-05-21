@@ -49,20 +49,8 @@
       <artifactId>slf4j-api</artifactId>
     </dependency>
     <dependency>
-      <groupId>net.sf.jung</groupId>
-      <artifactId>jung-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.jung</groupId>
-      <artifactId>jung-graph-impl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.jung</groupId>
-      <artifactId>jung-algorithms</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.jung</groupId>
-      <artifactId>jung-visualization</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jung-shaded</artifactId>
     </dependency>
 
     <!-- Test Dependencies -->

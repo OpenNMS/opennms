@@ -54,12 +54,10 @@ Modules to consider:
 org.opennms.features.minion:core-repository:25.0.0-SNAPSHOT
 org.opennms.features.container:minion:25.0.0-SNAPSHOT
 org.opennms.karaf:opennms:25.0.0-SNAPSHOT
-org.opennms.features.container:sentinel:25.0.0-SNAPSHOT
 org.opennms.features.telemetry:org.opennms.features.telemetry.daemon:25.0.0-SNAPSHOT
 org.opennms.features.telemetry.distributed:org.opennms.features.telemetry.distributed.sentinel:25.0.0-SNAPSHOT
 org.opennms.container:org.opennms.container.shared:25.0.0-SNAPSHOT
 org.opennms.features.minion:repository:25.0.0-SNAPSHOT
-org.opennms.features.sentinel:repository:25.0.0-SNAPSHOT
 org.opennms.features.telemetry:org.opennms.features.telemetry.itests:25.0.0-SNAPSHOT
 org.opennms.container:org.opennms.container.karaf:25.0.0-SNAPSHOT
 Modules with tests:
