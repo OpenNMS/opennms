@@ -136,14 +136,22 @@
     <feature name="minion-telemetryd-receivers" start-level="${earlyStartLevel}" description="Minion :: Telemetry :: Receivers" version="${project.version}">
       <feature>bson</feature>
       <feature>commons-csv</feature>
+      <feature>commons-lang3</feature>
       <feature>dropwizard-metrics</feature>
+      <feature>jackson1</feature>
       <feature version="${netty4Version}">netty</feature>
+      <feature>rate-limited-logger</feature>
+      <feature>resilience4j</feature>
+      <feature>health-api</feature>
+      <feature>opennms-core-ipc-sink-api</feature>
+      <feature>opennms-dao-api</feature>
       <feature>opennms-dnsresolver-api</feature>
       <feature>opennms-util</feature>
       <bundle>wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
       <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
       <bundle>wrap:mvn:io.pkts/pkts-core/${pktsVersion}$Bundle-SymbolicName=io.pkts.core&amp;Bundle-Version=${pktsVersion}</bundle>
       <bundle>wrap:mvn:io.pkts/pkts-buffers/${pktsVersion}$Bundle-SymbolicName=io.pkts.buffers&amp;Bundle-Version=${pktsVersion}</bundle>
+      <bundle>mvn:org.opennms.core/org.opennms.core.xml/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.jaxb/${project.version}</bundle>
