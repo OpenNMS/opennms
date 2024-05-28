@@ -145,6 +145,27 @@
   <pluginManagement>
     <plugins>
       <plugin>
+        <groupId>com.github.ekryd.sortpom</groupId>
+        <artifactId>sortpom-maven-plugin</artifactId>
+        <version>3.4.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>sort</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <createBackupFile>false</createBackupFile>
+          <nrOfIndentSpace>2</nrOfIndentSpace>
+          <sortDependencies>scope,groupId,artifactId</sortDependencies>
+          <sortDependencyManagement>scope,groupId,artifactId</sortDependencyManagement>
+          <sortModules>true</sortModules>
+          <sortOrderFile>https://ranger.befunk.com/bluebird/bluebird.xml</sortOrderFile>
+          <sortPlugins>groupId,artifactId</sortPlugins>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>com.google.code.maven-replacer-plugin</groupId>
         <artifactId>replacer</artifactId>
         <version>1.5.3</version>
