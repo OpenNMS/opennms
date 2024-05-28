@@ -1,11 +1,11 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.container</artifactId>
     <version>34.0.0-SNAPSHOT</version>
   </parent>
-  <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.karaf</groupId>
   <artifactId>opennms</artifactId>
   <packaging>pom</packaging>
@@ -18,105 +18,16 @@
   </properties>
   <build>
     <plugins>
-      <!-- Filter the features.xml files -->
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-resources-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>copy-resources</id>
-            <phase>generate-resources</phase>
-            <goals><goal>copy-resources</goal></goals>
-            <configuration>
-              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
-              <resources>
-                <resource>
-                  <directory>src/main/resources</directory>
-                  <filtering>true</filtering>
-                </resource>
-              </resources>
-              <encoding>UTF-8</encoding>
-              <escapeString>\</escapeString>
-              <nonFilteredFileExtensions>
-                <nonFilteredFileExtension>swp</nonFilteredFileExtension>
-              </nonFilteredFileExtensions>
-            </configuration>
-          </execution>
-          <!-- karaf-maven-plugin:verify doesn't know about external sun.nio.* packages, so we need to put a custom config in there -->
-          <execution>
-            <id>copy-karaf-resources</id>
-            <phase>generate-resources</phase>
-            <goals><goal>copy-resources</goal></goals>
-            <configuration>
-              <outputDirectory>${project.build.directory}/apache-karaf-${karafVersion}/etc</outputDirectory>
-              <overwrite>true</overwrite>
-              <resources>
-                <resource>
-                  <directory>src/test/karaf-resources</directory>
-                </resource>
-              </resources>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <executions>
-          <!-- Unpack Karaf to get access to a default etc/ for verify -->
-          <execution>
-            <id>unpack-karaf</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.apache.karaf</groupId>
-                  <artifactId>apache-karaf</artifactId>
-                  <version>${karafVersion}</version>
-                  <type>tar.gz</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>${project.build.directory}</outputDirectory>
-                  <includes>**/etc/**/*</includes>
-                  <excludes>**/custom.properties</excludes>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-          <execution>
-            <id>copy-camel-feature</id>
-            <phase>process-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.apache.camel.karaf</groupId>
-                  <artifactId>apache-camel</artifactId>
-                  <version>${camelVersion}</version>
-                  <classifier>features</classifier>
-                  <type>xml</type>
-                  <overWrite>false</overWrite>
-                  <outputDirectory>${project.build.directory}/downloaded-features</outputDirectory>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
       <plugin>
         <groupId>com.google.code.maven-replacer-plugin</groupId>
         <artifactId>replacer</artifactId>
         <executions>
           <execution>
             <id>exec</id>
-            <phase>package</phase>
             <goals>
               <goal>replace</goal>
             </goals>
+            <phase>package</phase>
             <configuration>
               <file>${project.build.directory}/downloaded-features/apache-camel-${camelVersion}-features.xml</file>
               <replacements>
@@ -141,15 +52,237 @@
         </executions>
       </plugin>
       <plugin>
+        <groupId>org.apache.karaf.tooling</groupId>
+        <artifactId>karaf-maven-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <skip>${skipTests}</skip>
+        </configuration>
+        <executions>
+          <execution>
+            <id>verify</id>
+            <goals>
+              <goal>verify</goal>
+            </goals>
+            <phase>process-resources</phase>
+            <configuration>
+              <javase>11</javase>
+              <descriptors>
+                <descriptor>file:${project.build.directory}/classes/features.xml</descriptor>
+                <descriptor>file:${project.build.directory}/classes/features-core.xml</descriptor>
+                <descriptor>file:${project.build.directory}/classes/features-experimental.xml</descriptor>
+                <descriptor>file:${project.build.directory}/classes/features-minion.xml</descriptor>
+                <descriptor>file:${project.build.directory}/classes/features-sentinel.xml</descriptor>
+                <descriptor>file:${project.build.directory}/downloaded-features/apache-camel-${camelVersion}-features.xml</descriptor>
+                <descriptor>file:${project.build.directory}/classes/karaf-extensions.xml</descriptor>
+                <descriptor>file:${project.build.directory}/classes/spring-legacy.xml</descriptor>
+              </descriptors>
+              <distribution>org.apache.karaf.features:framework</distribution>
+              <framework>
+                <feature>framework</feature>
+                <feature>aries-blueprint</feature>
+                <feature>shell</feature>
+                <feature>bundle</feature>
+                <feature>eventadmin</feature>
+              </framework>
+              <features>
+                <!-- core features -->
+                <feature>bouncycastle</feature>
+                <feature>bson</feature>
+                <feature>cassandra-driver</feature>
+                <feature>commons-beanutils</feature>
+                <feature>commons-cli</feature>
+                <feature>commons-codec</feature>
+                <feature>commons-collections</feature>
+                <feature>commons-compress</feature>
+                <feature>commons-configuration</feature>
+                <feature>commons-csv</feature>
+                <feature>commons-digester</feature>
+                <feature>commons-exec</feature>
+                <feature>commons-io</feature>
+                <feature>commons-jexl</feature>
+                <feature>commons-jxpath</feature>
+                <feature>commons-lang</feature>
+                <feature>commons-lang3</feature>
+                <feature>commons-net</feature>
+                <feature>commons-pool2</feature>
+                <feature>dropwizard-metrics</feature>
+                <feature>fst</feature>
+                <feature>guava</feature>
+                <feature>guava-dependencies</feature>
+                <feature>jackson-core</feature>
+                <feature>jackson-dataformat-xml</feature>
+                <feature>jackson-dataformat-yaml</feature>
+                <feature>jackson-datatype-jdk8</feature>
+                <feature>jackson-datatype-json</feature>
+                <feature>jackson-datatype-jsr310</feature>
+                <feature>jackson1</feature>
+                <feature>java-native-access</feature>
+                <feature>javax.mail</feature>
+                <feature>javax.servlet</feature>
+                <feature>javax.validation</feature>
+                <feature>jetty</feature>
+                <feature>jung</feature>
+                <feature>netty</feature>
+                <feature>org.json</feature>
+                <feature>pax-jetty</feature>
+                <feature>scv-api</feature>
+                <feature>scv-jceks-impl</feature>
+                <feature>scv-shell</feature>
+                <feature>snakeyaml</feature>
+                <feature>ssh</feature>
+                <feature>zookeeper-dependencies</feature>
+
+                <!-- base API features -->
+                <feature>opennms-activemq-pool</feature>
+                <feature>opennms-alarm-history-elastic</feature>
+                <feature>opennms-camel-amqp</feature>
+                <feature>opennms-core-camel</feature>
+                <feature>opennms-core-daemon</feature>
+                <feature>opennms-core-ipc-jms</feature>
+                <feature>opennms-core-ipc-rpc-api</feature>
+                <feature>opennms-core-ipc-sink-camel-common</feature>
+                <feature>opennms-core-ipc-sink-camel</feature>
+                <feature>opennms-core-ipc-sink-camel-server</feature>
+                <feature>opennms-core-ipc-twin-jms</feature>
+                <feature>opennms-distributed-core-jms</feature>
+                <feature>opennms-events-api</feature>
+                <feature>opennms-health</feature>
+                <feature>opennms-events-sink-dispatcher</feature>
+                <feature>opennms-health-api</feature>
+                <feature>opennms-mate-api</feature>
+                <feature>opennms-mate-impl</feature>
+                <feature>opennms-mate-shell</feature>
+                <feature>opennms-newts</feature>
+                <feature>opennms-poller-monitors-core</feature>
+                <feature>opennms-telemetry-daemon</feature>
+                <feature>opennms-timeseries-api</feature>
+                <feature>vaadin</feature>
+
+                <!-- minion features -->
+                <feature>dominion-grpc-client</feature>
+                <feature>dominion-secure-credentials-vault</feature>
+                <feature>minion-api-layer</feature>
+                <feature>minion-heartbeat-producer</feature>
+                <feature>minion-snmp-proxy</feature>
+                <feature>opennms-dao-minion</feature>
+                <feature>opennms-trapd-listener</feature>
+
+                <!-- sentinel features -->
+                <feature>sentinel-api-layer</feature>
+                <feature>sentinel-events-forwarder</feature>
+                <feature>sentinel-jms</feature>
+                <feature>sentinel-newts</feature>
+                <feature>sentinel-timeseries-api</feature>
+              </features>
+              <configuration>file:${project.build.directory}/apache-karaf-${karafVersion}/etc/config.properties</configuration>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <!-- Unpack Karaf to get access to a default etc/ for verify -->
+          <execution>
+            <id>unpack-karaf</id>
+            <goals>
+              <goal>unpack</goal>
+            </goals>
+            <phase>process-resources</phase>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.apache.karaf</groupId>
+                  <artifactId>apache-karaf</artifactId>
+                  <version>${karafVersion}</version>
+                  <type>tar.gz</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>${project.build.directory}</outputDirectory>
+                  <includes>**/etc/**/*</includes>
+                  <excludes>**/custom.properties</excludes>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-camel-feature</id>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <phase>process-resources</phase>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.apache.camel.karaf</groupId>
+                  <artifactId>apache-camel</artifactId>
+                  <version>${camelVersion}</version>
+                  <classifier>features</classifier>
+                  <type>xml</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>${project.build.directory}/downloaded-features</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <!-- Filter the features.xml files -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-resources-plugin</artifactId>
+        <executions>
+          <execution>
+            <id>copy-resources</id>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <outputDirectory>${project.build.outputDirectory}</outputDirectory>
+              <resources>
+                <resource>
+                  <directory>src/main/resources</directory>
+                  <filtering>true</filtering>
+                </resource>
+              </resources>
+              <encoding>UTF-8</encoding>
+              <escapeString>\</escapeString>
+              <nonFilteredFileExtensions>
+                <nonFilteredFileExtension>swp</nonFilteredFileExtension>
+              </nonFilteredFileExtensions>
+            </configuration>
+          </execution>
+          <!-- karaf-maven-plugin:verify doesn't know about external sun.nio.* packages, so we need to put a custom config in there -->
+          <execution>
+            <id>copy-karaf-resources</id>
+            <goals>
+              <goal>copy-resources</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+              <outputDirectory>${project.build.directory}/apache-karaf-${karafVersion}/etc</outputDirectory>
+              <overwrite>true</overwrite>
+              <resources>
+                <resource>
+                  <directory>src/test/karaf-resources</directory>
+                </resource>
+              </resources>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>build-helper-maven-plugin</artifactId>
         <executions>
           <execution>
             <id>attach-artifacts</id>
-            <phase>package</phase>
             <goals>
               <goal>attach-artifact</goal>
             </goals>
+            <phase>package</phase>
             <configuration>
               <artifacts>
                 <artifact>
@@ -202,138 +335,79 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
-          <groupId>org.apache.karaf.tooling</groupId>
-          <artifactId>karaf-maven-plugin</artifactId>
-          <extensions>true</extensions>
-          <configuration>
-            <skip>${skipTests}</skip>
-          </configuration>
-          <executions>
-              <execution>
-                  <id>verify</id>
-                  <phase>process-resources</phase>
-                  <goals>
-                      <goal>verify</goal>
-                  </goals>
-                  <configuration>
-                      <javase>11</javase>
-                      <descriptors>
-                          <descriptor>file:${project.build.directory}/classes/features.xml</descriptor>
-                          <descriptor>file:${project.build.directory}/classes/features-core.xml</descriptor>
-                          <descriptor>file:${project.build.directory}/classes/features-experimental.xml</descriptor>
-                          <descriptor>file:${project.build.directory}/classes/features-minion.xml</descriptor>
-                          <descriptor>file:${project.build.directory}/classes/features-sentinel.xml</descriptor>
-                          <descriptor>file:${project.build.directory}/downloaded-features/apache-camel-${camelVersion}-features.xml</descriptor>
-                          <descriptor>file:${project.build.directory}/classes/karaf-extensions.xml</descriptor>
-                          <descriptor>file:${project.build.directory}/classes/spring-legacy.xml</descriptor>
-                      </descriptors>
-                      <distribution>org.apache.karaf.features:framework</distribution>
-                      <framework>
-                          <feature>framework</feature>
-                          <feature>aries-blueprint</feature>
-                          <feature>shell</feature>
-                          <feature>bundle</feature>
-                          <feature>eventadmin</feature>
-                      </framework>
-                      <features>
-                          <!-- core features -->
-                          <feature>bouncycastle</feature>
-                          <feature>bson</feature>
-                          <feature>cassandra-driver</feature>
-                          <feature>commons-beanutils</feature>
-                          <feature>commons-cli</feature>
-                          <feature>commons-codec</feature>
-                          <feature>commons-collections</feature>
-                          <feature>commons-compress</feature>
-                          <feature>commons-configuration</feature>
-                          <feature>commons-csv</feature>
-                          <feature>commons-digester</feature>
-                          <feature>commons-exec</feature>
-                          <feature>commons-io</feature>
-                          <feature>commons-jexl</feature>
-                          <feature>commons-jxpath</feature>
-                          <feature>commons-lang</feature>
-                          <feature>commons-lang3</feature>
-                          <feature>commons-net</feature>
-                          <feature>commons-pool2</feature>
-                          <feature>dropwizard-metrics</feature>
-                          <feature>fst</feature>
-                          <feature>guava</feature>
-                          <feature>guava-dependencies</feature>
-                          <feature>jackson-core</feature>
-                          <feature>jackson-dataformat-xml</feature>
-                          <feature>jackson-dataformat-yaml</feature>
-                          <feature>jackson-datatype-jdk8</feature>
-                          <feature>jackson-datatype-json</feature>
-                          <feature>jackson-datatype-jsr310</feature>
-                          <feature>jackson1</feature>
-                          <feature>java-native-access</feature>
-                          <feature>javax.mail</feature>
-                          <feature>javax.servlet</feature>
-                          <feature>javax.validation</feature>
-                          <feature>jetty</feature>
-                          <feature>jung</feature>
-                          <feature>netty</feature>
-                          <feature>org.json</feature>
-                          <feature>pax-jetty</feature>
-                          <feature>scv-api</feature>
-                          <feature>scv-jceks-impl</feature>
-                          <feature>scv-shell</feature>
-                          <feature>snakeyaml</feature>
-                          <feature>ssh</feature>
-                          <feature>zookeeper-dependencies</feature>
-
-                          <!-- base API features -->
-                          <feature>opennms-activemq-pool</feature>
-                          <feature>opennms-alarm-history-elastic</feature>
-                          <feature>opennms-camel-amqp</feature>
-                          <feature>opennms-core-camel</feature>
-                          <feature>opennms-core-daemon</feature>
-                          <feature>opennms-core-ipc-jms</feature>
-                          <feature>opennms-core-ipc-rpc-api</feature>
-                          <feature>opennms-core-ipc-sink-camel-common</feature>
-                          <feature>opennms-core-ipc-sink-camel</feature>
-                          <feature>opennms-core-ipc-sink-camel-server</feature>
-                          <feature>opennms-core-ipc-twin-jms</feature>
-                          <feature>opennms-distributed-core-jms</feature>
-                          <feature>opennms-events-api</feature>
-                          <feature>opennms-health</feature>
-                          <feature>opennms-events-sink-dispatcher</feature>
-                          <feature>opennms-health-api</feature>
-                          <feature>opennms-mate-api</feature>
-                          <feature>opennms-mate-impl</feature>
-                          <feature>opennms-mate-shell</feature>
-                          <feature>opennms-newts</feature>
-                          <feature>opennms-poller-monitors-core</feature>
-                          <feature>opennms-telemetry-daemon</feature>
-                          <feature>opennms-timeseries-api</feature>
-                          <feature>vaadin</feature>
-
-                          <!-- minion features -->
-                          <feature>dominion-grpc-client</feature>
-                          <feature>dominion-secure-credentials-vault</feature>
-                          <feature>minion-api-layer</feature>
-                          <feature>minion-heartbeat-producer</feature>
-                          <feature>minion-snmp-proxy</feature>
-                          <feature>opennms-dao-minion</feature>
-                          <feature>opennms-trapd-listener</feature>
-
-                          <!-- sentinel features -->
-                          <feature>sentinel-api-layer</feature>
-                          <feature>sentinel-events-forwarder</feature>
-                          <feature>sentinel-jms</feature>
-                          <feature>sentinel-newts</feature>
-                          <feature>sentinel-timeseries-api</feature>
-                      </features>
-                      <configuration>file:${project.build.directory}/apache-karaf-${karafVersion}/etc/config.properties</configuration>
-                  </configuration>
-              </execution>
-          </executions>
-      </plugin>
     </plugins>
   </build>
   <dependencies>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.newts</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.situation-feedback</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.alarms.history</groupId>
+      <artifactId>org.opennms.features.alarms.history.elastic</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.alarms.history.rest</groupId>
+      <artifactId>org.opennms.features.alarms.history.rest.impl</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.notifications</groupId>
+      <artifactId>org.opennms.features.notifications.shell</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology.plugins</groupId>
+      <artifactId>org.opennms.features.topology.plugins.browsers</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>asset</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>org.opennms.features.topology.plugins.topo.application</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>org.opennms.features.topology.plugins.topo.bsm</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>org.opennms.features.topology.plugins.topo.linkd</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>org.opennms.features.topology.plugins.topo.pathoutage</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology.plugins.topo</groupId>
+      <artifactId>org.opennms.features.topology.plugins.topo.vmware</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.newts</groupId>
+      <artifactId>newts-karaf</artifactId>
+      <version>${newtsVersion}</version>
+      <classifier>features</classifier>
+      <type>xml</type>
+    </dependency>
     <!-- Framework distribution -->
     <dependency>
       <groupId>org.apache.karaf.features</groupId>
@@ -352,16 +426,65 @@
         </exclusion>
       </exclusions>
     </dependency>
-
     <dependency>
-      <groupId>org.opennms.osgi</groupId>
-      <artifactId>opennms-osgi-core-rest</artifactId>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-detector-registry</artifactId>
       <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-detectorclient-rpc</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-commands</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-jni</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-icmp-jni6</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-provision-persistence</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-wmi</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.icmp.proxy.rpc-impl</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.container</groupId>
-      <artifactId>org.opennms.container.jaas-login-module</artifactId>
+      <artifactId>extender</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -373,62 +496,107 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.container</groupId>
+      <artifactId>org.opennms.container.jaas-login-module</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.container</groupId>
       <artifactId>spring-extender</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.commands</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.health</groupId>
+      <artifactId>org.opennms.core.health.impl</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.health</groupId>
+      <artifactId>org.opennms.core.health.shell</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.common</groupId>
+      <artifactId>org.opennms.core.ipc.common.kafka-shell</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.rpc</groupId>
+      <artifactId>org.opennms.core.ipc.rpc.commands</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.twin</groupId>
+      <artifactId>org.opennms.core.ipc.twin.shell</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.snmp</groupId>
+      <artifactId>org.opennms.core.snmp.commands</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.snmp</groupId>
+      <artifactId>org.opennms.core.snmp.proxy.rpc-impl</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>eclipse-npn-alpn</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jackson1-dependencies</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jung-shaded</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>oia-dependencies</artifactId>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.newts</artifactId>
+      <artifactId>datachoices</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.activemq</groupId>
-      <artifactId>org.opennms.features.activemq.component</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.activemq</groupId>
-      <artifactId>org.opennms.features.activemq.shell</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.config.osgi</groupId>
-      <artifactId>org.opennms.features.config.osgi.del</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.config.osgi</groupId>
-      <artifactId>org.opennms.features.config.osgi.cm</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.dnsresolver</groupId>
-      <artifactId>org.opennms.features.dnsresolver.netty</artifactId>
-      <version>${project.version}</version>
+      <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.discovery</artifactId>
+      <artifactId>jira-troubleticketer</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.events</groupId>
-      <artifactId>org.opennms.features.events.syslog</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.events</groupId>
-      <artifactId>org.opennms.features.events.traps</artifactId>
-      <version>${project.version}</version>
+      <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -439,15 +607,67 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.bsm</groupId>
-      <artifactId>org.opennms.features.bsm.shell-commands</artifactId>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>opennms-integration-tsrm</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.bsm</groupId>
-      <artifactId>vaadin-adminpage</artifactId>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.discovery</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.eif-adapter</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.ifttt</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.newts</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.opennms-es-rest</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.timeseries</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>vaadin</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>vaadin-components</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>vaadin-dashboard</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
@@ -468,216 +688,51 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
-      <artifactId>vaadin</artifactId>
+      <artifactId>vaadin-surveillance-views</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.osgi.features.topology</groupId>
-      <artifactId>opennms-topology-runtime-base</artifactId>
+      <groupId>org.opennms.features.activemq</groupId>
+      <artifactId>org.opennms.features.activemq.component</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.activemq</groupId>
+      <artifactId>org.opennms.features.activemq.shell</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.api-layer</groupId>
+      <artifactId>org.opennms.features.api-layer.core</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.api-layer</groupId>
+      <artifactId>org.opennms.features.api-layer.minion</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.api-layer</groupId>
+      <artifactId>org.opennms.features.api-layer.sentinel</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>org.opennms.features.bsm.shell-commands</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.topology.plugins.topo</groupId>
-      <artifactId>org.opennms.features.topology.plugins.topo.pathoutage</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.topology.plugins.topo</groupId>
-      <artifactId>asset</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.topology.plugins</groupId>
-      <artifactId>org.opennms.features.topology.plugins.browsers</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.topology.plugins.topo</groupId>
-      <artifactId>org.opennms.features.topology.plugins.topo.linkd</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.topology.plugins.topo</groupId>
-      <artifactId>org.opennms.features.topology.plugins.topo.application</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.topology.plugins.topo</groupId>
-      <artifactId>org.opennms.features.topology.plugins.topo.bsm</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.osgi.features.topology</groupId>
-      <artifactId>opennms-topology-runtime-graphml</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.topology.plugins.topo</groupId>
-      <artifactId>org.opennms.features.topology.plugins.topo.vmware</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.topology</groupId>
-      <artifactId>org.opennms.features.topology.shell</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.enlinkd</groupId>
-      <artifactId>org.opennms.features.enlinkd.shell</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>vaadin-dashboard</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.ifttt</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.vaadin-dashlets</groupId>
-      <artifactId>dashlet-features</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-      <dependency>
-          <groupId>org.opennms.features</groupId>
-          <artifactId>vaadin-surveillance-views</artifactId>
-          <version>${project.version}</version>
-          <type>pom</type>
-          <scope>provided</scope>
-      </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>vaadin-components</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>jira-troubleticketer</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>opennms-integration-tsrm</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.newts</groupId>
-      <artifactId>newts-karaf</artifactId>
-      <version>${newtsVersion}</version>
-      <classifier>features</classifier>
-      <type>xml</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-icmp-jni</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-icmp-jni6</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-icmp-commands</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-provision-persistence</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-detector-registry</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>org.opennms.icmp.proxy.rpc-impl</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core.health</groupId>
-      <artifactId>org.opennms.core.health.impl</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core.health</groupId>
-      <artifactId>org.opennms.core.health.shell</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core.snmp</groupId>
-      <artifactId>org.opennms.core.snmp.commands</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>datachoices</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core.snmp</groupId>
-      <artifactId>org.opennms.core.snmp.proxy.rpc-impl</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-detectorclient-rpc</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.poller</groupId>
-      <artifactId>org.opennms.features.poller.client-rpc</artifactId>
+      <groupId>org.opennms.features.bsm</groupId>
+      <artifactId>vaadin-adminpage</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
@@ -690,6 +745,107 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.config.osgi</groupId>
+      <artifactId>org.opennms.features.config.osgi.cm</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.config.osgi</groupId>
+      <artifactId>org.opennms.features.config.osgi.del</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.device-config</groupId>
+      <artifactId>org.opennms.features.device-config.rest</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.device-config</groupId>
+      <artifactId>org.opennms.features.device-config.retrieval</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.device-config</groupId>
+      <artifactId>org.opennms.features.device-config.shell</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.device-config</groupId>
+      <artifactId>org.opennms.features.device-config.ssh-scripting</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.device-config</groupId>
+      <artifactId>org.opennms.features.device-config.tftp</artifactId>
+      <version>${project.version}</version>
+      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.dao-api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.dao-healthcheck</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.dao-impl</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.dao-shell</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.datasource</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.opennms-identity</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.distributed</groupId>
+      <artifactId>org.opennms.features.distributed.serviceregistry</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.dnsresolver</groupId>
+      <artifactId>org.opennms.features.dnsresolver.netty</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.enlinkd</groupId>
+      <artifactId>org.opennms.features.enlinkd.shell</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.events</groupId>
       <artifactId>org.opennms.features.events.commands</artifactId>
       <version>${project.version}</version>
@@ -697,10 +853,15 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-wmi</artifactId>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.syslog</artifactId>
       <version>${project.version}</version>
-      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.events</groupId>
+      <artifactId>org.opennms.features.events.traps</artifactId>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -711,37 +872,58 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.opennms-es-rest</artifactId>
+      <groupId>org.opennms.features.kafka</groupId>
+      <artifactId>org.opennms.features.kafka.consumer</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.eif-adapter</artifactId>
+      <groupId>org.opennms.features.kafka</groupId>
+      <artifactId>org.opennms.features.kafka.producer</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.poller</groupId>
+      <artifactId>org.opennms.features.poller.client-rpc</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core.ipc.rpc</groupId>
-      <artifactId>org.opennms.core.ipc.rpc.commands</artifactId>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
       <version>${project.version}</version>
-      <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core.ipc.common</groupId>
-      <artifactId>org.opennms.core.ipc.common.kafka-shell</artifactId>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.shell</artifactId>
       <version>${project.version}</version>
-      <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.core.ipc.twin</groupId>
-      <artifactId>org.opennms.core.ipc.twin.shell</artifactId>
+      <groupId>org.opennms.features.sentinel</groupId>
+      <artifactId>core</artifactId>
       <version>${project.version}</version>
-      <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry</groupId>
+      <artifactId>org.opennms.features.telemetry.api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry</groupId>
+      <artifactId>org.opennms.features.telemetry.shell</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.config</groupId>
+      <artifactId>org.opennms.features.telemetry.config.api</artifactId>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -766,80 +948,22 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.situation-feedback</artifactId>
+      <groupId>org.opennms.features.topologies</groupId>
+      <artifactId>org.opennms.features.topologies.service.api</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.topology</groupId>
+      <artifactId>org.opennms.features.topology.shell</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.alarms.history.rest</groupId>
-      <artifactId>org.opennms.features.alarms.history.rest.impl</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.alarms.history</groupId>
-      <artifactId>org.opennms.features.alarms.history.elastic</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.telemetry</groupId>
-      <artifactId>org.opennms.features.telemetry.api</artifactId>
-      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.telemetry.config</groupId>
-      <artifactId>org.opennms.features.telemetry.config.api</artifactId>
+      <groupId>org.opennms.features.vaadin-dashlets</groupId>
+      <artifactId>dashlet-features</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.telemetry</groupId>
-      <artifactId>org.opennms.features.telemetry.shell</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.kafka</groupId>
-      <artifactId>org.opennms.features.kafka.producer</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.kafka</groupId>
-      <artifactId>org.opennms.features.kafka.consumer</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.container</groupId>
-      <artifactId>extender</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.api-layer</groupId>
-      <artifactId>org.opennms.features.api-layer.core</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.api-layer</groupId>
-      <artifactId>org.opennms.features.api-layer.minion</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.api-layer</groupId>
-      <artifactId>org.opennms.features.api-layer.sentinel</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>oia-dependencies</artifactId>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
@@ -850,116 +974,25 @@
       <type>xml</type>
       <scope>provided</scope>
     </dependency>
+
     <dependency>
-      <groupId>org.opennms.features.distributed</groupId>
-      <artifactId>org.opennms.features.distributed.opennms-identity</artifactId>
+      <groupId>org.opennms.osgi</groupId>
+      <artifactId>opennms-osgi-core-rest</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.distributed</groupId>
-      <artifactId>org.opennms.features.distributed.dao-api</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.distributed</groupId>
-      <artifactId>org.opennms.features.distributed.dao-impl</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.distributed</groupId>
-      <artifactId>org.opennms.features.distributed.dao-healthcheck</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.distributed</groupId>
-      <artifactId>org.opennms.features.distributed.dao-shell</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.distributed</groupId>
-      <artifactId>org.opennms.features.distributed.datasource</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.distributed</groupId>
-      <artifactId>org.opennms.features.distributed.serviceregistry</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.newts</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.topologies</groupId>
-      <artifactId>org.opennms.features.topologies.service.api</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.device-config</groupId>
-      <artifactId>org.opennms.features.device-config.ssh-scripting</artifactId>
+      <groupId>org.opennms.osgi.features.topology</groupId>
+      <artifactId>opennms-topology-runtime-base</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.device-config</groupId>
-      <artifactId>org.opennms.features.device-config.tftp</artifactId>
+      <groupId>org.opennms.osgi.features.topology</groupId>
+      <artifactId>opennms-topology-runtime-graphml</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.device-config</groupId>
-      <artifactId>org.opennms.features.device-config.shell</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.device-config</groupId>
-      <artifactId>org.opennms.features.device-config.rest</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.device-config</groupId>
-      <artifactId>org.opennms.features.device-config.retrieval</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.scv</groupId>
-      <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.scv</groupId>
-      <artifactId>org.opennms.features.scv.shell</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.sentinel</groupId>
-      <artifactId>core</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.timeseries</artifactId>
-      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -967,35 +1000,6 @@
       <artifactId>org.opennms.protocols.xml</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.commands</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jackson1-dependencies</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>eclipse-npn-alpn</artifactId>
-      <version>${project.version}</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jung-shaded</artifactId>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.notifications</groupId>
-      <artifactId>org.opennms.features.notifications.shell</artifactId>
-      <version>${project.version}</version>
     </dependency>
   </dependencies>
 
