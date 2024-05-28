@@ -343,6 +343,11 @@
                   <type>properties</type>
                   <classifier>overrides</classifier>
                 </artifact>
+                <artifact>
+                  <file>${project.build.outputDirectory}/features-processing.xml</file>
+                  <type>xml</type>
+                  <classifier>features-processing</classifier>
+                </artifact>
               </artifacts>
             </configuration>
           </execution>
@@ -605,6 +610,12 @@
     <dependency>
       <groupId>org.opennms.core.health</groupId>
       <artifactId>org.opennms.core.health.impl</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.health</groupId>
+      <artifactId>org.opennms.core.health.rest-cxf</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

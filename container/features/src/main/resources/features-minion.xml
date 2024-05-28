@@ -190,7 +190,7 @@
     </feature>
 
     <feature name="dominion-grpc-client" description="Dominion :: GRPC :: Client" version="${project.version}">
-        <feature version="${guavaOsgiVersion}">guava</feature>
+        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature>minion-core-api</feature>
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.minion/dominion-grpc-client/${project.version}</bundle>

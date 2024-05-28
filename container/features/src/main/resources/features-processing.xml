@@ -24,6 +24,9 @@
     <bundle>mvn:org.apache.geronimo.specs/geronimo-jaspic_1.0_spec</bundle>
     <bundle>mvn:org.eclipse.jetty/jetty-jaspi</bundle>
     <bundle>mvn:org.apache.geronimo.components/geronimo-jaspi</bundle>
+
+    <!-- until we work with spring 4.3, skip it -->
+    <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring*/4.3.30.*</bundle>
   </blacklistedBundles>
 
   <bundleReplacements>
@@ -106,6 +109,8 @@
             originalUri="mvn:org.eclipse.jetty/jetty-jndi/[9,${jettyVersion})" mode="maven" />
     <bundle replacement="mvn:org.eclipse.jetty/jetty-plus/${jettyVersion}"
             originalUri="mvn:org.eclipse.jetty/jetty-plus/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty/jetty-proxy/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty/jetty-proxy/[9,${jettyVersion})" mode="maven" />
     <bundle replacement="mvn:org.eclipse.jetty/jetty-rewrite/${jettyVersion}"
             originalUri="mvn:org.eclipse.jetty/jetty-rewrite/[9,${jettyVersion})" mode="maven" />
     <bundle replacement="mvn:org.eclipse.jetty/jetty-security/${jettyVersion}"
@@ -154,8 +159,10 @@
             originalUri="mvn:org.codehaus.jackson/jackson-xc/[0,1.9.14]" mode="maven" />
 
     <!-- jackson2 upgrades -->
-    <bundle replacement="mvn:com.datastax.cassandra/cassandra-driver-core/${cassandraVersion}"
-            originalUri="mvn:com.datastax.cassandra/cassandra-driver-core/[3,${cassandraVersion})" mode="maven" />
+    <bundle replacement="mvn:com.datastax.oss/java-driver-core/${cassandraVersion}"
+            originalUri="mvn:com.datastax.oss/java-driver-core/[4,${cassandraVersion})" mode="maven" />
+    <bundle replacement="mvn:com.datastax.oss/java-driver-query-builder/${cassandraVersion}"
+            originalUri="mvn:com.datastax.oss/java-driver-query-builder/[4,${cassandraVersion})" mode="maven" />
     <bundle replacement="mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}"
             originalUri="mvn:com.fasterxml.jackson.core/jackson-annotations/[2,${jackson2Version})" mode="maven" />
     <bundle replacement="mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}"
@@ -264,6 +271,14 @@
             originalUri="mvn:org.apache.zookeeper/zookeeper/[3,${zookeeperVersion})" mode="maven" />
     <bundle replacement="wrap:mvn:org.apache.zookeeper/zookeeper-jute/${zookeeperVersion}"
             originalUri="mvn:org.apache.zookeeper/zookeeper-jute/[3,${zookeeperVersion})" mode="maven" />
+    <bundle replacement="mvn:org.bouncycastle/bcpkix-jdk18on/${bouncyCastleVersion}"
+            originalUri="mvn:org.bouncycastle/bcpkix-jdk18on/[1,${bouncyCastleVersion})" mode="maven" />
+    <bundle replacement="mvn:org.bouncycastle/bcprov-jdk18on/${bouncyCastleVersion}"
+            originalUri="mvn:org.bouncycastle/bcprov-jdk18on/[1,${bouncyCastleVersion})" mode="maven" />
+    <bundle replacement="mvn:org.bouncycastle/bctls-jdk18on/${bouncyCastleVersion}"
+            originalUri="mvn:org.bouncycastle/bctls-jdk18on/[1,${bouncyCastleVersion})" mode="maven" />
+    <bundle replacement="mvn:org.bouncycastle/bcutil-jdk18on/${bouncyCastleVersion}"
+            originalUri="mvn:org.bouncycastle/bcutil-jdk18on/[1,${bouncyCastleVersion})" mode="maven" />
     <bundle replacement="mvn:org.codehaus.jettison/jettison/${jettisonVersion}"
             originalUri="mvn:org.codehaus.jettison/jettison/[1,${jettisonVersion})" mode="maven" />
     <bundle replacement="mvn:io.dropwizard.metrics/metrics-core/${dropwizardMetricsVersion}"
