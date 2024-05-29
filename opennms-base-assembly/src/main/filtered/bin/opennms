@@ -816,6 +816,7 @@ if [ -z "$JAVA_SHORT_VERSION" ]; then
 fi
 
 
+# shellcheck disable=SC2034
 KARAF_HOME="${OPENNMS_HOME}"
 JPDA_ADDRESS="*:8001"
 JPDA_SUSPEND="n"
@@ -825,6 +826,7 @@ if [ "$JAVA_SHORT_VERSION" -lt 9 ]; then
 	JPDA_ADDRESS="8001"
 else
 	# Java 9+, add required modules
+	# shellcheck disable=SC2207
 	JAVA_CMD=("${JAVA_CMD[@]}" $("${OPENNMS_HOME}/bin/_module_opts.sh"))
 
 	# extra options that aren't shared with Minion and Sentinel
