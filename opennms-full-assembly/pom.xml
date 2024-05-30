@@ -119,44 +119,28 @@
               </artifactItems>
             </configuration>
           </execution>
-          <!-- Unpack the minion core repo so that it can be used in integration tests -->
+          <!-- Unpack the minion assembly so that it can be used in integration tests -->
           <execution>
-            <id>unpack-minion-core-repo</id>
+            <id>unpack-minion</id>
             <phase>process-test-resources</phase>
             <goals>
               <goal>unpack</goal>
             </goals>
             <configuration>
               <skip>${skipTests}</skip>
-              <outputDirectory>${project.build.directory}/minion-core-repo</outputDirectory>
+              <outputDirectory>${project.build.directory}/minion/</outputDirectory>
               <artifactItems>
                 <artifactItem>
-                  <groupId>org.opennms.features.minion</groupId>
-                  <artifactId>core-repository</artifactId>
+                  <groupId>org.opennms.features.container</groupId>
+                  <artifactId>minion</artifactId>
                   <version>${project.version}</version>
                   <type>tar.gz</type>
-                  <classifier>repo</classifier>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-          <!-- Unpack the minion default repo so that it can be used in integration tests -->
-          <execution>
-            <id>unpack-minion-default-repo</id>
-            <phase>process-test-resources</phase>
-            <goals>
-              <goal>unpack</goal>
-            </goals>
-            <configuration>
-              <skip>${skipTests}</skip>
-              <outputDirectory>${project.build.directory}/minion-default-repo</outputDirectory>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.opennms.features.minion</groupId>
-                  <artifactId>repository</artifactId>
-                  <version>${project.version}</version>
-                  <type>tar.gz</type>
-                  <classifier>repo</classifier>
+                  <fileMappers>
+                    <org.codehaus.plexus.components.io.filemappers.RegExpFileMapper>
+                      <pattern>^minion-[^/]*/</pattern>
+                      <replacement>./</replacement>
+                    </org.codehaus.plexus.components.io.filemappers.RegExpFileMapper>
+                  </fileMappers>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -661,10 +645,7 @@
                   <directory>${project.build.directory}/experimental-repo</directory>
                 </fileset>
                 <fileset>
-                  <directory>${project.build.directory}/minion-core-repo</directory>
-                </fileset>
-                <fileset>
-                  <directory>${project.build.directory}/minion-default-repo</directory>
+                  <directory>${project.build.directory}/minion</directory>
                 </fileset>
               </filesets>
             </configuration>
@@ -952,6 +933,12 @@
       <version>${project.version}</version>
       <type>xml</type>
       <classifier>minion</classifier>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.container</groupId>
+      <artifactId>minion</artifactId>
+      <version>${project.version}</version>
+      <type>tar.gz</type>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.distributed</groupId>

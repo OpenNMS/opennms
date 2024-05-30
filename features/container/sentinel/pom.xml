@@ -59,7 +59,7 @@
                 <executions>
                     <execution>
                         <id>copy-dependencies</id>
-                        <phase>prepare-package</phase>
+                        <phase>generate-resources</phase>
                         <goals>
                             <goal>copy</goal>
                         </goals>
@@ -75,12 +75,21 @@
                                     <type>jar</type>
                                     <outputDirectory>${project.build.directory}/assembly/bin</outputDirectory>
                                 </artifactItem>
+                                <artifactItem>
+                                    <groupId>org.opennms.karaf</groupId>
+                                    <artifactId>opennms</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>features-processing</classifier>
+                                    <type>xml</type>
+                                    <outputDirectory>${project.build.directory}/internal</outputDirectory>
+                                    <destFileName>features-processing.xml</destFileName>
+                                </artifactItem>
                             </artifactItems>
                         </configuration>
                     </execution>
                     <execution>
                         <id>unpack-dependencies</id>
-                        <phase>prepare-package</phase>
+                        <phase>generate-resources</phase>
                         <goals>
                             <goal>unpack</goal>
                         </goals>
@@ -342,7 +351,7 @@
                         <feature>spring/4.0.9.RELEASE_1</feature>
                         <feature>spring/4.1.9.RELEASE_1</feature>
                         <feature>spring/4.2.9.RELEASE_1</feature>
-                        <feature>spring/4.3.30.RELEASE_1</feature>
+                        <!-- <feature>spring/4.3.30.RELEASE_1</feature> -->
 
                         <feature>spring-jms/4.1.9.RELEASE_1</feature>
                         <feature>spring/${springVersion}</feature>
@@ -537,6 +546,14 @@
             <artifactId>opennms</artifactId>
             <version>${project.version}</version>
             <classifier>spring-legacy</classifier>
+            <type>xml</type>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.karaf</groupId>
+            <artifactId>opennms</artifactId>
+            <version>${project.version}</version>
+            <classifier>features-processing</classifier>
             <type>xml</type>
             <scope>runtime</scope>
         </dependency>

@@ -249,9 +249,8 @@ public abstract class KarafTestCase {
                     // These repositories are unpacked by the opennms-full-assembly project's build
                     // for final integration testing
                     "file:${karaf.home}/../../opennms-repo@snapshots@id=opennms-repo",
-                    "file:${karaf.home}/../../experimental-repo@snapshots@id=experimental-repo",
-                    "file:${karaf.home}/../../minion-core-repo@snapshots@id=minion-core-repo",
-                    "file:${karaf.home}/../../minion-default-repo@snapshots@id=minion-default-repo"
+                    "file:${karaf.home}/../../experimental-repo/system@snapshots@id=experimental-repo",
+                    "file:${karaf.home}/../../minion@snapshots@id=minion-repo"
                 })
             ),
 

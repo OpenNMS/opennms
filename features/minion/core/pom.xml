@@ -14,7 +14,6 @@
     <modules>
         <module>impl</module>
         <module>features</module>
-        <module>repository</module>
         <module>health-check</module>
     </modules>
 </project>

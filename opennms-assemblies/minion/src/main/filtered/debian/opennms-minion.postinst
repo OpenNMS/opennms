@@ -8,7 +8,6 @@ MINIONHOME="/usr/share/minion"
 MINIONDATA="/var/lib/minion"
 MINIONLOG="/var/log/minion"
 
-rm -rf "${MINIONHOME}/data"/* || true
 
 if [ ! -f "${ETCDIR}/host.key" ]; then
 	ssh-keygen -m PEM -t rsa -N "" -b 4096 -f "${ETCDIR}/host.key"
@@ -21,11 +20,14 @@ fi
 UUID="$(uuidgen -t)"
 sed -i "s|id = 00000000-0000-0000-0000-000000ddba11|id = $UUID|g" "${ETCDIR}/org.opennms.minion.controller.cfg"
 
-"${MINIONHOME}/bin/fix-permissions" -R "${MINIONHOME}"/* "${ETCDIR}" "${MINIONDATA}" "${MINIONLOG}" "${ETCDIR}/org.opennms.minion.controller.cfg"
+# move behind fix permission to prevent error in fix permission
+rm -rf "${MINIONHOME}/data"/* || true
 
 # Remove the directory used as the local Maven repo cache
 rm -rf "${MINIONHOME}/.local"
 rm -rf "${MINIONHOME}/.m2"
+
+"${MINIONHOME}/bin/fix-permissions" -R "${MINIONHOME}"/* "${ETCDIR}" "${MINIONDATA}" "${MINIONLOG}"
 
 # attempt to configure the kernel to allow ping as non-root
 "${MINIONHOME}/bin/ensure-user-ping.sh" minion || :
@@ -36,16 +38,16 @@ rm -rf "${MINIONHOME}/.m2"
 #DEBHELPER#
 
 echo ""
-echo " *** Thanks for using OpenNMS!"
-echo " ***"
-echo " *** Consider joining our active and supportive online community through"
-echo " ***"
-echo " *** https://www.opennms.com/participate/"
-echo " ***"
-echo " *** To connect with users, testers, experts, and contributors."
-echo " ***"
-echo " *** Or email us directly at contactus@opennms.com to learn more."
-echo " ***"
+echo " *** Thanks for using OpenNMS!”
+echo " ***”
+echo " *** Consider joining our active and supportive online community through”
+echo " ***”
+echo " *** https://www.opennms.com/participate/”
+echo " ***”
+echo " *** To connect with users, testers, experts, and contributors.”
+echo " ***”
+echo " *** Or email us directly at contactus@opennms.com to learn more.”
+echo " ***”
 echo ""
 
 exit 0

@@ -6,7 +6,7 @@ trap 's=$?; echo "$0: Error on line "$LINENO": $BASH_COMMAND"; exit $s' ERR
 MYDIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null && pwd )"
 cd "${MYDIR}"
 
-test -d repository || (echo "No 'repository' directory in $(pwd) -- are we in the right place (which is container/minion if you are curious)?" && exit 1)
+test -d dominion || (echo "No 'dominion' directory in $(pwd) -- are we in the right place (which is features/minion if you are curious)?" && exit 1)
 
 # Inclue the bundled Maven in the $PATH
 MYDIR=$(dirname "$0")
@@ -17,7 +17,7 @@ JAVA_OPTS="-Xmx2g -Djdk.util.zip.disableZip64ExtraFieldValidation=true"
 
 export PATH CONTAINERDIR JAVA_OPTS
 
-BUILD_PREREQUISITES="org.opennms.karaf:opennms,:org.opennms.container.shared,org.opennms.features.container:minion,org.opennms.features.minion:core-repository,org.opennms.features.minion:repository"
+BUILD_PREREQUISITES="org.opennms.karaf:opennms,:org.opennms.container.shared,org.opennms.features.container:minion"
 
 cleanup_and_build() {
   should_use_sudo=$1
@@ -129,18 +129,6 @@ spawn_minion() {
   pushd "${CONTAINERDIR}"/target > /dev/null
   mkdir -p "$MINION_HOME"
   tar zxvf minion-*.tar.gz -C "$MINION_HOME" --strip-components 1 > /dev/null
-  popd > /dev/null
-
-  # Extract the core repository
-  pushd core/repository/target > /dev/null
-  mkdir -p "$MINION_HOME/repositories/core"
-  tar zxvf core-repository-*-repo.tar.gz -C "$MINION_HOME/repositories/core" > /dev/null
-  popd > /dev/null
-
-  # Extract the default repository
-  pushd repository/target > /dev/null
-  mkdir -p "$MINION_HOME/repositories/default"
-  tar zxvf repository-*-repo.tar.gz -C "$MINION_HOME/repositories/default" > /dev/null
   popd > /dev/null
 
   echo "Updating configuration for Minion #$idx..."

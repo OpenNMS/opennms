@@ -106,7 +106,6 @@
                         <feature>ssh/${karafVersion}</feature>
                     </blacklistedFeatures>
                     <installedBundles>
-                        <!-- override for security (see etc/overrides.properties) -->
                         <bundle>mvn:org.ops4j.pax.logging/pax-logging-api/${paxLoggingVersion}</bundle>
                         <bundle>mvn:org.ops4j.pax.logging/pax-logging-log4j2/${paxLoggingVersion}</bundle>
                         <bundle>mvn:org.ops4j.pax.logging/pax-logging-logback/${paxLoggingVersion}</bundle>
@@ -131,32 +130,6 @@
                     </libraries>
                     <javase>1.8</javase>
                 </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-dependency-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <id>copy-overrides</id>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>copy</goal>
-                        </goals>
-                        <configuration>
-                            <artifactItems>
-                                <artifactItem>
-                                    <groupId>org.opennms.karaf</groupId>
-                                    <artifactId>opennms</artifactId>
-                                    <version>${project.version}</version>
-                                    <classifier>overrides</classifier>
-                                    <type>properties</type>
-                                    <outputDirectory>${project.build.directory}/assembly/etc</outputDirectory>
-                                    <destFileName>overrides.properties</destFileName>
-                                </artifactItem>
-                            </artifactItems>
-                        </configuration>
-                    </execution>
-                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>

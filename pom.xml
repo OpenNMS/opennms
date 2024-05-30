@@ -145,6 +145,27 @@
   <pluginManagement>
     <plugins>
       <plugin>
+        <groupId>com.github.ekryd.sortpom</groupId>
+        <artifactId>sortpom-maven-plugin</artifactId>
+        <version>3.4.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>sort</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <createBackupFile>false</createBackupFile>
+          <nrOfIndentSpace>2</nrOfIndentSpace>
+          <sortDependencies>scope,groupId,artifactId</sortDependencies>
+          <sortDependencyManagement>scope,groupId,artifactId</sortDependencyManagement>
+          <sortModules>true</sortModules>
+          <sortOrderFile>https://ranger.befunk.com/bluebird/bluebird.xml</sortOrderFile>
+          <sortPlugins>groupId,artifactId</sortPlugins>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>com.google.code.maven-replacer-plugin</groupId>
         <artifactId>replacer</artifactId>
         <version>1.5.3</version>
@@ -176,6 +197,7 @@
           <deployMissingFile>true</deployMissingFile>
           <failOnBlacklist>true</failOnBlacklist>
           <failOnMissing>true</failOnMissing>
+          <skipAddThirdParty>${license-skip-maven}</skipAddThirdParty>
           <sortArtifactByName>true</sortArtifactByName>
           <sortByGroupIdAndArtifactId>true</sortByGroupIdAndArtifactId>
           <useDefaultContentSanitizers>true</useDefaultContentSanitizers>
@@ -1480,12 +1502,6 @@
         </dependencies>
       </plugin>
       <plugin>
-          <groupId>org.apache.karaf.tooling</groupId>
-          <artifactId>karaf-maven-plugin</artifactId>
-          <version>${maven.karaf.plugin.version}</version>
-          <extensions>true</extensions>
-      </plugin>
-      <plugin>
         <groupId>com.atlassian.maven.plugins</groupId>
         <artifactId>maven-clover2-plugin</artifactId>
         <version>${cloverVersion}</version>
@@ -1606,6 +1622,7 @@
     <enforcer-skip-banned-dependencies>false</enforcer-skip-banned-dependencies>
     <!-- we have a lot of work to do before this is possible -->
     <enforcer-skip-dependency-convergence>true</enforcer-skip-dependency-convergence>
+    <license-skip-maven>false</license-skip-maven>
 
     <!--
       Surefire forked JVM arguments
@@ -1828,7 +1845,7 @@
     <httpasyncclientVersion>4.1.5</httpasyncclientVersion>
     <ipaddressVersion>5.5.0</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
-    <jackson2Version>2.14.2</jackson2Version>
+    <jackson2Version>2.14.3</jackson2Version>
     <jmsApiVersion>2.0.1</jmsApiVersion>
     <snakeyamlVersion>1.33</snakeyamlVersion>
     <spiflyVersion>1.3.6</spiflyVersion>
