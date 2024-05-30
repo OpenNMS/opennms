@@ -14,6 +14,7 @@
     <systemStartLevel>30</systemStartLevel>
     <earlyStartLevel>60</earlyStartLevel>
     <lateStartLevel>100</lateStartLevel>
+    <license-skip-maven>true</license-skip-maven>
   </properties>
   <build>
     <plugins>

@@ -176,6 +176,7 @@
           <deployMissingFile>true</deployMissingFile>
           <failOnBlacklist>true</failOnBlacklist>
           <failOnMissing>true</failOnMissing>
+          <skipAddThirdParty>${license-skip-maven}</skipAddThirdParty>
           <sortArtifactByName>true</sortArtifactByName>
           <sortByGroupIdAndArtifactId>true</sortByGroupIdAndArtifactId>
           <useDefaultContentSanitizers>true</useDefaultContentSanitizers>
@@ -1606,6 +1607,7 @@
     <enforcer-skip-banned-dependencies>false</enforcer-skip-banned-dependencies>
     <!-- we have a lot of work to do before this is possible -->
     <enforcer-skip-dependency-convergence>true</enforcer-skip-dependency-convergence>
+    <license-skip-maven>false</license-skip-maven>
 
     <!--
       Surefire forked JVM arguments
