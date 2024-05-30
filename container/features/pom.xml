@@ -603,6 +603,12 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core.grpc</groupId>
+      <artifactId>org.opennms.core.grpc.common</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.grpc</groupId>
       <artifactId>org.opennms.core.grpc.osgi</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
@@ -632,8 +638,20 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.ipc.grpc</groupId>
+      <artifactId>org.opennms.core.ipc.grpc.client</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.ipc.rpc</groupId>
       <artifactId>org.opennms.core.ipc.rpc.commands</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.rpc</groupId>
+      <artifactId>org.opennms.core.ipc.rpc.kafka</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -650,14 +668,32 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.ipc.sink.kafka</groupId>
+      <artifactId>org.opennms.core.ipc.sink.kafka.client</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.ipc.twin</groupId>
       <artifactId>org.opennms.core.ipc.twin.shell</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.ipc.twin.grpc</groupId>
+      <artifactId>org.opennms.core.ipc.twin.grpc.subscriber</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.ipc.twin.jms</groupId>
       <artifactId>org.opennms.core.ipc.twin.jms.subscriber</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.ipc.twin.kafka</groupId>
+      <artifactId>org.opennms.core.ipc.twin.kafka.subscriber</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -676,6 +712,18 @@
     <dependency>
       <groupId>org.opennms.core.snmp</groupId>
       <artifactId>org.opennms.core.snmp.proxy.rpc-impl</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.tracing</groupId>
+      <artifactId>org.opennms.core.tracing.jaeger-osgi</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core.tracing</groupId>
+      <artifactId>org.opennms.core.tracing.jaeger-tracer</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -910,6 +958,18 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.device-config.sink</groupId>
+      <artifactId>org.opennms.features.device-config.sink.dispatcher</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.device-config.sink</groupId>
+      <artifactId>org.opennms.features.device-config.sink.module</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.distributed</groupId>
       <artifactId>jms</artifactId>
       <version>${project.version}</version>
@@ -960,6 +1020,12 @@
     <dependency>
       <groupId>org.opennms.features.dnsresolver</groupId>
       <artifactId>org.opennms.features.dnsresolver.netty</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.dnsresolver</groupId>
+      <artifactId>org.opennms.features.dnsresolver.shell</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
