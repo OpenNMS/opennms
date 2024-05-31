@@ -240,6 +240,32 @@
     <bundle replacement="mvn:javax.jms/javax.jms-api/${jmsApiVersion}"
             originalUri="mvn:org.apache.geronimo.specs/geronimo-jms_2.0_spec/[0,2)" mode="maven" />
 
+    <!-- always use our spring -->
+    <bundle replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aop/${patchedSpringVersion}"
+            originalUri="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-aop/[4,5)" mode="maven" />
+    <bundle replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-beans/${patchedSpringVersion}"
+            originalUri="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-beans/[4,5)" mode="maven" />
+    <bundle replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context/${springVersion}"
+            originalUri="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context/[4,5)" mode="maven" />
+    <bundle replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context-support/${springVersion}"
+            originalUri="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-context-support/[4,5)" mode="maven" />
+    <bundle replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-core/${springVersion}"
+            originalUri="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-core/[4,5)" mode="maven" />
+    <bundle replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-expression/${patchedSpringVersion}"
+            originalUri="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-expression/[4,5)" mode="maven" />
+    <bundle replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-jdbc/${springVersion}"
+            originalUri="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-jdbc/[4,5)" mode="maven" />
+    <bundle replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-jms/${springVersion}"
+            originalUri="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-jms/[4,5)" mode="maven" />
+    <bundle replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-orm/${springVersion}"
+            originalUri="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-orm/[4,5)" mode="maven" />
+    <bundle replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-tx/${springVersion}"
+            originalUri="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-tx/[4,5)" mode="maven" />
+    <bundle replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-web/${patchedSpringVersion}"
+            originalUri="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-web/[4,5)" mode="maven" />
+    <bundle replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-webmvc/${springVersion}"
+            originalUri="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.spring-webmvc/[4,5)" mode="maven" />
+
     <!-- other misc bundles -->
     <bundle replacement="wrap:mvn:antlr/antlr/${antlr.version}$Bundle-SymbolicName=antlr&amp;Bundle-Version=${antlr.version}&amp;Import-Package=org.hibernate.hql.ast"
             originalUri="mvn:antlr/antlr/[2,${antlr.version})" mode="maven" />
