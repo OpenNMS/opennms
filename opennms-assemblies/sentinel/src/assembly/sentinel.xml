@@ -24,6 +24,14 @@
       <fileMode>0755</fileMode>
     </fileSet>
     <fileSet>
+      <directory>${project.build.directory}/unpacked/base-assembly</directory>
+      <outputDirectory>sentinel-${project.version}</outputDirectory>
+      <includes>
+        <include>bin/org.opennms.features.scv.cli.jar</include>
+      </includes>
+      <fileMode>0644</fileMode>
+    </fileSet>
+    <fileSet>
       <directory>${project.basedir}/src/main/filtered/debian</directory>
       <outputDirectory>sentinel-${project.version}/debian</outputDirectory>
     </fileSet>
