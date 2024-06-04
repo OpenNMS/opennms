@@ -94,7 +94,7 @@ updates:
     directory: "/"
     target-branch: "develop"
     reviewers:
-      - "rangerrick"
+      - "OpenNMS/dependabot-reviewers-maven"
     labels:
       - "dependency update"
     commit-message:
