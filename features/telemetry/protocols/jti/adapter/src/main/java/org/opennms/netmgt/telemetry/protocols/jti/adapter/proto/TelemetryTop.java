@@ -24,6 +24,8 @@
 
 package org.opennms.netmgt.telemetry.protocols.jti.adapter.proto;
 
+import com.google.protobuf.GeneratedMessage;
+
 public final class TelemetryTop {
   private TelemetryTop() {}
   public static void registerAllExtensions(
