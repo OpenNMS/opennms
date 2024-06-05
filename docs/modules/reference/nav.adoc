@@ -186,7 +186,6 @@
 ** xref:daemons/daemon-config-files/syslogd.adoc[]
 ** xref:daemons/daemon-config-files/telemetryd.adoc[]
 ** xref:daemons/daemon-config-files/ticketer.adoc[]
-** xref:daemons/daemon-config-files/tl1d.adoc[]
 ** xref:daemons/daemon-config-files/trapd.adoc[]
 ** xref:daemons/daemon-config-files/vacuumd.adoc[]
 

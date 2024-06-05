@@ -311,6 +311,7 @@
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
+  <!-- TODO MVR do I need to remove it here? -->
   <service enabled="false">
     <name>OpenNMS:Name=Tl1d</name>
     <class-name>org.opennms.netmgt.tl1d.jmx.Tl1d</class-name>

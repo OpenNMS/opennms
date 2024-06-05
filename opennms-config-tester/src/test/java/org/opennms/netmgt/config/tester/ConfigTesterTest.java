@@ -493,11 +493,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testTl1dConfiguration() {
-        testConfigFile("tl1d-configuration.xml");
-    }
-
-    @Test
     public void testTranslatorConfiguration() {
         testConfigFile("translator-configuration.xml");
     }

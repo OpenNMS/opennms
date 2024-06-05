@@ -30,7 +30,6 @@
    <event-file>events/opennms.reportd.events.xml</event-file>
    <event-file>events/opennms.syslogd.events.xml</event-file>
    <event-file>events/opennms.ticketd.events.xml</event-file>
-   <event-file>events/opennms.tl1d.events.xml</event-file>
    <event-file>events/GraphMLAssetPluginEvents.xml</event-file>
    <event-file>events/3Com.events.xml</event-file>
    <event-file>events/AdaptecRaid.events.xml</event-file>

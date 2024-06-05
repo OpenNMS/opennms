@@ -29,6 +29,8 @@
 --                              should be added inside the MODULE-IDENTITY module, not
 --                              in these comments.
 
+-- Version 2.1 -- 2024:         Removed TL1-specific objects and trap definition
+
 OPENNMS-MIB DEFINITIONS ::= BEGIN
 IMPORTS
    MODULE-IDENTITY, OBJECT-TYPE,
@@ -89,9 +91,6 @@ events			OBJECT IDENTIFIER
 eventsSpecific	OBJECT IDENTIFIER
 							::= { data 2 }
 							
-tl1AutonomousMessage	OBJECT IDENTIFIER
-							::= { eventsSpecific 1 }
-
 syslogMessageObjects	OBJECT IDENTIFIER
 							::= { eventsSpecific 2 }
 
@@ -292,65 +291,6 @@ nodelabel		OBJECT-TYPE
 			OpenNMS-event-nodeid will not."
 	::= { events 22 }
 
-tl1amRawMessage	OBJECT-TYPE
-	SYNTAX		DisplayString
-	MAX-ACCESS	read-only
-	STATUS		current
-	DESCRIPTION
-				"The raw TL1 autonomous message in its entirety."
-	::= { tl1AutonomousMessage 1 }
-	
-tl1amAlarmCode	OBJECT-TYPE
-	SYNTAX		DisplayString
-	MAX-ACCESS	read-only
-	STATUS		current
-	DESCRIPTION
-				"The ASCII alarm-code for this TL1 autonomous message."
-	::= { tl1AutonomousMessage 2 }
-
-tl1amAutonomousTag	OBJECT-TYPE
-	SYNTAX			DisplayString
-	MAX-ACCESS		read-only
-	STATUS			current
-	DESCRIPTION
-				"The ASCII autonomous-tag for this TL1 autonomous message."
-	::= { tl1AutonomousMessage 3 }
-
-tl1amVerb		OBJECT-TYPE
-	SYNTAX		DisplayString
-	MAX-ACCESS	read-only
-	STATUS		current
-	DESCRIPTION
-				"The ASCII verb for this TL1 autonomous message.
-				Should always be REPT."
-	::= { tl1AutonomousMessage 4 }
-
-tl1amAutoBlock	OBJECT-TYPE
-	SYNTAX		DisplayString
-	MAX-ACCESS	read-only
-	STATUS		current
-	DESCRIPTION
-				"The ASCII auto-block for this TL1 autonomous message."
-	::= { tl1AutonomousMessage 5 }
-
-tl1amAID		OBJECT-TYPE
-	SYNTAX		DisplayString
-	MAX-ACCESS	read-only
-	STATUS		current
-	DESCRIPTION
-				"The ASCII AID (access identifier) for this TL1 autonomous
-				message, as parsed from the auto-block."
-	::= { tl1AutonomousMessage 6 }
-
-tl1amAdditionalParams	OBJECT-TYPE
-	SYNTAX				DisplayString
-	MAX-ACCESS			read-only
-	STATUS				current
-	DESCRIPTION
-						"The additional parameters for this TL1 autonomous message,
-						as parsed from the auto-block."
-	::= { tl1AutonomousMessage 7 }
-
 --
 -- Objects in support of syslog-derived event traps
 --
@@ -496,30 +436,6 @@ eventTrap		NOTIFICATION-TYPE
 	that caused the event) and severity."
 	::= { onmsLegacyTraps 1 }
 
-tl1AutonomousMessageTrap	NOTIFICATION-TYPE
-	OBJECTS {
-		nodeid,
-		time,
-		host,
-		interface,
-		service,
-		severity,
-		tl1amRawMessage,
-		tl1amAlarmCode,
-		tl1amAutonomousTag,
-		tl1amVerb,
-		tl1amAutoBlock,
-		tl1amAID,
-		tl1amAdditionalParams
-	}
-	STATUS		current
-	DESCRIPTION
-		"This trap is used to convey the contents of a TL1 autonomous message
-		received from a TL1 NE or a north-bound TL1 EMS. Managers receiving
-		this trap may need to perform additional analysis of its varbinds in
-		order to realize value from this trap."
-	::= { onmsLegacyTraps 2 }
-
 alarmTrap	NOTIFICATION-TYPE
 	OBJECTS { 		
 		dbid,
@@ -655,21 +571,6 @@ events-Group	OBJECT-GROUP
 		"Conformance Group for OpenNMS Events"
 	::= { groups 1 }
 
-tl1AutonomousMessage-Group	OBJECT-GROUP
-	OBJECTS {
-		tl1amRawMessage,
-		tl1amAlarmCode,
-		tl1amAutonomousTag,
-		tl1amVerb,
-		tl1amAutoBlock,
-		tl1amAID,
-		tl1amAdditionalParams
-	}
-	STATUS current
-	DESCRIPTION 
-		"Conformance Group for TL1 autonomous message"
-	::= { groups 2 }
-
 eventsAlarms-Group	OBJECT-GROUP
 	OBJECTS {
 		alarmId,
@@ -683,8 +584,7 @@ eventsAlarms-Group	OBJECT-GROUP
 traps-Group	NOTIFICATION-GROUP
 	NOTIFICATIONS {
 		eventTrap,
-		tl1AutonomousMessageTrap,
-		alarmTrap, 
+		alarmTrap,
 		heartbeatTrap,
                 startSyncTrap, 
 		endSyncTrap, 
