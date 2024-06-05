@@ -48,14 +48,14 @@ public class RemotePollerServiceConfigMigratorOfflineTest {
         final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SERVICE_CONF_FILE_NAME);
         final ServiceConfiguration cfg = JaxbUtils.unmarshal(ServiceConfiguration.class, cfgFile);
 
-        assertEquals(30, cfg.getServices().size());
+        assertEquals(29, cfg.getServices().size());
 
         final RemotePollerServiceConfigMigratorOffline remotePollerServiceConfigMigratorOffline = new RemotePollerServiceConfigMigratorOffline();
         remotePollerServiceConfigMigratorOffline.execute();
 
         final ServiceConfiguration newCfg = JaxbUtils.unmarshal(ServiceConfiguration.class, cfgFile);
 
-        Assert.assertEquals(30, newCfg.getServices().size());
+        Assert.assertEquals(29, newCfg.getServices().size());
 
         final Set<String> services = newCfg.getServices().stream().map(s -> s.getName()).collect(Collectors.toSet());
 
@@ -78,14 +78,14 @@ public class RemotePollerServiceConfigMigratorOfflineTest {
         final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SERVICE_CONF_FILE_NAME);
         final ServiceConfiguration cfg = JaxbUtils.unmarshal(ServiceConfiguration.class, cfgFile);
 
-        assertEquals(29, cfg.getServices().size());
+        assertEquals(28, cfg.getServices().size());
 
         final RemotePollerServiceConfigMigratorOffline remotePollerServiceConfigMigratorOffline = new RemotePollerServiceConfigMigratorOffline();
         remotePollerServiceConfigMigratorOffline.execute();
 
         final ServiceConfiguration newCfg = JaxbUtils.unmarshal(ServiceConfiguration.class, cfgFile);
 
-        Assert.assertEquals(30, newCfg.getServices().size());
+        Assert.assertEquals(29, newCfg.getServices().size());
 
         final Set<String> services = newCfg.getServices().stream().map(s -> s.getName()).collect(Collectors.toSet());
 
@@ -108,14 +108,14 @@ public class RemotePollerServiceConfigMigratorOfflineTest {
         final File cfgFile = ConfigFileConstants.getFile(ConfigFileConstants.SERVICE_CONF_FILE_NAME);
         final ServiceConfiguration cfg = JaxbUtils.unmarshal(ServiceConfiguration.class, cfgFile);
 
-        assertEquals(30, cfg.getServices().size());
+        assertEquals(29, cfg.getServices().size());
 
         final RemotePollerServiceConfigMigratorOffline remotePollerServiceConfigMigratorOffline = new RemotePollerServiceConfigMigratorOffline();
         remotePollerServiceConfigMigratorOffline.execute();
 
         final ServiceConfiguration newCfg = JaxbUtils.unmarshal(ServiceConfiguration.class, cfgFile);
 
-        Assert.assertEquals(30, newCfg.getServices().size());
+        Assert.assertEquals(29, newCfg.getServices().size());
 
         final Set<String> services = newCfg.getServices().stream().map(s -> s.getName()).collect(Collectors.toSet());
 

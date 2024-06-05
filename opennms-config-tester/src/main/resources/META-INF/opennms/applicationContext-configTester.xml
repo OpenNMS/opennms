@@ -87,7 +87,6 @@
         <entry key="telemetryd-configuration.xml" value="telemetrydConfigDao"/>
         <entry key="threshd-configuration.xml" value="threshdDao"/>
         <entry key="thresholds.xml" value="thresholdingDao"/>
-        <entry key="tl1d-configuration.xml" value="tl1ConfigurationDao"/>
         <entry key="translator-configuration.xml" value="eventTranslatorConfigFactory"/>
         <entry key="trapd-configuration.xml" value="trapdConfigFactory"/>
         <entry key="users.xml" value="userFactory"/>
@@ -438,10 +437,6 @@
   </bean>
   <bean name="thresholdingDao" class="org.opennms.netmgt.config.dao.thresholding.impl.OnmsThresholdingDao">
     <constructor-arg ref="noOpJsonStore"/>
-  </bean>
-  
-  <bean id="tl1ConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultTl1ConfigurationDao">
-    <property name="configResource" value="file:${opennms.home}/etc/tl1d-configuration.xml"/>
   </bean>
   
   <bean id="eventTranslatorConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
