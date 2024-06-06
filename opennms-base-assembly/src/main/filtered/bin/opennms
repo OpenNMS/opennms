@@ -19,6 +19,12 @@ LOG_DIRECTORY="${install.logs.dir}"
 # Where to redirect "start" output.
 REDIRECT="$LOG_DIRECTORY/output.log"
 
+# Where the progress bar startup output goes
+PROGRESS_LOG="$LOG_DIRECTORY/progressbar.log"
+
+# Whether to show the progress bar
+PROGRESS_BAR=1
+
 # Number of times to do "opennms status" after starting OpenNMS to see
 # if it comes up completely.  Set to "0" to disable.  Between each
 # attempt we sleep for STATUS_WAIT seconds.
@@ -147,6 +153,7 @@ END
 }
 
 isRunning() {
+	[ "$1" -gt 0 ] || return 1
 	[ "$(/bin/ps -o pid= -o comm= -p "$1" | wc -l)" -gt 0 ];
 }
 
@@ -456,7 +463,24 @@ doStart(){
 		fi
 		echo "running ulimit -a"
 		ulimit -a
-		runCmd "${CMD[@]}" &
+		if [ ${PROGRESS_BAR} -eq 0 ]; then
+			runCmd "${CMD[@]}" &
+		else
+			runCmd "${CMD[@]}" >> "$REDIRECT" 2>&1 &
+			pid=$!
+			# Note: under systemd, this tail(1) will stay running until the
+			# service is stopped and all processes in this group will be
+			# killed by systemd. We make sure not to start another tail(1)
+			# in 'doStop' later whenever the service is shutdown in systemd.
+			# The "--pid $pid" part here is *critical* for systemd to be
+			# able to detect that OpenNMS has died. Using --pid tells
+			# tail(1) to exit once $pid is gone. Without this, tail(1) will
+			# stick around, and systemd will think that the service is
+			# active since *any* forked process is still around. We have
+			# a check that happens when this script starts up to ensure
+			# that tail(1) supports --pid, and if not, set set PROGRESS_LOG=0.
+			tail --pid $pid -F -n 0 "${PROGRESS_LOG}" &
+		fi
 	else
 		if [ "$BACKGROUND" = 1 ]; then
 			# shellcheck disable=SC2129
@@ -484,22 +508,37 @@ doStart(){
 		return 0
 	fi
 
+	if [ ${PROGRESS_BAR} -gt 0 ]; then
+		tail -F -n 0 "${PROGRESS_LOG}" &
+		tail_pid=$!
+		trap "kill ${tail_pid} > /dev/null 2>&1" 0
+	fi
+
 	# wait for startup
+	sleep $STATUS_WAIT
 	STATUS_ATTEMPTS=0
 	while [ "$STATUS_ATTEMPTS" -lt "$START_TIMEOUT" ]; do
 		sleep $STATUS_WAIT
 		if doStatus "$@"; then
+			if [ ${PROGRESS_BAR} -gt 0 ]; then
+				kill ${tail_pid} > /dev/null 2>&1
+				trap "" 0
+			fi
 			return 0
 		fi
 		if isRunning "$(getPid)"; then
 			true		# Java process is still running... don't do anything
 		else
-			echo "Started ${install.package.description}, but it stopped running: for details see $REDIRECT" >&2
+			echo "Started ${install.package.description}, but it stopped running: see details above or $REDIRECT" >&2
 			return 1
 		fi
 		((STATUS_ATTEMPTS++))
 	done
 
+	if [ ${PROGRESS_BAR} -gt 0 ]; then
+		# Assume the progress bar hasn't completed so advance to the next line
+		echo ""
+	fi
 	echo "Started ${install.package.description}, but it has not finished starting up" >&2
 	return 1
 }
@@ -588,11 +627,23 @@ doStop() {
 		runCmd "${RUNJAVA_CMD[@]}" "${JAVA_CMD[@]}" "${APP_VM_PARMS[@]}" -jar "$BOOTSTRAP" "${APP_PARMS_CONTROLLER[@]}" "${APP_PARMS_BEFORE[@]}" "$@" "${APP_PARMS_AFTER[@]}"
 	fi
 
+	# We don't want two copies of tail running under systemd
+	# (one left running from the start, another here).
+	if [ ${PROGRESS_BAR} -gt 0 ] && [ ${SYSTEMD} -eq 0 ]; then
+		tail -F -n 0 -q "${PROGRESS_LOG}" &
+		tail_pid=$!
+		trap "kill ${tail_pid} > /dev/null 2>&1" 0
+	fi
+
 	STATUS_ATTEMPTS=0
 	while [ "$STATUS_ATTEMPTS" -lt "$STOP_TIMEOUT" ]; do
 		doStatus "$@"
 		if [ "$?" -eq 3 ]; then
 			clearPids
+			if [ ${PROGRESS_BAR} -gt 0 ] && [ ${SYSTEMD} -eq 0 ]; then
+				kill ${tail_pid} > /dev/null 2>&1
+				trap "" 0
+			fi
 			return 0
 		fi
 
@@ -670,7 +721,7 @@ doStatus(){
 		# see org.opennms.netmgt.vmmgr.Invoker; we register a custom
 		# signal handler to trigger writing a current status update
 
-		kill -USR1 "$PID"
+		kill -USR1 "$PID" > /dev/null 2>&1
 
 		# wait up to 30 seconds for a new status-check.txt file to have been written
 		SLEEP_COUNT=0
@@ -775,6 +826,11 @@ MANAGER_OPTIONS+=("-Dopennms.home=$OPENNMS_HOME")
 #MANAGER_OPTIONS+=("-Djcifs.properties=$OPENNMS_HOME/etc/jcifs.properties")
 MANAGER_OPTIONS+=("-XX:+HeapDumpOnOutOfMemoryError")
 
+MANAGER_OPTIONS+=("-Dopennms.name=${install.package.description}")
+# macOS tput is finicky, so check first to see if stdout (FD 1) is a tty
+if [ -t 1 ] && which tput > /dev/null 2>&1 && columns=$(tput cols) && [ -n "${columns}" ]; then
+	MANAGER_OPTIONS+=("-Dterminal.columns=${columns}")
+fi
 
 if [ -n "$JAVA_INITIAL_HEAP_SIZE" ];then
  if [[ "$JAVA_INITIAL_HEAP_SIZE" =~ [0-9] ]];then
@@ -1015,6 +1071,20 @@ if [ "$SYSTEMD" -ne 1 ]; then
 	fi
 fi
 
+# If the progress bar is enabled *and* we are running in systemd, check
+# if the tail(1) program supports --pid. If it does not support --pid,
+# we can't use the progress bar, so set PROGRESS_BAR=0. See the earlier
+# comments where we use "tail --pid" for why this check is ***critical***.
+if [ ${PROGRESS_BAR} -gt 0 ] && [ ${SYSTEMD} -gt 0 ] && ! tail --help 2>&1 | grep -q -- --pid; then
+	echo "WARNING: disabling the progress bar because we are running in systemd and the 'tail' program doesn't support '--pid'" >&2
+	PROGRESS_BAR=0
+fi
+
+if [ -e "${OPENNMS_PIDFILE}" ]; then
+	# if the file already exists, make sure it's writable in the future
+	chown "${RUNAS}" "${OPENNMS_PIDFILE}"
+fi
+
 case "$COMMAND" in
 	start|spawn)
 		printf 'Starting %s: ' "${install.package.description}"
@@ -1036,10 +1106,12 @@ case "$COMMAND" in
 			fi
 			echo ""
 		else
-			if [ "$__ret" -eq 0 ]; then
-				echo "ok"
-			else
-				echo "failed"
+			if [ ${PROGRESS_BAR} -eq 0 ]; then
+				if [ "$__ret" -eq 0 ]; then
+					echo "ok"
+				else
+					echo "failed"
+				fi
 			fi
 		fi
 		exit "$__ret"
@@ -1071,7 +1143,9 @@ case "$COMMAND" in
 			echo ""
 		else
 			if [ "$__ret" -eq 0 ]; then
-				echo "stopped"
+				if [ ${PROGRESS_BAR} -eq 0 ] || [ ${SYSTEMD} -ne 0 ]; then
+					echo "stopped"
+				fi
 			else
 				echo "failed"
 			fi
@@ -1099,6 +1173,9 @@ case "$COMMAND" in
 		fi
 		if [ "$BACKGROUND" -eq 0 ]; then
 			__opennms_cmd+=("-f")
+		fi
+		if [[ "$-" =~ x ]]; then
+			__opennms_cmd=("${BASH}" "-x" "${__opennms_cmd[@]}")
 		fi
 		"${__opennms_cmd[@]}" "stop" && \
 		"${__opennms_cmd[@]}" "start"

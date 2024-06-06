@@ -1921,6 +1921,7 @@
     <paxCdiVersion>1.1.4</paxCdiVersion>
     <paxExamVersion>4.13.5</paxExamVersion>
     <pktsVersion>3.0.10</pktsVersion>
+    <progressBarVersion>0.9.5</progressBarVersion>
     <protobufVersion>3.22.5</protobufVersion>
     <postgresqlVersion>42.5.4</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
@@ -5572,6 +5573,11 @@
         <groupId>org.xerial.snappy</groupId>
         <artifactId>snappy-java</artifactId>
         <version>${snappyJavaVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>me.tongfei</groupId>
+        <artifactId>progressbar</artifactId>
+        <version>${progressBarVersion}</version>
       </dependency>
     </dependencies>
   </dependencyManagement>
