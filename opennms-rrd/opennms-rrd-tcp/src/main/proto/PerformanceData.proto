@@ -1,3 +1,4 @@
+syntax = "proto2";
 option java_package = "org.opennms.netmgt.rrd.tcp";
 option java_outer_classname = "PerformanceDataProtos";
 

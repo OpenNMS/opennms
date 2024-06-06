@@ -1820,7 +1820,7 @@
     <hibernateAnnotationsVersion>3.2.0.Final</hibernateAnnotationsVersion>
     <hibernateAnnotationsOsgiVersion>3.2.0</hibernateAnnotationsOsgiVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
-    <hibernateValidatorAnnotationProcessorVersion>4.1.0.Final</hibernateValidatorAnnotationProcessorVersion>
+    <hibernateValidatorAnnotationProcessorVersion>4.3.2.Final</hibernateValidatorAnnotationProcessorVersion>
     <hikaricpVersion>5.0.1</hikaricpVersion>
     <hllVersion>1.6.0</hllVersion>
     <httpcoreVersion>4.4.16</httpcoreVersion>
@@ -1921,7 +1921,7 @@
     <paxCdiVersion>1.1.4</paxCdiVersion>
     <paxExamVersion>4.13.5</paxExamVersion>
     <pktsVersion>3.0.10</pktsVersion>
-    <protobufVersion>3.22.5</protobufVersion>
+    <protobufVersion>3.24.4</protobufVersion>
     <postgresqlVersion>42.5.4</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>

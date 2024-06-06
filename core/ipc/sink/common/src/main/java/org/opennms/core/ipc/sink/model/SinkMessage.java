@@ -27,7 +27,7 @@ package org.opennms.core.ipc.sink.model;
 /**
  * Protobuf type {@code SinkMessage}
  */
-public  final class SinkMessage extends
+public final class SinkMessage extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:SinkMessage)
     SinkMessageOrBuilder {
@@ -39,86 +39,19 @@ private static final long serialVersionUID = 0L;
   private SinkMessage() {
     messageId_ = "";
     content_ = com.google.protobuf.ByteString.EMPTY;
-    currentChunkNumber_ = 0;
-    totalChunks_ = 0;
+  }
+
+  @java.lang.Override
+  @SuppressWarnings({"unused"})
+  protected java.lang.Object newInstance(
+      UnusedPrivateParameter unused) {
+    return new SinkMessage();
   }
 
   @java.lang.Override
   public final com.google.protobuf.UnknownFieldSet
   getUnknownFields() {
     return this.unknownFields;
-  }
-  private SinkMessage(
-      com.google.protobuf.CodedInputStream input,
-      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-      throws com.google.protobuf.InvalidProtocolBufferException {
-    this();
-    if (extensionRegistry == null) {
-      throw new java.lang.NullPointerException();
-    }
-    int mutable_bitField0_ = 0;
-    com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-        com.google.protobuf.UnknownFieldSet.newBuilder();
-    try {
-      boolean done = false;
-      while (!done) {
-        int tag = input.readTag();
-        switch (tag) {
-          case 0:
-            done = true;
-            break;
-          case 10: {
-            java.lang.String s = input.readStringRequireUtf8();
-
-            messageId_ = s;
-            break;
-          }
-          case 18: {
-
-            content_ = input.readBytes();
-            break;
-          }
-          case 24: {
-
-            currentChunkNumber_ = input.readInt32();
-            break;
-          }
-          case 32: {
-
-            totalChunks_ = input.readInt32();
-            break;
-          }
-          case 42: {
-            if (!((mutable_bitField0_ & 0x00000010) == 0x00000010)) {
-              tracingInfo_ = com.google.protobuf.MapField.newMapField(
-                  TracingInfoDefaultEntryHolder.defaultEntry);
-              mutable_bitField0_ |= 0x00000010;
-            }
-            com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
-            tracingInfo__ = input.readMessage(
-                TracingInfoDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-            tracingInfo_.getMutableMap().put(
-                tracingInfo__.getKey(), tracingInfo__.getValue());
-            break;
-          }
-          default: {
-            if (!parseUnknownFieldProto3(
-                input, unknownFields, extensionRegistry, tag)) {
-              done = true;
-            }
-            break;
-          }
-        }
-      }
-    } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-      throw e.setUnfinishedMessage(this);
-    } catch (java.io.IOException e) {
-      throw new com.google.protobuf.InvalidProtocolBufferException(
-          e).setUnfinishedMessage(this);
-    } finally {
-      this.unknownFields = unknownFields.build();
-      makeExtensionsImmutable();
-    }
   }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
@@ -145,12 +78,13 @@ private static final long serialVersionUID = 0L;
             org.opennms.core.ipc.sink.model.SinkMessage.class, org.opennms.core.ipc.sink.model.SinkMessage.Builder.class);
   }
 
-  private int bitField0_;
   public static final int MESSAGE_ID_FIELD_NUMBER = 1;
   private volatile java.lang.Object messageId_;
   /**
    * <code>string message_id = 1;</code>
+   * @return The messageId.
    */
+  @java.lang.Override
   public java.lang.String getMessageId() {
     java.lang.Object ref = messageId_;
     if (ref instanceof java.lang.String) {
@@ -165,7 +99,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string message_id = 1;</code>
+   * @return The bytes for messageId.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getMessageIdBytes() {
     java.lang.Object ref = messageId_;
@@ -184,7 +120,9 @@ private static final long serialVersionUID = 0L;
   private com.google.protobuf.ByteString content_;
   /**
    * <code>bytes content = 2;</code>
+   * @return The content.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString getContent() {
     return content_;
   }
@@ -193,7 +131,9 @@ private static final long serialVersionUID = 0L;
   private int currentChunkNumber_;
   /**
    * <code>int32 current_chunk_number = 3;</code>
+   * @return The currentChunkNumber.
    */
+  @java.lang.Override
   public int getCurrentChunkNumber() {
     return currentChunkNumber_;
   }
@@ -202,7 +142,9 @@ private static final long serialVersionUID = 0L;
   private int totalChunks_;
   /**
    * <code>int32 total_chunks = 4;</code>
+   * @return The totalChunks.
    */
+  @java.lang.Override
   public int getTotalChunks() {
     return totalChunks_;
   }
@@ -237,6 +179,7 @@ private static final long serialVersionUID = 0L;
    * <code>map&lt;string, string&gt; tracing_info = 5;</code>
    */
 
+  @java.lang.Override
   public boolean containsTracingInfo(
       java.lang.String key) {
     if (key == null) { throw new java.lang.NullPointerException(); }
@@ -245,6 +188,7 @@ private static final long serialVersionUID = 0L;
   /**
    * Use {@link #getTracingInfoMap()} instead.
    */
+  @java.lang.Override
   @java.lang.Deprecated
   public java.util.Map<java.lang.String, java.lang.String> getTracingInfo() {
     return getTracingInfoMap();
@@ -252,6 +196,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>map&lt;string, string&gt; tracing_info = 5;</code>
    */
+  @java.lang.Override
 
   public java.util.Map<java.lang.String, java.lang.String> getTracingInfoMap() {
     return internalGetTracingInfo().getMap();
@@ -259,6 +204,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>map&lt;string, string&gt; tracing_info = 5;</code>
    */
+  @java.lang.Override
 
   public java.lang.String getTracingInfoOrDefault(
       java.lang.String key,
@@ -271,6 +217,7 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>map&lt;string, string&gt; tracing_info = 5;</code>
    */
+  @java.lang.Override
 
   public java.lang.String getTracingInfoOrThrow(
       java.lang.String key) {
@@ -315,7 +262,7 @@ private static final long serialVersionUID = 0L;
         internalGetTracingInfo(),
         TracingInfoDefaultEntryHolder.defaultEntry,
         5);
-    unknownFields.writeTo(output);
+    getUnknownFields().writeTo(output);
   }
 
   @java.lang.Override
@@ -349,7 +296,7 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(5, tracingInfo__);
     }
-    size += unknownFields.getSerializedSize();
+    size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
     return size;
   }
@@ -364,19 +311,18 @@ private static final long serialVersionUID = 0L;
     }
     org.opennms.core.ipc.sink.model.SinkMessage other = (org.opennms.core.ipc.sink.model.SinkMessage) obj;
 
-    boolean result = true;
-    result = result && getMessageId()
-        .equals(other.getMessageId());
-    result = result && getContent()
-        .equals(other.getContent());
-    result = result && (getCurrentChunkNumber()
-        == other.getCurrentChunkNumber());
-    result = result && (getTotalChunks()
-        == other.getTotalChunks());
-    result = result && internalGetTracingInfo().equals(
-        other.internalGetTracingInfo());
-    result = result && unknownFields.equals(other.unknownFields);
-    return result;
+    if (!getMessageId()
+        .equals(other.getMessageId())) return false;
+    if (!getContent()
+        .equals(other.getContent())) return false;
+    if (getCurrentChunkNumber()
+        != other.getCurrentChunkNumber()) return false;
+    if (getTotalChunks()
+        != other.getTotalChunks()) return false;
+    if (!internalGetTracingInfo().equals(
+        other.internalGetTracingInfo())) return false;
+    if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+    return true;
   }
 
   @java.lang.Override
@@ -398,7 +344,7 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + TRACING_INFO_FIELD_NUMBER;
       hash = (53 * hash) + internalGetTracingInfo().hashCode();
     }
-    hash = (29 * hash) + unknownFields.hashCode();
+    hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
   }
@@ -537,18 +483,13 @@ private static final long serialVersionUID = 0L;
 
     // Construct using org.opennms.core.ipc.sink.model.SinkMessage.newBuilder()
     private Builder() {
-      maybeForceBuilderInitialization();
+
     }
 
     private Builder(
         com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       super(parent);
-      maybeForceBuilderInitialization();
-    }
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3
-              .alwaysUseFieldBuilders) {
-      }
+
     }
     @java.lang.Override
     public Builder clear() {
@@ -589,49 +530,47 @@ private static final long serialVersionUID = 0L;
     public org.opennms.core.ipc.sink.model.SinkMessage buildPartial() {
       org.opennms.core.ipc.sink.model.SinkMessage result = new org.opennms.core.ipc.sink.model.SinkMessage(this);
       int from_bitField0_ = bitField0_;
-      int to_bitField0_ = 0;
       result.messageId_ = messageId_;
       result.content_ = content_;
       result.currentChunkNumber_ = currentChunkNumber_;
       result.totalChunks_ = totalChunks_;
       result.tracingInfo_ = internalGetTracingInfo();
       result.tracingInfo_.makeImmutable();
-      result.bitField0_ = to_bitField0_;
       onBuilt();
       return result;
     }
 
     @java.lang.Override
     public Builder clone() {
-      return (Builder) super.clone();
+      return super.clone();
     }
     @java.lang.Override
     public Builder setField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
         java.lang.Object value) {
-      return (Builder) super.setField(field, value);
+      return super.setField(field, value);
     }
     @java.lang.Override
     public Builder clearField(
         com.google.protobuf.Descriptors.FieldDescriptor field) {
-      return (Builder) super.clearField(field);
+      return super.clearField(field);
     }
     @java.lang.Override
     public Builder clearOneof(
         com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-      return (Builder) super.clearOneof(oneof);
+      return super.clearOneof(oneof);
     }
     @java.lang.Override
     public Builder setRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
         int index, java.lang.Object value) {
-      return (Builder) super.setRepeatedField(field, index, value);
+      return super.setRepeatedField(field, index, value);
     }
     @java.lang.Override
     public Builder addRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
         java.lang.Object value) {
-      return (Builder) super.addRepeatedField(field, value);
+      return super.addRepeatedField(field, value);
     }
     @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -660,7 +599,7 @@ private static final long serialVersionUID = 0L;
       }
       internalGetMutableTracingInfo().mergeFrom(
           other.internalGetTracingInfo());
-      this.mergeUnknownFields(other.unknownFields);
+      this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
     }
@@ -675,17 +614,58 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      org.opennms.core.ipc.sink.model.SinkMessage parsedMessage = null;
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       try {
-        parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              messageId_ = input.readStringRequireUtf8();
+
+              break;
+            } // case 10
+            case 18: {
+              content_ = input.readBytes();
+
+              break;
+            } // case 18
+            case 24: {
+              currentChunkNumber_ = input.readInt32();
+
+              break;
+            } // case 24
+            case 32: {
+              totalChunks_ = input.readInt32();
+
+              break;
+            } // case 32
+            case 42: {
+              com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+              tracingInfo__ = input.readMessage(
+                  TracingInfoDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+              internalGetMutableTracingInfo().getMutableMap().put(
+                  tracingInfo__.getKey(), tracingInfo__.getValue());
+              break;
+            } // case 42
+            default: {
+              if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                done = true; // was an endgroup tag
+              }
+              break;
+            } // default:
+          } // switch (tag)
+        } // while (!done)
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (org.opennms.core.ipc.sink.model.SinkMessage) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
-        if (parsedMessage != null) {
-          mergeFrom(parsedMessage);
-        }
-      }
+        onChanged();
+      } // finally
       return this;
     }
     private int bitField0_;
@@ -693,6 +673,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object messageId_ = "";
     /**
      * <code>string message_id = 1;</code>
+     * @return The messageId.
      */
     public java.lang.String getMessageId() {
       java.lang.Object ref = messageId_;
@@ -708,6 +689,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message_id = 1;</code>
+     * @return The bytes for messageId.
      */
     public com.google.protobuf.ByteString
         getMessageIdBytes() {
@@ -724,6 +706,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message_id = 1;</code>
+     * @param value The messageId to set.
+     * @return This builder for chaining.
      */
     public Builder setMessageId(
         java.lang.String value) {
@@ -737,6 +721,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message_id = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearMessageId() {
       
@@ -746,6 +731,8 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string message_id = 1;</code>
+     * @param value The bytes for messageId to set.
+     * @return This builder for chaining.
      */
     public Builder setMessageIdBytes(
         com.google.protobuf.ByteString value) {
@@ -762,12 +749,16 @@ private static final long serialVersionUID = 0L;
     private com.google.protobuf.ByteString content_ = com.google.protobuf.ByteString.EMPTY;
     /**
      * <code>bytes content = 2;</code>
+     * @return The content.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString getContent() {
       return content_;
     }
     /**
      * <code>bytes content = 2;</code>
+     * @param value The content to set.
+     * @return This builder for chaining.
      */
     public Builder setContent(com.google.protobuf.ByteString value) {
       if (value == null) {
@@ -780,6 +771,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>bytes content = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearContent() {
       
@@ -791,12 +783,16 @@ private static final long serialVersionUID = 0L;
     private int currentChunkNumber_ ;
     /**
      * <code>int32 current_chunk_number = 3;</code>
+     * @return The currentChunkNumber.
      */
+    @java.lang.Override
     public int getCurrentChunkNumber() {
       return currentChunkNumber_;
     }
     /**
      * <code>int32 current_chunk_number = 3;</code>
+     * @param value The currentChunkNumber to set.
+     * @return This builder for chaining.
      */
     public Builder setCurrentChunkNumber(int value) {
       
@@ -806,6 +802,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 current_chunk_number = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearCurrentChunkNumber() {
       
@@ -817,12 +814,16 @@ private static final long serialVersionUID = 0L;
     private int totalChunks_ ;
     /**
      * <code>int32 total_chunks = 4;</code>
+     * @return The totalChunks.
      */
+    @java.lang.Override
     public int getTotalChunks() {
       return totalChunks_;
     }
     /**
      * <code>int32 total_chunks = 4;</code>
+     * @param value The totalChunks to set.
+     * @return This builder for chaining.
      */
     public Builder setTotalChunks(int value) {
       
@@ -832,6 +833,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>int32 total_chunks = 4;</code>
+     * @return This builder for chaining.
      */
     public Builder clearTotalChunks() {
       
@@ -870,6 +872,7 @@ private static final long serialVersionUID = 0L;
      * <code>map&lt;string, string&gt; tracing_info = 5;</code>
      */
 
+    @java.lang.Override
     public boolean containsTracingInfo(
         java.lang.String key) {
       if (key == null) { throw new java.lang.NullPointerException(); }
@@ -878,6 +881,7 @@ private static final long serialVersionUID = 0L;
     /**
      * Use {@link #getTracingInfoMap()} instead.
      */
+    @java.lang.Override
     @java.lang.Deprecated
     public java.util.Map<java.lang.String, java.lang.String> getTracingInfo() {
       return getTracingInfoMap();
@@ -885,6 +889,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>map&lt;string, string&gt; tracing_info = 5;</code>
      */
+    @java.lang.Override
 
     public java.util.Map<java.lang.String, java.lang.String> getTracingInfoMap() {
       return internalGetTracingInfo().getMap();
@@ -892,6 +897,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>map&lt;string, string&gt; tracing_info = 5;</code>
      */
+    @java.lang.Override
 
     public java.lang.String getTracingInfoOrDefault(
         java.lang.String key,
@@ -904,6 +910,7 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>map&lt;string, string&gt; tracing_info = 5;</code>
      */
+    @java.lang.Override
 
     public java.lang.String getTracingInfoOrThrow(
         java.lang.String key) {
@@ -965,7 +972,7 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public final Builder setUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
-      return super.setUnknownFieldsProto3(unknownFields);
+      return super.setUnknownFields(unknownFields);
     }
 
     @java.lang.Override
@@ -995,7 +1002,18 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new SinkMessage(input, extensionRegistry);
+      Builder builder = newBuilder();
+      try {
+        builder.mergeFrom(input, extensionRegistry);
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(builder.buildPartial());
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(e)
+            .setUnfinishedMessage(builder.buildPartial());
+      }
+      return builder.buildPartial();
     }
   };
 
