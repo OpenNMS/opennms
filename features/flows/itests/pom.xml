@@ -181,6 +181,10 @@
             <scope>test</scope>
             <exclusions>
                 <exclusion>
+                    <groupId>com.squareup.okio</groupId>
+                    <artifactId>okio</artifactId>
+                </exclusion>
+                <exclusion>
                     <groupId>org.opennms.nephron</groupId>
                     <artifactId>nephron-proto</artifactId>
                 </exclusion>
