@@ -1967,6 +1967,7 @@
     <xercesVersion>2.12.2</xercesVersion>
     <xmlApisExtVersion>1.3.04</xmlApisExtVersion>
     <xmlgraphicsCommonsVersion>2.9</xmlgraphicsCommonsVersion>
+    <xmlsecVersion>2.3.4</xmlsecVersion>
     <xstreamVersion>1.4.20</xstreamVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
@@ -3959,6 +3960,11 @@
             <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.santuario</groupId>
+        <artifactId>xmlsec</artifactId>
+        <version>${xmlsecVersion}</version>
       </dependency>
       <dependency>
         <groupId>bsf</groupId>
