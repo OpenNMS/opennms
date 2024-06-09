@@ -132,9 +132,6 @@
     <!-- OpenNMS Vaadin Surveillance Views -->
     <module>vaadin-surveillance-views</module>
 
-    <!-- Data Choices -->
-    <module>datachoices</module>
-
     <!-- Other projects -->
     <module>distributed</module>
     <module>endpoints</module>
@@ -187,9 +184,6 @@
     <!-- Configuration Manager -->
     <module>config</module>
 
-    <!-- Usage Analytics -->
-    <module>usageanalytics</module>
-    
     <module>inmemory-timeseries-plugin</module>
   </modules>
 </project>

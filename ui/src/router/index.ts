@@ -206,22 +206,6 @@ const router = createRouter({
       }
     },
     {
-      path: '/usage-statistics',
-      name: 'Usage Statistics',
-      component: () => import('@/containers/UsageStatistics.vue'),
-      beforeEnter: (to, from) => {
-        const checkRoles = () => {
-          if (!adminRole.value) {
-            showSnackBar({ msg: 'Must be admin to access Usage Statistics.' })
-            router.push(from.path)
-          }
-        }
-
-        if (rolesAreLoaded.value) checkRoles()
-        else whenever(rolesAreLoaded, () => checkRoles())
-      }
-    },
-    {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
       redirect: '/'
     }

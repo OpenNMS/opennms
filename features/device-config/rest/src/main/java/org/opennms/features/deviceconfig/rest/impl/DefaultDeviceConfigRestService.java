@@ -42,8 +42,6 @@ import org.opennms.features.deviceconfig.rest.api.DeviceConfigDTO;
 import org.opennms.features.deviceconfig.rest.api.DeviceConfigRestService;
 import org.opennms.features.deviceconfig.service.DeviceConfigConstants;
 import org.opennms.features.deviceconfig.service.DeviceConfigService;
-import org.opennms.features.usageanalytics.api.UsageAnalyticDao;
-import org.opennms.features.usageanalytics.api.UsageAnalyticMetricName;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.web.utils.ResponseUtils;
@@ -86,8 +84,6 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
 
     private final TransactionOperations operations;
 
-    private UsageAnalyticDao usageAnalyticDao;
-
     private static final Map<String,String> ORDERBY_QUERY_PROPERTY_MAP = Map.of(
         "lastupdated", "lastUpdated",
         "devicename", "ipInterface.node.label",
@@ -117,10 +113,6 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         this.deviceConfigDao = deviceConfigDao;
         this.deviceConfigService = deviceConfigService;
         this.operations = Objects.requireNonNull(operations);
-    }
-
-    public void setUsageAnalyticDao(UsageAnalyticDao usageAnalyticDao) {
-        this.usageAnalyticDao = usageAnalyticDao;
     }
 
     /** {@inheritDoc} */
@@ -192,13 +184,6 @@ public class DefaultDeviceConfigRestService implements DeviceConfigRestService {
         Set<DeviceConfigStatus> statuses,
         boolean pageEnter
     ) {
-        if (pageEnter) {
-            operations.execute(status -> {
-                usageAnalyticDao.incrementCounterByMetricName(UsageAnalyticMetricName.DCB_WEBUI_ENTRY.toString());
-                return null;
-            });
-        }
-
         List<DeviceConfigDTO> dtos =
             this.deviceConfigDao.getLatestConfigForEachInterface(limit, offset, orderBy, order, searchTerm, statuses)
                 .stream()

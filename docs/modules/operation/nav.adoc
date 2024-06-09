@@ -232,7 +232,6 @@
 **** xref:deep-dive/admin/configuration/system-proxies.adoc[]
 **** xref:deep-dive/admin/configuration/config-tester.adoc[]
 **** xref:deep-dive/admin/configuration/daemon-config-files.adoc[]
-**** xref:deep-dive/admin/configuration/usage-statistics.adoc[]
 **** xref:deep-dive/admin/configuration/rmi.adoc[]
 **** xref:deep-dive/admin/configuration/external-auth.adoc[]
 **** xref:deep-dive/admin/configuration/geocoder.adoc[]

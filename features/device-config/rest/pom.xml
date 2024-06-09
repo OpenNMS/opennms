@@ -77,11 +77,6 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.usageanalytics</groupId>
-            <artifactId>org.opennms.features.usageanalytics.api</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
             <groupId>org.opennms.dependencies</groupId>
             <artifactId>quartz-dependencies</artifactId>
            <type>pom</type>
