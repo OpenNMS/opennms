@@ -45,7 +45,6 @@
               org.opennms.netmgt.config.actiond.*;version="${project.version}",
               org.opennms.netmgt.config.ami.*;version="${project.version}",
               org.opennms.netmgt.config.categories.*;version="${project.version}",
-              org.opennms.netmgt.config.charts.*;version="${project.version}",
               org.opennms.netmgt.config.collectd.*;version="${project.version}",
               org.opennms.netmgt.config.collector.*;version="${project.version}",
               org.opennms.netmgt.config.databaseReports.*;version="${project.version}",
