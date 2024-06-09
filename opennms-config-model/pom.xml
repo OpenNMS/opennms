@@ -83,7 +83,6 @@
               org.opennms.netmgt.config.syslogd.*;version="${project.version}",
               org.opennms.netmgt.config.tags.*;version="${project.version}",
               org.opennms.netmgt.config.threshd.*;version="${project.version}",
-              org.opennms.netmgt.config.tl1d.*;version="${project.version}",
               org.opennms.netmgt.config.translator.*;version="${project.version}",
               org.opennms.netmgt.config.users.*;version="${project.version}",
               org.opennms.netmgt.config.vacuumd.*;version="${project.version}",

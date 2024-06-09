@@ -100,7 +100,6 @@
 **** xref:deep-dive/events/sources/sink-api.adoc[]
 **** xref:deep-dive/events/sources/snmp-traps.adoc[]
 **** xref:deep-dive/events/sources/syslog.adoc[]
-**** xref:deep-dive/events/sources/tl1.adoc[]
 **** xref:deep-dive/events/sources/xml-tcp.adoc[]
 *** xref:deep-dive/events/perf-data.adoc[]
 *** xref:deep-dive/events/event-advanced-search.adoc[]

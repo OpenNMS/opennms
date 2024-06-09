@@ -108,7 +108,6 @@ import org.opennms.netmgt.config.surveillanceViews.SurveillanceViewConfiguration
 import org.opennms.netmgt.config.syslogd.SyslogdConfiguration;
 import org.opennms.netmgt.config.threshd.ThreshdConfiguration;
 import org.opennms.netmgt.config.threshd.ThresholdingConfig;
-import org.opennms.netmgt.config.tl1d.Tl1dConfiguration;
 import org.opennms.netmgt.config.translator.EventTranslatorConfiguration;
 import org.opennms.netmgt.config.trapd.TrapdConfiguration;
 import org.opennms.netmgt.config.trend.TrendConfiguration;
@@ -266,7 +265,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "telemetryd-configuration.xml", TelemetrydConfig.class, false, null);
         addFile(Source.CONFIG, "threshd-configuration.xml", ThreshdConfiguration.class, true, null);
         addFile(Source.CONFIG, "thresholds.xml", ThresholdingConfig.class, true, null);
-        addFile(Source.CONFIG, "tl1d-configuration.xml", Tl1dConfiguration.class, true, null);
         addFile(Source.CONFIG, "translator-configuration.xml", EventTranslatorConfiguration.class, false, null);
         addFile(Source.CONFIG, "trapd-configuration.xml", TrapdConfiguration.class, true, null);
         addFile(Source.CONFIG, "trend-configuration.xml", TrendConfiguration.class, true, null);
@@ -314,7 +312,6 @@ public class WillItUnmarshalIT {
         addFile(Source.EXAMPLE, "surveillance-views.xml", SurveillanceViewConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "threshd-configuration.xml", ThreshdConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "thresholds.xml", ThresholdingConfig.class, false, null);
-        addFile(Source.EXAMPLE, "tl1d-configuration.xml", Tl1dConfiguration.class, false, null);
         addFile(Source.EXAMPLE, "viewsdisplay.xml", Viewinfo.class, false, null);
 
         // Add all event files
