@@ -58,7 +58,6 @@ Each dashlet visualizes specific information:
 * xref:deep-dive/visualizations/opsboard/dashlets/alarms.adoc[*Alarms:*] Displays a table with a short description of alarms.
 * xref:deep-dive/visualizations/opsboard/dashlets/grafana.adoc[*Grafana:*] Displays a Grafana dashboard with data spanning a specified time range.
 * xref:deep-dive/visualizations/opsboard/dashlets/image.adoc[*Image:*] Displays a custom image.
-* xref:deep-dive/visualizations/opsboard/dashlets/ksc.adoc[*KSC Reports:*] Displays a specified KSC report.
 * xref:deep-dive/visualizations/opsboard/dashlets/map.adoc[*Map:*] Displays the https://opennms.discourse.group/t/geographical-maps/2212[geographical map].
 * xref:deep-dive/visualizations/opsboard/dashlets/rrd.adoc[*RRD:*] Displays one or more RRD graphs.
 * xref:deep-dive/visualizations/opsboard/dashlets/rtc.adoc[*RTC:*] Displays configured SLA categories.

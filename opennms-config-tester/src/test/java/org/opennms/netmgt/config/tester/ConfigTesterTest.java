@@ -252,11 +252,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testKscPerformanceReports() {
-        testConfigFile("ksc-performance-reports.xml");
-    }
-
-    @Test
     public void testEnLinkdConfiguration() {
         ignoreConfigFile("enlinkd-configuration.xml");
     }

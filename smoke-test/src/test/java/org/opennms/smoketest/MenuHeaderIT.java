@@ -84,17 +84,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         driver.switchTo().parentFrame();
         frontPage();
 
-        final String reportsMenuName = "name=nav-Reports-top";
-        clickMenuItem(reportsMenuName, "Resource Graphs", "graph/index.jsp");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//label[contains(text()[normalize-space()], 'Standard Resource')]")));
-
-        clickMenuItem(reportsMenuName, "KSC Reports", "KSC/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='Customized Reports']");
-
-        // TODO MVR this is probably failing, as it no longer exists :)
-        clickMenuItem(reportsMenuName, "Statistics", "statisticsReports/index.htm");
-        findElementByXpath("//div[@class='card-header']/span");
-
         final String dashboardsMenuName = "name=nav-Dashboards-top";
         clickMenuItem(dashboardsMenuName, "Dashboard", "dashboard.jsp");
         // switchTo() by xpath is much faster than by ID

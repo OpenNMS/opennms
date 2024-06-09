@@ -219,44 +219,6 @@ export const defaultMainMenu = {
     {
       id: null,
       className: 'org.opennms.web.navigate.MenuDropdownNavBarEntry',
-      name: 'Reports',
-      url: 'report/index.jsp',
-      locationMatch: null,
-      icon: null,
-      iconType: null,
-      isIconOnly: null,
-      isVueLink: null,
-      roles: null,
-      items: [
-        {
-          id: null,
-          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
-          name: 'Resource Graphs',
-          url: 'graph/index.jsp',
-          locationMatch: 'performance',
-          icon: null,
-          iconType: null,
-          isIconOnly: null,
-          isVueLink: null,
-          roles: null
-        },
-        {
-          id: null,
-          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
-          name: 'KSC Reports',
-          url: 'KSC/index.jsp',
-          locationMatch: 'ksc',
-          icon: null,
-          iconType: null,
-          isIconOnly: null,
-          isVueLink: null,
-          roles: null
-        }
-      ]
-    },
-    {
-      id: null,
-      className: 'org.opennms.web.navigate.MenuDropdownNavBarEntry',
       name: 'Dashboards',
       url: 'dashboards.htm',
       locationMatch: null,
