@@ -432,7 +432,7 @@
         <feature>opennms-snmp</feature>
         <feature>scv-api</feature>
         <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-locks/concurrent-locks/1.0.0$Bundle-SymbolicName=com.googlecode.concurrent-locks&amp;Bundle-Version=1.0.0</bundle>
-        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt/${jasyptVersion}_1</bundle>
+        <bundle dependency="true">wrap:mvn:org.jasypt/jasypt/${jasyptVersion}$Bundle-SymbolicName=org.jasypt&amp;Bundle-Version=${jasyptVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-config/${project.version}</bundle>
     </feature>
     <feature name="opennms-kafka" version="${project.version}" description="OpenNMS :: Features :: Kafka">
@@ -1258,7 +1258,7 @@
     </feature>
     <feature name="vaadin-adminpage" version="${project.version}" description="OpenNMS :: Features :: BSM :: Vaadin Adminpage">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
-        <feature prerequisite="true">vaadin</feature>
+        <feature>vaadin</feature>
         <feature>org.opennms.features.bsm.service.api</feature>
         <bundle>mvn:org.opennms.features.bsm/vaadin-adminpage/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.vaadin-components/core/${project.version}</bundle>
@@ -1334,7 +1334,6 @@
         <feature>osgi-nrtg-jms</feature>
         <feature>osgi-nrtg-local</feature>
     </feature>
-
     <feature name="vaadin" version="${project.version}" description="OpenNMS :: Features :: Vaadin + Dependencies">
         <details>The Vaadin web application framework including some addons and osgi related packages.</details>
         <feature>scr</feature>
@@ -1649,11 +1648,6 @@
         <!--<bundle>mvn:org.opennms.features.endpoints.grafana.persistence/org.opennms.features.endpoints.grafana.persistence.impl/${project.version}</bundle>-->
         <bundle dependency="true">mvn:org.jetbrains.kotlin/kotlin-osgi-bundle/${kotlinVersion}</bundle>
     </feature>
-    <!-- TODO MVR remove me -->
-<!--    <feature name="opennms-reporting" version="${project.version}" description="OpenNMS :: Features :: Reporting">-->
-<!--        &lt;!&ndash; All other dependencies are wired in through custom.properties &ndash;&gt;-->
-<!--        <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.rest/${project.version}</bundle>-->
-<!--    </feature>-->
 
     <feature name="opennms-dnsresolver-api" version="${project.version}" description="OpenNMS :: Features :: DNS Resolver :: API">
         <bundle>mvn:org.opennms.features.dnsresolver/org.opennms.features.dnsresolver.api/${project.version}</bundle>
@@ -1872,7 +1866,7 @@
     </feature>
 
     <feature name="opennms-bridge-http-service" description="OpenNMS Bridge OSGi HTTP Service" version="${opennms.osgi.version}">
-        <bundle dependency="true" start-level="${systemStartLevel}">mvn:javax.servlet/javax.servlet-api/${servletApiVersion}</bundle>
+        <bundle dependency="true" start-level="${systemStartLevel}">mvn:javax.servlet/javax.servlet-api/3.1.0</bundle>
         <bundle start-level="${systemStartLevel}">mvn:org.apache.felix/org.apache.felix.http.bridge/${felixBridgeVersion}</bundle>
         <capability>http-service;provider:=pax-http</capability>
         <conditional>
