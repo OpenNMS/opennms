@@ -52,6 +52,7 @@ import io.restassured.http.ContentType;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 @org.junit.experimental.categories.Category(org.opennms.smoketest.junit.FlakyTests.class)
+// TODO MVr this is very likely failing now
 public class ReportRestIT extends AbstractRestIT {
     private static final Logger LOG = LoggerFactory.getLogger(ReportRestIT.class);
 

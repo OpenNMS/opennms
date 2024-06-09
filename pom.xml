@@ -121,7 +121,6 @@
     <module>opennms-config</module>
     <module>opennms-config-model</module>
     <module>opennms-provision</module>
-    <module>opennms-enterprise-reporting</module>
     <module>opennms-services</module>
     <module>opennms-taglib</module>
     <module>opennms-jetty</module>
@@ -1905,7 +1904,7 @@
     <kafkaBundleVersion>3.5.1_1</kafkaBundleVersion>
     <kafkaVersion>3.6.0</kafkaVersion>
     <kotlinVersion>1.9.10</kotlinVersion>
-    <liquibaseVersion>3.6.3</liquibaseVersion>
+    <liquibaseVersion>4.27.0</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
     <log4j2Version>2.21.1</log4j2Version>
     <logbackClassicVersion>1.2.13</logbackClassicVersion>
@@ -2892,46 +2891,6 @@
         <version>${project.version}</version>
       </dependency>
       <dependency>
-        <groupId>org.opennms.features.reporting</groupId>
-        <artifactId>org.opennms.features.reporting.api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.reporting</groupId>
-        <artifactId>org.opennms.features.reporting.core</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.reporting</groupId>
-        <artifactId>org.opennms.features.reporting.dao</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.reporting</groupId>
-        <artifactId>org.opennms.features.reporting.sdo</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.reporting</groupId>
-        <artifactId>org.opennms.features.reporting.model</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.reporting</groupId>
-        <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.reporting</groupId>
-        <artifactId>org.opennms.features.reporting.availability</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.reporting</groupId>
-        <artifactId>org.opennms.features.reporting.repository</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.opennms.features.ticketing</groupId>
         <artifactId>org.opennms.features.ticketing.api</artifactId>
         <version>${project.version}</version>
@@ -3537,11 +3496,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-reportd</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
         <artifactId>opennms-rrd-api</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -3588,11 +3542,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-site</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>jasper-shaded</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>

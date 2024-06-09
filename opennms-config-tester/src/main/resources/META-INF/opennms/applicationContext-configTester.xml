@@ -30,12 +30,10 @@
         <entry key="actiond-configuration.xml" value="actiondConfigFactory"/>
         <entry key="ami-config.xml" value="amiPeerFactory"/>
         <!-- <entry key="asterisk-configuration.properties" value="asteriskConfigProperties"/> --><!-- Not part of standard build -->
-        <entry key="availability-reports.xml" value="onmsReportConfigDao"/>
         <entry key="bsf-northbounder-configuration.xml" value="bsfNorthbounderConfigDao"/>
         <entry key="categories.xml" value="categoryFactory"/>
         <entry key="chart-configuration.xml" value="chartConfigFactory"/>
         <entry key="collectd-configuration.xml" value="collectdConfigFactory"/>
-        <entry key="database-reports.xml" value="databaseReportConfigDao"/>
         <entry key="database-schema.xml" value="databaseSchemaConfigFactory"/>
         <entry key="datacollection-config.xml" value="dataCollectionConfigDao"/>
         <entry key="destinationPaths.xml" value="destinationPathFactory"/>
@@ -48,7 +46,6 @@
         <entry key="geoip-adapter-configuration.xml" value="geoIpConfigDao"/>
         <entry key="groups.xml" value="groupFactory"/>
         <entry key="http-datacollection-config.xml" value="httpCollectionConfigFactory"/>
-        <entry key="jasper-reports.xml" value="legacyLocalJasperReportsDao"/>
         <entry key="javamail-configuration.properties" value="javaMailerConfig"/>
         <entry key="javamail-configuration.xml" value="javamailConfigurationDao"/>
         <entry key="jdbc-datacollection-config.xml" value="jdbcDataCollectionConfigDao"/>
@@ -69,7 +66,6 @@
         <entry key="poller-configuration.xml" value="pollerConfigFactory"/>
         <entry key="prometheus-datacollection-config.xml" value="prometheusDataCollectionConfigDao"/>
         <entry key="provisiond-configuration.xml" value="provisiondConfigurationDao"/>
-        <entry key="reportd-configuration.xml" value="reportdConfigurationDao"/>
         <entry key="response-adhoc-graph.properties" value="responseAdhocGraph"/>
         <entry key="response-graph.properties" value="responsePrefabGraph"/>
         <entry key="rrd-configuration.properties" value="rrdConfigurationProperties"/>
@@ -85,7 +81,6 @@
         <!-- <entry key="snmp-interface-poller-configuration.xml" value="snmpInterfacePollerConfigFactory"/> --><!-- database access -->
         <entry key="snmp-metadata-adapter-configuration.xml" value="snmpMetadataConfigDao"/>
         <entry key="snmptrap-northbounder-configuration.xml" value="snmpTrapNorthbounderConfigDao"/>
-        <entry key="statsd-configuration.xml" value="statisticsDaemonConfigDao"/>
         <entry key="surveillance-views.xml" value="surveillanceViewConfigDao"/>
         <entry key="syslogd-configuration.xml" value="syslogdConfigFactory"/>
         <entry key="syslog-northbounder-configuration.xml" value="syslogNorthbounderConfigDao"/>
@@ -135,10 +130,6 @@
   <bean id="asteriskConfigProperties" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.asterisk.utils.AsteriskConfig.getProperties</value></property>
   </bean>
-  
-  <bean id="onmsReportConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultOnmsReportConfigDao">
-    <property name="configResource" value="file:${opennms.home}/etc/availability-reports.xml"/>
-  </bean>
 
   <bean name="bsfNorthbounderConfigDao" class="org.opennms.netmgt.alarmd.northbounder.bsf.BSFNorthbounderConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/bsf-northbounder-configuration.xml" />
@@ -158,10 +149,6 @@
 
   <bean id="collectdConfigFactory" class="org.opennms.netmgt.config.CollectdConfigFactory"/>
 
-  <bean id="databaseReportConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultDatabaseReportConfigDao">
-    <property name="configResource" value="file:${opennms.home}/etc/database-reports.xml"/>
-  </bean>
-  
   <bean id="databaseSchemaConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.DatabaseSchemaConfigFactory.init</value></property>
   </bean>
@@ -213,19 +200,6 @@
   </bean>
 
   <bean id="httpCollectionConfigFactory" class="org.opennms.netmgt.config.HttpCollectionConfigFactory" depends-on="httpCollectionConfigFactory-init" factory-method="getInstance"/>
-
-  <bean id="legacyLocalJasperReportsConfigResource" class="org.springframework.core.io.UrlResource">
-    <constructor-arg value="file:${opennms.home}/etc/jasper-reports.xml"/>
-  </bean>
-
-  <bean id="jrTemplateResource" class="org.springframework.core.io.UrlResource">
-    <constructor-arg value="file:${opennms.home}/etc/report-templates"/>
-  </bean>
-
-  <bean id="legacyLocalJasperReportsDao" class="org.opennms.features.reporting.dao.jasper.LegacyLocalJasperReportsDao">
-    <constructor-arg ref="legacyLocalJasperReportsConfigResource"/>
-    <constructor-arg ref="jrTemplateResource"/>
-  </bean>
 
   <bean id="emptyScope" class="org.springframework.beans.factory.config.FieldRetrievingFactoryBean">
     <property name="staticField" value="org.opennms.core.mate.api.EmptyScope.EMPTY"/>
@@ -353,10 +327,6 @@
   <bean id="provisiondConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultProvisiondConfigurationDao">
   </bean>
 
-  <bean id="reportdConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultReportdConfigurationDao">
-    <property name="configResource" value="file:${opennms.home}/etc/reportd-configuration.xml"/>
-  </bean>
-  
   <bean id="responseAdhocGraph" class="org.opennms.netmgt.dao.support.PropertiesGraphDao">
       <property name="prefabConfigs">
         <map>
@@ -446,10 +416,6 @@
 
   <bean name="snmpTrapNorthbounderConfigDao" class="org.opennms.netmgt.alarmd.northbounder.snmptrap.SnmpTrapNorthbounderConfigDao">
     <property name="configResource" value="file:${opennms.home}/etc/snmptrap-northbounder-configuration.xml" />
-  </bean>
-
-  <bean id="statisticsDaemonConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultStatisticsDaemonConfigDao">
-    <property name="configResource" value="file:${opennms.home}/etc/statsd-configuration.xml"/>
   </bean>
 
   <bean id="surveillanceViewConfigDao" class="org.opennms.netmgt.dao.jaxb.DefaultSurveillanceViewConfigDao">

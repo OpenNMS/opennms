@@ -9,7 +9,7 @@
   <groupId>org.opennms.dependencies</groupId>
   <artifactId>liquibase-dependencies</artifactId>
   <packaging>pom</packaging>
-  <name>OpenNMS :: Dependencies :: LiquiBase</name>
+  <name>OpenNMS :: Dependencies :: Liquibase</name>
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -30,6 +30,10 @@
         <exclusion>
           <groupId>ch.qos.logback</groupId>
           <artifactId>logback-classic</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>javax.xml.bind</groupId>
+          <artifactId>jaxb-api</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

@@ -274,7 +274,6 @@ Furthermore, some {page-component-title} configuration files allow the use of Me
 * xref:reference:service-assurance/monitors/JmxMonitor.adoc[JMX monitor], xref:reference:performance-data-collection/collectors/jmx.adoc[JMX collector]: jmx-config.xml, jmx-datacollection-config.xml, jmx-datacollection-config/*.xml
 * xref:operation:deep-dive/notifications/introduction.adoc[Notification configuration]: javamail-configuration.xml, javamail-configuration.properties, microblog-configuration.xml, xmpp-configuration.xml
 * xref:reference:performance-data-collection/collectors/nsclient.adoc[NSClient collector]: nsclient-config.xml
-* xref:operation:deep-dive/database-reports/template-introduction.adoc[Remote Repository configuration]: remote-repository.xml
 * xref:operation:deep-dive/provisioning/xml-samples.adoc[SNMP configuration], xref:operation:deep-dive/provisioning/snmp-profile.adoc[SNMP profiles]: snmp-config.xml
 * xref:reference:ticketing/introduction.adoc[Ticketer configuration]: jira.properties, remedy.properties, tsrm.properties
 * xref:reference:daemons/daemon-config-files/trapd.adoc[Trapd configuration]: trapd-configuration.xml

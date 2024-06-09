@@ -42,6 +42,7 @@ import javax.persistence.TemporalType;
  *  @author <a href="mailto:jonathan@opennms.org">Jonathan Sartin</a>
  * @version $Id: $
  */
+// TODO MVR this is no longer required technically, but we may decide to leave it as it might be useful to still have access to the data
 public class ReportCatalogEntry implements Serializable {
 
     private static final long serialVersionUID = -5351014623584691820L;

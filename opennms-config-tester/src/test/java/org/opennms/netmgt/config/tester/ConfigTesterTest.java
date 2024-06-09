@@ -47,7 +47,6 @@ import org.junit.AfterClass;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.FixMethodOrder;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.opennms.core.db.DataSourceFactory;
@@ -135,11 +134,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testAvailabilityReports() {
-        testConfigFile("availability-reports.xml");
-    }
-
-    @Test
     public void testBSFNorthbounderConfiguration() {
         testConfigFile("bsf-northbounder-configuration.xml");
     }
@@ -165,11 +159,6 @@ public class ConfigTesterTest {
     @Test
     public void testCollectdConfiguration() {
         testConfigFile("collectd-configuration.xml");
-    }
-
-    @Test
-    public void testDatabaseReports() {
-        testConfigFile("database-reports.xml");
     }
 
     @Test
@@ -230,11 +219,6 @@ public class ConfigTesterTest {
     @Test
     public void testIfTttConfig() {
         ignoreConfigFile("ifttt-config.xml");
-    }
-
-    @Test
-    public void testJasperReports() {
-        testConfigFile("jasper-reports.xml");
     }
 
     @Test
@@ -359,11 +343,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testReportdConfiguration() {
-        testConfigFile("reportd-configuration.xml");
-    }
-
-    @Test
     public void testResponseAdhocGraph() {
         testConfigFile("response-adhoc-graph.properties");
     }
@@ -463,11 +442,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testStatsdConfiguration() {
-        testConfigFile("statsd-configuration.xml");
-    }
-
-    @Test
     public void testSurveillanceViews() {
         testConfigFile("surveillance-views.xml");
     }
@@ -561,11 +535,6 @@ public class ConfigTesterTest {
      */
     public void testXmppConfiguration() {
         ignoreConfigFile("xmpp-configuration.properties");
-    }
-
-    @Test
-    public void testRemoteRepositoyConfig() {
-        ignoreConfigFile("remote-repository.xml");
     }
 
     @Test

@@ -230,16 +230,6 @@
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.ApplicationDao" ref="applicationDao" />
 
-    <bean id="statisticsReportDao" class="org.opennms.netmgt.dao.hibernate.StatisticsReportDaoHibernate">
-        <property name="sessionFactory" ref="sessionFactory" />
-    </bean>
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.StatisticsReportDao" ref="statisticsReportDao" />
-
-    <bean id="statisticsReportDataDao" class="org.opennms.netmgt.dao.hibernate.StatisticsReportDataDaoHibernate">
-        <property name="sessionFactory" ref="sessionFactory" />
-    </bean>
-    <onmsgi:service interface="org.opennms.netmgt.dao.api.StatisticsReportDataDao" ref="statisticsReportDataDao" />
-
     <bean id="resourceReferenceDao" class="org.opennms.netmgt.dao.hibernate.ResourceReferenceDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>

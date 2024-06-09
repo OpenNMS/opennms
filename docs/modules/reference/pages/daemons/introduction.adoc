@@ -74,9 +74,6 @@ This can be helpful for devices that cannot be directly polled to check service 
 | Queued
 | Handles scheduling of tasks to run in the future.
 
-| Reportd
-| Generates and schedules reports.
-
 | Rtcd
 | Handles uptime percentage calculations.
 
@@ -86,9 +83,6 @@ This can be helpful for devices that cannot be directly polled to check service 
 | SnmpPoller
 | Checks SNMP interface admin status.
 It is separate from pollerd's SnmpMonitor.
-
-| Statsd
-| Generates statistical reports from node data.
 
 | Syslogd
 | Allows retrieval and parsing of syslog messages to generate events.

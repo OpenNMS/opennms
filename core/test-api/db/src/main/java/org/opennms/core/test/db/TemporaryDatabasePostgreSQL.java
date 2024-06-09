@@ -21,8 +21,36 @@
  */
 package org.opennms.core.test.db;
 
-import static org.junit.Assert.assertTrue;
+import com.google.common.base.Joiner;
+import liquibase.Contexts;
+import liquibase.changelog.ChangeLogParameters;
+import liquibase.changelog.ChangeSet;
+import liquibase.changelog.DatabaseChangeLog;
+import liquibase.exception.ChangeLogParseException;
+import liquibase.exception.LiquibaseException;
+import liquibase.integration.spring.SpringResourceAccessor;
+import liquibase.parser.ChangeLogParserFactory;
+import liquibase.resource.ResourceAccessor;
+import liquibase.util.StringUtil;
+import org.apache.commons.codec.binary.Hex;
+import org.apache.commons.codec.digest.DigestUtils;
+import org.opennms.core.db.install.SimpleDataSource;
+import org.opennms.core.schema.MigrationException;
+import org.opennms.core.schema.Migrator;
+import org.opennms.core.test.ConfigurationTestUtils;
+import org.postgresql.xa.PGXADataSource;
+import org.slf4j.LoggerFactory;
+import org.springframework.context.support.GenericApplicationContext;
+import org.springframework.context.support.StaticApplicationContext;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.Resource;
+import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowCountCallbackHandler;
 
+import javax.sql.DataSource;
+import javax.sql.XAConnection;
+import javax.sql.XADataSource;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,37 +76,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.logging.Logger;
 
-import javax.sql.DataSource;
-import javax.sql.XAConnection;
-import javax.sql.XADataSource;
-
-import org.apache.commons.codec.binary.Hex;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.opennms.core.db.install.SimpleDataSource;
-import org.opennms.core.schema.ExistingResourceAccessor;
-import org.opennms.core.schema.MigrationException;
-import org.opennms.core.schema.Migrator;
-import org.opennms.core.test.ConfigurationTestUtils;
-import org.postgresql.xa.PGXADataSource;
-import org.slf4j.LoggerFactory;
-import org.springframework.context.support.GenericApplicationContext;
-import org.springframework.context.support.StaticApplicationContext;
-import org.springframework.core.io.Resource;
-import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.RowCountCallbackHandler;
-
-import com.google.common.base.Joiner;
-
-import liquibase.Contexts;
-import liquibase.changelog.ChangeLogParameters;
-import liquibase.changelog.ChangeSet;
-import liquibase.changelog.DatabaseChangeLog;
-import liquibase.exception.ChangeLogParseException;
-import liquibase.exception.LiquibaseException;
-import liquibase.parser.ChangeLogParserFactory;
-import liquibase.resource.ResourceAccessor;
-import liquibase.util.StringUtils;
+import static org.junit.Assert.assertTrue;
 
 /**
  * 
@@ -680,7 +678,7 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
         final long start = System.currentTimeMillis();
 
         ChangeLogParameters changeLogParameters = new ChangeLogParameters();
-        changeLogParameters.setContexts(new Contexts(StringUtils.splitAndTrim(Migrator.getLiquibaseContexts(), ",")));
+        changeLogParameters.setContexts(new Contexts(StringUtil.splitAndTrim(Migrator.getLiquibaseContexts(), ",")));
 
         MessageDigest md = MessageDigest.getInstance("MD5");
         List<URI> seenChangeLogs = new LinkedList<>();
@@ -689,14 +687,24 @@ public class TemporaryDatabasePostgreSQL implements TemporaryDatabase {
             seenChangeLogs.add(resource.getURI());
             DigestUtils.updateDigest(md, resource.getInputStream());
 
-            ResourceAccessor accessor = new ExistingResourceAccessor(resource);
+            ResourceAccessor accessor = new SpringResourceAccessor(new DefaultResourceLoader() {
+                @Override
+                public Resource getResource(String location) {
+                    return resource;
+                }
+
+                @Override
+                public ClassLoader getClassLoader() {
+                    return TemporaryDatabasePostgreSQL.class.getClassLoader();
+                }
+            });
             DatabaseChangeLog changeLog = ChangeLogParserFactory.getInstance().getParser(Migrator.LIQUIBASE_CHANGELOG_FILENAME, accessor).parse(Migrator.LIQUIBASE_CHANGELOG_FILENAME, changeLogParameters, accessor);
 
             for (ChangeSet c : changeLog.getChangeSets()) {
                 URI uri = resource.createRelative(c.getFilePath()).getURI();
                 if (!seenChangeLogs.contains(uri)) {
                     seenChangeLogs.add(uri);
-                    for (InputStream s : accessor.getResourcesAsStream(c.getFilePath())) {
+                    try (InputStream s = accessor.get(c.getFilePath()).openInputStream()) {
                         DigestUtils.updateDigest(md, s);
                     }
                 }

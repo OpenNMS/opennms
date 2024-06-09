@@ -557,7 +557,6 @@
         <feature>opennms-core</feature>
         <feature>opennms-model</feature>
         <feature>opennms-config-api</feature>
-        <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.model/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-api/${project.version}</bundle>
     </feature>
     <feature name="opennms-dao" version="${project.version}" description="OpenNMS :: DAO">
@@ -1650,10 +1649,11 @@
         <!--<bundle>mvn:org.opennms.features.endpoints.grafana.persistence/org.opennms.features.endpoints.grafana.persistence.impl/${project.version}</bundle>-->
         <bundle dependency="true">mvn:org.jetbrains.kotlin/kotlin-osgi-bundle/${kotlinVersion}</bundle>
     </feature>
-    <feature name="opennms-reporting" version="${project.version}" description="OpenNMS :: Features :: Reporting">
-        <!-- All other dependencies are wired in through custom.properties -->
-        <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.rest/${project.version}</bundle>
-    </feature>
+    <!-- TODO MVR remove me -->
+<!--    <feature name="opennms-reporting" version="${project.version}" description="OpenNMS :: Features :: Reporting">-->
+<!--        &lt;!&ndash; All other dependencies are wired in through custom.properties &ndash;&gt;-->
+<!--        <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.rest/${project.version}</bundle>-->
+<!--    </feature>-->
 
     <feature name="opennms-dnsresolver-api" version="${project.version}" description="OpenNMS :: Features :: DNS Resolver :: API">
         <bundle>mvn:org.opennms.features.dnsresolver/org.opennms.features.dnsresolver.api/${project.version}</bundle>
