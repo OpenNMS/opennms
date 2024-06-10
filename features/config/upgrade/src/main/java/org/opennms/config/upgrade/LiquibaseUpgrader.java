@@ -24,7 +24,6 @@ package org.opennms.config.upgrade;
 import java.sql.Connection;
 import java.util.Objects;
 
-import liquibase.Scope;
 import org.opennms.features.config.service.api.ConfigurationManagerService;
 
 import liquibase.Liquibase;
@@ -43,7 +42,6 @@ import liquibase.ext2.cm.executor.CmExecutor;
 import liquibase.ext2.cm.sqlgenerator.CmSqlGenerator;
 import liquibase.resource.ClassLoaderResourceAccessor;
 
-// TODO MVR this should go
 public class LiquibaseUpgrader {
 
     public final static String TABLE_NAME_DATABASECHANGELOG = "cm_databasechangelog";
@@ -65,15 +63,17 @@ public class LiquibaseUpgrader {
         db.setDatabaseChangeLogLockTableName(TABLE_NAME_DATABASECHANGELOGLOCK);
 
         // Register our extensions.
-        Scope.getCurrentScope().getSingleton(ChangeFactory.class).register(new RegisterSchema());
-        Scope.getCurrentScope().getSingleton(ChangeFactory.class).register(new UpgradeSchema());
-        Scope.getCurrentScope().getSingleton(ChangeFactory.class).register(new ImportConfiguration());
-        Scope.getCurrentScope().getSingleton(ChangeFactory.class).register(new ImportConfigurations());
-        Scope.getCurrentScope().getSingleton(ChangeFactory.class).register(new ChangeSchema());
-        Scope.getCurrentScope().getSingleton(liquibase.executor.ExecutorService.class).clearExecutor("jdbc", db);
+        ChangeFactory.getInstance().register(RegisterSchema.class);
+        ChangeFactory.getInstance().register(UpgradeSchema.class);
+        ChangeFactory.getInstance().register(ImportConfiguration.class);
+        ChangeFactory.getInstance().register(ImportConfigurations.class);
+        ChangeFactory.getInstance().register(ChangeSchema.class);
+        // Liqui 4.4.3: Scope.getCurrentScope().getSingleton(liquibase.change.ChangeFactory.class).register(new RegisterSchema());
+        ExecutorService.getInstance().clearExecutor(db);
         CmExecutor executor = new CmExecutor();
         executor.setDatabase(db);
-        Scope.getCurrentScope().getSingleton(liquibase.executor.ExecutorService.class).setExecutor("jdbc", db, executor);
+        ExecutorService.getInstance().setExecutor(db, executor);
+        // Liqui 4.4.3: Scope.getCurrentScope().getSingleton(liquibase.executor.ExecutorService.class).register(new CmExecutor());
         liquibase.sqlgenerator.SqlGeneratorFactory.getInstance().register(new CmSqlGenerator());
 
         // Liquibase

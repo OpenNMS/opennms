@@ -21,7 +21,6 @@
  */
 package liquibase.ext.opennms.createindex;
 
-import liquibase.Scope;
 import liquibase.database.Database;
 import liquibase.logging.LogService;
 import liquibase.logging.Logger;
@@ -33,7 +32,7 @@ import liquibase.statement.core.CreateIndexStatement;
 import liquibase.structure.DatabaseObject;
 
 public class CreateIndexWithWhereGenerator extends CreateIndexGenerator {
-    private static final Logger LOG = Scope.getCurrentScope().getLog(CreateIndexWithWhereGenerator.class);
+    private static final Logger LOG = LogService.getLog(CreateIndexWithWhereGenerator.class);
 
     @Override
     public int getPriority() {

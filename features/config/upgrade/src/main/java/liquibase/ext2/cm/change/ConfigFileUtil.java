@@ -35,13 +35,13 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
-import org.apache.commons.io.FilenameUtils;
 import org.opennms.features.config.exception.ConfigIOException;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.util.FileCopyUtils;
 
 import liquibase.exception.ValidationErrors;
+import liquibase.util.file.FilenameUtils;
 
 class ConfigFileUtil {
     public static String OPENNMS_HOME = System.getProperty("opennms.home", "");

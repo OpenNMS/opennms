@@ -21,17 +21,17 @@
  */
 package liquibase.ext.opennms.createindex;
 
-import liquibase.Scope;
 import liquibase.change.ChangeMetaData;
 import liquibase.change.DatabaseChange;
 import liquibase.database.Database;
+import liquibase.logging.LogService;
 import liquibase.logging.Logger;
 import liquibase.statement.SqlStatement;
 import liquibase.statement.core.CreateIndexStatement;
 
 @DatabaseChange(name="createIndex", description = "Creates an index on an existing column or set of columns.", priority = ChangeMetaData.PRIORITY_DEFAULT + 1, appliesTo = "index")
 public class CreateIndexWithWhereChange extends liquibase.change.core.CreateIndexChange {
-    private static final Logger LOG = Scope.getCurrentScope().getLog(CreateIndexWithWhereChange.class);
+    private static final Logger LOG = LogService.getLog(CreateIndexWithWhereChange.class);
     private String m_where;
 
     public CreateIndexWithWhereChange() {
