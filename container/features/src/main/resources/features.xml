@@ -810,7 +810,7 @@
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan-serializer/${xalanSerializerServicemixVersion}</bundle>
         <bundle>mvn:org.opennms.core.wsman/org.opennms.core.wsman.api/${wsmanVersion}</bundle>
         <bundle>mvn:org.opennms.core.wsman/org.opennms.core.wsman.cxf/${wsmanVersion}</bundle>
-        <bundle>mvn:org.opennms.features/org.opennms.features.wsman/${project.version}</bundle>
+        <bundle>mvn:org.opennms.extensions/org.opennms.extensions.wsman/${project.version}</bundle>
     </feature>
     <feature name="wmi-integration" version="${project.version}" description="OpenNMS :: Features :: WMI Integration">
         <feature>commons-cli</feature>
@@ -819,7 +819,7 @@
         <feature>jcifs</feature>
         <bundle dependency="true">wrap:mvn:com.github.skyghis/j-interop-ng/${jinteropVersion}$Bundle-SymbolicName=com.github.skyghis.j-interop-ng&amp;Bundle-Version=${jinteropVersion}</bundle>
         <bundle dependency="true">wrap:mvn:com.github.skyghis/j-interop-ng-deps/${jinteropVersion}$Bundle-SymbolicName=com.github.skyghis.j-interop-ng.deps&amp;Bundle-Version=${jinteropVersion}</bundle>
-        <bundle>mvn:org.opennms/opennms-wmi/${project.version}</bundle>
+        <bundle>mvn:org.opennms.extensions/org.opennms.extensions.wmi/${project.version}</bundle>
     </feature>
     <feature name="opennms-prometheus-collector" version="${project.version}" description="OpenNMS :: Features :: Prometheus Collector">
         <feature>opennms-core-web</feature>
@@ -892,7 +892,7 @@
         <bundle>wrap:mvn:com.toastcoders/yavijava/6.0.05$Bundle-SymbolicName=com.toastcoders.yavijava&amp;Bundle-Version=6.0.05</bundle>
         <bundle>wrap:mvn:org.sblim.slp/sblimSLPClient/1.17$Bundle-SymbolicName=org.sblim.slp.client&amp;Bundle-Version=1.17</bundle>
         <bundle>wrap:mvn:org.sblim.wbem/sblimCIMClient/1.17$Bundle-SymbolicName=org.sblim.webm.client&amp;Bundle-Version=1.17</bundle>
-        <bundle>mvn:org.opennms/opennms-vmware/${project.version}</bundle>
+        <bundle>mvn:org.opennms.extensions/org.opennms.extensions.vmware/${project.version}</bundle>
     </feature>
     <feature name="opennms-poller-monitors-core" version="${project.version}" description="OpenNMS :: Poller :: Monitors :: Core">
         <feature>activemq-client</feature>

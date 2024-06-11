@@ -27,7 +27,7 @@
         <include>org.opennms.core:org.opennms.core.soa:jar:xsds:${project.version}</include>
         <include>org.opennms.features:org.opennms.features.jdbc-collector:jar:xsds:${project.version}</include>
         <include>org.opennms.features:org.opennms.features.juniper-tca-collector:jar:xsds:${project.version}</include>
-        <include>org.opennms.features:org.opennms.features.wsman:jar:xsds:${project.version}</include>
+        <include>org.opennms.extensions:org.opennms.extensions.wsman:jar:xsds:${project.version}</include>
         <include>org.opennms:opennms-config-jaxb:jar:xsds:${project.version}</include>
         <include>org.opennms:opennms-config-model:jar:xsds:${project.version}</include>
         <include>org.opennms:drools-correlation-engine:jar:xsds:${project.version}</include>

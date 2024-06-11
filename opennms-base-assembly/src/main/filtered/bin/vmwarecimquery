@@ -4,7 +4,7 @@ OPENNMS_HOME="${install.dir}"
 OPENNMS_BINDIR="${install.bin.dir}"
 
 YAVIJAVA_JAR=`ls -1 "$OPENNMS_HOME"/lib/yavijava-*.jar | head -n 1`
-VMWARE_JAR=`ls -1 "$OPENNMS_HOME"/lib/opennms-vmware-*.jar | head -n 1`
+VMWARE_JAR=`ls -1 "$OPENNMS_HOME"/lib/org.opennms.extensions.vmware-*.jar | head -n 1`
 DOM4J_JAR=`ls -1 "$OPENNMS_HOME"/lib/dom4j-*.jar | head -n 1`
 COMMONS_CLI_JAR=`ls -1 "$OPENNMS_HOME"/lib/commons-cli-*.jar | head -n 1`
 SLF4J_API_JAR=`ls -1 "$OPENNMS_HOME"/lib/slf4j-api*.jar | head -n 1`

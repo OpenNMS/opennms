@@ -121,8 +121,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-vmware</artifactId>
+      <groupId>org.opennms.extensions</groupId>
+      <artifactId>org.opennms.extensions.vmware</artifactId>
       <scope>test</scope>
     </dependency>
     <dependency>
@@ -195,8 +195,8 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.wsman</artifactId>
+      <groupId>org.opennms.extensions</groupId>
+      <artifactId>org.opennms.extensions.wsman</artifactId>
       <version>${project.version}</version>
       <scope>test</scope>
     </dependency>

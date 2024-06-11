@@ -108,7 +108,7 @@
       <feature>opennms-config</feature>
       <feature>opennms-config-jaxb</feature>
       <feature>opennms-core-web</feature>
-      <!-- System classpath dependency of opennms-vmware -->
+      <!-- System classpath dependency of org.opennms.extensions.vmware -->
       <feature>opennms-prometheus-collector</feature>
       <feature>opennms-provisioning</feature>
       <feature>opennms-vmware</feature>

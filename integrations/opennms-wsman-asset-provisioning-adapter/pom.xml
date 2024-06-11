@@ -52,8 +52,8 @@
       <artifactId>org.opennms.features.events.api</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.wsman</artifactId>
+      <groupId>org.opennms.extensions</groupId>
+      <artifactId>org.opennms.extensions.wsman</artifactId>
       <version>${project.version}</version>
     </dependency>
     <!-- test dependencies -->

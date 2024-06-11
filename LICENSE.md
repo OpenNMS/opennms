@@ -80,10 +80,10 @@ view the header in each file:
 * core/snmp/impl-snmp4j/src/main/java/org/opennms/netmgt/snmp/snmp4j/Integer32IgnoreTooManyBytes.java
 * core/soa/src/main/java/org/opennms/core/soa/support/OnmsOSGiBridgeActivator.java
 * core/test-api/dns/src/main/java/org/opennms/core/test/dns/DNSServer.java
-* integrations/opennms-vmware/src/main/java/org/opennms/netmgt/collectd/VmwareCimCollector.java
-* integrations/opennms-vmware/src/main/java/org/opennms/netmgt/poller/monitors/VmwareCimMonitor.java
-* integrations/opennms-vmware/src/main/java/org/opennms/protocols/vmware/VmwareViJavaAccess.java
-* integrations/opennms-vmware/src/test/java/org/opennms/netmgt/collectd/vmware/VmwareViJavaAccessTest.java
+* extensions/vmware/src/main/java/org/opennms/netmgt/collectd/VmwareCimCollector.java
+* extensions/vmware/src/main/java/org/opennms/netmgt/poller/monitors/VmwareCimMonitor.java
+* extensions/vmware/src/main/java/org/opennms/protocols/vmware/VmwareViJavaAccess.java
+* extensions/vmware/src/test/java/org/opennms/netmgt/collectd/vmware/VmwareViJavaAccessTest.java
 * maven/conf/logging/simplelogger.properties
 * opennms-services/src/main/java/org/opennms/netmgt/xmlrpcd/TimeoutSecureXmlRpcClient.java
 * opennms-services/src/main/java/org/opennms/netmgt/xmlrpcd/TimeoutSecureXmlRpcTransport.java
