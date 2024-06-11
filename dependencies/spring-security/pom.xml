@@ -94,7 +94,15 @@
           <groupId>org.bouncycastle</groupId>
           <artifactId>org.bouncycastle:bcpkix-jdk15on</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.apache.santuario</groupId>
+          <artifactId>xmlsec</artifactId>
+        </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.santuario</groupId>
+      <artifactId>xmlsec</artifactId>
     </dependency>
     <dependency>
       <groupId>org.apache.servicemix.bundles</groupId>
