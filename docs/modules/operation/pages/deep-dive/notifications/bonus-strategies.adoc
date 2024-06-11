@@ -1,7 +1,0 @@
-
-
-[[ga-notifications-bonus-strategies]]
-= Bonus Notification Methods
-:description: Overview of bonus notification methods in {page-component-title}: Mattermost and Slack.
-
-{page-component-title} includes a handful of newer notification methods that currently require manual steps to activate.

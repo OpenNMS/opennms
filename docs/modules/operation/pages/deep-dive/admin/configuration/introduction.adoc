@@ -1,5 +1,0 @@
-
-= {page-component-title} Configuration
-:description: Overview of configuration section in the {page-component-title} documentation.
-
-This section explains the configuration options available for various {page-component-title} components.

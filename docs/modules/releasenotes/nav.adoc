@@ -1,3 +1,0 @@
-.Release Notes
-* xref:whatsnew.adoc[]
-* xref:changelog.adoc[]

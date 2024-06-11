@@ -1,1 +1,0 @@
-include::operation:deep-dive/performance-data-collection/shell/measurements.adoc[]

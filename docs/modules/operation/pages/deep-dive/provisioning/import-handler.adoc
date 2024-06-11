@@ -1,8 +1,0 @@
-
-[[import-handlers]]
-= Import Handlers
-:description: Overview of import handlers in {page-component-title} to facilitate provisioning nodes from an external system into a requisition.
-
-{page-component-title} supports a number of import handlers to facilitate provisioning nodes from an external system (foreign source) into a requisition.
-
-See the xref:reference:provisioning/handlers/introduction.adoc[provisioning reference section] for information on supported handlers.
