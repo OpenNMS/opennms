@@ -76,12 +76,6 @@
     <module>osgi-jsr223</module>
     <module>opennms-osgi-core-rest</module>
 
-    <!-- JMX config generator -->
-    <module>jmx-config-generator</module>
-
-    <!-- SNMP MIB Parser and Event/Collection Configuration -->
-    <module>mib-compiler</module>
-
     <!-- webapps -->
     <module>root-webapp</module>
 

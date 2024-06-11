@@ -89,24 +89,6 @@
             </configuration>
           </execution>
           <execution>
-            <id>copy-jmx-config-generator</id>
-            <phase>process-resources</phase>
-            <goals><goal>copy</goal></goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.opennms.features</groupId>
-                  <artifactId>jmxconfiggenerator</artifactId>
-                  <type>jar</type>
-                  <classifier>onejar</classifier>
-                  <destFileName>opennms_jmx_config_generator.jar</destFileName>
-                  <outputDirectory>${project.build.directory}/jmx</outputDirectory>
-                </artifactItem>
-              </artifactItems>
-            </configuration>
-          </execution>
-
-          <execution>
             <id>copy-scv-cli</id>
             <phase>process-resources</phase>
             <goals><goal>copy</goal></goals>

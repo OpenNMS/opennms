@@ -1,17 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
-    <artifactId>org.opennms.features</artifactId>
     <groupId>org.opennms</groupId>
+    <artifactId>org.opennms.tooling</artifactId>
     <version>34.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
   <artifactId>org.opennms.features.mib-compiler</artifactId>
   <packaging>bundle</packaging>
-  <name>OpenNMS :: Features :: MIB-Compiler</name>
-
-  <description>Standalong MIB-Compiler based on JSMILib</description>
+  <name>OpenNMS :: Tooling :: MIB-Compiler</name>
+  <description>Standalone MIB-Compiler based on JSMILib</description>
   <properties>
     <bundle.symbolicName>org.opennms.features.mib-compiler</bundle.symbolicName>
     <bundle.namespace>org.opennms.features</bundle.namespace>
@@ -39,14 +38,8 @@
       </plugin>
     </plugins>
   </build>
- 
+
   <dependencies>
-        <dependency>
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>spring-dependencies</artifactId>
-            <scope>provided</scope>
-            <type>pom</type>
-        </dependency>
         <dependency>
             <groupId>org.opennms.core</groupId>
             <artifactId>org.opennms.core.lib</artifactId>

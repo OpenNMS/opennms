@@ -101,6 +101,7 @@
     <module>protocols</module>
     <module>tests</module>
     <module>integration-tests</module>
+    <module>tooling</module>
     <module>ui</module>
 
     <!-- old structure -->
@@ -2733,11 +2734,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
-        <artifactId>org.opennms.features.mib-compiler</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.request-tracker</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -3425,12 +3421,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-provisiond</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>jmxconfiggenerator</artifactId>
-        <classifier>onejar</classifier>
         <version>${project.version}</version>
       </dependency>
       <dependency>

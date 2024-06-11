@@ -290,7 +290,6 @@
     <intercept-url pattern="/admin/ng-requisitions/**" access="hasAnyRole('ROLE_PROVISION','ROLE_ADMIN')" />
     <intercept-url pattern="/admin/classification/index.jsp" access="hasAnyRole('ROLE_FLOW_MANAGER','ROLE_ADMIN')" />
     <intercept-url pattern="/admin/**" access="hasAnyRole('ROLE_ADMIN')" />
-    <intercept-url pattern="/**/mib-compiler" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/**/admin-*" access="hasAnyRole('ROLE_ADMIN')" />
     <intercept-url pattern="/rtc/post/**" access="hasAnyRole('ROLE_RTC')" />
     <intercept-url pattern="/element/rescan.jsp" access="hasAnyRole('ROLE_ADMIN')" />
