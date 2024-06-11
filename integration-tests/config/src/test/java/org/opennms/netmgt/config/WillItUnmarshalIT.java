@@ -114,7 +114,6 @@ import org.opennms.netmgt.config.wsman.credentials.WsmanConfig;
 import org.opennms.netmgt.config.wsman.WsmanDatacollectionConfig;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.opennms.netmgt.provision.persist.requisition.Requisition;
-import org.opennms.netmgt.search.providers.action.Actions;
 import org.opennms.netmgt.telemetry.config.model.TelemetrydConfig;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.features.jest.client.credentials.ElasticCredentials;
@@ -240,7 +239,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "snmp-hardware-inventory-adapter-configuration.xml", HwInventoryAdapterConfiguration.class, false, null);
         addFile(Source.CONFIG, "snmp-interface-poller-configuration.xml", SnmpInterfacePollerConfiguration.class, true, null);
         addFile(Source.CONFIG, "snmp-metadata-adapter-configuration.xml", SnmpMetadataConfig.class, false, null);
-        addFile(Source.CONFIG, "search-actions.xml", Actions.class, false, null);
         addFile(Source.CONFIG, "surveillance-views.xml", SurveillanceViewConfiguration.class, true, null);
         addFile(Source.CONFIG, "syslog-northbounder-configuration.xml", SyslogNorthbounderConfig.class, true, null);
         addFile(Source.CONFIG, "syslogd-configuration.xml", SyslogdConfiguration.class, false, null);

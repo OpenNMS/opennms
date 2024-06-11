@@ -447,7 +447,6 @@
                 <feature>opennms-endpoints-grafana</feature>
 <!--                <feature>opennms-reporting</feature>-->
                 <feature>opennms-send-event-command</feature>
-                <feature>opennms-search</feature>
                 <feature>opennms-dnsresolver-shell</feature>
                 <feature>opennms-dnsresolver-netty</feature>
                 <feature>opennms-blobstore-noop</feature>

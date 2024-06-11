@@ -1283,13 +1283,6 @@
         <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
         <bundle>mvn:org.apache.httpcomponents/httpasyncclient-osgi/${httpasyncclientVersion}</bundle>
     </feature>
-    <feature name="opennms-search" version="${project.version}" description="OpenNMS :: Features :: Search">
-        <details>OpenNMS :: Features :: Search</details>
-        <bundle>mvn:org.opennms.features.search/org.opennms.features.search.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.search/org.opennms.features.search.providers/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.search/org.opennms.features.search.service/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.search/org.opennms.features.search.rest/${project.version}</bundle>
-    </feature>
     <feature name="opennms-mate-api" version="${project.version}" description="OpenNMS :: Features :: Metadata :: API">
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature>opennms-core</feature>
