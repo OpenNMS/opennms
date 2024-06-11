@@ -76,32 +76,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItem("Status", "Application", "application/index.jsp");
         findElementByXpath("//li[text()='Application Status']");
 
-        clickMenuItem("Status", "Surveillance", "surveillance-view.jsp");
-        // switchTo() by xpath is much faster than by ID
-        //driver.switchTo().frame("surveillance-view-ui");
-        driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
-        driver.switchTo().parentFrame();
-        frontPage();
-
-        final String dashboardsMenuName = "name=nav-Dashboards-top";
-        clickMenuItem(dashboardsMenuName, "Dashboard", "dashboard.jsp");
-        // switchTo() by xpath is much faster than by ID
-        //driver.switchTo().frame("surveillance-view-ui");
-        driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
-        driver.switchTo().parentFrame();
-        frontPage();
-
-        clickMenuItem(dashboardsMenuName, "Ops Board", "vaadin-wallboard");
-        findElementByXpath("//select[@class='v-select-select']");
-
-        frontPage();
-        final String mapsMenuName = "name=nav-Maps-top";
-        clickMenuItem(mapsMenuName, "Topology", "topology");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(), 'Selection Context')]")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='navbar']//a[@name='nav-Maps-top']")));
-
         frontPage();
         findElementByXpath("//nav//a[contains(@title, 'Configure OpenNMS') and contains(@href, 'opennms/admin/index.jsp')]").click();
         findElementByXpath("//div[@class='card-header']/span[text()='OpenNMS System']");

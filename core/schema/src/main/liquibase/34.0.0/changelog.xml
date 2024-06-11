@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+    <!-- Topology Layout Table -->
+    <changeSet author="mvrueden" id="33.0.0-drop-topology-layout-tables">
+        <!-- The layout -->
+        <dropTable tableName="topo_layout_vertex_positions" />
+        <dropTable tableName="topo_vertex_position" />
+        <dropTable tableName="topo_layout" />
+    </changeSet>
+
+</databaseChangeLog>

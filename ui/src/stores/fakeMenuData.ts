@@ -219,44 +219,6 @@ export const defaultMainMenu = {
     {
       id: null,
       className: 'org.opennms.web.navigate.MenuDropdownNavBarEntry',
-      name: 'Dashboards',
-      url: 'dashboards.htm',
-      locationMatch: null,
-      icon: null,
-      iconType: null,
-      isIconOnly: null,
-      isVueLink: null,
-      roles: null,
-      items: [
-        {
-          id: null,
-          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
-          name: 'Dashboard',
-          url: 'dashboard.jsp',
-          locationMatch: 'dashboard',
-          icon: null,
-          iconType: null,
-          isIconOnly: null,
-          isVueLink: null,
-          roles: null
-        },
-        {
-          id: null,
-          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
-          name: 'Ops Board',
-          url: 'vaadin-wallboard',
-          locationMatch: 'vaadin-wallboard',
-          icon: null,
-          iconType: null,
-          isIconOnly: null,
-          isVueLink: null,
-          roles: null
-        }
-      ]
-    },
-    {
-      id: null,
-      className: 'org.opennms.web.navigate.MenuDropdownNavBarEntry',
       name: 'Maps',
       url: 'maps.htm',
       locationMatch: null,

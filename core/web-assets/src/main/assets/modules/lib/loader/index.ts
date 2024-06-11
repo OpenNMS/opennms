@@ -24,7 +24,7 @@
 
 export default class OnmsLoader {
   public prefix = '/opennms/assets/';
-  public extension = '.vaadin.js';
+  public extension = '.vaadin.js'; // TODO MVR not sure what to do here atm, but gonna get rid of this soon anyways :D
   private loaded = new Set<string>();
   private mappings: object;
 

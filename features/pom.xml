@@ -75,23 +75,15 @@
     <!-- OpenNMS rest provider module -->
     <module>rest-provider</module>
 
-    <!-- OpenNMS OSGI Core -->
-    <module>opennms-osgi-core</module>
-    
     <!-- OSGi Script Engine -->
     <module>osgi-jsr223</module>
     <module>opennms-osgi-core-rest</module>
 
     <!-- JMX config generator -->
     <module>jmx-config-generator</module>
-    <module>vaadin-jmxconfiggenerator</module>
- 
+
     <!-- SNMP MIB Parser and Event/Collection Configuration -->
     <module>mib-compiler</module>
-    <module>vaadin-snmp-events-and-metrics</module>
-
-    <!-- Topology Map -->
-    <module>topology-map</module>
 
     <!-- webapps -->
     <module>root-webapp</module>
@@ -109,22 +101,6 @@
 
     <!-- OpenNMS Notifications -->
     <module>notifications</module>
-
-    <!-- OpenNMS Vaadin Themes -->
-    <module>themes</module>
-
-    <!-- Vaadin Feature -->
-    <module>vaadin</module>
-
-    <!-- Generic Vaadin components -->
-    <module>vaadin-components</module>
-
-    <!-- Dashboard and dashlet UI elements -->
-    <module>vaadin-dashboard</module>
-    <module>vaadin-dashlets</module>
-
-    <!-- OpenNMS Vaadin Surveillance Views -->
-    <module>vaadin-surveillance-views</module>
 
     <!-- Other projects -->
     <module>distributed</module>

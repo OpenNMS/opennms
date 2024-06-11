@@ -56,7 +56,7 @@ public class OsgiDeployedApplicationsIT extends OpenNMSSeleniumIT {
                 "osgi/topology"
         };
 
-        verifyUrls(paths, 403, "FORBIDDEN");
+        verifyUrls(paths, 404, "NOT_FOUND");
     }
 
     // See NMS-7785
@@ -72,7 +72,7 @@ public class OsgiDeployedApplicationsIT extends OpenNMSSeleniumIT {
                 "topology"
         };
 
-        verifyUrls(paths, 200, "OK");
+        verifyUrls(paths, 404, "NOT_FOUND");
     }
 
     private void verifyUrls(final String[] paths, final int expectedStatus, final String expectedStatusText) throws IOException {

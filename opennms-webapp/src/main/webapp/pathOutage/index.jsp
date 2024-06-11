@@ -25,11 +25,8 @@
 	import="
 		java.net.InetAddress,
 		java.util.List,
-		org.opennms.core.utils.InetAddressUtils,
-		org.opennms.features.topology.link.Layout,
-		org.opennms.features.topology.link.TopologyLinkBuilder"
+		org.opennms.core.utils.InetAddressUtils"
 %>
-<%@ page import="org.opennms.features.topology.link.TopologyProvider" %>
 <%@ page import="org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl" %>
 
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
@@ -60,7 +57,6 @@
 				<th>Critical Path IP</th>
 				<th>Critical Path Service</th>
 				<th>Number of Nodes</th>
-				<th>Actions</th>
 			</tr>
 		<% for (String[] pth : testPaths) {
 			pthData = PathOutageManagerDaoImpl.getInstance().getCriticalPathData(pth[1], pth[2]); %>
@@ -75,15 +71,6 @@
 			<td><%= pth[1] %></td>
 			<td class="severity-<%= pthData[3] %> bright"><%= pth[2] %></td>
 			<td><a href="pathOutage/showNodes.jsp?critIp=<%= pth[1] %>&critSvc=<%= pth[2] %>"><%= pthData[2] %></a></td>
-			<%
-				final String topologyLink = new TopologyLinkBuilder()
-						.focus(pthData[1])
-						.szl(0)
-						.layout(Layout.HIERARCHY)
-						.provider(TopologyProvider.PATH_OUTAGE)
-						.getLink();
-			%>
-			<td><a href="<%= topologyLink%>"><i class="fa fa-external-link-square"></i> View in Topology</a></td>
 		</tr>
 		<% } %>
 	</table>

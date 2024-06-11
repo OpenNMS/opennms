@@ -50,10 +50,6 @@ var opennmsVersion = pkginfo.version;
 
 var argv = require('yargs').argv;
 var isProduction = argv.env === 'production';
-var doVaadin = true;
-if (typeof argv.vaadin !== 'undefined') {
-  doVaadin = argv.vaadin;
-}
 var distdir = path.join(__dirname, 'target', 'dist', 'assets');
 var variants = {
   production: [ false ]
@@ -91,9 +87,6 @@ const scssUse = [
 
 if (isProduction) {
   variants.production = [ true, false ];
-  if (doVaadin) {
-    variants.production.push('vaadin');
-  }
 }
 
 var getLatest = function getLatest(searchPath, latest = 0, recurse = true) {
@@ -142,7 +135,6 @@ var staticroot = path.join(assetsroot, 'static');
 var styleEntries = {};
 var appEntries = {};
 var vendorEntries = {};
-var vaadinEntries = {};
 var allEntries = {};
 
 const checkEntry = (type, entry) => {
@@ -169,9 +161,6 @@ const scanUtils = (start, dirs, names) => {
         checkEntry('lib', entry);
         appEntries[entry] = entryPath;
       }
-      if (entryPath.indexOf(path.sep + 'vaadin' + path.sep) >= 0) {
-        vaadinEntries[entry] = entryPath;
-      }
       allEntries[entry] = entryPath;
     }
   }
@@ -186,9 +175,6 @@ const scanApps = (start, dirs, names) => {
       const entry = path.basename(path.dirname(relative));
       const entryPath = path.join(start,file);
       checkEntry('app', entry);
-      if (entryPath.indexOf(path.sep + 'vaadin' + path.sep) >= 0) {
-        vaadinEntries[entry] = entryPath;
-      }
       allEntries[entry] = entryPath;
       appEntries[entry] = entryPath;
     }
@@ -226,9 +212,6 @@ doWalk('lib', scanApps);
 
 /* scan vendor roll-ups */
 doWalk('vendor', scanUtils);
-
-/* scan vendor roll-ups */
-doWalk('vaadin', scanUtils);
 
 const dotPrint = (entry) => {
   console.log('* ' + entry);
@@ -373,29 +356,8 @@ var config = {
         }]
       },
       {
-        // special case, vaadin-theme.scss needs string-replace-webpack-plugin to fix up header include stuff
-        test: /vaadin-theme\.scss$/,
-        include: [ styleroot ],
-        use: extractText.extract({
-          fallback: 'style-loader',
-          use: [ {
-            loader: StringReplacePlugin.replace({
-              replacements: [
-                {
-                  pattern: /\/\*! string-replace-webpack-plugin:\s*(.+?)\s*\*\//,
-                  replacement: function(match, p1, offset, string) {
-                    return p1;
-                  }
-                }
-              ]
-            })
-          } ].concat(scssUse)
-        })
-      },
-      {
         test: /\.scss$/,
         include: [ styleroot ],
-        exclude: [ path.join(styleroot, 'vaadin-theme.scss') ],
         use: extractText.extract({
           fallback: 'style-loader',
           use: scssUse
@@ -458,9 +420,6 @@ var config = {
 };
 
 function getExtension(options) {
-  if (options.production === 'vaadin') {
-    return '.vaadin.js';
-  }
   return options.production? '.min.js' : '.js';
 }
 
@@ -485,15 +444,6 @@ function createConfig(options) {
   var debug = Boolean(!options.production);
   var minify = Boolean(options.production);
   var assetJsonFile = 'assets' + (options.production? '.min' : '') + '.json';
-  if (options.production === 'vaadin') {
-    assetJsonFile = 'assets.vaadin.json';
-    myconf.entry = vaadinEntries;
-  } else {
-    // only do the vaadin files in the vaadin build
-    for (const key of Object.keys(vaadinEntries)) {
-      delete myconf.entry[key];
-    }
-  }
 
   myconf.plugins.push(new webpack.DefinePlugin(defs));
   myconf.plugins.push(new webpack.LoaderOptionsPlugin({
@@ -501,40 +451,39 @@ function createConfig(options) {
     debug: debug
   }));
 
-  if (options.production !== 'vaadin') {
-    myconf.plugins.unshift(new ESLintPlugin({
-      cache: true,
-      failOnError: true,
-    }));
+  myconf.plugins.unshift(new ESLintPlugin({
+    cache: true,
+    failOnError: true,
+  }));
 
-    myconf.optimization = {
-      runtimeChunk: {
-        name: 'vendor'
-      },
-      splitChunks: {
-        chunks: 'all',
-        minSize: 1,
-        minChunks: 1,
-        name: true,
-        cacheGroups: {
-          default: false,
-          vendors: false,
-          runtime: false,
-          vendor: {
-            name: 'vendor',
-            enforce: true,
-            test: (module, chunks) => {
-              return module.context
-              && module.context.includes('node_modules')
-              && !module.context.includes('d3')
-              && !module.context.includes('holderjs')
-              && !module.context.includes('leaflet');
-            }
+  myconf.optimization = {
+    runtimeChunk: {
+      name: 'vendor'
+    },
+    splitChunks: {
+      chunks: 'all',
+      minSize: 1,
+      minChunks: 1,
+      name: true,
+      cacheGroups: {
+        default: false,
+        vendors: false,
+        runtime: false,
+        vendor: {
+          name: 'vendor',
+          enforce: true,
+          test: (module, chunks) => {
+            return module.context
+            && module.context.includes('node_modules')
+            && !module.context.includes('d3')
+            && !module.context.includes('holderjs')
+            && !module.context.includes('leaflet');
           }
         }
       }
-    };
-  }
+    }
+  };
+
   myconf.plugins.push(extractText);
 
   if (!myconf.optimization) {
@@ -583,7 +532,7 @@ function createConfig(options) {
   //console.log(myconf);
 
   const smp = new SpeedMeasurePlugin({
-    outputTarget: 'target/smp-' + (options.production === 'vaadin' ? 'vaadin' : myconf.mode) + '.log'
+    outputTarget: 'target/smp-' +  myconf.mode + '.log'
   });
 
   return smp.wrap( myconf );

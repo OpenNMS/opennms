@@ -1225,15 +1225,6 @@
         <bundle>mvn:org.apache.velocity/velocity-engine-core/${velocityVersion}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.name-cutter/${project.version}</bundle>
     </feature>
-    <feature name="vaadin-jmxconfiggenerator" version="${project.version}" description="OpenNMS :: Features :: JMX Config Generator :: Web UI">
-        <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
-        <feature prerequisite="true">vaadin</feature>
-        <feature>jmxconfiggenerator</feature>
-        <bundle>mvn:org.opennms.features/vaadin-jmxconfiggenerator/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/core/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/widgetset/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.themes/jmxconfiggenerator-theme/${project.version}</bundle>
-    </feature>
     <feature name="org.opennms.features.enlinkd.service.api" version="${project.version}" description="OpenNMS :: Features :: Enlinkd :: Service :: API">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
         <feature version="${guavaOsgiVersion}">guava</feature>
@@ -1256,15 +1247,6 @@
         <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.shell-commands/${project.version}</bundle>
         <bundle start-level="${systemStartLevel}">mvn:org.apache.karaf.shell/org.apache.karaf.shell.core/${karafVersion}</bundle>
     </feature>
-    <feature name="vaadin-adminpage" version="${project.version}" description="OpenNMS :: Features :: BSM :: Vaadin Adminpage">
-        <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
-        <feature>vaadin</feature>
-        <feature>org.opennms.features.bsm.service.api</feature>
-        <bundle>mvn:org.opennms.features.bsm/vaadin-adminpage/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/core/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/widgetset/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.link/${project.version}</bundle>
-    </feature>
     <feature name="geolocation" version="${project.version}" description="OpenNMS :: Features :: Geolocation :: Feature">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
         <feature version="${guavaOsgiVersion}">guava</feature>
@@ -1277,17 +1259,6 @@
         <bundle start-level="${lateStartLevel}">mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.google/${project.version}</bundle>
         <bundle start-level="${lateStartLevel}">mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.mapquest/${project.version}</bundle>
         <bundle start-level="${lateStartLevel}">mvn:org.opennms.features.geocoder/org.opennms.features.geocoder.nominatim/${project.version}</bundle>
-    </feature>
-    <feature name="vaadin-snmp-events-and-metrics" version="${project.version}" description="OpenNMS :: Features :: SNMP Events and Metrics Admin UI">
-        <details>OpenNMS Vaadin Administration UI for handling SNMP related configuration files for events and data collection.</details>
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features/vaadin-snmp-events-and-metrics/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/core/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/widgetset/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.themes/onms-default-theme/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features/org.opennms.features.mib-compiler/${project.version}</bundle>
-        <bundle>mvn:commons-lang/commons-lang/${commonsLangVersion}</bundle>
     </feature>
     <feature name="osgi-nrtg-api" version="${project.version}" description="OpenNMS :: Features :: NRTG :: Features :: API">
         <details>The API contains the models for the NRTG OSGI projects. It has models for collection jobs, measurements and protocol collectors.</details>
@@ -1333,195 +1304,6 @@
         <details>OSGI Runtime for the NRTCollector.</details>
         <feature>osgi-nrtg-jms</feature>
         <feature>osgi-nrtg-local</feature>
-    </feature>
-    <feature name="vaadin" version="${project.version}" description="OpenNMS :: Features :: Vaadin + Dependencies">
-        <details>The Vaadin web application framework including some addons and osgi related packages.</details>
-        <feature>scr</feature>
-        <feature version="${guavaOsgiVersion}">guava</feature>
-        <feature prerequisite="true">opennms-http-whiteboard</feature>
-
-        <!-- OpenNMS Vaadin Base -->
-        <bundle>mvn:org.opennms.features.vaadin-components/extender-service/${project.version}</bundle>
-        <bundle>mvn:org.opennms.osgi/opennms-osgi-core/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.themes/onms-default-theme/${project.version}</bundle>
-
-        <!-- Dependencies -->
-        <bundle>mvn:com.vaadin.external.gwt/gwt-elemental/2.8.2.vaadin2</bundle>
-        <bundle>wrap:mvn:com.google.gwt/gwt-user/${gwtVersion}/$Export-Package=com.google.*</bundle>
-        <bundle>mvn:com.vaadin.external/gentyref/${vaadinGentyrefVersion}</bundle>
-        <bundle>mvn:org.jsoup/jsoup/${vaadinJsoupVersion}</bundle>
-        <bundle>mvn:org.json/json/${jsonVersion}</bundle>
-
-        <!-- Vaadin -->
-        <bundle>mvn:com.vaadin/vaadin-shared/${vaadinVersion}</bundle>
-        <bundle>mvn:com.vaadin/vaadin-server/${vaadinVersion}</bundle>
-        <bundle>mvn:com.vaadin/vaadin-client/${vaadinVersion}</bundle>
-        <bundle>mvn:com.vaadin/vaadin-client-compiled/${vaadinVersion}</bundle>
-        <bundle>mvn:com.vaadin/vaadin-themes/${vaadinVersion}</bundle>
-
-        <!-- Vaadin Compatibility -->
-        <bundle>mvn:com.vaadin/vaadin-compatibility-shared/${vaadinVersion}</bundle>
-        <bundle>mvn:com.vaadin/vaadin-compatibility-server/${vaadinVersion}</bundle>
-        <bundle>mvn:com.vaadin/vaadin-compatibility-client-compiled/${vaadinVersion}</bundle>
-        <bundle>wrap:mvn:com.vaadin/vaadin-compatibility-client/${vaadinVersion}</bundle>
-        <bundle>mvn:com.vaadin/vaadin-compatibility-themes/${vaadinVersion}</bundle>
-
-        <!-- Add Ons -->
-        <bundle>mvn:com.vaadin/vaadin-context-menu/${vaadinAddonContextMenuVersion}</bundle>
-        <bundle>mvn:org.vaadin.addon/confirmdialog/${vaadinAddonConfirmDialogVersion}</bundle>
-    </feature>
-    <feature name="opennms-topology-api" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: API">
-        <details>APIs for creating topology OSGi plugins.</details>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.api/${project.version}</bundle>
-    </feature>
-    <feature name="opennms-topology-runtime-base" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: Base">
-        <details>Base runtime and plugins for the OpenNMS topology web app.</details>
-        <feature>opennms-core</feature>
-        <feature>opennms-topology-api</feature>
-        <feature>geolocation</feature>
-        <feature>commons-collections4</feature>
-        <feature>commons-lang3</feature>
-        <feature>commons-net</feature>
-        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
-        <feature>jackson-core</feature>
-        <feature>jackson-dataformat-yaml</feature>
-        <feature>jung</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.app/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.topology.plugins.topo/org.opennms.features.topology.plugins.topo.history/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.link/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.topology.plugins/org.opennms.features.topology.plugins.layout/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.netutils/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.topology.themes/org.opennms.features.topology.themes.default-theme/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/core/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/graph/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/header/${project.version}</bundle>
-    </feature>
-    <feature name="opennms-topology-runtime-linkd" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: Linkd">
-        <details>Linkd-based runtime and plugins for the OpenNMS topology web app.</details>
-        <feature>opennms-topology-runtime-base</feature>
-        <bundle>mvn:org.opennms.features.topology.plugins.topo/org.opennms.features.topology.plugins.topo.linkd/${project.version}</bundle>
-    </feature>
-    <feature name="opennms-topology-runtime-browsers" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: Browsers">
-        <details>Alarm browser to enhance the Linkd topology UI.</details>
-        <feature>opennms-topology-api</feature>
-        <bundle>mvn:org.opennms.features.topology.plugins/org.opennms.features.topology.plugins.browsers/${project.version}</bundle>
-    </feature>
-    <feature name="opennms-topology-runtime-vmware" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: VMware">
-        <details>Runtime and plugins for the OpenNMS VMware topology web app.</details>
-        <feature>opennms-topology-runtime-base</feature>
-        <bundle>mvn:org.opennms.features.topology.plugins.topo/org.opennms.features.topology.plugins.topo.vmware/${project.version}</bundle>
-    </feature>
-    <feature name="opennms-topology-runtime-application" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: Application">
-        <details>Runtime and plugins for the OpenNMS Application Topology Provider</details>
-        <feature>opennms-topology-runtime-base</feature>
-        <feature>opennms-graph-provider-application</feature>
-        <bundle>mvn:org.opennms.features.topology.plugins.topo/org.opennms.features.topology.plugins.topo.application/${project.version}</bundle>
-    </feature>
-    <feature name="opennms-topology-runtime-bsm" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: BSM">
-        <details>Generated using Pax-Construct</details>
-        <feature>opennms-topology-runtime-base</feature>
-        <bundle>mvn:org.opennms.features.topology.plugins.topo/org.opennms.features.topology.plugins.topo.bsm/${project.version}</bundle>
-    </feature>
-    <feature name="opennms-topology-runtime-pathoutage" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: PathOutage">
-        <details>Generated using Pax-Construct</details>
-        <feature>opennms-topology-runtime-base</feature>
-        <bundle>mvn:org.opennms.features.topology.plugins.topo/org.opennms.features.topology.plugins.topo.pathoutage/${project.version}</bundle>
-    </feature>
-    <feature name="opennms-topology-runtime-graphml" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: GraphML">
-        <details>GraphML runtime and plugins for the OpenNMS topology web app.</details>
-        <feature>groovy</feature>
-        <feature>opennms-graphml</feature>
-        <feature>opennms-topology-runtime-base</feature>
-        <bundle>mvn:org.opennms.features.topology.plugins.topo/graphml/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features/org.opennms.features.osgi-jsr223/${project.version}</bundle>
-    </feature>
-    <feature name="opennms-topology-runtime-asset" version="${project.version}" description="OpenNMS :: Features :: Topology :: Features :: Runtime :: Asset">
-        <details>Asset runtime and plugins for the OpenNMS topology web app.</details>
-        <feature prerequisite="true">shell-compat</feature>
-        <feature>opennms-topology-runtime-graphml</feature>
-        <feature>opennms-topology-runtime-base</feature>
-        <bundle>mvn:org.opennms.features.topology.plugins.topo/asset/${project.version}</bundle>
-    </feature>
-    <feature name="org.opennms.features.topology.shell" version="${project.version}" description="OpenNMS :: Features :: Topology :: Shell Commands">
-        <details>Generated using Pax-Construct</details>
-        <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.shell/${project.version}</bundle>
-    </feature>
-    <feature name="vaadin-dashboard" version="${project.version}" description="OpenNMS :: Features :: Dashboard">
-        <details>OpenNMS Vaadin Dashboard</details>
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features/vaadin-dashboard/${project.version}</bundle>
-        <bundle>wrap:mvn:org.vaadin.addons/dragdroplayouts/1.4.2</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/core/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.themes/dashboard-theme/${project.version}</bundle>
-        <bundle>mvn:org.vaadin.addons/dragdroplayouts/1.4.2</bundle>
-    </feature>
-    <feature name="dashlet-alarms" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: Alarms">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-alarms/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-bsm" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: BSM">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-bsm/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-summary" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: Summary">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-summary/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-map" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: Map">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-map/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-image" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: Image">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-image/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-rtc" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: RTC">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-rtc/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-rrd" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: RRD">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-rrd/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-topology" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: Topology">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-topology/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.link/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-surveillance" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: Surveillance">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-surveillance/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-url" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: URL">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-url/${project.version}</bundle>
-    </feature>
-    <feature name="dashlet-grafana" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: Grafana">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-grafana/${project.version}</bundle>
-    </feature>
-    <feature name="vaadin-surveillance-views" version="${project.version}" description="OpenNMS :: Features :: Surveillance Views">
-        <details>OpenNMS Vaadin Surveillance Views</details>
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features/vaadin-surveillance-views/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/graph/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/core/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.vaadin-components/widgetset/${project.version}</bundle>
     </feature>
     <feature name="jira-troubleticketer" version="${project.version}" description="OpenNMS :: Features :: Ticketing :: JIRA">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
@@ -1727,8 +1509,6 @@
         <feature>opennms-graph-provider-graphml</feature>
         <feature>opennms-graph-provider-bsm</feature>
         <feature>opennms-graph-provider-application</feature>
-        <feature>opennms-graph-provider-legacy</feature>
-        <feature>opennms-graph-provider-topology</feature>
     </feature>
     <feature name="opennms-graph-api" description="OpenNMS :: Features :: Graph :: API" version="${project.version}">
         <feature version="${guavaOsgiVersion}">guava</feature>
@@ -1783,18 +1563,6 @@
         <feature>opennms-graph-service</feature>
         <feature>opennms-model</feature>
         <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.application/${project.version}</bundle>
-    </feature>
-    <feature name="opennms-graph-provider-legacy" description="OpenNMS :: Features :: Graph :: Provider :: VMware + Enlinkd" version="${project.version}">
-        <feature>opennms-graph-service</feature>
-        <feature>opennms-model</feature>
-        <feature>opennms-topology-api</feature>
-        <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.legacy/${project.version}</bundle>
-    </feature>
-    <feature name="opennms-graph-provider-topology" description="OpenNMS :: Features :: Graph :: Provider :: Topology" version="${project.version}">
-        <feature>opennms-model</feature>
-        <feature>opennms-graph-service</feature>
-        <bundle>mvn:org.opennms.features.topology/org.opennms.features.topology.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.topology/${project.version}</bundle>
     </feature>
     <!-- For now it is only used for test purposes -->
     <feature name="opennms-graph-provider-persistence-test" description="OpenNMS :: Features :: Graph :: Provider :: Persistence Test" version="${project.version}">

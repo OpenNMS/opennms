@@ -191,13 +191,6 @@
     </jsp:include>
   </c:if>
 
-  <c:if test="${param.vaadinEmbeddedStyles == 'true'}">
-    <!-- embedded Vaadin app, fix container to leave room for headers -->
-    <style type="text/css">
-      footer#footer { position:absolute; bottom:0; width:100%; }
-    </style>
-  </c:if>
-
 </head>
 
 <%-- The <body> tag is unmatched in this file (its matching tag is in the

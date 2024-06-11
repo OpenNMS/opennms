@@ -158,15 +158,9 @@ Files in `vendor/` should be a single JavaScript file that includes other depend
 The compiled entry point file will be named after the file in the `vendor/` directory.
 For example, if your vendor file is called `foo.js`, the entry point will be named "*foo*" and the final asset will be the file `foo.js`.
 
-## Vaadin Components
-
-The `vaadin/` directory exists for files that will be included in `@JavaScript` tags in a Vaadin application.
-Because of the version of Vaadin we use, it is [very picky about initialization order](https://github.com/vaadin/framework/issues/3631).
-Anything under the `vaadin/` subdirectory will be compiled as a single monolithic (minified) script including dependencies with a `.vaadin.js` extension.
-
 ## Libraries
 
-The `lib/` directory exists for things that don't fit under `apps/`, `vendor/`, or `vaadin/`.
+The `lib/` directory exists for things that don't fit under `apps/` or `vendor/`.
 It should contain common code and utilities.
 It also can contain 3rd-party code that you wish to include into other assets.
 Note that any directory named `3rdparty` will automatically be ignored by the webpack entry-point compilation code.

@@ -42,10 +42,6 @@ public class FrontPageController {
 
     @RequestMapping(method = RequestMethod.GET)
     protected ModelAndView handleRequest(HttpServletRequest request, HttpServletResponse response) throws Exception {
-        if (request.isUserInRole(Authentication.ROLE_DASHBOARD) || "true".equals(System.getProperty("org.opennms.dashboard.redirect", "false").toLowerCase())) {
-            return new ModelAndView("redirect:/dashboard.jsp");
-        } else {
-            return new ModelAndView("redirect:/index.jsp");
-        }
+        return new ModelAndView("redirect:/index.jsp");
     }
 }

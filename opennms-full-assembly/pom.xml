@@ -417,39 +417,13 @@
                 <feature>spring-security-opennms</feature>
                 <feature>twitter4j</feature>
                 <feature>opennms-jaas-login-module</feature>
-                <feature>dashlet-alarms</feature>
-                <feature>dashlet-bsm</feature>
-                <feature>dashlet-image</feature>
-                <feature>dashlet-map</feature>
-                <feature>dashlet-rrd</feature>
-                <feature>dashlet-rtc</feature>
-                <feature>dashlet-summary</feature>
-                <feature>dashlet-surveillance</feature>
-                <feature>dashlet-topology</feature>
-                <feature>dashlet-url</feature>
-                <feature>dashlet-grafana</feature>
                 <feature>opennms-amqp-event-forwarder</feature>
                 <feature>opennms-amqp-event-receiver</feature>
                 <feature>opennms-amqp-alarm-northbounder</feature>
                 <feature>opennms-graphml</feature>
                 <feature>opennms-graphs</feature>
                 <feature>opennms-graph-provider-persistence-test</feature>
-                <feature>opennms-topology-runtime-base</feature>
-                <feature>opennms-topology-runtime-browsers</feature>
-                <feature>opennms-topology-runtime-linkd</feature>
-                <feature>opennms-topology-runtime-vmware</feature>
-                <feature>opennms-topology-runtime-application</feature>
-                <feature>opennms-topology-runtime-bsm</feature>
-                <feature>opennms-topology-runtime-graphml</feature>
-                <feature>opennms-topology-runtime-pathoutage</feature>
-                <feature>opennms-topology-runtime-asset</feature>
-                <feature>org.opennms.features.topology.shell</feature>
                 <feature>opennms-enlinkd-shell</feature>
-                <feature>vaadin</feature>
-                <feature>vaadin-dashboard</feature>
-                <feature>vaadin-jmxconfiggenerator</feature>
-                <feature>vaadin-snmp-events-and-metrics</feature>
-                <feature>vaadin-surveillance-views</feature>
                 <feature>jira-troubleticketer</feature>
                 <feature>tsrm-troubleticketer</feature>
                 <feature>eif-adapter</feature>
@@ -464,7 +438,6 @@
                 <feature>org.opennms.features.enlinkd.service.api</feature>
                 <feature>org.opennms.features.bsm.service.api</feature>
                 <feature>org.opennms.features.bsm.shell-commands</feature>
-                <feature>vaadin-adminpage</feature>
                 <feature>opennms-jest</feature>
                 <feature>opennms-es-rest</feature>
                 <feature>ifttt-integration</feature>

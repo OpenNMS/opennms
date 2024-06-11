@@ -409,19 +409,6 @@
   <reference-list interface="org.opennms.integration.api.v1.graph.status.StatusProvider" availability="optional">
     <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="statusProviderManager" />
   </reference-list>
-  <bean id="legacyVertexStatusProviderManager" class="org.opennms.features.apilayer.graph.status.LegacyVertexStatusProviderManager">
-    <argument ref="blueprintBundleContext"/>
-  </bean>
-  <reference-list interface="org.opennms.integration.api.v1.graph.status.LegacyStatusProvider" availability="optional">
-    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="legacyVertexStatusProviderManager" />
-  </reference-list>
-  <bean id="legacyEdgeStatusProviderManager" class="org.opennms.features.apilayer.graph.status.LegacyEdgeStatusProviderManager">
-    <argument ref="blueprintBundleContext"/>
-  </bean>
-  <reference-list interface="org.opennms.integration.api.v1.graph.status.LegacyStatusProvider" availability="optional">
-    <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="legacyEdgeStatusProviderManager" />
-  </reference-list>
-
   <bean id="graphContainerCacheImpl" class="org.opennms.features.apilayer.graph.GraphContainerCacheImpl">
     <argument ref="graphContainerCache" />
   </bean>

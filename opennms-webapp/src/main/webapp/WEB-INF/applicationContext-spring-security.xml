@@ -296,8 +296,7 @@
     <intercept-url pattern="/element/rescan.jsp" access="hasAnyRole('ROLE_ADMIN')" />
     
     <intercept-url pattern="/frontpage.htm" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
-    <intercept-url pattern="/dashboard.jsp" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
-    <intercept-url pattern="/VAADIN/**" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
+    <intercept-url pattern="/VAADIN/**" access="denyAll" /> <!-- TODO MVR verify this is no longer available -->
     <intercept-url pattern="/gwt.js" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/surveillanceservice.gwt" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />
     <intercept-url pattern="/graph/graph.png" access="hasAnyRole('ROLE_USER','ROLE_DASHBOARD')" />

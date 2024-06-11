@@ -110,17 +110,11 @@ public class JsmiMibParser implements MibParser, Serializable {
         errorHandler = new OnmsProblemEventHandler(parser);
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.MibParser#setMibDirectory(java.io.File)
-     */
     @Override
     public void setMibDirectory(File mibDirectory) {
         this.mibDirectory = mibDirectory;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.MibParser#parseMib(java.io.File)
-     */
     @Override
     public boolean parseMib(File mibFile) {
         // Validate MIB Directory
@@ -174,33 +168,21 @@ public class JsmiMibParser implements MibParser, Serializable {
         return module != null;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.MibParser#getFormattedErrors()
-     */
     @Override
     public String getFormattedErrors() {
         return errorHandler.getMessages();
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.MibParser#getMissingDependencies()
-     */
     @Override
     public List<String> getMissingDependencies() {
         return missingDependencies;
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.services.MibParser#getMibName()
-     */
     @Override
     public String getMibName() {
         return module.getId();
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.services.MibParser#getEvents(java.lang.String)
-     */
     @Override
     public Events getEvents(String ueibase) {
         if (module == null) {
@@ -219,9 +201,6 @@ public class JsmiMibParser implements MibParser, Serializable {
         }
     }
 
-    /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.api.MibParser#getDataCollection()
-     */
     @Override
     public DatacollectionGroup getDataCollection() {
         if (module == null) {
@@ -265,10 +244,6 @@ public class JsmiMibParser implements MibParser, Serializable {
         return dcGroup;
     }
 
-
-    /* (non-Javadoc)
-     * @see org.opennms.features.vaadin.mibcompiler.api.MibParser#getPrefabGraphs()
-     */
     @Override
     public List<PrefabGraph> getPrefabGraphs() {
         if (module == null) {

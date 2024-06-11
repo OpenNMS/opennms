@@ -280,11 +280,6 @@
         <property name="entries">
             <list>
                 <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                    <property name="name" value="Topology"/>
-                    <property name="url" value="topology"/>
-                    <property name="locationMatch" value="topology"/>
-                </bean>
-                <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                     <property name="name" value="Geographical"/>
                     <property name="url" value="ui/index.html#/map"/>
                     <property name="locationMatch" value="ui/index.html#/map"/>
@@ -295,29 +290,6 @@
 
     <bean name="/maps.htm" class="org.opennms.web.controller.MapsController">
         <property name="mapMenuEntries" ref="mapMenuEntries" />
-    </bean>
-
-    <bean name="dashboardMenuEntries" class="org.opennms.web.navigate.MenuDropdownNavBarEntry">
-        <property name="name" value="Dashboards" />
-        <property name="url" value="dashboards.htm" />
-        <property name="entries">
-            <list>
-                <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                    <property name="name" value="Dashboard"/>
-                    <property name="url" value="dashboard.jsp"/>
-                    <property name="locationMatch" value="dashboard"/>
-                </bean>
-                <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
-                    <property name="name" value="Ops Board"/>
-                    <property name="url" value="vaadin-wallboard"/>
-                    <property name="locationMatch" value="vaadin-wallboard"/>
-                </bean>
-            </list>
-        </property>
-    </bean>
-
-    <bean name="/dashboards.htm" class="org.opennms.web.controller.DashboardController">
-        <property name="dashboardMenuEntries" ref="dashboardMenuEntries" />
     </bean>
 
     <!--  "includes" -->
@@ -437,8 +409,6 @@
                         </list>
                     </property>
                 </bean>
-
-                <ref bean="dashboardMenuEntries" />
 
                 <ref bean="mapMenuEntries" />
 

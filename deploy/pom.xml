@@ -76,8 +76,6 @@
     <module>../features/ticketing/api</module>
     <module>../features/timeformat/api</module>
     <module>../features/topologies/service/api</module>
-    <module>../features/topology-map/org.opennms.features.topology.api</module>
-    <module>../features/topology-map/org.opennms.features.topology.persistence/org.opennms.features.topology.persistence.api</module>
     <module>../features/usageanalytics/api</module>
     <module>../opennms-alarms/api</module>
     <module>../opennms-config-api</module>

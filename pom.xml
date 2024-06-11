@@ -964,20 +964,6 @@
               </pluginExecution>
               <pluginExecution>
                 <pluginExecutionFilter>
-                  <groupId>com.vaadin</groupId>
-                  <artifactId>vaadin-maven-plugin</artifactId>
-                  <versionRange>[1.0.2,)</versionRange>
-                  <goals>
-                    <goal>resources</goal>
-                    <goal>update-widgetset</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <ignore></ignore>
-                </action>
-              </pluginExecution>
-              <pluginExecution>
-                <pluginExecutionFilter>
                   <groupId>org.codehaus.mojo</groupId>
                   <artifactId>exec-maven-plugin</artifactId>
                   <versionRange>[1.0,)</versionRange>
@@ -1158,11 +1144,6 @@
                 <exclude>**/hawkular/**/*</exclude>
                 <exclude>**/impl/holtwinters/*</exclude>
                 <exclude>**/osgi/script/*.java</exclude>
-                <exclude>**/vaadin/extender/Constants.java</exclude>
-                <exclude>**/vaadin/extender/VaadinResourceService.java</exclude>
-                <exclude>**/vaadin/extender/internal/Activator.java</exclude>
-                <exclude>**/vaadin/extender/internal/extender/PaxVaadinBundleTracker.java</exclude>
-                <exclude>**/vaadin/extender/internal/servlet/VaadinResourceServlet.java</exclude>
 
                 <!-- Sun CDDL -->
                 <exclude>**/taglibs/standard/lang/**/*</exclude>
@@ -1498,12 +1479,6 @@
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-xjc-plugin</artifactId>
         <version>${cxfXjcVersion}</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.karaf.tooling</groupId>
-        <artifactId>karaf-maven-plugin</artifactId>
-        <version>${maven.karaf.plugin.version}</version>
-        <extensions>true</extensions>
       </plugin>
     </plugins>
  </build>
@@ -1967,8 +1942,6 @@
     <tape2Version>2.0.0-beta1</tape2Version>
     <trackerVersion>0.7</trackerVersion>
     <twitter4jVersion>3.0.6</twitter4jVersion>
-    <vaadinJsoupVersion>1.15.3</vaadinJsoupVersion>
-    <vaadinGentyrefVersion>1.2.0.vaadin1</vaadinGentyrefVersion>
     <velocityVersion>2.3</velocityVersion>
     <xalanVersion>2.7.3</xalanVersion>
     <xalanServicemixVersion>2.7.3_3</xalanServicemixVersion>
@@ -1999,13 +1972,6 @@
 
     <!-- moved here from topology features -->
     <jungVersion>2.1.1</jungVersion>
-    <vaadinVersion>8.14.3</vaadinVersion>
-    <!-- Requiring a more recent plugin version which passes the classpath via ENV -->
-    <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
-    <vaadinAddonContextMenuVersion>3.1.0</vaadinAddonContextMenuVersion>
-    <vaadinAddonConfirmDialogVersion>3.2.0</vaadinAddonConfirmDialogVersion>
-    <vaadinJavaMaxMemory>1g</vaadinJavaMaxMemory>
-    <vaadinLocalWorkers>${maxCpus}</vaadinLocalWorkers>
     <skipPdfGeneration>true</skipPdfGeneration>
 
     <!-- nodejs development -->
@@ -2899,17 +2865,6 @@
         <groupId>org.opennms.features.provisioning</groupId>
         <artifactId>org.opennms.features.provisioning.lib</artifactId>
         <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.topology</groupId>
-        <artifactId>org.opennms.features.topology.api</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>vaadin</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
@@ -4314,72 +4269,6 @@
             <artifactId>jsr305</artifactId>
           </exclusion>
         </exclusions>
-      </dependency>
-      <!-- Vaadin -->
-      <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-compatibility-server</artifactId>
-        <version>${vaadinVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-compatibility-shared</artifactId>
-        <version>${vaadinVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-compatibility-client-compiled</artifactId>
-        <version>${vaadinVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-compatibility-client</artifactId>
-        <version>${vaadinVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-compatibility-themes</artifactId>
-        <version>${vaadinVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-server</artifactId>
-        <version>${vaadinVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-shared</artifactId>
-        <version>${vaadinVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-client-compiled</artifactId>
-        <version>${vaadinVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-client</artifactId>
-        <version>${vaadinVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-themes</artifactId>
-        <version>${vaadinVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.vaadin</groupId>
-        <artifactId>vaadin-context-menu</artifactId>
-        <version>${vaadinAddonContextMenuVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.vaadin.addon</groupId>
-        <artifactId>confirmdialog</artifactId>
-        <version>${vaadinAddonConfirmDialogVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features.vaadin-components</groupId>
-        <artifactId>extender-service</artifactId>
-        <version>${project.version}</version>
       </dependency>
       <dependency>
         <groupId>opensymphony</groupId>

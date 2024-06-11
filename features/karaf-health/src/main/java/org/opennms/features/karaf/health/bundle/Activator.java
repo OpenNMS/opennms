@@ -44,20 +44,6 @@ public class Activator implements BundleActivator {
 
     @Override
     public void start(BundleContext context) throws Exception {
-        // Determine if any vaadin theme fragments are unresolved
-        final Set<Bundle> unresolvedVaadinThemeFragments = getUnresolvedVaadinThemeFragments(context);
-        if (!unresolvedVaadinThemeFragments.isEmpty()) {
-            // Get vaadin theme host bundle to initialize refresh
-            final Bundle vaadinThemeHostBundle = getVaadinThemeHostbundle(context);
-            final List<Bundle> bundlesToRefresh = new ArrayList<>();
-            bundlesToRefresh.add(vaadinThemeHostBundle);
-
-            // Refresh
-            final Bundle systemBundle = context.getBundle(0);
-            FrameworkWiring frameworkWiring = systemBundle.adapt(FrameworkWiring.class);
-            frameworkWiring.refreshBundles(bundlesToRefresh);
-        }
-
         KarafHealthServiceImpl karafHealthService = new KarafHealthServiceImpl();
         Dictionary<String, Object> props = new Hashtable<>();
         props.put("registration.export", "true");
@@ -69,21 +55,5 @@ public class Activator implements BundleActivator {
         if (karafHealthServiceSvcReg != null) {
             karafHealthServiceSvcReg.unregister();
         }
-    }
-
-    private static Bundle getVaadinThemeHostbundle(BundleContext context) {
-        return Arrays.stream(context.getBundles())
-                .filter(b -> "com.vaadin.themes".equalsIgnoreCase(b.getSymbolicName()))
-                .findFirst()
-                .orElse(null);
-    }
-
-    private static Set<Bundle> getUnresolvedVaadinThemeFragments(BundleContext context) {
-        return Arrays.stream(context.getBundles())
-                .filter(bundle -> {
-                    String fragmentHost = bundle.getHeaders().get("Fragment-Host");
-                    return fragmentHost != null && fragmentHost.contains("com.vaadin.themes") && bundle.getState() == Bundle.INSTALLED;
-                })
-                .collect(Collectors.toSet());
     }
 }

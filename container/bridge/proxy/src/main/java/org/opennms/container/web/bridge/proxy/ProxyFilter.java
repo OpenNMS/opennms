@@ -58,6 +58,7 @@ import org.osgi.util.tracker.ServiceTracker;
  *
  * @author mvrueden
  */
+// TODO MVR I kept this for now, as next step is to remove opennms-webapp completely anyways, so this is going away :)
 public class ProxyFilter implements Filter, RequestHandlerRegistry {
     private BundleContext bundleContext;
     private DispatcherTracker dispatcherTracker;
