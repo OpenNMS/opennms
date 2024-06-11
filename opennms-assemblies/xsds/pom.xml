@@ -113,12 +113,6 @@
       <classifier>xsds</classifier>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>org.opennms.features.ifttt</artifactId>
-      <version>${project.version}</version>
-      <classifier>xsds</classifier>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.telemetry.config</groupId>
       <artifactId>org.opennms.features.telemetry.config.jaxb</artifactId>
       <version>${project.version}</version>

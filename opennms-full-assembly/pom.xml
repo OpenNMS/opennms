@@ -440,7 +440,6 @@
                 <feature>org.opennms.features.bsm.shell-commands</feature>
                 <feature>opennms-jest</feature>
                 <feature>opennms-es-rest</feature>
-                <feature>ifttt-integration</feature>
                 <feature>opennms-flows</feature>
                 <feature>opennms-api-layer</feature>
                 <feature>opennms-plugin-sample</feature>

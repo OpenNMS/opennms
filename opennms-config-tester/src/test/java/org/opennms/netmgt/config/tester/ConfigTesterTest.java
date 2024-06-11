@@ -217,11 +217,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testIfTttConfig() {
-        ignoreConfigFile("ifttt-config.xml");
-    }
-
-    @Test
     public void testJavamailConfigurationProperties() {
         testConfigFile("javamail-configuration.properties");
     }

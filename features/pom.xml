@@ -138,9 +138,6 @@
     <!-- Event Integration Facility Adapter -->
     <module>eif-adapter</module>
 
-    <!-- IfTtt integration -->
-    <module>ifttt</module>
-
     <module>jest</module>
     <module>dnsresolver</module>
     <module>karaf-health</module>
