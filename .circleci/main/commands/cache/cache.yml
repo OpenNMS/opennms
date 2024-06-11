@@ -119,7 +119,8 @@ commands:
       steps:
         - run:
             name: Calculate cache key
-            command: find core/web-assets -name package\*.json -o -name bower.json | grep -v /target/ | sort -u | xargs cat > nodejs-dependency-json-cache.key
+            # TODO MVR this is no longer required
+            command: echo 1 > nodejs-dependency-json-cache.key
         - restore_cache:
             keys:
               - nodejs-dependencies-v4-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}

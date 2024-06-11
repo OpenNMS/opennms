@@ -56,7 +56,6 @@
     <module>test-api</module>
     <module>upgrade</module>
     <module>web</module>
-    <module>web-assets</module>
     <module>xml</module>
     <module>tracing</module>
     <module>grpc</module>

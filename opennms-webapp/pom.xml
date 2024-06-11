@@ -24,24 +24,6 @@
         <artifactId>maven-dependency-plugin</artifactId>
         <executions>
           <execution>
-            <id>unpack-js</id>
-            <phase>process-resources</phase>
-            <goals><goal>unpack</goal></goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.opennms.core</groupId>
-                  <artifactId>org.opennms.core.web-assets</artifactId>
-                  <version>${project.version}</version>
-                  <classifier>dist</classifier>
-                  <overWrite>true</overWrite>
-                  <outputDirectory>target/opennms-webapp-${project.version}</outputDirectory>
-                </artifactItem>
-              </artifactItems>
-              <excludes>META-INF/**</excludes>
-            </configuration>
-          </execution>
-          <execution>
             <id>copy-jaxb-dependencies</id>
             <phase>test-compile</phase>
             <goals><goal>copy</goal></goals>
@@ -387,21 +369,6 @@
     </profile>
   </profiles>
   <dependencies>
-    <!-- this dependency only exists for unpacking into the final webapp, hence scope=provided -->
-    <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.web-assets</artifactId>
-      <version>${project.version}</version>
-      <classifier>dist</classifier>
-      <scope>provided</scope>
-    </dependency>
-    <!-- ...but this one contains code -->
-    <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.web-assets</artifactId>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-
     <!-- indirect OpenNMS dependencies that belong in $OPENNMS_HOME/lib -->
     <!-- these should all be <scope>${onmsLibScope}</scope> and also included in opennms-base-assembly -->
 

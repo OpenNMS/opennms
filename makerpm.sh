@@ -240,6 +240,7 @@ function main()
         run rsync -aqr --exclude=.git --exclude=.svn --exclude=target --delete --delete-excluded "$TOPDIR/" "$WORKDIR/tmp/$PACKAGE_NAME-$VERSION-$RELEASE/"
         if $ASSEMBLY_ONLY; then
             # Include any existing target/ directory from the core/web-assets project so that webpack does not need to run again
+            # TODO MVR this is no longer available
             run rsync -aqr --delete --delete-excluded "$TOPDIR/core/web-assets/" "$WORKDIR/tmp/$PACKAGE_NAME-$VERSION-$RELEASE/core/web-assets/"
         fi
 
