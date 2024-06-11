@@ -46,9 +46,6 @@
     <!-- Flows -->
     <module>flows</module>
 
-    <!-- Graphml -->
-    <module>graphml</module>
-
     <module>kafka</module>
 
     <!-- Executor factories -->

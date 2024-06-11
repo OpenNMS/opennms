@@ -420,7 +420,6 @@
                 <feature>opennms-amqp-event-forwarder</feature>
                 <feature>opennms-amqp-event-receiver</feature>
                 <feature>opennms-amqp-alarm-northbounder</feature>
-                <feature>opennms-graphml</feature>
                 <feature>opennms-graphs</feature>
                 <feature>opennms-graph-provider-persistence-test</feature>
                 <feature>opennms-enlinkd-shell</feature>
@@ -1005,22 +1004,6 @@
       <version>${project.version}</version>
     </dependency>
 
-    <!-- GraphML dependencies -->
-    <dependency>
-      <groupId>org.opennms.features.graphml</groupId>
-      <artifactId>org.opennms.features.graphml.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.graphml</groupId>
-      <artifactId>org.opennms.features.graphml.service</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.graphml</groupId>
-      <artifactId>org.opennms.features.graphml.rest</artifactId>
-      <version>${project.version}</version>
-    </dependency>
     <dependency>
       <groupId>org.opennms.features.scv</groupId>
       <artifactId>org.opennms.features.scv.jceks-impl</artifactId>

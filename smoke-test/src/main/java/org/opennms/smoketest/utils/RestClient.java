@@ -355,30 +355,6 @@ public class RestClient {
         return target.request().header("Authorization", authorizationHeader);
     }
 
-    public void sendGraphML(String graphName, InputStream graphMLStream) {
-        Objects.requireNonNull(graphName);
-        Objects.requireNonNull(graphMLStream);
-
-        final WebTarget target = getTarget().path("graphml").path(graphName);
-        final Response response = getBuilder(target).accept(MediaType.APPLICATION_XML).post(Entity.entity(graphMLStream, MediaType.APPLICATION_XML));
-        bailOnFailure(response);
-    }
-
-    public Response getGraphML(String graphName) {
-        Objects.requireNonNull(graphName);
-
-        final WebTarget target = getTarget().path("graphml").path(graphName);
-        final Response response = getBuilder(target).accept(MediaType.APPLICATION_XML).get();
-        return response;
-    }
-
-    public void deleteGraphML(String graphName) {
-        Objects.requireNonNull(graphName);
-        final WebTarget target = getTarget().path("graphml").path(graphName);
-        final Response response = getBuilder(target).delete();
-        bailOnFailure(response);
-    }
-
     private void bailOnFailure(Response response) {
         if (!Response.Status.Family.SUCCESSFUL.equals(response.getStatusInfo().getFamily())) {
             throw new RuntimeException(String.format("Request failed with: %s:\n%s",

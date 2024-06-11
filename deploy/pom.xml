@@ -55,7 +55,6 @@
     <module>../features/graph/api</module>
     <module>../features/graph/dao/api</module>
     <module>../features/graph/rest/api</module>
-    <module>../features/graphml/api</module>
     <module>../features/measurements/api</module>
     <module>../features/notifications/api</module>
     <module>../features/openconfig/api</module>

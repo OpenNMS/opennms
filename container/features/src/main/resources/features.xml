@@ -1423,15 +1423,6 @@
         <bundle>mvn:org.opennms.core.ipc.twin.grpc/org.opennms.core.ipc.twin.grpc.publisher/${project.version}</bundle>
     </feature>
 
-    <feature name="opennms-graphml" description="OpenNMS :: Features :: GraphML :: API + Service + ReST" version="${project.version}">
-        <feature version="${guavaOsgiVersion}">guava</feature>
-        <bundle>mvn:org.opennms.features.graphml/org.opennms.features.graphml.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.graphml/org.opennms.features.graphml.service/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.graphml/org.opennms.features.graphml.rest/${project.version}</bundle>
-        <!-- Provided by ${OPENNMS_HOME}/lib -->
-        <!-- <bundle>mvn:org.opennms.core/org.opennms.core.xml/${project.version}</bundle> -->
-    </feature>
-
     <!-- Convenient feature to install all graph related features-->
     <feature name="opennms-graphs" description="OpenNMS :: Features :: Graph" version="${project.version}">
         <feature>opennms-graph-api</feature>
@@ -1440,7 +1431,6 @@
         <feature>opennms-graph-persistence</feature>
         <feature>opennms-graph-shell</feature>
         <feature>opennms-graph-rest</feature>
-        <feature>opennms-graph-provider-graphml</feature>
         <feature>opennms-graph-provider-application</feature>
     </feature>
     <feature name="opennms-graph-api" description="OpenNMS :: Features :: Graph :: API" version="${project.version}">
@@ -1480,13 +1470,6 @@
         <bundle>mvn:org.opennms.features.graph/org.opennms.features.graph.shell/${project.version}</bundle>
     </feature>
     <!-- Graph Providers -->
-    <feature name="opennms-graph-provider-graphml" description="OpenNMS :: Features :: Graph :: Provider :: GraphML" version="${project.version}">
-        <feature>jung</feature>
-        <feature>opennms-graph-service</feature>
-        <feature>opennms-core</feature>
-        <feature>opennms-graphml</feature>
-        <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.graphml/${project.version}</bundle>
-    </feature>
     <feature name="opennms-graph-provider-application" description="OpenNMS :: Features :: Graph :: Provider :: Application" version="${project.version}">
         <feature>opennms-graph-service</feature>
         <feature>opennms-model</feature>

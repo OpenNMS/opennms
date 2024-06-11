@@ -45,19 +45,6 @@ import org.opennms.core.web.HttpClientWrapper;
 public class ErrorResponseIT extends OpenNMSSeleniumIT {
 
     @Test
-    public void verifyErrorResponseV1() throws IOException {
-        try (HttpClientWrapper client = createClientWrapper()) {
-            // "INVALID-XML" is not a valid graphml definition, therefore unmarshalling will fail.
-            HttpPost httpPost = new HttpPost(getBaseUrlExternal() + "opennms/rest/graphml/test-graph");
-            httpPost.setHeader("Accept", "application/xml");
-            httpPost.setHeader("Content-Type", "application/xml");
-            httpPost.setEntity(new StringEntity("INVALID-XML"));
-            CloseableHttpResponse response = client.execute(httpPost);
-            verify(response);
-        }
-    }
-
-    @Test
     public void verifyErrorResponseV2() throws IOException {
         try (HttpClientWrapper client = createClientWrapper()) {
             // The FIQL parser expects == and cannot handle =.
