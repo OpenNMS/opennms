@@ -51,11 +51,6 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>ui-extension</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>cxf-dependencies</artifactId>
       <version>${project.version}</version>
