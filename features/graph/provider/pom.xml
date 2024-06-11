@@ -13,7 +13,6 @@
     <packaging>pom</packaging>
     <modules>
         <module>application</module>
-        <module>bsm</module>
         <module>graphml</module>
         <module>persistence-test</module>
     </modules>

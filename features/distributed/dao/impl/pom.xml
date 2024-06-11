@@ -29,10 +29,6 @@
                             org.opennms.netmgt.enlinkd.persistence.api,
                             org.opennms.netmgt.enlinkd.service.api,
                             org.opennms.netmgt.topologies.service.api,
-                            org.opennms.netmgt.bsm.persistence.api,
-                            org.opennms.netmgt.bsm.persistence.api.functions,
-                            org.opennms.netmgt.bsm.persistence.api.functions.reduce,
-                            org.opennms.netmgt.bsm.persistence.api.functions.map,
                             org.opennms.netmgt.endpoints.grafana.api,
                             org.opennms.netmgt.endpoints.grafana.persistence.api,
                             org.opennms.netmgt.flows.classification.persistence.api,
@@ -128,9 +124,6 @@
                             org.opennms.netmgt.enlinkd.service.api,
                             org.opennms.netmgt.topologies.service.api,
 
-                            org.opennms.netmgt.bsm.persistence.api,
-                            org.opennms.netmgt.bsm.persistence.api.functions.map,
-                            org.opennms.netmgt.bsm.persistence.api.functions.reduce,
                             org.opennms.netmgt.endpoints.grafana.api,
                             org.opennms.netmgt.endpoints.grafana.persistence.api,
                             org.opennms.netmgt.flows.classification.persistence.api,
@@ -176,7 +169,6 @@
                             org.opennms.netmgt.enlinkd.persistence.impl,
                             org.opennms.netmgt.enlinkd.service.impl,
                             org.opennms.netmgt.topologies.service.impl,
-                            org.opennms.netmgt.bsm.persistence.impl,
                             org.opennms.netmgt.dao.jmx,
                             org.opennms.netmgt.dao.hibernate,
                             org.opennms.netmgt.dao.jaxb,
@@ -206,7 +198,6 @@
                                 <includes>
                                     <include>org.opennms:opennms-dao</include>
                                     <include>org.opennms.features.distributed:org.opennms.features.distributed.dao-api</include>
-                                    <include>org.opennms.features.bsm:org.opennms.features.bsm.persistence.impl</include>
                                     <include>org.opennms.features.endpoints.grafana.persistence:org.opennms.features.endpoints.grafana.persistence.impl</include>
                                     <include>org.opennms.features.flows.classification.persistence:org.opennms.features.flows.classification.persistence.impl</include>
                                     <include>org.opennms.features.telemetry.protocols.bmp.persistence:org.opennms.features.telemetry.protocols.bmp.persistence.impl</include>
@@ -236,11 +227,6 @@
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-dao</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.features.bsm</groupId>
-            <artifactId>org.opennms.features.bsm.persistence.impl</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.enlinkd</groupId>

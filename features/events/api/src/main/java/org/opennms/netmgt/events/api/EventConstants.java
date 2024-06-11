@@ -962,17 +962,9 @@ public abstract class EventConstants {
     public static final String BMP_PEER_DOWN = "uei.opennms.org/bmp/peerDown";
     public static final String BMP_PEER_UP = "uei.opennms.org/bmp/peerUp";
 
-    //
-    // for Bsmd
-    //
-    public static final String BUSINESS_SERVICE_OPERATIONAL_STATUS_CHANGED_UEI = "uei.opennms.org/bsm/serviceOperationalStatusChanged";
-    public static final String BUSINESS_SERVICE_PROBLEM_UEI = "uei.opennms.org/bsm/serviceProblem";
-    public static final String BUSINESS_SERVICE_PROBLEM_RESOLVED_UEI = "uei.opennms.org/bsm/serviceProblemResolved";
-    public static final String BUSINESS_SERVICE_DELETED_EVENT_UEI = "uei.opennms.org/internal/serviceDeleted";
     public static final String APPLICATION_CREATED_EVENT_UEI = "uei.opennms.org/internal/applicationCreated";
     public static final String APPLICATION_CHANGED_EVENT_UEI = "uei.opennms.org/internal/applicationChanged";
     public static final String APPLICATION_DELETED_EVENT_UEI = "uei.opennms.org/internal/applicationDeleted";
-    public static final String BUSINESS_SERVICE_GRAPH_INVALIDATED = "uei.opennms.org/bsm/graphInvalidated";
 
     public static final String PARM_BUSINESS_SERVICE_ID = "businessServiceId";
     public static final String PARM_BUSINESS_SERVICE_NAME = "businessServiceName";

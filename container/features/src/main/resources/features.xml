@@ -1233,20 +1233,6 @@
         <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.service.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.criteria/${project.version}</bundle>
     </feature>
-    <feature name="org.opennms.features.bsm.service.api" version="${project.version}" description="OpenNMS :: Features :: BSM :: Service :: API">
-        <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
-        <feature version="${guavaOsgiVersion}">guava</feature>
-        <feature>jung</feature>
-        <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.persistence.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.service.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core/org.opennms.core.criteria/${project.version}</bundle>
-    </feature>
-    <feature name="org.opennms.features.bsm.shell-commands" version="${project.version}" description="OpenNMS :: Features :: BSM :: Shell Commands">
-        <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
-        <feature>org.opennms.features.bsm.service.api</feature>
-        <bundle>mvn:org.opennms.features.bsm/org.opennms.features.bsm.shell-commands/${project.version}</bundle>
-        <bundle start-level="${systemStartLevel}">mvn:org.apache.karaf.shell/org.apache.karaf.shell.core/${karafVersion}</bundle>
-    </feature>
     <feature name="geolocation" version="${project.version}" description="OpenNMS :: Features :: Geolocation :: Feature">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
         <feature version="${guavaOsgiVersion}">guava</feature>
@@ -1455,7 +1441,6 @@
         <feature>opennms-graph-shell</feature>
         <feature>opennms-graph-rest</feature>
         <feature>opennms-graph-provider-graphml</feature>
-        <feature>opennms-graph-provider-bsm</feature>
         <feature>opennms-graph-provider-application</feature>
     </feature>
     <feature name="opennms-graph-api" description="OpenNMS :: Features :: Graph :: API" version="${project.version}">
@@ -1501,11 +1486,6 @@
         <feature>opennms-core</feature>
         <feature>opennms-graphml</feature>
         <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.graphml/${project.version}</bundle>
-    </feature>
-    <feature name="opennms-graph-provider-bsm" description="OpenNMS :: Features :: Graph :: Provider :: Business Services" version="${project.version}">
-        <feature>opennms-graph-service</feature>
-        <feature>opennms-model</feature>
-        <bundle>mvn:org.opennms.features.graph.provider/org.opennms.features.graph.provider.bsm/${project.version}</bundle>
     </feature>
     <feature name="opennms-graph-provider-application" description="OpenNMS :: Features :: Graph :: Provider :: Application" version="${project.version}">
         <feature>opennms-graph-service</feature>

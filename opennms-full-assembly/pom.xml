@@ -436,8 +436,6 @@
                 <feature>opennms-telemetry-openconfig</feature>
                 <feature>opennms-telemetry-openconfig-client</feature>
                 <feature>org.opennms.features.enlinkd.service.api</feature>
-                <feature>org.opennms.features.bsm.service.api</feature>
-                <feature>org.opennms.features.bsm.shell-commands</feature>
                 <feature>opennms-jest</feature>
                 <feature>opennms-es-rest</feature>
                 <feature>opennms-flows</feature>

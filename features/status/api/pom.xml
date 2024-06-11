@@ -40,16 +40,6 @@
       <scope>test</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.bsm</groupId>
-      <artifactId>org.opennms.features.bsm.persistence.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.bsm</groupId>
-      <artifactId>org.opennms.features.bsm.service.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-jrobin</artifactId>
       <scope>test</scope>
@@ -77,18 +67,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-dao-mock</artifactId>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.bsm</groupId>
-      <artifactId>org.opennms.features.bsm.persistence.impl</artifactId>
-      <version>${project.version}</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-        <groupId>org.opennms.features.bsm</groupId>
-        <artifactId>org.opennms.features.bsm.service.impl</artifactId>
-        <version>${project.version}</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

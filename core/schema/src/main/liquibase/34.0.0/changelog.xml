@@ -12,4 +12,16 @@
         <dropTable tableName="topo_layout" />
     </changeSet>
 
+    <changeSet author="mvrueden" id="34.0.0-drop-bsm">
+        <dropTable tableName="bsm_service_attributes" />
+        <dropTable tableName="bsm_service_reductionkeys" />
+        <dropTable tableName="bsm_service_applications" />
+        <dropTable tableName="bsm_service_ifservices" />
+        <dropTable tableName="bsm_service_children" />
+        <dropTable tableName="bsm_service_edge" />
+        <dropTable tableName="bsm_service" />
+        <dropTable tableName="bsm_reduce" />
+        <dropTable tableName="bsm_map" />
+    </changeSet>
+
 </databaseChangeLog>

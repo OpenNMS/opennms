@@ -14,7 +14,6 @@
 
   <event-file>events/opennms.ackd.events.xml</event-file>
   <event-file>events/opennms.alarm.events.xml</event-file>
-  <event-file>events/opennms.bsm.events.xml</event-file>
   <event-file>events/opennms.capsd.events.xml</event-file>
   <event-file>events/opennms.config.events.xml</event-file>
   <event-file>events/opennms.correlation.events.xml</event-file>

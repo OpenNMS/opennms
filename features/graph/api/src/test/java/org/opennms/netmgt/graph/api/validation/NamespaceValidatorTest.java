@@ -37,7 +37,6 @@ public class NamespaceValidatorTest {
         final List<String> acceptableNamespaces = Lists.newArrayList(
                 "nodes",
                 "application",
-                "bsm",
                 "test",
                 "vmware",
                 "acme:markets",

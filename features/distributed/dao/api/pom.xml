@@ -26,10 +26,6 @@
                             org.opennms.netmgt.enlinkd.persistence.api,
                             org.opennms.netmgt.enlinkd.service.api,
                             org.opennms.netmgt.topologies.service.api,
-                            org.opennms.netmgt.bsm.persistence.api,
-                            org.opennms.netmgt.bsm.persistence.api.functions,
-                            org.opennms.netmgt.bsm.persistence.api.functions.reduce,
-                            org.opennms.netmgt.bsm.persistence.api.functions.map,
                             org.opennms.netmgt.endpoints.grafana.api,
                             org.opennms.netmgt.endpoints.grafana.persistence.api,
                             org.opennms.netmgt.flows.classification.persistence.api,
@@ -65,9 +61,6 @@
                             org.opennms.netmgt.enlinkd.persistence.api,
                             org.opennms.netmgt.enlinkd.service.api,
                             org.opennms.netmgt.topologies.service.api,
-                            org.opennms.netmgt.bsm.persistence.api,
-                            org.opennms.netmgt.bsm.persistence.api.functions.map,
-                            org.opennms.netmgt.bsm.persistence.api.functions.reduce,
                             org.opennms.netmgt.config.ackd,
                             org.opennms.netmgt.config.api,
                             org.opennms.netmgt.config.javamail,
@@ -95,9 +88,6 @@
                             org.opennms.netmgt.enlinkd.persistence.api,
                             org.opennms.netmgt.enlinkd.service.api,
                             org.opennms.netmgt.topologies.service.api,
-                            org.opennms.netmgt.bsm.persistence.api,
-                            org.opennms.netmgt.bsm.persistence.api.functions.reduce,
-                            org.opennms.netmgt.bsm.persistence.api.functions.map,
                             org.opennms.netmgt.endpoints.grafana.api,
                             org.opennms.netmgt.endpoints.grafana.persistence.api,
                             org.opennms.netmgt.flows.classification.persistence.api,
@@ -121,7 +111,6 @@
                             <artifactSet>
                                 <includes>
                                     <include>org.opennms:opennms-dao-api</include>
-                                    <include>org.opennms.features.bsm:org.opennms.features.bsm.persistence.api</include>
                                     <include>org.opennms.features.flows.classification.persistence:org.opennms.features.flows.classification.persistence.api</include>
                                     <include>org.opennms.features.endpoints.grafana.persistence:org.opennms.features.endpoints.persistence.grafana.api</include>
                                     <include>org.opennms.features.endpoints.grafana:org.opennms.features.endpoints.grafana.api</include>
@@ -140,11 +129,6 @@
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-dao-api</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms.features.bsm</groupId>
-            <artifactId>org.opennms.features.bsm.persistence.api</artifactId>
-            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.enlinkd</groupId>

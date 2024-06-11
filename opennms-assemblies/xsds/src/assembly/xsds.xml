@@ -40,8 +40,6 @@
         <include>org.opennms:opennms-alarm-northbounder-snmptrap:jar:xsds:${project.version}</include>
         <include>org.opennms:opennms-alarm-northbounder-syslog:jar:xsds:${project.version}</include>
 
-        <include>org.opennms.features.bsm:org.opennms.features.bsm.rest.api:jar:xsds:${project.version}</include>
-
         <include>org.opennms.protocols:org.opennms.protocols.nsclient:jar:xsds:${project.version}</include>
         <include>org.opennms.protocols:org.opennms.protocols.xml:jar:xsds:${project.version}</include>
         <include>org.opennms.features.telemetry.config:org.opennms.features.telemetry.config.jaxb:jar:xsds:${project.version}</include>

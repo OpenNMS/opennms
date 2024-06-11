@@ -42,11 +42,9 @@ import org.opennms.features.status.api.SeverityFilter;
 import org.opennms.features.status.api.StatusEntity;
 import org.opennms.features.status.api.StatusSummary;
 import org.opennms.features.status.api.application.ApplicationStatusService;
-import org.opennms.features.status.api.bsm.BusinessServiceStatusService;
 import org.opennms.features.status.api.node.NodeQuery;
 import org.opennms.features.status.api.node.NodeStatusService;
 import org.opennms.features.status.api.node.strategy.NodeStatusCalculationStrategy;
-import org.opennms.netmgt.bsm.service.model.BusinessService;
 import org.opennms.netmgt.model.OnmsApplication;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
@@ -68,9 +66,6 @@ import com.google.common.base.Strings;
 @Path("status")
 @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
 public class StatusRestService {
-
-    @Autowired
-    private BusinessServiceStatusService businessServiceStatusService;
 
     @Autowired
     private ApplicationStatusService applicationStatusService;
@@ -99,13 +94,6 @@ public class StatusRestService {
     }
 
     @GET
-    @Path("/summary/business-services")
-    public List<Object[]> getBusinessServiceStatus() {
-        StatusSummary summary = businessServiceStatusService.getSummary();
-        return convert(summary);
-    }
-
-    @GET
     @Path("/applications")
     public Response getApplications(@Context final UriInfo uriInfo) {
         final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(uriInfo);
@@ -124,31 +112,6 @@ public class StatusRestService {
             return dto;
         }).collect(Collectors.toList());
         final ApplicationDTOList list = new ApplicationDTOList(statusEntities);
-        list.setOffset(queryParameters.getOffset());
-        list.setTotalCount(totalCount);
-
-        return createResponse(list, offset, totalCount);
-    }
-
-    @GET
-    @Path("/business-services")
-    public Response getBusinessServices(@Context final UriInfo uriInfo) {
-        final QueryParameters queryParameters = QueryParametersBuilder.buildFrom(uriInfo);
-        final SeverityFilter severityFilter = getSeverityFilter(uriInfo);
-        final Query query = new Query(queryParameters, severityFilter);
-
-        final List<StatusEntity<BusinessService>> services = businessServiceStatusService.getStatus(query);
-        final int totalCount = businessServiceStatusService.count(query);
-        final int offset = queryParameters.getOffset();
-
-        final List<BusinessServiceDTO> statusEntities = services.stream().map(bs -> {
-            BusinessServiceDTO statusDTO = new BusinessServiceDTO();
-            statusDTO.setId(bs.getEntity().getId().intValue());
-            statusDTO.setName(bs.getEntity().getName());
-            statusDTO.setSeverity(bs.getStatus());
-            return statusDTO;
-        }).collect(Collectors.toList());
-        final BusinessServiceDTOList list = new BusinessServiceDTOList(statusEntities);
         list.setOffset(queryParameters.getOffset());
         list.setTotalCount(totalCount);
 

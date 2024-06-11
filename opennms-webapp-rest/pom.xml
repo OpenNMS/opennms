@@ -222,12 +222,6 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.bsm</groupId>
-      <artifactId>org.opennms.features.bsm.service.api</artifactId>
-      <version>${project.version}</version>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.rest</groupId>
       <artifactId>org.opennms.features.rest.mapper</artifactId>
       <version>${project.version}</version>

@@ -437,13 +437,6 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.bsm</groupId>
-      <artifactId>org.opennms.features.bsm.shell-commands</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.enlinkd</groupId>
       <artifactId>org.opennms.features.enlinkd.shell</artifactId>
       <version>${project.version}</version>
