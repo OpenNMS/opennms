@@ -5,10 +5,6 @@
   xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd"
 >
     <jsp-config>
-        <taglib>
-            <taglib-uri>http://www.springframework.org/tags/form</taglib-uri>
-            <taglib-location>/WEB-INF/spring-form.tld</taglib-location>
-        </taglib>
         <jsp-property-group>
             <url-pattern>*.jsp</url-pattern>
             <page-encoding>UTF-8</page-encoding>
@@ -192,39 +188,6 @@
     </init-param>
   </filter>
 
-  <filter>
-    <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
-    <filter-name>AddRefreshHeader-300</filter-name>
-    <filter-class>org.opennms.web.servlet.AddRefreshHeaderFilter</filter-class>
-    <init-param>
-      <description>This parameter specifies how often to refresh the page.</description>
-      <param-name>seconds</param-name>
-      <param-value>300</param-value>
-    </init-param>
-  </filter>
-
-  <filter>
-    <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
-    <filter-name>AddRefreshHeader-120</filter-name>
-    <filter-class>org.opennms.web.servlet.AddRefreshHeaderFilter</filter-class>
-    <init-param>
-      <description>This parameter specifies how often to refresh the page.</description>
-      <param-name>seconds</param-name>
-      <param-value>120</param-value>
-    </init-param>
-  </filter>
-
-  <filter>
-    <description>Adds the refresh HTTP header to a servlet's or JSP's output so it will be automatically reloaded.</description>
-    <filter-name>AddRefreshHeader-30</filter-name>
-    <filter-class>org.opennms.web.servlet.AddRefreshHeaderFilter</filter-class>
-    <init-param>
-      <description>This parameter specifies how often to refresh the page.</description>
-      <param-name>seconds</param-name>
-      <param-value>30</param-value>
-    </init-param>
-  </filter>
-
 
   <filter>
     <description>Stores HTTP request parameters in request attributes for later access</description>
@@ -341,65 +304,8 @@
   </filter-mapping>
 
   <filter-mapping>
-    <filter-name>AddRefreshHeader-300</filter-name>
-    <url-pattern>/index.jsp</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-300</filter-name>
-    <url-pattern>/rtc/category.jsp</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-300</filter-name>
-    <url-pattern>/element/node.jsp</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-300</filter-name>
-    <url-pattern>/element/linkednode.jsp</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-300</filter-name>
-    <url-pattern>/element/interface.jsp</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-300</filter-name>
-    <url-pattern>/element/service.jsp</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-300</filter-name>
-    <url-pattern>/outage/list.htm</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-300</filter-name>
-    <url-pattern>/graph/results.htm</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-120</filter-name>
-    <url-pattern>/event/list</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-120</filter-name>
-    <url-pattern>/alarm/list</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-30</filter-name>
-    <url-pattern>/event/list.htm</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-30</filter-name>
-    <url-pattern>/alarm/list.htm</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>AddRefreshHeader-300</filter-name>
-    <url-pattern>/alarm/detail.htm</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
     <filter-name>eXtremeExport</filter-name>
     <url-pattern>/*</url-pattern>
-  </filter-mapping>
-  <filter-mapping>
-    <filter-name>SpaRouting</filter-name>
-    <url-pattern>/ui</url-pattern>
-    <url-pattern>/ui/*</url-pattern>
   </filter-mapping>
   <filter-mapping>
     <filter-name>httpsRewriteFilter</filter-name>
@@ -846,7 +752,6 @@
         <servlet-name>updateServiceNotify</servlet-name>
         <servlet-class>org.opennms.web.admin.notification.ServiceNoticeUpdateServlet</servlet-class>
   </servlet>
-
   <servlet>
     <servlet-name>rtcPost</servlet-name>
     <servlet-class>org.opennms.web.category.RTCPostServlet</servlet-class>
@@ -859,7 +764,6 @@
     <!-- Load on startup so that we can immediately start processing RTC POSTs -->
     <load-on-startup>1</load-on-startup>
   </servlet>
-
   <servlet>
     <servlet-name>sendMail</servlet-name>
     <servlet-class>org.opennms.web.mail.MailerServlet</servlet-class>
@@ -869,30 +773,15 @@
       <param-value>../support/index.htm</param-value>
     </init-param>
   </servlet>
-
   <servlet>
     <servlet-name>nodeRescan</servlet-name>
     <servlet-class>org.opennms.web.element.NodeRescanServlet</servlet-class>
   </servlet>
-
   <!-- Servlet to set snmp interface up or down -->
   <servlet>
      <servlet-name>ManageSnmpIntf</servlet-name>
     <servlet-class>org.opennms.web.element.ManageSnmpIntfServlet</servlet-class>
   </servlet>
-
-  <!--
-  <servlet>
-    <servlet-name>filterOutage</servlet-name>
-    <servlet-class>org.opennms.web.outage.OutageFilterServlet</servlet-class>
-  </servlet>
-  -->
-
-  <!-- servlet>
-    <servlet-name>invClogin</servlet-name>
-    <servlet-class>org.opennms.web.inventory.InvCloginServlet</servlet-class>
-  </servlet-->
-
   <servlet>
         <servlet-name>dispatcher</servlet-name>
         <servlet-class>org.springframework.web.servlet.DispatcherServlet</servlet-class>
@@ -903,359 +792,8 @@
     <servlet-name>notificationStream</servlet-name>
     <servlet-class>org.opennms.web.notification.NotificationStreamServlet</servlet-class>
   </servlet>
-  <servlet-mapping>
-    <servlet-name>queryEvent</servlet-name>
-    <url-pattern>/event/query</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>queryAlarm</servlet-name>
-    <url-pattern>/alarm/query</url-pattern>
-  </servlet-mapping>
-
-  <!--servlet mapping for update notification status servlet -->
-  <servlet-mapping>
-    <servlet-name>updateNotificationStatus</servlet-name>
-    <url-pattern>/admin/updateNotificationStatus</url-pattern>
-  </servlet-mapping>
-
-  <!-- servlet mapping for the destination wizard servlet -->
-  <servlet-mapping>
-    <servlet-name>destinationWizard</servlet-name>
-    <url-pattern>/admin/notification/destinationWizard</url-pattern>
-  </servlet-mapping>
-
-  <!-- servlet mapping for the notification wizard servlet -->
-  <servlet-mapping>
-    <servlet-name>notificationWizard</servlet-name>
-    <url-pattern>/admin/notification/noticeWizard/notificationWizard</url-pattern>
-  </servlet-mapping>
-
-  <!-- servlet mapping for configuring users groups -->
-  <!-- user configuration servlets -->
-  <!-- converted to Controller -->
-  <servlet-mapping>
-    <servlet-name>modifyUser</servlet-name>
-    <url-pattern>/admin/userGroupView/users/modifyUser</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>updateUser</servlet-name>
-    <url-pattern>/admin/userGroupView/users/updateUser</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>saveUser</servlet-name>
-    <url-pattern>/admin/userGroupView/users/saveUser</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>renameUser</servlet-name>
-    <url-pattern>/admin/userGroupView/users/renameUser</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>addNewUser</servlet-name>
-    <url-pattern>/admin/userGroupView/users/addNewUser</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>deleteUser</servlet-name>
-    <url-pattern>/admin/userGroupView/users/deleteUser</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>addDutySchedules</servlet-name>
-    <url-pattern>/admin/userGroupView/users/addDutySchedules</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>removeDutySchedules</servlet-name>
-    <url-pattern>/admin/userGroupView/users/removeDutySchedules</url-pattern>
-  </servlet-mapping>
-  <!-- end of user configuration servlets -->
-
-  <!-- group configuration servlets -->
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/admin/userGroupView/groups/modifyGroup</url-pattern>
-  </servlet-mapping>
-  <!-- end of group configuration servlets -->
-  <!-- set UserGroup for user dynamically -->
-  <servlet-mapping>
-      <servlet-name>dispatcher</servlet-name>
-      <url-pattern>/support/groups/setACLUserGroups</url-pattern>
-  </servlet-mapping>
-  <!-- end -->
-
-  <servlet-mapping>
-    <servlet-name>admin-roles</servlet-name>
-    <url-pattern>/admin/userGroupView/roles</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>user-roles</servlet-name>
-    <url-pattern>/roles</url-pattern>
-  </servlet-mapping>
-
-  <!-- end of user groups configuration servlets -->
-
-    <!--servlet mapping for restart discovery servlet-->
-  <servlet-mapping>
-    <servlet-name>actionDiscovery</servlet-name>
-    <url-pattern>/admin/discovery/actionDiscovery</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>discoveryScan</servlet-name>
-    <url-pattern>/admin/discovery/scanConfig</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>modifyAsset</servlet-name>
-    <url-pattern>/asset/modifyAsset</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>importAssets</servlet-name>
-    <url-pattern>/admin/asset/import/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>exportAssets</servlet-name>
-    <url-pattern>/admin/asset/assets.csv</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>getInterfaces</servlet-name>
-    <url-pattern>/admin/nodemanagement/getInterfaces</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>addNewInterface</servlet-name>
-    <url-pattern>/admin/addNewInterface</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>setCriticalPath</servlet-name>
-    <url-pattern>/admin/setCriticalPath</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>deleteSelNodes</servlet-name>
-    <url-pattern>/admin/deleteSelNodes</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>deleteNodes</servlet-name>
-    <url-pattern>/admin/deleteNodes</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-     <servlet-name>deleteInterface</servlet-name>
-     <url-pattern>/admin/deleteInterface</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-  	<servlet-name>deleteService</servlet-name>
-  	<url-pattern>/admin/deleteService</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>snmpGetNodes</servlet-name>
-    <url-pattern>/admin/snmpGetNodes</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>getNodes</servlet-name>
-    <url-pattern>/admin/getNodes</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>manageNodes</servlet-name>
-    <url-pattern>/admin/manageNodes</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-     <servlet-name>manageNode</servlet-name>
-     <url-pattern>/admin/manageNode</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>snmpManageNodes</servlet-name>
-    <url-pattern>/admin/changeCollectStatus</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>snmpConfig</servlet-name>
-    <url-pattern>/admin/snmpConfig</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-        <servlet-name>updateServiceNotify</servlet-name>
-        <url-pattern>/admin/updateServiceNotify</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>rtcPost</servlet-name>
-    <url-pattern>/rtc/post/*</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>rtcRaw</servlet-name>
-    <url-pattern>/rtc/raw</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>sendMail</servlet-name>
-    <url-pattern>/mail/send</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-    <servlet-name>nodeRescan</servlet-name>
-    <url-pattern>/element/rescan</url-pattern>
-  </servlet-mapping>
-
-   <servlet-mapping>
-    <servlet-name>ManageSnmpIntf</servlet-name>
-    <url-pattern>/element/ManageSnmpIntf</url-pattern>
-  </servlet-mapping>
-
-    <servlet-mapping>
-        <servlet-name>dispatcher</servlet-name>
-        <url-pattern>*.htm</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>dispatcher</servlet-name>
-        <url-pattern>/alarm/index</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>dispatcher</servlet-name>
-        <url-pattern>/alarm/list</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>dispatcher</servlet-name>
-        <url-pattern>/alarm/createFavorite</url-pattern>
-    </servlet-mapping>
-    <servlet-mapping>
-        <servlet-name>dispatcher</servlet-name>
-        <url-pattern>/alarm/deleteFavorite</url-pattern>
-    </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/alarm/acknowledge</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/alarm/acknowledgeByFilter</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/alarm/changeSeverity</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/event/acknowledge</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/event/acknowledgeByFilter</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/event/index</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/event/createFavorite</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/event/deleteFavorite</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/event/list</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/event/detail.jsp</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/notification/browse</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/notification/acknowledge</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>notificationStream</servlet-name>
-    <url-pattern>/notification/stream</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/outage/list</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/outage/detail.jsp</url-pattern>
-  </servlet-mapping>
-  <servlet-mapping>
-    <servlet-name>dispatcher</servlet-name>
-    <url-pattern>/element/service.jsp</url-pattern>
-  </servlet-mapping>
-
-  <!-- Although this will be matched by the above *.htm url-pattern,
-       this servlet-mapping needs to be here because wildcard url-pattern
-       elements don't seem to work as a welcome-page entry. -->
-  <servlet-mapping>
-        <servlet-name>dispatcher</servlet-name>
-        <url-pattern>/frontPage.htm</url-pattern>
-  </servlet-mapping>
-
-  <servlet-mapping>
-        <servlet-name>dispatcher</servlet-name>
-        <url-pattern>/graph/graph.png</url-pattern>
-  </servlet-mapping>
 
   <!-- WARMERGE: insert servlet -->
   <!-- WARMERGE: insert servlet-mapping -->
 
-  <error-page>
-    <exception-type>org.opennms.web.category.CategoryNotFoundException</exception-type>
-    <location>/errors/categorynotfound.jsp</location>
-  </error-page>
-  <error-page>
-    <exception-type>org.opennms.web.servlet.MissingParameterException</exception-type>
-    <location>/errors/missingparam.jsp</location>
-  </error-page>
-  <error-page>
-    <exception-type>org.opennms.web.event.EventIdNotFoundException</exception-type>
-    <location>/errors/eventidnotfound.jsp</location>
-  </error-page>
-  <error-page>
-    <exception-type>org.opennms.web.alarm.AlarmIdNotFoundException</exception-type>
-    <location>/errors/alarmidnotfound.jsp</location>
-  </error-page>
-  <error-page>
-    <exception-type>org.opennms.web.element.ElementNotFoundException</exception-type>
-    <location>/errors/elementnotfound.jsp</location>
-  </error-page>
-  <error-page>
-    <exception-type>org.opennms.web.element.ElementIdNotFoundException</exception-type>
-    <location>/errors/elementidnotfound.jsp</location>
-  </error-page>
-  <error-page>
-    <exception-type>org.opennms.web.notification.NoticeIdNotFoundException</exception-type>
-    <location>/errors/noticeidnotfound.jsp</location>
-  </error-page>
-  <error-page>
-    <exception-type>org.opennms.web.outage.OutageIdNotFoundException</exception-type>
-    <location>/errors/outageidnotfound.jsp</location>
-  </error-page>
-  <error-page>
-    <exception-type>java.lang.SecurityException</exception-type>
-    <location>/errors/sealingviolation.jsp</location>
-  </error-page>
-  <error-page>
-    <exception-type>org.opennms.netmgt.events.api.EventProxyException</exception-type>
-    <location>/errors/eventproxyexception.jsp</location>
-  </error-page>
-  <error-page>
-    <exception-type>org.opennms.web.admin.nodeManagement.NoManagedInterfacesException</exception-type>
-    <location>/errors/nomanagedinterfaces.jsp</location>
-  </error-page>
-  <error-page>
-    <error-code>500</error-code>
-    <location>/errors/unknownexception.jsp</location>
-  </error-page>
-  <error-page>
-    <error-code>404</error-code>
-    <location>/errors/pagenotfound.jsp</location>
-  </error-page>
-
-  <!-- the welcome-file elements need to point at a file that exists or
-       a non-wildcard url-pattern in a servlet-mapping element. -->
-  <welcome-file-list>
-    <welcome-file>frontPage.jsp</welcome-file>
-  </welcome-file-list>
 </web-app>
