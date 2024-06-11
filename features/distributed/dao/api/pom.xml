@@ -102,8 +102,7 @@
                             org.opennms.netmgt.endpoints.grafana.persistence.api,
                             org.opennms.netmgt.flows.classification.persistence.api,
                             org.opennms.netmgt.telemetry.protocols.bmp.persistence.api,
-                            org.opennms.features.deviceconfig.persistence.api,
-                            org.opennms.features.usageanalytics.api
+                            org.opennms.features.deviceconfig.persistence.api
                         </Private-Package>
                     </instructions>
                 </configuration>
