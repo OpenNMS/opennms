@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>33.0.4</version>
+    <version>33.0.5</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -777,7 +777,7 @@
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi</artifactId>
-      <version>5.2.3</version>
+      <version>5.2.5</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>

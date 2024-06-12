@@ -2,6 +2,23 @@
 
 = Changelog
 
+[[releasenotes-changelog-33.0.5]]
+
+== Release 33.0.5
+
+Release 33.0.5 contains a bug fix and an enhancement.
+
+The codename for Horizon 33.0.5 is https://wikipedia.org/wiki/$$Pinus_nigra$$[_Black Pine_].
+
+=== Enhancement
+
+* Update Provisiond scan to remove old primary IP inteface (Issue https://issues.opennms.org/browse/NMS-16347[NMS-16347])
+
+=== Bug
+
+* Unable to set `collection` on detectors (Issue https://issues.opennms.org/browse/NMS-16360[NMS-16360])
+
+
 [[releasenotes-changelog-33.0.4]]
 
 == Release 33.0.4

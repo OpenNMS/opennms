@@ -22,6 +22,7 @@
 syntax = "proto3";
 
 option go_package = "telemetry_bis";
+option java_package = "org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto";
 
 /*
  * Common message used as a header to both compact and self-describing

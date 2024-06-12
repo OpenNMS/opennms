@@ -358,8 +358,7 @@ public class KafkaForwarderIT implements TemporaryDatabaseAware<MockDatabase> {
 
         // Wait until the synchronization process kicks off and delete the alarm
         await().atMost(2, TimeUnit.MINUTES).until(() ->
-                kafkaConsumer.getAlarmByReductionKey(alarmReductionKey), nullValue());
-
+                kafkaConsumer.getAlarmsByReductionKey().get(alarmReductionKey) == null);
     }
 
     @Test

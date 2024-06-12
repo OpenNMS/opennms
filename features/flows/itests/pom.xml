@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.flows</artifactId>
-        <version>33.0.4</version>
+        <version>33.0.5</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.flows</groupId>
@@ -180,6 +180,10 @@
             <version>${nephronVersion}</version>
             <scope>test</scope>
             <exclusions>
+                <exclusion>
+                    <groupId>com.squareup.okio</groupId>
+                    <artifactId>okio</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>org.opennms.nephron</groupId>
                     <artifactId>nephron-proto</artifactId>

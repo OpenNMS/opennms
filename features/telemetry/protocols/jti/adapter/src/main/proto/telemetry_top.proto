@@ -28,6 +28,7 @@
 // The top level message is TelemetryStream.
 //
 
+syntax = "proto2";
 import "google/protobuf/descriptor.proto";
 option java_package = "org.opennms.netmgt.telemetry.protocols.jti.adapter.proto";
 
