@@ -21,24 +21,26 @@
  */
 package org.opennms.netmgt.provision.detector.simple.support;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
+import java.util.List;
+
+import io.netty.channel.ChannelHandlerContext;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
+
+import io.netty.handler.codec.MessageToMessageDecoder;
 
 /**
  * <p>LineOrientedResponseDecoder class.</p>
  *
  * @author Seth
  */
-public class LineOrientedResponseDecoder extends OneToOneDecoder {
+public class LineOrientedResponseDecoder extends MessageToMessageDecoder<Object> {
 
     /**
      * This method decodes {@link String} objects into {@link LineOrientedResponse} instances
      * that contain the byte representation of the response.
      */
     @Override
-    public Object decode(final ChannelHandlerContext ctx, final Channel channel, final Object msg) throws Exception {
-        return new LineOrientedResponse((String)msg);
+    public void decode(final ChannelHandlerContext ctx, final Object msg, final List<Object> messages) throws Exception {
+        messages.add(new LineOrientedResponse((String)msg));
     }
 }
