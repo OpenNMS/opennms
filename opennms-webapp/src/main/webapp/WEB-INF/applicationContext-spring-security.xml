@@ -256,6 +256,13 @@
           <beans:constructor-arg name="pattern" value="/admin/manageNodes"/>
           <beans:constructor-arg name="httpMethod" value="POST"/>
         </beans:bean>
+
+        <!-- see NMS-16369 -->
+        <beans:bean class="org.springframework.security.web.util.matcher.AntPathRequestMatcher">
+          <beans:constructor-arg name="pattern" value="/j_spring_security_check"/>
+          <beans:constructor-arg name="httpMethod" value="POST"/>
+        </beans:bean>
+
       </util:list>
     </beans:constructor-arg>
   </beans:bean>
