@@ -30,8 +30,10 @@ package org.opennms.netmgt.provision.support;
 
 import java.util.Map;
 
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
+import io.netty.channel.ChannelPromise;
+
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.DetectFutureListener;
 
@@ -49,14 +51,14 @@ public class DetectFutureNettyImpl implements DetectFuture {
     }
 
     private final AsyncBasicDetectorNettyImpl<?,?> m_detector;
-    private final ChannelFuture m_future;
+    private final ChannelPromise m_future;
 
     /**
      * <p>Constructor for DefaultDetectFuture.</p>
      *
      * @param detector a {@link org.opennms.netmgt.provision.AsyncServiceDetector} object.
      */
-    public DetectFutureNettyImpl(final AsyncBasicDetectorNettyImpl<?,?> detector, final ChannelFuture future) {
+    public DetectFutureNettyImpl(final AsyncBasicDetectorNettyImpl<?,?> detector, final ChannelPromise future) {
         m_detector = detector;
         m_future = future;
     }
@@ -88,7 +90,7 @@ public class DetectFutureNettyImpl implements DetectFuture {
      */
     @Override
     public Throwable getException() {
-        return m_future.getCause();
+        return m_future.cause();
     }
 
     /** {@inheritDoc} */
