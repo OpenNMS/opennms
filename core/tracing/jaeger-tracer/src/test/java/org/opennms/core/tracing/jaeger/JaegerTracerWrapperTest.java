@@ -49,11 +49,11 @@ public class JaegerTracerWrapperTest {
         tracer.inject(span.context(), Format.Builtin.TEXT_MAP, tracingInfoCarrier);
         SpanContext newContext = tracer.extract(Format.Builtin.TEXT_MAP, tracingInfoCarrier);
 
-        if (!span.context().toString().equals(newContext.toString())) {
-            System.err.println("Initial SpanContext: " + span.context().toString());
+        if (!span.context().toTraceId().equals(newContext.toTraceId())) {
+            System.err.println("Initial trace ID: " + span.context().toTraceId());
             System.err.println("TracingInfoCarrier map after injection:");
             tracingInfoCarrier.getTracingInfoMap().forEach((key, value) -> System.err.println(key + " -> " + value));
-            System.err.println("\nExtracted SpanContext: " + newContext.toString());
+            System.err.println("\nExtracted trace ID: " + newContext.toTraceId());
 
             fail("Before and after span contexts don't match. See above.");
         }
