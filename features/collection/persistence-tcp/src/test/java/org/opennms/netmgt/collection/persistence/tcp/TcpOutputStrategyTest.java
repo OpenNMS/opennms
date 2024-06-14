@@ -107,7 +107,7 @@ public class TcpOutputStrategyTest {
                             }
                         });
 
-        Channel channel = bootstrap.bind(new InetSocketAddress(0)).channel();
+        Channel channel = bootstrap.bind(new InetSocketAddress(0)).syncUninterruptibly().channel();
         InetSocketAddress addr = (InetSocketAddress)channel.localAddress();
 
         // Point the TCP exporter to our server
