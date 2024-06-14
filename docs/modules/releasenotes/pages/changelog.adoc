@@ -172,7 +172,6 @@ The codename for Horizon 33.0.0 is https://wikipedia.org/wiki/$$Sequoia_sempervi
 * Convert deviceStore etc to pinia, remove vuex from project (Issue https://issues.opennms.org/browse/NMS-16156[NMS-16156])
 * DOCS: Document structured node list (Issue https://issues.opennms.org/browse/NMS-16210[NMS-16210])
 * Docs: Remove reference to 'opennms-cloud-plugin' plugin (Issue https://issues.opennms.org/browse/NMS-16231[NMS-16231])
-* Stalled threads in telemetryd parser (Issue https://issues.opennms.org/browse/NMS-16243[NMS-16243])
 
 === New Feature
 
