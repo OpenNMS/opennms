@@ -25,20 +25,19 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.nio.ByteBuffer;
 import java.time.Duration;
-import java.time.Instant;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.RejectedExecutionException;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.SynchronousQueue;
-import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import com.google.common.cache.CacheLoader;
+import com.google.common.util.concurrent.RateLimiter;
 import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.distributed.core.api.Identity;
@@ -61,7 +60,6 @@ import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
 import com.google.common.base.Joiner;
 import com.google.common.cache.CacheBuilder;
-import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.google.common.collect.Lists;
 import com.swrve.ratelimitedlogger.RateLimitedLog;
@@ -116,8 +114,6 @@ public abstract class ParserBase implements Parser {
 
     private final Counter sequenceErrors;
 
-    private final ThreadFactory threadFactory;
-
     private int threads = DEFAULT_NUM_THREADS;
 
     private long maxClockSkew = 0;
@@ -130,9 +126,9 @@ public abstract class ParserBase implements Parser {
 
     private boolean dnsLookupsEnabled = true;
 
-    private LoadingCache<InetAddress, Optional<Instant>> clockSkewEventCache;
+    private LoadingCache<InetAddress, RateLimiter> clockSkewEventLimiters;
 
-    private LoadingCache<InetAddress, Optional<Instant>> illegalFlowEventCache;
+    private LoadingCache<InetAddress, RateLimiter> illegalFlowEventLimiters;
 
     private ExecutorService executor;
 
@@ -151,27 +147,14 @@ public abstract class ParserBase implements Parser {
         this.dnsResolver = Objects.requireNonNull(dnsResolver);
         Objects.requireNonNull(metricRegistry);
 
-        // Create a thread factory that sets a thread local variable when the thread is created
-        // This variable is used to identify the thread as one that belongs to this class
-        final LogPreservingThreadFactory logPreservingThreadFactory = new LogPreservingThreadFactory("Telemetryd-" + protocol + "-" + name, Integer.MAX_VALUE);
-        threadFactory = new ThreadFactory() {
-            @Override
-            public Thread newThread(Runnable r) {
-                return logPreservingThreadFactory.newThread(() -> {
-                    isParserThread.set(true);
-                    r.run();
-                });
-            }
-        };
-
-        recordsReceived = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsReceived"));
-        recordsDispatched = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsDispatched"));
-        recordEnrichmentTimer = metricRegistry.timer(MetricRegistry.name("parsers",  name, "recordEnrichment"));
-        recordEnrichmentErrors = metricRegistry.counter(MetricRegistry.name("parsers",  name, "recordEnrichmentErrors"));
-        invalidFlows = metricRegistry.meter(MetricRegistry.name("parsers",  name, "invalidFlows"));
-        recordsScheduled = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsScheduled"));
-        recordsCompleted = metricRegistry.meter(MetricRegistry.name("parsers",  name, "recordsCompleted"));
-        recordDispatchErrors = metricRegistry.counter(MetricRegistry.name("parsers",  name, "recordDispatchErrors"));
+        recordsReceived = metricRegistry.meter(MetricRegistry.name("parsers", name, "recordsReceived"));
+        recordsDispatched = metricRegistry.meter(MetricRegistry.name("parsers", name, "recordsDispatched"));
+        recordEnrichmentTimer = metricRegistry.timer(MetricRegistry.name("parsers", name, "recordEnrichment"));
+        recordEnrichmentErrors = metricRegistry.counter(MetricRegistry.name("parsers", name, "recordEnrichmentErrors"));
+        invalidFlows = metricRegistry.meter(MetricRegistry.name("parsers", name, "invalidFlows"));
+        recordsScheduled = metricRegistry.meter(MetricRegistry.name("parsers", name, "recordsScheduled"));
+        recordsCompleted = metricRegistry.meter(MetricRegistry.name("parsers", name, "recordsCompleted"));
+        recordDispatchErrors = metricRegistry.counter(MetricRegistry.name("parsers", name, "recordDispatchErrors"));
         sequenceErrors = metricRegistry.counter(MetricRegistry.name("parsers", name, "sequenceErrors"));
 
         // Call setters since these also perform additional handling
@@ -189,7 +172,7 @@ public abstract class ParserBase implements Parser {
                 1, threads,
                 60L, TimeUnit.SECONDS,
                 new SynchronousQueue<>(),
-                threadFactory,
+                new LogPreservingThreadFactory("Telemetryd-" + protocol + "-" + name, Integer.MAX_VALUE),
                 (r, executor) -> {
                     // We enter this block when the queue is full and the caller is attempting to submit additional tasks
                     try {
@@ -234,23 +217,17 @@ public abstract class ParserBase implements Parser {
     public void setClockSkewEventRate(final long clockSkewEventRate) {
         this.clockSkewEventRate = clockSkewEventRate;
 
-        this.clockSkewEventCache = CacheBuilder.newBuilder().expireAfterWrite(this.clockSkewEventRate, TimeUnit.SECONDS).build(new CacheLoader<InetAddress, Optional<Instant>>() {
-            @Override
-            public Optional<Instant> load(InetAddress key) throws Exception {
-                return Optional.empty();
-            }
-        });
+        this.clockSkewEventLimiters = CacheBuilder.newBuilder()
+                .expireAfterWrite(this.clockSkewEventRate, TimeUnit.SECONDS)
+                .build(CacheLoader.from(() -> RateLimiter.create(1.0 / this.clockSkewEventRate)));
     }
 
     public void setIllegalFlowEventRate(final long illegalFlowEventRate) {
         this.illegalFlowEventRate = illegalFlowEventRate;
 
-        this.illegalFlowEventCache = CacheBuilder.newBuilder().expireAfterWrite(this.illegalFlowEventRate, TimeUnit.SECONDS).build(new CacheLoader<InetAddress, Optional<Instant>>() {
-            @Override
-            public Optional<Instant> load(InetAddress key) throws Exception {
-                return Optional.empty();
-            }
-        });
+        this.illegalFlowEventLimiters = CacheBuilder.newBuilder()
+                .expireAfterWrite(this.illegalFlowEventRate, TimeUnit.SECONDS)
+                .build(CacheLoader.from(() -> RateLimiter.create(1.0 / this.clockSkewEventRate)));
     }
 
     public long getIllegalFlowEventRate() {
@@ -291,38 +268,33 @@ public abstract class ParserBase implements Parser {
             this.sequenceErrors.inc();
         }
 
+        final RecordEnricher recordEnricher = new RecordEnricher(dnsResolver, getDnsLookupsEnabled());
+
         // The packets are coming in hot - performance here is critical
         //   LOG.trace("Got packet: {}", packet);
         // Perform the record enrichment and serialization in a thread pool allowing these to be parallelized
-        final CompletableFuture<CompletableFuture[]> futureOfFutures = CompletableFuture.supplyAsync(() -> {
-            return packet.getRecords().map(record -> {
-                this.recordsReceived.mark();
+        final var futures = packet.getRecords().map(record -> {
+            this.recordsReceived.mark();
 
-                final CompletableFuture<Void> future = new CompletableFuture<>();
-                final Timer.Context timerContext = recordEnrichmentTimer.time();
-                // Trigger record enrichment (performing DNS reverse lookups for example)
-                final RecordEnricher recordEnricher = new RecordEnricher(dnsResolver, getDnsLookupsEnabled());
-                recordEnricher.enrich(record).whenComplete((enrichment, ex) -> {
-                    timerContext.close();
-                    if (ex != null) {
-                        this.recordEnrichmentErrors.inc();
+            final Timer.Context timerContext = recordEnrichmentTimer.time();
 
-                        // Enrichment failed
-                        future.completeExceptionally(ex);
-                        return;
-                    }
-                    // Enrichment was successful
+            // Trigger record enrichment (performing DNS reverse lookups for example)
+            return recordEnricher.enrich(record)
+                    .whenComplete((enrichment, ex) -> {
+                        timerContext.close();
 
-                    // We're currently in the callback thread from the enrichment process
-                    // We want the remainder of the serialization and dispatching to be performed
-                    // from one of our executor threads so that we can put back-pressure on the listener
-                    // if we can't keep up
-                    final Runnable dispatch = () -> {
+                        if (ex != null) {
+                            this.recordEnrichmentErrors.inc();
+                        }
+                    })
+                    .thenApplyAsync(enrichment -> {
+                        this.recordsScheduled.mark();
+
                         // Let's serialize
                         final FlowMessage.Builder flowMessage;
                         try {
                             flowMessage = this.getMessageBuilder().buildMessage(record, enrichment);
-                        } catch (final  Exception e) {
+                        } catch (final Exception e) {
                             throw new RuntimeException(e);
                         }
 
@@ -331,11 +303,7 @@ public abstract class ParserBase implements Parser {
                         if (!corrections.isEmpty()) {
                             this.invalidFlows.mark();
 
-                            final Optional<Instant> instant = illegalFlowEventCache.getUnchecked(session.getRemoteAddress());
-
-                            if (!instant.isPresent() || Duration.between(instant.get(), Instant.now()).getSeconds() > getIllegalFlowEventRate()) {
-                                illegalFlowEventCache.put(session.getRemoteAddress(), Optional.of(Instant.now()));
-
+                            if (illegalFlowEventLimiters.getUnchecked(session.getRemoteAddress()).tryAcquire()) {
                                 eventForwarder.sendNow(new EventBuilder()
                                         .setUei(ILLEGAL_FLOW_EVENT_UEI)
                                         .setTime(new Date())
@@ -356,68 +324,35 @@ public abstract class ParserBase implements Parser {
                         }
 
                         // Build the message to dispatch
-                        final TelemetryMessage msg = new TelemetryMessage(remoteAddress, ByteBuffer.wrap(flowMessage.build().toByteArray()));
+                        return new TelemetryMessage(remoteAddress, ByteBuffer.wrap(flowMessage.build().toByteArray()));
 
+                    }, executor)
+                    .thenCompose(msg -> {
                         // Dispatch
-                        dispatcher.send(msg).whenComplete((b, exx) -> {
+                        recordsDispatched.mark();
+                        return dispatcher.send(msg).whenComplete((b, exx) -> {
                             if (exx != null) {
                                 this.recordDispatchErrors.inc();
-                                future.completeExceptionally(exx);
                             } else {
                                 this.recordsCompleted.mark();
-                                future.complete(null);
                             }
                         });
-
-                        recordsDispatched.mark();
-                    };
-
-                    // It's possible that the callback thread is already a thread from the pool, if that's the case
-                    // execute within the current thread. This helps avoid deadlocks.
-                    if (Boolean.TRUE.equals(isParserThread.get())) {
-                        dispatch.run();
-                    } else {
-                        // We're not in one of the parsers threads, execute the dispatch in the pool
-                        executor.execute(dispatch);
-                    }
-
-                    this.recordsScheduled.mark();
-                });
-                return future;
-            }).toArray(CompletableFuture[]::new);
-        }, executor);
+                    });
+        }).toArray(CompletableFuture[]::new);
 
         // Return a future which is completed when all records are finished dispatching (i.e. written to Kafka)
-        final CompletableFuture<Void> future = new CompletableFuture<>();
-        futureOfFutures.whenComplete((futures,ex) -> {
-            if (ex != null) {
-                LOG.warn("Error preparing records for dispatch.", ex);
-                future.completeExceptionally(ex);
-                return;
+        return CompletableFuture.allOf(futures).whenComplete((any, exx) -> {
+            if (exx != null) {
+                LOG.warn("One or more of the records were not successfully dispatched.", exx);
             }
-            // Dispatch was triggered for all the records, now wait for the dispatching to complete
-            CompletableFuture.allOf(futures).whenComplete((any,exx) -> {
-                if (exx != null) {
-                    LOG.warn("One or more of the records were not successfully dispatched.", exx);
-                    future.completeExceptionally(exx);
-                    return;
-                }
-                // All of the records have been successfully dispatched
-                future.complete(any);
-            });
         });
-        return future;
     }
 
     protected void detectClockSkew(final long packetTimestampMs, final InetAddress remoteAddress) {
         if (getMaxClockSkew() > 0) {
             long deltaMs = Math.abs(packetTimestampMs - System.currentTimeMillis());
             if (deltaMs > getMaxClockSkew() * 1000L) {
-                final Optional<Instant> instant = clockSkewEventCache.getUnchecked(remoteAddress);
-
-                if (!instant.isPresent() || Duration.between(instant.get(), Instant.now()).getSeconds() > getClockSkewEventRate()) {
-                    clockSkewEventCache.put(remoteAddress, Optional.of(Instant.now()));
-
+                if (clockSkewEventLimiters.getUnchecked(remoteAddress).tryAcquire()) {
                     eventForwarder.sendNow(new EventBuilder()
                             .setUei(CLOCK_SKEW_EVENT_UEI)
                             .setTime(new Date())
@@ -441,11 +376,11 @@ public abstract class ParserBase implements Parser {
 
         if (flow.getFirstSwitched().getValue() > flow.getLastSwitched().getValue()) {
             corrections.add(String.format("Malformed flow: lastSwitched must be greater than firstSwitched: srcAddress=%s, dstAddress=%s, firstSwitched=%d, lastSwitched=%d, duration=%d",
-                                  flow.getSrcAddress(),
-                                  flow.getDstAddress(),
-                                  flow.getFirstSwitched().getValue(),
-                                  flow.getLastSwitched().getValue(),
-                                  flow.getLastSwitched().getValue() - flow.getFirstSwitched().getValue()));
+                    flow.getSrcAddress(),
+                    flow.getDstAddress(),
+                    flow.getFirstSwitched().getValue(),
+                    flow.getLastSwitched().getValue(),
+                    flow.getLastSwitched().getValue() - flow.getFirstSwitched().getValue()));
 
             // Re-calculate a (somewhat) valid timout from the flow timestamps
             final long timeout = (flow.hasDeltaSwitched() && flow.getDeltaSwitched().getValue() != flow.getFirstSwitched().getValue())
