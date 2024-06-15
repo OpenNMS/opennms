@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.scriptd.helper;
+package org.opennms.netmgt.snmp.helper;
 
 import java.math.BigInteger;
 import java.net.InetAddress;
@@ -531,7 +531,7 @@ public class SnmpTrapHelper {
      * @return The newly-created trap.
      * @throws Throws                                                    SnmpTrapHelperException if the trap cannot be created for
      *                                                                   any reason.
-     * @throws org.opennms.netmgt.scriptd.helper.SnmpTrapHelperException if any.
+     * @throws SnmpTrapHelperException if any.
      */
     public SnmpTrapBuilder createV2Trap(String trapOid, String sysUpTime) throws SnmpTrapHelperException {
 
@@ -552,7 +552,7 @@ public class SnmpTrapHelper {
      * @return The newly-created trap.
      * @throws Throws                                                    SnmpTrapHelperException if the trap cannot be created for
      *                                                                   any reason.
-     * @throws org.opennms.netmgt.scriptd.helper.SnmpTrapHelperException if any.
+     * @throws SnmpTrapHelperException if any.
      */
     public SnmpV2TrapBuilder createV2Inform(String trapOid, String sysUpTime) throws SnmpTrapHelperException {
 
@@ -573,7 +573,7 @@ public class SnmpTrapHelper {
      * @return The newly-created trap.
      * @throws Throws                                                    SnmpTrapHelperException if the trap cannot be created for
      *                                                                   any reason.
-     * @throws org.opennms.netmgt.scriptd.helper.SnmpTrapHelperException if any.
+     * @throws SnmpTrapHelperException if any.
      */
     public SnmpV3TrapBuilder createV3Trap(String trapOid, String sysUpTime) throws SnmpTrapHelperException {
 
@@ -594,7 +594,7 @@ public class SnmpTrapHelper {
      * @return The newly-created trap.
      * @throws Throws                                                    SnmpTrapHelperException if the trap cannot be created for
      *                                                                   any reason.
-     * @throws org.opennms.netmgt.scriptd.helper.SnmpTrapHelperException if any.
+     * @throws SnmpTrapHelperException if any.
      */
     public SnmpV3TrapBuilder createV3Inform(String trapOid, String sysUpTime) throws SnmpTrapHelperException {
 
@@ -629,7 +629,7 @@ public class SnmpTrapHelper {
      * @param value The variable binding value
      * @throws Throws                                                    SnmpTrapHelperException if the variable binding cannot be
      *                                                                   added to the trap for any reason.
-     * @throws org.opennms.netmgt.scriptd.helper.SnmpTrapHelperException if any.
+     * @throws SnmpTrapHelperException if any.
      */
     public void addVarBinding(SnmpTrapBuilder trap, String name, String type, String value) throws SnmpTrapHelperException {
         addVarBinding(trap, name, type, EventConstants.XML_ENCODING_TEXT, value);
@@ -646,7 +646,7 @@ public class SnmpTrapHelper {
      * @param value    The variable binding value
      * @throws Throws                                                    SnmpTrapHelperException if the variable binding cannot be
      *                                                                   added to the trap for any reason.
-     * @throws org.opennms.netmgt.scriptd.helper.SnmpTrapHelperException if any.
+     * @throws SnmpTrapHelperException if any.
      */
     public void addVarBinding(SnmpTrapBuilder trap, String name, String type, String encoding, String value) throws SnmpTrapHelperException {
 
@@ -674,7 +674,7 @@ public class SnmpTrapHelper {
      * @param destPort The port to which the trap should be forwarded
      * @throws Throws                                                    SnmpTrapHelperException if the variable binding cannot be
      *                                                                   added to the trap for any reason.
-     * @throws org.opennms.netmgt.scriptd.helper.SnmpTrapHelperException if any.
+     * @throws SnmpTrapHelperException if any.
      */
     public void forwardV1Trap(Event event, String destAddr, int destPort) throws SnmpTrapHelperException {
         // the event must correspond to an SNMP trap
@@ -808,7 +808,7 @@ public class SnmpTrapHelper {
      * @param destPort The port to which the trap should be forwarded
      * @throws Throws                                                    SnmpTrapHelperException if the variable binding cannot be
      *                                                                   added to the trap for any reason.
-     * @throws org.opennms.netmgt.scriptd.helper.SnmpTrapHelperException if any.
+     * @throws SnmpTrapHelperException if any.
      */
     public void forwardV2Trap(Event event, String destAddr, int destPort) throws SnmpTrapHelperException {
 
@@ -928,7 +928,7 @@ public class SnmpTrapHelper {
      * @param destPort The port to which the trap should be forwarded
      * @throws Throws                                                    SnmpTrapHelperException if the variable binding cannot be
      *                                                                   added to the trap for any reason.
-     * @throws org.opennms.netmgt.scriptd.helper.SnmpTrapHelperException if any.
+     * @throws SnmpTrapHelperException if any.
      */
     public void forwardTrap(Event event, String destAddr, int destPort) throws SnmpTrapHelperException {
 

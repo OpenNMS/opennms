@@ -252,13 +252,6 @@ public class Event implements Message,Serializable {
 	private List<Forward> _forwardList;
 
 	/**
-	 * The script information for this event
-	 */
-	@XmlElement(name = "script")
-	@Valid
-	private List<Script> _scriptList;
-
-	/**
 	 * The ifIndex to which this event is pertinent
 	 */
 	@XmlElement(name = "ifIndex")
@@ -295,7 +288,6 @@ public class Event implements Message,Serializable {
 		_operactionList = new CopyOnWriteArrayList<>();
 		_loggroupList = new CopyOnWriteArrayList<>();
 		_forwardList = new CopyOnWriteArrayList<>();
-		_scriptList = new CopyOnWriteArrayList<>();
 	}
 
 	public static Event copyFrom(IEvent source) {
@@ -337,8 +329,6 @@ public class Event implements Message,Serializable {
 		event.setTticket(Tticket.copyFrom(source.getTticket()));
 		event.getForwardCollection().addAll(
 				source.getForwardCollection().stream().map(Forward::copyFrom).collect(Collectors.toList()));
-		event.getScriptCollection().addAll(
-				source.getScriptCollection().stream().map(Script::copyFrom).collect(Collectors.toList()));
 		event.setIfIndex(source.hasIfIndex() ? source.getIfIndex() : null);
 		event.setIfAlias(source.getIfAlias());
 		event.setMouseovertext(source.getMouseovertext());
@@ -451,29 +441,6 @@ public class Event implements Message,Serializable {
 	}
 
 	/**
-	 * 
-	 * 
-	 * @param vScript
-	 * @throws IndexOutOfBoundsException
-	 *             if the index given is outside the bounds of the collection
-	 */
-	public void addScript(final Script vScript) throws IndexOutOfBoundsException {
-		_scriptList.add(vScript);
-	}
-
-	/**
-	 * 
-	 * 
-	 * @param index
-	 * @param vScript
-	 * @throws IndexOutOfBoundsException
-	 *             if the index given is outside the bounds of the collection
-	 */
-	public void addScript(final int index, final Script vScript) throws IndexOutOfBoundsException {
-		_scriptList.add(index, vScript);
-	}
-
-	/**
      */
 	public void deleteDbid() {
 		_dbid = null;
@@ -525,15 +492,6 @@ public class Event implements Message,Serializable {
 	 */
 	public Enumeration<Operaction> enumerateOperaction() {
 		return Collections.enumeration(_operactionList);
-	}
-
-	/**
-	 * Method enumerateScript.
-	 * 
-	 * @return an Enumeration over all possible elements of this collection
-	 */
-	public Enumeration<Script> enumerateScript() {
-		return Collections.enumeration(_scriptList);
 	}
 
 	/**
@@ -975,56 +933,6 @@ public class Event implements Message,Serializable {
 	}
 
 	/**
-	 * Method getScript.
-	 * 
-	 * @param index
-	 * @throws IndexOutOfBoundsException
-	 *             if the index given is outside the bounds of the collection
-	 * @return the value of the Script at the given index
-	 */
-	public Script getScript(final int index) throws IndexOutOfBoundsException {
-		// check bounds for index
-		if (index < 0 || index >= _scriptList.size()) {
-			throw new IndexOutOfBoundsException("getScript: Index value '" + index + "' not in range [0.." + (_scriptList.size() - 1) + "]");
-		}
-
-		return _scriptList.get(index);
-	}
-
-	/**
-	 * Method getScript.Returns the contents of the collection in an Array.
-	 * <p>
-	 * Note: Just in case the collection contents are changing in another
-	 * thread, we pass a 0-length Array of the correct type into the API call.
-	 * This way we <i>know</i> that the Array returned is of exactly the correct
-	 * length.
-	 * 
-	 * @return this collection as an Array
-	 */
-	public Script[] getScript() {
-		return _scriptList.toArray(new Script[0]);
-	}
-
-	/**
-	 * Method getScriptCollection.Returns a reference to '_scriptList'. No type
-	 * checking is performed on any modifications to the Vector.
-	 * 
-	 * @return a reference to the Vector backing this class
-	 */
-	public List<Script> getScriptCollection() {
-		return _scriptList;
-	}
-
-	/**
-	 * Method getScriptCount.
-	 * 
-	 * @return the size of this collection
-	 */
-	public int getScriptCount() {
-		return _scriptList.size();
-	}
-
-	/**
 	 * Returns the value of field 'service'. The field 'service' has the
 	 * following description: The service to which this event is pertinent
 	 * 
@@ -1184,15 +1092,6 @@ public class Event implements Message,Serializable {
 	}
 
 	/**
-	 * Method iterateScript.
-	 * 
-	 * @return an Iterator over all possible elements in this collection
-	 */
-	public Iterator<Script> iterateScript() {
-		return _scriptList.iterator();
-	}
-
-	/**
      */
 	public void removeAllAutoaction() {
 		_autoactionList.clear();
@@ -1214,12 +1113,6 @@ public class Event implements Message,Serializable {
      */
 	public void removeAllOperaction() {
 		_operactionList.clear();
-	}
-
-	/**
-     */
-	public void removeAllScript() {
-		_scriptList.clear();
 	}
 
 	/**
@@ -1300,26 +1193,6 @@ public class Event implements Message,Serializable {
 	 */
 	public Operaction removeOperactionAt(final int index) {
 		return _operactionList.remove(index);
-	}
-
-	/**
-	 * Method removeScript.
-	 * 
-	 * @param vScript
-	 * @return true if the object was removed from the collection.
-	 */
-	public boolean removeScript(final Script vScript) {
-		return _scriptList.remove(vScript);
-	}
-
-	/**
-	 * Method removeScriptAt.
-	 * 
-	 * @param index
-	 * @return the element removed from the collection
-	 */
-	public Script removeScriptAt(final int index) {
-		return _scriptList.remove(index);
 	}
 
 	/**
@@ -1773,67 +1646,6 @@ public class Event implements Message,Serializable {
 	 */
 	public void setPathoutage(final String pathoutage) {
 		_pathoutage = pathoutage;
-	}
-
-	/**
-	 * 
-	 * @deprecated
-	 * @param index
-	 * @param vScript
-	 * @throws IndexOutOfBoundsException
-	 *             if the index given is outside the bounds of the collection
-	 */
-    @Hidden
-	public void setScript(final int index, final Script vScript) throws IndexOutOfBoundsException {
-		// check bounds for index
-		if (index < 0 || index >= _scriptList.size()) {
-			throw new IndexOutOfBoundsException("setScript: Index value '" + index + "' not in range [0.." + (_scriptList.size() - 1) + "]");
-		}
-
-		_scriptList.set(index, vScript);
-	}
-
-	/**
-	 * 
-	 * @deprecated
-	 * @param vScriptArray
-	 */
-    @Hidden
-	public void setScript(final Script[] vScriptArray) {
-		// -- copy array
-		_scriptList.clear();
-
-		for (int i = 0; i < vScriptArray.length; i++) {
-			_scriptList.add(vScriptArray[i]);
-		}
-	}
-
-	/**
-	 * Sets the value of '_scriptList' by copying the given Vector. All elements
-	 * will be checked for type safety.
-	 * 
-	 * @param vScriptList
-	 *            the Vector to copy.
-	 */
-	public void setScript(final List<Script> vScriptList) {
-		// copy vector
-		_scriptList.clear();
-
-		_scriptList.addAll(vScriptList);
-	}
-
-	/**
-	 * Sets the value of '_scriptList' by setting it to the given Vector. No
-	 * type checking is performed.
-	 * 
-	 * @deprecated
-	 * 
-	 * @param scriptList
-	 *            the Vector to set.
-	 */
-    @Hidden
-	public void setScriptCollection(final List<Script> scriptList) {
-		_scriptList = scriptList;
 	}
 
 	/**

@@ -19,48 +19,40 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.scriptd.helper;
-
-import java.net.UnknownHostException;
+package org.opennms.netmgt.snmp.helper;
 
 import org.opennms.netmgt.xml.event.Event;
 
-public class SnmpV2InformEventForwarder extends SnmpTrapForwarderHelper implements
-		EventForwarder {	
+public abstract class AbstractEventPolicyRule implements EventPolicyRule {
 
-	public SnmpV2InformEventForwarder(String ip, int port, String community, int timeout, int retries, SnmpTrapHelper snmpTrapHelper) {
-		super(ip, port, community, timeout, retries, snmpTrapHelper);
+    @Override
+	public void addForwardRule(EventMatch match) {
+		m_filter.add(match);
+		m_forwardes.add(Boolean.TRUE);
 	}
 
         @Override
-	public void flushEvent(Event event) {
-		event =	super.filter(event);
-		if (event != null) {
-		try {
-			sendV2EventInform(event);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (SnmpTrapHelperException e) {
-			e.printStackTrace();
+	public void addDropRule(EventMatch match) {
+		m_filter.add(match);
+		m_forwardes.add(Boolean.FALSE);
+	}
+
+        @Override
+	public Event filter(Event event) {
+		boolean forward = true;
+		int count = 0;
+		for (EventMatch filter: m_filter) {
+			if (filter.match(event)) {
+				forward = m_forwardes.get(count).booleanValue();
+				break;
+			}
+			count++;
 		}
-		}
-		
+		if (forward)
+			return expand(event);
+		return null;
 	}
 
-        @Override
-	public void flushSyncEvent(Event event) {
-		flushEvent(event);
-	}
+	protected abstract Event expand(Event event);
 
-        @Override
-	public void sendStartSync() {
-		throw new UnsupportedOperationException();
-	}
-
-        @Override
-	public void sendEndSync() {
-		throw new UnsupportedOperationException();
-	}
-
-	
 }

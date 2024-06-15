@@ -37,7 +37,7 @@ import org.opennms.netmgt.config.TrapdConfigFactory;
 import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.scriptd.helper.SnmpTrapHelper;
+import org.opennms.netmgt.snmp.helper.SnmpTrapHelper;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;

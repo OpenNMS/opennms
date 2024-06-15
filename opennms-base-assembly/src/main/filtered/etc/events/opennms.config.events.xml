@@ -1,15 +1,5 @@
 <events xmlns="http://xmlns.opennms.org/xsd/eventconf">
    <event>
-      <uei>uei.opennms.org/internal/reloadScriptConfig</uei>
-      <event-label>OpenNMS-defined internal event: reloadScriptConfig</event-label>
-      <descr>&lt;p>The administrator has changed the ScriptD configuration.
-            ScriptD will load the new configuration.&lt;/p></descr>
-      <logmsg dest="logndisplay">
-            &lt;p>The ScriptD configuration files have changed.&lt;/p>
-        </logmsg>
-      <severity>Minor</severity>
-   </event>
-   <event>
       <uei>uei.opennms.org/internal/reloadVacuumdConfig</uei>
       <event-label>OpenNMS-defined internal event: reloadVacuumdConfig</event-label>
       <descr>&lt;p>The administrator has changed the Vacuumd

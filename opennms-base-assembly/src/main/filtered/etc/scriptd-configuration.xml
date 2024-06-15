@@ -1,3 +1,0 @@
-<scriptd-configuration xmlns="http://xmlns.opennms.org/xsd/config/scriptd">
-   <engine language="beanshell" className="bsh.util.BeanShellBSFEngine" extensions="bsh"/>
-</scriptd-configuration>

@@ -684,17 +684,6 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
                 });
             }
 
-            // Convert the script entry
-            //
-            if (m_eventConfDao.isSecureTag("script")) {
-                e.removeAllScript();
-            }
-            if (e.getScriptCount() == 0 && econf.getScripts().size() > 0) {
-                econf.getScripts().forEach(sc -> {
-                    e.addScript(transform(sc));
-                });
-            }
-
             // Copy the mouse over text
             //
             if (m_eventConfDao.isSecureTag("mouseovertext")) {

@@ -19,27 +19,20 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.scriptd.helper;
+package org.opennms.netmgt.snmp.helper;
 
 import org.opennms.netmgt.xml.event.Event;
-/**
- * An EventMatch is an Interface that 
- * is able to specify criteria to match Events
- * An implementation of this interface is a class
- * where you have some criteria to decide if the Event
- * matches or not
- * 
- * @author antonio
- *
- */
-public interface EventMatch {
 
-	/**
-	 * Method to decide if the Event matches
-	 * 
-	 * @param event
-	 * @return true if the event match
-	 */
-	public boolean match(Event event);
+public abstract class AbstractEventForwarder implements EventForwarder {
+
+	EventPolicyRule m_filter;
+        @Override
+	public void setEventPolicyRule(EventPolicyRule filter) {
+		m_filter = filter;
+	}
+
+	public Event filter(Event event) {
+		return m_filter.filter(event);
+	}
 
 }

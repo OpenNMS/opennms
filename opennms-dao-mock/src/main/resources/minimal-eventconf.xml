@@ -6,7 +6,6 @@
       <doNotOverride>operaction</doNotOverride>
       <doNotOverride>autoaction</doNotOverride>
       <doNotOverride>tticket</doNotOverride>
-      <doNotOverride>script</doNotOverride>
     </security>
   </global>
 
@@ -338,18 +337,6 @@
       changed.&lt;/p&gt;
     </logmsg>
     <severity>Warning</severity>
-  </event>
-  <event>
-    <uei>uei.opennms.org/internal/reloadScriptConfig</uei>
-    <event-label>OpenNMS-defined internal event: reloadScriptConfig</event-label>
-    <descr>
-      &lt;p&gt;The administrator has changed the ScriptD
-      configuration. ScriptD will load the new configuration.&lt;/p&gt;
-    </descr>
-    <logmsg dest='logndisplay'>
-      &lt;p&gt;The ScriptD configuration files have changed.&lt;/p&gt;
-    </logmsg>
-    <severity>Minor</severity>
   </event>
     <event>
       <uei>uei.opennms.org/internal/reloadVacuumdConfig</uei>

@@ -19,11 +19,13 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.scriptd.helper;
+package org.opennms.netmgt.snmp.helper;
 
 import java.net.UnknownHostException;
 
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventDatetimeFormatter;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
@@ -32,6 +34,7 @@ import org.opennms.netmgt.snmp.SnmpV3TrapBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.access.BeanFactoryReference;
 
 public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder implements EventForwarder {
 	private static final Logger LOG = LoggerFactory.getLogger(SnmpTrapForwarderHelper.class);
@@ -403,7 +406,7 @@ public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder imp
                      snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.7.0", "OctetString", "text", "null");
              String label=null;
              if (event.hasNodeid()) {
-            	 	label = DbHelper.getNodeLabel(Integer.valueOf(Long.valueOf(event.getNodeid()).toString()));
+            	 	label = getNodeLabel(Integer.valueOf(Long.valueOf(event.getNodeid()).toString()));
             	 	snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.8.0", "OctetString", "text", Long.valueOf(event.getNodeid()).toString());
              } else
                      snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.8.0", "OctetString", "text", "null");
@@ -558,5 +561,10 @@ public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder imp
 	public void setPrivprotocol(String privprotocol) {
 		this.privprotocol = privprotocol;
 	}
-	
+
+	private static String getNodeLabel(Integer nodeid) {
+		BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
+		return BeanUtils.getBean(bf,"nodeDao", NodeDao.class)
+				.get(nodeid).getLabel();
+	}
 }

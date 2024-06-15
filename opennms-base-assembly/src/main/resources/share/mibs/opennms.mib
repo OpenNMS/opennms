@@ -405,7 +405,6 @@ synchronizing		OBJECT-TYPE
 	::= { eventsAlarms 2 }
 
 -- Trap definitions
-
 eventTrap		NOTIFICATION-TYPE
 	OBJECTS {
 		dbid,
@@ -429,7 +428,7 @@ eventTrap		NOTIFICATION-TYPE
 		nodelabel
 		}
 	STATUS		current
-	DESCRIPTION 
+	DESCRIPTION
 	"This is the definition of the generic OpenNMS trap sent from the
 	scriptd process. Key variables are uei (which tells what type
 	of OpenNMS event this was), interface (the IP address of the interface

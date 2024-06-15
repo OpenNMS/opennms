@@ -19,29 +19,49 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.scriptd.helper;
+package org.opennms.netmgt.snmp.helper;
+
+import java.net.UnknownHostException;
 
 import org.opennms.netmgt.xml.event.Event;
 
-public class EventForwarderDefaultImpl extends AbstractEventForwarder implements
-		EventForwarder {
+public class SnmpV3InformEventForwarder extends SnmpTrapForwarderHelper implements
+		EventForwarder {	
+
+	public SnmpV3InformEventForwarder(String ip, int port, int timeout, int retries, int securityLevel, 
+			String securityname, String authPassPhrase, String authProtocol,
+			String privPassPhrase, String privprotocol, SnmpTrapHelper snmpTrapHelper ) {
+		super(ip,port,securityLevel,securityname,authPassPhrase,authProtocol,privPassPhrase,privprotocol,timeout, retries, snmpTrapHelper);
+	}
 
         @Override
 	public void flushEvent(Event event) {
-		super.filter(event);
+		event =	super.filter(event);
+		if (event != null) {
+			try {
+				sendV3EventInform(event);
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			} catch (SnmpTrapHelperException e) {
+				e.printStackTrace();
+			}
+		}		
 	}
 
         @Override
 	public void flushSyncEvent(Event event) {
-		super.filter(event);
+		flushEvent(event);
 	}
-		
+
         @Override
 	public void sendStartSync() {
+		throw new UnsupportedOperationException();
 	}
 
         @Override
 	public void sendEndSync() {
-	} 
+		throw new UnsupportedOperationException();
+	}
+
 	
 }
