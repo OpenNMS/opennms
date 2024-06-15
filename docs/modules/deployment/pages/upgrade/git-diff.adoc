@@ -73,7 +73,6 @@ include
 opennms-upgrade-status.properties
 libraries.properties
 pluginManifestData.xml
-org.opennms.features.datachoices.cfg
 include
 configured
 EOF

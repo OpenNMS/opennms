@@ -161,19 +161,6 @@ public class RestClient {
         return getBuilder(target).get(OnmsNode.class);
     }
 
-    public Map<String, Object> getUsageStatistics() throws Exception {
-        final Response response = getBuilder(getTarget().path("datachoices")).get();
-        final String jsonContent = response.readEntity(String.class);
-        final Map<String, Object> hashMap = new ObjectMapper().readValue(jsonContent, HashMap.class);
-        return hashMap.entrySet().stream().collect(Collectors.toMap(e -> e.getKey(), e-> {
-                    if (e.getValue() instanceof Integer) {
-                        return Long.valueOf( (Integer) e.getValue());
-                    } else {
-                        return e.getValue();
-                    }
-                }));
-    }
-
     public Response getResponseForNode(String nodeCriteria) {
         final WebTarget target = getTarget().path("nodes").path(nodeCriteria);
         return getBuilder(target).get();
