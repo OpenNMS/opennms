@@ -1484,11 +1484,6 @@
         <feature prerequisite="true">vaadin</feature>
         <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-image/${project.version}</bundle>
     </feature>
-    <feature name="dashlet-charts" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: Charts">
-        <feature>opennms-core</feature>
-        <feature prerequisite="true">vaadin</feature>
-        <bundle>mvn:org.opennms.features.vaadin-dashlets/dashlet-charts/${project.version}</bundle>
-    </feature>
     <feature name="dashlet-rtc" version="${project.version}" description="OpenNMS :: Features :: Dashlets :: RTC">
         <feature>opennms-core</feature>
         <feature prerequisite="true">vaadin</feature>

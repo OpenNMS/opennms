@@ -231,18 +231,6 @@ export const defaultMainMenu = {
         {
           id: null,
           className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
-          name: 'Charts',
-          url: 'charts/index.jsp',
-          locationMatch: 'chart',
-          icon: null,
-          iconType: null,
-          isIconOnly: null,
-          isVueLink: null,
-          roles: null
-        },
-        {
-          id: null,
-          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
           name: 'Resource Graphs',
           url: 'graph/index.jsp',
           locationMatch: 'performance',

@@ -194,7 +194,6 @@
 **** Dashlets
 ***** xref:deep-dive/visualizations/opsboard/dashlets/alarm-detail.adoc[]
 ***** xref:deep-dive/visualizations/opsboard/dashlets/alarms.adoc[]
-***** xref:deep-dive/visualizations/opsboard/dashlets/charts.adoc[]
 ***** xref:deep-dive/visualizations/opsboard/dashlets/grafana.adoc[]
 ***** xref:deep-dive/visualizations/opsboard/dashlets/image.adoc[]
 ***** xref:deep-dive/visualizations/opsboard/dashlets/ksc.adoc[]
