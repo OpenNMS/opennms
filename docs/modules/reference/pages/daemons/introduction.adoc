@@ -93,9 +93,6 @@ It is separate from pollerd's SnmpMonitor.
 | Ticketer
 | Enables {page-component-title} to create trouble tickets in external systems.
 
-| Tl1d
-| Enables reception of TL1 autonomous messages.
-
 | Trapd
 | Provides an SNMP server that accepts SNMP traps that can be converted to events.
 
