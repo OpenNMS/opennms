@@ -13,9 +13,6 @@ See xref:operation:deep-dive/admin/configuration/daemon-config-files.adoc[] sect
 |===
 | Name  | Description
 
-| Ackd
-| The acknowledge daemon is responsible for alarm acknowledgement.
-
 | Actiond
 | Generates Java actions based on received events.
 

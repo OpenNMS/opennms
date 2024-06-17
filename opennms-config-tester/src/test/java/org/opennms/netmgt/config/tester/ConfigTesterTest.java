@@ -111,11 +111,6 @@ public class ConfigTesterTest {
     }
 
     @Test
-    public void testAckdConfiguration() {
-        testConfigFile("ackd-configuration.xml");
-    }
-
-    @Test
     public void testActiondConfiguration() {
         testConfigFile("actiond-configuration.xml");
     }

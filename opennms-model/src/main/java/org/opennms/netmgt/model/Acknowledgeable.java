@@ -24,8 +24,7 @@ package org.opennms.netmgt.model;
 import java.util.Date;
 
 /**
- * Entities that have the capability of being acknowledge should implement this interface for
- * Ackd acknowledgment behavior.
+ * Entities that have the capability of being acknowledge should implement this interface for acknowledgment behavior.
  *
  * @author <a href="mailto:jeffg@opennms.org">Jeff Gehlbach</a>
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
