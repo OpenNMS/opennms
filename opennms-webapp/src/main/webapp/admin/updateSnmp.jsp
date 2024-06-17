@@ -99,7 +99,7 @@
   </div>
   <div class="card-body">
     <p>
-      The interface has had its SNMP information updated. This should cause any
+      The interface has had its SNMP information updated. This should not cause any
       changes in SNMP community names or collection to take effect.
     </p>
   </div> <!-- card-body -->
