@@ -102,13 +102,6 @@
                   <destFileName>opennms_jmx_config_generator.jar</destFileName>
                   <outputDirectory>${project.build.directory}/jmx</outputDirectory>
                 </artifactItem>
-                <artifactItem>
-                  <groupId>org.opennms</groupId>
-                  <artifactId>opennms-jasperstudio-extension</artifactId>
-                  <type>jar</type>
-                  <classifier>jar-with-dependencies</classifier>
-                  <outputDirectory>${project.build.directory}/jasperstudio-extension</outputDirectory>
-                </artifactItem>
               </artifactItems>
             </configuration>
           </execution>
@@ -156,50 +149,6 @@
             </goals>
           </execution>
         </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.codehaus.mojo</groupId>
-        <artifactId>jasperreports-maven-plugin</artifactId>
-        <version>${jasperreportsMavenPluginVersion}</version>
-        <executions>
-          <execution>
-            <phase>compile</phase>
-            <goals>
-              <goal>compile-reports</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <sourceDirectory>${project.build.outputDirectory}/etc/report-templates</sourceDirectory>
-          <outputDirectory>${project.build.directory}/jasper</outputDirectory>
-          <xmlValidation>true</xmlValidation>
-          <forceCompile>false</forceCompile>
-          <additionalProperties>
-            <net.sf.jasperreports.query.executer.factory.measurement>org.opennms.netmgt.jasper.measurement.MeasurementExecutorFactory</net.sf.jasperreports.query.executer.factory.measurement>
-          </additionalProperties>
-        </configuration>
-        <dependencies>
-          <dependency>
-            <groupId>org.opennms.dependencies</groupId>
-            <artifactId>jasper-shaded</artifactId>
-            <version>${project.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>xerces</groupId>
-            <artifactId>xercesImpl</artifactId>
-            <version>${xercesVersion}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>jasper-extensions</artifactId>
-            <version>${project.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.postgresql</groupId>
-            <artifactId>postgresql</artifactId>
-            <version>${postgresqlVersion}</version>
-          </dependency>
-        </dependencies>
       </plugin>
       <plugin>
         <artifactId>maven-resources-plugin</artifactId>
@@ -341,10 +290,6 @@
       <groupId>org.opennms</groupId>
       <artifactId>org.opennms.icmp.proxy.rpc-impl</artifactId>
       <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-reportd</artifactId>
     </dependency>
     <!-- just here to be able to unpack it into the assembly tarball -->
     <dependency>
@@ -743,38 +688,6 @@
       <artifactId>org.opennms.features.instrumentationLogReader</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.core</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.availability</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.repository</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.model</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.dao</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.sdo</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.reporting</groupId>
-      <artifactId>org.opennms.features.reporting.jasper-reports</artifactId>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.features.scv</groupId>
       <artifactId>org.opennms.features.scv.cli</artifactId>
       <version>${project.version}</version>
@@ -1020,47 +933,6 @@
       <artifactId>org.opennms.features.request-tracker</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>jasper-extensions</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-jasperstudio-extension</artifactId>
-      <version>${project.version}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-expression</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-asm</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-aop</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-context</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-beans</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>org.springframework</groupId>
-          <artifactId>spring-core</artifactId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jasper-shaded</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>jradius-dependencies</artifactId>
       <type>pom</type>
@@ -1275,15 +1147,4 @@
       <classifier>runtime</classifier>
     </dependency>
   </dependencies>
-
-  <repositories>
-    <repository>
-      <id>jasperreports</id>
-      <name>OpenNMS Mega-Repository (jasperreports override)</name>
-      <url>https://maven.opennms.org/repository/everything/</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 </project>
