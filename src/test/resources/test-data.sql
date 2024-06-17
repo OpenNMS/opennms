@@ -131,7 +131,7 @@ INSERT INTO distpoller (dpname, dpip, dpcomment, dpdisclimit, dplastnodepull, dp
 -- Data for Name: events; Type: TABLE DATA; Schema: public; Owner: opennms
 --
 
-INSERT INTO events (eventid, eventuei, nodeid, eventtime, eventhost, eventsource, ipaddr, eventdpname, eventsnmphost, serviceid, eventsnmp, eventparms, eventcreatetime, eventdescr, eventloggroup, eventlogmsg, eventseverity, eventpathoutage, eventcorrelation, eventsuppressedcount, eventoperinstruct, eventautoaction, eventoperaction, eventoperactionmenutext, eventnotification, eventtticket, eventtticketstate, eventforward, eventmouseovertext, eventlog, eventdisplay, eventackuser, eventacktime, alarmid) VALUES (1, 'uei.opennms.org/test', NULL, '2006-07-28 16:48:07.957', NULL, 'test', NULL, 'localhost', NULL, NULL, NULL, NULL, '2006-07-28 16:48:07.957', NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Y', 'Y', NULL, NULL, NULL);
+INSERT INTO events (eventid, eventuei, nodeid, eventtime, eventhost, eventsource, ipaddr, eventdpname, eventsnmphost, serviceid, eventsnmp, eventparms, eventcreatetime, eventdescr, eventloggroup, eventlogmsg, eventseverity, eventpathoutage, eventcorrelation, eventsuppressedcount, eventoperinstruct, eventoperaction, eventoperactionmenutext, eventnotification, eventtticket, eventtticketstate, eventforward, eventmouseovertext, eventlog, eventdisplay, eventackuser, eventacktime, alarmid) VALUES (1, 'uei.opennms.org/test', NULL, '2006-07-28 16:48:07.957', NULL, 'test', NULL, 'localhost', NULL, NULL, NULL, NULL, '2006-07-28 16:48:07.957', NULL, NULL, NULL, 1, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'Y', 'Y', NULL, NULL, NULL);
 
 
 --

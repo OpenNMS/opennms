@@ -26,7 +26,6 @@
   <bean id="configTester" class="org.opennms.netmgt.config.tester.ConfigTester">
     <property name="configs">
       <map>
-        <entry key="actiond-configuration.xml" value="actiondConfigFactory"/>
         <entry key="ami-config.xml" value="amiPeerFactory"/>
         <!-- <entry key="asterisk-configuration.properties" value="asteriskConfigProperties"/> --><!-- Not part of standard build -->
         <entry key="bsf-northbounder-configuration.xml" value="bsfNorthbounderConfigDao"/>
@@ -107,12 +106,6 @@
     </property>
   </bean>
 
-  <bean id="actiondConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
-    <property name="staticMethod"><value>org.opennms.netmgt.config.ActiondConfigFactory.init</value></property>
-  </bean>
-
-  <bean id="actiondConfigFactory" class="org.opennms.netmgt.config.ActiondConfigFactory" depends-on="actiondConfigFactory-init" factory-method="getInstance"/>
-  
   <bean id="amiPeerFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.AmiPeerFactory.init</value></property>
   </bean>

@@ -32,7 +32,6 @@ import org.opennms.netmgt.events.api.EventProcessor;
 import org.opennms.netmgt.events.api.EventProcessorException;
 import org.opennms.netmgt.model.events.EventUtils;
 import org.opennms.netmgt.xml.event.AlarmData;
-import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Logmsg;
@@ -68,7 +67,7 @@ import com.codahale.metrics.Timer.Context;
  * </P>
  * <P>
  * The list of elements that can have a %element% or %parms[*]% in their value
- * are : descr, logmsg, operinstr, autoaction, operaction(/menu), tticket
+ * are : descr, logmsg, operinstr, operaction(/menu), tticket
  * </P>
  *
  * <P>
@@ -226,27 +225,6 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
         dest.setCtime(src.getCtime());
         dest.setState(src.getState().toString());
         dest.setPath(src.getPath().toString());
-
-        return dest;
-    }
-
-    /**
-     * This method is used to transform an auto action event configuration
-     * instance into an auto action event instance. This is used when the
-     * incoming event does not have any auto action information and the
-     * information from the configuration object is copied.
-     *
-     * @param src
-     *            The configuration source to transform.
-     *
-     * @return The transformed auto action information.
-     *
-     */
-    private org.opennms.netmgt.xml.event.Autoaction transform(org.opennms.netmgt.xml.eventconf.Autoaction src) {
-        org.opennms.netmgt.xml.event.Autoaction dest = new org.opennms.netmgt.xml.event.Autoaction();
-
-        dest.setContent(src.getContent());
-        dest.setState(src.getState().toString());
 
         return dest;
     }
@@ -415,25 +393,6 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
     }
 
     /**
-     * Expand parms in the event autoaction(s)
-     */
-    private void expandParms(Autoaction[] autoactions, Event event) {
-        boolean expanded = false;
-
-        for (Autoaction action : autoactions) {
-            String strRet = m_eventUtil.expandParms(action.getContent(), event);
-            if (strRet != null) {
-                action.setContent(strRet);
-                expanded = true;
-            }
-        }
-
-        if (expanded) {
-            event.setAutoaction(autoactions);
-        }
-    }
-
-    /**
      * Expand parms in the event operaction(s)
      */
     private void expandParms(Operaction[] operactions, Event event) {
@@ -508,11 +467,6 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
                 event.setOperinstruct(strRet);
                 strRet = null;
             }
-        }
-
-        // autoaction
-        if (event.getAutoaction() != null) {
-            expandParms(event.getAutoaction(), event);
         }
 
         // operaction
@@ -622,17 +576,6 @@ public final class EventExpander implements org.opennms.netmgt.dao.api.EventExpa
             }
             if (e.getOperinstruct() == null && econf.getOperinstruct() != null) {
                 e.setOperinstruct(econf.getOperinstruct());
-            }
-
-            // Copy the auto actions.
-            //
-            if (m_eventConfDao.isSecureTag("autoaction")) {
-                e.removeAllAutoaction();
-            }
-            if (e.getAutoactionCount() == 0 && econf.getAutoactions().size() > 0) {
-                econf.getAutoactions().forEach(aa -> {
-                    e.addAutoaction(transform(aa));
-                });
             }
 
             // Convert the operator actions

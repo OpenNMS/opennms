@@ -48,12 +48,6 @@ public class ImmutableEventTest {
         }
 
         try {
-            immutableEvent.getAutoactionCollection().add(ImmutableAutoAction.newBuilder().build());
-        } catch (Exception e) {
-            // Expected...
-        }
-
-        try {
             immutableEvent.getOperactionCollection().add(ImmutableOperAction.newBuilder().build());
         } catch (Exception e) {
             // Expected...
@@ -150,10 +144,6 @@ public class ImmutableEventTest {
         event.setCorrelation(correlation);
 
         event.setOperinstruct("test-operinstruct");
-
-        Autoaction autoaction = new Autoaction();
-        autoaction.setContent("test");
-        event.getAutoactionCollection().add(autoaction);
 
         Operaction operaction = new Operaction();
         operaction.setContent("test");

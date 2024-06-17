@@ -1278,7 +1278,6 @@ public class EventFactory {
             event.severity = OnmsSeverity.get(rs.getInt("eventSeverity"));
 
             event.operatorInstruction = rs.getString("eventOperInstruct");
-            event.autoAction = rs.getString("eventAutoAction");
             event.operatorAction = rs.getString("eventOperAction");
             event.operatorActionMenuText = rs.getString("eventOperActionMenuText");
             event.notification = rs.getString("eventNotification");

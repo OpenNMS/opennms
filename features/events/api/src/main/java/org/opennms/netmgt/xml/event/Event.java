@@ -211,13 +211,6 @@ public class Event implements Message,Serializable {
 	private String _operinstruct;
 
 	/**
-	 * The automatic action to occur when this event occurs
-	 */
-	@XmlElement(name = "autoaction")
-	@Valid
-	private List<Autoaction> _autoactionList;
-
-	/**
 	 * The operator action to be taken when this event occurs
 	 */
 	@XmlElement(name = "operaction")
@@ -284,7 +277,6 @@ public class Event implements Message,Serializable {
 	public Event() {
 		super();
 
-		_autoactionList = new CopyOnWriteArrayList<>();
 		_operactionList = new CopyOnWriteArrayList<>();
 		_loggroupList = new CopyOnWriteArrayList<>();
 		_forwardList = new CopyOnWriteArrayList<>();
@@ -320,8 +312,6 @@ public class Event implements Message,Serializable {
 		event.setPathoutage(source.getPathoutage());
 		event.setCorrelation(Correlation.copyFrom(source.getCorrelation()));
 		event.setOperinstruct(source.getOperinstruct());
-		event.getAutoactionCollection().addAll(
-				source.getAutoactionCollection().stream().map(Autoaction::copyFrom).collect(Collectors.toList()));
 		event.getOperactionCollection().addAll(
 				source.getOperactionCollection().stream().map(Operaction::copyFrom).collect(Collectors.toList()));
 		event.setAutoacknowledge(Autoacknowledge.copyFrom(source.getAutoacknowledge()));
@@ -339,30 +329,6 @@ public class Event implements Message,Serializable {
 	// -----------/
 	// - Methods -/
 	// -----------/
-
-	/**
-	 * 
-	 * 
-	 * @param vAutoaction
-	 * @throws IndexOutOfBoundsException
-	 *             if the index given is outside the bounds of the collection
-	 */
-	public void addAutoaction(final Autoaction vAutoaction)
-			throws IndexOutOfBoundsException {
-		_autoactionList.add(vAutoaction);
-	}
-
-	/**
-	 * 
-	 * 
-	 * @param index
-	 * @param vAutoaction
-	 * @throws IndexOutOfBoundsException
-	 *             if the index given is outside the bounds of the collection
-	 */
-	public void addAutoaction(final int index, final Autoaction vAutoaction) throws IndexOutOfBoundsException {
-		_autoactionList.add(index, vAutoaction);
-	}
 
 	/**
 	 * 
@@ -459,15 +425,6 @@ public class Event implements Message,Serializable {
 	}
 
 	/**
-	 * Method enumerateAutoaction.
-	 * 
-	 * @return an Enumeration over all possible elements of this collection
-	 */
-	public Enumeration<Autoaction> enumerateAutoaction() {
-		return Collections.enumeration(_autoactionList);
-	}
-
-	/**
 	 * Method enumerateForward.
 	 * 
 	 * @return an Enumeration over all possible elements of this collection
@@ -513,57 +470,6 @@ public class Event implements Message,Serializable {
 	 */
 	public Autoacknowledge getAutoacknowledge() {
 		return _autoacknowledge;
-	}
-
-	/**
-	 * Method getAutoaction.
-	 * 
-	 * @param index
-	 * @throws IndexOutOfBoundsException
-	 *             if the index given is outside the bounds of the collection
-	 * @return the value of the Autoaction at the
-	 *         given index
-	 */
-	public Autoaction getAutoaction(final int index) throws IndexOutOfBoundsException {
-		// check bounds for index
-		if (index < 0 || index >= _autoactionList.size()) {
-			throw new IndexOutOfBoundsException("getAutoaction: Index value '" + index + "' not in range [0.." + (_autoactionList.size() - 1) + "]");
-		}
-
-		return _autoactionList.get(index);
-	}
-
-	/**
-	 * Method getAutoaction.Returns the contents of the collection in an Array.
-	 * <p>
-	 * Note: Just in case the collection contents are changing in another
-	 * thread, we pass a 0-length Array of the correct type into the API call.
-	 * This way we <i>know</i> that the Array returned is of exactly the correct
-	 * length.
-	 * 
-	 * @return this collection as an Array
-	 */
-	public Autoaction[] getAutoaction() {
-		return _autoactionList.toArray(new Autoaction[0]);
-	}
-
-	/**
-	 * Method getAutoactionCollection.Returns a reference to '_autoactionList'.
-	 * No type checking is performed on any modifications to the Vector.
-	 * 
-	 * @return a reference to the Vector backing this class
-	 */
-	public List<Autoaction> getAutoactionCollection() {
-		return _autoactionList;
-	}
-
-	/**
-	 * Method getAutoactionCount.
-	 * 
-	 * @return the size of this collection
-	 */
-	public int getAutoactionCount() {
-		return _autoactionList.size();
 	}
 
 	/**
@@ -1056,15 +962,6 @@ public class Event implements Message,Serializable {
 	}
 
 	/**
-	 * Method iterateAutoaction.
-	 * 
-	 * @return an Iterator over all possible elements in this collection
-	 */
-	public Iterator<Autoaction> iterateAutoaction() {
-		return _autoactionList.iterator();
-	}
-
-	/**
 	 * Method iterateForward.
 	 * 
 	 * @return an Iterator over all possible elements in this collection
@@ -1093,12 +990,6 @@ public class Event implements Message,Serializable {
 
 	/**
      */
-	public void removeAllAutoaction() {
-		_autoactionList.clear();
-	}
-
-	/**
-     */
 	public void removeAllForward() {
 		_forwardList.clear();
 	}
@@ -1113,26 +1004,6 @@ public class Event implements Message,Serializable {
      */
 	public void removeAllOperaction() {
 		_operactionList.clear();
-	}
-
-	/**
-	 * Method removeAutoaction.
-	 * 
-	 * @param vAutoaction
-	 * @return true if the object was removed from the collection.
-	 */
-	public boolean removeAutoaction(final Autoaction vAutoaction) {
-		return _autoactionList.remove(vAutoaction);
-	}
-
-	/**
-	 * Method removeAutoactionAt.
-	 * 
-	 * @param index
-	 * @return the element removed from the collection
-	 */
-	public Autoaction removeAutoactionAt(final int index) {
-		return _autoactionList.remove(index);
 	}
 
 	/**
@@ -1218,66 +1089,6 @@ public class Event implements Message,Serializable {
 		_autoacknowledge = autoacknowledge;
 	}
 
-	/**
-	 * 
-	 * @deprecated
-	 * @param index
-	 * @param vAutoaction
-	 * @throws IndexOutOfBoundsException
-	 *             if the index given is outside the bounds of the collection
-	 */
-    @Hidden
-	public void setAutoaction(final int index, final Autoaction vAutoaction) throws IndexOutOfBoundsException {
-		// check bounds for index
-		if (index < 0 || index >= _autoactionList.size()) {
-			throw new IndexOutOfBoundsException("setAutoaction: Index value '" + index + "' not in range [0.." + (_autoactionList.size() - 1) + "]");
-		}
-
-		_autoactionList.set(index, vAutoaction);
-	}
-
-	/**
-	 * 
-	 * @deprecated
-	 * @param vAutoactionArray
-	 */
-    @Hidden
-	public void setAutoaction(final Autoaction[] vAutoactionArray) {
-		// -- copy array
-		_autoactionList.clear();
-
-		for (int i = 0; i < vAutoactionArray.length; i++) {
-			_autoactionList.add(vAutoactionArray[i]);
-		}
-	}
-
-	/**
-	 * Sets the value of '_autoactionList' by copying the given Vector. All
-	 * elements will be checked for type safety.
-	 * 
-	 * @param vAutoactionList
-	 *            the Vector to copy.
-	 */
-	public void setAutoaction(final List<Autoaction> vAutoactionList) {
-		// copy vector
-		_autoactionList.clear();
-
-		_autoactionList.addAll(vAutoactionList);
-	}
-
-	/**
-	 * Sets the value of '_autoactionList' by setting it to the given Vector. No
-	 * type checking is performed.
-	 * 
-	 * @deprecated
-	 * 
-	 * @param autoactionList
-	 *            the Vector to set.
-	 */
-    @Hidden
-	public void setAutoactionCollection(final List<Autoaction> autoactionList) {
-		_autoactionList = autoactionList;
-	}
 
 	/**
 	 * Sets the value of field 'correlation'. The field 'correlation' has the

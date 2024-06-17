@@ -33,17 +33,6 @@ package org.opennms.netmgt.eventd;
 public abstract class EventdConstants {
 
     /**
-     * The SQL insertion string used by eventd to store the event information
-     * into the database.
-     */
-    public static final String SQL_DB_INS_EVENT = "INSERT into events (eventID, eventUei, nodeID, eventTime, " +
-    		"eventHost, ipAddr, systemId, eventSnmpHost, serviceID, eventSnmp, eventParms, eventCreateTime, eventDescr, " +
-    		"eventLoggroup, eventLogmsg, eventLog, eventDisplay, eventSeverity, eventPathOutage, eventCorrelation, eventSuppressedCount, " +
-    		"eventOperInstruct, eventAutoAction, eventOperAction, eventOperActionMenuText, eventNotification, eventTticket, eventTticketState, " +
-    		"eventForward, eventMouseOverText, eventAckUser, eventAckTime, eventSource, ifIndex) " +
-    		"values(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
-
-    /**
      * The SQL statement necessary to convert the service name into a service id
      * using the distributed poller database.
      */

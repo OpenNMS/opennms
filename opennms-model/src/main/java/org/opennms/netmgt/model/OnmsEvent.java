@@ -170,10 +170,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	private String eventOperInstruct;
 
 	/** nullable persistent field */
-	@Column(name="eventAutoAction", length=256)
-	private String eventAutoAction;
-
-	/** nullable persistent field */
 	@Column(name="eventOperAction", length=256)
 	private String eventOperAction;
 
@@ -671,25 +667,6 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 */
 	public void setEventOperInstruct(String eventoperinstruct) {
 		eventOperInstruct = eventoperinstruct;
-	}
-
-	/**
-	 * <p>getEventAutoAction</p>
-	 *
-	 * @return a {@link java.lang.String} object.
-	 */
-	@XmlElement(name="autoAction")
-	public String getEventAutoAction() {
-		return eventAutoAction;
-	}
-
-	/**
-	 * <p>setEventAutoAction</p>
-	 *
-	 * @param eventautoaction a {@link java.lang.String} object.
-	 */
-	public void setEventAutoAction(String eventautoaction) {
-		eventAutoAction = eventautoaction;
 	}
 
 	/**

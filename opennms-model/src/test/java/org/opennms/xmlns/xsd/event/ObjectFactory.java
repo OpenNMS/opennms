@@ -66,14 +66,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Autoaction }
-     * 
-     */
-    public Autoaction createAutoaction() {
-        return new Autoaction();
-    }
-
-    /**
      * Create an instance of {@link Header }
      * 
      */

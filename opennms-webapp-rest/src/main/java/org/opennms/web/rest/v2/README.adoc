@@ -181,7 +181,6 @@ org.opennms.web.rest.support.SearchPropertiesToAsciidocTest
 | Name | Type | Description
 | event.eventAckTime | Timestamp | Acknowledged Time
 | event.eventAckUser | String | Acknowledging User
-| event.eventAutoAction | String | Autoaction
 | event.eventCorrelation | String | Correlation
 | event.eventCreateTime | Timestamp | Creation Time
 | event.eventDescr | String | Description

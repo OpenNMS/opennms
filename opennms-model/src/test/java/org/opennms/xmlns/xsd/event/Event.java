@@ -80,7 +80,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="pathoutage" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element ref="{http://xmlns.opennms.org/xsd/event}correlation" minOccurs="0"/>
  *         &lt;element name="operinstruct" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element ref="{http://xmlns.opennms.org/xsd/event}autoaction" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element ref="{http://xmlns.opennms.org/xsd/event}operaction" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element ref="{http://xmlns.opennms.org/xsd/event}autoacknowledge" minOccurs="0"/>
  *         &lt;element name="loggroup" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded" minOccurs="0"/>
@@ -122,7 +121,6 @@ import javax.xml.bind.annotation.XmlType;
     "pathoutage",
     "correlation",
     "operinstruct",
-    "autoaction",
     "operaction",
     "autoacknowledge",
     "loggroup",
@@ -177,9 +175,6 @@ public class Event {
     @Valid
     protected Correlation correlation;
     protected String operinstruct;
-    @XmlElement(namespace = "http://xmlns.opennms.org/xsd/event")
-    @Valid
-    protected List<Autoaction> autoaction;
     @XmlElement(namespace = "http://xmlns.opennms.org/xsd/event")
     @Valid
     protected List<Operaction> operaction;
@@ -705,36 +700,6 @@ public class Event {
      */
     public void setOperinstruct(String value) {
         this.operinstruct = value;
-    }
-
-    /**
-     * The automatic action to occur when this event
-     *             occurs Gets the value of the autoaction property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the autoaction property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getAutoaction().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Autoaction }
-     * 
-     * 
-     */
-    public List<Autoaction> getAutoaction() {
-        if (autoaction == null) {
-            autoaction = new ArrayList<>();
-        }
-        return this.autoaction;
     }
 
     /**

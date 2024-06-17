@@ -95,7 +95,6 @@ public class JaxbUtilsTest {
                 + "<ctime>yesterday</ctime>"
               + "</correlation>"
               + "<operinstruct>run away</operinstruct>"
-              + "<autoaction state=\"off\">content</autoaction>"
               + "<operaction menutext=\"this is in the menu!\" state=\"on\">totally actiony</operaction>"
               + "<autoacknowledge state=\"off\">content</autoacknowledge>"
               + "<loggroup>foo</loggroup>"

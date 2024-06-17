@@ -53,11 +53,6 @@ public abstract class ConfigFileConstants {
     //
 
     /**
-     * The opennms actiond config file
-     */
-    public static final int ACTIOND_CONFIG_FILE_NAME;
-
-    /**
      * The opennms capsd config file
      */
     public static final int CAPSD_CONFIG_FILE_NAME;
@@ -409,7 +404,6 @@ public abstract class ConfigFileConstants {
 
         DB_CONFIG_FILE_NAME = 0;
         JMS_CONFIG_FILE_NAME = 1;
-        ACTIOND_CONFIG_FILE_NAME = 2;
         CAPSD_CONFIG_FILE_NAME = 3;
         DISCOVERY_CONFIG_FILE_NAME = 4;
 
@@ -513,7 +507,6 @@ public abstract class ConfigFileConstants {
 
         FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
         FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
-        FILE_ID_TO_NAME[ACTIOND_CONFIG_FILE_NAME] = "actiond-configuration.xml";
         FILE_ID_TO_NAME[CAPSD_CONFIG_FILE_NAME] = "capsd-configuration.xml";
         FILE_ID_TO_NAME[DISCOVERY_CONFIG_FILE_NAME] = "discovery-configuration.xml";
 

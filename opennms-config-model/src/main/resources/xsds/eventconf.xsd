@@ -128,13 +128,6 @@
           </annotation>
         </element>
 
-        <element maxOccurs="unbounded" minOccurs="0" ref="this:autoaction">
-          <annotation>
-            <documentation>The automatic action to occur when this event
-            occurs</documentation>
-          </annotation>
-        </element>
-
         <element maxOccurs="unbounded" minOccurs="0" ref="this:varbindsdecode">
           <annotation>
             <documentation>The varbind decoding tag used to decode value 
@@ -548,27 +541,6 @@
           </restriction>
         </simpleType>
       </attribute>
-    </complexType>
-  </element>
-
-  <element name="autoaction">
-    <annotation>
-      <documentation>The automatic action to occur when this event occurs with
-      state controlling if action takes place</documentation>
-    </annotation>
-
-    <complexType>
-      <simpleContent>
-        <extension base="string">
-          <attribute default="on" name="state" use="optional">
-            <simpleType>
-              <restriction base="string">
-                <pattern value="(on|off)"/>
-              </restriction>
-            </simpleType>
-          </attribute>
-        </extension>
-      </simpleContent>
     </complexType>
   </element>
 

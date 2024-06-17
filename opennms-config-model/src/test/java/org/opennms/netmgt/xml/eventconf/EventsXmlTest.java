@@ -89,10 +89,6 @@ public class EventsXmlTest extends XmlTest<Events> {
 		correlation0.addCuei("vCuei");
 		event1.setCorrelation(correlation0);
 		event1.setOperinstruct("operinstruct");
-		Autoaction autoaction0 = new Autoaction();
-		autoaction0.setContent("These are important data");
-		autoaction0.setState(StateType.ON);
-		event1.addAutoaction(autoaction0);
 		Varbindsdecode varbindsdecode0 = new Varbindsdecode();
 		Decode decode0 = new Decode();
 		decode0.setVarbinddecodedstring("testing");
@@ -206,7 +202,6 @@ public class EventsXmlTest extends XmlTest<Events> {
 					"    <ctime>ctime</ctime>" +
 					"  </correlation>" +
 					"  <operinstruct>operinstruct</operinstruct>" +
-					"  <autoaction state=\"on\">These are important data</autoaction>" +
 					"  <varbindsdecode>" +
 					"    <parmid>parm[#1]</parmid>" +
 					"    <decode varbinddecodedstring=\"testing\" varbindvalue=\"3\"/>" +
