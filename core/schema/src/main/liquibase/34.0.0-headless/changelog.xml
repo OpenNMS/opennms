@@ -10,4 +10,8 @@
     <changeSet author="mvrueden" id="34.0.0-headless-drop-autoaction-column">
         <dropColumn tableName="events" columnName="eventautoaction" />
     </changeSet>
+    <changeSet author="mvrueden" id="34.0.0-headless-drop-device-config">
+        <dropTable tableName="device_config" />
+        <dropSequence sequenceName="deviceconfignxtid"/>
+    </changeSet>
 </databaseChangeLog>

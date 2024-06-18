@@ -25,8 +25,5 @@ package org.opennms.features.usageanalytics.api;
  * Enumeration class to provide list of metric names.
  */
 public enum UsageAnalyticMetricName {
-    DCB_SUCCEED,
-    DCB_FAILED,
-    DCB_WEBUI_ENTRY,
-    DCB_WEBUI_TIME
+
 }

@@ -66,7 +66,6 @@ import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerRequestBuilder;
 import org.opennms.netmgt.poller.PollerResponse;
-import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.client.rpc.LocationAwarePollerClientImpl;
 import org.opennms.netmgt.poller.client.rpc.PollerClientRpcModule;
@@ -104,8 +103,6 @@ public class PollableServiceConfigIT {
     @Autowired
     private PollerClientRpcModule m_pollerClientRpcModule;
 
-    private ServiceMonitorAdaptor m_serviceMonitorAdaptor = (svc, parameters, status) -> status;
-
     @Before
     public void setUp() throws Exception {
         MockLogAppender.setupLogging();
@@ -136,8 +133,7 @@ public class PollableServiceConfigIT {
         final ThresholdingService thresholdingService = mock(ThresholdingService.class);
         final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pkg, timer,
                                                                     persisterFactory, thresholdingService,
-                                                                    m_locationAwarePollerClient, m_pollOutagesDao,
-                                                                    m_serviceMonitorAdaptor);
+                                                                    m_locationAwarePollerClient, m_pollOutagesDao);
         PollStatus pollStatus = psc.poll();
         assertThat(pollStatus.getReason(), not(containsString("Unexpected exception")));
     }
@@ -175,7 +171,7 @@ public class PollableServiceConfigIT {
 
         final PollableService svc = new PollableService(iface, "HTTP-www.example.com");
         final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pkg, timer,
-                persisterFactory, thresholdingService, locationAwarePollerClient, m_pollOutagesDao, m_serviceMonitorAdaptor);
+                persisterFactory, thresholdingService, locationAwarePollerClient, m_pollOutagesDao);
         psc.poll();
 
         verify(pollerRequestBuilder).withMonitorLocator(factory.getServiceMonitorLocator("HTTP").orElseThrow());
@@ -228,7 +224,7 @@ public class PollableServiceConfigIT {
         ThresholdingService thresholdingService = mock(ThresholdingService.class);
 
         final PollableServiceConfig psc = new PollableServiceConfig(pollableSvc, pollerConfig,
-                pkg, timer, persisterFactory, thresholdingService, client, m_pollOutagesDao, m_serviceMonitorAdaptor);
+                pkg, timer, persisterFactory, thresholdingService, client, m_pollOutagesDao);
 
         // Trigger the poll
         PollStatus pollStatus = psc.poll();
@@ -267,8 +263,7 @@ public class PollableServiceConfigIT {
 
         final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pkg, timer,
                                                                     persisterFactory, thresholdingService,
-                                                                    m_locationAwarePollerClient, m_pollOutagesDao,
-                                                                    m_serviceMonitorAdaptor);
+                                                                    m_locationAwarePollerClient, m_pollOutagesDao);
 
         svc.setPollConfig(psc);
         svc.setSchedule(sched);
@@ -324,8 +319,7 @@ public class PollableServiceConfigIT {
 
         final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pkg, timer,
                                                                     persisterFactory, thresholdingService,
-                                                                    m_locationAwarePollerClient, m_pollOutagesDao,
-                                                                    m_serviceMonitorAdaptor);
+                                                                    m_locationAwarePollerClient, m_pollOutagesDao);
 
         svc.setPollConfig(psc);
         svc.setSchedule(sched);
@@ -388,8 +382,7 @@ public class PollableServiceConfigIT {
 
         final PollableServiceConfig psc = new PollableServiceConfig(svc, factory, pkg, timer,
                                                                     persisterFactory, thresholdingService,
-                                                                    m_locationAwarePollerClient, m_pollOutagesDao,
-                                                                    m_serviceMonitorAdaptor);
+                                                                    m_locationAwarePollerClient, m_pollOutagesDao);
 
         svc.setPollConfig(psc);
         svc.setSchedule(sched);
