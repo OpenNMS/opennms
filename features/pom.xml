@@ -90,9 +90,6 @@
     <module>mib-compiler</module>
     <module>vaadin-snmp-events-and-metrics</module>
 
-    <!-- Near Real Time Graphing -->
-    <module>nrtg</module>
-
     <!-- Topology Map -->
     <module>topology-map</module>
 

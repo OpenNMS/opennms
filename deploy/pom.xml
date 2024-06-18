@@ -61,7 +61,6 @@
     <module>../features/graphml/api</module>
     <module>../features/measurements/api</module>
     <module>../features/notifications/api</module>
-    <module>../features/nrtg/api</module>
     <module>../features/openconfig/api</module>
     <module>../features/poller/api</module>
     <module>../features/provisioning/api</module>
