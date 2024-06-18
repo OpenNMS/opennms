@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.opennms.core.utils.ConfigFileConstants;
@@ -45,6 +46,18 @@ import org.opennms.upgrade.api.OnmsUpgradeException;
  * @author <a href="mailto:ranger@opennms.org">Benjamin Reed</a>
  */
 public class EOLServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
+
+    static final List<String> EOL_SERVICES = List.of(
+            "OpenNMS:Name=Linkd",
+            "OpenNMS:Name=Xmlrpcd",
+            "OpenNMS:Name=XmlrpcProvisioner",
+            "OpenNMS:Name=AccessPointMonitor",
+            "OpenNMS:Name=PollerBackEnd",
+            "OpenNMS:Name=Reportd",
+            "OpenNMS:Name=Statsd",
+            "OpenNMS:Name=Tl1d"
+    );
+
     /** 
      * The services configuration file.
      */
@@ -129,22 +142,11 @@ public class EOLServiceConfigMigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void execute() throws OnmsUpgradeException {
-        final String[] eol = {
-                "OpenNMS:Name=Linkd",
-                "OpenNMS:Name=Xmlrpcd",
-                "OpenNMS:Name=XmlrpcProvisioner",
-                "OpenNMS:Name=AccessPointMonitor",
-                "OpenNMS:Name=PollerBackEnd",
-                "OpenNMS:Name=Reportd",
-                "OpenNMS:Name=Statsd",
-                "OpenNMS:Name=Tl1d"
-        };
-
         try {
             final ServiceConfiguration currentCfg = JaxbUtils.unmarshal(ServiceConfiguration.class, configFile);
 
             // Remove any end-of-life'd daemons from service configuration
-            for (final String serviceName : eol) {
+            for (final String serviceName : EOL_SERVICES) {
                 final Service eolService = getService(currentCfg, serviceName);
                 if (eolService == null) {
                     continue;

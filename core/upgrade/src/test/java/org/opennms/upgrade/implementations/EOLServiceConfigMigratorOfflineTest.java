@@ -55,16 +55,7 @@ public class EOLServiceConfigMigratorOfflineTest {
     private final int m_totalAfter;
     private final int m_enabledAfter;
 
-    private final List<String> m_disabled = Arrays.asList(
-            "OpenNMS:Name=Linkd",
-            "OpenNMS:Name=Xmlrpcd",
-            "OpenNMS:Name=XmlrpcProvisioner",
-            "OpenNMS:Name=AccessPointMonitor",
-            "OpenNMS:Name=PollerBackEnd",
-            "OpenNMS:Name=Reportd",
-            "OpenNMS:Name=Statsd",
-            "OpenNMS:Name=Tl1d"
-    );
+    private static final List<String> DISABLED_SERVICES = EOLServiceConfigMigratorOffline.EOL_SERVICES;
 
     public EOLServiceConfigMigratorOfflineTest(final String testFile, final int totalBefore, final int totalAfter, final int enabledAfter) {
         m_testFile = testFile;
@@ -134,13 +125,13 @@ public class EOLServiceConfigMigratorOfflineTest {
 
         for (final Service svc : cfg.getServices()) {
             final String serviceName = svc.getName();
-            if (m_disabled.contains(serviceName)) {
+            if (DISABLED_SERVICES.contains(serviceName)) {
                 assertFalse("Service " + serviceName + " should be disabled.", svc.isEnabled());
             }
         }
         for (final Service svc : factory.getServices()) {
             final String serviceName = svc.getName();
-            assertFalse("Service " + serviceName + " should not be in the active service list.", m_disabled.contains(svc.getName()));
+            assertFalse("Service " + serviceName + " should not be in the active service list.", DISABLED_SERVICES.contains(svc.getName()));
         }
     }
 
