@@ -122,9 +122,6 @@ Originally developed at LinkedIn, it is now supported by the Apache community (s
 https://www.elastic.co/kibana/[Kibana]:: A component of the Elastic Stack (comprised of Elasticsearch, Logstash, and Kibana).
 It enables visualizations for data indexed in an Elasticsearch cluster.
 
-KSC reports:: Key SNMP customized (KSC) reports provide a way to generate prefabricated graphical views of collected data.
-They let you display data from different devices and sources (SNMP, ICMP, HTTP) on one page (see xref:operation:deep-dive/visualizations/opsboard/dashlets/ksc.adoc[]).
-
 https://kubernetes.io/[Kubernetes]:: An open-source container orchestration system for automating software deployments, scaling, and management.
 Originally designed by Google, the Cloud Native Computing Foundation now maintains it.
 

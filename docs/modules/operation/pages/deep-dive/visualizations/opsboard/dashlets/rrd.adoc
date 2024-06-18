@@ -22,9 +22,6 @@ All displayed graphs are normalized with a predefined width and height.
 | Rows
 | Number of rows in the dashlet.
 
-| KSC report
-| Import RRD graphs from an existing KSC report and rearrange them.
-
 | Graph width
 | Generic width for all RRD graphs in this dashlet.
 

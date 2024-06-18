@@ -58,8 +58,6 @@ public class IndexPageIT extends OpenNMSSeleniumIT {
     public void canRenderSearchBoxes() throws Exception {
         driver.get(getBaseUrlInternal() + "opennms/index.jsp");
         // The following input fields will exist on index.jsp, only if includes/search-box.jsp is rendered and processed by AngularJS
-        WebElement asyncKsc = findElementByXpath("//input[@ng-model='asyncKsc']");
-        Assert.assertNotNull(asyncKsc);
         WebElement asyncNode = findElementByXpath("//input[@ng-model='asyncNode']");
         Assert.assertNotNull(asyncNode);
     }

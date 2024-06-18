@@ -55,7 +55,6 @@
               org.opennms.netmgt.config.groups.*;version="${project.version}",
               org.opennms.netmgt.config.httpdatacollection.*;version="${project.version}",
               org.opennms.netmgt.config.javamail.*;version="${project.version}",
-              org.opennms.netmgt.config.kscReports.*;version="${project.version}",
               org.opennms.netmgt.config.mailtransporttest.*;version="${project.version}",
               org.opennms.netmgt.config.map.adapter.*;version="${project.version}",
               org.opennms.netmgt.config.microblog.*;version="${project.version}",
