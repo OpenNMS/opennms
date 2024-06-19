@@ -135,6 +135,30 @@
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />
 
+<script type="text/javascript">
+
+    var addOrReplaceParam = function(url, param, value) {
+        param = encodeURIComponent(param);
+        var r = "([&?]|&amp;)" + param + "\\b(?:=(?:[^&#]*))*";
+        var a = document.createElement('a');
+        var regex = new RegExp(r);
+        var str = param + (value ? "=" + encodeURIComponent(value) : "");
+        a.href = url;
+        var q = a.search.replace(regex, "$1"+str);
+        if (q === a.search) {
+            a.search += (a.search ? "&" : "") + str;
+        } else {
+            a.search = q;
+        }
+        return a.href;
+    }
+
+    if (!/.*[&?]id=.*/.test(window.location.href)) {
+        window.location.href = addOrReplaceParam(document.location.href, 'id', '${alarmId}');
+    }
+
+</script>
+
 <div class="card">
   <div class="card-header">
     <span><%= (alarm.isSituation() ? "Situation " : "Alarm ") + alarm.getId()%></span>
