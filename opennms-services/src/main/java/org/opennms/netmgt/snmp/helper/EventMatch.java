@@ -19,31 +19,27 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.config.scriptd;
+package org.opennms.netmgt.snmp.helper;
 
-import javax.xml.bind.annotation.adapters.XmlAdapter;
-
+import org.opennms.netmgt.xml.event.Event;
 /**
- * JAXB doesn't allow both @XmlElement and @XmlValue annotations on
- * the same object. This adapter can be used as a work-around.
+ * An EventMatch is an Interface that 
+ * is able to specify criteria to match Events
+ * An implementation of this interface is a class
+ * where you have some criteria to decide if the Event
+ * matches or not
+ * 
+ * @author antonio
  *
- * <pre>
- *  @XmlPath(".")
- *  @XmlJavaTypeAdapter(MixedContentAdapter.class)
- *  private String content;
- * </pre>
- *
- * @author jwhite
  */
-public class MixedContentAdapter extends XmlAdapter<Content, String> {
+public interface EventMatch {
 
-    @Override
-    public String unmarshal(Content content) {
-        return content.value;
-    }
+	/**
+	 * Method to decide if the Event matches
+	 * 
+	 * @param event
+	 * @return true if the event match
+	 */
+	public boolean match(Event event);
 
-    @Override
-    public Content marshal(String value) {
-        return new Content(value);
-    }
 }

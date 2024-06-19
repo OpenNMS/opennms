@@ -132,9 +132,6 @@ public class ImmutableMapper {
                 .setForwardList(ImmutableCollections.newListOfImmutableType(
                         event.getForwardCollection().stream().map(
                                 ImmutableMapper::fromMutableForward).collect(Collectors.toList())))
-                .setScriptList(ImmutableCollections.newListOfImmutableType(
-                        event.getScriptCollection().stream().map(
-                                ImmutableMapper::fromMutableScript).collect(Collectors.toList())))
                 .setIfIndex(event.hasIfIndex() ? event.getIfIndex() : null)
                 .setIfAlias(event.getIfAlias())
                 .setMouseOverText(event.getMouseovertext())

@@ -71,10 +71,6 @@ public interface IEvent {
     IParm getParm(final String key);
     IParm getParmTrim(String key);
     String getPathoutage();
-    IScript getScript(final int index);
-    IScript[] getScript();
-    List<IScript> getScriptCollection();
-    int getScriptCount();
     String getService();
     String getSeverity();
     ISnmp getSnmp();

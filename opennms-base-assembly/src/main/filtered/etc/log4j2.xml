@@ -230,7 +230,6 @@
         <KeyValuePair key="provisiond"           value="DEBUG" />
         <KeyValuePair key="queued"               value="DEBUG" />
         <KeyValuePair key="rtc"                  value="DEBUG" />
-        <KeyValuePair key="scriptd"              value="DEBUG" />
         <KeyValuePair key="snmp"                 value="DEBUG" />
         <KeyValuePair key="snmp-poller"          value="DEBUG" />
         <KeyValuePair key="syslogd"              value="DEBUG" />

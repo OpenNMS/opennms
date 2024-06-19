@@ -49,15 +49,16 @@ import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.dao.mock.MockEventIpcManager;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.opennms.netmgt.scriptd.helper.EventForwarder;
-import org.opennms.netmgt.scriptd.helper.SnmpTrapHelper;
-import org.opennms.netmgt.scriptd.helper.SnmpV3InformEventForwarder;
-import org.opennms.netmgt.scriptd.helper.SnmpV3TrapEventForwarder;
+import org.opennms.netmgt.snmp.helper.EventForwarder;
+import org.opennms.netmgt.snmp.helper.SnmpTrapHelper;
+import org.opennms.netmgt.snmp.helper.SnmpV3InformEventForwarder;
+import org.opennms.netmgt.snmp.helper.SnmpV3TrapEventForwarder;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV1TrapBuilder;
+import org.opennms.netmgt.snmp.helper.EventPolicyRuleDefaultImpl;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.snmp4j.security.SecurityLevel;
@@ -282,7 +283,6 @@ public class TrapdIT {
         // Wait until we received the expected events
         await().until(() -> m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived(), hasSize(2));
     }
-
     @Test
     public void testSnmpV3TrapNoAuthNoPriv() {
         testSnmpV3NotificationWithSecurityLevel(TrapOrInform.TRAP, SecurityLevel.noAuthNoPriv);
@@ -358,7 +358,7 @@ public class TrapdIT {
         }
 
         // Use the default policy rule that forwards all events - we can manage the filtering ourselves in this script
-        snmpv3EventForwarder.setEventPolicyRule(new org.opennms.netmgt.scriptd.helper.EventPolicyRuleDefaultImpl());
+        snmpv3EventForwarder.setEventPolicyRule(new EventPolicyRuleDefaultImpl());
 
         // Build the event we're going to send as a trap, and expect that same event
         Event trapEvent = new EventBuilder("uei.opennms.org/default/trap", "trapd")

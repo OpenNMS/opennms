@@ -5,7 +5,6 @@
          <doNotOverride>operaction</doNotOverride>
          <doNotOverride>autoaction</doNotOverride>
          <doNotOverride>tticket</doNotOverride>
-         <doNotOverride>script</doNotOverride>
       </security>
    </global>
    <!-- Custom event configs go here -->

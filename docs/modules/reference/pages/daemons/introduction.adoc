@@ -77,9 +77,6 @@ This can be helpful for devices that cannot be directly polled to check service 
 | Rtcd
 | Handles uptime percentage calculations.
 
-| Scriptd
-| Lets you configure Bean Shell script to run in response to events.
-
 | SnmpPoller
 | Checks SNMP interface admin status.
 It is separate from pollerd's SnmpMonitor.

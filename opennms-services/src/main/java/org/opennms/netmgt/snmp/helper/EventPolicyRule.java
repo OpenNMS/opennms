@@ -19,14 +19,42 @@
  * language governing permissions and limitations under the
  * License.
  */
-@XmlSchema(
-    namespace = "http://xmlns.opennms.org/xsd/config/scriptd",
-    elementFormDefault = javax.xml.bind.annotation.XmlNsForm.QUALIFIED,
-    xmlns={
-        @XmlNs(prefix="", namespaceURI="http://xmlns.opennms.org/xsd/config/scriptd")
-    }
-)
-package org.opennms.netmgt.config.scriptd;
+package org.opennms.netmgt.snmp.helper;
 
-import javax.xml.bind.annotation.XmlNs;
-import javax.xml.bind.annotation.XmlSchema;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.opennms.netmgt.xml.event.Event;
+/**
+ * An EventFilter is a filter of Events
+ * An implementation of this interface is a class
+ * where you have some criteria to decide if the Event
+ * pass the filter or not
+ * 
+ * @author antonio
+ *
+ */
+public interface EventPolicyRule {
+
+	List<EventMatch> m_filter = new ArrayList<>();
+	List<Boolean> m_forwardes = new ArrayList<>();
+
+	/**
+	 * 
+	 * Method to decide if the event 
+	 * should be forwarder
+	 * 
+	 * @return event
+	 * the filtered Event
+	 * that can be null or 
+	 * with parameter changes
+	 * 
+	 */
+
+	Event filter(Event event);
+	
+	void addForwardRule(EventMatch eventMatch);
+	
+	void addDropRule(EventMatch eventMatch);
+
+}

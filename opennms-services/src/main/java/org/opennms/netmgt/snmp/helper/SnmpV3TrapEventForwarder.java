@@ -19,19 +19,18 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.scriptd.helper;
+package org.opennms.netmgt.snmp.helper;
 
 import java.net.UnknownHostException;
 
 import org.opennms.netmgt.xml.event.Event;
 
-public class SnmpV3TrapAlarmForwarder extends SnmpTrapForwarderHelper implements
-		EventForwarder {
+public class SnmpV3TrapEventForwarder extends SnmpTrapForwarderHelper implements
+		EventForwarder {	
 
-
-	public SnmpV3TrapAlarmForwarder(String ip, int port, int securityLevel,
+	public SnmpV3TrapEventForwarder(String ip, int port, int securityLevel,
 			String securityname, String authPassPhrase, String authProtocol,
-			String privPassPhrase, String privprotocol, SnmpTrapHelper snmpTrapHelper) {
+			String privPassPhrase, String privprotocol, SnmpTrapHelper snmpTrapHelper ) {
 		super(ip,port,securityLevel,securityname,authPassPhrase,authProtocol,privPassPhrase,privprotocol,snmpTrapHelper);
 	}
 
@@ -39,37 +38,30 @@ public class SnmpV3TrapAlarmForwarder extends SnmpTrapForwarderHelper implements
 	public void flushEvent(Event event) {
 		event =	super.filter(event);
 		if (event != null) {
-		try {
-			sendV3AlarmTrap(event, false);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (SnmpTrapHelperException e) {
-			e.printStackTrace();
-		}
-		}
+			try {
+				sendV3EventTrap(event);
+			} catch (UnknownHostException e) {
+				e.printStackTrace();
+			} catch (SnmpTrapHelperException e) {
+				e.printStackTrace();
+			}
+		}		
 	}
 
         @Override
 	public void flushSyncEvent(Event event) {
-		event =	super.filter(event);
-		if (event != null) {
-		try {
-			sendV3AlarmTrap(event, true);
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
-		} catch (SnmpTrapHelperException e) {
-			e.printStackTrace();
-		}
-		}
+		flushEvent(event);
 	}
 
         @Override
 	public void sendStartSync() {
-		super.sendV3StartSyncTrap();
+		throw new UnsupportedOperationException();
 	}
 
         @Override
 	public void sendEndSync() {
-		super.sendV3EndSyncTrap();
+		throw new UnsupportedOperationException();
 	}
+
+	
 }

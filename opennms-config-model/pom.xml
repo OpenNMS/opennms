@@ -67,7 +67,6 @@
               org.opennms.netmgt.config.poller.*;version="${project.version}",
               org.opennms.netmgt.config.provisiond.*;version="${project.version}",
               org.opennms.netmgt.config.rtc.*;version="${project.version}",
-              org.opennms.netmgt.config.scriptd.*;version="${project.version}",
               org.opennms.netmgt.config.server.*;version="${project.version}",
               org.opennms.netmgt.config.service.*;version="${project.version}",
               org.opennms.netmgt.config.siteStatusViews.*;version="${project.version}",

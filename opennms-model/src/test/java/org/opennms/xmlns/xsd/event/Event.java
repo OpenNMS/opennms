@@ -86,7 +86,6 @@ import javax.xml.bind.annotation.XmlType;
  *         &lt;element name="loggroup" type="{http://www.w3.org/2001/XMLSchema}string" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element ref="{http://xmlns.opennms.org/xsd/event}tticket" minOccurs="0"/>
  *         &lt;element ref="{http://xmlns.opennms.org/xsd/event}forward" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element ref="{http://xmlns.opennms.org/xsd/event}script" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="ifIndex" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *         &lt;element name="ifAlias" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="mouseovertext" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
@@ -194,9 +193,6 @@ public class Event {
     @XmlElement(namespace = "http://xmlns.opennms.org/xsd/event")
     @Valid
     protected List<Forward> forward;
-    @XmlElement(namespace = "http://xmlns.opennms.org/xsd/event")
-    @Valid
-    protected List<Script> script;
     protected Integer ifIndex;
     protected String ifAlias;
     protected String mouseovertext;
@@ -877,36 +873,6 @@ public class Event {
             forward = new ArrayList<>();
         }
         return this.forward;
-    }
-
-    /**
-     * The script information for this
-     *             event Gets the value of the script property.
-     * 
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the script property.
-     * 
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getScript().add(newItem);
-     * </pre>
-     * 
-     * 
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Script }
-     * 
-     * 
-     */
-    public List<Script> getScript() {
-        if (script == null) {
-            script = new ArrayList<>();
-        }
-        return this.script;
     }
 
     /**

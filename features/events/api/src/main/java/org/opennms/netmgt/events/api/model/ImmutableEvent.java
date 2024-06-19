@@ -64,7 +64,6 @@ public final class ImmutableEvent implements IEvent {
     private final List<String> logGroupList;
     private final ITticket tTicket;
     private final List<IForward> forwardList;
-    private final List<IScript> scriptList;
     private final Integer ifIndex;
     private final String ifAlias;
     private final String mouseOverText;
@@ -100,7 +99,6 @@ public final class ImmutableEvent implements IEvent {
         logGroupList = ImmutableCollections.newListOfImmutableType(builder.logGroupList);
         tTicket = ImmutableTticket.immutableCopy(builder.tTicket);
         forwardList = ImmutableCollections.with(ImmutableForward::immutableCopy).newList(builder.forwardList);
-        scriptList = ImmutableCollections.with(ImmutableScript::immutableCopy).newList(builder.scriptList);
         ifIndex = builder.ifIndex;
         ifAlias = builder.ifAlias;
         mouseOverText = builder.mouseOverText;
@@ -152,7 +150,6 @@ public final class ImmutableEvent implements IEvent {
         private List<String> logGroupList;
         private ITticket tTicket;
         private List<IForward> forwardList;
-        private List<IScript> scriptList;
         private Integer ifIndex;
         private String ifAlias;
         private String mouseOverText;
@@ -191,7 +188,6 @@ public final class ImmutableEvent implements IEvent {
             logGroupList = MutableCollections.copyListFromNullable(event.getLoggroupCollection());
             tTicket = event.getTticket();
             forwardList = MutableCollections.copyListFromNullable(event.getForwardCollection());
-            scriptList = MutableCollections.copyListFromNullable(event.getScriptCollection());
             ifIndex = event.getIfIndex();
             ifAlias = event.getIfAlias();
             mouseOverText = event.getMouseovertext();
@@ -340,11 +336,6 @@ public final class ImmutableEvent implements IEvent {
 
         public Builder setForwardList(List<IForward> forwardList) {
             this.forwardList = forwardList;
-            return this;
-        }
-
-        public Builder setScriptList(List<IScript> scriptList) {
-            this.scriptList = scriptList;
             return this;
         }
 
@@ -598,31 +589,6 @@ public final class ImmutableEvent implements IEvent {
     }
 
     @Override
-    public IScript getScript(int index) {
-        if (index < 0 || index >= scriptList.size()) {
-            throw new IndexOutOfBoundsException("getScript: Index value '" + index + "' not in range [0.." +
-                    (scriptList.size() - 1) + "]");
-        }
-
-        return scriptList.get(index);
-    }
-
-    @Override
-    public IScript[] getScript() {
-        return scriptList.toArray(new IScript[0]);
-    }
-
-    @Override
-    public List<IScript> getScriptCollection() {
-        return scriptList;
-    }
-
-    @Override
-    public int getScriptCount() {
-        return scriptList.size();
-    }
-
-    @Override
     public String getService() {
         return service;
     }
@@ -719,7 +685,6 @@ public final class ImmutableEvent implements IEvent {
                 Objects.equals(logGroupList, that.logGroupList) &&
                 Objects.equals(tTicket, that.tTicket) &&
                 Objects.equals(forwardList, that.forwardList) &&
-                Objects.equals(scriptList, that.scriptList) &&
                 Objects.equals(ifIndex, that.ifIndex) &&
                 Objects.equals(ifAlias, that.ifAlias) &&
                 Objects.equals(mouseOverText, that.mouseOverText) &&
@@ -730,7 +695,7 @@ public final class ImmutableEvent implements IEvent {
     public int hashCode() {
         return Objects.hash(uuid, dbId, distPoller, creationTime, masterStation, mask, uei, source, nodeid, time, host,
                 snmpHost, service, snmp, parms, descr, logMsg, severity, pathOutage, correlation, operInstruct,
-                autoActionList, operActionList, autoAcknowledge, logGroupList, tTicket, forwardList, scriptList,
+                autoActionList, operActionList, autoAcknowledge, logGroupList, tTicket, forwardList,
                 ifIndex, ifAlias, mouseOverText, alarmData);
     }
 
@@ -766,7 +731,6 @@ public final class ImmutableEvent implements IEvent {
                 ", logGroupList=" + logGroupList +
                 ", tTicket=" + tTicket +
                 ", forwardList=" + forwardList +
-                ", scriptList=" + scriptList +
                 ", ifIndex=" + ifIndex +
                 ", ifAlias='" + ifAlias + '\'' +
                 ", mouseOverText='" + mouseOverText + '\'' +

@@ -5,7 +5,6 @@ broken0-eventconf.xml<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
             <doNotOverride>operaction</doNotOverride>
             <doNotOverride>autoaction</doNotOverride>
             <doNotOverride>tticket</doNotOverride>
-            <doNotOverride>script</doNotOverride>
         </security>
     </global><broken
     <event-file>working/working.events.xml</event-file>

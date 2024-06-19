@@ -70,7 +70,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Forward;
 import org.opennms.netmgt.xml.event.Operaction;
 import org.opennms.netmgt.xml.event.Parm;
-import org.opennms.netmgt.xml.event.Script;
 import org.opennms.netmgt.xml.event.Snmp;
 import org.opennms.netmgt.xml.event.Value;
 import org.slf4j.Logger;
@@ -536,13 +535,6 @@ public abstract class EventUtils {
         }
         if (event.getParmCollection().size() > 0) {
             b.append(" Parms: " + toString(event.getParmCollection()) + "\n");
-        }
-        if (event.getScriptCount() > 0) {
-            b.append(" Script:");
-            for (Iterator<Script> i = event.getScriptCollection().iterator(); i.hasNext(); ) {
-                b.append(" " + i.next().toString());
-            }
-            b.append("\n");
         }
         if (event.getService() != null) {
             b.append(" Service: " + event.getService() + "\n");

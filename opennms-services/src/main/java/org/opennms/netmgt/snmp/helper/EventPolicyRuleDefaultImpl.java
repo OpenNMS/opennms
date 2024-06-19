@@ -19,15 +19,20 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.scriptd.jmx;
+package org.opennms.netmgt.snmp.helper;
 
-import org.opennms.netmgt.daemon.BaseOnmsMBean;
+import org.opennms.netmgt.xml.event.Event;
 
-/**
- * <p>ScriptdMBean interface.</p>
- *
- * @author ranger
- * @version $Id: $
- */
-public interface ScriptdMBean extends BaseOnmsMBean {
+public class EventPolicyRuleDefaultImpl extends AbstractEventPolicyRule implements
+		EventPolicyRule {
+
+	@Override
+	/**
+	 * This method do nothing 
+	 * 
+	 */
+	protected Event expand(Event event) {
+		return event;
+	}
+
 }
