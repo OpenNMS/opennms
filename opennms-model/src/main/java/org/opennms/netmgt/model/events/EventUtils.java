@@ -65,7 +65,6 @@ import org.opennms.netmgt.events.api.model.IValue;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
-import org.opennms.netmgt.xml.event.Autoaction;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Forward;
 import org.opennms.netmgt.xml.event.Operaction;
@@ -472,13 +471,6 @@ public abstract class EventUtils {
         b.append("\n");
         if (event.getAutoacknowledge() != null) {
             b.append(" Autoacknowledge: " + event.getAutoacknowledge() + "\n");
-        }
-        if (event.getAutoactionCount() > 0) {
-            b.append(" Autoactions:");
-            for (Iterator<Autoaction> i = event.getAutoactionCollection().iterator(); i.hasNext(); ) {
-                b.append(" " + i.next().toString());
-            }
-            b.append("\n");
         }
         if (event.getCreationTime() != null) {
             b.append(" CreationTime: " + event.getCreationTime() + "\n");

@@ -161,7 +161,7 @@ public class EventExpanderTest {
         assertThat(event, hasParameter("i-hate", "Vaadin"));
 
         verify(m_eventConfDao, times(1)).findByEvent(any(Event.class));
-        verify(m_eventConfDao, times(13)).isSecureTag(anyString());
+        verify(m_eventConfDao, times(12)).isSecureTag(anyString());
         verify(m_eventUtil, times(1)).expandParms(anyString(), any(Event.class), any(Map.class));
     }
 
@@ -200,7 +200,7 @@ public class EventExpanderTest {
         assertThat(event, hasParameter("slotNum", "1"));
 
         verify(m_eventConfDao, times(1)).findByEvent(any(Event.class));
-        verify(m_eventConfDao, times(13)).isSecureTag(anyString());
+        verify(m_eventConfDao, times(12)).isSecureTag(anyString());
     }
 
     private void expand(Event event, org.opennms.netmgt.xml.eventconf.Event eventConfig) {

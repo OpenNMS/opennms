@@ -95,9 +95,6 @@ public interface EventWriter extends EventProcessor {
     /** Constant <code>EVENT_OPERINSTRUCT_FIELD_SIZE=1024</code> */
 //    public static final int EVENT_OPERINSTRUCT_FIELD_SIZE = 1024;
 
-    /** Constant <code>EVENT_AUTOACTION_FIELD_SIZE=256</code> */
-    public static final int EVENT_AUTOACTION_FIELD_SIZE = 256;
-
     /** Constant <code>EVENT_OPERACTION_FIELD_SIZE=256</code> */
     public static final int EVENT_OPERACTION_FIELD_SIZE = 256;
 

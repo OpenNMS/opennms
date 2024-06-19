@@ -101,9 +101,6 @@ public class EventDTO {
     @XmlElement(name = "operatorInstructions")
     private String operatorInstructions;
 
-    @XmlElement(name = "autoAction")
-    private String autoAction;
-
     @XmlElement(name = "operatorAction")
     private String operatorAction;
 
@@ -306,14 +303,6 @@ public class EventDTO {
         this.operatorInstructions = operatorInstructions;
     }
 
-    public String getAutoAction() {
-        return autoAction;
-    }
-
-    public void setAutoAction(String autoAction) {
-        this.autoAction = autoAction;
-    }
-
     public String getOperatorAction() {
         return operatorAction;
     }
@@ -451,7 +440,6 @@ public class EventDTO {
                 Objects.equals(correlation, eventDTO.correlation) &&
                 Objects.equals(suppressedCount, eventDTO.suppressedCount) &&
                 Objects.equals(operatorInstructions, eventDTO.operatorInstructions) &&
-                Objects.equals(autoAction, eventDTO.autoAction) &&
                 Objects.equals(operatorAction, eventDTO.operatorAction) &&
                 Objects.equals(operationActionMenuText, eventDTO.operationActionMenuText) &&
                 Objects.equals(notification, eventDTO.notification) &&
@@ -470,6 +458,6 @@ public class EventDTO {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, uei, label, time, host, source, ipAddress, snmpHost, serviceType, snmp, parameters, createTime, description, logGroup, logMessage, severity, pathOutage, correlation, suppressedCount, operatorInstructions, autoAction, operatorAction, operationActionMenuText, notification, troubleTicket, troubleTicketState, mouseOverText, log, display, ackUser, ackTime, nodeId, nodeLabel, ifIndex, location);
+        return Objects.hash(id, uei, label, time, host, source, ipAddress, snmpHost, serviceType, snmp, parameters, createTime, description, logGroup, logMessage, severity, pathOutage, correlation, suppressedCount, operatorInstructions, operatorAction, operationActionMenuText, notification, troubleTicket, troubleTicketState, mouseOverText, log, display, ackUser, ackTime, nodeId, nodeLabel, ifIndex, location);
     }
 }

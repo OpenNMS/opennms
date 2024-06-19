@@ -176,7 +176,6 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
         event.acknowledgeTime = onmsEvent.getEventAckTime();
         event.acknowledgeUser = onmsEvent.getEventAckUser();
         event.alarmId = onmsEvent.getAlarm() != null ? onmsEvent.getAlarm().getId() : 0;
-        event.autoAction = onmsEvent.getEventAutoAction();
         event.createTime = onmsEvent.getEventCreateTime();
         event.description = onmsEvent.getEventDescr();
         event.dpName = onmsEvent.getDistPoller() != null ? onmsEvent.getDistPoller().getId() : "";

@@ -61,7 +61,6 @@ public abstract class EventMapper {
             @Mapping(source = "eventCorrelation", target = "correlation"),
             @Mapping(source = "eventSuppressedCount", target = "suppressedCount"),
             @Mapping(source = "eventOperInstruct", target = "operatorInstructions"),
-            @Mapping(source = "eventAutoAction", target = "autoAction"),
             @Mapping(source = "eventOperAction", target = "operatorAction"),
             @Mapping(source = "eventOperActionMenuText", target = "operationActionMenuText"),
             @Mapping(source = "eventNotification", target = "notification"),

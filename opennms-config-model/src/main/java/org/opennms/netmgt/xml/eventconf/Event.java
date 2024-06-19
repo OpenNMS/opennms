@@ -112,12 +112,6 @@ public class Event implements Serializable, Comparable<Event> {
     private String m_operinstruct;
 
     /**
-     * The automatic action to occur when this event occurs
-     */
-    @XmlElement(name="autoaction", required=false)
-    private List<Autoaction> m_autoactions = new ArrayList<>();
-
-    /**
      * The varbind decoding tag used to decode value into a string
      */
     @XmlElement(name="varbindsdecode", required=false)
@@ -278,24 +272,6 @@ public class Event implements Serializable, Comparable<Event> {
 
     public void setOperinstruct(final String operinstruct) {
         m_operinstruct = ConfigUtils.normalizeAndInternString(operinstruct);
-    }
-
-    public List<Autoaction> getAutoactions() {
-        return m_autoactions;
-    }
-
-    public void setAutoactions(final List<Autoaction> autoactions) {
-        if (m_autoactions == autoactions) return;
-        m_autoactions.clear();
-        if (autoactions != null) m_autoactions.addAll(autoactions);
-    }
-
-    public void addAutoaction(final Autoaction autoaction) {
-        m_autoactions.add(autoaction);
-    }
-
-    public boolean removeAutoaction(final Autoaction autoaction) {
-        return m_autoactions.remove(autoaction);
     }
 
     public List<Varbindsdecode> getVarbindsdecodes() {
@@ -473,7 +449,6 @@ public class Event implements Serializable, Comparable<Event> {
                             m_severity,
                             m_correlation,
                             m_operinstruct,
-                            m_autoactions,
                             m_varbindsdecodes,
                             m_parameters,
                             m_operactions,
@@ -504,7 +479,6 @@ public class Event implements Serializable, Comparable<Event> {
                     Objects.equals(this.m_severity, that.m_severity) &&
                     Objects.equals(this.m_correlation, that.m_correlation) &&
                     Objects.equals(this.m_operinstruct, that.m_operinstruct) &&
-                    Objects.equals(this.m_autoactions, that.m_autoactions) &&
                     Objects.equals(this.m_varbindsdecodes, that.m_varbindsdecodes) &&
                     Objects.equals(this.m_parameters, that.m_parameters) &&
                     Objects.equals(this.m_operactions, that.m_operactions) &&

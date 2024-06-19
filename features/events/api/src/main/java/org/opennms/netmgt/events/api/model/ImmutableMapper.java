@@ -62,17 +62,6 @@ public class ImmutableMapper {
                 .build();
     }
 
-    public static ImmutableAutoAction fromMutableAutoAction(Autoaction autoaction) {
-        if (autoaction == null) {
-            return null;
-        }
-
-        return ImmutableAutoAction.newBuilder()
-                .setContent(autoaction.getContent())
-                .setState(autoaction.getState())
-                .build();
-    }
-
     public static ImmutableCorrelation fromMutableCorrelation(Correlation correlation) {
         if (correlation == null) {
             return null;
@@ -120,9 +109,6 @@ public class ImmutableMapper {
                 .setPathOutage(event.getPathoutage())
                 .setCorrelation(ImmutableMapper.fromMutableCorrelation(event.getCorrelation()))
                 .setOperInstruct(event.getOperinstruct())
-                .setAutoActionList(ImmutableCollections.newListOfImmutableType(
-                        event.getAutoactionCollection().stream().map(
-                                ImmutableMapper::fromMutableAutoAction).collect(Collectors.toList())))
                 .setOperActionList(ImmutableCollections.newListOfImmutableType(
                         event.getOperactionCollection().stream().map(
                                 ImmutableMapper::fromMutableOperAction).collect(Collectors.toList())))

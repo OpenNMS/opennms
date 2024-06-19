@@ -33,7 +33,6 @@ import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
-import org.opennms.netmgt.dao.util.AutoAction;
 import org.opennms.netmgt.dao.util.Correlation;
 import org.opennms.netmgt.dao.util.Forward;
 import org.opennms.netmgt.dao.util.OperatorAction;
@@ -47,7 +46,6 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.event.Header;
 import org.opennms.netmgt.xml.event.Log;
 import org.opennms.netmgt.xml.event.Operaction;
-import org.opennms.netmgt.xml.eventconf.LogDestType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -351,9 +349,6 @@ public class HibernateEventWriter implements EventWriter {
 
         // eventOperInstruct
         ovent.setEventOperInstruct(EventDatabaseConstants.format(event.getOperinstruct(), 0));
-
-        // eventAutoAction
-        ovent.setEventAutoAction(event.getAutoactionCount() > 0 ? AutoAction.format(event.getAutoaction(), EVENT_AUTOACTION_FIELD_SIZE) : null);
 
         // eventOperAction / eventOperActionMenuText
         if (event.getOperactionCount() > 0) {

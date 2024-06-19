@@ -221,15 +221,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Autoaction }
-     * 
-     */
-    public Autoaction createAutoaction() {
-    	LOG.debug("createAutoaction");
-        return new Autoaction();
-    }
-
-    /**
      * Create an instance of {@link Tticket }
      * 
      */

@@ -7,4 +7,7 @@
         <dropTable tableName="reportcatalog" />
         <dropSequence sequenceName="reportcatalognxtid" />
     </changeSet>
+    <changeSet author="mvrueden" id="34.0.0-headless-drop-autoaction-column">
+        <dropColumn tableName="events" columnName="eventautoaction" />
+    </changeSet>
 </databaseChangeLog>

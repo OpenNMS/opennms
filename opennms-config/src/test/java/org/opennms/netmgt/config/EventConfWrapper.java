@@ -23,7 +23,6 @@ package org.opennms.netmgt.config;
 
 import java.util.Iterator;
 
-import org.opennms.netmgt.xml.eventconf.Autoaction;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Forward;
 import org.opennms.netmgt.xml.eventconf.Operaction;
@@ -60,13 +59,6 @@ public class EventConfWrapper {
     		final StringBuilder b = new StringBuilder("Event: ");
     		if (m_event.getAutoacknowledge() != null) {
     			b.append(" Autoacknowledge: " + m_event.getAutoacknowledge() + "\n");
-    		}
-    		if (m_event.getAutoactions().size() > 0) {
-    			b.append(" Autoactions:");
-    			for (Iterator<Autoaction> i = m_event.getAutoactions().iterator(); i.hasNext(); ) {
-    				b.append(" " + i.next().toString());
-    			}
-			b.append("\n");
     		}
 		if (m_event.getDescr() != null) {
 			b.append(" Descr: " + m_event.getDescr() + "\n");

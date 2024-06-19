@@ -58,7 +58,6 @@ public final class ImmutableEvent implements IEvent {
     private final String pathOutage;
     private final ICorrelation correlation;
     private final String operInstruct;
-    private final List<IAutoAction> autoActionList;
     private final List<IOperAction> operActionList;
     private final IAutoAcknowledge autoAcknowledge;
     private final List<String> logGroupList;
@@ -93,7 +92,6 @@ public final class ImmutableEvent implements IEvent {
         pathOutage = builder.pathOutage;
         correlation = ImmutableCorrelation.immutableCopy(builder.correlation);
         operInstruct = builder.operInstruct;
-        autoActionList = ImmutableCollections.with(ImmutableAutoAction::immutableCopy).newList(builder.autoActionList);
         operActionList = ImmutableCollections.with(ImmutableOperAction::immutableCopy).newList(builder.operActionList);
         autoAcknowledge = ImmutableAutoAcknowledge.immutableCopy(builder.autoAcknowledge);
         logGroupList = ImmutableCollections.newListOfImmutableType(builder.logGroupList);
@@ -144,7 +142,6 @@ public final class ImmutableEvent implements IEvent {
         private String pathOutage;
         private ICorrelation correlation;
         private String operInstruct;
-        private List<IAutoAction> autoActionList;
         private List<IOperAction> operActionList;
         private IAutoAcknowledge autoAcknowledge;
         private List<String> logGroupList;
@@ -182,7 +179,6 @@ public final class ImmutableEvent implements IEvent {
             pathOutage = event.getPathoutage();
             correlation = event.getCorrelation();
             operInstruct = event.getOperinstruct();
-            autoActionList = MutableCollections.copyListFromNullable(event.getAutoactionCollection());
             operActionList = MutableCollections.copyListFromNullable(event.getOperactionCollection());
             autoAcknowledge = event.getAutoacknowledge();
             logGroupList = MutableCollections.copyListFromNullable(event.getLoggroupCollection());
@@ -309,11 +305,6 @@ public final class ImmutableEvent implements IEvent {
             return this;
         }
 
-        public Builder setAutoActionList(List<IAutoAction> autoActionList) {
-            this.autoActionList = autoActionList;
-            return this;
-        }
-
         public Builder setOperActionList(List<IOperAction> operActionList) {
             this.operActionList = operActionList;
             return this;
@@ -372,32 +363,6 @@ public final class ImmutableEvent implements IEvent {
     @Override
     public IAutoAcknowledge getAutoacknowledge() {
         return autoAcknowledge;
-    }
-
-    @Override
-    public IAutoAction getAutoaction(int index) {
-        // check bounds for index
-        if (index < 0 || index >= autoActionList.size()) {
-            throw new IndexOutOfBoundsException("getAutoaction: Index value '" + index + "' not in range [0.." +
-                    (autoActionList.size() - 1) + "]");
-        }
-
-        return autoActionList.get(index);
-    }
-
-    @Override
-    public IAutoAction[] getAutoaction() {
-        return autoActionList.toArray(new IAutoAction[0]);
-    }
-
-    @Override
-    public List<IAutoAction> getAutoactionCollection() {
-        return autoActionList;
-    }
-
-    @Override
-    public int getAutoactionCount() {
-        return autoActionList.size();
     }
 
     @Override
@@ -649,11 +614,6 @@ public final class ImmutableEvent implements IEvent {
     }
 
     @Override
-    public Enumeration<IAutoAction> enumerateAutoaction() {
-        return Collections.enumeration(autoActionList);
-    }
-
-    @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -679,7 +639,6 @@ public final class ImmutableEvent implements IEvent {
                 Objects.equals(pathOutage, that.pathOutage) &&
                 Objects.equals(correlation, that.correlation) &&
                 Objects.equals(operInstruct, that.operInstruct) &&
-                Objects.equals(autoActionList, that.autoActionList) &&
                 Objects.equals(operActionList, that.operActionList) &&
                 Objects.equals(autoAcknowledge, that.autoAcknowledge) &&
                 Objects.equals(logGroupList, that.logGroupList) &&
@@ -695,8 +654,7 @@ public final class ImmutableEvent implements IEvent {
     public int hashCode() {
         return Objects.hash(uuid, dbId, distPoller, creationTime, masterStation, mask, uei, source, nodeid, time, host,
                 snmpHost, service, snmp, parms, descr, logMsg, severity, pathOutage, correlation, operInstruct,
-                autoActionList, operActionList, autoAcknowledge, logGroupList, tTicket, forwardList,
-                ifIndex, ifAlias, mouseOverText, alarmData);
+                operActionList, autoAcknowledge, logGroupList, tTicket, forwardList, ifIndex, ifAlias, mouseOverText, alarmData);
     }
 
     @Override
@@ -725,7 +683,6 @@ public final class ImmutableEvent implements IEvent {
                 ", pathOutage='" + pathOutage + '\'' +
                 ", correlation=" + correlation +
                 ", operInstruct='" + operInstruct + '\'' +
-                ", autoActionList=" + autoActionList +
                 ", operActionList=" + operActionList +
                 ", autoAcknowledge=" + autoAcknowledge +
                 ", logGroupList=" + logGroupList +

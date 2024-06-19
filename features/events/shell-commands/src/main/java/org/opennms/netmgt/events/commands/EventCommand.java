@@ -100,7 +100,6 @@ public class EventCommand implements Action {
         fillTable(eventPropertyTable, "eventCorrelation", onmsEvent.getEventCorrelation());
         fillTable(eventPropertyTable, "eventSurpressedCount", onmsEvent.getEventSuppressedCount());
         fillTable(eventPropertyTable, "eventOperInstruct", onmsEvent.getEventOperInstruct());
-        fillTable(eventPropertyTable, "eventAutoAction", onmsEvent.getEventAutoAction());
         fillTable(eventPropertyTable, "eventOperAction", onmsEvent.getEventOperAction());
         fillTable(eventPropertyTable, "eventOperActionMenuText", onmsEvent.getEventOperActionMenuText());
         fillTable(eventPropertyTable, "eventNotification", onmsEvent.getEventNotification());

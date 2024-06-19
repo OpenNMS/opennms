@@ -162,7 +162,6 @@ The following elements in `eventconf.xml` accept replacement tokens:
 * `descr`
 * `logmsg`
 * `operinstruct`
-* `autoaction`
 * `operaction` (`/menu`)
 * `tticket`
 * `alarm-data`

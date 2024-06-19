@@ -217,7 +217,6 @@ public abstract class SearchProperties {
 		new SearchProperty(OnmsEvent.class, "id", "ID", INTEGER),
 		new SearchProperty(OnmsEvent.class, "eventAckTime", "Acknowledged Time", TIMESTAMP),
 		new SearchProperty(OnmsEvent.class, "eventAckUser", "Acknowledging User", STRING),
-		new SearchProperty(OnmsEvent.class, "eventAutoAction", "Autoaction", STRING),
 		new SearchProperty(OnmsEvent.class, "eventCorrelation", "Correlation", STRING),
 		new SearchProperty(OnmsEvent.class, "eventCreateTime", "Creation Time", TIMESTAMP),
 		new SearchProperty(OnmsEvent.class, "eventDescr", "Description", STRING),
