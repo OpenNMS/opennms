@@ -36,629 +36,73 @@ public abstract class ConfigFileConstants {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConfigFileConstants.class);
 
-    private static final String[] FILE_ID_TO_NAME;
-
-    /**
-     * The opennms database config file
-     */
-    public static final int DB_CONFIG_FILE_NAME;
-
-    /**
-     * The opennms jms config file
-     */
-    public static final int JMS_CONFIG_FILE_NAME;
-
-    //
-    // the OpenNMS services' config files
-    //
-
-    /**
-     * The opennms actiond config file
-     */
-    public static final int ACTIOND_CONFIG_FILE_NAME;
-
-    /**
-     * The opennms capsd config file
-     */
-    public static final int CAPSD_CONFIG_FILE_NAME;
-
-    /**
-     * The opennms discovery config file
-     */
-    public static final int DISCOVERY_CONFIG_FILE_NAME;
-
-    /**
-     * The opennms eventd config file
-     */
-    public static final int EVENTD_CONFIG_FILE_NAME;
-
-    /**
-     * The Availability Reports HTML converter xsl file.
-     */
-    public static final int REPORT_HTML_XSL;
-
-    /**
-     * The opennms notifd config file
-     */
-    public static final int NOTIFD_CONFIG_FILE_NAME;
-
-    /**
-     * The opennms outage manager config file
-     */
-    public static final int OUTAGE_MANAGER_CONFIG_FILE_NAME;
-
-    /**
-     * The opennms poller config file
-     */
-    public static final int POLLER_CONFIG_FILE_NAME;
-
-    /**
-     * The opennms poll outages config file
-     */
-    public static final int POLL_OUTAGES_CONFIG_FILE_NAME;
-
-    /** The opennms SNMP poller config file
-     */
-    public static final int SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME;
-
-    /**
-     * The opennms rtc config file
-     */
-    public static final int RTC_CONFIG_FILE_NAME;
-
-    /**
-     * The opennms trapd config file
-     */
-    public static final int TRAPD_CONFIG_FILE_NAME;
-
-    /**
-     * The opennms manager config file
-     */
-    public static final int MANAGER_CONFIG_FILE_NAME;
-
-    /**
-     * The services config file
-     */
-    public static final int SERVICE_CONF_FILE_NAME;
-
-    /**
-     * The opennms collectd config file
-     */
-    public static final int COLLECTD_CONFIG_FILE_NAME;
-
-    /**
-     * The opennms threshd config file
-     */
-    public static final int THRESHD_CONFIG_FILE_NAME;
-
-    /**
-     * The opennms vulnscand config file
-     */
-    public static final int VULNSCAND_CONFIG_FILE_NAME;
-
-    /**
-     * The vacuumd config file
-     */
-    public static final int VACUUMD_CONFIG_FILE_NAME;
-
-    /**
-     * The config file specifying the rrd config (ie JRobin vs JNI)
-     */
-    public static final int RRD_CONFIG_FILE_NAME;
-
-    /**
-     * The config file specifying the JavaMailer config (ie SMTP HOST)
-     * 
-     */
-
-    public static final int JAVA_MAIL_CONFIG_FILE_NAME;
-
-    /**
-     * The config file specifying the XMPP config (host, user, password, etc.)
-     * 
-     */
-    public static final int XMPP_CONFIG_FILE_NAME;
-    
-    /**
-     * JFree Chart configuration file
-     */
-    public static final int TRANSLATOR_CONFIG_FILE_NAME;
-    
-    /**
-     * The config file for specifying JMX MBeans
-     */
-    public static final int JMX_DATA_COLLECTION_CONF_FILE_NAME;
-
-    /**
-     * The config file for syslogd
-     */
-    public static final int SYSLOGD_CONFIG_FILE_NAME;
-
-    /**
-     * The grok pattern file for Syslogd's {@link RadixTreeSyslogParser}
-     */
-    public static final int SYSLOGD_GROK_PATTERNS_FILE_NAME;
-
-    //
-    // End services config files
-    //
-
-    //
-    // Other config files
-    //
-
-    /**
-     * The administrator pitXML file for the Swing GUI
-     */
-    public static final int ADMIN_PITXML_FILE_NAME;
-
-    /**
-     * The properties file that contains a list of event uies to exclude from
-     * the notification wizard
-     */
-    public static final int EXCLUDE_UEI_FILE_NAME;
-
-    /**
-     * The users config file
-     */
-    public static final int USERS_CONF_FILE_NAME;
-
-    /**
-     * The categories config file
-     */
-    public static final int CATEGORIES_CONF_FILE_NAME;
-
-    /**
-     * The user groups config file
-     */
-    public static final int GROUPS_CONF_FILE_NAME;
-
-    /**
-     * The views display config file
-     */
-    public static final int VIEWS_DISPLAY_CONF_FILE_NAME;
-
-    /**
-     * the notifications conf file
-     */
-    public static final int NOTIFICATIONS_CONF_FILE_NAME;
-
-    /**
-     * the notification commands file
-     */
-    public static final int NOTIF_COMMANDS_CONF_FILE_NAME;
-
-    /**
-     * the destination paths for notifications
-     */
-    public static final int DESTINATION_PATHS_CONF_FILE_NAME;
-
-    /**
-     * The SNMP config file
-     */
-    public static final int SNMP_CONF_FILE_NAME;
-
-    /**
-     * the event conf file
-     */
-    public static final int EVENT_CONF_FILE_NAME;
-
-    /**
-     * the SNMP data collection conf file
-     */
-    public static final int DATA_COLLECTION_CONF_FILE_NAME;
-
-    /**
-     * a store for general information needed to configure
-     */
-    public static final int BASE_CONFIGURATION_FILE_NAME;
-
-    /**
-     * the thresholding config file
-     */
-    public static final int THRESHOLDING_CONF_FILE_NAME;
-
-    /**
-     * This is the name of the path of the webui colors dtd
-     */
-    public static final int WEBUI_COLORS_FILE_NAME;
-
-    /**
-     * The opennms surveillance views config file
-     */
-    public static final int SURVEILLANCE_VIEWS_FILE_NAME;
-
-    /**
-     * The opennms surveillance views config file
-     */
-    public static final int SITE_STATUS_VIEWS_FILE_NAME;
-    
-    /** Constant <code>HTTP_COLLECTION_CONFIG_FILE_NAME</code> */
-    public static final int HTTP_COLLECTION_CONFIG_FILE_NAME;
-
-    /**
-     * The config file for maps Adapter
-     */
-    public static final int MAPS_ADAPTER_CONFIG_FILE_NAME;
-
-    //
-    // End other config files
-    //
-
-    //
-    // XSL files used by reports
-    //
-
-    /**
-     * The reporting pdf xsl file
-     */
-    public static final int REPORT_PDF_XSL;
-
-    /**
-     * The reporting svg xsl file
-     */
-    public static final int REPORT_SVG_XSL;
-
-    /**
-     * The Events reporting xsl file
-     */
-    public static final int EVENT_REPORT;
-
-    /**
-     * The Outages reporting xsl file
-     */
-    public static final int OUTAGE_REPORT;
-
-    /**
-     * The Outages reporting xsl file
-     */
-    public static final int NOTIFY_REPORT;
-
-    /**
-     * The ENHANCED Linkd discovery configuration file
-     */
-    public static final int ENLINKD_CONFIG_FILE_NAME;
-
-    /**
-     * The OpenNMS DataSourceConfiguration file
-     */
-    public static final int OPENNMS_DATASOURCE_CONFIG_FILE_NAME;
-
-    //
-    // End XSL files used by reports
-    //
-
-    //
-    // DTDs used by reports
-    //
-
-    /**
-     * This is the name of the path of the event report dtd
-     */
-    public static final int EVENT_REPORT_DTD;
-
-    /**
-     * This is the name of the path of the event report dtd
-     */
-    public static final int OUTAGE_REPORT_DTD;
-
-    /**
-     * This is the name of the path of the notification report dtd
-     */
-    public static final int NOTIFY_REPORT_DTD;
-
-    
-    /**
-     * The NSClient data collection configuration file
-     */
-    public static final int NSCLIENT_COLLECTION_CONFIG_FILE_NAME;
-
-    /**
-     * The NSClient data collection configuration file
-     */
-    public static final int NSCLIENT_CONFIG_FILE_NAME;
-    
-    /**
-     * The WMI agent configuration file
-     */
-    public static final int WMI_CONFIG_FILE_NAME;
-
-    /**
-     * The SNMP Asset Provisioning Adapter configuration file
-     */
-    public static final int SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME;
-
-    /**
-     * The SNMP Asset Provisioning Adapter configuration file
-     */
-    public static final int WSMAN_ASSET_ADAPTER_CONFIG_FILE_NAME;
-
-    /**
-     * The WMI collection configuration file
-     */
-    public static final int WMI_COLLECTION_CONFIG_FILE_NAME;
-    
-    /**
-     * The Asterisk global configuration file (for notifications, etc.)
-     */
-    public static final int ASTERISK_CONFIG_FILE_NAME;
-
-    /**
-     * The AMI agent configuration file
-     */
-    public static final int AMI_CONFIG_FILE_NAME;
-    
-    /**
-     * The config file for microblog notifications and acks
-     */
-    public static final int MICROBLOG_CONFIG_FILE_NAME;
-    
-    /**
-     * The config file for the JDBC Data Collector.
-     */
-    public static final int JDBC_COLLECTION_CONFIG_FILE_NAME;
-
-    //
-    // Initialize the class data. This section is used to initialize the
-    // integer constants to their final values and to build the array
-    // of integer identifiers to file names.
-    //
-    static {
-        // Initialize the constants
-        //
-
-        DB_CONFIG_FILE_NAME = 0;
-        JMS_CONFIG_FILE_NAME = 1;
-        ACTIOND_CONFIG_FILE_NAME = 2;
-        CAPSD_CONFIG_FILE_NAME = 3;
-        DISCOVERY_CONFIG_FILE_NAME = 4;
-
-        EVENTD_CONFIG_FILE_NAME = 5;
-        NOTIFD_CONFIG_FILE_NAME = 6;
-        OUTAGE_MANAGER_CONFIG_FILE_NAME = 7;
-        POLLER_CONFIG_FILE_NAME = 8;
-        POLL_OUTAGES_CONFIG_FILE_NAME = 9;
-
-        RTC_CONFIG_FILE_NAME = 10;
-        TRAPD_CONFIG_FILE_NAME = 11;
-        MANAGER_CONFIG_FILE_NAME = 12;
-        SERVICE_CONF_FILE_NAME = 13;
-
-        ADMIN_PITXML_FILE_NAME = 15;
-        EXCLUDE_UEI_FILE_NAME = 18;
-        USERS_CONF_FILE_NAME = 19;
-
-        CATEGORIES_CONF_FILE_NAME = 21;
-        GROUPS_CONF_FILE_NAME = 22;
-        NOTIFICATIONS_CONF_FILE_NAME = 23;
-        NOTIF_COMMANDS_CONF_FILE_NAME = 24;
-        DESTINATION_PATHS_CONF_FILE_NAME = 25;
-
-        SNMP_CONF_FILE_NAME = 26;
-        EVENT_CONF_FILE_NAME = 27;
-        DATA_COLLECTION_CONF_FILE_NAME = 29;
-        REPORT_PDF_XSL = 30;
-
-        REPORT_SVG_XSL = 31;
-        EVENT_REPORT = 32;
-        OUTAGE_REPORT = 33;
-        EVENT_REPORT_DTD = 34;
-        OUTAGE_REPORT_DTD = 35;
-
-        NOTIFY_REPORT_DTD = 36;
-        NOTIFY_REPORT = 37;
-        COLLECTD_CONFIG_FILE_NAME = 38;
-        BASE_CONFIGURATION_FILE_NAME = 39;
-
-        VULNSCAND_CONFIG_FILE_NAME = 40;
-
-        THRESHD_CONFIG_FILE_NAME = 41;
-        THRESHOLDING_CONF_FILE_NAME = 42;
-        VIEWS_DISPLAY_CONF_FILE_NAME = 43;
-        REPORT_HTML_XSL = 44;
-
-        WEBUI_COLORS_FILE_NAME = 45;
-
-        RRD_CONFIG_FILE_NAME = 51;
-
-        JAVA_MAIL_CONFIG_FILE_NAME = 52;
-        VACUUMD_CONFIG_FILE_NAME = 53;
-
-        XMPP_CONFIG_FILE_NAME = 54;
-        
-        JMX_DATA_COLLECTION_CONF_FILE_NAME = 56;
-        
-        TRANSLATOR_CONFIG_FILE_NAME = 57;
-
-        SYSLOGD_CONFIG_FILE_NAME = 58;
-
-        SYSLOGD_GROK_PATTERNS_FILE_NAME = 59;
-
-        SURVEILLANCE_VIEWS_FILE_NAME = 61;
-        
-        SITE_STATUS_VIEWS_FILE_NAME = 62;
-        
-        HTTP_COLLECTION_CONFIG_FILE_NAME = 64;
-        
-        NSCLIENT_COLLECTION_CONFIG_FILE_NAME = 65;
-        
-        NSCLIENT_CONFIG_FILE_NAME = 66;
-        
-        WMI_CONFIG_FILE_NAME = 67;
-
-        WMI_COLLECTION_CONFIG_FILE_NAME = 68;
-        
-        OPENNMS_DATASOURCE_CONFIG_FILE_NAME = 69;
-        
-        SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME = 73;
-        
-        ASTERISK_CONFIG_FILE_NAME = 74;
-        
-        AMI_CONFIG_FILE_NAME = 75;
-        
-        MAPS_ADAPTER_CONFIG_FILE_NAME = 76;
-        
-        MICROBLOG_CONFIG_FILE_NAME = 78;
-        
-        SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME = 79;
-        
-        JDBC_COLLECTION_CONFIG_FILE_NAME = 80;
-        
-        ENLINKD_CONFIG_FILE_NAME = 81;
-
-        WSMAN_ASSET_ADAPTER_CONFIG_FILE_NAME = 82;
-        // Allocate and build the mapping of identifiers to names
-        //
-        FILE_ID_TO_NAME = new String[83];
-
-        FILE_ID_TO_NAME[DB_CONFIG_FILE_NAME] = "opennms-database.xml";
-        FILE_ID_TO_NAME[JMS_CONFIG_FILE_NAME] = "opennms-jms.xml";
-        FILE_ID_TO_NAME[ACTIOND_CONFIG_FILE_NAME] = "actiond-configuration.xml";
-        FILE_ID_TO_NAME[CAPSD_CONFIG_FILE_NAME] = "capsd-configuration.xml";
-        FILE_ID_TO_NAME[DISCOVERY_CONFIG_FILE_NAME] = "discovery-configuration.xml";
-
-        FILE_ID_TO_NAME[EVENTD_CONFIG_FILE_NAME] = "eventd-configuration.xml";
-        FILE_ID_TO_NAME[NOTIFD_CONFIG_FILE_NAME] = "notifd-configuration.xml";
-        FILE_ID_TO_NAME[OUTAGE_MANAGER_CONFIG_FILE_NAME] = "outage-configuration.xml";
-        FILE_ID_TO_NAME[POLLER_CONFIG_FILE_NAME] = "poller-configuration.xml";
-        FILE_ID_TO_NAME[POLL_OUTAGES_CONFIG_FILE_NAME] = "poll-outages.xml";
-
-        FILE_ID_TO_NAME[RTC_CONFIG_FILE_NAME] = "rtc-configuration.xml";
-        FILE_ID_TO_NAME[TRAPD_CONFIG_FILE_NAME] = "trapd-configuration.xml";
-        FILE_ID_TO_NAME[MANAGER_CONFIG_FILE_NAME] = "manager-configuration.xml";
-        FILE_ID_TO_NAME[SERVICE_CONF_FILE_NAME] = "service-configuration.xml";
-
-        FILE_ID_TO_NAME[ADMIN_PITXML_FILE_NAME] = "pitXML.xml";
-        FILE_ID_TO_NAME[EXCLUDE_UEI_FILE_NAME] = "exclude-ueis.properties";
-        FILE_ID_TO_NAME[USERS_CONF_FILE_NAME] = "users.xml";
-
-        FILE_ID_TO_NAME[CATEGORIES_CONF_FILE_NAME] = "categories.xml";
-        FILE_ID_TO_NAME[GROUPS_CONF_FILE_NAME] = "groups.xml";
-        FILE_ID_TO_NAME[NOTIFICATIONS_CONF_FILE_NAME] = "notifications.xml";
-        FILE_ID_TO_NAME[NOTIF_COMMANDS_CONF_FILE_NAME] = "notificationCommands.xml";
-        FILE_ID_TO_NAME[DESTINATION_PATHS_CONF_FILE_NAME] = "destinationPaths.xml";
-
-        FILE_ID_TO_NAME[SNMP_CONF_FILE_NAME] = "snmp-config.xml";
-        FILE_ID_TO_NAME[EVENT_CONF_FILE_NAME] = "eventconf.xml";
-        FILE_ID_TO_NAME[DATA_COLLECTION_CONF_FILE_NAME] = "datacollection-config.xml";
-        FILE_ID_TO_NAME[REPORT_PDF_XSL] = "PDFAvailReport.xsl";
-
-        FILE_ID_TO_NAME[REPORT_SVG_XSL] = "SVGAvailReport.xsl";
-        FILE_ID_TO_NAME[REPORT_HTML_XSL] = "AvailabilityReports.xsl";
-        FILE_ID_TO_NAME[EVENT_REPORT] = "EventReport.xsl";
-        FILE_ID_TO_NAME[OUTAGE_REPORT] = "OutageReport.xsl";
-        FILE_ID_TO_NAME[EVENT_REPORT_DTD] = "eventreport.dtd";
-        FILE_ID_TO_NAME[OUTAGE_REPORT_DTD] = "outagereport.dtd";
-
-        FILE_ID_TO_NAME[NOTIFY_REPORT_DTD] = "notifications.dtd";
-        FILE_ID_TO_NAME[NOTIFY_REPORT] = "NotifyReport.xsl";
-
-        FILE_ID_TO_NAME[BASE_CONFIGURATION_FILE_NAME] = "baseConfiguration.xml";
-
-        FILE_ID_TO_NAME[COLLECTD_CONFIG_FILE_NAME] = "collectd-configuration.xml";
-
-        FILE_ID_TO_NAME[THRESHD_CONFIG_FILE_NAME] = "threshd-configuration.xml";
-        FILE_ID_TO_NAME[THRESHOLDING_CONF_FILE_NAME] = "thresholds.xml";
-
-        FILE_ID_TO_NAME[VULNSCAND_CONFIG_FILE_NAME] = "vulnscand-configuration.xml";
-        FILE_ID_TO_NAME[VIEWS_DISPLAY_CONF_FILE_NAME] = "viewsdisplay.xml";
-
-        FILE_ID_TO_NAME[WEBUI_COLORS_FILE_NAME] = "webui-colors.xml";
-
-        FILE_ID_TO_NAME[RRD_CONFIG_FILE_NAME] = "rrd-configuration.properties";
-        FILE_ID_TO_NAME[JAVA_MAIL_CONFIG_FILE_NAME] = "javamail-configuration.properties";
-        FILE_ID_TO_NAME[VACUUMD_CONFIG_FILE_NAME] = "vacuumd-configuration.xml";
-        FILE_ID_TO_NAME[XMPP_CONFIG_FILE_NAME] = "xmpp-configuration.properties";
-        FILE_ID_TO_NAME[JMX_DATA_COLLECTION_CONF_FILE_NAME] = "jmx-datacollection-config.xml";
-        FILE_ID_TO_NAME[TRANSLATOR_CONFIG_FILE_NAME] = "translator-configuration.xml";
-        FILE_ID_TO_NAME[SYSLOGD_CONFIG_FILE_NAME] = "syslogd-configuration.xml";
-        FILE_ID_TO_NAME[SYSLOGD_GROK_PATTERNS_FILE_NAME] = "syslogd-grok-patterns.txt";
-        FILE_ID_TO_NAME[ENLINKD_CONFIG_FILE_NAME] = "enlinkd-configuration.xml";
-        FILE_ID_TO_NAME[SURVEILLANCE_VIEWS_FILE_NAME] = "surveillance-views.xml";
-        FILE_ID_TO_NAME[SITE_STATUS_VIEWS_FILE_NAME] = "site-status-views.xml";
-        FILE_ID_TO_NAME[HTTP_COLLECTION_CONFIG_FILE_NAME] = "http-datacollection-config.xml";
-        FILE_ID_TO_NAME[NSCLIENT_COLLECTION_CONFIG_FILE_NAME] = "nsclient-datacollection-config.xml";
-        FILE_ID_TO_NAME[NSCLIENT_CONFIG_FILE_NAME] = "nsclient-config.xml";
-        FILE_ID_TO_NAME[WMI_CONFIG_FILE_NAME] = "wmi-config.xml";
-        FILE_ID_TO_NAME[WMI_COLLECTION_CONFIG_FILE_NAME] = "wmi-datacollection-config.xml";
-        FILE_ID_TO_NAME[OPENNMS_DATASOURCE_CONFIG_FILE_NAME] = "opennms-datasources.xml";
-        FILE_ID_TO_NAME[SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME] = "snmp-interface-poller-configuration.xml";
-        FILE_ID_TO_NAME[ASTERISK_CONFIG_FILE_NAME] = "asterisk-configuration.properties";
-        FILE_ID_TO_NAME[AMI_CONFIG_FILE_NAME] = "ami-config.xml";
-        FILE_ID_TO_NAME[MAPS_ADAPTER_CONFIG_FILE_NAME] = "mapsadapter-configuration.xml";
-        FILE_ID_TO_NAME[MICROBLOG_CONFIG_FILE_NAME] = "microblog-configuration.xml";
-        FILE_ID_TO_NAME[SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME] = "snmp-asset-adapter-configuration.xml";
-        FILE_ID_TO_NAME[WSMAN_ASSET_ADAPTER_CONFIG_FILE_NAME] = "wsman-asset-adapter-configuration.xml";
-        FILE_ID_TO_NAME[JDBC_COLLECTION_CONFIG_FILE_NAME] = "jdbc-datacollection-config.xml";
-    }
-
-    /**
-     * Returns the base name of the identified file as defined by the passed
-     * integer value. This name has not yet been resolved and is only the name
-     * of the file with no path location information prepended. If the fully
-     * qualified name of the file is needed then use
-     * {@link #getFile(int) getFile()}to returned the {@link java.io.File File}
-     * object. The java File object can be queried to get more detailed
-     * information on the file.
-     *
-     * @param id
-     *            The identifier of the desired file.
-     * @return The base name of the file that matches the identifier.
-     */
-    public static String getFileName(int id) {
-        return FILE_ID_TO_NAME[id];
-    }
-
-    /**
-     * <p>
-     * Returns the java {@link java.io.File File}information for the file
-     * identified by the passed integer identifier. If the file cannot be
-     * located by the search algorithm then an excption is generated.
-     * </p>
-     *
-     * <p>
-     * The file is looked for in the <em>etc</em> directory of the OpenNMS
-     * home location identified by the System property <em>opennms.home</em>.
-     * If the file is not found in the <em>etc</em> directory then an attempt
-     * is made to find it in the root OpenNMS directory. If it still cannot be
-     * found then a {@link java.io.FileNotFoundException FileNotFoundException}
-     * is generated by the method.
-     * </p>
-     *
-     * @param id
-     *            The identifer for the configuration file.
-     * @return The File handle to the passed identifier.
-     * @throws java.io.FileNotFoundException
-     *             Thrown if the file cannot be located.
-     * @throws java.io.IOException
-     *             Thrown if an error occurs accessing the file system.
-     */
-    public static File getFile(int id) throws IOException {
-        // Recover the home directory from the system properties.
-        String home = getHome();
-
-        // Check to make sure that the home directory exists
-        File fhome = new File(home);
-        if (!fhome.exists()) {
-        	LOG.debug("The specified home directory does not exist.");
-            throw new FileNotFoundException("The OpenNMS home directory \"" + home + "\" does not exist");
-        }
-
-        String rfile = getFileName(id);
-        File frfile = new File(home + File.separator + "etc" + File.separator + rfile);
-        if (!frfile.exists()) {
-            File frfileNoEtc = new File(home + File.separator + rfile);
-            if (!frfileNoEtc.exists()) {
-                throw new FileNotFoundException("The requested file '" + rfile
-                                                + "' could not be found at '"
-                                                + frfile.getAbsolutePath()
-                                                + "' or '"
-                                                + frfileNoEtc.getAbsolutePath()
-                                                + "'");
-            }
-        }
-
-        return frfile;
+    public static final String ACTIOND_CONFIG_FILE_NAME = "actiond-configuration.xml";
+    public static final String DISCOVERY_CONFIG_FILE_NAME = "discovery-configuration.xml";
+
+    public static final String EVENTD_CONFIG_FILE_NAME = "eventd-configuration.xml";
+    public static final String NOTIFD_CONFIG_FILE_NAME = "notifd-configuration.xml";
+    public static final String POLLER_CONFIG_FILE_NAME = "poller-configuration.xml";
+    public static final String POLL_OUTAGES_CONFIG_FILE_NAME = "poll-outages.xml";
+
+    public static final String RTC_CONFIG_FILE_NAME = "rtc-configuration.xml";
+    public static final String TRAPD_CONFIG_FILE_NAME = "trapd-configuration.xml";
+    public static final String SERVICE_CONF_FILE_NAME = "service-configuration.xml";
+
+    public static final String EXCLUDE_UEI_FILE_NAME = "exclude-ueis.properties";
+    public static final String USERS_CONF_FILE_NAME = "users.xml";
+
+    public static final String CATEGORIES_CONF_FILE_NAME = "categories.xml";
+    public static final String GROUPS_CONF_FILE_NAME = "groups.xml";
+    public static final String NOTIFICATIONS_CONF_FILE_NAME = "notifications.xml";
+    public static final String NOTIF_COMMANDS_CONF_FILE_NAME = "notificationCommands.xml";
+    public static final String DESTINATION_PATHS_CONF_FILE_NAME = "destinationPaths.xml";
+
+    public static final String SNMP_CONF_FILE_NAME = "snmp-config.xml";
+    public static final String EVENT_CONF_FILE_NAME = "eventconf.xml";
+    public static final String DATA_COLLECTION_CONF_FILE_NAME = "datacollection-config.xml";
+
+    public static final String COLLECTD_CONFIG_FILE_NAME = "collectd-configuration.xml";
+
+    public static final String THRESHD_CONFIG_FILE_NAME = "threshd-configuration.xml";
+    public static final String THRESHOLDING_CONF_FILE_NAME = "thresholds.xml";
+
+    public static final String VIEWS_DISPLAY_CONF_FILE_NAME = "viewsdisplay.xml";
+    public static final String RRD_CONFIG_FILE_NAME = "rrd-configuration.properties";
+    public static final String JAVA_MAIL_CONFIG_FILE_NAME = "javamail-configuration.properties";
+    public static final String VACUUMD_CONFIG_FILE_NAME = "vacuumd-configuration.xml";
+    public static final String XMPP_CONFIG_FILE_NAME = "xmpp-configuration.properties";
+    public static final String JMX_DATA_COLLECTION_CONF_FILE_NAME = "jmx-datacollection-config.xml";
+    public static final String TRANSLATOR_CONFIG_FILE_NAME = "translator-configuration.xml";
+    public static final String SYSLOGD_CONFIG_FILE_NAME = "syslogd-configuration.xml";
+    public static final String SYSLOGD_GROK_PATTERNS_FILE_NAME = "syslogd-grok-patterns.txt";
+    public static final String ENLINKD_CONFIG_FILE_NAME = "enlinkd-configuration.xml";
+    public static final String SURVEILLANCE_VIEWS_FILE_NAME = "surveillance-views.xml";
+    public static final String SITE_STATUS_VIEWS_FILE_NAME = "site-status-views.xml";
+    public static final String HTTP_COLLECTION_CONFIG_FILE_NAME = "http-datacollection-config.xml";
+    public static final String NSCLIENT_COLLECTION_CONFIG_FILE_NAME = "nsclient-datacollection-config.xml";
+    public static final String NSCLIENT_CONFIG_FILE_NAME = "nsclient-config.xml";
+    public static final String WMI_CONFIG_FILE_NAME = "wmi-config.xml";
+    public static final String WMI_COLLECTION_CONFIG_FILE_NAME = "wmi-datacollection-config.xml";
+    public static final String OPENNMS_DATASOURCE_CONFIG_FILE_NAME = "opennms-datasources.xml";
+    public static final String SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME = "snmp-interface-poller-configuration.xml";
+    public static final String ASTERISK_CONFIG_FILE_NAME = "asterisk-configuration.properties";
+    public static final String AMI_CONFIG_FILE_NAME = "ami-config.xml";
+    public static final String MICROBLOG_CONFIG_FILE_NAME = "microblog-configuration.xml";
+    public static final String SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME = "snmp-asset-adapter-configuration.xml";
+    public static final String WSMAN_ASSET_ADAPTER_CONFIG_FILE_NAME = "wsman-asset-adapter-configuration.xml";
+    public static final String JDBC_COLLECTION_CONFIG_FILE_NAME = "jdbc-datacollection-config.xml";
+
+    /**
+     * Constant <code>RRD_DS_MAX_SIZE=19</code>
+     */
+    public static final int RRD_DS_MAX_SIZE = 19;
+
+    /**
+     * @deprecated use the provided <code>filename</code> instead. See all available constants in {@link ConfigFileConstants}
+     */
+    @Deprecated(forRemoval = true)
+    public static String getFileName(String filename) {
+        return filename;
     }
 
     /**
@@ -677,13 +121,10 @@ public abstract class ConfigFileConstants {
      * is generated by the method.
      * </p>
      *
-     * @param fname
-     *            The base file name of the configuration file.
+     * @param fname The base file name of the configuration file.
      * @return The File handle to the named file.
-     * @throws java.io.FileNotFoundException
-     *             Thrown if the file cannot be located.
-     * @throws java.io.IOException
-     *             Thrown if an error occurs accessing the file system.
+     * @throws java.io.FileNotFoundException Thrown if the file cannot be located.
+     * @throws java.io.IOException           Thrown if an error occurs accessing the file system.
      */
     public static File getConfigFileByName(String fname) throws IOException {
         // Recover the home directory from the system properties.
@@ -694,7 +135,7 @@ public abstract class ConfigFileConstants {
         //
         File fhome = new File(home);
         if (!fhome.exists()) {
-        	LOG.debug("The specified home directory does not exist.");
+            LOG.debug("The specified home directory does not exist.");
             throw new FileNotFoundException("The OpenNMS home directory \"" + home + "\" does not exist.");
         }
 
@@ -710,14 +151,18 @@ public abstract class ConfigFileConstants {
     }
 
     /**
-     * <p>getHome</p>
+     * Alias for {@link #getConfigFileByName(String)}
      *
-     * @return a {@link java.lang.String} object.
+     * @see #getConfigFileByName(String) 
      */
+    public static File getFile(String filename) throws IOException {
+        return getConfigFileByName(filename);
+    }
+
     public static String getHome() {
         String home = System.getProperty("opennms.home");
         if (home == null) {
-        	LOG.debug("The 'opennms.home' property was not set, falling back to /opt/opennms.  This should really only happen in unit tests.");
+            LOG.debug("The 'opennms.home' property was not set, falling back to /opt/opennms.  This should really only happen in unit tests.");
             home = File.separator + "opt" + File.separator + "opennms";
         }
         // Remove the trailing slash if necessary
@@ -729,16 +174,6 @@ public abstract class ConfigFileConstants {
     }
 
     /**
-     * Method to return the string for the managed address include files for
-     * discovery, capsd and polling.
-     *
-     * @return String, the file url for the include file
-     */
-    public static String getIncludeFileString() {
-        return "file:" + getHome() + File.separator + "etc" + File.separator + "include";
-    }
-
-    /**
      * Method to return the string for path of the etc directory.
      *
      * @return String, the file url for the include file
@@ -747,15 +182,4 @@ public abstract class ConfigFileConstants {
         return getHome() + File.separator + "etc" + File.separator;
     }
 
-    /**
-     * <p>getTimezoneFileDir</p>
-     *
-     * @return a {@link java.lang.String} object.
-     */
-    public static String getTimezoneFileDir() {
-        return File.separator + "usr" + File.separator + "share" + File.separator + "zoneinfo" + File.separator + "US";
-    }
-
-    /** Constant <code>RRD_DS_MAX_SIZE=19</code> */
-    public static final int RRD_DS_MAX_SIZE = 19;
 }
