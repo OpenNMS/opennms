@@ -7,11 +7,6 @@
 		http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd		
 	">
 
-	<bean name="ackd-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
-		<constructor-arg value="org.opennms.netmgt.config.ackd.AckdConfiguration" />
-		<constructor-arg value="file:${opennms.home}/etc/ackd-configuration.xml" />
-	</bean>
-
 	<bean name="actiond-configuration.xml" class="org.opennms.core.config.impl.JaxbResourceConfiguration">
 		<constructor-arg value="org.opennms.netmgt.config.actiond.ActiondConfiguration" />
 		<constructor-arg value="file:${opennms.home}/etc/actiond-configuration.xml" />

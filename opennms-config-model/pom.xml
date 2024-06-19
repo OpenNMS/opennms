@@ -41,7 +41,6 @@
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
             <Export-Package>
-              org.opennms.netmgt.config.ackd.*;version="${project.version}",
               org.opennms.netmgt.config.actiond.*;version="${project.version}",
               org.opennms.netmgt.config.ami.*;version="${project.version}",
               org.opennms.netmgt.config.categories.*;version="${project.version}",

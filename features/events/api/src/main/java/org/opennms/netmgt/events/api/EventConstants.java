@@ -932,11 +932,6 @@ public abstract class EventConstants {
     static final int STATE_OFF = 0;
 
     /**
-     * UEI used for requesting an acknowledgment of an OnmsAcknowledgeable.
-     */
-    public static final String ACKNOWLEDGE_EVENT_UEI = "uei.opennms.org/ackd/acknowledge";
-
-    /**
      * UEI used for indicating a change management event.
      */
     public static final String NODE_CONFIG_CHANGE_UEI = "uei.opennms.org/internal/translator/entityConfigChanged";

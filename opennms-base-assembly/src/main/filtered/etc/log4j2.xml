@@ -203,7 +203,6 @@
         <!-- always leave instrumentation logging at INFO -->
         <KeyValuePair key="instrumentation"      value="INFO" />
         <KeyValuePair key="access-point-monitor" value="DEBUG" />
-        <KeyValuePair key="ackd"                 value="DEBUG" />
         <KeyValuePair key="actiond"              value="DEBUG" />
         <KeyValuePair key="alarmd"               value="DEBUG" />
         <KeyValuePair key="asterisk-gateway"     value="DEBUG" />

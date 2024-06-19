@@ -164,7 +164,6 @@
 *** xref:provisioning/detectors/WsmanWqlDetector.adoc[WS-MAN WQL]
 
 * xref:daemons/introduction.adoc[]
-** xref:daemons/daemon-config-files/ackd.adoc[]
 ** xref:daemons/daemon-config-files/alarmd.adoc[]
 ** xref:daemons/daemon-config-files/bsmd.adoc[]
 ** xref:daemons/daemon-config-files/collectd.adoc[]

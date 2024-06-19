@@ -26,7 +26,6 @@
   <bean id="configTester" class="org.opennms.netmgt.config.tester.ConfigTester">
     <property name="configs">
       <map>
-        <entry key="ackd-configuration.xml" value="ackdConfigurationDao"/>
         <entry key="actiond-configuration.xml" value="actiondConfigFactory"/>
         <entry key="ami-config.xml" value="amiPeerFactory"/>
         <!-- <entry key="asterisk-configuration.properties" value="asteriskConfigProperties"/> --><!-- Not part of standard build -->
@@ -108,10 +107,6 @@
     </property>
   </bean>
 
-  <bean id="ackdConfigurationDao" class="org.opennms.netmgt.dao.jaxb.DefaultAckdConfigurationDao">
-    <property name="configResource" value="file:${opennms.home}/etc/ackd-configuration.xml" />
-  </bean>
-  
   <bean id="actiondConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
     <property name="staticMethod"><value>org.opennms.netmgt.config.ActiondConfigFactory.init</value></property>
   </bean>

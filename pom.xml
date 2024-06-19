@@ -107,7 +107,6 @@
     <module>opennms-util</module>
     <module>opennms-bootstrap</module>
     <module>opennms-model</module>
-    <module>opennms-ackd</module>
     <module>opennms-alarms</module>
     <module>opennms-config-tester</module>
     <module>opennms-dao-api</module>
@@ -2474,11 +2473,6 @@
 
       <!--  opennms dependencies -->
       <!--  PLEASE KEEP THESE IN ALPHABETICAL ORDER -->
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-ackd</artifactId>
-        <version>${project.version}</version>
-      </dependency>
       <dependency>
         <groupId>org.opennms.core</groupId>
         <artifactId>org.opennms.core.api</artifactId>
