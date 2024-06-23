@@ -80,12 +80,6 @@
     <intercept-url pattern="/rest/classifications/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN,ROLE_FLOW_MANAGER" />
     <intercept-url pattern="/rest/classifications/**" method="PUT" access="ROLE_REST,ROLE_ADMIN,ROLE_FLOW_MANAGER" />
 
-    <!-- Allow certain actions for the ROLE_DEVICE_CONFIG_BACKUP role -->
-    <intercept-url pattern="/rest/device-config/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_DEVICE_CONFIG_BACKUP" />
-    <intercept-url pattern="/rest/device-config/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN,ROLE_DEVICE_CONFIG_BACKUP" />
-    <intercept-url pattern="/rest/device-config/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_DEVICE_CONFIG_BACKUP" />
-    <intercept-url pattern="/rest/device-config/**" method="PUT" access="ROLE_REST,ROLE_ADMIN,ROLE_DEVICE_CONFIG_BACKUP" />
-
     <!--
       Must have ROLE_FILESYSTEM_EDITOR to view or edit files. Added here, but additional checks are done in code
       to disallow any other role.

@@ -35,8 +35,6 @@
     <module>../features/config/dao/api</module>
     <module>../features/config/rest/api</module>
     <module>../features/config/service/api</module>
-    <module>../features/device-config/api</module>
-    <module>../features/device-config/persistence/api</module>
     <module>../features/distributed/coordination/api</module>
     <module>../features/distributed/core/api</module>
     <module>../features/distributed/dao/api</module>

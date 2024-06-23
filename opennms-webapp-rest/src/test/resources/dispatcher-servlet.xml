@@ -346,12 +346,6 @@
                                 <property name="url" value="pathOutage/index.jsp"/>
                                 <property name="locationMatch" value="pathOutage"/>
                             </bean>
-                            <bean class="org.opennms.web.navigate.RoleBasedNavBarEntry">
-                                <property name="name" value="Device Configs"/>
-                                <property name="url" value="ui/index.html#/device-config-backup"/>
-                                <property name="locationMatch" value="configurationManagement"/>
-                                <property name="roles" value="ROLE_ADMIN,ROLE_REST,ROLE_DEVICE_CONFIG_BACKUP"/>
-                            </bean>
                             <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
                                 <property name="name" value="External Requisitions"/>
                                 <property name="url" value="ui/index.html#/configuration"/>

@@ -21,11 +21,7 @@
  */
 package org.opennms.netmgt.poller.shell;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
 import java.net.InetAddress;
-import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,7 +32,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
 
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
@@ -46,13 +41,10 @@ import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.core.mate.api.EntityScopeProvider;
-import org.opennms.core.mate.api.FallbackScope;
 import org.opennms.core.mate.api.Interpolator;
-import org.opennms.core.mate.api.MapScope;
 import org.opennms.core.mate.api.Scope;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.features.deviceconfig.service.DeviceConfigUtil;
 import org.opennms.netmgt.config.PollerConfig;
 import org.opennms.netmgt.config.ReadOnlyPollerConfigManager;
 import org.opennms.netmgt.config.poller.Package;
@@ -62,12 +54,10 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.poller.DeviceConfig;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerResponse;
-import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.poller.support.SimpleMonitoredService;
 
@@ -208,16 +198,6 @@ public class Poll implements Action {
                             });
                         } else {
                             System.out.printf("(No properties were returned by the monitor.\n");
-                        }
-                        if (pollStatus.getDeviceConfig() != null) {
-                            DeviceConfig deviceConfig = pollStatus.getDeviceConfig();
-                            byte[] content = deviceConfig.getContent();
-                            if (DeviceConfigUtil.isGzipFile(deviceConfig.getFilename())) {
-                                content = DeviceConfigUtil.decompressGzipToBytes(content);
-                            }
-                            System.out.printf("Received file %s with content ... \n\n", deviceConfig.getFilename());
-                            String config = new String(deviceConfig.getContent(), Charset.forName(Charset.defaultCharset().name()));
-                            System.out.println(config);
                         }
                     } else {
                         System.out.printf("\nService is %s on %s using %s\n", pollStatus.getStatusName(), host, className);

@@ -75,9 +75,6 @@ public class UsageStatisticsReportDTOTest {
             "\"coreQueuedUpdatesCompleted\":0," +
             "\"databaseProductName\":null," +
             "\"databaseProductVersion\":null," +
-            "\"dcbFailed\":0," +
-            "\"dcbSucceed\":0," +
-            "\"dcbWebUiEntries\":0," +
             "\"destinationPathCount\":-1," +
             "\"eventLogsProcessed\":0," +
             "\"events\":0," +
@@ -92,7 +89,6 @@ public class UsageStatisticsReportDTOTest {
             "\"monitoringLocations\":0," +
             "\"nodes\":0," +
             "\"nodesBySysOid\":{\".1.2.3.4\":2,\".1.2.3.5\":6}," +
-            "\"nodesWithDeviceConfigBySysOid\":{}," +
             "\"notificationEnablementStatus\":null," +
             "\"notifications\":0," +
             "\"onCallRoleCount\":1," +

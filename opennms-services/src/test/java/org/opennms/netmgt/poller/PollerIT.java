@@ -116,8 +116,7 @@ import com.google.common.collect.Sets;
         "classpath:/META-INF/opennms/applicationContext-serviceMonitorRegistry.xml",
 
         // Override the default QueryManager with the DAO version
-        "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml",
-        "classpath:/META-INF/opennms/applicationContext-test-deviceConfig.xml"
+        "classpath:/META-INF/opennms/applicationContext-pollerdTest.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={
         // We don't need a real pinger here
@@ -251,7 +250,6 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
         m_poller.setPollerConfig(m_pollerConfig);
         m_poller.setPollOutagesDao(m_pollerConfig);
         m_poller.setLocationAwarePollerClient(m_locationAwarePollerClient);
-        m_poller.setServiceMonitorAdaptor((svc, parameters, status) -> status);
         m_poller.setPersisterFactory(new MockPersisterFactory());
     }
 

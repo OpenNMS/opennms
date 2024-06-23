@@ -39,15 +39,6 @@ import {
   getPreFabGraphs
 } from './graphService'
 
-import {
-  getDeviceConfigBackups,
-  backupDeviceConfig,
-  downloadDeviceConfigs,
-  getVendorOptions,
-  getOsImageOptions,
-  getHistoryByIpInterface
-} from './deviceService'
-
 import { getMainMenu, getNotificationSummary } from './menuService'
 import { getFileNames, getFile, getSnippets, postFile, deleteFile, getFileExtensions } from './configService'
 import { getAliases, getCredentialsByAlias, addCredentials, updateCredentials } from './scvService'
@@ -110,12 +101,6 @@ export default {
   getResourceForNode,
   getGraphDefinitionsByResourceId,
   getPlugins,
-  getDeviceConfigBackups,
-  backupDeviceConfig,
-  downloadDeviceConfigs,
-  getVendorOptions,
-  getOsImageOptions,
-  getHistoryByIpInterface,
   getAliases,
   getCredentialsByAlias,
   addCredentials,

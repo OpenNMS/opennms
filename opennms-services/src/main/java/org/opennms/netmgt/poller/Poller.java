@@ -117,10 +117,6 @@ public class Poller extends AbstractServiceDaemon {
     @Autowired
     private ReadablePollOutagesDao m_pollOutagesDao;
 
-    @Autowired()
-    @Qualifier("deviceConfigMonitorAdaptor")
-    private ServiceMonitorAdaptor serviceMonitorAdaptor;
-
     public void setPersisterFactory(PersisterFactory persisterFactory) {
         m_persisterFactory = persisterFactory;
     }
@@ -277,10 +273,6 @@ public class Poller extends AbstractServiceDaemon {
 
     public void setLocationAwarePollerClient(LocationAwarePollerClient locationAwarePollerClient) {
         m_locationAwarePollerClient = locationAwarePollerClient;
-    }
-
-    public void setServiceMonitorAdaptor(ServiceMonitorAdaptor serviceMonitorAdaptor) {
-        this.serviceMonitorAdaptor = serviceMonitorAdaptor;
     }
 
     /**
@@ -519,7 +511,7 @@ public class Poller extends AbstractServiceDaemon {
         PollableService svc = getNetwork().createService(service.getNodeId(), iface.getNode().getLabel(), iface.getNode().getLocation().getLocationName(), addr, serviceName);
         PollableServiceConfig pollConfig = new PollableServiceConfig(svc, m_pollerConfig, pkg,
                                                                      getScheduler(), m_persisterFactory, m_thresholdingService,
-                                                                     m_locationAwarePollerClient, m_pollOutagesDao, serviceMonitorAdaptor);
+                                                                     m_locationAwarePollerClient, m_pollOutagesDao);
         svc.setPollConfig(pollConfig);
         synchronized(svc) {
             if (svc.getSchedule() == null) {

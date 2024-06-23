@@ -91,18 +91,6 @@ export const defaultMainMenu = {
           isIconOnly: null,
           isVueLink: null,
           roles: null
-        },
-        {
-          id: null,
-          className: 'org.opennms.web.navigate.LocationBasedNavBarEntry',
-          name: 'Device Configs',
-          url: 'ui/index.html#/device-config-backup',
-          locationMatch: 'configurationManagement',
-          icon: null,
-          iconType: null,
-          isIconOnly: null,
-          isVueLink: true,
-          roles: 'ROLE_ADMIN,ROLE_REST,ROLE_DEVICE_CONFIG_BACKUP'
         }
       ]
     },

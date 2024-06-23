@@ -44,11 +44,5 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-config</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.features.device-config</groupId>
-      <artifactId>org.opennms.features.device-config.api</artifactId>
-      <version>${project.version}</version>
-      <scope>compile</scope>
-    </dependency>
   </dependencies>
 </project>
