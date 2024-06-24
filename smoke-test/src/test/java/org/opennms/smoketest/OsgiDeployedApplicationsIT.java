@@ -48,10 +48,6 @@ public class OsgiDeployedApplicationsIT extends OpenNMSSeleniumIT {
     public void verifyOsgiUrlIsNotAccessibleDirectly() throws IOException {
         final String[] paths = new String[]{
                 "osgi/jmx-config-tool",
-                "osgi/vaadin-surveillance-views?dashboard=true",
-                "osgi/vaadin-surveillance-views?dashboard=false",
-                "osgi/vaadin-surveillance-views-config",
-                "osgi/wallboard-config",
                 "osgi/bsm-admin-page",
                 "osgi/topology"
         };
@@ -64,10 +60,6 @@ public class OsgiDeployedApplicationsIT extends OpenNMSSeleniumIT {
     public void verifyOsgiUrlIsAccessibleViaBridge() throws IOException {
         final String[] paths = new String[]{
                 "admin/jmx-config-tool",
-                "vaadin-surveillance-views?dashboard=true",
-                "vaadin-surveillance-views?dashboard=false",
-                "admin/vaadin-surveillance-views-config",
-                "admin/wallboard-config",
                 "admin/bsm-admin-page",
                 "topology"
         };

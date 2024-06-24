@@ -536,32 +536,11 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
-      <artifactId>vaadin-dashboard</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.ifttt</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.features.vaadin-dashlets</groupId>
-      <artifactId>dashlet-features</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-      <dependency>
-          <groupId>org.opennms.features</groupId>
-          <artifactId>vaadin-surveillance-views</artifactId>
-          <version>${project.version}</version>
-          <type>pom</type>
-          <scope>provided</scope>
-      </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>vaadin-components</artifactId>
