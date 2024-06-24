@@ -190,6 +190,7 @@
       </div>
 
       <form class="" id="loginForm" name="loginForm" role="form" method="post" action="<c:url value='j_spring_security_check'/>" autocomplete="off">
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         <div class="form-content">
           <div class="form-group">
             <input type="text" id="input_j_username" name="j_username"
