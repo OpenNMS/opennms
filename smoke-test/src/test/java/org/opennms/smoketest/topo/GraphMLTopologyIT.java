@@ -155,6 +155,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     @Test
     public void verifyNavigateToAndBreadcrumbs() {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
+        topologyUIPage.defaultFocus();
         topologyUIPage.findVertex("East Region").contextMenu().click("Navigate To", "Markets (East Region)");
 
         final ArrayList<TopologyIT.FocusedVertex> marketsVertcies = Lists.newArrayList(
