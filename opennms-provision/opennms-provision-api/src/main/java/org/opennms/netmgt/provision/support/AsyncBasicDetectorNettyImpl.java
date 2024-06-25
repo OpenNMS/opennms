@@ -90,7 +90,6 @@ public abstract class AsyncBasicDetectorNettyImpl<Request, Response> extends Asy
     @Override
     public void dispose(){
         LOG.debug("calling dispose on detector {}", getServiceName());
-        //m_factory.releaseExternalResources();
     }
     
     /** {@inheritDoc} */

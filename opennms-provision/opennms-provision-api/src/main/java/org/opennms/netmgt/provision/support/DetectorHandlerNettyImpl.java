@@ -53,7 +53,7 @@ public class DetectorHandlerNettyImpl<Request, Response> extends ChannelInboundH
     /** {@inheritDoc} */
     @Override
     public void channelActive(ChannelHandlerContext ctx) throws Exception {
-        LOG.debug("channelOpen()");
+        LOG.debug("channelActive()");
         if(!getConversation().hasBanner() && getConversation().getRequest() != null) {
             Object request = getConversation().getRequest();
             ctx.channel().write(request);
@@ -63,7 +63,7 @@ public class DetectorHandlerNettyImpl<Request, Response> extends ChannelInboundH
     /** {@inheritDoc} */
     @Override
     public void channelInactive(ChannelHandlerContext ctx) throws Exception {
-        LOG.debug("channelClosed()");
+        LOG.debug("channelInactive()");
     }
 
     /** {@inheritDoc} */
