@@ -136,15 +136,11 @@
 <jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script type="text/javascript">
-
-    function hasIdParam(url) {
-        return /.*[&?]id=.*/.test(url);
+    let url = new URL(location.href);
+    if (!url.searchParams.has('id')) {
+        url.searchParams.set('id', '${alarmId}');
+        window.location.href = url.href;
     }
-
-    if (!hasIdParam(window.location.href)) {
-        window.location.href = document.location.href + '?id=${alarmId}';
-    }
-
 </script>
 
 <div class="card">
