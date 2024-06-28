@@ -4,9 +4,9 @@ updates:
   - package-ecosystem: "npm"
     # Look for `package.json` and `lock` files in the `root` directory
     directory: "/ui"
-    target-branch: "foundation-2024"
+    target-branch: "develop"
     reviewers:
-      - "OpenNMS/dependabot-reviewers-node"
+      - "Bluebird-Community/dependabot-reviewers-node"
     labels:
       - "dependency update"
     commit-message:
@@ -25,10 +25,10 @@ updates:
   - package-ecosystem: "npm"
     # Look for `package.json` and `lock` files in the `root` directory
     directory: "/core/web-assets/"
-    target-branch: "foundation-2023"
+    target-branch: "develop"
     versioning-strategy: "increase-if-necessary"
     reviewers:
-      - "OpenNMS/dependabot-reviewers-node"
+      - "Bluebird-Community/dependabot-reviewers-node"
     labels:
       - "dependency update"
     commit-message:
@@ -79,9 +79,9 @@ updates:
 
   - package-ecosystem: "maven"
     directory: "/"
-    target-branch: "foundation-2023"
+    target-branch: "develop"
     reviewers:
-      - "OpenNMS/dependabot-reviewers-maven"
+      - "Bluebird-Community/dependabot-reviewers-maven"
     labels:
       - "dependency update"
     commit-message:
@@ -94,7 +94,7 @@ updates:
     directory: "/"
     target-branch: "develop"
     reviewers:
-      - "OpenNMS/dependabot-reviewers-maven"
+      - "mvrueden"
     labels:
       - "dependency update"
     commit-message:

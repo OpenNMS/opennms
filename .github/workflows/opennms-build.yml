@@ -1,0 +1,530 @@
+---
+name: opennms-build
+run-name: Build and run test suites
+on:
+  push:
+
+jobs:
+  quick-build:
+    if: "!contains(github.event.commits[0].message, '[skip quick-build]')"
+    runs-on:
+      group: Default
+      labels:
+        - self-hosted
+        - Linux
+        - X64
+        - eu-central-de
+        - labmonkeys
+    steps:
+      - uses: actions/checkout@v4
+      - name: Cleaning project for quick validation
+        run: |
+          make validate
+      - name: Build Web UI with yarn including tests
+        run: |
+          make compile-ui
+      - name: Build from source without expensive tasks
+        run: |
+          make quick-compile
+      - name: Assemble tarball without expensive tasks
+        run: |
+          make quick-assemble
+      - name: Run quick smoke test
+        run: |
+          make quick-smoke
+      - name: Publish Quick Smoke Test Report
+        if: success() || failure()
+        uses: scacap/action-surefire-report@v1
+        with:
+          check_name: Quick Smoke Test Report
+      - name: Collect build logs
+        if: always()
+        run: |
+          make collect-testresults
+      - name: Persist test results and logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: quick-build-logs
+          path: target/artifacts/mvn.*.log
+      - name: Persist tarball Core
+        uses: actions/upload-artifact@v4
+        with:
+          name: tarball-core
+          path: opennms-full-assembly/target/opennms-full-assembly-*.tar.gz
+      - name: Persist tarball Minion
+        uses: actions/upload-artifact@v4
+        with:
+          name: tarball-minion
+          path: opennms-assemblies/minion/target/org.opennms.assemblies.minion-*.tar.gz
+      - name: Persist tarball Sentinel
+        uses: actions/upload-artifact@v4
+        with:
+          name: tarball-sentinel
+          path: opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*.tar.gz
+
+  deps-freshness:
+    if: "!contains(github.event.commits[0].message, '[skip deps-freshness]')"
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/bluebird/java-builder:0.0.1.jdk-17
+    steps:
+      - uses: actions/checkout@v4
+      - name: Add workspace to git safe.directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+      - name: Cleaning project for quick validation
+        run: |
+          make libyear
+      - name: Collect libyear logs
+        if: always()
+        run: |
+          make collect-testresults
+      - name: Persist libyear results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: deps-freshness
+          path: |
+            target/artifacts/logs/libyear.log        
+
+  core-debian-package:
+    if: "!contains(github.event.commits[0].message, '[skip core-debian-package]')"
+    needs:
+      - quick-build
+    runs-on:
+      group: Default
+      labels:
+        - self-hosted
+        - Linux
+        - X64
+        - eu-central-de
+        - labmonkeys
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Core Debian packages
+        run: make core-deb-pkg
+      - name: Persist Core debian package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-deb-pkgs
+          path: |
+            target/artifacts/debian/core
+
+  minion-debian-package:
+    if: "!contains(github.event.commits[0].message, '[skip minion-debian-package]')"
+    needs:
+      - quick-build
+    runs-on:
+      group: Default
+      labels:
+        - self-hosted
+        - Linux
+        - X64
+        - eu-central-de
+        - labmonkeys
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Minion Debian packages
+        run: make minion-deb-pkg
+      - name: Persist Minion debian package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: minion-deb-pkgs
+          path: |
+            target/artifacts/debian/minion
+
+  sentinel-debian-package:
+    if: "!contains(github.event.commits[0].message, '[skip sentinel-debian-package]')"
+    needs:
+      - quick-build
+    runs-on:
+      group: Default
+      labels:
+        - self-hosted
+        - Linux
+        - X64
+        - eu-central-de
+        - labmonkeys
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build Sentinel Debian packages
+        run: make sentinel-deb-pkg
+      - name: Persist Sentinel debian package artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: sentinel-deb-pkgs
+          path: |
+            target/artifacts/debian/sentinel
+
+  core-oci:
+    if: "!contains(github.event.commits[0].message, '[skip core-oci]')"
+    needs: quick-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare
+        run: |
+          platform=${{ matrix.platform }}
+          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
+      - uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: tarball-core
+          path: opennms-full-assembly/target
+      - name: Extract Core tarball for container build
+        run: |
+          mkdir -p opennms-container/core/tarball-root
+          tar xzf opennms-full-assembly/target/opennms-full-assembly-*-core.tar.gz -C opennms-container/core/tarball-root
+      - name: Build and push Core container image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./opennms-container/core
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: quay.io/bluebird/core-snapshot:${{ github.sha }}.b${{ github.run_id }}
+      - name: Run Trivy vulnerability scanner on Core
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'quay.io/bluebird/core-snapshot:${{ github.sha }}.b${{ github.run_id }}'
+          format: 'table'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'LOW,MEDIUM,HIGH,CRITICAL'
+      - name: Generate Core SBOM and submit results to Dependency Graph
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          format: 'github'
+          output: 'dependency-results.sbom.json'
+          timeout: 30m
+          image-ref: 'quay.io/bluebird/core-snapshot:${{ github.sha }}.b${{ github.run_id }}'
+          github-pat: ${{ secrets.GITHUB_TOKEN }}
+
+  minion-oci:
+    if: "!contains(github.event.commits[0].message, '[skip minion-oci]')"
+    needs: quick-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare
+        run: |
+          platform=${{ matrix.platform }}
+          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
+      - uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: tarball-minion
+          path: opennms-assemblies/minion/target
+      - name: Extract Minion tarball for container build
+        run: |
+          mkdir -p opennms-container/minion/tarball-root
+          tar xzf opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz --strip-component 1 -C opennms-container/minion/tarball-root
+      - name: Generate minion-config-schema
+        working-directory: opennms-container/minion
+        run: |
+          cat minion-config-schema.yml.in | sed -e 's,@VERSION@,${{ github.sha }},' \
+          -e 's,@REVISION@,${{ github.sha }},' \
+          -e 's,@BRANCH@,${{ github.ref_name }},' \
+          -e 's,@BUILD_NUMBER@,${{ github.run_id }},' > minion-config-schema.yml
+      - name: Build and push Minion container image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./opennms-container/minion
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: quay.io/bluebird/minion-snapshot:${{ github.sha }}.b${{ github.run_id }}
+      - name: Run Trivy vulnerability scanner on Minion
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'quay.io/bluebird/minion-snapshot:${{ github.sha }}.b${{ github.run_id }}'
+          format: 'table'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'LOW,MEDIUM,HIGH,CRITICAL'
+      - name: Generate Minion SBOM and submit results to Dependency Graph
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          format: 'github'
+          output: 'dependency-results.sbom.json'
+          timeout: 30m
+          image-ref: 'quay.io/bluebird/minion-snapshot:${{ github.sha }}.b${{ github.run_id }}'
+          github-pat: ${{ secrets.GITHUB_TOKEN }}
+
+  sentinel-oci:
+    if: "!contains(github.event.commits[0].message, '[skip sentinel-oci]')"
+    needs: quick-build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Prepare
+        run: |
+          platform=${{ matrix.platform }}
+          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
+      - uses: actions/checkout@v4
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          registry: quay.io
+          username: ${{ secrets.QUAY_USERNAME }}
+          password: ${{ secrets.QUAY_PASSWORD }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: tarball-sentinel
+          path: opennms-assemblies/sentinel/target
+      - name: Extract Sentinel tarball for container build
+        run: |
+          mkdir -p opennms-container/sentinel/tarball-root
+          tar xzf opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz --strip-component 1 -C opennms-container/sentinel/tarball-root
+      - name: Build and push Sentinel container image
+        uses: docker/build-push-action@v5
+        with:
+          context: ./opennms-container/sentinel
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: quay.io/bluebird/sentinel-snapshot:${{ github.sha }}.b${{ github.run_id }}
+      - name: Run Trivy vulnerability scanner on Sentinel
+        uses: aquasecurity/trivy-action@master
+        with:
+          image-ref: 'quay.io/bluebird/sentinel-snapshot:${{ github.sha }}.b${{ github.run_id }}'
+          format: 'table'
+          ignore-unfixed: true
+          vuln-type: 'os,library'
+          severity: 'LOW,MEDIUM,HIGH,CRITICAL'
+      - name: Generate Sentinel SBOM and submit results to Dependency Graph
+        uses: aquasecurity/trivy-action@master
+        with:
+          scan-type: 'fs'
+          format: 'github'
+          output: 'dependency-results.sbom.json'
+          timeout: 30m
+          image-ref: 'quay.io/bluebird/sentinel-snapshot:${{ github.sha }}.b${{ github.run_id }}'
+          github-pat: ${{ secrets.GITHUB_TOKEN }}
+
+  unit-tests:
+    if: "!contains(github.event.commits[0].message, '[skip unit-tests]')"
+    needs:
+      - quick-build
+    runs-on:
+      group: Default
+      labels:
+        - self-hosted
+        - Linux
+        - X64
+        - eu-central-de
+        - labmonkeys
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare the build for tests
+        run: |
+          make quick-compile
+          make quick-assemble
+      - name: Run unit test suite
+        run: |
+          make unit-tests
+      - name: Publish Unit Test Report
+        if: success() || failure()
+        uses: scacap/action-surefire-report@v1
+        with:
+          check_name: Unit Test Report
+      - name: Collect test results and logs
+        if: always()
+        run: |
+          make collect-testresults
+      - name: Persist unit test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: unit-tests-artifacts
+          path: |
+            target/artifacts/mvn.*.log
+            target/artifacts/surefire-reports
+            target/artifacts/failsafe-reports
+
+  integration-tests:
+    if: "!contains(github.event.commits[0].message, '[skip integration-tests]')"
+    needs:
+      - quick-build
+    runs-on:
+      group: Default
+      labels:
+        - self-hosted
+        - Linux
+        - X64
+        - eu-central-de
+        - labmonkeys
+    steps:
+      - uses: actions/checkout@v4
+      - name: Prepare the build for tests and installing it
+        run: |
+          make quick-compile 
+          make quick-assemble 
+          make install-core
+      - name: Run integration unit test suite
+        run: |
+          make integration-tests
+      - name: Publish Integration Test Report
+        if: success() || failure()
+        uses: scacap/action-surefire-report@v1
+        with:
+          check_name: Integration Test Report
+      - name: Collect test results and logs
+        if: always()
+        run: |
+          make collect-testresults
+      - name: Persist integration test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: integration-tests-artifacts
+          path: |
+            target/artifacts/mvn.*.log
+            target/artifacts/surefire-reports
+            target/artifacts/failsafe-reports
+
+  e2e-tests-core:
+    if: "!contains(github.event.commits[0].message, '[skip e2e-tests-core]')"
+    needs:
+      - unit-tests
+      - integration-tests
+    runs-on:
+      group: Default
+      labels:
+        - self-hosted
+        - Linux
+        - X64
+        - eu-central-de
+        - labmonkeys
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and assemble with container images
+        run: |
+          make quick-compile
+          make quick-assemble
+      - name: Run Core End-to-End tests
+        run: |
+          make core-e2e
+      - name: Publish E2E Core Test Report
+        if: success() || failure()
+        uses: scacap/action-surefire-report@v1
+        with:
+          check_name: Core E2E Test Report
+      - name: Collect test results and logs
+        if: always()
+        run: |
+          make collect-testresults
+      - name: Persist Core e2e test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-tests-core-artifacts
+          path: |
+            target/artifacts/mvn.*.log
+            target/artifacts/surefire-reports
+            target/artifacts/failsafe-reports
+            target/artifacts/recordings
+
+  e2e-tests-minion:
+    if: "!contains(github.event.commits[0].message, '[skip e2e-tests-minion]')"
+    needs:
+      - unit-tests
+      - integration-tests
+    runs-on:
+      group: Default
+      labels:
+        - self-hosted
+        - Linux
+        - X64
+        - eu-central-de
+        - labmonkeys
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and assemble with container images
+        run: |
+          make quick-compile
+          make quick-assemble
+      - name: Run Minion End-to-End tests
+        run: |
+          make minion-e2e
+      - name: Publish E2E Minion Test Report
+        if: success() || failure()
+        uses: scacap/action-surefire-report@v1
+        with:
+          check_name: Minion E2E Test Report
+      - name: Collect test results and logs
+        if: always()
+        run: |
+          make collect-testresults
+      - name: Persist Minion e2e test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-tests-minion-artifacts
+          path: |
+            target/artifacts/mvn.*.log
+            target/artifacts/surefire-reports
+            target/artifacts/failsafe-reports
+            target/artifacts/recordings
+
+  e2e-tests-sentinel:
+    if: "!contains(github.event.commits[0].message, '[skip e2e-tests-sentinel]')"
+    needs:
+      - unit-tests
+      - integration-tests
+    runs-on:
+      group: Default
+      labels:
+        - self-hosted
+        - Linux
+        - X64
+        - eu-central-de
+        - labmonkeys
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build and assemble with container images
+        run: |
+          make quick-compile
+          make quick-assemble
+      - name: Run Sentinel End-to-End tests
+        run: |
+          make sentinel-e2e
+      - name: Publish E2E Sentinel Test Report
+        if: success() || failure()
+        uses: scacap/action-surefire-report@v1
+        with:
+          check_name: Sentinel E2E Test Report
+      - name: Collect test results and logs
+        if: always()
+        run: |
+          make collect-testresults
+      - name: Persist Sentinel e2e test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: e2e-tests-sentinel-artifacts
+          path: |
+            target/artifacts/mvn.*.log
+            target/artifacts/surefire-reports
+            target/artifacts/failsafe-reports
+            target/artifacts/recordings

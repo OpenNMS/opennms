@@ -6,7 +6,7 @@
 export DH_VERBOSE=1
 export SHELL=/bin/bash
 
-export JAVA_HOME=$(shell core/cli/src/main/resources/bin/find-java.sh 1.8 1.9)
+export JAVA_HOME=$(shell core/cli/src/main/resources/bin/find-java.sh 17)
 
 export OPTS_ASSEMBLIES=-Passemblies
 export OPTS_PROFILES=-Prun-expensive-tasks
@@ -30,7 +30,6 @@ export BUILDDEFINES=\
 	-Dproduct.snapshot=true \
 	-Daether.connector.basic.threads=1 \
 	-Daether.connector.resumeDownloads=false \
-	--builder smart \
 	--threads $${CCI_MAXCPU:-2} \
 	$(OPTS_PROFILES)
 

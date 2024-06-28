@@ -1,0 +1,3 @@
+org.opennms.netmgt.config.SnmpEncryptionIT
+org.opennms.netmgt.provision.service.NewSuspectScanIT
+org.opennms.netmgt.alarmd.AlarmLifecycleListenerManagerIT

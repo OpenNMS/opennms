@@ -9,4 +9,11 @@
   - indigo423
 
 ".circleci/**/*":
-  - mershad-manesh
+  - indigo423
+  - mvrueden
+  - fooker
+
+".github/**/*":
+  - indigo423
+  - mvrueden
+  - fooker

@@ -4,8 +4,7 @@ on:
     # types: [review_requested, ready_for_review, opened, synchronize, reopened]
     branches:
       - develop
-      - 'foundation-**'
-      - 'release-**'
+
 jobs:
   assign_reviewer:
     if: github.event.pull_request.draft == false
