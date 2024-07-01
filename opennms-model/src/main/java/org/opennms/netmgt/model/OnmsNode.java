@@ -1544,6 +1544,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
                 }else if(scannedPrimaryIf != null && dbIface.isPrimary()){
                     dbIface.setIsSnmpPrimary(PrimaryType.SECONDARY);
                     oldPrimaryInterface = dbIface;
+
                 }
             } else {
                 // else update the database with scanned info
@@ -1634,7 +1635,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
 
         mergeSnmpInterfaces(scannedNode, deleteMissing);
 
-        mergeIpInterfaces(scannedNode, eventForwarder, true);
+        mergeIpInterfaces(scannedNode, eventForwarder, deleteMissing);
 
         mergeCategorySet(scannedNode);
 
