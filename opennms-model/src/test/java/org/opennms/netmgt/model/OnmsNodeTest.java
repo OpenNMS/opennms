@@ -109,7 +109,7 @@ public class OnmsNodeTest {
         scannedNode.addIpInterface(createInterface("10.33.3.100", PrimaryType.SECONDARY));
         scannedNode.addIpInterface(createInterface("10.33.6.100", PrimaryType.SECONDARY));
         final EventForwarder eventForwarder = mock(EventForwarder.class);
-        node.mergeIpInterfaces(scannedNode, eventForwarder);
+        node.mergeIpInterfaces(scannedNode, eventForwarder, true);
         final Map<String, Boolean> interfaceMap = node.getIpInterfaces().stream().collect(Collectors.toMap(OnmsIpInterface::getIpAddressAsString, OnmsIpInterface::isPrimary));
         assertEquals(4, interfaceMap.size());
         assertTrue(interfaceMap.containsKey("10.33.2.100"));
