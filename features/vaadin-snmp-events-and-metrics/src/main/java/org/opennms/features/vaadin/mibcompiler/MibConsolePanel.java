@@ -30,6 +30,7 @@ package org.opennms.features.vaadin.mibcompiler;
 
 import java.time.Instant;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.opennms.features.timeformat.api.TimeformatService;
 import org.opennms.vaadin.user.UserTimeZoneExtractor;
 import org.slf4j.LoggerFactory;
@@ -106,7 +107,7 @@ public class MibConsolePanel extends Panel implements Logger {
      * @param message the message
      */
     private void logMsg(String level, String message) {
-        String msg = timeformatService.format(Instant.now(), UserTimeZoneExtractor.extractUserTimeZoneIdOrNull(getUI())) + level + message;
+        String msg = timeformatService.format(Instant.now(), UserTimeZoneExtractor.extractUserTimeZoneIdOrNull(getUI())) + level + StringEscapeUtils.escapeHtml(message);
         Label error = new Label(msg, ContentMode.HTML);
         logContent.addComponent(error);
         scrollIntoView();
