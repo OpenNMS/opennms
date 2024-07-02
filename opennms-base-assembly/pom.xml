@@ -1302,5 +1302,9 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
+    <repository>
+      <id>jaspersoft-third-party</id>
+      <url>https://maven.opennms.org/repository/everything/</url>
+   </repository>
   </repositories>
 </project>
