@@ -185,11 +185,6 @@
             <version>${project.version}</version>
           </dependency>
           <dependency>
-            <groupId>com.lowagie</groupId>
-            <artifactId>itext</artifactId>
-            <version>2.1.7.js5</version>
-          </dependency>
-          <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
             <version>${xercesVersion}</version>
@@ -1307,9 +1302,15 @@
         <enabled>false</enabled>
       </snapshots>
     </repository>
-    <repository>
-      <id>jaspersoft-third-party</id>
-      <url>https://maven.opennms.org/repository/everything/</url>
-    </repository>
   </repositories>
+   <pluginRepositories>
+  <pluginRepository>
+    <id>jaspersoft-third-party</id>
+    <name>OpenNMS Mega-Repository</name>
+    <url>https://maven.opennms.org/repository/everything/</url>
+    <snapshots>
+      <enabled>false</enabled>
+    </snapshots>
+  </pluginRepository>
+</pluginRepositories>
 </project>
