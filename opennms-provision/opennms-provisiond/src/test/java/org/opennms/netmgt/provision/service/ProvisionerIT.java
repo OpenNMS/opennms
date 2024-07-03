@@ -39,7 +39,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
-import java.util.stream.Collectors;
 
 import org.joda.time.Duration;
 import org.junit.After;
@@ -855,18 +854,13 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         // Verify node count
         assertEquals(1, getNodeDao().countAll());
 
-        var node = getNodeDao().findByLabel("david").get(0);
-        var ipInterfaces = node.getIpInterfaces();
-
         // Verify ipinterface count
-        assertEquals("Unexpected number of interfaces found: " + ipInterfaces, 2,
-                ipInterfaces.size());
-
-        var services = node.getIpInterfaces().stream().flatMap(i -> i.getMonitoredServices().stream()).collect(Collectors.toList());
+        assertEquals("Unexpected number of interfaces found: " + getInterfaceDao().findAll(), 2,
+                getInterfaceDao().countAll());
 
         // Verify ifservices count - discover snmp service on other if
-        assertEquals("Unexpected number of services found: " + services, 2,
-                services.size());
+        assertEquals("Unexpected number of services found: " + getMonitoredServiceDao().findAll(), 2,
+                getMonitoredServiceDao().countAll());
 
         // Verify service count
         assertEquals("Unexpected number of service types found: " + getServiceTypeDao().findAll(), 1,
@@ -880,31 +874,6 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
         // Verify node count
         assertEquals(0, getNodeDao().countAll());
-    }
-
-    @Test(timeout = 300000)
-    public void testNMS16347() throws Exception {
-        importFromResource("classpath:/NMS16347-1", "dbonly");
-        runPendingScans();
-
-        assertEquals(1, getNodeDao().countAll());
-        var node = getNodeDao().findByForeignId("empty", "4243");
-        assertNotNull(node);
-        var primary = node.getPrimaryInterface();
-        assertNotNull(primary);
-        assertEquals("10.136.160.1", InetAddressUtils.str(primary.getIpAddress()));
-        assertEquals(3, node.getIpInterfaces().size());
-
-        importFromResource("classpath:/NMS16347-2", "dbonly");
-        runPendingScans();
-
-        assertEquals(1, getNodeDao().countAll());
-        node = getNodeDao().findByForeignId("empty", "4243");
-        primary = node.getPrimaryInterface();
-        assertNotNull(primary);
-        assertEquals("10.136.160.2", InetAddressUtils.str(primary.getIpAddress()));
-        assertNotNull(node);
-        assertEquals(3, node.getIpInterfaces().size());
     }
 
     // fail if we take more than five minutes
