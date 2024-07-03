@@ -319,6 +319,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         // verify that the page loaded properly
         // DO NOT invoke .open()
         topologyUIPage = new TopologyIT.TopologyUIPage(this, getBaseUrlInternal());
+        topologyUIPage.defaultFocus();
         waitForTransition(this);
         Assert.assertThat(topologyUIPage.getSzl(), is(0));
         Assert.assertThat(topologyUIPage.getFocusedVertices(), hasItems(
