@@ -184,13 +184,11 @@
             <artifactId>jasper-shaded</artifactId>
             <version>${project.version}</version>
           </dependency>
-
-              <dependency>
-      <groupId>com.lowagie</groupId>
-      <artifactId>itext</artifactId>
-      <version>2.1.7.js5</version>
-  </dependency>
-          
+          <dependency>
+            <groupId>com.lowagie</groupId>
+            <artifactId>itext</artifactId>
+            <version>2.1.7.js5</version>
+          </dependency>
           <dependency>
             <groupId>xerces</groupId>
             <artifactId>xercesImpl</artifactId>
@@ -1312,6 +1310,6 @@
     <repository>
       <id>jaspersoft-third-party</id>
       <url>https://maven.opennms.org/repository/everything/</url>
-   </repository>
+    </repository>
   </repositories>
 </project>
