@@ -98,4 +98,11 @@ public class AlarmsPageIT extends OpenNMSSeleniumIT {
         driver.get(getBaseUrlInternal() + "opennms/alarm/detail.htm?id=999999999");
         findElementByXpath("//h1[text()='Alarm Cleared or Not Found']");
     }
+
+    @Test
+    public void testNMS16417() throws InterruptedException {
+        enterText(By.xpath("//form//input[@name='id']"), "1");
+        clickElement(By.xpath("//form//button[@type='submit']"));
+        wait.until(ExpectedConditions.urlMatches(".*id=1"));
+    }
 }
