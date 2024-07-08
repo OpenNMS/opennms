@@ -1871,9 +1871,9 @@
 
     <!-- nodejs development -->
     <frontendPluginVersion>1.14.2</frontendPluginVersion>
-    <nodeVersion>v18.18.1</nodeVersion>
-    <npmVersion>8.19.4</npmVersion>
-    <yarnVersion>v1.22.19</yarnVersion>
+    <nodeVersion>v18.18.2</nodeVersion>
+    <npmVersion>9.8.1</npmVersion>
+    <yarnVersion>1.22.19</yarnVersion>
 
     <!-- configuration manager -->
     <xmlschemaVersion>2.3.1</xmlschemaVersion>
