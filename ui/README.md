@@ -4,7 +4,8 @@ This template should help get you started developing with Vue 3 and Typescript i
 
 ## Build instructions
 
-This project was started with Node v14+
+This project requires Node 18+.
+
 You will also need [yarn](https://yarnpkg.com/getting-started/install)
 
 To install packages and run dev server
