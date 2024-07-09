@@ -68,7 +68,6 @@ import org.testcontainers.utility.MountableFile;
 import com.google.common.base.Strings;
 
 public class MinionContainer extends GenericContainer<MinionContainer> implements KarafContainer<MinionContainer>, TestLifecycleAware {
-    private static final Logger LOG = LoggerFactory.getLogger(MinionContainer.class);
     private static final int MINION_DEBUG_PORT = 5005;
     private static final int MINION_SYSLOG_PORT = 1514;
     private static final int MINION_SSH_PORT = 8201;
@@ -302,7 +301,7 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
 
         @Override
         protected void waitUntilReady() {
-            LOG.info("Waiting for Minion health check...");
+            container.logger().info("Waiting for Minion health check...");
             RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
             await("waiting for good health check probe")
                     .atMost(5, MINUTES)
@@ -310,7 +309,7 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
                     .failFast("container is no longer running", () -> !container.isRunning())
                     .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
                     .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
-            LOG.info("Health check passed.");
+            container.logger().info("Health check passed.");
 
             container.assertNoKarafDestroy(Paths.get("/opt", ALIAS, "data", "log", "karaf.log"));
         }
@@ -334,7 +333,7 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
                         () -> { threadDump.set(DevDebugUtils.gatherThreadDump(this, targetLogFolder, null)); }
                 );
 
-        LOG.info("Gathering logs...");
+        logger().info("Gathering logs...");
         // List of known log files we expect to find in the container
         final List<String> logFiles = Arrays.asList("karaf.log");
         DevDebugUtils.copyLogs(this,
@@ -345,14 +344,38 @@ public class MinionContainer extends GenericContainer<MinionContainer> implement
                 // log files
                 logFiles);
 
-        LOG.info("Log directory: {}", targetLogFolder.toUri());
-        LOG.info("Console log: {}", targetLogFolder.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
+        logger().info("Log directory: {}", targetLogFolder.toUri());
+        logger().info("Console log: {}", targetLogFolder.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
         if (threadDump.get() != null) {
-            LOG.info("Thread dump: {}", threadDump.get().toUri());
+            logger().info("Thread dump: {}", threadDump.get().toUri());
         }
     }
 
     public String getId() {
         return this.id;
+    }
+
+    @Override
+    protected Logger logger() {
+        return LoggerFactory.getLogger(getLoggerName(getDockerImageName()) + " " + getId() + "@" + getLocation());
+    }
+
+    /*
+     * This is a copy of org.testcontainers.utility.DockerLoggerFactory.getLogger,
+     * changed to return a String instead of a Logger.
+     */
+    public static String getLoggerName(String dockerImageName) {
+        final String abbreviatedName;
+        if (dockerImageName.contains("@sha256")) {
+            abbreviatedName = dockerImageName.substring(0, dockerImageName.indexOf("@sha256") + 14) + "...";
+        } else {
+            abbreviatedName = dockerImageName;
+        }
+
+        if ("UTF-8".equals(System.getProperty("file.encoding"))) {
+            return "\uD83D\uDC33 [" + abbreviatedName + "]";
+        } else {
+            return "docker[" + abbreviatedName + "]";
+        }
     }
 }

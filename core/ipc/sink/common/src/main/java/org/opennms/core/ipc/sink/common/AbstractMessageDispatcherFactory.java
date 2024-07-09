@@ -40,6 +40,7 @@ import com.codahale.metrics.MetricSet;
 import com.codahale.metrics.Timer.Context;
 
 import io.opentracing.Scope;
+import io.opentracing.Span;
 import io.opentracing.Tracer;
 
 /**
@@ -74,9 +75,12 @@ public abstract class AbstractMessageDispatcherFactory<W> implements MessageDisp
      * Invokes dispatch within a timer context.
      */
     private <S extends Message, T extends Message> void timedDispatch(DispatcherState<W, S,T> state, T message) {
+        final Span span = getTracer().buildSpan(state.getModule().getId()).start();
         try (Context ctx = state.getDispatchTimer().time();
-             Scope scope = getTracer().buildSpan(state.getModule().getId()).startActive(true)) {
+             Scope scope = getTracer().scopeManager().activate(span)) {
             dispatch(state.getModule(), state.getMetaData(), message);
+        } finally {
+            span.finish();
         }
     }
 
