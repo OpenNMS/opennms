@@ -5,7 +5,7 @@
     <parent>
         <artifactId>org.opennms.config-dao.poll-outages</artifactId>
         <groupId>org.opennms</groupId>
-        <version>33.0.6-SNAPSHOT</version>
+        <version>33.0.6</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
