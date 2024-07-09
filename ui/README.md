@@ -4,10 +4,9 @@ This template should help you start developing with Vue 3, Typescript 4.9, and V
 
 ## Build instructions
 
-This project requires Node 16.18.1 or greater. Node 19.4.0 is recommended.
+This project requires Node 18+.
 
-You will also need [yarn](https://yarnpkg.com/getting-started/install). Version 1.22.18 is currently used; this project has not yet been updated to work with yarn 3 or 4.
-
+You will also need [yarn](https://yarnpkg.com/getting-started/install)
 
 To install packages and run dev server
 ```
