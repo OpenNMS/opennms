@@ -2,6 +2,32 @@
 
 = Changelog
 
+[[releasenotes-changelog-33.0.6]]
+
+== Release 33.0.6
+
+Release 33.0.6 contains a couple of bug fixes and an enhancement.
+
+The codename for Horizon 33.0.6 is https://wikipedia.org/wiki/$$Mangifera_indica$$[_Mango_].
+
+=== Task
+
+* Stalled threads in telemetryd parser (Issue https://issues.opennms.org/browse/NMS-16243[NMS-16243])
+
+=== Bug
+
+* Cross-Frame Scripting-CWE ID : 1021 Web scan vulnerability (Issue https://issues.opennms.org/browse/NMS-16369[NMS-16369])
+* Address CVE-2020-15522 (Issue https://issues.opennms.org/browse/NMS-16384[NMS-16384])
+* Querying Alarms by alarmId leads to a page that loses context on refresh (Issue https://issues.opennms.org/browse/NMS-16417[NMS-16417])
+* NMS-16243 fix missing from 33.x release series (Issue https://issues.opennms.org/browse/NMS-16441[NMS-16441])
+* Stored XSS on "MIB Compiler" (Issue https://issues.opennms.org/browse/NMS-16444[NMS-16444])
+* Stored XSS on "Scheduled Outages" (Issue https://issues.opennms.org/browse/NMS-16445[NMS-16445])
+* Missing Access Control on "Grafana Endpoints" (Issue https://issues.opennms.org/browse/NMS-16446[NMS-16446])
+* Missing Access Control on "Geocoder Configuration" (Issue https://issues.opennms.org/browse/NMS-16447[NMS-16447])
+* Stored XSS on "Node Label" (Issue https://issues.opennms.org/browse/NMS-16448[NMS-16448])
+* Detailed server configuration in the error (Issue https://issues.opennms.org/browse/NMS-16449[NMS-16449])
+* Services are deleted and recreated on each provisioning run (Issue https://issues.opennms.org/browse/NMS-16458[NMS-16458])
+
 [[releasenotes-changelog-33.0.5]]
 
 == Release 33.0.5
