@@ -86,6 +86,12 @@
     <intercept-url pattern="/rest/device-config/**" method="GET" access="ROLE_REST,ROLE_ADMIN,ROLE_DEVICE_CONFIG_BACKUP" />
     <intercept-url pattern="/rest/device-config/**" method="PUT" access="ROLE_REST,ROLE_ADMIN,ROLE_DEVICE_CONFIG_BACKUP" />
 
+    <!-- Allow access to endpoint configuration only for ROLE_REST and ROLE_ADMIN roles -->
+    <intercept-url pattern="/rest/endpoints/**" method="GET" access="ROLE_REST,ROLE_ADMIN" />
+    <intercept-url pattern="/rest/endpoints/**" method="POST" access="ROLE_REST,ROLE_ADMIN" />
+    <intercept-url pattern="/rest/endpoints/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN" />
+    <intercept-url pattern="/rest/endpoints/**" method="PUT" access="ROLE_REST,ROLE_ADMIN" />
+
     <!--
       Must have ROLE_FILESYSTEM_EDITOR to view or edit files. Added here, but additional checks are done in code
       to disallow any other role.
@@ -141,6 +147,12 @@
     <intercept-url pattern="/api/v2/geolocation" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
     <!-- Allow users to POST to the Graph API, which is read-only -->
     <intercept-url pattern="/api/v2/graphs/**" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER"/>
+
+    <!-- Only allow privileged users to access geocoding API -->
+    <intercept-url pattern="/api/v2/geocoding/**" method="GET" access="ROLE_REST,ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/geocoding/**" method="POST" access="ROLE_REST,ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/geocoding/**" method="DELETE" access="ROLE_REST,ROLE_ADMIN" />
+    <intercept-url pattern="/api/v2/geocoding/**" method="PUT" access="ROLE_REST,ROLE_ADMIN" />
 
     <!-- OPTIONS pre-flight requests should always be accepted -->
     <intercept-url pattern="/api/v2/**" method="OPTIONS" access="ROLE_ANONYMOUS,ROLE_REST,ROLE_ADMIN,ROLE_USER,ROLE_MOBILE"/>
