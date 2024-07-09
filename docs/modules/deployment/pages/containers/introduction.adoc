@@ -1,0 +1,10 @@
+[[containers]]
+= Containerized Deployment
+:description: Learn how to install OpenNMS Horizon/Meridian in a containerized environment.
+
+This section covers basics for getting a containerized OpenNMS instance running.
+For more advanced examples see our link:https://github.com/opennms-forge/stack-play[stack-play repository] or xref:containers/helm.adoc[Helm charts].
+
+OpenNMS Horizon container images are published to Docker Hub.
+Meridian images are available in a private container repository.
+Contact your account manager for access information.
