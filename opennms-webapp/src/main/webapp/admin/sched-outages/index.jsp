@@ -177,7 +177,7 @@
 						String outageName = thisOutage.getName();
 	%>
 	<tr valign="top" class="<%=rowClass%>">
-		<td><%=outageName%></td>
+		<td><%=java.net.URLEncoder.encode(outageName, "UTF-8")%></td>
 		<td><%=pollOutagesDao.getOutageType(outageName)%></td>
 		<td><ul class="list-unstyled">
 		<%
@@ -247,9 +247,9 @@
 			src="<%=(thresholdingOutages.contains(outageName))?outageOnImageUrl:outageOffImageUrl%>"></td>
 		<td align="center"><img
 			src="<%=(collectionOutages.contains(outageName))?outageOnImageUrl:outageOffImageUrl%>"></td>
-		<td><a id="<%=outageName%>.edit"
+		<td><a id="<%=java.net.URLEncoder.encode(outageName, "UTF-8")%>.edit"
 			href="admin/sched-outages/editoutage.jsp?name=<%=java.net.URLEncoder.encode(outageName, "UTF-8")%>">Edit</a></td>
-		<td><a id="<%=outageName%>.delete"
+		<td><a id="<%=java.net.URLEncoder.encode(outageName, "UTF-8")%>.delete"
 			href="admin/sched-outages/index.jsp?deleteOutage=<%=java.net.URLEncoder.encode(outageName, "UTF-8")%>"
 			onClick="if(!confirm('Are you sure you wish to delete this outage?')) {return false;}">Delete</a></td>
 	</tr>

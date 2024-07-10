@@ -37,22 +37,22 @@
 
 <script type="text/javascript">
 var nodesToAddAuto = [
-  <c:forEach items="${model.nodes}" var="node"><c:if test="${node.foreignSource == null}">{ "id": "${node.id}", "label": "${node.label}" },</c:if>
+  <c:forEach items="${model.nodes}" var="node"><c:if test="${node.foreignSource == null}">{ "id": "${node.id}", "label": "${fn:escapeXml(node.label)}" },</c:if>
   </c:forEach>
 ];
 
 var nodesToDeleteAuto = [
-  <c:forEach items="${model.sortedMemberNodes}" var="node"><c:if test="${node.foreignSource == null}">{ "id": "${node.id}", "label": "${node.label}" },</c:if>
+  <c:forEach items="${model.sortedMemberNodes}" var="node"><c:if test="${node.foreignSource == null}">{ "id": "${node.id}", "label": "${fn:escapeXml(node.label)}" },</c:if>
   </c:forEach>
 ];
 
 var nodesToAddReq = [
-  <c:forEach items="${model.nodes}" var="node"><c:if test="${node.foreignSource != null}">{ "id": "${node.id}", "label": "${node.label}", "foreignSource": "${node.foreignSource}", "foreignId": "${node.foreignId}" },</c:if>
+  <c:forEach items="${model.nodes}" var="node"><c:if test="${node.foreignSource != null}">{ "id": "${node.id}", "label": "${fn:escapeXml(node.label)}", "foreignSource": "${node.foreignSource}", "foreignId": "${node.foreignId}" },</c:if>
   </c:forEach>
 ];
 
 var nodesToDeleteReq = [
-  <c:forEach items="${model.sortedMemberNodes}" var="node"><c:if test="${node.foreignSource != null}">{ "id": "${node.id}", "label": "${node.label}", "foreignSource": "${node.foreignSource}", "foreignId": "${node.foreignId}" },</c:if>
+  <c:forEach items="${model.sortedMemberNodes}" var="node"><c:if test="${node.foreignSource != null}">{ "id": "${node.id}", "label": "${fn:escapeXml(node.label)}", "foreignSource": "${node.foreignSource}", "foreignId": "${node.foreignId}" },</c:if>
   </c:forEach>
 ];
 

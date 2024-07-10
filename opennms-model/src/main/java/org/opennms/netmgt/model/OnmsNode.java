@@ -1515,7 +1515,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      * @param eventForwarder a {@link org.opennms.netmgt.events.api.EventForwarder} object.
      * @param deleteMissing a boolean.
      */
-    public void mergeIpInterfaces(OnmsNode scannedNode, EventForwarder eventForwarder) {
+    public void mergeIpInterfaces(OnmsNode scannedNode, EventForwarder eventForwarder, boolean deleteMissing) {
         OnmsIpInterface oldPrimaryInterface = null;
         OnmsIpInterface scannedPrimaryIf = null;
         // build a map of ipAddrs to ipInterfaces for the scanned node
@@ -1538,11 +1538,17 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
 
             // if we can't find a scanned interface remove from the database
             if (scannedIface == null) {
-                it.remove();
-                dbIface.visit(new DeleteEventVisitor(eventForwarder));
+                if (deleteMissing) {
+                    it.remove();
+                    dbIface.visit(new DeleteEventVisitor(eventForwarder));
+                }else if(scannedPrimaryIf != null && dbIface.isPrimary()){
+                    dbIface.setIsSnmpPrimary(PrimaryType.SECONDARY);
+                    oldPrimaryInterface = dbIface;
+
+                }
             } else {
                 // else update the database with scanned info
-                dbIface.mergeInterface(scannedIface, eventForwarder, true);
+                dbIface.mergeInterface(scannedIface, eventForwarder, deleteMissing);
                 if(scannedPrimaryIf != null && dbIface.isPrimary() && scannedPrimaryIf != scannedIface){
                     dbIface.setIsSnmpPrimary(PrimaryType.SECONDARY);
                     oldPrimaryInterface = dbIface;
@@ -1629,7 +1635,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
 
         mergeSnmpInterfaces(scannedNode, deleteMissing);
 
-        mergeIpInterfaces(scannedNode, eventForwarder);
+        mergeIpInterfaces(scannedNode, eventForwarder, deleteMissing);
 
         mergeCategorySet(scannedNode);
 

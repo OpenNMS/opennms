@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.topologies</groupId>
     <artifactId>org.opennms.features.topologies.service</artifactId>
-    <version>33.0.5</version>
+    <version>33.0.6</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features.topologies.service.api</artifactId>

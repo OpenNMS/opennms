@@ -46,6 +46,7 @@ import org.opennms.netmgt.telemetry.listeners.UdpListener;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow5.proto.Record;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.Netflow5MessageBuilder;
 import org.opennms.test.ThreadLocker;
 import org.springframework.util.SocketUtils;
 
@@ -75,19 +76,25 @@ public class ListenerParserThreadingIT implements AsyncDispatcher<TelemetryMessa
         DnsResolver dnsResolver = new DnsResolver() {
             @Override
             public CompletableFuture<Optional<InetAddress>> lookup(String hostname) {
-                threadLocker.park();
                 return CompletableFuture.completedFuture(Optional.empty());
+
             }
 
             @Override
             public CompletableFuture<Optional<String>> reverseLookup(InetAddress inetAddress) {
-                threadLocker.park();
                 return CompletableFuture.completedFuture(Optional.empty());
+
             }
         };
 
         int udpPort = SocketUtils.findAvailableUdpPort();
-        Netflow5UdpParser parser = new Netflow5UdpParser("FLOW", this, eventForwarder, identity, dnsResolver, new MetricRegistry());
+        Netflow5UdpParser parser = new Netflow5UdpParser("FLOW", this, eventForwarder, identity, dnsResolver, new MetricRegistry()) {
+            @Override
+            public Netflow5MessageBuilder getMessageBuilder() {
+                threadLocker.park();
+                return super.getMessageBuilder();
+            }
+        };
         parser.setThreads(NUM_THREADS);
         UdpListener listener = new UdpListener("FLOW", Collections.singletonList(parser), new MetricRegistry());
         listener.setPort(udpPort);
