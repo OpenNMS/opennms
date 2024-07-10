@@ -5,7 +5,7 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>33.0.6</version>
+        <version>33.0.7-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>vaadin-jmxconfiggenerator</artifactId>

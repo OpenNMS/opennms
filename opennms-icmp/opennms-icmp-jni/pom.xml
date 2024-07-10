@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms-icmp</artifactId>
     <groupId>org.opennms</groupId>
-    <version>33.0.6</version>
+    <version>33.0.7-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-icmp-jni</artifactId>
