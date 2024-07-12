@@ -20,6 +20,7 @@
   <session-config>
     <cookie-config>
       <http-only>true</http-only>
+      <secure>false</secure>
       <comment>__SAME_SITE_STRICT__</comment>
     </cookie-config>
     <session-timeout>-1</session-timeout>
