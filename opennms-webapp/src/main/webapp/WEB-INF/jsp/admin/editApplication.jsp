@@ -84,7 +84,7 @@
             <label for="input_locationAdd">Available locations</label>
             <select name="locationAdds" id="input_locationAdd" class="form-control" size="10" multiple>
               <c:forEach items="${model.monitoringLocations}" var="location">
-                <option value="${location.locationName}">${fn:escapeXml(location.locationName)}</option>
+                <option value="${fn:escapeXml(location.locationName)}">${fn:escapeXml(location.locationName)}</option>
               </c:forEach>
             </select>
           </div>
@@ -98,7 +98,7 @@
             <label for="input_locationDelete">Locations on application</label>
             <select name="locationDeletes" id="input_locationDelete" class="form-control" size="10" multiple>
               <c:forEach items="${model.sortedMemberLocations}" var="location">
-                <option value="${location.locationName}">${fn:escapeXml(location.locationName)}</option>
+                <option value="${fn:escapeXml(location.locationName)}">${fn:escapeXml(location.locationName)}</option>
               </c:forEach>
             </select>
           </div>
