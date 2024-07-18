@@ -141,4 +141,37 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
 
         assertTrue("Is the year in the footer is equals to current? - ", matchFound);
     }
+
+    @Test
+    public void testNMS16443() {
+        // this is a malicious string that should be properly escaped
+        final String evilString = "foobar'\"><script>alert(document.domain)</script>";
+
+        // navigate to locations page
+        getDriver().get(getBaseUrlInternal() + "opennms/locations/index.jsp");
+        // add a new location
+        findElementByXpath("//button[text()='Add a new location']").click();
+        // wait for modal dialog to appear
+        waitUntil(pageContainsText("Add a new Monitoring Location"));
+        // enter the evil string...
+        enterText(By.xpath("//*[@id=\"addLocationModal\"]/div/div/div/form/div[1]/input"), evilString);
+        // ...and something in the other mandatory field
+        enterText(By.xpath("//*[@id=\"addLocationModal\"]/div/div/div/form/div[2]/input"), "foobar");
+        // hit the submit button
+        findElementByXpath("//*[@id=\"addLocationModal\"]/div/div/div/form/button").click();
+        // wait till the modal dialog is closed
+        waitForClose(By.cssSelector(".modal-dialog"));
+
+        // navigate to the applications page
+        driver.get(getBaseUrlInternal() + "opennms/admin/applications.htm");
+        // enter an application name...
+        enterText(By.name("newApplicationName"), "foobar");
+        // ...and create it by hitting the button
+        findElementByName("newApplicationSubmit").click();
+        // now click the edit link...
+        findElementByXpath("//*[@id=\"content\"]/table/tbody/tr[2]/td[2]/a").click();
+        // ...and check for the given text.
+        // This will fail if the text is not properly escaped, as a user dialogue will appear.
+        waitUntil(pageContainsText("Edit application foobar"));
+    }
 }
