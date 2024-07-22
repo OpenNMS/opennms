@@ -46,7 +46,7 @@
     "@featherds/utils": "0.12.30",
     "@fortawesome/fontawesome-svg-core": "^6.4.2",
     "@fortawesome/free-regular-svg-icons": "^6.5.1",
-    "@fortawesome/free-solid-svg-icons": "^6.4.2",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/vue-fontawesome": "^3.0.6",
     "@vueuse/core": "^9.13.0",
     "ace-builds": "^1.32.6",
