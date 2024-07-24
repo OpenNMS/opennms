@@ -14,7 +14,7 @@ export MAVEN_OPTS     := -Xms8g -Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredC
 
 GIT_BRANCH            := $(shell git branch | grep \* | cut -d' ' -f2)
 OPENNMS_HOME          := /opt/opennms
-OPENNMS_VERSION       := $(shell .cicd-assets/pom2version.sh pom.xml)
+OPENNMS_VERSION       := $(shell mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:evaluate -Dexpression=project.version -q -DforceStdout)
 VERSION               := $(shell echo ${OPENNMS_VERSION} | sed -e 's,-SNAPSHOT,,')
 RELEASE_BUILD_KEY     := onms
 RELEASE_BRANCH        := $(shell echo ${GIT_BRANCH} | sed -e 's,/,-,g')
@@ -322,7 +322,7 @@ sentinel-e2e: deps-oci test-lists sentinel-oci minion-oci core-oci
 # We allow users here to pass a specific unit tests and projects to run.
 # Otherwise we run the full test suite
 .PHONY: unit-tests
-unit-tests: test-lists
+unit-tests: test-lists spinup-postgres
 	$(eval U_TESTS ?= $(shell grep -Fxv -f ./.cicd-assets/_skipTests.txt ./target/artifacts/tests/unit_tests_classnames | paste -s -d, -))
 	$(eval TESTS_PROJECTS ?= $(shell cat ${ARTIFACTS_DIR}/tests/test_modules | paste -s -d, -))
 	# Parallel compiling with -T 1C works, but it doesn't for tests
