@@ -326,16 +326,13 @@ jobs:
     if: "!contains(github.event.commits[0].message, '[skip unit-tests]')"
     needs:
       - quick-build
-    runs-on:
-      group: Default
-      labels:
-        - self-hosted
-        - Linux
-        - X64
-        - eu-central-de
-        - labmonkeys
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/bluebird/java-builder:0.0.1.jdk-17
     steps:
       - uses: actions/checkout@v4
+      - name: Add workspace to git safe.directory
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Prepare the build for tests
         run: |
           make quick-compile
@@ -528,3 +525,63 @@ jobs:
             target/artifacts/surefire-reports
             target/artifacts/failsafe-reports
             target/artifacts/recordings
+
+  publish-core-debian-package:
+    needs:
+      - core-debian-package
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/bluebird/base-builder:0.0.5
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: core-deb-pkgs
+          path: target/artifacts/debian/core
+      - name: Publish Core Debian packages to Cloudsmith
+        shell: bash
+        run: |
+          export CLOUDSMITH_API_KEY=${{ secrets.CLOUDSMITH_API_KEY }}
+          for deb in $(ls target/artifacts/debian/core/*.deb); do
+            cloudsmith push deb --republish bluebird/develop/any-distro/any-version ${deb};
+          done;
+
+  publish-minion-debian-package:
+    needs:
+      - minion-debian-package
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/bluebird/base-builder:0.0.5
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: minion-deb-pkgs
+          path: target/artifacts/debian/minion
+      - name: Publish Minion Debian packages to Cloudsmith
+        shell: bash
+        run: |
+          export CLOUDSMITH_API_KEY=${{ secrets.CLOUDSMITH_API_KEY }}
+          for deb in $(ls target/artifacts/debian/minion/*.deb); do
+            cloudsmith push deb --republish bluebird/develop/any-distro/any-version ${deb};
+          done;
+
+  publish-sentinel-debian-package:
+    needs:
+      - sentinel-debian-package
+    if: github.ref == 'refs/heads/develop'
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/bluebird/base-builder:0.0.5
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: sentinel-deb-pkgs
+          path: target/artifacts/debian/sentinel
+      - name: Publish Sentinel Debian packages to Cloudsmith
+        shell: bash
+        run: |
+          export CLOUDSMITH_API_KEY=${{ secrets.CLOUDSMITH_API_KEY }}
+          for deb in $(ls target/artifacts/debian/sentinel/*.deb); do
+            cloudsmith push deb --republish bluebird/develop/any-distro/any-version ${deb};
+          done;

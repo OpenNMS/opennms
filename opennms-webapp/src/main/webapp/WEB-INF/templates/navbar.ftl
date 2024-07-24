@@ -3,7 +3,7 @@
 <nav class="navbar navbar-expand-md navbar-dark opennms-bg-chromatic-black" id="header" role="navigation">
     <!-- Brand and toggle get grouped for better mobile display -->
     <a class="navbar-brand" href="${baseHref}index.jsp">
-        <img id="logo" src="${baseHref}images/opennms-horizon-logo.svg" alt="OpenNMS Horizon Logo" width="auto" height="22px" onerror="this.src='${baseHref}images/opennms-horizon-logo.png'" />
+        <img id="logo" src="${baseHref}images/bluebird.svg" alt="Bluebird Logo" width="auto" height="42px" onerror="this.src='${baseHref}images/bluebird.png'" />
     </a>
     <button type="button" title="Toggle navigation" class="navbar-toggler collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
         <span class="navbar-toggler-icon"></span>

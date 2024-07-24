@@ -42,7 +42,7 @@ $(function() {
                 let message = JSON.parse(event.data);
                 let notification = new Notification(message.head, {
                     body: message.body,
-                    icon: Util.getBaseHref() + 'images/o-512.png',
+                    icon: Util.getBaseHref() + 'images/bluebird-512.png',
                     badge: Util.getBaseHref() + 'favicon.ico',
                     tag: 'opennms:notification:' + message.id
                 });

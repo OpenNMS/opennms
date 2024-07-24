@@ -32,7 +32,7 @@ start_year="$1"; shift
 APP_CLASS=org.opennms.reporting.availability.AvailabilityReport
 
 exec "$OPENNMS_BINDIR"/runjava -r -- \
-	-Dimage="$OPENNMS_WEBAPP"/images/opennms-logo-dark.svg \
+	-Dimage="$OPENNMS_WEBAPP"/images/bluebird-logo-dark.svg \
 	-Dopennms.manager.class="$APP_CLASS" \
 	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \
 	-DcatName="$category_name" \

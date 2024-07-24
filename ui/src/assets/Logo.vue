@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import Logo from './OpenNMS_Horizontal-Logo_Light-BG.svg'
+import Logo from './bluebird.svg'
 </script>
 
 <style scoped lang="scss">

@@ -173,8 +173,8 @@ show-info:
 
 .PHONY: validate
 validate: deps-build show-info
-	$(MAVEN_BIN) clean
-	$(MAVEN_BIN) clean --file opennms-full-assembly/pom.xml -Dbuild.profile=default
+	$(MAVEN_BIN) --settings $(MAVEN_SETTINGS_XML) clean
+	$(MAVEN_BIN) --settings $(MAVEN_SETTINGS_XML) clean --file opennms-full-assembly/pom.xml -Dbuild.profile=default
 
 .PHONY: maven-structure-graph
 maven-structure-graph: deps-build show-info
@@ -386,14 +386,14 @@ code-coverage: deps-sonar
 core-deb-pkg: deps-deb-packages
 	@echo "==== Building Debian Core ===="
 	@echo
-	@echo "Version:     " $(VERSION)
+	@echo "Version:     " $(OPENNMS_VERSION)
 	@echo "Release:     " $(DEB_PKG_RELEASE)
 	@echo "OPA VERSION: " $(OPA_VERSION)
 	@echo "DEBEMAIL:    " $(DEBEMAIL)
 	@echo
 	@sed -i='' "s/OPA_VERSION/$(OPA_VERSION)/g" debian/control
 	@echo "- adding auto-generated changelog entry"
-	export DEBEMAIL="$(DEBEMAIL)"; dch -b -v "$(VERSION)-$(DEB_PKG_RELEASE)" "$(EXTRA_INFO)$(EXTRA_INFO2)"
+	export DEBEMAIL="$(DEBEMAIL)"; dch -b -v "$(OPENNMS_VERSION)-$(DEB_PKG_RELEASE)" "$(EXTRA_INFO)$(EXTRA_INFO2)"
 	export OPENNMS_SETTINGS_XML="../$(MAVEN_SETTINGS_XML)"; dpkg-buildpackage -us -uc -Zgzip
 	mkdir -p $(ARTIFACTS_DIR)/debian/core
 	mv ../*.deb ../*.dsc ../*.tar.gz ../*.buildinfo ../*.changes $(ARTIFACTS_DIR)/debian/core
@@ -402,18 +402,18 @@ core-deb-pkg: deps-deb-packages
 minion-deb-pkg: compile assemble
 	@echo "==== Building Debian Minion ===="
 	@echo
-	@echo "Version:     " $(VERSION)
+	@echo "Version:     " $(OPENNMS_VERSION)
 	@echo "Release:     " $(DEB_PKG_RELEASE)
 	@echo "OPA VERSION: " $(OPA_VERSION)
 	@echo "DEBEMAIL:    " $(DEBEMAIL)
 	@echo
 	@echo "- adding auto-generated changelog entry"
-	@cp opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz "target/opennms-minion_$(VERSION).orig.tar.gz"
-	@cp opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz "target/opennms-minion_$(OPENNMS_VERSION).tar.gz"
+	@mv opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz "target/opennms-minion_$(VERSION).orig.tar.gz"
+	@mv opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz "target/opennms-minion_$(OPENNMS_VERSION).tar.gz"
 	@tar xzf "target/opennms-minion_$(OPENNMS_VERSION).tar.gz" -C target
 	@sed -i='' "s/OPA_VERSION/$(OPA_VERSION)/g" target/minion-$(OPENNMS_VERSION)/debian/control
 	cd target/minion-$(OPENNMS_VERSION); \
-	export DEBEMAIL="$(DEBEMAIL)"; dch -b -v "$(VERSION)-$(DEB_PKG_RELEASE)" "$(EXTRA_INFO)$(EXTRA_INFO2)"; \
+	export DEBEMAIL="$(DEBEMAIL)"; dch -b -v "$(OPENNMS_VERSION)-$(DEB_PKG_RELEASE)" "$(EXTRA_INFO)$(EXTRA_INFO2)"; \
 	dpkg-buildpackage -us -uc -Zgzip
 	mkdir -p $(ARTIFACTS_DIR)/debian/minion
 	mv target/*.deb target/*.dsc target/*.debian.tar.gz target/*.buildinfo target/*.changes $(ARTIFACTS_DIR)/debian/minion
@@ -422,18 +422,18 @@ minion-deb-pkg: compile assemble
 sentinel-deb-pkg: compile assemble
 	@echo "==== Building Debian Sentinel ===="
 	@echo
-	@echo "Version:     " $(VERSION)
+	@echo "Version:     " $(OPENNMS_VERSION)
 	@echo "Release:     " $(DEB_PKG_RELEASE)
 	@echo "OPA VERSION: " $(OPA_VERSION)
 	@echo "DEBEMAIL:    " $(DEBEMAIL)
 	@echo
 	@echo "- adding auto-generated changelog entry"
-	@cp opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz "target/opennms-sentinel_$(VERSION).orig.tar.gz"
-	@cp opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz "target/opennms-sentinel_$(OPENNMS_VERSION).tar.gz"
+	@mv opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz "target/opennms-sentinel_$(VERSION).orig.tar.gz"
+	@mv opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz "target/opennms-sentinel_$(OPENNMS_VERSION).tar.gz"
 	@tar xzf "target/opennms-sentinel_$(OPENNMS_VERSION).tar.gz" -C target
 	@sed -i='' "s/OPA_VERSION/$(OPA_VERSION)/g" target/sentinel-$(OPENNMS_VERSION)/debian/control
 	cd target/sentinel-$(OPENNMS_VERSION); \
-	export DEBEMAIL="$(DEBEMAIL)"; dch -b -v "$(VERSION)-$(DEB_PKG_RELEASE)" "$(EXTRA_INFO)$(EXTRA_INFO2)"; \
+	export DEBEMAIL="$(DEBEMAIL)"; dch -b -v "$(OPENNMS_VERSION)-$(DEB_PKG_RELEASE)" "$(EXTRA_INFO)$(EXTRA_INFO2)"; \
 	dpkg-buildpackage -us -uc -Zgzip
 	mkdir -p $(ARTIFACTS_DIR)/debian/sentinel
 	mv target/*.deb target/*.dsc target/*.debian.tar.gz target/*.buildinfo target/*.changes $(ARTIFACTS_DIR)/debian/sentinel
@@ -487,24 +487,24 @@ clean: clean-assembly clean-docs
 # We use find with a regex, which exits gracefully when targets don't exist in case steps failed.
 collect-artifacts:
 	mkdir -p $(ARTIFACTS_DIR)/{archives,config-schema,oci}
-	find . -type f -regex "^\.\/target\/opennms-.*\.tar\.gz" -exec cp -v {} $(ARTIFACTS_DIR)/archives \; # Fetch -source and assembled archive
-	find . -type f -regex "^\.\/opennms-assemblies\/minion\/target\/org.opennms.assemblies.minion-.*\.tar\.gz" -exec cp -v {} $(ARTIFACTS_DIR)/archives/minion-${OPENNMS_VERSION}.tar.gz \;
-	find . -type f -regex "^\.\/opennms-assemblies\/sentinel\/target\/org.opennms.assemblies.sentinel-.*\.tar\.gz" -exec cp -v {} $(ARTIFACTS_DIR)/archives/sentinel-${OPENNMS_VERSION}.tar.gz \;
-	find . -type f -regex "^\.\/opennms-assemblies\/xsds\/target\/.*-xsds\.tar\.gz" -exec cp -v {} $(ARTIFACTS_DIR)/archives/opennms-${OPENNMS_VERSION}-xsds.tar.gz \;
-	find . -type f -regex "^\.\/opennms-full-assembly\/target\/opennms-full-assembly-.*-core\.tar\.gz" -exec cp -v {} $(ARTIFACTS_DIR)/archives/opennms-${OPENNMS_VERSION}-core.tar.gz \;
-	find . -type f -regex "^\.\/opennms-full-assembly\/target\/opennms-full-assembly-.*-optional\.tar\.gz" -exec cp -v {} $(ARTIFACTS_DIR)/archives/opennms-${OPENNMS_VERSION}-optional.tar.gz \;
-	find . -type f -regex "^\.\/opennms-full-assembly\/target\/THIRD-PARTY.txt" -exec cp -v {} $(ARTIFACTS_DIR) \;
-	find . -type f -regex "^\.\/opennms-container\/.*\/images\/.*\.oci" -exec cp -v {} $(ARTIFACTS_DIR)/oci \;
-	find . -type f -regex "^\.\/target\/bom.*" -exec cp -v {} $(ARTIFACTS_DIR) \;
+	find . -type f -regex "^\.\/target\/opennms-.*\.tar\.gz" -exec mv -v {} $(ARTIFACTS_DIR)/archives \; # Fetch -source and assembled archive
+	find . -type f -regex "^\.\/opennms-assemblies\/minion\/target\/org.opennms.assemblies.minion-.*\.tar\.gz" -exec mv -v {} $(ARTIFACTS_DIR)/archives/minion-${OPENNMS_VERSION}.tar.gz \;
+	find . -type f -regex "^\.\/opennms-assemblies\/sentinel\/target\/org.opennms.assemblies.sentinel-.*\.tar\.gz" -exec mv -v {} $(ARTIFACTS_DIR)/archives/sentinel-${OPENNMS_VERSION}.tar.gz \;
+	find . -type f -regex "^\.\/opennms-assemblies\/xsds\/target\/.*-xsds\.tar\.gz" -exec mv -v {} $(ARTIFACTS_DIR)/archives/opennms-${OPENNMS_VERSION}-xsds.tar.gz \;
+	find . -type f -regex "^\.\/opennms-full-assembly\/target\/opennms-full-assembly-.*-core\.tar\.gz" -exec mv -v {} $(ARTIFACTS_DIR)/archives/opennms-${OPENNMS_VERSION}-core.tar.gz \;
+	find . -type f -regex "^\.\/opennms-full-assembly\/target\/opennms-full-assembly-.*-optional\.tar\.gz" -exec mv -v {} $(ARTIFACTS_DIR)/archives/opennms-${OPENNMS_VERSION}-optional.tar.gz \;
+	find . -type f -regex "^\.\/opennms-full-assembly\/target\/THIRD-PARTY.txt" -exec mv -v {} $(ARTIFACTS_DIR) \;
+	find . -type f -regex "^\.\/opennms-container\/.*\/images\/.*\.oci" -exec mv -v {} $(ARTIFACTS_DIR)/oci \;
+	find . -type f -regex "^\.\/target\/bom.*" -exec mv -v {} $(ARTIFACTS_DIR) \;
 
 .PHONY: collect-testresults
 collect-testresults:
 	mkdir -p $(ARTIFACTS_DIR)/{surefire-reports,failsafe-reports,recordings}
-	find . -type f -regex ".*\/target\/.*\.mp4" -exec cp -v {} $(ARTIFACTS_DIR)/recordings \;
-	find . -type f -regex ".*\/target\/surefire-reports\/.*\.xml" -exec cp -v {} $(ARTIFACTS_DIR)/surefire-reports/ \;
-	find . -type f -regex ".*\/target\/failsafe-reports\/.*\.xml" -exec cp -v {} $(ARTIFACTS_DIR)/failsafe-reports/ \;
+	find . -type f -regex ".*\/target\/.*\.mp4" -exec mv -v {} $(ARTIFACTS_DIR)/recordings \;
+	find . -type f -regex ".*\/target\/surefire-reports\/.*\.xml" -exec mv -v {} $(ARTIFACTS_DIR)/surefire-reports/ \;
+	find . -type f -regex ".*\/target\/failsafe-reports\/.*\.xml" -exec mv -v {} $(ARTIFACTS_DIR)/failsafe-reports/ \;
 	find . -type d -regex "^\.\/target\/logs" -exec tar czf $(ARTIFACTS_DIR)/logs.tar.gz {} \;
-	find . -type f -regex "^\.\/target\/structure-graph\.json" -exec cp -v {} $(ARTIFACTS_DIR) \;
+	find . -type f -regex "^\.\/target\/structure-graph\.json" -exec mv -v {} $(ARTIFACTS_DIR) \;
 
 .PHONY: spinup-postgres
 spinup-postgres: deps-oci

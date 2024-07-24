@@ -37,7 +37,7 @@
 
 <%
     // Horizon values - these are overridden in Meridian
-    String wallpaperBgImagePath = "images/wallpapers/background_dark.png";
+    String wallpaperBgImagePath = "images/wallpapers/ulf-milseburg.jpg";
     String titleLogoImagePath = "images/opennms_horizon_title.svg";
     String labelTextColor = "#fff";
 %>
@@ -128,7 +128,7 @@
   }
 
   label.pg-text, span.pg-text {
-    color: <%= labelTextColor %>;
+    color: #fff;
   }
 
   a.pg-link, a.pg-link:visited {
@@ -190,8 +190,8 @@
 
 <div class="login-page">
     <div class="card login-form rounded">
-        <div style="padding-bottom: 36px; padding-top: 60px">
-            <img src="<%= titleLogoImagePath %>" class="horizon" width="185px" />
+        <div style="padding-top: 60px">
+            <div id="password-page-title">Set a secure admin password</div>
         </div>
         <div class="form-content-wrapper">
             <form role="form" method="post" name="goForm" onSubmit="return verifyGoForm(event);" action="account/selfService/passwordGateAction">

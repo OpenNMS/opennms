@@ -66,7 +66,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url('images/wallpapers/background_dark.png');
+    background-image: url('images/wallpapers/ulf-milseburg.jpg');
     background-size: cover;
   }
 
@@ -115,9 +115,12 @@
     background-image: linear-gradient(to right, rgb(61, 168, 200), rgb(116, 187, 160));
   }
 
-  .horizon {
-      margin-left: 30%;
-    }
+  #login-page-title {
+    padding-left: 21.5%;
+    padding-bottom: 10px;
+    font-weight: 300;
+    font-size: 16px;
+  }
 
   #login-attempt-failed {
     margin-top: 10px;
@@ -185,9 +188,7 @@
 </script>
 <div class="login-page">
     <div class="card login-form rounded">
-      <div style="padding-bottom: 36px; padding-top: 60px">
-        <img src="images/opennms_horizon_title.svg" class="horizon" width="185px" />
-      </div>
+      <div id="login-page-title">Login to Bluebird</div>
 
       <form class="" id="loginForm" name="loginForm" role="form" method="post" action="<c:url value='j_spring_security_check'/>" autocomplete="off">
         <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
@@ -224,11 +225,5 @@
           </div>
         </div>
       </form>
-  </div>
-
-  <div class="" style="position: absolute; bottom: 0px; right: 10px; font-size: 3em; padding: 20pt 20pt 5pt 20pt">
-       <div style="padding-bottom: 20px; padding-top: 20px">
-          <img src="images/opennms-logo-light.svg" class="" width="180px" />
-       </div>
   </div>
 </div>

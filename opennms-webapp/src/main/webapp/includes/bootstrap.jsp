@@ -86,7 +86,7 @@
     <c:forEach var="headTitle" items="${__bs_headTitles}">
       <c:out value="${headTitle}" escapeXml="true"/> |
     </c:forEach>
-    OpenNMS Web Console
+    Bluebird Web Console
   </title>
   <c:if test="${param.nobase != 'true' }">
     <base href="<%= __baseHref %>" />
@@ -130,8 +130,8 @@
   <link rel="icon" type="image/png" sizes="32x32" href="<%= __baseHref %>favicon-32x32.png">
   <link rel="icon" type="image/png" sizes="16x16" href="<%= __baseHref %>favicon-16x16.png">
   <link rel="manifest" href="<%= __baseHref %>site.webmanifest">
-  <link rel="mask-icon" href="<%= __baseHref %>safari-pinned-tab.svg" color="#4c9d45">
-  <meta name="msapplication-TileColor" content="#e9e9e9">
+  <link rel="mask-icon" href="<%= __baseHref %>safari-pinned-tab.svg" color="#5bbad5">
+  <meta name="msapplication-TileColor" content="#da532c">
   <meta name="theme-color" content="#ffffff">
 
   <jsp:include page="/assets/load-assets.jsp" flush="false">
