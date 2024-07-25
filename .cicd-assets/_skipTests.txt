@@ -1,1 +1,10 @@
-org.opennms.netmgt.snmp.AbstractSnmpValueTest
+org.opennms.netmgt.provision.detector.BgpSessionDetectorTest
+org.opennms.netmgt.provision.detector.CiscoIpSlaDetectorTest
+org.opennms.netmgt.provision.detector.DiskUsageDetectorTest
+org.opennms.netmgt.provision.detector.HostResourceSWRunDetectorTest
+org.opennms.netmgt.provision.detector.OmsaStorageDetectorTest
+org.opennms.netmgt.provision.detector.OpenManageChassisDetectorTest
+org.opennms.netmgt.provision.detector.PercDetectorTest
+org.opennms.netmgt.provision.detector.SnmpDetectorTest
+org.opennms.netmgt.provision.detector.SnmpDetectorWithProfilesTest
+org.opennms.netmgt.provision.detector.Win32ServiceDetectorTest
