@@ -67,7 +67,7 @@ jobs:
     if: "!contains(github.event.commits[0].message, '[skip deps-freshness]')"
     runs-on: ubuntu-latest
     container:
-      image: quay.io/bluebird/java-builder:0.0.1.jdk-17
+      image: quay.io/bluebird/java-builder:0.0.4.jdk-17
     steps:
       - uses: actions/checkout@v4
       - name: Add workspace to git safe.directory
@@ -326,13 +326,16 @@ jobs:
     if: "!contains(github.event.commits[0].message, '[skip unit-tests]')"
     needs:
       - quick-build
-    runs-on: ubuntu-latest
-    container:
-      image: quay.io/bluebird/java-builder:0.0.1.jdk-17
+    runs-on:
+      group: Default
+      labels:
+        - self-hosted
+        - Linux
+        - X64
+        - eu-central-de
+        - labmonkeys
     steps:
       - uses: actions/checkout@v4
-      - name: Add workspace to git safe.directory
-        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
       - name: Prepare the build for tests
         run: |
           make quick-compile
@@ -532,7 +535,7 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     container:
-      image: quay.io/bluebird/base-builder:0.0.5
+      image: quay.io/bluebird/base-builder:ubuntu.0.1.0.b53
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -552,7 +555,7 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     container:
-      image: quay.io/bluebird/base-builder:0.0.5
+      image: quay.io/bluebird/base-builder:ubuntu.0.1.0.b53
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -572,7 +575,7 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     container:
-      image: quay.io/bluebird/base-builder:0.0.5
+      image: quay.io/bluebird/base-builder:ubuntu.0.1.0.b53
     steps:
       - uses: actions/download-artifact@v4
         with:

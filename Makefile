@@ -408,8 +408,8 @@ minion-deb-pkg: compile assemble
 	@echo "DEBEMAIL:    " $(DEBEMAIL)
 	@echo
 	@echo "- adding auto-generated changelog entry"
-	@mv opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz "target/opennms-minion_$(VERSION).orig.tar.gz"
-	@mv opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz "target/opennms-minion_$(OPENNMS_VERSION).tar.gz"
+	@cp opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz "target/opennms-minion_$(OPENNMS_VERSION).orig.tar.gz"
+	@cp opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz "target/opennms-minion_$(OPENNMS_VERSION).tar.gz"
 	@tar xzf "target/opennms-minion_$(OPENNMS_VERSION).tar.gz" -C target
 	@sed -i='' "s/OPA_VERSION/$(OPA_VERSION)/g" target/minion-$(OPENNMS_VERSION)/debian/control
 	cd target/minion-$(OPENNMS_VERSION); \
@@ -428,8 +428,8 @@ sentinel-deb-pkg: compile assemble
 	@echo "DEBEMAIL:    " $(DEBEMAIL)
 	@echo
 	@echo "- adding auto-generated changelog entry"
-	@mv opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz "target/opennms-sentinel_$(VERSION).orig.tar.gz"
-	@mv opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz "target/opennms-sentinel_$(OPENNMS_VERSION).tar.gz"
+	@cp opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz "target/opennms-sentinel_$(OPENNMS_VERSION).orig.tar.gz"
+	@cp opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz "target/opennms-sentinel_$(OPENNMS_VERSION).tar.gz"
 	@tar xzf "target/opennms-sentinel_$(OPENNMS_VERSION).tar.gz" -C target
 	@sed -i='' "s/OPA_VERSION/$(OPA_VERSION)/g" target/sentinel-$(OPENNMS_VERSION)/debian/control
 	cd target/sentinel-$(OPENNMS_VERSION); \
