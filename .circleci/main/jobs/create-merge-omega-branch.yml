@@ -29,10 +29,6 @@ jobs:
             - run:
                 name: Checkout target branch and merge from source
                 command: |
-                  if [ "$CIRCLE_PROJECT_REPONAME" == "opennms-omega" ]; then
-                   exit 0
-                  fi
-
                   export GIT_MERGE_AUTOEDIT=no
                   if git rev-parse << pipeline.parameters.main_branch >> >/dev/null 2>&1; then
                     git checkout << pipeline.parameters.main_branch >>
@@ -43,4 +39,5 @@ jobs:
                   git merge origin/<< pipeline.parameters.main_branch >>
             - run:
                 name: Push to Omega github
-                command: git push -f omega << pipeline.parameters.main_branch >>:<< pipeline.parameters.main_branch >>
+                command: git push -f omega << pipeline.parameters.main_branch >>:< pipeline.parameters.main_branch >>
+
