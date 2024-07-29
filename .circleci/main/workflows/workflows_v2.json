@@ -80,6 +80,7 @@
             "extends": [
                 "create-merge-foundation-branch",
                 "create-merge-meridian-branch",
+                "create-merge-omega-branch",
                 "merge-foundation-branch",
                 "merge-poweredby-branch"
             ]
@@ -421,6 +422,22 @@
                 "user_overridable": false
             }
         },
+        "create-merge-omega-branch": {
+            "context": [
+                "CircleCI"
+            ],  
+            "requires": [
+                "tarball-assembly-only"
+            ],  
+            "filters": {
+                "branches": {
+                    "only": [
+                        "develop"
+                    ]
+                },
+                "user_overridable": false
+            }   
+        },      
         "create-merge-meridian-branch": {
             "context": [
                 "CircleCI"
