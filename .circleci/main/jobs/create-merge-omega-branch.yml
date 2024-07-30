@@ -39,5 +39,5 @@ jobs:
                   git merge origin/<< pipeline.parameters.main_branch >>
             - run:
                 name: Push to Omega github
-                command: git push -f omega << pipeline.parameters.main_branch >>:< pipeline.parameters.main_branch >>
+                command: git push -f omega << pipeline.parameters.main_branch >>:<< pipeline.parameters.main_branch >>
 
