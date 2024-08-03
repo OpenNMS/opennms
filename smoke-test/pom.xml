@@ -55,7 +55,7 @@
     <jersey.version>2.42</jersey.version>
     <jestVersion>5.3.4</jestVersion>
     <junit5Version>5.9.2</junit5Version>
-    <karafVersion>4.3.6</karafVersion>
+    <karafVersion>4.3.10</karafVersion>
     <selenium.version>4.6.0</selenium.version>
     <!-- seleniarm.version needs to match a date stamped release version from the docker-seleniarm releases page
          for the same version of selenium specified in selenium.version above.
