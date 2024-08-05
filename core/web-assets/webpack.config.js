@@ -229,7 +229,8 @@ var config = {
   entry: allEntries,
   output: {
     path: distdir,
-    libraryTarget: 'umd'
+    libraryTarget: 'umd',
+    hashFunction: 'sha256'
   },
   target: 'web',
   module: {
