@@ -178,7 +178,7 @@ commands:
         #- add_ssh_keys:
         #    fingerprints:
         #      - "6a:c7:42:e6:e3:26:76:95:f4:0a:7a:5b:9c:b3:19:0e"
-        #      #- "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
+        #     #- "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
         - cached-checkout
         - run:
             name: Create git identity
