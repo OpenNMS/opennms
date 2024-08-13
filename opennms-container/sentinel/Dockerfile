@@ -17,6 +17,10 @@ ARG REPO_RPM="https://yum.opennms.org/repofiles/opennms-repo-stable-rhel8.noarch
 
 SHELL ["/bin/bash", "-c"]
 
+# Given that CentOS mirrors are offline we will point to Vault
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+
 # Collect generic steps in a layer for caching
 RUN rpm --import "${REPO_KEY_URL}" && \
     dnf -y install epel-release && \

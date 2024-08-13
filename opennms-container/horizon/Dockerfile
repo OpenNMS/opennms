@@ -25,6 +25,10 @@ SHELL ["/bin/bash", "-c"]
 RUN curl --retry 5 --fail -L ${CONFD_URL} -o /usr/bin/confd && \
     chmod +x /usr/bin/confd
 
+# Given that CentOS mirrors are offline we will point to Vault
+RUN sed -i 's/mirrorlist/#mirrorlist/g' /etc/yum.repos.d/CentOS-*
+RUN sed -i 's|#baseurl=http://mirror.centos.org|baseurl=http://vault.centos.org|g' /etc/yum.repos.d/CentOS-*
+
 RUN dnf -y install dnf-plugins-core && \
     dnf config-manager --set-enabled powertools && \
     rpm --import "${REPO_KEY_URL}" && \
