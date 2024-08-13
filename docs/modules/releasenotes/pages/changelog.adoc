@@ -1,6 +1,21 @@
 [[release-33-changelog]]
 
 = Changelog
+ 
+[[releasenotes-changelog-33.0.7]]
+
+== Release 33.0.7
+
+Release 33.0.7 contains a bunch of security updates.
+
+The codename for Horizon 33.0.7 is https://wikipedia.org/wiki/$$Calliandra_surinamensis$$[_Pink powder puff_].
+
+=== Bug
+
+* Stored XSS on "Monitoring Locations" (Issue https://issues.opennms.org/browse/NMS-16443[NMS-16443])
+* Host Header Injection (Issue https://issues.opennms.org/browse/NMS-16450[NMS-16450])
+* [Web] - Missing Secure Flag on Session Cookie (Issue https://issues.opennms.org/browse/NMS-16451[NMS-16451])
+
 
 [[releasenotes-changelog-33.0.6]]
 
