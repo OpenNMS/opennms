@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.opennms.features.distributed</groupId>
         <artifactId>org.opennms.features.distributed.dao</artifactId>
-        <version>33.0.7-SNAPSHOT</version>
+        <version>33.0.7</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.distributed</groupId>
