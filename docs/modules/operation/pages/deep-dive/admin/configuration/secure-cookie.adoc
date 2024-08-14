@@ -1,0 +1,27 @@
+
+= Secure Cookie Attribute
+:description: Learn how to configure the Secure Cookie attribute in {page-component-title} to protect the session cookie confidentiality.
+
+The Secure Cookie attribute controls whether browsers should enforce the encrypted transmission of cookies.
+This prevents some types of attacks, as the enforced encrypted transmission prevents the session cookie from being read and modified.
+
+{page-component-title} ships with a default HTTP configuration and therefore the Secure Cookie Attribute for the session cookie is set to `false`.
+For production environments in which HTTPS is used, it is highly recommended to activate this flag.
+
+== Enforce encrypted transmission of the session cookie
+
+To change the Secure Cookie Attribute for the session cookie, you must edit `$OPENNMS_HOME/jetty-webapps/opennms/WEB-INF/web.xml`:
++
+[source, xml]
+----
+<session-config>
+  <cookie-config>
+    <http-only>true</http-only>
+    <secure>false</secure> <1>
+    <comment>__SAME_SITE_STRICT__</comment>
+  </cookie-config>
+  <session-timeout>-1</session-timeout>
+</session-config>
+----
+<1> Replace `false` with `true` to secure the session cookie.
+
