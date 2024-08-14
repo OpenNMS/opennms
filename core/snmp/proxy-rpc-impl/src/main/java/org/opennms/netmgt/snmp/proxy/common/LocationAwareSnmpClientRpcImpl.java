@@ -23,6 +23,7 @@ package org.opennms.netmgt.snmp.proxy.common;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -113,6 +114,11 @@ public class LocationAwareSnmpClientRpcImpl implements LocationAwareSnmpClient, 
     @Override
     public SNMPRequestBuilder<List<SnmpValue>> get(SnmpAgentConfig agent, List<SnmpObjId> oids) {
         return new SNMPMultiGetBuilder(this, agent, oids);
+    }
+
+    @Override
+    public SNMPRequestBuilder<SnmpValue> set(SnmpAgentConfig agent, List<SnmpObjId> oids, List<SnmpValue> values) {
+        return new SNMPSetBuilder(this, agent, oids, values);
     }
 
     public CompletableFuture<SnmpMultiResponseDTO> execute(SnmpRequestDTO request) {

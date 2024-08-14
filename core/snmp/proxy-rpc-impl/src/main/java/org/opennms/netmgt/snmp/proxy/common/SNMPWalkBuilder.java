@@ -31,7 +31,7 @@ import org.opennms.netmgt.snmp.SnmpResult;
 public class SNMPWalkBuilder extends AbstractSNMPRequestBuilder<List<SnmpResult>> {
 
     public SNMPWalkBuilder(LocationAwareSnmpClientRpcImpl client, SnmpAgentConfig agent, List<SnmpObjId> oids) {
-        super(client, agent, Collections.emptyList(), buildWalkRequests(oids));
+        super(client, agent, Collections.emptyList(), buildWalkRequests(oids), Collections.emptyList());
     }
 
     private static List<SnmpWalkRequestDTO> buildWalkRequests(List<SnmpObjId> oids) {
