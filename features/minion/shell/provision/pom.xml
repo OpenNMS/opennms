@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.opennms.features.minion</groupId>
         <artifactId>org.opennms.features.minion.shell</artifactId>
-        <version>33.0.7</version>
+        <version>33.0.8-SNAPSHOT</version>
     </parent>
 
     <groupId>org.opennms.features.minion.shell</groupId>
