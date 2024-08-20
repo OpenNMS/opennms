@@ -33,7 +33,7 @@ import org.opennms.netmgt.snmp.SnmpValue;
 public class SNMPMultiGetBuilder extends AbstractSNMPRequestBuilder<List<SnmpValue>> {
 
     public SNMPMultiGetBuilder(LocationAwareSnmpClientRpcImpl client, SnmpAgentConfig agent, List<SnmpObjId> oids) {
-        super(client, agent, buildGetRequests(oids), Collections.emptyList());
+        super(client, agent, buildGetRequests(oids), Collections.emptyList(), Collections.emptyList());
     }
 
     private static List<SnmpGetRequestDTO> buildGetRequests(List<SnmpObjId> oids) {

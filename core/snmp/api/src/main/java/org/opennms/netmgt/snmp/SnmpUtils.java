@@ -89,6 +89,10 @@ public abstract class SnmpUtils {
         return getStrategy().getAsync(agentConfig, oids);
     }
 
+    public static CompletableFuture<SnmpValue[]> setAsync(SnmpAgentConfig agentConfig, SnmpObjId[] oids, SnmpValue[] values) {
+        return getStrategy().setAsync(agentConfig, oids, values);
+    }
+
     public static SnmpValue getNext(SnmpAgentConfig agentConfig, SnmpObjId oid) {
         return getStrategy().getNext(agentConfig, oid);
     }

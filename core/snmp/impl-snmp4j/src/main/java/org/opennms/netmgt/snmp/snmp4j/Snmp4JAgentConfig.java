@@ -132,8 +132,8 @@ public class Snmp4JAgentConfig {
         }
     }
 
-    public String getWriteCommunity() {
-        return m_config.getWriteCommunity();
+    public OctetString getWriteCommunity() {
+        return convertCommunity(m_config.getWriteCommunity());
     }
 
     @Override
@@ -260,27 +260,31 @@ public class Snmp4JAgentConfig {
 
     @VisibleForTesting
     public Target getTarget() {
-        Target target = createTarget();
+        return getTarget(false);
+    }
+
+    public Target getTarget(final boolean useWriteCommunity) {
+        Target target = createTarget(useWriteCommunity);
         target.setVersion(getVersion());
         target.setRetries(getRetries());
         target.setTimeout(getTimeout());
         target.setAddress(getAddress());
         target.setMaxSizeRequestPDU(getMaxRequestSize());
-            
+
         return target;
     }
 
-    private Target createTarget() {
-        return (isSnmpV3() ? createUserTarget() : createCommunityTarget());
+    private Target createTarget(final boolean useWriteCommunity) {
+        return (isSnmpV3() ? createUserTarget() : createCommunityTarget(useWriteCommunity));
     }
 
     boolean isSnmpV3() {
         return m_config.getVersion() == SnmpConstants.version3;
     }
 
-    private Target createCommunityTarget() {
+    private Target createCommunityTarget(final boolean useWriteCommunity) {
         CommunityTarget target = new CommunityTarget();
-        target.setCommunity(getReadCommunity());
+        target.setCommunity(useWriteCommunity ? getWriteCommunity() : getReadCommunity());
         return target;
     }
 
