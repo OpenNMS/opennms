@@ -75,6 +75,7 @@ import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.rrd.RrdStrategy;
+import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpValue;
@@ -294,9 +295,12 @@ public class TcaCollectorIT implements InitializingBean {
 		SnmpValue v1a = SnmpUtils.get(m_collectionAgent.getAgentConfig(), peer1);
 		SnmpValue v2a = SnmpUtils.get(m_collectionAgent.getAgentConfig(), peer2);
 
+		final SnmpAgentConfig agentConfig = m_collectionAgent.getAgentConfig();
+		agentConfig.setWriteCommunity("public");
+
 		// Set New Values
-		SnmpUtils.set(m_collectionAgent.getAgentConfig(), peer1, valFac.getOctetString(sb.toString().getBytes()));
-		SnmpUtils.set(m_collectionAgent.getAgentConfig(), peer2, valFac.getOctetString(sb.toString().getBytes()));
+		SnmpUtils.set(agentConfig, peer1, valFac.getOctetString(sb.toString().getBytes()));
+		SnmpUtils.set(agentConfig, peer2, valFac.getOctetString(sb.toString().getBytes()));
 
 		// Validate New Values
 		SnmpValue v1b = SnmpUtils.get(m_collectionAgent.getAgentConfig(), peer1);

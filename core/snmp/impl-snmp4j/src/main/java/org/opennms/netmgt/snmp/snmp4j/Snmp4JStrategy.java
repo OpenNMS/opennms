@@ -264,6 +264,18 @@ public class Snmp4JStrategy implements SnmpStrategy {
         return future;
     }
 
+    @Override
+    public CompletableFuture<SnmpValue[]> setAsync(SnmpAgentConfig agentConfig, SnmpObjId[] oids, SnmpValue[] values) {
+        final CompletableFuture<SnmpValue[]> future = new CompletableFuture<>();
+        final Snmp4JAgentConfig snmp4jAgentConfig = new Snmp4JAgentConfig(agentConfig);
+        final PDU pdu = buildPdu(snmp4jAgentConfig, PDU.SET, oids, values);
+        if (pdu == null) {
+            future.completeExceptionally(new Exception("Invalid PDU for OIDs: " + Arrays.toString(oids)));
+        }
+        send(snmp4jAgentConfig, pdu, true, future);
+        return future;
+    }
+
     /**
      * SNMP4J getNext implementation
      * 
@@ -345,7 +357,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
 
             try {
                 final Snmp mySession = session;
-                mySession.send(pdu, agentConfig.getTarget(), null, new ResponseListener() {
+                mySession.send(pdu, agentConfig.getTarget(pdu.getType() == PDU.SET), null, new ResponseListener() {
                     @Override
                     public void onResponse(final ResponseEvent responseEvent) {
                         try {
@@ -374,7 +386,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
             }
         } else { // we're not expecting a response
             try {
-                session.send(pdu, agentConfig.getTarget());
+                session.send(pdu, agentConfig.getTarget(pdu.getType() == PDU.SET));
                 future.complete(null);
             } catch (final Exception e) {
                 LOG.error("send: error during SNMP operation", e);

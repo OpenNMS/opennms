@@ -21,13 +21,17 @@
  */
 package org.opennms.netmgt.snmp.proxy;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.netmgt.snmp.CollectionTracker;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpValue;
+
+import com.google.common.collect.Lists;
 
 /**
  * Asynchronous SNMP client API that either executes the request locally, delegating
@@ -55,4 +59,14 @@ public interface LocationAwareSnmpClient {
     SNMPRequestBuilder<List<SnmpValue>> get(SnmpAgentConfig agent, SnmpObjId... oids);
 
     SNMPRequestBuilder<List<SnmpValue>> get(SnmpAgentConfig agent, List<SnmpObjId> oids);
+
+    SNMPRequestBuilder<SnmpValue> set(SnmpAgentConfig agent, List<SnmpObjId> oids, List<SnmpValue> values);
+
+    default SNMPRequestBuilder<SnmpValue> set(SnmpAgentConfig agent, SnmpObjId oid, SnmpValue value) {
+        return set(agent, Collections.singletonList(oid), Collections.singletonList(value));
+    }
+
+    default SNMPRequestBuilder<SnmpValue> set(SnmpAgentConfig agent, SnmpObjId[] oids, SnmpValue[] values) {
+        return set(agent, Lists.newArrayList(oids), Lists.newArrayList(values));
+    }
 }
