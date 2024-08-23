@@ -32,8 +32,8 @@ import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowTele
 
 import com.codahale.metrics.MetricRegistry;
 
-public class IpFixTelemetryAdapter extends NetflowTelemetryAdapter {
-    public IpFixTelemetryAdapter(final AdapterDefinition adapterConfig, final MetricRegistry metricRegistry) {
+public class IpfixTelemetryAdapter extends NetflowTelemetryAdapter {
+    public IpfixTelemetryAdapter(final AdapterDefinition adapterConfig, final MetricRegistry metricRegistry) {
         super(adapterConfig, metricRegistry);
     }
 }

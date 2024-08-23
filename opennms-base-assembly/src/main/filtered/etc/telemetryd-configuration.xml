@@ -162,7 +162,7 @@
             </package>
         </adapter>
 
-        <adapter name="IPFIX-Telemetry" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpFixTelemetryAdapter" enabled="false">
+        <adapter name="IPFIX-Telemetry" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixTelemetryAdapter" enabled="false">
             <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/netflow-telemetry.groovy"/>
             <package name="IPFIX-Default">
                 <rrd step="300">

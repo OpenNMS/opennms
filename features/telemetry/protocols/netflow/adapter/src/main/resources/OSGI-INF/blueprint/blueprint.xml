@@ -89,7 +89,7 @@
 	</service>
 
 	<!-- IPFix Telemetry Factory and Adapter -->
-	<bean id="ipfixTelemetryFactory" class="org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpFixTelemetryAdapterFactory">
+	<bean id="ipfixTelemetryFactory" class="org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixTelemetryAdapterFactory">
 		<argument ref="blueprintBundleContext" />
 		<property name="telemetryRegistry" ref="telemetryRegistry"/>
 		<property name="collectionAgentFactory" ref="collectionAgentFactory" />

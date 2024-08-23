@@ -32,24 +32,24 @@ import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.collection.AbstractCollectionAdapterFactory;
 import org.osgi.framework.BundleContext;
 
-public class IpFixTelemetryAdapterFactory extends AbstractCollectionAdapterFactory {
+public class IpfixTelemetryAdapterFactory extends AbstractCollectionAdapterFactory {
 
-    public IpFixTelemetryAdapterFactory() {
+    public IpfixTelemetryAdapterFactory() {
         super(null);
     }
 
-    public IpFixTelemetryAdapterFactory(final BundleContext bundleContext) {
+    public IpfixTelemetryAdapterFactory(final BundleContext bundleContext) {
         super(bundleContext);
     }
 
     @Override
     public Class<? extends Adapter> getBeanClass() {
-        return IpFixTelemetryAdapter.class;
+        return IpfixTelemetryAdapter.class;
     }
 
     @Override
     public Adapter createBean(final AdapterDefinition adapterConfig) {
-        final IpFixTelemetryAdapter adapter = new IpFixTelemetryAdapter(adapterConfig, getTelemetryRegistry().getMetricRegistry());
+        final IpfixTelemetryAdapter adapter = new IpfixTelemetryAdapter(adapterConfig, getTelemetryRegistry().getMetricRegistry());
         adapter.setCollectionAgentFactory(getCollectionAgentFactory());
         adapter.setPersisterFactory(getPersisterFactory());
         adapter.setFilterDao(getFilterDao());

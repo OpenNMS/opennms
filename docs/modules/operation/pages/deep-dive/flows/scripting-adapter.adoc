@@ -38,10 +38,10 @@ The following example shows a snippet of the `telemetryd-configuration.xml` file
 
 To process the additional data, an additional Telemetryd adapter must be configured and enabled.
 This adapter specifies the processing script to use for processing the data.
-To do so, enable a Telemetry Adapter of type `org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpFixTelemetryAdapter` and specifying a Groovy file by using the `script` parameter.
+To do so, enable a Telemetry Adapter of type `org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixTelemetryAdapter` and specifying a Groovy file by using the `script` parameter.
 The following example shows a snippet of the `telemetryd-configuration.xml` file in which the IPFIX-Telemetry adapter is enabled and is using the script `/opt/opennms/etc/telemetryd-adapters/netflow-telemetry.groovy`.
 
-[source, xml]
+[source,xml]
 ----
 ...
     <queue name="IPFIX">
@@ -59,7 +59,7 @@ The following example shows a snippet of the `telemetryd-configuration.xml` file
             </package>
         </adapter>
 
-        <adapter name="IPFIX-Telemetry" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpFixTelemetryAdapter" enabled="true">
+        <adapter name="IPFIX-Telemetry" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixTelemetryAdapter" enabled="true">
             <parameter key="script" value="/opt/opennms/etc/telemetryd-adapters/netflow-telemetry.groovy"/>
             <package name="IPFIX-Default">
                 <rrd step="300">
