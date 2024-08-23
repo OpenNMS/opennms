@@ -37,27 +37,36 @@ import java.util.stream.Stream;
 
 import javax.script.ScriptException;
 
+import org.opennms.core.mate.api.ContextKey;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.flows.api.NodeInfo;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.collection.AbstractScriptedCollectionAdapter;
 import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.opennms.netmgt.telemetry.protocols.collection.ScriptedCollectionSetBuilder;
+import org.opennms.netmgt.telemetry.protocols.common.cache.NodeMetadataCache;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.Value;
 
 import com.codahale.metrics.MetricRegistry;
+import com.google.common.base.Strings;
 import com.google.protobuf.InvalidProtocolBufferException;
 
 public class NetflowTelemetryAdapter extends AbstractScriptedCollectionAdapter {
     private InterfaceToNodeCache interfaceToNodeCache;
     private CollectionAgentFactory collectionAgentFactory;
 
-    protected NetflowTelemetryAdapter(final AdapterDefinition adapterConfig, final MetricRegistry metricRegistry) {
+    private ContextKey contextKey;
+    private String metaDataNodeLookup;
+    private final NodeMetadataCache nodeMetadataCache;
+
+    protected NetflowTelemetryAdapter(final AdapterDefinition adapterConfig, final MetricRegistry metricRegistry, final NodeMetadataCache nodeMetadataCache) {
         super(adapterConfig, metricRegistry);
+        this.nodeMetadataCache = nodeMetadataCache;
     }
 
     @Override
@@ -83,11 +92,11 @@ public class NetflowTelemetryAdapter extends AbstractScriptedCollectionAdapter {
             return Stream.empty();
         }
 
-        final Optional<Integer> nodeId = interfaceToNodeCache.getFirstNodeId(messageLog.getLocation(), inetAddress);
+        final Optional<NodeInfo> nodeInfo = nodeMetadataCache.getNodeInfoFromCache(messageLog.getLocation(), messageLog.getSourceAddress(), contextKey, flowMessage.getNodeIdentifier());
 
         final CollectionAgent agent;
-        if (nodeId.isPresent()) {
-            agent = collectionAgentFactory.createCollectionAgent(Integer.toString(nodeId.get()), inetAddress);
+        if (nodeInfo.isPresent()) {
+            agent = collectionAgentFactory.createCollectionAgent(Integer.toString(nodeInfo.get().getNodeId()), inetAddress);
 
         } else {
             LOG.warn("Unable to find node and interface for agent address: {}", address);
@@ -153,5 +162,23 @@ public class NetflowTelemetryAdapter extends AbstractScriptedCollectionAdapter {
 
     public void setInterfaceToNodeCache(final InterfaceToNodeCache interfaceToNodeCache) {
         this.interfaceToNodeCache = interfaceToNodeCache;
+    }
+
+    public ContextKey getContextKey() {
+        return contextKey;
+    }
+
+    public String getMetaDataNodeLookup() {
+        return metaDataNodeLookup;
+    }
+
+    public void setMetaDataNodeLookup(String metaDataNodeLookup) {
+        this.metaDataNodeLookup = metaDataNodeLookup;
+
+        if (!Strings.isNullOrEmpty(this.metaDataNodeLookup)) {
+            this.contextKey = new ContextKey(metaDataNodeLookup);
+        } else {
+            this.contextKey = null;
+        }
     }
 }

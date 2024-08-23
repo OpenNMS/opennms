@@ -28,12 +28,13 @@
 package org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9;
 
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
+import org.opennms.netmgt.telemetry.protocols.common.cache.NodeMetadataCache;
 import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowTelemetryAdapter;
 
 import com.codahale.metrics.MetricRegistry;
 
 public class Netflow9TelemetryAdapter extends NetflowTelemetryAdapter {
-    public Netflow9TelemetryAdapter(final AdapterDefinition adapterConfig, final MetricRegistry metricRegistry) {
-        super(adapterConfig, metricRegistry);
+    public Netflow9TelemetryAdapter(final AdapterDefinition adapterConfig, final MetricRegistry metricRegistry, final NodeMetadataCache nodeMetadataCache) {
+        super(adapterConfig, metricRegistry, nodeMetadataCache);
     }
 }
