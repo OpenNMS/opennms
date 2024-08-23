@@ -55,6 +55,7 @@ import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEng
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
 import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
+import org.opennms.netmgt.telemetry.protocols.common.cache.NodeMetadataCacheImpl;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
@@ -88,16 +89,26 @@ public class MockDocumentEnricherFactory {
                 new RuleBuilder().withName("http").withSrcPort("80").withProtocol("tcp,udp").build(),
                 new RuleBuilder().withName("https").withSrcPort("443").withProtocol("tcp,udp").build()
         ), FilterService.NOOP);
-        enricher = new DocumentEnricherImpl(
-                new MetricRegistry(),
-                nodeDao, ipInterfaceDao,
-                interfaceToNodeCache, new MockSessionUtils(), classificationEngine,
+        final NodeMetadataCacheImpl nodeMetadataCache = new NodeMetadataCacheImpl(
                 new CacheConfigBuilder()
-                    .withName("flows.node")
-                    .withMaximumSize(1000)
-                    .withExpireAfterWrite(300)
-                    .build(), clockSkewCorrectionThreshold,
-                new DocumentMangler(new ScriptEngineManager()));
+                        .withName("nodeInfoCache")
+                        .withMaximumSize(1000)
+                        .withExpireAfterWrite(300)
+                        .build(),
+                new CacheConfigBuilder()
+                        .withName("nodeMetadataCache")
+                        .withMaximumSize(1000)
+                        .withExpireAfterWrite(300)
+                        .build(),
+                new MetricRegistry(),
+                nodeDao,
+                ipInterfaceDao,
+                interfaceToNodeCache
+        );
+        enricher = new DocumentEnricherImpl(
+                new MockSessionUtils(), classificationEngine,
+                clockSkewCorrectionThreshold,
+                new DocumentMangler(new ScriptEngineManager()), nodeMetadataCache);
 
         // Required for mock node dao
         addServiceRegistry(nodeDao);

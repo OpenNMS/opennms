@@ -73,6 +73,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.telemetry.protocols</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>oia-dependencies</artifactId>
       <type>pom</type>

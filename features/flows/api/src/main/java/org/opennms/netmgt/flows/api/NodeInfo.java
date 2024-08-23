@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.flows.processing.enrichment;
+package org.opennms.netmgt.flows.api;
 
 import java.util.List;
 

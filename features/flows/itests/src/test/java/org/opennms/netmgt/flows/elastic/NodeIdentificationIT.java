@@ -62,6 +62,7 @@ import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.telemetry.protocols.common.cache.NodeMetadataCacheImpl;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -115,16 +116,29 @@ public class NodeIdentificationIT {
     @Test
     public void testSomething() throws InterruptedException {
         final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> Collections.emptyList(), FilterService.NOOP);
-        final DocumentEnricherImpl documentEnricher = new DocumentEnricherImpl(
-                new MetricRegistry(),
-                databasePopulator.getNodeDao(), databasePopulator.getIpInterfaceDao(),
-                interfaceToNodeCache, sessionUtils, classificationEngine,
+        final NodeMetadataCacheImpl nodeMetadataCache = new NodeMetadataCacheImpl(
                 new CacheConfigBuilder()
-                        .withName("flows.node")
+                        .withName("nodeInfoCache")
                         .withMaximumSize(1000)
                         .withExpireAfterWrite(300)
-                        .build(), 0,
-                new DocumentMangler(new ScriptEngineManager()));
+                        .build(),
+                new CacheConfigBuilder()
+                        .withName("nodeMetadataCache")
+                        .withMaximumSize(1000)
+                        .withExpireAfterWrite(300)
+                        .build(),
+                new MetricRegistry(),
+                databasePopulator.getNodeDao(),
+                databasePopulator.getIpInterfaceDao(),
+                interfaceToNodeCache
+        );
+
+        final DocumentEnricherImpl documentEnricher = new DocumentEnricherImpl(
+                sessionUtils,
+                classificationEngine,
+                 0,
+                new DocumentMangler(new ScriptEngineManager()),
+                nodeMetadataCache);
 
         final TestFlow testFlow = new TestFlow();
         testFlow.setSrcAddr("1.1.1.1");

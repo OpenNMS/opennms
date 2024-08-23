@@ -2,18 +2,12 @@
            xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
            xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
 		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
-
 		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
 		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
 
     <!-- Configuration properties -->
     <cm:property-placeholder id="flowProcessingProperties" persistent-id="org.opennms.features.flows.persistence.elastic" update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="nodeCache.enabled" value="true" /> <!-- Set to false to disable caching -->
-            <cm:property name="nodeCache.maximumSize" value="10000"/> <!-- Set value for unlimited size -->
-            <cm:property name="nodeCache.expireAfterWrite" value="0"/> <!-- in seconds. Set to 0 to never evict elements -->
-            <cm:property name="nodeCache.recordStats" value="true"/> <!-- Set to false to not expose cache statistics via jmx -->
-
             <cm:property name="flowThreshold.stepSizeMs" value="300000"/>
             <cm:property name="flowThreshold.idleTimeoutMs" value="900000"/>
 
@@ -24,16 +18,6 @@
             <cm:property name="mangleScriptPath" value="" />
         </cm:default-properties>
     </cm:property-placeholder>
-
-    <!-- Configure node cache -->
-    <bean id="nodeCacheConfig" class="org.opennms.core.cache.CacheConfig">
-        <argument value="nodes"/>
-        <property name="metricRegistry" ref="flowPipelineMetricRegistry" />
-        <property name="enabled" value="${nodeCache.enabled}" />
-        <property name="maximumSize" value="${nodeCache.maximumSize}" />
-        <property name="expireAfterWrite" value="${nodeCache.expireAfterWrite}" />
-        <property name="recordStats" value="${nodeCache.recordStats}" />
-    </bean>
 
     <!-- Metrics -->
     <bean id="flowPipelineMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
@@ -73,6 +57,7 @@
     </bean>
 
     <!-- Enrichment -->
+    <reference id="nodeMetadataCache" interface="org.opennms.netmgt.telemetry.protocols.common.cache.NodeMetadataCache" availability="mandatory"/>
     <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
@@ -81,15 +66,11 @@
     <reference id="classificationEngine" interface="org.opennms.netmgt.flows.classification.ClassificationEngine" availability="mandatory" />
     <reference id="classificationRuleProvider" interface="org.opennms.netmgt.flows.classification.ClassificationRuleProvider" />
     <bean id="documentEnricher" class="org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl">
-        <argument ref="flowPipelineMetricRegistry" />
         <argument ref="classificationEngine" />
-        <argument ref="nodeDao" />
-        <argument ref="ipInterfaceDao" />
-        <argument ref="interfaceToNodeCache" />
         <argument ref="sessionUtils" />
-        <argument ref="nodeCacheConfig" />
-	<argument value="${clockSkewCorrectionThreshold}" />
+        <argument value="${clockSkewCorrectionThreshold}" />
         <argument ref="mangler" />
+        <argument ref="nodeMetadataCache" />
     </bean>
 
     <bean id="interfaceMarker" class="org.opennms.netmgt.flows.processing.impl.InterfaceMarkerImpl" destroy-method="stop">

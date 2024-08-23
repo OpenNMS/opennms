@@ -93,13 +93,14 @@ import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEng
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService;
 import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
-import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
+import org.opennms.netmgt.flows.api.NodeInfo;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.flows.persistence.FlowDocumentBuilder;
 import org.opennms.netmgt.flows.processing.FlowBuilder;
 import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
+import org.opennms.netmgt.telemetry.protocols.common.cache.NodeMetadataCacheImpl;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
@@ -168,18 +169,27 @@ public class AggregatedFlowQueryIT {
                 new RuleBuilder().withName("https").withSrcPort("443").withProtocol("tcp,udp").build()),
                                                                          FilterService.NOOP);
 
-        documentEnricher = new DocumentEnricherImpl(metricRegistry,
-                                                    new MockNodeDao(),
-                                                    new MockIpInterfaceDao(),
-                                                    new MockInterfaceToNodeCache(),
-                                                    new MockSessionUtils(),
+        final NodeMetadataCacheImpl nodeMetadataCache = new NodeMetadataCacheImpl(
+                new CacheConfigBuilder()
+                        .withName("nodeInfoCache")
+                        .withMaximumSize(1000)
+                        .withExpireAfterWrite(300)
+                        .build(),
+                new CacheConfigBuilder()
+                        .withName("nodeMetadataCache")
+                        .withMaximumSize(1000)
+                        .withExpireAfterWrite(300)
+                        .build(),
+                new MetricRegistry(),
+                new MockNodeDao(),
+                new MockIpInterfaceDao(),
+                new MockInterfaceToNodeCache()
+        );
+        documentEnricher = new DocumentEnricherImpl(new MockSessionUtils(),
                                                     classificationEngine,
-                                                    new CacheConfigBuilder()
-                                                        .withName("flows.node")
-                                                        .withMaximumSize(1000)
-                                                        .withExpireAfterWrite(300)
-                                                        .build(), 0,
-                                                    new DocumentMangler(new ScriptEngineManager()));
+                                                    0,
+                                                    new DocumentMangler(new ScriptEngineManager()),
+                                                    nodeMetadataCache);
 
         // The repository should be empty
         assertThat(smartQueryService.getFlowCount(Collections.singletonList(new TimeRangeFilter(0, System.currentTimeMillis()))).get(), equalTo(0L));
