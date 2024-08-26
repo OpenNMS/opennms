@@ -30,7 +30,6 @@ package org.opennms.netmgt.telemetry.protocols.common.cache;
 import java.util.Optional;
 
 import org.opennms.core.mate.api.ContextKey;
-import org.opennms.netmgt.flows.api.NodeInfo;
 
 public interface NodeMetadataCache {
     Optional<NodeInfo> getNodeInfoFromCache(final String location, final String ipAddress, final ContextKey contextKey, final String value);

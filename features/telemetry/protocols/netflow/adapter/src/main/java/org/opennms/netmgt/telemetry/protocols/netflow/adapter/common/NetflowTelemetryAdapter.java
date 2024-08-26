@@ -41,7 +41,7 @@ import org.opennms.core.mate.api.ContextKey;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
-import org.opennms.netmgt.flows.api.NodeInfo;
+import org.opennms.netmgt.telemetry.protocols.common.cache.NodeInfo;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;

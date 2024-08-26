@@ -44,7 +44,7 @@ import org.junit.Test;
 import org.opennms.core.test.xml.JsonTest;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
-import org.opennms.netmgt.flows.api.NodeInfo;
+import org.opennms.netmgt.telemetry.protocols.common.cache.NodeInfo;
 
 import com.google.common.io.Resources;
 import com.google.gson.Gson;

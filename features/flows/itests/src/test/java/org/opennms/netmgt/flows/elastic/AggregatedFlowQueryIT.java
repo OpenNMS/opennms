@@ -93,7 +93,7 @@ import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEng
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService;
 import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
-import org.opennms.netmgt.flows.api.NodeInfo;
+import org.opennms.netmgt.telemetry.protocols.common.cache.NodeInfo;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;

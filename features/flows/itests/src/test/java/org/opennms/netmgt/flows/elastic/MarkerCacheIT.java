@@ -59,7 +59,7 @@ import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
-import org.opennms.netmgt.flows.api.NodeInfo;
+import org.opennms.netmgt.telemetry.protocols.common.cache.NodeInfo;
 import org.opennms.netmgt.flows.processing.impl.InterfaceMarkerImpl;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.test.JUnitConfigurationEnvironment;

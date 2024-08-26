@@ -34,20 +34,18 @@ import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import org.opennms.core.cache.Cache;
+import org.opennms.core.cache.CacheBuilder;
 import org.opennms.core.cache.CacheConfig;
 import org.opennms.core.mate.api.ContextKey;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.flows.api.NodeInfo;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.opennms.core.cache.CacheBuilder;
 
 import com.codahale.metrics.MetricRegistry;
 import com.codahale.metrics.Timer;
