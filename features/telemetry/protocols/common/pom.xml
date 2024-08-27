@@ -59,20 +59,5 @@
       <groupId>org.mongodb</groupId>
       <artifactId>bson</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.opennms.core.mate</groupId>
-      <artifactId>org.opennms.core.mate.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.cache</artifactId>
-      <version>${project.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features.flows</groupId>
-      <artifactId>org.opennms.features.flows.api</artifactId>
-      <version>${project.version}</version>
-    </dependency>
   </dependencies>
 </project>
