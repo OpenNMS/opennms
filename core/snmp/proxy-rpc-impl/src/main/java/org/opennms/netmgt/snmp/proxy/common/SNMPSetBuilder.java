@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,28 +30,32 @@ package org.opennms.netmgt.snmp.proxy.common;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpResult;
+import org.opennms.netmgt.snmp.SnmpValue;
 
-public class SNMPWalkBuilder extends AbstractSNMPRequestBuilder<List<SnmpResult>> {
+public class SNMPSetBuilder extends AbstractSNMPRequestBuilder<SnmpValue> {
 
-    public SNMPWalkBuilder(LocationAwareSnmpClientRpcImpl client, SnmpAgentConfig agent, List<SnmpObjId> oids) {
-        super(client, agent, Collections.emptyList(), buildWalkRequests(oids), Collections.emptyList());
+    public SNMPSetBuilder(LocationAwareSnmpClientRpcImpl client, SnmpAgentConfig agent, List<SnmpObjId> oids, List<SnmpValue> values) {
+        super(client, agent, Collections.emptyList(), Collections.emptyList(), buildGetRequests(oids, values));
     }
 
-    private static List<SnmpWalkRequestDTO> buildWalkRequests(List<SnmpObjId> oids) {
-        final SnmpWalkRequestDTO walkRequest = new SnmpWalkRequestDTO();
-        walkRequest.setOids(oids);
-        return Collections.singletonList(walkRequest);
+    private static List<SnmpSetRequestDTO> buildGetRequests(List<SnmpObjId> oids, List<SnmpValue> values) {
+        final SnmpSetRequestDTO setRequest = new SnmpSetRequestDTO();
+        setRequest.setOids(oids);
+        setRequest.setValues(values);
+        return Collections.singletonList(setRequest);
     }
 
     @Override
-    protected List<SnmpResult> processResponse(SnmpMultiResponseDTO response) {
+    protected SnmpValue processResponse(SnmpMultiResponseDTO response) {
         return response.getResponses().stream()
+                .flatMap(res -> res.getResults().stream())
                 .findFirst()
-                .map(SnmpResponseDTO::getResults)
-                .orElse(Collections.emptyList());
+                .map(SnmpResult::getValue)
+                .orElse(null);
     }
 }
