@@ -137,6 +137,7 @@ public class SnmpCollectorMinMaxValIT implements TestContextAware, InitializingB
 
         SnmpPeerFactory.setInstance(m_snmpPeerFactory);
         m_agentConfig = m_snmpPeerFactory.getAgentConfig(InetAddressUtils.addr(TEST_HOST_ADDRESS));
+        m_agentConfig.setWriteCommunity("public");
 
         m_rrdStrategy = new JRobinRrdStrategy();
 

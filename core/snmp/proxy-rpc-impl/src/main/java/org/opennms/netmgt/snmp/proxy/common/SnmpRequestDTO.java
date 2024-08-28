@@ -61,6 +61,9 @@ public class SnmpRequestDTO implements RpcRequest {
     @XmlElement(name="walk")
     private List<SnmpWalkRequestDTO> walks = new ArrayList<>(0);
 
+    @XmlElement(name="set")
+    private List<SnmpSetRequestDTO> sets = new ArrayList<>(0);
+
     @XmlTransient
     private Long timeToLive;
 
@@ -108,6 +111,15 @@ public class SnmpRequestDTO implements RpcRequest {
         return walks;
     }
 
+    public void setSetRequests(List<SnmpSetRequestDTO> sets) {
+        this.sets = sets;
+    }
+
+    public List<SnmpSetRequestDTO> getSetRequest() {
+        return sets;
+    }
+
+
     public String getDescription() {
         return description;
     }
@@ -145,7 +157,7 @@ public class SnmpRequestDTO implements RpcRequest {
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, systemId, agent, gets, walks, description, timeToLive);
+        return Objects.hash(location, systemId, agent, gets, walks, sets, description, timeToLive);
     }
 
     @Override
@@ -162,6 +174,7 @@ public class SnmpRequestDTO implements RpcRequest {
                 && Objects.equals(this.agent, other.agent)
                 && Objects.equals(this.gets, other.gets)
                 && Objects.equals(this.walks, other.walks)
+                && Objects.equals(this.sets, other.sets)
                 && Objects.equals(this.description, other.description)
                 && Objects.equals(this.timeToLive, other.timeToLive);
     }

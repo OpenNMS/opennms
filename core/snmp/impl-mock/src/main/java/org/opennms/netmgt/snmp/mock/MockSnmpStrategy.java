@@ -127,6 +127,11 @@ public class MockSnmpStrategy implements SnmpStrategy {
     }
 
     @Override
+    public CompletableFuture<SnmpValue[]> setAsync(SnmpAgentConfig agentConfig, SnmpObjId[] oids, SnmpValue[] values) {
+        return CompletableFuture.completedFuture(set(agentConfig, oids, values));
+    }
+
+    @Override
     public SnmpValue getNext(final SnmpAgentConfig agentConfig, final SnmpObjId oid) {
         final PropertyOidContainer oidContainer = getOidContainer(agentConfig);
         if (oidContainer == null) return null;
