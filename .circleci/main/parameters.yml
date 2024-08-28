@@ -24,11 +24,11 @@ parameters:
   next_branch:
     description: the auto-merge target branch
     type: string
-    default: release-33.x
+    default: foundation-2024
   next_branch_label:
     description: the auto-merge target branch (escaped, no slashes)
     type: string
-    default: release-33.x
+    default: foundation-2024
 
   ### sub-tree "module" build setup ###
   trigger-docs:
@@ -47,10 +47,6 @@ parameters:
     description: whether to trigger a code coverage build
     type: boolean
     default: false
-  trigger-flaky-smoke:
-    description: whether to enable running flaky smoke tests
-    type: boolean
-    default: false
 
   ### config.yml parameters for when triggers are used (not used in main.yml, but needed defined here for trigger executions) ###
   trigger-prebuild:
@@ -59,7 +55,3 @@ parameters:
   trigger-coverage-api:
     type: boolean
     default: false
-  trigger-flaky:
-    type: boolean
-    default: false
-

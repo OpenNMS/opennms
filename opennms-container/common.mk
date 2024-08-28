@@ -12,7 +12,7 @@ endif
 VERSION                 := $(shell ../../.circleci/scripts/pom2version.sh ../../pom.xml)
 SHELL                   := /bin/bash -o nounset -o pipefail -o errexit
 BUILD_DATE              := $(shell date -u +"%Y-%m-%dT%H:%M:%SZ")
-BASE_IMAGE              := opennms/deploy-base:ubuntu-3.3.0.b259-jre-11
+BASE_IMAGE              := opennms/deploy-base:ubuntu-3.4.0.b268-jre-11
 DOCKER_CLI_EXPERIMENTAL := enabled
 DOCKER_REGISTRY         := docker.io
 DOCKER_ORG              := opennms

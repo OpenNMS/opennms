@@ -720,7 +720,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.6.0</version>
+        <version>3.7.1</version>
         <configuration>
           <overrideUid>0</overrideUid>
           <overrideGid>0</overrideGid>
@@ -730,7 +730,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.3.2</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1148,6 +1148,7 @@
                    <exclude>javax.xml.bind:jaxb-api</exclude>        <!-- use: jaxb-dependencies -->
                    <exclude>jdom:jdom</exclude>                      <!-- use: org.apache.servicemix.bundles.jdom -->
                    <exclude>log4j:log4j</exclude>                    <!-- use: log4j2 -->
+                   <exclude>nekohtml:nekohtml</exclude>              <!-- use: net.sourceforge.nekohtml:nekohtml -->
                    <exclude>org.apache.geronimo.specs/geronimo-jms_2.0_spec</exclude>   <!-- use: javax.jms:javax.jms-api -->
                    <exclude>org.apache.velocity:velocity</exclude>   <!-- use: org.apache.velocity:velocity-engine-core -->
                    <exclude>org.springframework:*</exclude>          <!-- use: org.apache.servicemix.bundles.spring-* -->
@@ -1512,7 +1513,7 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- maven surefire/failsafe version added here so it could be overridden -->
-    <maven.testing.plugin.version>3.2.2</maven.testing.plugin.version>
+    <maven.testing.plugin.version>3.2.5</maven.testing.plugin.version>
 
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
@@ -1605,7 +1606,7 @@
     <!-- dependency versions -->
     <antVersion>1.10.13</antVersion>
     <args4jVersion>2.33</args4jVersion>
-    <asmVersion>9.6</asmVersion>
+    <asmVersion>9.7</asmVersion>
     <activemqVersion>5.15.16</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.17</batikVersion>
@@ -1620,17 +1621,17 @@
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
     <commonsChainVersion>1.2</commonsChainVersion>
-    <commonsCliVersion>1.2</commonsCliVersion>
-    <commonsCodecVersion>1.16.0</commonsCodecVersion>
+    <commonsCliVersion>1.7.0</commonsCliVersion>
+    <commonsCodecVersion>1.16.1</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
     <commonsCollections4Version>4.4</commonsCollections4Version>
-    <commonsCompressVersion>1.25.0</commonsCompressVersion>
+    <commonsCompressVersion>1.26.1</commonsCompressVersion>
     <commonsConfigurationVersion>1.10</commonsConfigurationVersion>
     <commonsCsvVersion>1.5</commonsCsvVersion>
     <commonsDaemonVersion>1.3.4</commonsDaemonVersion>
     <commonsDbcpVersion>1.4</commonsDbcpVersion>
     <commonsDigesterVersion>2.1</commonsDigesterVersion>
-    <commonsExecVersion>1.2</commonsExecVersion>
+    <commonsExecVersion>1.4.0</commonsExecVersion>
     <commonsFileuploadVersion>1.5</commonsFileuploadVersion>
     <commonsJexlVersion>2.1.1</commonsJexlVersion>
     <commonsJexl3Version>3.3</commonsJexl3Version>
@@ -1643,7 +1644,7 @@
     <commonsPoolVersion>1.6</commonsPoolVersion>
     <commonsPool2Version>2.4.3</commonsPool2Version>
     <commonsTextVersion>1.11.0</commonsTextVersion>
-    <commonsValidatorVersion>1.7</commonsValidatorVersion>
+    <commonsValidatorVersion>1.8.0</commonsValidatorVersion>
     <concurrentTreesVersion>2.6.1</concurrentTreesVersion>
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.5</c3p0Version>
@@ -1651,7 +1652,7 @@
     <cxfVersion>3.5.5</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
-    <dnsjavaVersion>3.5.2_1</dnsjavaVersion>
+    <dnsjavaVersion>3.5.3_1</dnsjavaVersion>
     <dom4jVersion>2.1.4</dom4jVersion>
     <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
@@ -1670,7 +1671,7 @@
     <geohashVersion>1.4.0</geohashVersion>
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
-    <groovyVersion>2.5.22</groovyVersion>
+    <groovyVersion>2.5.23</groovyVersion>
     <grpcVersion>1.46.0</grpcVersion>
     <gsonVersion>2.9.1</gsonVersion>
     <guavaVersion>25.1-jre</guavaVersion>
@@ -1684,7 +1685,7 @@
     <hibernateAnnotationsVersion>3.2.0.Final</hibernateAnnotationsVersion>
     <hibernateAnnotationsOsgiVersion>3.2.0</hibernateAnnotationsOsgiVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
-    <hibernateValidatorAnnotationProcessorVersion>4.1.0.Final</hibernateValidatorAnnotationProcessorVersion>
+    <hibernateValidatorAnnotationProcessorVersion>4.3.2.Final</hibernateValidatorAnnotationProcessorVersion>
     <hikaricpVersion>5.0.1</hikaricpVersion>
     <hllVersion>1.6.0</hllVersion>
     <httpcoreVersion>4.4.16</httpcoreVersion>
@@ -1732,7 +1733,7 @@
     <jrrd2Version>2.0.3</jrrd2Version>
     <jrubyVersion>9.2.6.0</jrubyVersion>
     <jschVersion>0.2.11</jschVersion>
-    <jsonVersion>20231013</jsonVersion>
+    <jsonVersion>20240303</jsonVersion>
     <jsonPatchVersion>1.13</jsonPatchVersion>
     <jsonPathVersion>2.8.0</jsonPathVersion>
     <jsonSmartVersion>2.5.0</jsonSmartVersion>
@@ -1771,9 +1772,9 @@
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
     <log4j2Version>2.21.1</log4j2Version>
-    <logbackClassicVersion>1.2.12</logbackClassicVersion>
+    <logbackClassicVersion>1.2.13</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
-    <mavenApiVersion>3.9.5</mavenApiVersion>
+    <mavenApiVersion>3.9.6</mavenApiVersion>
     <mavenResolverApiVersion>1.9.15</mavenResolverApiVersion>
     <minaVersion>2.2.3</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
@@ -1783,7 +1784,7 @@
     <paxCdiVersion>1.1.4</paxCdiVersion>
     <paxExamVersion>4.13.5</paxExamVersion>
     <pktsVersion>3.0.10</pktsVersion>
-    <protobufVersion>3.16.3</protobufVersion>
+    <protobufVersion>3.24.4</protobufVersion>
     <postgresqlVersion>42.5.4</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
@@ -1802,7 +1803,7 @@
     <opencsvVersion>2.3</opencsvVersion>
     <opentracingVersion>0.32.0</opentracingVersion>
     <jaegertracingVersion>1.8.1</jaegertracingVersion>
-    <pyroscopeVersion>0.11.5</pyroscopeVersion>
+    <pyroscopeVersion>0.13.1</pyroscopeVersion>
     <lz4JavaVersion>1.8.0</lz4JavaVersion>
     <quartzVersion>2.3.2</quartzVersion>
     <rancidApiVersion>2.0.0</rancidApiVersion>
@@ -1831,17 +1832,19 @@
     <vaadinJsoupVersion>1.15.3</vaadinJsoupVersion>
     <vaadinGentyrefVersion>1.2.0.vaadin1</vaadinGentyrefVersion>
     <velocityVersion>2.3</velocityVersion>
-    <xalanVersion>2.7.3.ONMS.1</xalanVersion>
-    <xalanServicemixVersion>2.7.3_0_ONMS_1</xalanServicemixVersion>
+    <xalanVersion>2.7.3</xalanVersion>
+    <xalanServicemixVersion>2.7.3_3</xalanServicemixVersion>
+    <xalanSerializerServicemixVersion>2.7.3_1</xalanSerializerServicemixVersion>
     <xercesVersion>2.12.2</xercesVersion>
     <xmlApisExtVersion>1.3.04</xmlApisExtVersion>
     <xmlgraphicsCommonsVersion>2.9</xmlgraphicsCommonsVersion>
+    <xmlsecVersion>2.3.4</xmlsecVersion>
     <xstreamVersion>1.4.20</xstreamVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
     <zookeeperVersion>3.7.2</zookeeperVersion>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
-    <minaSshdVersion>2.11.0</minaSshdVersion>
+    <minaSshdVersion>2.12.1</minaSshdVersion>
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
 
     <springVersion>4.2.9.RELEASE_1</springVersion>
@@ -1868,8 +1871,8 @@
 
     <!-- nodejs development -->
     <frontendPluginVersion>1.14.2</frontendPluginVersion>
-    <nodeVersion>v16.20.2</nodeVersion>
-    <npmVersion>8.19.4</npmVersion>
+    <nodeVersion>v18.20.2</nodeVersion>
+    <npmVersion>9.8.1</npmVersion>
     <yarnVersion>v1.22.19</yarnVersion>
 
     <!-- configuration manager -->
@@ -3869,6 +3872,11 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.apache.santuario</groupId>
+        <artifactId>xmlsec</artifactId>
+        <version>${xmlsecVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>bsf</groupId>
         <artifactId>bsf</artifactId>
         <version>2.4.0</version>
@@ -4325,7 +4333,7 @@
       <dependency>
         <groupId>com.opencsv</groupId>
         <artifactId>opencsv</artifactId>
-        <version>5.8</version>
+        <version>5.9</version>
       </dependency>
       <dependency>
         <groupId>net.i2p.crypto</groupId>
@@ -4903,6 +4911,11 @@
         <groupId>mx4j</groupId>
         <artifactId>mx4j-tools</artifactId>
         <version>3.0.1</version>
+      </dependency>
+      <dependency>
+        <groupId>net.sourceforge.nekohtml</groupId>
+        <artifactId>nekohtml</artifactId>
+        <version>1.9.22-atlassian-4</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>

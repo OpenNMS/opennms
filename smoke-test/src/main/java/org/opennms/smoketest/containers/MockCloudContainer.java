@@ -51,7 +51,7 @@ public class MockCloudContainer extends GenericContainer<MockCloudContainer> {
     private static final Path CLOUD_MOCK_PATH_CONTAINER = Path.of("/").resolve(CLOUD_MOCK_PATH_HOST.getFileName());
     private static final String CLOUD_MOCK_MAIN = "org.opennms.plugins.cloud.ittest.MockCloudMain";
     public MockCloudContainer() {
-        super(DockerImageName.parse("opennms/deploy-base:ubuntu-3.3.0.b259-jre-11"));
+        super(DockerImageName.parse("opennms/deploy-base:ubuntu-3.4.0.b268-jre-11"));
         withCopyFileToContainer(MountableFile.forHostPath(CLOUD_MOCK_PATH_HOST), CLOUD_MOCK_PATH_CONTAINER.toString())
                 .withCommand("/usr/bin/java", "-cp", CLOUD_MOCK_PATH_CONTAINER.toString(), CLOUD_MOCK_MAIN)
                 .withExposedPorts(PORT)

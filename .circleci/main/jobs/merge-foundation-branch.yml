@@ -6,9 +6,10 @@ jobs:
   merge-foundation-branch:
     executor: base-executor
     steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "66:9a:2d:a8:ad:7b:cc:7c:d2:ee:55:94:01:72:ac:2a"
+      #- add_ssh_keys:
+      #    fingerprints:
+      #      - "6a:c7:42:e6:e3:26:76:95:f4:0a:7a:5b:9c:b3:19:0e"
+      #      #- "66:9a:2d:a8:ad:7b:cc:7c:d2:ee:55:94:01:72:ac:2a"
       - run:
           name: "Branch Merge Parameters"
           command: |

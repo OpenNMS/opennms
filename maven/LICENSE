@@ -206,26 +206,122 @@ Apache Maven includes a number of components and libraries with separate
 copyright notices and license terms. Your use of those components are 
 subject to the terms and conditions of the following licenses: 
 
-- AOP alliance (http://aopalliance.sourceforge.net) aopalliance:aopalliance:jar:1.0
-    License: Public Domain
+- lib/guava-25.1-android.jar: com.google.guava:guava:bundle:25.1-android
+    Guava: Google Core Libraries for Java
+    Project URL: https://github.com/google/guava/
+    License: The Apache Software License, Version 2.0 (ASL-2.0)  http://www.apache.org/licenses/LICENSE-2.0.txt (lib/guava.license)
 
-- JSR-250 Common Annotations for the JavaTM Platform (http://jcp.org/aboutJava/communityprocess/final/jsr250/index.html) javax.annotation:jsr250-api:jar:1.0
+
+- lib/guice-4.2.1.jar: com.google.inject:guice:jar:4.2.1
+    Google Guice - Core Library
+    Project URL: https://github.com/google/guice/
+    License: The Apache Software License, Version 2.0 (ASL-2.0)  http://www.apache.org/licenses/LICENSE-2.0.txt (lib/guice.license)
+
+
+- lib/commons-cli-1.4.jar: commons-cli:commons-cli:jar:1.4
+    Apache Commons CLI
+    Project URL: http://commons.apache.org/proper/commons-cli/
+    License: Apache License, Version 2.0 (ASL-2.0)  https://www.apache.org/licenses/LICENSE-2.0.txt (lib/commons-cli.license)
+
+
+- lib/commons-io-2.5.jar: commons-io:commons-io:jar:2.5
+    Apache Commons IO
+    Project URL: http://commons.apache.org/proper/commons-io/
+    License: Apache License, Version 2.0 (ASL-2.0)  http://www.apache.org/licenses/LICENSE-2.0.txt (lib/commons-io.license)
+
+
+- lib/jsr250-api-1.0.jar: javax.annotation:jsr250-api:jar:1.0
+    JSR-250 Common Annotations for the JavaTM Platform
+    Project URL: http://jcp.org/aboutJava/communityprocess/final/jsr250/index.html
     License: COMMON DEVELOPMENT AND DISTRIBUTION LICENSE (CDDL) Version 1.0 (CDDL-1.0)  https://glassfish.dev.java.net/public/CDDLv1.0.html (lib/jsr250-api.license)
 
-- Checker Qual (http://checkerframework.org) org.checkerframework:checker-compat-qual:jar:2.0.0
-    License: The MIT License (MIT)  http://opensource.org/licenses/MIT (lib/checker-compat-qual.license)
 
-- Animal Sniffer Annotations (http://mojo.codehaus.org/animal-sniffer/animal-sniffer-annotations) org.codehaus.mojo:animal-sniffer-annotations:jar:1.14
-    License: MIT license (MIT)  http://www.opensource.org/licenses/mit-license.php (lib/animal-sniffer-annotations.license)
+- lib/cdi-api-1.0.jar: javax.enterprise:cdi-api:jar:1.0
+    CDI APIs
+    Project URL: http://www.seamframework.org/Weld/cdi-api
+    License: Apache License, Version 2.0 (ASL-2.0)  http://www.apache.org/licenses/LICENSE-2.0 (lib/cdi-api.license)
 
-- org.eclipse.sisu.inject (http://www.eclipse.org/sisu/org.eclipse.sisu.inject/) org.eclipse.sisu:org.eclipse.sisu.inject:eclipse-plugin:0.3.3
+
+- lib/javax.inject-1.jar: javax.inject:javax.inject:jar:1
+    javax.inject
+    Project URL: http://code.google.com/p/atinject/
+    License: The Apache Software License, Version 2.0 (ASL-2.0)  http://www.apache.org/licenses/LICENSE-2.0.txt (lib/javax.inject.license)
+
+
+- lib/commons-lang3-3.8.1.jar: org.apache.commons:commons-lang3:jar:3.8.1
+    Apache Commons Lang
+    Project URL: http://commons.apache.org/proper/commons-lang/
+    License: Apache License, Version 2.0 (ASL-2.0)  https://www.apache.org/licenses/LICENSE-2.0.txt (lib/commons-lang3.license)
+
+
+- boot/plexus-classworlds-2.6.0.jar: org.codehaus.plexus:plexus-classworlds:bundle:2.6.0
+    Plexus Classworlds
+    Project URL: http://codehaus-plexus.github.io/plexus-classworlds/
+    License: Apache License, Version 2.0 (ASL-2.0)  http://www.apache.org/licenses/LICENSE-2.0.txt (boot/plexus-classworlds.license)
+
+
+- lib/plexus-component-annotations-2.1.0.jar: org.codehaus.plexus:plexus-component-annotations:jar:2.1.0
+    Plexus :: Component Annotations
+    Project URL: http://codehaus-plexus.github.io/plexus-containers/plexus-component-annotations/
+    License: Apache License, Version 2.0 (ASL-2.0)  http://www.apache.org/licenses/LICENSE-2.0.txt (lib/plexus-component-annotations.license)
+
+
+- lib/plexus-interpolation-1.25.jar: org.codehaus.plexus:plexus-interpolation:bundle:1.25
+    Plexus Interpolation API
+    Project URL: http://codehaus-plexus.github.io/plexus-interpolation/
+    License: Apache License, Version 2.0 (ASL-2.0)  http://www.apache.org/licenses/LICENSE-2.0.txt (lib/plexus-interpolation.license)
+
+
+- lib/plexus-utils-3.2.1.jar: org.codehaus.plexus:plexus-utils:jar:3.2.1
+    Plexus Common Utilities
+    Project URL: http://codehaus-plexus.github.io/plexus-utils/
+    License: Apache License, Version 2.0 (ASL-2.0)  http://www.apache.org/licenses/LICENSE-2.0.txt (lib/plexus-utils.license)
+
+
+- lib/org.eclipse.sisu.inject-0.3.4.jar: org.eclipse.sisu:org.eclipse.sisu.inject:jar:0.3.4
+    org.eclipse.sisu.inject
+    Project URL: https://www.eclipse.org/sisu/
     License: Eclipse Public License, Version 1.0 (EPL-1.0)  http://www.eclipse.org/legal/epl-v10.html (lib/org.eclipse.sisu.inject.license)
 
-- org.eclipse.sisu.plexus (http://www.eclipse.org/sisu/org.eclipse.sisu.plexus/) org.eclipse.sisu:org.eclipse.sisu.plexus:eclipse-plugin:0.3.3
+
+- lib/org.eclipse.sisu.plexus-0.3.4.jar: org.eclipse.sisu:org.eclipse.sisu.plexus:jar:0.3.4
+    org.eclipse.sisu.plexus
+    Project URL: https://www.eclipse.org/sisu/
     License: Eclipse Public License, Version 1.0 (EPL-1.0)  http://www.eclipse.org/legal/epl-v10.html (lib/org.eclipse.sisu.plexus.license)
 
-- JCL 1.2 implemented over SLF4J (http://www.slf4j.org) org.slf4j:jcl-over-slf4j:jar:1.7.25
-    License: MIT License (MIT)  http://www.opensource.org/licenses/mit-license.php (lib/jcl-over-slf4j.license)
 
-- SLF4J API Module (http://www.slf4j.org) org.slf4j:slf4j-api:jar:1.7.25
+- lib/jansi-1.17.1.jar: org.fusesource.jansi:jansi:jar:1.17.1
+    jansi
+    Project URL: http://fusesource.github.io/jansi/jansi
+    License: The Apache Software License, Version 2.0 (ASL-2.0)  http://www.apache.org/licenses/LICENSE-2.0.txt (lib/jansi.license)
+
+
+- lib/jsoup-1.12.1.jar: org.jsoup:jsoup:jar:1.12.1
+    jsoup Java HTML Parser
+    Project URL: https://jsoup.org/
+    License: The MIT License (MIT)  https://jsoup.org/license (lib/jsoup.license)
+
+
+- lib/jcl-over-slf4j-1.7.29.jar: org.slf4j:jcl-over-slf4j:jar:1.7.29
+    JCL 1.2 implemented over SLF4J
+    Project URL: http://www.slf4j.org
+    License: Apache License, Version 2.0 (ASL-2.0)  https://www.apache.org/licenses/LICENSE-2.0.txt (lib/jcl-over-slf4j.license)
+
+
+- lib/slf4j-api-1.7.29.jar: org.slf4j:slf4j-api:jar:1.7.29
+    SLF4J API Module
+    Project URL: http://www.slf4j.org
     License: MIT License (MIT)  http://www.opensource.org/licenses/mit-license.php (lib/slf4j-api.license)
+
+
+- lib/plexus-cipher-1.7.jar: org.sonatype.plexus:plexus-cipher:jar:1.7
+    Plexus Cipher: encryption/decryption Component
+    Project URL: http://spice.sonatype.org/plexus-cipher
+    License: Apache Public License 2.0 (ASL-2.0)  http://www.apache.org/licenses/LICENSE-2.0 (lib/plexus-cipher.license)
+
+
+- lib/plexus-sec-dispatcher-1.4.jar: org.sonatype.plexus:plexus-sec-dispatcher:jar:1.4
+    Plexus Security Dispatcher Component
+    Project URL: http://spice.sonatype.org/plexus-sec-dispatcher
+    License: Apache Public License 2.0 (ASL-2.0)  http://www.apache.org/licenses/LICENSE-2.0 (lib/plexus-sec-dispatcher.license)
+

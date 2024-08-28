@@ -100,7 +100,7 @@
     "vue-tsc": "^0.40.1"
   },
   "engines": {
-    "node": ">=16.18.1",
+    "node": ">=18",
     "yarn": ">=1.22.18"
   },
   "resolutions": {

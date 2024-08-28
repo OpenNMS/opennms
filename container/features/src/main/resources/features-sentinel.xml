@@ -129,7 +129,7 @@
         <feature>opennms-dnsresolver-netty</feature>
         <feature>sentinel-kvstore-api</feature>
         <feature>opennms-kafka</feature>
-        <bundle>mvn:com.google.protobuf/protobuf-java-util/${protobufVersion}</bundle>
+        <bundle>wrap:mvn:com.google.protobuf/protobuf-java-util/${protobufVersion}$overwrite=merge&amp;Import-Package=javax.annotation;version=!,*</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.kafka-persistence/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>

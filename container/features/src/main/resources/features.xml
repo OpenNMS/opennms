@@ -50,7 +50,7 @@
     </feature>
     <feature name="batik" version="${batikVersion}" description="Apache :: XML Graphics :: Batik">
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan/${xalanServicemixVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan-serializer/${xalanServicemixVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan-serializer/${xalanSerializerServicemixVersion}</bundle>
         <bundle dependency="true">wrap:mvn:xml-apis/xml-apis-ext/1.3.04$Bundle-SymbolicName=org.w3c.xml-apis.ext&amp;Bundle-Version=1.3.04</bundle>
         <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-anim/${batikVersion}$Bundle-SymbolicName=org.apache.xmlgraphics.batik.anim&amp;Bundle-Version=${batikVersion}</bundle>
         <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/batik-awt-util/${batikVersion}$Bundle-SymbolicName=org.apache.xmlgraphics.batik.awk.util&amp;Bundle-Version=${batikVersion}</bundle>
@@ -802,7 +802,7 @@
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xerces/${xercesVersion}_1</bundle>
         <bundle>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.bcel/5.2_4</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan/${xalanServicemixVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan-serializer/${xalanServicemixVersion}</bundle>
+        <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan-serializer/${xalanSerializerServicemixVersion}</bundle>
         <bundle>mvn:org.opennms.core.wsman/org.opennms.core.wsman.api/${wsmanVersion}</bundle>
         <bundle>mvn:org.opennms.core.wsman/org.opennms.core.wsman.cxf/${wsmanVersion}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.wsman/${project.version}</bundle>
@@ -1145,8 +1145,12 @@
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/${project.version}</bundle>
+        <!--
+        <bundle>mvn:jakarta.annotation/jakarta.annotation-api/3.0.0</bundle>
+        <bundle>mvn:com.google.findbugs/jsr305/3.0.2</bundle>
+        -->
         <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
-        <bundle>mvn:com.google.protobuf/protobuf-java-util/${protobufVersion}</bundle>
+        <bundle>wrap:mvn:com.google.protobuf/protobuf-java-util/${protobufVersion}$overwrite=merge&amp;Import-Package=javax.annotation;version=!,*</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.flows/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.parser/${project.version}</bundle>

@@ -17,10 +17,6 @@ parameters:
     description: whether to trigger garbage collection for older feature images
     type: boolean
     default: false
-  trigger-flaky:
-    description: whether to enable running flaky smoke tests
-    type: boolean
-    default: false
   is_pr:
     description: whether this build is a pull request (only valid in non-setup workflows)
     type: boolean
@@ -73,7 +69,6 @@ workflows:
         - equal: [ true, << pipeline.parameters.trigger-coverage-api >> ]
         - equal: [ false, << pipeline.parameters.trigger-prebuild >> ]
         - equal: [ false, << pipeline.parameters.trigger-automation >> ]
-        - equal: [ false, << pipeline.parameters.trigger-flaky >> ]
     jobs:
       - trigger-path-filtering:
           base-revision: << pipeline.git.branch >>
@@ -86,32 +81,10 @@ workflows:
         - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
         - equal: [ true, << pipeline.parameters.trigger-prebuild >> ]
         - equal: [ false, << pipeline.parameters.trigger-automation >> ]
-        - equal: [ false, << pipeline.parameters.trigger-flaky >> ]
     jobs:
       - trigger-path-filtering:
           base-revision: << pipeline.git.branch >>
           mapping: |
-            ((?!docs/).)*     trigger-build       true
-            docs/.*           trigger-docs        true
-            ui/.*             trigger-ui          true
-            .circleci/.*      trigger-build       true
-            .circleci/main/jobs/build/build-docs.yml trigger-docs        true
-            .circleci/main/jobs/build/build-ui.yml trigger-ui        true
-            antora-playbook-local.yml      trigger-docs        true
-            Makefile                       trigger-docs        true
-
-  pre-build-with-flaky:
-    when:
-      and:
-        - equal: [ false, << pipeline.parameters.trigger-coverage-api >> ]
-        - equal: [ true, << pipeline.parameters.trigger-prebuild >> ]
-        - equal: [ false, << pipeline.parameters.trigger-automation >> ]
-        - equal: [ true, << pipeline.parameters.trigger-flaky >> ]
-    jobs:
-      - trigger-path-filtering:
-          base-revision: << pipeline.git.branch >>
-          mapping: |
-            .*                trigger-flaky-smoke true
             ((?!docs/).)*     trigger-build       true
             docs/.*           trigger-docs        true
             ui/.*             trigger-ui          true
@@ -194,7 +167,6 @@ jobs:
             echo Coverage API: << pipeline.parameters.trigger-coverage-api >>
             echo Prebuild: << pipeline.parameters.trigger-prebuild >>
             echo Automation: << pipeline.parameters.trigger-automation >>
-            echo Trigger Flaky Tests: << pipeline.parameters.trigger-flaky >>
       - run:
           name: Process Generate
           environment:

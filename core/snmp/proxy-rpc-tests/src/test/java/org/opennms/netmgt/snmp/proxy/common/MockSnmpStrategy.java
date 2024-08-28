@@ -49,7 +49,8 @@ import org.opennms.netmgt.snmp.TrapNotificationListener;
 
 public class MockSnmpStrategy implements SnmpStrategy {
 
-    private static boolean firstCall = true;
+    private static boolean firstGetCall = true;
+    private static boolean firstSetCall = true;
 
     @Override
     public SnmpWalker createWalker(SnmpAgentConfig agentConfig, String name, CollectionTracker tracker) {
@@ -78,8 +79,17 @@ public class MockSnmpStrategy implements SnmpStrategy {
 
     @Override
     public CompletableFuture<SnmpValue[]> getAsync(SnmpAgentConfig agentConfig, SnmpObjId[] oids) {
-        if (firstCall) {
-            firstCall = false;
+        if (firstGetCall) {
+            firstGetCall = false;
+            return SnmpProxyRpcModuleTest.completedFuture;
+        }
+        return SnmpProxyRpcModuleTest.failedFuture;
+    }
+
+    @Override
+    public CompletableFuture<SnmpValue[]> setAsync(SnmpAgentConfig agentConfig, SnmpObjId[] oids, SnmpValue[] values) {
+        if (firstSetCall) {
+            firstSetCall = false;
             return SnmpProxyRpcModuleTest.completedFuture;
         }
         return SnmpProxyRpcModuleTest.failedFuture;
@@ -158,6 +168,6 @@ public class MockSnmpStrategy implements SnmpStrategy {
     }
 
     public static void setFirstCall(boolean firstCall) {
-        MockSnmpStrategy.firstCall = firstCall;
+        MockSnmpStrategy.firstGetCall = firstCall;
     }
 }

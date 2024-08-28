@@ -20,28 +20,32 @@ export DOCKER_PASSWORD="${DOCKERHUB_PASS}"
 
 configure_cosign
 
-printf '%s' "${DCT_DELEGATE_KEY}" | base64 -d > "${PRIVATE_KEY_FOLDER}/${DCT_DELEGATE_KEY_NAME}.key"
-chmod 600 "${PRIVATE_KEY_FOLDER}/${DCT_DELEGATE_KEY_NAME}.key"
+if [ "${DOCKER_CONTENT_TRUST}" -eq 1 ]; then
+  printf '%s' "${DCT_DELEGATE_KEY}" | base64 -d > "${PRIVATE_KEY_FOLDER}/${DCT_DELEGATE_KEY_NAME}.key"
+  chmod 600 "${PRIVATE_KEY_FOLDER}/${DCT_DELEGATE_KEY_NAME}.key"
 
-export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE="${DCT_DELEGATE_KEY_PASSPHRASE}"
-docker trust key load "${PRIVATE_KEY_FOLDER}/${DCT_DELEGATE_KEY_NAME}.key"
+  export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE="${DCT_DELEGATE_KEY_PASSPHRASE}"
+  docker trust key load "${PRIVATE_KEY_FOLDER}/${DCT_DELEGATE_KEY_NAME}.key"
+fi
 
 for TYPE in horizon minion sentinel; do
   export DOCKER_REPO="${DOCKER_SERVER}/opennms/${TYPE}"
 
-  # figure out DCT environment variables for $TYPE
-  _key_contents_variable="$(printf 'DCT_REPO_%s_KEY' "${TYPE}" | tr '[:lower:]' '[:upper:]' | tr '-' '_')"
-  _key_name_variable="$(printf 'DCT_REPO_%s_KEY_NAME' "${TYPE}" | tr '[:lower:]' '[:upper:]' | tr '-' '_')"
-  _key_passphrase_variable="$(printf 'DCT_REPO_%s_KEY_PASSPHRASE' "${TYPE}" | tr '[:lower:]' '[:upper:]' | tr '-' '_')"
+  if [ "${DOCKER_CONTENT_TRUST}" -eq 1 ]; then
+    # figure out DCT environment variables for $TYPE
+    _key_contents_variable="$(printf 'DCT_REPO_%s_KEY' "${TYPE}" | tr '[:lower:]' '[:upper:]' | tr '-' '_')"
+    _key_name_variable="$(printf 'DCT_REPO_%s_KEY_NAME' "${TYPE}" | tr '[:lower:]' '[:upper:]' | tr '-' '_')"
+    _key_passphrase_variable="$(printf 'DCT_REPO_%s_KEY_PASSPHRASE' "${TYPE}" | tr '[:lower:]' '[:upper:]' | tr '-' '_')"
 
-  # save and load $TYPE's key
-  printf '%s' "${!_key_contents_variable}" | base64 -d > "${PRIVATE_KEY_FOLDER}/${!_key_name_variable}.key"
-  chmod 600 "${PRIVATE_KEY_FOLDER}/${!_key_name_variable}.key"
-  export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE="${!_key_passphrase_variable}"
-  docker trust key load "${PRIVATE_KEY_FOLDER}/${!_key_name_variable}.key"
+    # save and load $TYPE's key
+    printf '%s' "${!_key_contents_variable}" | base64 -d > "${PRIVATE_KEY_FOLDER}/${!_key_name_variable}.key"
+    chmod 600 "${PRIVATE_KEY_FOLDER}/${!_key_name_variable}.key"
+    export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE="${!_key_passphrase_variable}"
+    docker trust key load "${PRIVATE_KEY_FOLDER}/${!_key_name_variable}.key"
 
-  # put the passphrase back to the delegate for signing
-  export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE="${DCT_DELEGATE_KEY_PASSPHRASE}"
+    # put the passphrase back to the delegate for signing
+    export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE="${DCT_DELEGATE_KEY_PASSPHRASE}"
+  fi
 
   # in dockerhub, only push the "branchname-arch" version of the individual ones
   find /tmp/artifacts/oci -name "${TYPE}-linux-*.oci" | sort -u | while read -r _file; do
@@ -59,10 +63,14 @@ for TYPE in horizon minion sentinel; do
     cosign_sign "${DOCKER_REPO}@${_sha256}" "/tmp/artifacts/xml/${_file_tag}-sbom.xml"
   done
 
-  export NOTARY_TARGETS_PASSPHRASE="${!_key_passphrase_variable}"
   for _publish_tag in "${DOCKER_TAGS[@]}"; do
     create_and_push_manifest "${DOCKER_REPO}" "${DOCKER_BRANCH_TAG}" "${_publish_tag}"
-    do_with_retries notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${DOCKER_REPO}" "${_publish_tag}" "${DOCKER_IMAGE_BYTES_SIZE}" --sha256 "${DOCKER_IMAGE_SHA_256}" --publish --verbose
+
+    if [ "${DOCKER_CONTENT_TRUST}" -eq 1 ]; then
+      export NOTARY_TARGETS_PASSPHRASE="${!_key_passphrase_variable}"
+      do_with_retries notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${DOCKER_REPO}" "${_publish_tag}" "${DOCKER_IMAGE_BYTES_SIZE}" --sha256 "${DOCKER_IMAGE_SHA_256}" --publish --verbose
+    fi
+
     cosign_sign "${DOCKER_REPO}@sha256:${DOCKER_IMAGE_SHA_256}"
   done
 
