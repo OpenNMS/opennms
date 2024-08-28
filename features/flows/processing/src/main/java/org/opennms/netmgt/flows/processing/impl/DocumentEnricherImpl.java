@@ -45,7 +45,7 @@ import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
-import org.opennms.netmgt.telemetry.protocols.common.cache.NodeMetadataCache;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeMetadataCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

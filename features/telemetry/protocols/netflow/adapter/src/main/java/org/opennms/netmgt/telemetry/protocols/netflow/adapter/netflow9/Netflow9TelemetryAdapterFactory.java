@@ -30,7 +30,7 @@ package org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.collection.AbstractCollectionAdapterFactory;
-import org.opennms.netmgt.telemetry.protocols.common.cache.NodeMetadataCache;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeMetadataCache;
 import org.osgi.framework.BundleContext;
 
 public class Netflow9TelemetryAdapterFactory extends AbstractCollectionAdapterFactory {

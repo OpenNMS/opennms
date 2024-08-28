@@ -93,14 +93,14 @@ import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEng
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService;
 import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
-import org.opennms.netmgt.telemetry.protocols.common.cache.NodeInfo;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfo;
 import org.opennms.netmgt.flows.filter.api.Filter;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.flows.persistence.FlowDocumentBuilder;
 import org.opennms.netmgt.flows.processing.FlowBuilder;
 import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
-import org.opennms.netmgt.telemetry.protocols.common.cache.NodeMetadataCacheImpl;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeMetadataCacheImpl;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;

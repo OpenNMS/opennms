@@ -65,7 +65,7 @@ import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.filter.api.FilterDao;
 import org.opennms.integration.api.v1.flows.Flow;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
-import org.opennms.netmgt.telemetry.protocols.common.cache.NodeInfo;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfo;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRuleProvider;

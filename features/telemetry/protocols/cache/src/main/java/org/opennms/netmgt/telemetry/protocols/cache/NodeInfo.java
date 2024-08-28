@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.telemetry.protocols.common.cache;
+package org.opennms.netmgt.telemetry.protocols.cache;
 
 import java.util.List;
 

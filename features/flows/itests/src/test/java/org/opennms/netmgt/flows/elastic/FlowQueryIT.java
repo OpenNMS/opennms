@@ -69,7 +69,6 @@ import org.hamcrest.number.IsCloseTo;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
-import org.opennms.core.cache.CacheConfig;
 import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
@@ -102,7 +101,7 @@ import org.opennms.netmgt.flows.filter.api.FilterVisitor;
 import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
-import org.opennms.netmgt.telemetry.protocols.common.cache.NodeMetadataCacheImpl;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeMetadataCacheImpl;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;

@@ -48,7 +48,7 @@
     <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory" />
 
     <!-- Configure NodeMetadataCache -->
-    <bean id="nodeMetadataCache" class="org.opennms.netmgt.telemetry.protocols.common.cache.NodeMetadataCacheImpl">
+    <bean id="nodeMetadataCache" class="org.opennms.netmgt.telemetry.protocols.cache.NodeMetadataCacheImpl">
         <argument ref="nodeInfoCacheConfig"/>
         <argument ref="nodeMetadataCacheConfig"/>
         <argument ref="flowCacheMetricRegistry"/>
@@ -56,7 +56,7 @@
         <argument ref="ipInterfaceDao"/>
         <argument ref="interfaceToNodeCache"/>
     </bean>
-    <service ref="nodeMetadataCache" interface="org.opennms.netmgt.telemetry.protocols.common.cache.NodeMetadataCache">
+    <service ref="nodeMetadataCache" interface="org.opennms.netmgt.telemetry.protocols.cache.NodeMetadataCache">
         <service-properties>
             <entry key="registration.export" value="true" />
         </service-properties>

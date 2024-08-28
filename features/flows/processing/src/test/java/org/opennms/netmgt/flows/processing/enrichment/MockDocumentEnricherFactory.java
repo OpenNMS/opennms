@@ -55,7 +55,7 @@ import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEng
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
 import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
-import org.opennms.netmgt.telemetry.protocols.common.cache.NodeMetadataCacheImpl;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeMetadataCacheImpl;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;

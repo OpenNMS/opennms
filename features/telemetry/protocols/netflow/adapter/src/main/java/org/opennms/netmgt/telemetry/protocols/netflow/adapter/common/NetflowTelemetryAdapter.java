@@ -41,14 +41,14 @@ import org.opennms.core.mate.api.ContextKey;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
-import org.opennms.netmgt.telemetry.protocols.common.cache.NodeInfo;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfo;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.collection.AbstractScriptedCollectionAdapter;
 import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.opennms.netmgt.telemetry.protocols.collection.ScriptedCollectionSetBuilder;
-import org.opennms.netmgt.telemetry.protocols.common.cache.NodeMetadataCache;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeMetadataCache;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.Value;
 

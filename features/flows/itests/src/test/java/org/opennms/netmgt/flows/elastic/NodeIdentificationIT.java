@@ -62,7 +62,7 @@ import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.telemetry.protocols.common.cache.NodeMetadataCacheImpl;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeMetadataCacheImpl;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
