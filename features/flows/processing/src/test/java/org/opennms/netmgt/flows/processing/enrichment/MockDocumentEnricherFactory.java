@@ -55,7 +55,8 @@ import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEng
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
 import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
 import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
-import org.opennms.netmgt.telemetry.protocols.cache.NodeMetadataCacheImpl;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCache;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCacheImpl;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
@@ -89,17 +90,14 @@ public class MockDocumentEnricherFactory {
                 new RuleBuilder().withName("http").withSrcPort("80").withProtocol("tcp,udp").build(),
                 new RuleBuilder().withName("https").withSrcPort("443").withProtocol("tcp,udp").build()
         ), FilterService.NOOP);
-        final NodeMetadataCacheImpl nodeMetadataCache = new NodeMetadataCacheImpl(
+        final NodeInfoCache nodeInfoCache = new NodeInfoCacheImpl(
                 new CacheConfigBuilder()
                         .withName("nodeInfoCache")
                         .withMaximumSize(1000)
                         .withExpireAfterWrite(300)
+                        .withExpireAfterRead(300)
                         .build(),
-                new CacheConfigBuilder()
-                        .withName("nodeMetadataCache")
-                        .withMaximumSize(1000)
-                        .withExpireAfterWrite(300)
-                        .build(),
+                true,
                 new MetricRegistry(),
                 nodeDao,
                 ipInterfaceDao,
@@ -108,7 +106,7 @@ public class MockDocumentEnricherFactory {
         enricher = new DocumentEnricherImpl(
                 new MockSessionUtils(), classificationEngine,
                 clockSkewCorrectionThreshold,
-                new DocumentMangler(new ScriptEngineManager()), nodeMetadataCache);
+                new DocumentMangler(new ScriptEngineManager()), nodeInfoCache);
 
         // Required for mock node dao
         addServiceRegistry(nodeDao);

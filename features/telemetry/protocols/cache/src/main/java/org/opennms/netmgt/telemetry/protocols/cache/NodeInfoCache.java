@@ -31,7 +31,7 @@ import java.util.Optional;
 
 import org.opennms.core.mate.api.ContextKey;
 
-public interface NodeMetadataCache {
+public interface NodeInfoCache {
     Optional<NodeInfo> getNodeInfoFromCache(final String location, final String ipAddress, final ContextKey contextKey, final String value);
 
 }

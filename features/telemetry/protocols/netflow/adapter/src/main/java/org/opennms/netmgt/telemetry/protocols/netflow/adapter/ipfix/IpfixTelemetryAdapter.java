@@ -28,13 +28,13 @@
 package org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix;
 
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
-import org.opennms.netmgt.telemetry.protocols.cache.NodeMetadataCache;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCache;
 import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowTelemetryAdapter;
 
 import com.codahale.metrics.MetricRegistry;
 
 public class IpfixTelemetryAdapter extends NetflowTelemetryAdapter {
-    public IpfixTelemetryAdapter(final AdapterDefinition adapterConfig, final MetricRegistry metricRegistry, final NodeMetadataCache nodeMetadataCache) {
+    public IpfixTelemetryAdapter(final AdapterDefinition adapterConfig, final MetricRegistry metricRegistry, final NodeInfoCache nodeMetadataCache) {
         super(adapterConfig, metricRegistry, nodeMetadataCache);
     }
 }

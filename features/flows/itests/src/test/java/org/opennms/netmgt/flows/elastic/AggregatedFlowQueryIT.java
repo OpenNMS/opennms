@@ -100,7 +100,8 @@ import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.flows.persistence.FlowDocumentBuilder;
 import org.opennms.netmgt.flows.processing.FlowBuilder;
 import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
-import org.opennms.netmgt.telemetry.protocols.cache.NodeMetadataCacheImpl;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCache;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCacheImpl;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
@@ -169,17 +170,14 @@ public class AggregatedFlowQueryIT {
                 new RuleBuilder().withName("https").withSrcPort("443").withProtocol("tcp,udp").build()),
                                                                          FilterService.NOOP);
 
-        final NodeMetadataCacheImpl nodeMetadataCache = new NodeMetadataCacheImpl(
+        final NodeInfoCache nodeInfoCache = new NodeInfoCacheImpl(
                 new CacheConfigBuilder()
                         .withName("nodeInfoCache")
                         .withMaximumSize(1000)
                         .withExpireAfterWrite(300)
+                        .withExpireAfterRead(300)
                         .build(),
-                new CacheConfigBuilder()
-                        .withName("nodeMetadataCache")
-                        .withMaximumSize(1000)
-                        .withExpireAfterWrite(300)
-                        .build(),
+                true,
                 new MetricRegistry(),
                 new MockNodeDao(),
                 new MockIpInterfaceDao(),
@@ -189,7 +187,7 @@ public class AggregatedFlowQueryIT {
                                                     classificationEngine,
                                                     0,
                                                     new DocumentMangler(new ScriptEngineManager()),
-                                                    nodeMetadataCache);
+                                                    nodeInfoCache);
 
         // The repository should be empty
         assertThat(smartQueryService.getFlowCount(Collections.singletonList(new TimeRangeFilter(0, System.currentTimeMillis()))).get(), equalTo(0L));

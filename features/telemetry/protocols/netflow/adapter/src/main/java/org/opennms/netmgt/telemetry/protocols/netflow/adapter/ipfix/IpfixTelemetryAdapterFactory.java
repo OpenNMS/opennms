@@ -30,12 +30,12 @@ package org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.collection.AbstractCollectionAdapterFactory;
-import org.opennms.netmgt.telemetry.protocols.cache.NodeMetadataCache;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCache;
 import org.osgi.framework.BundleContext;
 
 public class IpfixTelemetryAdapterFactory extends AbstractCollectionAdapterFactory {
 
-    private NodeMetadataCache nodeMetadataCache;
+    private NodeInfoCache nodeInfoCache;
 
     public IpfixTelemetryAdapterFactory() {
         super(null);
@@ -52,7 +52,7 @@ public class IpfixTelemetryAdapterFactory extends AbstractCollectionAdapterFacto
 
     @Override
     public Adapter createBean(final AdapterDefinition adapterConfig) {
-        final IpfixTelemetryAdapter adapter = new IpfixTelemetryAdapter(adapterConfig, getTelemetryRegistry().getMetricRegistry(), nodeMetadataCache);
+        final IpfixTelemetryAdapter adapter = new IpfixTelemetryAdapter(adapterConfig, getTelemetryRegistry().getMetricRegistry(), nodeInfoCache);
         adapter.setCollectionAgentFactory(getCollectionAgentFactory());
         adapter.setPersisterFactory(getPersisterFactory());
         adapter.setFilterDao(getFilterDao());
@@ -65,7 +65,7 @@ public class IpfixTelemetryAdapterFactory extends AbstractCollectionAdapterFacto
         return adapter;
     }
 
-    public void setNodeMetadataCache(NodeMetadataCache nodeMetadataCache) {
-        this.nodeMetadataCache = nodeMetadataCache;
+    public void setNodeInfoCache(NodeInfoCache nodeInfoCache) {
+        this.nodeInfoCache = nodeInfoCache;
     }
 }

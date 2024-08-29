@@ -57,7 +57,7 @@
     </bean>
 
     <!-- Enrichment -->
-    <reference id="nodeMetadataCache" interface="org.opennms.netmgt.telemetry.protocols.cache.NodeMetadataCache" availability="mandatory"/>
+    <reference id="nodeInfoCache" interface="org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCache" availability="mandatory"/>
     <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory" />
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
@@ -70,7 +70,7 @@
         <argument ref="sessionUtils" />
         <argument value="${clockSkewCorrectionThreshold}" />
         <argument ref="mangler" />
-        <argument ref="nodeMetadataCache" />
+        <argument ref="nodeInfoCache" />
     </bean>
 
     <bean id="interfaceMarker" class="org.opennms.netmgt.flows.processing.impl.InterfaceMarkerImpl" destroy-method="stop">

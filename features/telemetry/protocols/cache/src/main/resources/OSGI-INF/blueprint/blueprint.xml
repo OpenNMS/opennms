@@ -12,14 +12,11 @@
     <cm:property-placeholder id="cacheConfigProperties" persistent-id="org.opennms.features.telemetry.protocols.common" update-strategy="reload">
         <cm:default-properties>
             <cm:property name="nodeInfoCache.enabled" value="true" /> <!-- Set to false to disable caching -->
+            <cm:property name="nodeInfoCache.nodeMetadataEnabled" value="true" /> <!-- Set to false to disable caching -->
             <cm:property name="nodeInfoCache.maximumSize" value="10000"/> <!-- Set value for unlimited size -->
             <cm:property name="nodeInfoCache.expireAfterWrite" value="0"/> <!-- in seconds. Set to 0 to never evict elements -->
+            <cm:property name="nodeInfoCache.expireAfterRead" value="0"/> <!-- in seconds. Set to 0 to never evict elements -->
             <cm:property name="nodeInfoCache.recordStats" value="true"/> <!-- Set to false to not expose cache statistics via jmx -->
-
-            <cm:property name="nodeMetadataCache.enabled" value="true" /> <!-- Set to false to disable caching -->
-            <cm:property name="nodeMetadataCache.maximumSize" value="10000"/> <!-- Set value for unlimited size -->
-            <cm:property name="nodeMetadataCache.expireAfterWrite" value="0"/> <!-- in seconds. Set to 0 to never evict elements -->
-            <cm:property name="nodeMetadataCache.recordStats" value="true"/> <!-- Set to false to not expose cache statistics via jmx -->
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -30,16 +27,8 @@
         <property name="enabled" value="${nodeInfoCache.enabled}" />
         <property name="maximumSize" value="${nodeInfoCache.maximumSize}" />
         <property name="expireAfterWrite" value="${nodeInfoCache.expireAfterWrite}" />
+        <property name="expireAfterRead" value="${nodeInfoCache.expireAfterRead}" />
         <property name="recordStats" value="${nodeInfoCache.recordStats}" />
-    </bean>
-
-    <bean id="nodeMetadataCacheConfig" class="org.opennms.core.cache.CacheConfig">
-        <argument value="nodeMetadataCache"/>
-        <property name="metricRegistry" ref="flowCacheMetricRegistry" />
-        <property name="enabled" value="${nodeMetadataCache.enabled}" />
-        <property name="maximumSize" value="${nodeMetadataCache.maximumSize}" />
-        <property name="expireAfterWrite" value="${nodeMetadataCache.expireAfterWrite}" />
-        <property name="recordStats" value="${nodeMetadataCache.recordStats}" />
     </bean>
 
     <!-- Configure references -->
@@ -47,16 +36,16 @@
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
     <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory" />
 
-    <!-- Configure NodeMetadataCache -->
-    <bean id="nodeMetadataCache" class="org.opennms.netmgt.telemetry.protocols.cache.NodeMetadataCacheImpl">
+    <!-- Configure NodeInfoCache -->
+    <bean id="nodeInfoCache" class="org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCacheImpl">
         <argument ref="nodeInfoCacheConfig"/>
-        <argument ref="nodeMetadataCacheConfig"/>
+        <argument value="${nodeInfoCache.nodeMetadataEnabled}"/>
         <argument ref="flowCacheMetricRegistry"/>
         <argument ref="nodeDao"/>
         <argument ref="ipInterfaceDao"/>
         <argument ref="interfaceToNodeCache"/>
     </bean>
-    <service ref="nodeMetadataCache" interface="org.opennms.netmgt.telemetry.protocols.cache.NodeMetadataCache">
+    <service ref="nodeInfoCache" interface="org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCache">
         <service-properties>
             <entry key="registration.export" value="true" />
         </service-properties>

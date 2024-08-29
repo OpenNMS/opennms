@@ -45,7 +45,7 @@ import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.ClassificationRequest;
 import org.opennms.netmgt.flows.classification.persistence.api.Protocols;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
-import org.opennms.netmgt.telemetry.protocols.cache.NodeMetadataCache;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCache;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -56,7 +56,7 @@ public class DocumentEnricherImpl {
 
     private final ClassificationEngine classificationEngine;
 
-    private final NodeMetadataCache nodeMetadataCache;
+    private final NodeInfoCache nodeInfoCache;
 
     private final long clockSkewCorrectionThreshold;
 
@@ -66,10 +66,10 @@ public class DocumentEnricherImpl {
                                 final ClassificationEngine classificationEngine,
                                 final long clockSkewCorrectionThreshold,
                                 final DocumentMangler mangler,
-                                final NodeMetadataCache nodeMetadataCache) {
+                                final NodeInfoCache nodeInfoCache) {
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.classificationEngine = Objects.requireNonNull(classificationEngine);
-        this.nodeMetadataCache = Objects.requireNonNull(nodeMetadataCache);
+        this.nodeInfoCache = Objects.requireNonNull(nodeInfoCache);
         this.clockSkewCorrectionThreshold = clockSkewCorrectionThreshold;
         this.mangler = Objects.requireNonNull(mangler);
     }
@@ -91,12 +91,12 @@ public class DocumentEnricherImpl {
             document.setLocation(source.getLocation());
 
             // Node data
-            nodeMetadataCache.getNodeInfoFromCache(source.getLocation(), source.getSourceAddress(), source.getContextKey(), flow.getNodeIdentifier()).ifPresent(document::setExporterNodeInfo);
+            nodeInfoCache.getNodeInfoFromCache(source.getLocation(), source.getSourceAddress(), source.getContextKey(), flow.getNodeIdentifier()).ifPresent(document::setExporterNodeInfo);
             if (flow.getDstAddr() != null) {
-                nodeMetadataCache.getNodeInfoFromCache(source.getLocation(), flow.getDstAddr(), null, null).ifPresent(document::setSrcNodeInfo);
+                nodeInfoCache.getNodeInfoFromCache(source.getLocation(), flow.getDstAddr(), null, null).ifPresent(document::setSrcNodeInfo);
             }
             if (flow.getSrcAddr() != null) {
-                nodeMetadataCache.getNodeInfoFromCache(source.getLocation(), flow.getSrcAddr(), null, null).ifPresent(document::setDstNodeInfo);
+                nodeInfoCache.getNodeInfoFromCache(source.getLocation(), flow.getSrcAddr(), null, null).ifPresent(document::setDstNodeInfo);
             }
 
             // Locality

@@ -30,12 +30,12 @@ package org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5;
 import org.opennms.netmgt.telemetry.api.adapter.Adapter;
 import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.collection.AbstractCollectionAdapterFactory;
-import org.opennms.netmgt.telemetry.protocols.cache.NodeMetadataCache;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCache;
 import org.osgi.framework.BundleContext;
 
 public class Netflow5TelemetryAdapterFactory extends AbstractCollectionAdapterFactory {
 
-    private NodeMetadataCache nodeMetadataCache;
+    private NodeInfoCache nodeInfoCache;
 
     public Netflow5TelemetryAdapterFactory() {
         super(null);
@@ -52,7 +52,7 @@ public class Netflow5TelemetryAdapterFactory extends AbstractCollectionAdapterFa
 
     @Override
     public Adapter createBean(final AdapterDefinition adapterConfig) {
-        final Netflow5TelemetryAdapter adapter = new Netflow5TelemetryAdapter(adapterConfig, getTelemetryRegistry().getMetricRegistry(), nodeMetadataCache);
+        final Netflow5TelemetryAdapter adapter = new Netflow5TelemetryAdapter(adapterConfig, getTelemetryRegistry().getMetricRegistry(), nodeInfoCache);
         adapter.setCollectionAgentFactory(getCollectionAgentFactory());
         adapter.setPersisterFactory(getPersisterFactory());
         adapter.setFilterDao(getFilterDao());
@@ -65,8 +65,8 @@ public class Netflow5TelemetryAdapterFactory extends AbstractCollectionAdapterFa
         return adapter;
     }
 
-    public void setNodeMetadataCache(NodeMetadataCache nodeMetadataCache) {
-        this.nodeMetadataCache = nodeMetadataCache;
+    public void setNodeInfoCache(NodeInfoCache nodeInfoCache) {
+        this.nodeInfoCache = nodeInfoCache;
     }
 }
 

@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import org.opennms.core.cache.Cache;
 import org.opennms.core.cache.CacheBuilder;
 import org.opennms.core.cache.CacheConfig;
+import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.core.mate.api.ContextKey;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
@@ -52,8 +53,8 @@ import com.codahale.metrics.Timer;
 import com.google.common.base.Strings;
 import com.google.common.cache.CacheLoader;
 
-public class NodeMetadataCacheImpl implements NodeMetadataCache {
-    private static final Logger LOG = LoggerFactory.getLogger(NodeMetadataCacheImpl.class);
+public class NodeInfoCacheImpl implements NodeInfoCache {
+    private static final Logger LOG = LoggerFactory.getLogger(NodeInfoCacheImpl.class);
 
     private static class NodeMetadataKey {
 
@@ -87,10 +88,17 @@ public class NodeMetadataCacheImpl implements NodeMetadataCache {
     private final Cache<InterfaceToNodeCache.Entry, Optional<NodeInfo>> nodeInfoCache;
     private final Timer nodeLoadTimer;
 
-    public NodeMetadataCacheImpl(final CacheConfig nodeInfoCacheConfig, final CacheConfig nodeMetadataCacheConfig, final MetricRegistry metricRegistry, final NodeDao nodeDao, final IpInterfaceDao ipInterfaceDao, final InterfaceToNodeCache interfaceToNodeCache) {
+    public NodeInfoCacheImpl(final CacheConfig nodeInfoCacheConfig, final boolean nodeMetadataEnabled, final MetricRegistry metricRegistry, final NodeDao nodeDao, final IpInterfaceDao ipInterfaceDao, final InterfaceToNodeCache interfaceToNodeCache) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.ipInterfaceDao = Objects.requireNonNull(ipInterfaceDao);
         this.interfaceToNodeCache = Objects.requireNonNull(interfaceToNodeCache);
+
+        final CacheConfig nodeMetadataCacheConfig = new CacheConfigBuilder()
+                .withName("nodeMetadataCache")
+                .withExpireAfterRead(nodeInfoCacheConfig.getExpireAfterRead())
+                .withExpireAfterWrite(nodeInfoCacheConfig.getExpireAfterWrite())
+                .withMaximumSize(nodeInfoCacheConfig.getMaximumSize())
+                .build();
 
         this.nodeInfoCache = new CacheBuilder()
                 .withConfig(Objects.requireNonNull(nodeInfoCacheConfig))
@@ -102,7 +110,7 @@ public class NodeMetadataCacheImpl implements NodeMetadataCache {
                 }).build();
 
         this.nodeMetadataCache = new CacheBuilder()
-                .withConfig(Objects.requireNonNull(nodeMetadataCacheConfig))
+                .withConfig(nodeMetadataCacheConfig)
                 .withCacheLoader(new CacheLoader<NodeMetadataKey, Optional<NodeInfo>>() {
                     @Override
                     public Optional<NodeInfo> load(NodeMetadataKey key) {

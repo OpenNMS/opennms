@@ -48,7 +48,7 @@ import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
 import org.opennms.netmgt.telemetry.protocols.collection.AbstractScriptedCollectionAdapter;
 import org.opennms.netmgt.telemetry.protocols.collection.CollectionSetWithAgent;
 import org.opennms.netmgt.telemetry.protocols.collection.ScriptedCollectionSetBuilder;
-import org.opennms.netmgt.telemetry.protocols.cache.NodeMetadataCache;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCache;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.Value;
 
@@ -62,11 +62,11 @@ public class NetflowTelemetryAdapter extends AbstractScriptedCollectionAdapter {
 
     private ContextKey contextKey;
     private String metaDataNodeLookup;
-    private final NodeMetadataCache nodeMetadataCache;
+    private final NodeInfoCache nodeInfoCache;
 
-    protected NetflowTelemetryAdapter(final AdapterDefinition adapterConfig, final MetricRegistry metricRegistry, final NodeMetadataCache nodeMetadataCache) {
+    protected NetflowTelemetryAdapter(final AdapterDefinition adapterConfig, final MetricRegistry metricRegistry, final NodeInfoCache nodeInfoCache) {
         super(adapterConfig, metricRegistry);
-        this.nodeMetadataCache = nodeMetadataCache;
+        this.nodeInfoCache = nodeInfoCache;
     }
 
     @Override
@@ -92,7 +92,7 @@ public class NetflowTelemetryAdapter extends AbstractScriptedCollectionAdapter {
             return Stream.empty();
         }
 
-        final Optional<NodeInfo> nodeInfo = nodeMetadataCache.getNodeInfoFromCache(messageLog.getLocation(), messageLog.getSourceAddress(), contextKey, flowMessage.getNodeIdentifier());
+        final Optional<NodeInfo> nodeInfo = nodeInfoCache.getNodeInfoFromCache(messageLog.getLocation(), messageLog.getSourceAddress(), contextKey, flowMessage.getNodeIdentifier());
 
         final CollectionAgent agent;
         if (nodeInfo.isPresent()) {
