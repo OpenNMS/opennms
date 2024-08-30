@@ -37,7 +37,6 @@ import static org.opennms.integration.api.v1.flows.Flow.Direction;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.time.Instant;
 import java.util.List;
 import java.util.Optional;
 
@@ -45,7 +44,7 @@ import org.junit.Test;
 import org.opennms.core.test.xml.JsonTest;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
-import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfo;
 
 import com.google.common.io.Resources;
 import com.google.gson.Gson;

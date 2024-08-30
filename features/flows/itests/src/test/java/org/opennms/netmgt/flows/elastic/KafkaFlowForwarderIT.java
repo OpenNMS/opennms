@@ -61,7 +61,7 @@ import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.netmgt.flows.persistence.KafkaFlowForwarder;
 import org.opennms.netmgt.flows.persistence.model.FlowDocument;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
-import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfo;
 import org.osgi.service.cm.ConfigurationAdmin;
 
 import com.codahale.metrics.MetricRegistry;

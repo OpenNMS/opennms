@@ -18,6 +18,7 @@
 	<reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" />
 	<reference id="persisterFactory" interface="org.opennms.netmgt.collection.api.PersisterFactory" availability="optional" />
 	<reference id="thresholdingService" interface="org.opennms.netmgt.threshd.api.ThresholdingService" />
+	<reference id="nodeInfoCache" interface="org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCache" availability="mandatory"/>
 
 	<!-- Netflow5 Factory and Adapter -->
 	<bean id="netflow5Factory" class="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5AdapterFactory">
@@ -41,6 +42,7 @@
 		<property name="filterDao" ref="filterDao" />
 		<property name="persisterFactory" ref="persisterFactory" />
 		<property name="thresholdingService" ref="thresholdingService" />
+		<property name="nodeInfoCache" ref="nodeInfoCache" />
 	</bean>
 	<service ref="netflow5TelemetryFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
 		<service-properties>
@@ -70,6 +72,7 @@
 		<property name="filterDao" ref="filterDao" />
 		<property name="persisterFactory" ref="persisterFactory" />
 		<property name="thresholdingService" ref="thresholdingService" />
+		<property name="nodeInfoCache" ref="nodeInfoCache" />
 	</bean>
 	<service ref="netflow9TelemetryFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
 		<service-properties>
@@ -99,6 +102,7 @@
 		<property name="filterDao" ref="filterDao" />
 		<property name="persisterFactory" ref="persisterFactory" />
 		<property name="thresholdingService" ref="thresholdingService" />
+		<property name="nodeInfoCache" ref="nodeInfoCache" />
 	</bean>
 	<service ref="ipfixTelemetryFactory" interface="org.opennms.netmgt.telemetry.api.adapter.AdapterFactory">
 		<service-properties>
