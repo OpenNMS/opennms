@@ -55,6 +55,8 @@ import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCache;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCacheImpl;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -108,16 +110,26 @@ public class NodeIdentificationIT {
     @Test
     public void testSomething() throws InterruptedException {
         final ClassificationEngine classificationEngine = new DefaultClassificationEngine(() -> Collections.emptyList(), FilterService.NOOP);
-        final DocumentEnricherImpl documentEnricher = new DocumentEnricherImpl(
-                new MetricRegistry(),
-                databasePopulator.getNodeDao(), databasePopulator.getIpInterfaceDao(),
-                interfaceToNodeCache, sessionUtils, classificationEngine,
+        final NodeInfoCache nodeInfoCache = new NodeInfoCacheImpl(
                 new CacheConfigBuilder()
-                        .withName("flows.node")
+                        .withName("nodeInfoCache")
                         .withMaximumSize(1000)
                         .withExpireAfterWrite(300)
-                        .build(), 0,
-                new DocumentMangler(new ScriptEngineManager()));
+                        .withExpireAfterRead(300)
+                        .build(),
+                true,
+                new MetricRegistry(),
+                databasePopulator.getNodeDao(),
+                databasePopulator.getIpInterfaceDao(),
+                interfaceToNodeCache
+        );
+
+        final DocumentEnricherImpl documentEnricher = new DocumentEnricherImpl(
+                sessionUtils,
+                classificationEngine,
+                 0,
+                new DocumentMangler(new ScriptEngineManager()),
+                nodeInfoCache);
 
         final TestFlow testFlow = new TestFlow();
         testFlow.setSrcAddr("1.1.1.1");

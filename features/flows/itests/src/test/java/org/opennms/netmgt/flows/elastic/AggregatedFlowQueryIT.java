@@ -21,29 +21,12 @@
  */
 package org.opennms.netmgt.flows.elastic;
 
-import static org.awaitility.Awaitility.await;
-import static org.hamcrest.CoreMatchers.equalTo;
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.closeTo;
-import static org.hamcrest.Matchers.contains;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.hasSize;
-import static org.opennms.integration.api.v1.flows.Flow.Direction;
-
-import java.net.MalformedURLException;
-import java.time.Instant;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-import java.util.stream.LongStream;
-
-import javax.script.ScriptEngineManager;
-
+import com.codahale.metrics.MetricRegistry;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Lists;
+import com.google.common.collect.Table;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.testing.TestPipeline;
 import org.apache.beam.sdk.testing.TestStream;
@@ -92,17 +75,33 @@ import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.flows.persistence.FlowDocumentBuilder;
 import org.opennms.netmgt.flows.processing.FlowBuilder;
-import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
 import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
 import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfo;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCache;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCacheImpl;
 
-import com.codahale.metrics.MetricRegistry;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Lists;
-import com.google.common.collect.Table;
+import javax.script.ScriptEngineManager;
+import java.net.MalformedURLException;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
-import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.closeTo;
+import static org.hamcrest.Matchers.contains;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.hasSize;
+import static org.opennms.integration.api.v1.flows.Flow.Direction;
 
 /**
  * Similar to {@link FlowQueryIT}, but adapted for aggregated queries.
@@ -166,18 +165,24 @@ public class AggregatedFlowQueryIT {
                 new RuleBuilder().withName("https").withSrcPort("443").withProtocol("tcp,udp").build()),
                                                                          FilterService.NOOP);
 
-        documentEnricher = new DocumentEnricherImpl(metricRegistry,
-                                                    new MockNodeDao(),
-                                                    new MockIpInterfaceDao(),
-                                                    new MockInterfaceToNodeCache(),
-                                                    new MockSessionUtils(),
+        final NodeInfoCache nodeInfoCache = new NodeInfoCacheImpl(
+                new CacheConfigBuilder()
+                        .withName("nodeInfoCache")
+                        .withMaximumSize(1000)
+                        .withExpireAfterWrite(300)
+                        .withExpireAfterRead(300)
+                        .build(),
+                true,
+                new MetricRegistry(),
+                new MockNodeDao(),
+                new MockIpInterfaceDao(),
+                new MockInterfaceToNodeCache()
+        );
+        documentEnricher = new DocumentEnricherImpl(new MockSessionUtils(),
                                                     classificationEngine,
-                                                    new CacheConfigBuilder()
-                                                        .withName("flows.node")
-                                                        .withMaximumSize(1000)
-                                                        .withExpireAfterWrite(300)
-                                                        .build(), 0,
-                                                    new DocumentMangler(new ScriptEngineManager()));
+                                                    0,
+                                                    new DocumentMangler(new ScriptEngineManager()),
+                                                    nodeInfoCache);
 
         // The repository should be empty
         assertThat(smartQueryService.getFlowCount(Collections.singletonList(new TimeRangeFilter(0, System.currentTimeMillis()))).get(), equalTo(0L));

@@ -25,16 +25,13 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5;
+package org.opennms.netmgt.telemetry.protocols.cache;
 
-import org.opennms.netmgt.telemetry.config.api.AdapterDefinition;
-import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCache;
-import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowTelemetryAdapter;
+import java.util.Optional;
 
-import com.codahale.metrics.MetricRegistry;
+import org.opennms.core.mate.api.ContextKey;
 
-public class Netflow5TelemetryAdapter extends NetflowTelemetryAdapter {
-    public Netflow5TelemetryAdapter(final AdapterDefinition adapterConfig, final MetricRegistry metricRegistry, final NodeInfoCache nodeMetadataCache) {
-        super(adapterConfig, metricRegistry, nodeMetadataCache);
-    }
+public interface NodeInfoCache {
+    Optional<NodeInfo> getNodeInfoFromCache(final String location, final String ipAddress, final ContextKey contextKey, final String value);
+
 }

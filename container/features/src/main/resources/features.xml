@@ -1170,7 +1170,8 @@
         <bundle>mvn:com.google.findbugs/jsr305/3.0.2</bundle>
         -->
         <bundle>wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
-        <bundle>wrap:wrap:mvn:com.google.protobuf/protobuf-java-util/${protobufVersion}$overwrite=merge&amp;Import-Package=javax.annotation;version=!,*</bundle>
+        <bundle>wrap:mvn:com.google.protobuf/protobuf-java-util/${protobufVersion}$overwrite=merge&amp;Import-Package=javax.annotation;version=!,*</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.cache/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.flows/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.parser/${project.version}</bundle>
