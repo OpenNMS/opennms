@@ -28,9 +28,11 @@
 
 package org.opennms.netmgt.provision.detector.simple.support;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.oneone.OneToOneDecoder;
+import java.util.List;
+
+import io.netty.channel.ChannelHandlerContext;
+
+import io.netty.handler.codec.MessageToMessageDecoder;
 import org.opennms.netmgt.provision.detector.simple.response.MultilineOrientedResponse;
 
 /**
@@ -38,18 +40,13 @@ import org.opennms.netmgt.provision.detector.simple.response.MultilineOrientedRe
  *
  * @author Seth
  */
-public class MultilineOrientedResponseDecoder extends OneToOneDecoder {
+public class MultilineOrientedResponseDecoder extends MessageToMessageDecoder<Object> {
 
     public static final String DEFAULT_MULTILINE_INDICATOR = "-";
 
     private final String m_multilineIndicator;
     private MultilineOrientedResponse m_response;
 
-    /**
-     * <p>Constructor for MultilineOrientedResponseDecoder.</p>
-     *
-     * @param multilineIndicator a {@link java.lang.String} object.
-     */
     public MultilineOrientedResponseDecoder() {
         this(DEFAULT_MULTILINE_INDICATOR);
     }
@@ -68,10 +65,10 @@ public class MultilineOrientedResponseDecoder extends OneToOneDecoder {
      * that contain each line of the string response.
      */
     @Override
-    protected Object decode(final ChannelHandlerContext ctx, final Channel channel, final Object msg) throws Exception {
+    protected void decode(final ChannelHandlerContext ctx, final Object msg, final List<Object> messages) throws Exception {
         // We can only decode strings
         if (!(msg instanceof String)) {
-            return msg;
+            messages.add(msg);
         }
         // Construct a new response if there isn't one yet
         if (m_response == null) {
@@ -82,11 +79,10 @@ public class MultilineOrientedResponseDecoder extends OneToOneDecoder {
         if(checkIndicator(response)) {
             // Do nothing; if the multi-line indicator is present then 
             // continue to accumulate lines into the m_response instance
-            return null;
         } else {
             MultilineOrientedResponse retval = m_response;
             m_response = null;
-            return retval;
+            messages.add(retval);
         }
     }
 
