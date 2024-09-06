@@ -1263,7 +1263,7 @@
                    <exclude>jdom:jdom</exclude>                      <!-- use: org.apache.servicemix.bundles.jdom -->
                    <exclude>net.sf.jung:*</exclude>                  <!-- use: org.opennms.dependencies:jung-shaded -->
                    <exclude>log4j:log4j</exclude>                    <!-- use: log4j2 -->
-                   <exclude>nekohtml:nekohtml</exclude>              <!-- use: net.sourceforge.nekohtml:nekohtml -->
+                   <exclude>nekohtml:nekohtml</exclude>              <!-- use: org.nokogiri:nekohtml -->
                    <exclude>org.apache.geronimo.specs/geronimo-jms_2.0_spec</exclude>   <!-- use: javax.jms:javax.jms-api -->
                    <exclude>org.apache.velocity:velocity</exclude>   <!-- use: org.apache.velocity:velocity-engine-core -->
                    <exclude>org.springframework:*</exclude>          <!-- use: org.apache.servicemix.bundles.spring-* -->
@@ -5010,9 +5010,9 @@
         <version>3.0.1</version>
       </dependency>
       <dependency>
-        <groupId>net.sourceforge.nekohtml</groupId>
+        <groupId>org.nokogiri</groupId>
         <artifactId>nekohtml</artifactId>
-        <version>1.9.22-atlassian-4</version>
+        <version>1.9.22.noko2</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>
