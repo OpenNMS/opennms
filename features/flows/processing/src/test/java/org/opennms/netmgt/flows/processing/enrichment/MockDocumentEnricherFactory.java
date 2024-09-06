@@ -101,7 +101,8 @@ public class MockDocumentEnricherFactory {
                 new MetricRegistry(),
                 nodeDao,
                 ipInterfaceDao,
-                interfaceToNodeCache
+                interfaceToNodeCache,
+                new MockSessionUtils()
         );
         enricher = new DocumentEnricherImpl(
                 new MockSessionUtils(), classificationEngine,

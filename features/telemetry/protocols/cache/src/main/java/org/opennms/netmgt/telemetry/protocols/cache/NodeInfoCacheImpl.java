@@ -42,6 +42,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -88,10 +89,13 @@ public class NodeInfoCacheImpl implements NodeInfoCache {
     private final Cache<InterfaceToNodeCache.Entry, Optional<NodeInfo>> nodeInfoCache;
     private final Timer nodeLoadTimer;
 
-    public NodeInfoCacheImpl(final CacheConfig nodeInfoCacheConfig, final boolean nodeMetadataEnabled, final MetricRegistry metricRegistry, final NodeDao nodeDao, final IpInterfaceDao ipInterfaceDao, final InterfaceToNodeCache interfaceToNodeCache) {
+    private final SessionUtils sessionUtils;
+
+    public NodeInfoCacheImpl(final CacheConfig nodeInfoCacheConfig, final boolean nodeMetadataEnabled, final MetricRegistry metricRegistry, final NodeDao nodeDao, final IpInterfaceDao ipInterfaceDao, final InterfaceToNodeCache interfaceToNodeCache, final SessionUtils sessionUtils) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.ipInterfaceDao = Objects.requireNonNull(ipInterfaceDao);
         this.interfaceToNodeCache = Objects.requireNonNull(interfaceToNodeCache);
+        this.sessionUtils = Objects.requireNonNull(sessionUtils);
 
         final CacheConfig nodeMetadataCacheConfig = new CacheConfigBuilder()
                 .withName("nodeMetadataCache")
@@ -122,30 +126,32 @@ public class NodeInfoCacheImpl implements NodeInfoCache {
     }
 
     public Optional<NodeInfo> getNodeInfoFromCache(final String location, final String ipAddress, final ContextKey contextKey, final String value) {
-        Optional<NodeInfo> nodeDocument = Optional.empty();
-        if (contextKey != null && !Strings.isNullOrEmpty(value)) {
-            final NodeMetadataKey metadataKey = new NodeMetadataKey(contextKey, value);
-            try {
-                nodeDocument = this.nodeMetadataCache.get(metadataKey);
-            } catch (ExecutionException e) {
-                LOG.error("Error while retrieving NodeDocument from NodeMetadataCache: {}.", e.getMessage(), e);
-                throw new RuntimeException(e);
+        return sessionUtils.withTransaction(() -> {
+            Optional<NodeInfo> nodeDocument = Optional.empty();
+            if (contextKey != null && !Strings.isNullOrEmpty(value)) {
+                final NodeMetadataKey metadataKey = new NodeMetadataKey(contextKey, value);
+                try {
+                    nodeDocument = this.nodeMetadataCache.get(metadataKey);
+                } catch (ExecutionException e) {
+                    LOG.error("Error while retrieving NodeDocument from NodeMetadataCache: {}.", e.getMessage(), e);
+                    throw new RuntimeException(e);
+                }
+                if(nodeDocument.isPresent()) {
+                    return nodeDocument;
+                }
             }
-            if(nodeDocument.isPresent()) {
-                return nodeDocument;
-            }
-        }
 
-        final var entry = this.interfaceToNodeCache.getFirst(location, InetAddressUtils.addr(ipAddress));
-        if(entry.isPresent()) {
-            try {
-                return this.nodeInfoCache.get(entry.get());
-            } catch (ExecutionException e) {
-                LOG.error("Error while retrieving NodeDocument from NodeInfoCache: {}.", e.getMessage(), e);
-                throw new RuntimeException(e);
+            final var entry = this.interfaceToNodeCache.getFirst(location, InetAddressUtils.addr(ipAddress));
+            if(entry.isPresent()) {
+                try {
+                    return this.nodeInfoCache.get(entry.get());
+                } catch (ExecutionException e) {
+                    LOG.error("Error while retrieving NodeDocument from NodeInfoCache: {}.", e.getMessage(), e);
+                    throw new RuntimeException(e);
+                }
             }
-        }
-        return nodeDocument;
+            return nodeDocument;
+        });
     }
 
     private Optional<NodeInfo> getNodeInfoFromMetadataContext(ContextKey contextKey, String value) {
