@@ -154,7 +154,8 @@ public class FlowQueryIT {
                 new MetricRegistry(),
                 new MockNodeDao(),
                 new MockIpInterfaceDao(),
-                new MockInterfaceToNodeCache()
+                new MockInterfaceToNodeCache(),
+                new MockSessionUtils()
         );
 
         documentEnricher = new DocumentEnricherImpl(new MockSessionUtils(),

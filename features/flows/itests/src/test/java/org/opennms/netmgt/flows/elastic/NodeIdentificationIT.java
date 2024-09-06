@@ -44,6 +44,7 @@ import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.mock.MockSessionUtils;
 import org.opennms.netmgt.flows.api.FlowSource;
 import org.opennms.netmgt.flows.classification.ClassificationEngine;
 import org.opennms.netmgt.flows.classification.FilterService;
@@ -121,7 +122,8 @@ public class NodeIdentificationIT {
                 new MetricRegistry(),
                 databasePopulator.getNodeDao(),
                 databasePopulator.getIpInterfaceDao(),
-                interfaceToNodeCache
+                interfaceToNodeCache,
+                new MockSessionUtils()
         );
 
         final DocumentEnricherImpl documentEnricher = new DocumentEnricherImpl(

@@ -35,6 +35,7 @@
     <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
     <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
     <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory" />
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory" />
 
     <!-- Configure NodeInfoCache -->
     <bean id="nodeInfoCache" class="org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCacheImpl">
@@ -44,6 +45,7 @@
         <argument ref="nodeDao"/>
         <argument ref="ipInterfaceDao"/>
         <argument ref="interfaceToNodeCache"/>
+        <argument ref="sessionUtils"/>
     </bean>
     <service ref="nodeInfoCache" interface="org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCache">
         <service-properties>
