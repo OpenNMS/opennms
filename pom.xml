@@ -1785,7 +1785,7 @@
     <paxExamVersion>4.13.5</paxExamVersion>
     <pktsVersion>3.0.10</pktsVersion>
     <protobufVersion>3.24.4</protobufVersion>
-    <postgresqlVersion>42.5.4</postgresqlVersion>
+    <postgresqlVersion>42.5.5</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>3.6.0</okioVersion>
