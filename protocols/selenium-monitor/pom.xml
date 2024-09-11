@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.protocols</artifactId>
-    <version>33.0.7</version>
+    <version>33.0.8</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.protocols</groupId>
@@ -82,6 +82,10 @@
         <exclusion>
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.seleniumhq.selenium</groupId>
+          <artifactId>selenium-safari-driver</artifactId>
         </exclusion>
       </exclusions>
     </dependency>

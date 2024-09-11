@@ -37,17 +37,19 @@ public abstract class AbstractSNMPRequestBuilder<T> implements SNMPRequestBuilde
     private final SnmpAgentConfig agent;
     private List<SnmpGetRequestDTO> gets;
     private List<SnmpWalkRequestDTO> walks;
+    private List<SnmpSetRequestDTO> sets;
     private String location;
     private String systemId;
     private String description;
     private Long timeToLiveInMilliseconds = null;
 
     public AbstractSNMPRequestBuilder(LocationAwareSnmpClientRpcImpl client,
-            SnmpAgentConfig agent, List<SnmpGetRequestDTO> gets, List<SnmpWalkRequestDTO> walks) {
+            SnmpAgentConfig agent, List<SnmpGetRequestDTO> gets, List<SnmpWalkRequestDTO> walks, List<SnmpSetRequestDTO> sets) {
         this.client = Objects.requireNonNull(client);
         this.agent = Objects.requireNonNull(agent);
         this.gets = Objects.requireNonNull(gets);
         this.walks = Objects.requireNonNull(walks);
+        this.sets = Objects.requireNonNull(sets);
     }
 
     @Override
@@ -89,6 +91,7 @@ public abstract class AbstractSNMPRequestBuilder<T> implements SNMPRequestBuilde
         snmpRequestDTO.setDescription(description);
         snmpRequestDTO.setGetRequests(gets);
         snmpRequestDTO.setWalkRequests(walks);
+        snmpRequestDTO.setSetRequests(sets);
         // TTL specified in agent configuration overwrites any previous ttls specified.
         if (agent.getTTL() != null) {
             timeToLiveInMilliseconds = agent.getTTL();

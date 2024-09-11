@@ -21,22 +21,21 @@
  */
 package org.opennms.netmgt.provision.support;
 
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelStateEvent;
+import io.netty.channel.ChannelHandlerContext;
 
 /**
  * CAUTION: This class is unused. This implementation has never been in production.
  */
 public class TcpDetectorHandlerNettyImpl<Request,Response> extends DetectorHandlerNettyImpl<Request,Response> {
     @Override
-    public void channelOpen(ChannelHandlerContext ctx, ChannelStateEvent event) throws Exception {
+    public void channelActive(ChannelHandlerContext ctx) throws Exception {
         // If the conversation has no banner and no request, then we are just checking to make
         // sure that the port is open. Close the channel.
         if(!getConversation().hasBanner() && getConversation().getRequest() == null) {
-           ctx.getChannel().close();
+           ctx.channel().close();
        } else {
            // Otherwise, default to the normal DetectorHandler conversation behavior
-           super.channelOpen(ctx, event);
+           super.channelActive(ctx);
        }
     }
 }

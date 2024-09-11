@@ -1,7 +1,26 @@
 [[release-33-changelog]]
 
 = Changelog
- 
+
+[[releasenotes-changelog-33.0.8]]
+
+== Release 33.0.8
+
+Release 33.0.8 contains a bunch of bug fixes and an enhancement.
+
+The codename for Horizon 33.0.8 is https://wikipedia.org/wiki/$$Cassia_fistula$$[_Golden Shower tree_].
+
+=== Task
+
+* Alarm Resync (Issue https://issues.opennms.org/browse/NMS-16489[NMS-16489])
+* Update to Netty 4 (Issue https://issues.opennms.org/browse/NMS-16496[NMS-16496])
+* Update pgjdbc to version 42.5.5  (Postgres sql JDBC driver) (Issue https://issues.opennms.org/browse/NMS-16503[NMS-16503])
+* Update forked version of nekohtml parser to `>= 1.9.22.noko2`version of Nokogiri if applicable (Issue https://issues.opennms.org/browse/NMS-16504[NMS-16504])
+* Update Apache CXF to 4.0.4, 3.6.3 or 3.5.8 to fix CVE-2024-28752 (Issue https://issues.opennms.org/browse/NMS-16505[NMS-16505])
+
+=== Bug
+* Snakeyaml vulnerable to Stack overflow leading to denial of service (Issue https://issues.opennms.org/browse/NMS-15169[NMS-15169])
+
 [[releasenotes-changelog-33.0.7]]
 
 == Release 33.0.7

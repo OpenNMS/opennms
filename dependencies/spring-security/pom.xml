@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>dependencies</artifactId>
-    <version>33.0.7</version>
+    <version>33.0.8</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
@@ -60,9 +60,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>net.sourceforge.nekohtml</groupId>
+      <groupId>org.nokogiri</groupId>
       <artifactId>nekohtml</artifactId>
-      <version>1.9.22</version>
+      <version>1.9.22.noko2</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>

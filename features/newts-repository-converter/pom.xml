@@ -3,7 +3,7 @@
   <parent>
     <artifactId>org.opennms.features</artifactId>
     <groupId>org.opennms</groupId>
-    <version>33.0.7</version>
+    <version>33.0.8</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -87,6 +87,12 @@
       <groupId>com.github.stefanbirkner</groupId>
       <artifactId>system-rules</artifactId>
       <version>1.5.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>1.33</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

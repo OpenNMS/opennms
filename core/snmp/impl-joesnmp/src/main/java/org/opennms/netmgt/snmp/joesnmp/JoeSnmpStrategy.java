@@ -155,7 +155,13 @@ public class JoeSnmpStrategy implements SnmpStrategy {
         return CompletableFuture.completedFuture(get(agentConfig, oids));
     }
 
-        @Override
+    @Override
+    public CompletableFuture<SnmpValue[]> setAsync(SnmpAgentConfig agentConfig, SnmpObjId[] oids, SnmpValue[] values) {
+        LOG.warn("The JoeSnmpStrategy does not support asynchronous SNMP SET requests.");
+        return CompletableFuture.completedFuture(set(agentConfig, oids, values));
+    }
+
+    @Override
     public SnmpValue getNext(SnmpAgentConfig snmpAgentConfig, SnmpObjId oid) {
         SnmpObjId[] oids = { oid };
         return getNext(snmpAgentConfig, oids)[0];
