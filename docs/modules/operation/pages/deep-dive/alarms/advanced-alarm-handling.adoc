@@ -1,0 +1,49 @@
+= Advanced Alarm Handling
+:description: Advanced ways to handle alarms in {page-component-title}: advanced alarm handling.
+
+Advanced Alarm Handling using Drools.
+
+[[ga-Included-alarm-handling]]
+== Included Alarm handling
+
+In addition to the manual actions, it is possible to automate alarm handling with the use of https://www.drools.org/[Drools] scripts.
+
+Within the `$\{OPENNMS_HOME}/etc/alarmd/drools-rules.d/alarmd.drl` file there is a default rule set of rules for handling alarm cleanup, 
+clearing, and creating/updating tickets.
+
+Within the Within the `$\{OPENNMS_HOME}/etc/alarmd/drools-rules.d/situations.drl` file there is a default rule set for handling alarm cleanup, 
+clearing, and creating/updating tickets.
+
+You can find some additional examples in the `$\{OPENNMS_HOME}/etc/examples/alarmd/drools-rules.d/` directory.
+
+[[ga-alarm-handling-drools-example-1]]
+== Alarm Handling Drools Example 1:
+The following example drools rule will escalate an alarm for a node within a specific category for a NodeDown event.
+
+=== Example:
+[source, drools]
+----
+/* include the OnmsNode model details */
+import org.opennms.netmgt.model.OnmsNode;
+
+/* Custom rule to escalate a nodeDown alarm for a specific category of Node */
+rule "escalation"
+  when
+    $sessionClock : SessionClock()
+    $alarm : OnmsAlarm( alarmType != OnmsAlarm.RESOLUTION_TYPE &&
+                        severity.isLessThan(OnmsSeverity.CRITICAL) &&
+                        severity.isGreaterThanOrEqual(OnmsSeverity.WARNING) &&
+                        isAcknowledged() == false &&
+                        uei == "uei.opennms.org/nodes/nodeDown" &&
+                        getNode().hasCategory("VMware8") == true)
+  then
+    /* Print some stuff to alarm log as warning, change this to debug for production */
+    alarmService.warn("Hey, my rule ran!");
+    alarmService.warn("Acked: {}",$alarm.isAcknowledged());
+    alarmService.warn("Alarm ID: {}",$alarm.getId());
+    alarmService.warn("Node ID: {}",$alarm.getNode().getId());
+    alarmService.warn("Node has category VMware8: {}",$alarm.getNode().hasCategory("VMware8"));
+    /* escalate the alarm */
+    alarmService.escalateAlarm($alarm, new Date($sessionClock.getCurrentTime()));
+end
+----
