@@ -11,8 +11,7 @@ In addition to the manual actions, it is possible to automate alarm handling wit
 Within the `$\{OPENNMS_HOME}/etc/alarmd/drools-rules.d/alarmd.drl` file there is a default rule set of rules for handling alarm cleanup, 
 clearing, and creating/updating tickets.
 
-Within the Within the `$\{OPENNMS_HOME}/etc/alarmd/drools-rules.d/situations.drl` file there is a default rule set for handling alarm cleanup, 
-clearing, and creating/updating tickets.
+The `$\{OPENNMS_HOME}/etc/alarmd/drools-rules.d/situations.drl` file contains the default rules for the Situation lifecycle.
 
 You can find some additional examples in the `$\{OPENNMS_HOME}/etc/examples/alarmd/drools-rules.d/` directory.
 
