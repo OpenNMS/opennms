@@ -13,7 +13,7 @@ clearing, and creating/updating tickets.
 
 The `$\{OPENNMS_HOME}/etc/alarmd/drools-rules.d/situations.drl` file contains the default rules for the Situation lifecycle.
 
-You can find some additional examples in the `$\{OPENNMS_HOME}/etc/examples/alarmd/drools-rules.d/` directory.
+Additional examples are available in `$\{OPENNMS_HOME}/etc/examples/alarmd/drools-rules.d/`.
 
 [[ga-alarm-handling-drools-example-1]]
 == Alarm Handling Drools Example 1:
