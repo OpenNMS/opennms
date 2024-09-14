@@ -178,8 +178,7 @@ public class Executor {
         public void run() {
 
             if (isReloadConfigEvent(m_event)) {
-                // reloads are handled by Scriptd#handleReloadConfigEvent
-                return;
+		    doReload();
             }
 
             if (m_config.getTransactional()) {
@@ -201,6 +200,52 @@ public class Executor {
             registerEventProcessor();
             loadConfig();
 
+            // Run all stop scripts before terminating engines
+	    LOG.debug("Running all stop scripts...");
+            for (final StopScript stopScript : m_config.getStopScripts()) {
+                if (stopScript.getContent().isPresent()) {
+                    try {
+                        m_scriptManager.exec(stopScript.getLanguage(), "", 0, 0, stopScript.getContent().get());
+                    } catch (BSFException e) {
+                        LOG.error("Stop script failed: " + stopScript, e);
+                    }
+                } else {
+                    LOG.warn("Stop script has no script contents: " + stopScript);
+                }
+            }
+
+	    LOG.debug("Terminating existing engines");
+	    m_scriptManager.terminate();
+
+            for (final Engine engine : m_config.getEngines()) {
+               LOG.debug("Re-Registering engine: {}", engine.getLanguage());
+               String[] extensions = null;
+               if (engine.getExtensions().isPresent()) {
+                   StringTokenizer st = new StringTokenizer(engine.getExtensions().get());
+                   extensions = new String[st.countTokens()];
+                   int j = 0;
+                   while (st.hasMoreTokens()) {
+                       extensions[j++] = st.nextToken();
+                   }
+               }
+               BSFManager.registerScriptingEngine(engine.getLanguage(), engine.getClassName(), extensions);
+            }
+
+	    // Run all start scripts
+	    LOG.debug("Running all start scripts...");
+            for (final StartScript startScript : m_config.getStartScripts()) {
+                if (startScript.getContent().isPresent()) {
+                    try {
+                        m_scriptManager.exec(startScript.getLanguage(), "", 0, 0, startScript.getContent().get());
+                    } catch (BSFException e) {
+                        LOG.error("Start script failed: " + startScript, e);
+                    }
+                } else {
+                    LOG.warn("Start script has no script content: " + startScript);
+                }
+            }
+            // run the explicit reload scripts since this is a reload
+	    LOG.debug("Running all reload scripts...");
             for (final ReloadScript script : m_config.getReloadScripts()) {
                 final var scriptContent = script.getContent();
                 if (scriptContent.isPresent()) {
@@ -213,8 +258,7 @@ public class Executor {
                     LOG.warn("Reload Script does not have script contents: {}", script);
                 }
             }
-
-            LOG.debug("Scriptd configuration reloaded");
+            LOG.debug("Scriptd configuration reloaded!");
         } catch (final Exception e) {
             LOG.error("Unable to reload Scriptd configuration", e);
         }
@@ -413,4 +457,5 @@ public class Executor {
 
         LOG.debug("Scriptd executor stopped");
     }
+
 }
