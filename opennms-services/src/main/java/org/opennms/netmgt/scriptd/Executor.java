@@ -210,7 +210,7 @@ public class Executor {
                         LOG.error("Stop script failed: {}", stopScript, e);
                     }
                 } else {
-                    LOG.warn("Stop script has no script contents: " + stopScript);
+                    LOG.warn("Stop script has no script contents: {}", stopScript);
                 }
             }
 
