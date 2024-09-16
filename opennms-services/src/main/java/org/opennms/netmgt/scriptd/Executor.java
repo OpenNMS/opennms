@@ -238,7 +238,7 @@ public class Executor {
                     try {
                         m_scriptManager.exec(startScript.getLanguage(), "", 0, 0, startScript.getContent().get());
                     } catch (BSFException e) {
-                        LOG.error("Start script failed: " + startScript, e);
+                        LOG.error("Start script failed: {}", startScript, e);
                     }
                 } else {
                     LOG.warn("Start script has no script content: " + startScript);
