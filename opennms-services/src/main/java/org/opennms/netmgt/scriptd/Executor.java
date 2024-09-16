@@ -241,7 +241,7 @@ public class Executor {
                         LOG.error("Start script failed: {}", startScript, e);
                     }
                 } else {
-                    LOG.warn("Start script has no script content: " + startScript);
+                    LOG.warn("Start script has no script content: {}", startScript);
                 }
             }
             // run the explicit reload scripts since this is a reload
