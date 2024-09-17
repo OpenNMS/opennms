@@ -1894,7 +1894,7 @@
     <slingJohnzonVersion>1.2.16</slingJohnzonVersion>
     <!-- END: versions must match versions provided by embedded Karaf -->
     <kafkaBundleVersion>3.5.1_1</kafkaBundleVersion>
-    <kafkaVersion>3.6.0</kafkaVersion>
+    <kafkaVersion>3.6.2</kafkaVersion>
     <kotlinVersion>1.9.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
