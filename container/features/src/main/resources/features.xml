@@ -1999,6 +1999,7 @@
         <feature>opennms-health-rest</feature>
         <feature version="${cxfVersion}">cxf-core</feature>
         <feature version="${cxfVersion}">cxf-jaxrs</feature>
+        <feature>jackson-dataformat-yaml</feature>
         <!-- early start-level to override jettison version in 3rd-party feature files -->
         <bundle start-level="${earlyStartLevel}">mvn:org.codehaus.jettison/jettison/${jettisonVersion}</bundle>
         <bundle>mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${jackson2Version}</bundle>
