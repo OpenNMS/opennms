@@ -24,6 +24,7 @@
         <exclude>**/sshd-*/2.8.0/*</exclude>
         <exclude>**/*xstream*/1.4.8_1</exclude>
         <exclude>**/*xstream*/1.4.8_1/*</exclude>
+        <exclude>%regex[.*org\/bouncycastle\/(bcprov|bctls|bcutil|bcpkix)-jdk18on/1.7[56]/?.*]</exclude>
       </excludes>
     </fileSet>
   </fileSets>
