@@ -1672,7 +1672,7 @@
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
     <groovyVersion>2.5.23</groovyVersion>
-    <grpcVersion>1.46.0</grpcVersion>
+    <grpcVersion>1.66.0</grpcVersion>
     <gsonVersion>2.9.1</gsonVersion>
     <guavaVersion>25.1-jre</guavaVersion>
     <guavaOsgiVersion>25.1.0</guavaOsgiVersion>
