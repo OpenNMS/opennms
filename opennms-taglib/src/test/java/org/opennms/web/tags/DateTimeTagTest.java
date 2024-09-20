@@ -62,7 +62,7 @@ public class DateTimeTagTest {
 
     @Test
     public void shouldOutputeDateTimeIncludingTimeZone() throws IOException {
-        test("yyyy-MM-dd'T'HH:mm:ssxxx");
+        test("yyyy-MM-dd HH:mm:ssxxx");
     }
 
     @Test
@@ -85,7 +85,7 @@ public class DateTimeTagTest {
         // Martinique has no daylight savings => offset to UTC should be always the same
         final ZoneId martinique = ZoneId.of("America/Martinique");
         attributes.put(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID, martinique);
-        String result = test("yyyy-MM-dd'T'HH:mm:ssxxx", martinique, Instant.now(), attributes);
+        String result = test("yyyy-MM-dd HH:mm:ssxxx", martinique, Instant.now(), attributes);
         assertEquals("-04:00", result.substring(result.length()-6));
     }
 

@@ -66,7 +66,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url('images/wallpapers/ulf-milseburg.jpg');
+    background-image: url('images/wallpapers/ulf-milseburg-view.jpg');
     background-size: cover;
   }
 

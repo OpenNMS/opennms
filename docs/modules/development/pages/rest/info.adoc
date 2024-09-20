@@ -30,7 +30,7 @@ Service that provides information about the {page-component-title} instance.
     },
     "datetimeformatConfig": {
         "zoneId": "UTC",
-        "datetimeformat": "yyyy-MM-dd'T'HH:mm:ssxxx"
+        "datetimeformat": "yyyy-MM-dd HH:mm:ssxxx"
     },
     "services": {
         "Eventd": "running",

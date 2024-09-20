@@ -50,7 +50,7 @@ function createController() {
 }
 
 beforeEach(function() {
-  window._onmsDateTimeFormat = "yyyy-MM-dd'T'HH:mm:ssxxx";
+  window._onmsDateTimeFormat = "yyyy-MM-dd HH:mm:ssxxx";
   window._onmsZoneId = 'America/New_York';
   window._onmsFormatter = new OnmsDateFormatter();
 });

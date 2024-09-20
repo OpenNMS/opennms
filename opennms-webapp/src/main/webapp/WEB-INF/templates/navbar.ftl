@@ -12,91 +12,68 @@
     </button>
 
     <div id="navbar" class="navbar-collapse collapse">
-        <#if request.remoteUser?has_content >
-            <ul class="navbar-nav ml-1">
-                <li class="nav-item">
-                    <span class="navbar-text navbar-formatted-time">${formattedTime}</span>
-                </li>
-                <li class="nav-item">
-                    <span class="navbar-text navbar-bell ml-1">
-                        <#if noticeStatus = 'Unknown'>
-                            <!-- Gray circle with bell inside -->
-                            <i class="fa fa-bell text-secondary"></i>
-                        </#if>
-                        <#if noticeStatus = 'Off'>
-                            <i class="fa fa-bell-slash text-danger" title="Notices: Off"></i>
-                        </#if>
-                        <#if noticeStatus = 'On'>
-                            <i class="fa fa-bell text-horizon" title="Notices: On"></i>
-                        </#if>
-                    </span>
-                </li>
-            </ul>
-        </#if>
-
         <div ng-app="onms.default.apps">
             <onms-central-search></onms-central-search>
         </div>
 
         <ul class="navbar-nav ml-auto">
             <#if request.remoteUser?has_content >
-            <#list model.entryList as entry>
-                <#assign item=entry.getKey()>
-                <#assign display=entry.getValue()>
+                <#list model.entryList as entry>
+                    <#assign item=entry.getKey()>
+                    <#assign display=entry.getValue()>
 
-                <#if shouldDisplay(item, display) >
-                    <#if item.entries?has_content >
-                    <#-- has sub-entries, draw menu drop-downs -->
-                        <li class="nav-item dropdown">
-                            <#if item.url?has_content && item.url != "#">
-                                <a href="${baseHref}${item.url}" name="nav-${item.name}-top"
-                                   class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
-                                   aria-expanded="false">
-                                    <#if isAdminLink(item) >
-                                        <i class="fa fa-solid fa-cogs"></i>
-                                    </#if>
-                                    ${item.name}
-                                </a>
-                            <#else>
-                                <a href="#" name="nav-${item.name}-top" class="nav-link dropdown-toggle"
-                                   data-toggle="dropdown" role="button" aria-expanded="false">${item.name}</a>
-                            </#if>
-                            <div class="dropdown-menu dropdown-menu-right" role="menu">
-                                <#list item.entries as subItem>
-                                    <#if shouldDisplay(subItem) >
-                                        <#if subItem.url?has_content >
-                                            <a class="dropdown-item" name="nav-${item.name}-${subItem.name}"
-                                               href="${baseHref}${subItem.url}">
-                                                <#if isAdminLink(subItem) >
-                                                    <i class="fa fa-solid fa-cogs"></i>
-                                                </#if>
-                                                ${subItem.name}
-                                            </a>
-                                        <#else>
-                                            <a class="dropdown-item" name="nav-${item.name}-${subItem.name}"
-                                               href="#">${subItem.name}</a>
+                    <#if shouldDisplay(item, display) >
+                        <#if item.entries?has_content >
+                        <#-- has sub-entries, draw menu drop-downs -->
+                            <li class="nav-item dropdown">
+                                <#if item.url?has_content && item.url != "#">
+                                    <a href="${baseHref}${item.url}" name="nav-${item.name}-top"
+                                       class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
+                                       aria-expanded="false">
+                                        <#if isAdminLink(item) >
+                                            <i class="fa fa-solid fa-cogs"></i>
                                         </#if>
-                                    </#if>
-                                </#list>
-                            </div>
-                        </li>
-                    <#else>
-                        <#if item.url?has_content >
-                            <li class="nav-item">
-                                <a class="nav-link" name="nav-${item.name}-top" href="${baseHref}${item.url}">
-                                    <#if isAdminLink(item) >
-                                        <i class="fa fa-solid fa-cogs"></i>
-                                    </#if>
-                                    ${item.name}
-                                </a>
+                                        ${item.name}
+                                    </a>
+                                <#else>
+                                    <a href="#" name="nav-${item.name}-top" class="nav-link dropdown-toggle"
+                                       data-toggle="dropdown" role="button" aria-expanded="false">${item.name}</a>
+                                </#if>
+                                <div class="dropdown-menu dropdown-menu-right" role="menu">
+                                    <#list item.entries as subItem>
+                                        <#if shouldDisplay(subItem) >
+                                            <#if subItem.url?has_content >
+                                                <a class="dropdown-item" name="nav-${item.name}-${subItem.name}"
+                                                   href="${baseHref}${subItem.url}">
+                                                    <#if isAdminLink(subItem) >
+                                                        <i class="fa fa-solid fa-cogs"></i>
+                                                    </#if>
+                                                    ${subItem.name}
+                                                </a>
+                                            <#else>
+                                                <a class="dropdown-item" name="nav-${item.name}-${subItem.name}"
+                                                   href="#">${subItem.name}</a>
+                                            </#if>
+                                        </#if>
+                                    </#list>
+                                </div>
                             </li>
                         <#else>
-                            <a class="nav-link" name="nav-${item.name}-top" href="#">${item.name}</a>
+                            <#if item.url?has_content >
+                                <li class="nav-item">
+                                    <a class="nav-link" name="nav-${item.name}-top" href="${baseHref}${item.url}">
+                                        <#if isAdminLink(item) >
+                                            <i class="fa fa-solid fa-cogs"></i>
+                                        </#if>
+                                        ${item.name}
+                                    </a>
+                                </li>
+                            <#else>
+                                <a class="nav-link" name="nav-${item.name}-top" href="#">${item.name}</a>
+                            </#if>
                         </#if>
                     </#if>
-                </#if>
-            </#list>
-
+                </#list>
             <li id="menubar-plugin-container" class="nav-item dropdown" style="display:none">
                 <a name="nav-plugin-top" class="nav-link dropdown-toggle" data-toggle="dropdown" role="button"
                    aria-expanded="false">Plugins</a>
@@ -142,31 +119,6 @@
                     </a>
                 </div>
             </li>
-            <li class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle badge-wrapper" data-toggle="dropdown" role="button"
-                   aria-expanded="false">
-                    <span class="badge badge-pill userNotificationCount" id="userNotificationsBadge"></span>
-                    <span class="badge badge-pill teamNotificationCount" id="teamNotificationsBadge"></span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" role="menu">
-                    <a class="dropdown-item"
-                       href="${baseHref}notification/browse?acktype=unack&amp;filter=user==${request.remoteUser}">
-                        <i class="fa fa-fw fa-user"></i>&nbsp; <span class="userNotificationCount">0</span> notices
-                        assigned to you
-                    </a>
-                    <div id="headerNotifications" style="min-width: 500px"></div>
-
-
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="${baseHref}notification/browse?acktype=unack">
-                        <i class="fa fa-fw fa-users"></i>&nbsp; <span class="teamNotificationCount">0</span> of <span
-                                class="totalNotificationCount"></span> assigned to anyone but you
-                    </a>
-                    <a class="dropdown-item" href="${baseHref}roles">
-                        <i class="fa fa-fw fa-calendar"></i>&nbsp; On-Call Schedule
-                    </a>
-                </div>
-            </li>
         </ul>
         <ul class="navbar-nav">
             <#if isAdmin || isProvision >
@@ -191,9 +143,56 @@
                        href="${baseHref}admin/index.jsp"><i class="fa fa-cogs"></i></a>
                 </li>
             </#if>
-            </#if>
         </ul>
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle badge-wrapper" data-toggle="dropdown" role="button"
+                   aria-expanded="false">
+                    <span class="badge badge-pill userNotificationCount" id="userNotificationsBadge"></span>
+                    <span class="badge badge-pill teamNotificationCount" id="teamNotificationsBadge"></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" role="menu">
+                    <a class="dropdown-item"
+                       href="${baseHref}notification/browse?acktype=unack&amp;filter=user==${request.remoteUser}">
+                        <i class="fa fa-fw fa-user"></i>&nbsp; <span class="userNotificationCount">0</span> notices
+                        assigned to you
+                    </a>
+                    <div id="headerNotifications" style="min-width: 500px"></div>
+
+
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="${baseHref}notification/browse?acktype=unack">
+                        <i class="fa fa-fw fa-users"></i>&nbsp; <span class="teamNotificationCount">0</span> of
+                        <span
+                                class="totalNotificationCount"></span> assigned to anyone but you
+                    </a>
+                    <a class="dropdown-item" href="${baseHref}roles">
+                        <i class="fa fa-fw fa-calendar"></i>&nbsp; On-Call Schedule
+                    </a>
+                </div>
+            </li>
+        </ul>
+        <div id="notification-status">
+            <#if noticeStatus = 'Unknown'>
+                <!-- Gray circle with bell inside -->
+                <i class="fa fa-bell text-secondary"></i>
+            </#if>
+            <#if noticeStatus = 'Off'>
+                <i class="fa fa-bell-slash text-danger" title="Notices: Off"></i>
+            </#if>
+            <#if noticeStatus = 'On'>
+                <i class="fa fa-bell text-horizon" title="Notices: On"></i>
+            </#if>
+        </div>
+        <#if request.remoteUser?has_content >
+            <ul class="navbar-nav ml-1">
+                <li class="nav-item">
+                    <span class="navbar-text navbar-formatted-time">${formattedTime}</span>
+                </li>
+            </ul>
+        </#if>
     </div>
+    </#if>
 </nav>
 
 <#-- hide the header if not displayed in a toplevel window (iFrame) -->
