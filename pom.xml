@@ -1963,7 +1963,7 @@
     <swaggerUIVersion>3.13.0</swaggerUIVersion>
     <swaggerVersion>2.1.12</swaggerVersion>
     <swaggerParserVersion>2.0.33</swaggerParserVersion>
-    <swaggerRequestValidatorVersion>2.39.0</swaggerRequestValidatorVersion>
+    <swaggerRequestValidatorVersion>2.42.0</swaggerRequestValidatorVersion>
     <openapiSchemaValidatorVersion>1.0.7</openapiSchemaValidatorVersion>
     <tape2Version>2.0.0-beta1</tape2Version>
     <trackerVersion>0.7</trackerVersion>
