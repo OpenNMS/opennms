@@ -12,28 +12,6 @@
     </button>
 
     <div id="navbar" class="navbar-collapse collapse">
-        <#if request.remoteUser?has_content >
-            <ul class="navbar-nav ml-1">
-                <li class="nav-item">
-                    <span class="navbar-text navbar-formatted-time">${formattedTime}</span>
-                </li>
-                <li class="nav-item">
-                    <span class="navbar-text navbar-bell ml-1">
-                        <#if noticeStatus = 'Unknown'>
-                            <!-- Gray circle with bell inside -->
-                            <i class="fa fa-bell text-secondary"></i>
-                        </#if>
-                        <#if noticeStatus = 'Off'>
-                            <i class="fa fa-bell-slash text-danger" title="Notices: Off"></i>
-                        </#if>
-                        <#if noticeStatus = 'On'>
-                            <i class="fa fa-bell text-horizon" title="Notices: On"></i>
-                        </#if>
-                    </span>
-                </li>
-            </ul>
-        </#if>
-
         <div ng-app="onms.default.apps">
             <onms-central-search></onms-central-search>
         </div>
@@ -142,31 +120,6 @@
                     </a>
                 </div>
             </li>
-            <li class="nav-item dropdown">
-                <a href="#" class="nav-link dropdown-toggle badge-wrapper" data-toggle="dropdown" role="button"
-                   aria-expanded="false">
-                    <span class="badge badge-pill userNotificationCount" id="userNotificationsBadge"></span>
-                    <span class="badge badge-pill teamNotificationCount" id="teamNotificationsBadge"></span>
-                </a>
-                <div class="dropdown-menu dropdown-menu-right" role="menu">
-                    <a class="dropdown-item"
-                       href="${baseHref}notification/browse?acktype=unack&amp;filter=user==${request.remoteUser}">
-                        <i class="fa fa-fw fa-user"></i>&nbsp; <span class="userNotificationCount">0</span> notices
-                        assigned to you
-                    </a>
-                    <div id="headerNotifications" style="min-width: 500px"></div>
-
-
-                    <div class="dropdown-divider"></div>
-                    <a class="dropdown-item" href="${baseHref}notification/browse?acktype=unack">
-                        <i class="fa fa-fw fa-users"></i>&nbsp; <span class="teamNotificationCount">0</span> of <span
-                                class="totalNotificationCount"></span> assigned to anyone but you
-                    </a>
-                    <a class="dropdown-item" href="${baseHref}roles">
-                        <i class="fa fa-fw fa-calendar"></i>&nbsp; On-Call Schedule
-                    </a>
-                </div>
-            </li>
         </ul>
         <ul class="navbar-nav">
             <#if isAdmin || isProvision >
@@ -193,6 +146,53 @@
             </#if>
             </#if>
         </ul>
+        <ul class="navbar-nav">
+            <li class="nav-item dropdown">
+                <a href="#" class="nav-link dropdown-toggle badge-wrapper" data-toggle="dropdown" role="button"
+                   aria-expanded="false">
+                    <span class="badge badge-pill userNotificationCount" id="userNotificationsBadge"></span>
+                    <span class="badge badge-pill teamNotificationCount" id="teamNotificationsBadge"></span>
+                </a>
+                <div class="dropdown-menu dropdown-menu-right" role="menu">
+                    <a class="dropdown-item"
+                       href="${baseHref}notification/browse?acktype=unack&amp;filter=user==${request.remoteUser}">
+                        <i class="fa fa-fw fa-user"></i>&nbsp; <span class="userNotificationCount">0</span> notices
+                        assigned to you
+                    </a>
+                    <div id="headerNotifications" style="min-width: 500px"></div>
+
+
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" href="${baseHref}notification/browse?acktype=unack">
+                        <i class="fa fa-fw fa-users"></i>&nbsp; <span class="teamNotificationCount">0</span> of
+                        <span
+                                class="totalNotificationCount"></span> assigned to anyone but you
+                    </a>
+                    <a class="dropdown-item" href="${baseHref}roles">
+                        <i class="fa fa-fw fa-calendar"></i>&nbsp; On-Call Schedule
+                    </a>
+                </div>
+            </li>
+        </ul>
+        <div>
+            <#if noticeStatus = 'Unknown'>
+                <!-- Gray circle with bell inside -->
+                <i class="fa fa-bell text-secondary"></i>
+            </#if>
+            <#if noticeStatus = 'Off'>
+                <i class="fa fa-bell-slash text-danger" title="Notices: Off"></i>
+            </#if>
+            <#if noticeStatus = 'On'>
+                <i class="fa fa-bell text-horizon" title="Notices: On"></i>
+            </#if>
+        </div>
+        <#if request.remoteUser?has_content >
+            <ul class="navbar-nav ml-1">
+                <li class="nav-item">
+                    <span class="navbar-text navbar-formatted-time">${formattedTime}</span>
+                </li>
+            </ul>
+        </#if>
     </div>
 </nav>
 
@@ -339,3 +339,4 @@
 
     </script>
 </#if>
+

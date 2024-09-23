@@ -34,7 +34,7 @@ const timeZone = computed<string>(
 
 const formatString = computed<string>(
   // eslint-disable-next-line quotes
-  () => appInfo.value.datetimeformatConfig?.datetimeformat || "yyyy-MM-dd'T'HH:mm:ssxxx"
+  () => appInfo.value.datetimeformatConfig?.datetimeformat || "yyyy-MM-dd HH:mm:ssxxx"
 )
 
 const dateFormatDirective = {

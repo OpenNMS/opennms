@@ -43,7 +43,7 @@ public class CentralizedDateTimeFormat {
 
     public final static String SYSTEM_PROPERTY_DATE_FORMAT = "org.opennms.ui.datettimeformat";
     public final static String SESSION_PROPERTY_TIMEZONE_ID = "org.opennms.ui.timezoneid";
-    public final static String DEFAULT_FORMAT_PATTERN = "yyyy-MM-dd'T'HH:mm:ssxxx";
+    public final static String DEFAULT_FORMAT_PATTERN = "yyyy-MM-dd HH:mm:ssxxx";
 
     public static final Logger LOG = LoggerFactory.getLogger(CentralizedDateTimeFormat.class);
 

@@ -30,7 +30,7 @@ function OnmsDateFormatter() {
 
 OnmsDateFormatter.prototype.init = function init(readyCallback) {
 	var self = this;
-	var defaultFormat = "yyyy-MM-dd'T'HH:mm:ssxxx"; // eslint-disable-line quotes
+	var defaultFormat = "yyyy-MM-dd HH:mm:ssxxx"; // eslint-disable-line quotes
 	window._onmsZoneId = undefined;
 
 	var xhr = new XMLHttpRequest();

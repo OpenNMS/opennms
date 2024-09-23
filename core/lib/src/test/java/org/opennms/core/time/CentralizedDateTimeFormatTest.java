@@ -36,7 +36,7 @@ public class CentralizedDateTimeFormatTest {
 
     @Test
     public void shouldOutputeDateTimeIncludingTimeZone() throws IOException {
-        test("yyyy-MM-dd'T'HH:mm:ssxxx", Instant.now());
+        test("yyyy-MM-dd HH:mm:ssxxx", Instant.now());
     }
 
     @Test

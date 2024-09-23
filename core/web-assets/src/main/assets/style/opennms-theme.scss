@@ -329,9 +329,7 @@ div.NLnode:hover span.NLdbid, div.NLnode:hover span.NLfs, div.NLnode:hover span.
 }
 /* Resource Graph sidebar classes inspired by Bootstrap Docs: End */
 
-#navbar {
-  margin-top: auto;
-}
+#navbar {}
 
 #footer {
   text-align: center;
@@ -390,7 +388,7 @@ iframe.vaadin-fullscreen {
 }
 
 .opennms-bg-chromatic-black {
-     background-color: $opennms-dark-blue;
+  background-color: $opennms-dark-blue;
 }
 
 .navbar-brand {
@@ -423,16 +421,16 @@ iframe.vaadin-fullscreen {
     font-size:14px;
     color:rgba(255, 255, 255, 0.8);
     letter-spacing: 0.12px;
-    margin-right:1rem;
-    padding-top:13px;
+    width: 100px;
+    text-align: right;
   }
   .navbar-bell {
     margin-right:60px;
     padding-top:13px;
   }
   .form-control {
-      border-radius:0px;
-      background-color:transparent;
+    border-radius:0px;
+    background-color:transparent;
   }
   .input-group {
     .form-control:not(:last-child) {
@@ -449,7 +447,7 @@ iframe.vaadin-fullscreen {
       background-color:white;
     }
   }
-  .search-bar .input-group-text { 
+  .search-bar .input-group-text {
     border-radius:4px;
     border-top-right-radius: 0;
     border-bottom-right-radius: 0;
@@ -514,7 +512,7 @@ iframe.vaadin-fullscreen {
     height:23px;
     color: #000;
   }
- 
+
 .nav-item.dropdown a.dropdown-toggle:after {
   vertical-align: 2px;
   margin-left: 6px;
