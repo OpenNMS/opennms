@@ -62,7 +62,7 @@ void forwardEvent(IEvent event) {
             else
                 snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.13", "OctetString", "text", "null");
             if (event.descr != null) {
-                descrString = event.descr.replaceAll("&lt;.*&gt;", " ").replaceAll("\\s+", " ");
+                descrString = event.descr.replaceAll("&lt;.*&gt;", " ").replaceAll("&#34;", "\"").replaceAll("\\s+", " ");
                 snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.2.16", "OctetString", "text", descrString);
             }
             else
