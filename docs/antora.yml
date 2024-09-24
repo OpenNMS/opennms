@@ -1,9 +1,9 @@
 name: horizon
-version: '33'
+version: '34-SNAPSHOT'
 title: Horizon
 asciidoc:
   attributes:
-    full-display-version: '33.0.8'
+    full-display-version: '34.0.0-SNAPSHOT'
     package-prefix: opennms
     experimental: true
     source-language: asciidoc@

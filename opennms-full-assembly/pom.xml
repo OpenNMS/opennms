@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>33.0.8</version>
+    <version>34.0.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>opennms-full-assembly</artifactId>
@@ -351,7 +351,6 @@
                 <feature>dnsjava</feature>
                 <feature>dropwizard-metrics</feature>
                 <feature>fop</feature>
-                <feature>guava17</feature>
                 <feature>guava</feature>
                 <feature>hibernate36</feature>
                 <feature>hibernate-validator4</feature>

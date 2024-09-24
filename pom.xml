@@ -26,7 +26,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>33.0.8</version>
+  <version>34.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -144,6 +144,11 @@
   </extensions>
   <pluginManagement>
     <plugins>
+      <plugin>
+        <groupId>com.google.code.maven-replacer-plugin</groupId>
+        <artifactId>replacer</artifactId>
+        <version>1.5.3</version>
+      </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
@@ -1256,6 +1261,7 @@
                    <exclude>javax.ws.rs:jsr311-api</exclude>         <!-- use: javax.ws.rs-api -->
                    <exclude>javax.xml.bind:jaxb-api</exclude>        <!-- use: jaxb-dependencies -->
                    <exclude>jdom:jdom</exclude>                      <!-- use: org.apache.servicemix.bundles.jdom -->
+                   <exclude>net.sf.jung:*</exclude>                  <!-- use: org.opennms.dependencies:jung-shaded -->
                    <exclude>log4j:log4j</exclude>                    <!-- use: log4j2 -->
                    <exclude>nekohtml:nekohtml</exclude>              <!-- use: org.nokogiri:nekohtml -->
                    <exclude>org.apache.geronimo.specs/geronimo-jms_2.0_spec</exclude>   <!-- use: javax.jms:javax.jms-api -->
@@ -1643,7 +1649,7 @@
 
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
-    <maven.karaf.plugin.version>4.4.4</maven.karaf.plugin.version>
+    <maven.karaf.plugin.version>4.4.5</maven.karaf.plugin.version>
     <maven.pax.plugin.version>1.6.0</maven.pax.plugin.version>
     <maven.shade.plugin.version>3.5.1</maven.shade.plugin.version>
     <antlr.version>2.7.7</antlr.version>
@@ -1671,7 +1677,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>33.0.8</opennms.osgi.version>
+    <opennms.osgi.version>34.0.0.SNAPSHOT</opennms.osgi.version>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
@@ -1732,11 +1738,12 @@
     <!-- dependency versions -->
     <antVersion>1.10.13</antVersion>
     <args4jVersion>2.33</args4jVersion>
+    <ariesUtilVersion>1.1.3</ariesUtilVersion>
     <asmVersion>9.7</asmVersion>
     <activemqVersion>5.15.16</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.17</batikVersion>
-    <bouncyCastleVersion>1.76</bouncyCastleVersion>
+    <bouncyCastleVersion>1.78.1</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
@@ -1763,7 +1770,7 @@
     <commonsJxpathVersion>1.3</commonsJxpathVersion>
     <commonsIoVersion>2.15.0</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
-    <commonsLang3Version>3.13.0</commonsLang3Version>
+    <commonsLang3Version>3.16.0</commonsLang3Version>
     <commonsMath3Version>3.6.1</commonsMath3Version>
     <commonsNetVersion>3.10.0</commonsNetVersion>
     <commonsPoolVersion>1.6</commonsPoolVersion>
@@ -1777,7 +1784,7 @@
     <cxfVersion>3.5.8</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
-    <dnsjavaVersion>3.5.3_1</dnsjavaVersion>
+    <dnsjavaVersion>2.1.9_1</dnsjavaVersion>
     <dom4jVersion>2.1.4</dom4jVersion>
     <dropwizardMetricsVersion>4.2.10</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
@@ -1787,6 +1794,7 @@
     <elasticsearchNettyVersion>${netty4Version}</elasticsearchNettyVersion>
     <elasticsearchDriftPluginVersion>2.0.5</elasticsearchDriftPluginVersion>
     <elasticsearchTargetVersion>7.17.9</elasticsearchTargetVersion>
+    <errorProneAnnotationsVersion>2.25.0</errorProneAnnotationsVersion>
     <felixBridgeVersion>4.1.6</felixBridgeVersion>
     <felixProxyVersion>3.0.6</felixProxyVersion>
     <fopVersion>2.9</fopVersion>
@@ -1798,9 +1806,10 @@
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
     <groovyVersion>3.0.21</groovyVersion>
-    <grpcVersion>1.46.0</grpcVersion>
+    <grpcVersion>1.66.0</grpcVersion>
     <gsonVersion>2.9.1</gsonVersion>
     <guavaVersion>31.1-jre</guavaVersion>
+    <guava32Version>32.1.3-jre</guava32Version>
     <guavaOsgiVersion>31.1</guavaOsgiVersion>
     <guavagRPCVersion>30.1-jre</guavagRPCVersion>
     <gwtVersion>2.9.0</gwtVersion>
@@ -1817,7 +1826,7 @@
     <httpcoreVersion>4.4.16</httpcoreVersion>
     <httpclientVersion>4.5.14</httpclientVersion>
     <httpasyncclientVersion>4.1.5</httpasyncclientVersion>
-    <ipaddressVersion>5.4.0</ipaddressVersion>
+    <ipaddressVersion>5.5.0</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
     <jackson2Version>2.16.2</jackson2Version>
     <jmsApiVersion>2.0.1</jmsApiVersion>
@@ -1894,7 +1903,7 @@
     <slingJohnzonVersion>1.2.16</slingJohnzonVersion>
     <!-- END: versions must match versions provided by embedded Karaf -->
     <kafkaBundleVersion>3.5.1_1</kafkaBundleVersion>
-    <kafkaVersion>3.6.0</kafkaVersion>
+    <kafkaVersion>3.6.2</kafkaVersion>
     <kotlinVersion>1.9.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
@@ -1924,6 +1933,7 @@
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
     <osgiEnterpriseVersion>7.0.0</osgiEnterpriseVersion>
+    <osgiServiceJdbcVersion>1.0.1</osgiServiceJdbcVersion>
     <owaspEncoderVersion>1.2.3</owaspEncoderVersion>
     <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
     <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
@@ -1953,7 +1963,7 @@
     <swaggerUIVersion>3.13.0</swaggerUIVersion>
     <swaggerVersion>2.1.12</swaggerVersion>
     <swaggerParserVersion>2.0.33</swaggerParserVersion>
-    <swaggerRequestValidatorVersion>2.39.0</swaggerRequestValidatorVersion>
+    <swaggerRequestValidatorVersion>2.42.0</swaggerRequestValidatorVersion>
     <openapiSchemaValidatorVersion>1.0.7</openapiSchemaValidatorVersion>
     <tape2Version>2.0.0-beta1</tape2Version>
     <trackerVersion>0.7</trackerVersion>
@@ -1966,11 +1976,12 @@
     <xalanSerializerServicemixVersion>2.7.3_1</xalanSerializerServicemixVersion>
     <xercesVersion>2.12.2</xercesVersion>
     <xmlApisExtVersion>1.3.04</xmlApisExtVersion>
+    <xmlSchemaVersion>2.3.1</xmlSchemaVersion>
     <xmlgraphicsCommonsVersion>2.9</xmlgraphicsCommonsVersion>
     <xmlsecVersion>2.3.4</xmlsecVersion>
     <xstreamVersion>1.4.20</xstreamVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
-    <wsmanVersion>1.2.3</wsmanVersion>
+    <wsmanVersion>1.3.0</wsmanVersion>
     <zookeeperVersion>3.7.2</zookeeperVersion>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
     <minaSshdVersion>2.12.1</minaSshdVersion>
@@ -3116,6 +3127,17 @@
         <artifactId>jasypt-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jung-shaded</artifactId>
+        <version>${project.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>net.sf.jung</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.jasypt</groupId>
@@ -4317,7 +4339,7 @@
       <dependency>
         <groupId>com.google.errorprone</groupId>
         <artifactId>error_prone_annotations</artifactId>
-        <version>2.18.0</version>
+        <version>${errorProneAnnotationsVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
@@ -4435,26 +4457,6 @@
         <artifactId>json-lib</artifactId>
         <version>${jsonlibVersion}</version>
         <classifier>jdk15</classifier>
-      </dependency>
-      <dependency>
-        <groupId>net.sf.jung</groupId>
-        <artifactId>jung-api</artifactId>
-        <version>${jungVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>net.sf.jung</groupId>
-        <artifactId>jung-graph-impl</artifactId>
-        <version>${jungVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>net.sf.jung</groupId>
-        <artifactId>jung-algorithms</artifactId>
-        <version>${jungVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>net.sf.jung</groupId>
-        <artifactId>jung-visualization</artifactId>
-        <version>${jungVersion}</version>
       </dependency>
       <dependency>
         <groupId>net.sf.opencsv</groupId>
@@ -5035,6 +5037,26 @@
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-transport</artifactId>
+        <version>${netty4Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport-classes-epoll</artifactId>
+        <version>${netty4Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport-native-epoll</artifactId>
+        <version>${netty4Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport-classes-kqueue</artifactId>
+        <version>${netty4Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport-native-kqueue</artifactId>
         <version>${netty4Version}</version>
       </dependency>
       <dependency>
