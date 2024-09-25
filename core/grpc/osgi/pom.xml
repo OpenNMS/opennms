@@ -22,18 +22,11 @@
         <version>${maven.shade.plugin.version}</version>
         <executions>
           <execution>
-            <phase>package</phase>
             <goals>
               <goal>shade</goal>
             </goals>
+            <phase>package</phase>
             <configuration>
-              <artifactSet>
-              </artifactSet>
-              <filters>
-                <filter>
-                  <artifact>*:*</artifact>
-                </filter>
-              </filters>
               <createDependencyReducedPom>true</createDependencyReducedPom>
             </configuration>
           </execution>
@@ -46,13 +39,14 @@
         <configuration>
           <instructions>
             <Import-Package>
+              com.google.protobuf;version="[3.19,5)",
+              javax.net,
               javax.net.ssl,
               javax.security.cert,
               javax.security.auth.x500,
             </Import-Package>
-            <Export-Package>
-              com.google.protobuf,
-              io.grpc,
+            <Export-Package>io.grpc,
+              io.grpc.core,
               io.grpc.stub,
               io.grpc.protobuf,
               io.grpc.internal,
@@ -72,7 +66,7 @@
   <dependencies>
     <dependency>
       <groupId>io.grpc</groupId>
-      <artifactId>grpc-netty-shaded</artifactId>
+      <artifactId>grpc-core</artifactId>
       <version>${grpcVersion}</version>
     </dependency>
     <dependency>
@@ -84,6 +78,12 @@
       <groupId>io.grpc</groupId>
       <artifactId>grpc-protobuf</artifactId>
       <version>${grpcVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>com.google.protobuf</groupId>
+          <artifactId>protobuf-java</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
@@ -91,14 +91,9 @@
       <version>${grpcVersion}</version>
     </dependency>
     <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>${guavagRPCVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>com.google.protobuf</groupId>
-      <artifactId>protobuf-java</artifactId>
-      <version>${protobufVersion}</version>
+      <groupId>io.grpc</groupId>
+      <artifactId>grpc-netty-shaded</artifactId>
+      <version>${grpcVersion}</version>
     </dependency>
   </dependencies>
 
