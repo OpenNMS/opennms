@@ -67,7 +67,7 @@ jobs:
     if: "!contains(github.event.commits[0].message, '[skip deps-freshness]')"
     runs-on: ubuntu-latest
     container:
-      image: quay.io/bluebird/java-builder:0.0.4.jdk-17
+      image: quay.io/bluebird/java-builder:0.1.1.jdk-17.b1
     steps:
       - uses: actions/checkout@v4
       - name: Add workspace to git safe.directory
@@ -191,23 +191,6 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: quay.io/bluebird/core-snapshot:${{ github.sha }}.b${{ github.run_id }}
-      - name: Run Trivy vulnerability scanner on Core
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'quay.io/bluebird/core-snapshot:${{ github.sha }}.b${{ github.run_id }}'
-          format: 'table'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'LOW,MEDIUM,HIGH,CRITICAL'
-      - name: Generate Core SBOM and submit results to Dependency Graph
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          format: 'github'
-          output: 'dependency-results.sbom.json'
-          timeout: 30m
-          image-ref: 'quay.io/bluebird/core-snapshot:${{ github.sha }}.b${{ github.run_id }}'
-          github-pat: ${{ secrets.GITHUB_TOKEN }}
 
   minion-oci:
     if: "!contains(github.event.commits[0].message, '[skip minion-oci]')"
@@ -251,23 +234,6 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: quay.io/bluebird/minion-snapshot:${{ github.sha }}.b${{ github.run_id }}
-      - name: Run Trivy vulnerability scanner on Minion
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'quay.io/bluebird/minion-snapshot:${{ github.sha }}.b${{ github.run_id }}'
-          format: 'table'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'LOW,MEDIUM,HIGH,CRITICAL'
-      - name: Generate Minion SBOM and submit results to Dependency Graph
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          format: 'github'
-          output: 'dependency-results.sbom.json'
-          timeout: 30m
-          image-ref: 'quay.io/bluebird/minion-snapshot:${{ github.sha }}.b${{ github.run_id }}'
-          github-pat: ${{ secrets.GITHUB_TOKEN }}
 
   sentinel-oci:
     if: "!contains(github.event.commits[0].message, '[skip sentinel-oci]')"
@@ -304,23 +270,6 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           tags: quay.io/bluebird/sentinel-snapshot:${{ github.sha }}.b${{ github.run_id }}
-      - name: Run Trivy vulnerability scanner on Sentinel
-        uses: aquasecurity/trivy-action@master
-        with:
-          image-ref: 'quay.io/bluebird/sentinel-snapshot:${{ github.sha }}.b${{ github.run_id }}'
-          format: 'table'
-          ignore-unfixed: true
-          vuln-type: 'os,library'
-          severity: 'LOW,MEDIUM,HIGH,CRITICAL'
-      - name: Generate Sentinel SBOM and submit results to Dependency Graph
-        uses: aquasecurity/trivy-action@master
-        with:
-          scan-type: 'fs'
-          format: 'github'
-          output: 'dependency-results.sbom.json'
-          timeout: 30m
-          image-ref: 'quay.io/bluebird/sentinel-snapshot:${{ github.sha }}.b${{ github.run_id }}'
-          github-pat: ${{ secrets.GITHUB_TOKEN }}
 
   unit-tests:
     if: "!contains(github.event.commits[0].message, '[skip unit-tests]')"
@@ -535,7 +484,7 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     container:
-      image: quay.io/bluebird/base-builder:ubuntu.0.1.0.b53
+      image: quay.io/bluebird/base-builder:ubuntu.0.1.1.b1
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -555,7 +504,7 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     container:
-      image: quay.io/bluebird/base-builder:ubuntu.0.1.0.b53
+      image: quay.io/bluebird/base-builder:ubuntu.0.1.1.b1
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -575,7 +524,7 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     container:
-      image: quay.io/bluebird/base-builder:ubuntu.0.1.0.b53
+      image: quay.io/bluebird/base-builder:ubuntu.0.1.1.b1
     steps:
       - uses: actions/download-artifact@v4
         with:

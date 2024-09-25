@@ -40,6 +40,7 @@ OCI_REGISTRY          ?= quay.io
 OCI_REGISTRY_USER     ?= changeme
 OCI_REGISTRY_PASSWORD ?= changeme
 OCI_REGISTRY_ORG      ?= changeme
+TRIVY_ARGS            := --java-db-repository quay.io/bluebird/trivy-java-db:1 --timeout 30m --format json
 
 .PHONY: help
 help:
@@ -288,15 +289,15 @@ sentinel-oci-sbom: deps-oci-sbom sentinel-oci
 
 .PHONY: core-oci-sec-scan
 core-oci-sec-scan: deps-oci-sec-scan core-oci
-	trivy image opennms/horizon:latest --timeout 30m --format json -o $(ARTIFACTS_DIR)/oci/core-trivy-report.json
+	trivy image opennms/horizon:latest $(TRIVY_ARGS) -o $(ARTIFACTS_DIR)/oci/core-trivy-report.json
 
 .PHONY: minion-oci-sec-scan
 minion-oci-sec-scan: deps-oci-sec-scan minion-oci
-	trivy image opennms/minion:latest --timeout 30m --format json -o $(ARTIFACTS_DIR)/oci/minion-trivy-report.json
+	trivy image opennms/minion:latest $(TRIVY_ARGS) -o $(ARTIFACTS_DIR)/oci/minion-trivy-report.json
 
 .PHONY: sentinel-oci-sec-scan
 sentinel-oci-sec-scan: deps-oci-sec-scan sentinel-oci
-	trivy image opennms/sentinel:latest --timeout 30m --format json -o $(ARTIFACTS_DIR)/oci/sentinel-trivy-report.json
+	trivy image opennms/sentinel:latest $(TRIVY_ARGS) -o $(ARTIFACTS_DIR)/oci/sentinel-trivy-report.json
 
 # Run just the a very limited set of integration tests to verify the application comes up and we have something we can
 # at least work with.
