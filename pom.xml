@@ -1661,6 +1661,7 @@
     <eddsaVersion>0.3.0</eddsaVersion>
     <elasticsearchNettyVersion>4.1.69.Final</elasticsearchNettyVersion>
     <elasticsearchTargetVersion>7.6.2</elasticsearchTargetVersion>
+    <esapiVersion>2.3.0.0</esapiVersion>
     <felixBridgeVersion>4.0.12</felixBridgeVersion>
     <felixProxyVersion>3.0.6</felixProxyVersion>
     <fopVersion>2.9</fopVersion>
