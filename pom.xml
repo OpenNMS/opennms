@@ -1223,7 +1223,7 @@
                  <version>[3.5,)</version>
                </requireMavenVersion>
                <requireJavaVersion>
-                 <version>[11,18)</version>
+                 <version>[11,22)</version>
                </requireJavaVersion>
              </rules>
            </configuration>

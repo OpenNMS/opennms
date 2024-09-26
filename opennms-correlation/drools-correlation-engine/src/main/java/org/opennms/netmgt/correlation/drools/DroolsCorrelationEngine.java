@@ -42,6 +42,7 @@ import org.apache.commons.lang.exception.ExceptionUtils;
 import org.drools.core.RuleBaseConfiguration;
 import org.drools.core.RuleBaseConfiguration.AssertBehaviour;
 import org.kie.api.KieBase;
+import org.kie.api.KieBaseConfiguration;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
@@ -233,15 +234,18 @@ public class DroolsCorrelationEngine extends AbstractCorrelationEngine {
         KieContainer kContainer = ks.newKieContainer(ks.getRepository().getDefaultReleaseId());
 
         AssertBehaviour behaviour = AssertBehaviour.determineAssertBehaviour(m_assertBehaviour);
-        RuleBaseConfiguration ruleBaseConfig = new RuleBaseConfiguration();
-        ruleBaseConfig.setAssertBehaviour(behaviour);
+
+        final KieServices kieServices = KieServices.Factory.get();
+        final KieBaseConfiguration ruleBaseConfig = kieServices.newKieBaseConfiguration();
+        ruleBaseConfig.setProperty("drools.eventProcessingMode", "stream");
+        ruleBaseConfig.setProperty("drools.equalityBehavior", behaviour.toExternalForm());
 
         EventProcessingOption eventProcessingOption = EventProcessingOption.CLOUD;
         if (m_eventProcessingMode != null && m_eventProcessingMode.toLowerCase().equals("stream")) {
             eventProcessingOption = EventProcessingOption.STREAM;
             m_isStreaming = true;
         }
-        ruleBaseConfig.setEventProcessingMode(eventProcessingOption);
+        ruleBaseConfig.setProperty("drools.eventProcessingMode", eventProcessingOption.toExternalForm());
 
         m_kieBase = kContainer.newKieBase(ruleBaseConfig);
 

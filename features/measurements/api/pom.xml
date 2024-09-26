@@ -23,8 +23,8 @@
             </goals>
             <configuration>
               <!-- To load the jar file into jaspersoft studio it is required to be Java 1.7 compatible -->
-              <source>1.7</source>
-              <target>1.7</target>
+              <source>1.8</source>
+              <target>1.8</target>
             </configuration>
           </execution>
         </executions>

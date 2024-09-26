@@ -368,7 +368,7 @@ sub get_minimum_java {
 
 # for now
 sub get_maximum_java {
-	return 18;
+	return 22;
 }
 
 sub get_version_from_java {

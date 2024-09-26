@@ -30,9 +30,11 @@ import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.List;
 
+import org.drools.core.CompositeSessionConfiguration;
 import org.drools.core.RuleBaseConfiguration;
 import org.drools.core.RuleBaseConfiguration.AssertBehaviour;
 import org.kie.api.KieBase;
+import org.kie.api.KieBaseConfiguration;
 import org.kie.api.KieServices;
 import org.kie.api.builder.KieBuilder;
 import org.kie.api.builder.KieFileSystem;
@@ -43,6 +45,7 @@ import org.kie.api.marshalling.Marshaller;
 import org.kie.api.marshalling.ObjectMarshallingStrategy;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
+import org.kie.internal.conf.CompositeBaseConfiguration;
 import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.alarmd.api.NorthboundAlarm;
 import org.opennms.netmgt.alarmd.api.NorthbounderException;
@@ -152,9 +155,11 @@ public class DroolsNorthbounder extends AbstractNorthbounder implements Initiali
         KieContainer kContainer = ks.newKieContainer(ks.getRepository().getDefaultReleaseId());
 
         AssertBehaviour behaviour = AssertBehaviour.determineAssertBehaviour(m_engine.getAssertBehaviour());
-        RuleBaseConfiguration ruleBaseConfig = new RuleBaseConfiguration();
-        ruleBaseConfig.setAssertBehaviour(behaviour);
-        ruleBaseConfig.setEventProcessingMode(EventProcessingOption.STREAM);
+
+        final KieServices kieServices = KieServices.Factory.get();
+        final KieBaseConfiguration ruleBaseConfig = kieServices.newKieBaseConfiguration();
+        ruleBaseConfig.setProperty("drools.eventProcessingMode", "stream");
+        ruleBaseConfig.setProperty("drools.equalityBehavior", behaviour.toExternalForm());
 
         m_kieBase = kContainer.newKieBase(ruleBaseConfig);
         m_kieSession = m_kieBase.newKieSession();

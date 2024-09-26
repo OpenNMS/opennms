@@ -50,8 +50,8 @@ import java.io.OutputStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
-import org.drools.core.common.DroolsObjectInputStream;
-import org.drools.core.common.DroolsObjectOutputStream;
+import org.drools.base.common.DroolsObjectOutputStream;
+import org.drools.base.common.DroolsObjectInputStream;
 
 /**
  * Created by IntelliJ IDEA.

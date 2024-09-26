@@ -27,6 +27,7 @@ oneTimeSetUp() {
   makeFakeJava "$TESTDIR/9-openjdk" true "9.0.4" "13"
   makeFakeJava "$TESTDIR/11-openjdk" true "11.0.2" "9-LTS"
   makeFakeJava "$TESTDIR/17-openjdk" true "17-ea" "26-2439"
+  makeFakeJava "$TESTDIR/21-openjdk" true "21.0.4" "12-3455"
 }
 
 oneTimeTearDown() {
@@ -53,7 +54,7 @@ testHelp() {
 testJavaSearch() {
   output="$(runFindJava -s -v)"
   assertTrue "$?"
-  assertEquals "17" "$output"
+  assertEquals "21.0.4" "$output"
 }
 
 testJavaSearch6to8() {
@@ -74,8 +75,8 @@ testJavaSearch8to11() {
   assertEquals "11.0.2" "$output"
 }
 
-testJavaSearch18() {
-  output="$(runFindJava -s -v 18)"
+testJavaSearch22() {
+  output="$(runFindJava -s -v 22)"
   assertFalse "$?"
   assertEquals "No match found!" "$output"
 }
