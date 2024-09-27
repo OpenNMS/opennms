@@ -25,6 +25,7 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.opentracing.References;
 import io.opentracing.Scope;
+import io.opentracing.Span;
 import io.opentracing.Tracer;
 import org.apache.camel.AsyncCallback;
 import org.apache.camel.AsyncProcessor;
@@ -124,12 +125,15 @@ public class JmsTwinPublisher extends AbstractTwinPublisher implements AsyncProc
                 String tracingOperationKey = generateTracingOperationKey(twinRequest.getLocation(), twinRequest.getKey());
                 Tracer.SpanBuilder spanBuilder = TracingInfoCarrier.buildSpanFromTracingMetadata(getTracer(),
                         tracingOperationKey, twinRequest.getTracingInfo(), References.FOLLOWS_FROM);
-                try(Scope scope = spanBuilder.startActive(true)) {
+                final Span span = spanBuilder.start();
+                try(Scope scope = getTracer().scopeManager().activate(span)) {
                     TwinUpdate twinUpdate = getTwin(twinRequest);
-                    addTracingInfo(scope.span(), twinUpdate);
+                    addTracingInfo(span, twinUpdate);
                     TwinResponseProto twinResponseProto = mapTwinResponse(twinUpdate);
                     exchange.getOut().setBody(twinResponseProto.toByteArray());
                     callback.done(false);
+                } finally {
+                    span.finish();
                 }
             } catch (Exception e) {
                 LOG.error("Exception while processing request", e);
