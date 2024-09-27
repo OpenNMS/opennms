@@ -58,6 +58,7 @@ rule "setSituationSeverityToMaxAlarmSeverity"
 end
 
 rule "escalateSituationSeverity"
+no-loop false
   when
     $sessionClock : SessionClock()
     $situation : OnmsAlarm( isSituation() == true, $relatedAlarmIds : relatedAlarmIds )
