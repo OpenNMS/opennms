@@ -155,7 +155,6 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitorAdapto
         //    appear in the map
         // Add labels to be used in time series that depends on labels
         Map<String, String> tags = new HashMap<>();
-        tags.put("node_id", Integer.toString(service.getNodeId()));
         tags.put("node_label", service.getNodeLabel());
         tags.put("location", service.getNodeLocation());
         LatencyCollectionResource latencyResource = new LatencyCollectionResource(service.getSvcName(), service.getIpAddr(), service.getNodeLocation(), tags);

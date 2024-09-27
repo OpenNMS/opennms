@@ -31,7 +31,6 @@ import java.util.concurrent.ExecutionException;
 
 import org.opennms.core.cache.Cache;
 import org.opennms.integration.api.v1.timeseries.Tag;
-import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.netmgt.collection.api.AbstractPersister;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.AttributeType;
@@ -105,10 +104,6 @@ public class TimeseriesPersister extends AbstractPersister {
             // Set the builder before any calls to persistNumericAttribute are made
             CollectionResource resource = group.getResource();
             Set<Tag> metaTags = getUserDefinedMetaTags(resource);
-            resource.getTags().forEach((key, value) -> metaTags.add(new ImmutableTag(key, value)));
-            if (resource.getInterfaceLabel() != null) {
-                metaTags.add(new ImmutableTag("resource_label", resource.getInterfaceLabel()));
-            }
             currentBuilder = new TimeseriesPersistOperationBuilder(writer, repository, resource, group.getName(), metaTags,
                     resourceLevelStringAttributes, this.metricRegistry);
             if (resource.getTimeKeeper() != null) {

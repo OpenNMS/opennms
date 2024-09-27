@@ -112,6 +112,7 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
 
             // create tags for categories
             nodeOptional.ifPresent(onmsNode -> mapCategories(tags, onmsNode));
+            mapResourceTags(configuredMetaTags, tags, resource);
             return tags;
         });
     }
@@ -122,6 +123,22 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
             node.getCategories().stream()
                     .map(OnmsCategory::getName)
                     .forEach(catName -> tags.add(new ImmutableTag("cat_" + catName, catName)));
+        }
+    }
+
+    private void mapResourceTags(final Map<String, String> configuredMetaTags, final Set<Tag> tags,
+                                 final CollectionResource resource) {
+
+        for (Map.Entry<String, String> entry : configuredMetaTags.entrySet()) {
+            if (entry.getValue().contains("resource:label") && resource.getInterfaceLabel() != null) {
+                tags.add(new ImmutableTag(entry.getKey(), resource.getInterfaceLabel()));
+            }
+            if (entry.getValue().contains("resource:node_label") && resource.getTags().get("node_label") != null) {
+                tags.add(new ImmutableTag(entry.getKey(), resource.getTags().get("node_label")));
+            }
+            if (entry.getValue().contains("resource:location") && resource.getTags().get("location") != null) {
+                tags.add(new ImmutableTag(entry.getKey(), resource.getTags().get("location")));
+            }
         }
     }
 
