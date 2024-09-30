@@ -1909,7 +1909,7 @@
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
     <log4j2Version>2.21.1</log4j2Version>
-    <logbackClassicVersion>1.2.13</logbackClassicVersion>
+    <logbackClassicVersion>1.5.8</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
     <mavenApiVersion>3.9.6</mavenApiVersion>
     <mavenResolverApiVersion>2.0.1</mavenResolverApiVersion>
