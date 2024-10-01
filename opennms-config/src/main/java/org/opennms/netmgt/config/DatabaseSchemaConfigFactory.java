@@ -389,19 +389,39 @@ public final class DatabaseSchemaConfigFactory implements DatabaseSchemaConfig {
      */
     public String addColumn(final List<Table> tables, final String column) throws FilterParseException {
         getReadLock().lock();
-        try {
-            final Table table = findTableByVisibleColumn(column);
-            if(table == null) {
-                final String message = "Could not find the column '" + column +"' in filter rule";
-                throw new FilterParseException(message);
+        if (doesColumnExist(column)) {
+            try {
+                final Table table = findTableByVisibleColumn(column);
+                if (table == null) {
+                    final String message = "Could not find the column '" + column + "' in filter rule";
+                    throw new FilterParseException(message);
+                }
+                if (!tables.contains(table)) {
+                    tables.add(table);
+                }
+                return table.getName() + "." + column;
+            } finally {
+                getReadLock().unlock();
             }
-            if (!tables.contains(table)) {
-                tables.add(table);
-            }
-            return table.getName() + "." + column;
-        } finally {
-            getReadLock().unlock();
         }
+        return "";
+    }
+    /**
+     * Validate that a column is in the schema.
+     * @return boolean
+     *
+     */
+    public boolean doesColumnExist(String colName) {
+        for (final Table t : getDatabaseSchema().getTables()) {
+            for (final Column col : t.getColumns()) {
+                if (col.getVisible() == null || col.getVisible().equalsIgnoreCase("true")) {
+                    if (col.getName().equalsIgnoreCase(colName)) {
+                        return true; // Column found
+                    }
+                }
+            }
+        }
+        return false; // Column not found
     }
 
 }

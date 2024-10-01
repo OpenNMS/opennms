@@ -458,6 +458,11 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         columns.append(m_databaseSchemaConfigFactory.addColumn(tables, "nodeID"));
         columns.append(", " + m_databaseSchemaConfigFactory.addColumn(tables, "nodeLabel"));
 
+        //added table assets column
+        columns.append(", " + m_databaseSchemaConfigFactory.addColumn(tables, "city"));
+        columns.append(", " + m_databaseSchemaConfigFactory.addColumn(tables, "department"));
+        columns.append(", " + m_databaseSchemaConfigFactory.addColumn(tables, "address1"));
+
         final String where = parseRule(tables, rule);
         final String from = m_databaseSchemaConfigFactory.constructJoinExprForTables(tables);
 
@@ -708,6 +713,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             }
             regex.appendTail(tempStringBuff);
             sqlRule = tempStringBuff.toString();
+            if(!sqlRule.isEmpty())
             return "WHERE " + sqlRule;
         }
         return "";
