@@ -102,8 +102,8 @@ public abstract class DestinationPathManager {
     /**
      * <p>getTargetCommands</p>
      *
-     * @param path   a {@link org.opennms.netmgt.config.destinationPaths.Path} object.
-     * @param index  a int.
+     * @param path a {@link org.opennms.netmgt.config.destinationPaths.Path} object.
+     * @param index a int.
      * @param target a {@link java.lang.String} object.
      * @return a {@link java.util.Collection} object.
      * @throws java.io.IOException if any.
@@ -126,7 +126,7 @@ public abstract class DestinationPathManager {
      * <p>getTargetList</p>
      *
      * @param index a int.
-     * @param path  a {@link org.opennms.netmgt.config.destinationPaths.Path} object.
+     * @param path a {@link org.opennms.netmgt.config.destinationPaths.Path} object.
      * @return an array of {@link org.opennms.netmgt.config.destinationPaths.Target} objects.
      * @throws java.io.IOException if any.
      */
@@ -149,7 +149,7 @@ public abstract class DestinationPathManager {
     /**
      * <p>pathHasTarget</p>
      *
-     * @param path   a {@link org.opennms.netmgt.config.destinationPaths.Path} object.
+     * @param path a {@link org.opennms.netmgt.config.destinationPaths.Path} object.
      * @param target a {@link java.lang.String} object.
      * @return a boolean.
      * @throws java.io.IOException if any.
@@ -196,8 +196,9 @@ public abstract class DestinationPathManager {
     /**
      * Removes a Path from the xml file.
      *
-     * @param path the path to remove
-     * @throws IOException
+     * @param path
+     *            the path to remove
+     * @exception IOException
      * @throws java.io.IOException if any.
      */
     public synchronized void removePath(Path path) throws IOException {
@@ -208,8 +209,9 @@ public abstract class DestinationPathManager {
     /**
      * Removes a Path form the xml file based on its name
      *
-     * @param name the name of the path to remove
-     * @throws IOException
+     * @param name
+     *            the name of the path to remove
+     * @exception IOException
      * @throws java.io.IOException if any.
      */
     public synchronized void removePath(String name) throws IOException {
@@ -270,7 +272,7 @@ public abstract class DestinationPathManager {
     /**
      * <p>update</p>
      *
-     * @throws java.io.IOException           if any.
+     * @throws java.io.IOException if any.
      * @throws java.io.FileNotFoundException if any.
      */
     public abstract void update() throws IOException, FileNotFoundException;
