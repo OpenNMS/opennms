@@ -58,7 +58,7 @@ public abstract class DestinationPathManager {
      * <p>parseXML</p>
      *
      * @param stream a {@link java.io.InputStream} object.
-     * @throws IOException
+     * @throws IOException 
      */
     protected void parseXML(final InputStream stream) throws IOException {
         try (final InputStreamReader isr = new InputStreamReader(stream)) {
@@ -83,7 +83,7 @@ public abstract class DestinationPathManager {
      */
     public Path getPath(String pathName) throws IOException {
         update();
-
+    
         return m_destinationPaths.get(pathName);
     }
 
