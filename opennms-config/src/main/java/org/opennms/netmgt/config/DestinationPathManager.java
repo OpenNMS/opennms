@@ -95,7 +95,7 @@ public abstract class DestinationPathManager {
      */
     public Map<String, Path> getPaths() throws IOException {
         update();
-
+    
         return Collections.unmodifiableMap(m_destinationPaths);
     }
 
@@ -110,14 +110,14 @@ public abstract class DestinationPathManager {
      */
     public Collection<String> getTargetCommands(Path path, int index, String target) throws IOException {
         update();
-
+    
         Target[] targets = getTargetList(index, path);
-
+    
         for (int i = 0; i < targets.length; i++) {
             if (targets[i].getName().equals(target))
                 return targets[i].getCommands();
         }
-
+    
         // default null value if target isn't found in Path
         return null;
     }
@@ -132,7 +132,7 @@ public abstract class DestinationPathManager {
      */
     public Target[] getTargetList(int index, Path path) throws IOException {
         update();
-
+    
         Target[] targets = null;
         // index of -1 indicates the initial targets, any other index means to
         // get
@@ -142,7 +142,7 @@ public abstract class DestinationPathManager {
         } else {
             targets = path.getEscalates().get(index).getTargets().toArray(new Target[0]);
         }
-
+    
         return targets;
     }
 
@@ -161,7 +161,7 @@ public abstract class DestinationPathManager {
             if (curTarget.getName().equals(target))
                 return true;
         }
-
+    
         // default false value if target isn't found
         return false;
     }
@@ -174,7 +174,7 @@ public abstract class DestinationPathManager {
      */
     public synchronized void addPath(Path newPath) throws IOException {
         m_destinationPaths.put(newPath.getName(), newPath);
-
+    
         saveCurrent();
     }
 
@@ -189,7 +189,7 @@ public abstract class DestinationPathManager {
         if (m_destinationPaths.containsKey(oldName)) {
             m_destinationPaths.remove(oldName);
         }
-
+    
         addPath(newPath);
     }
 
@@ -229,9 +229,9 @@ public abstract class DestinationPathManager {
         for (Path path : m_destinationPaths.values()) {
             allPaths.addPath(path);
         }
-
+    
         allPaths.setHeader(rebuildHeader());
-
+    
         // Marshal to a string first, then write the string to the file. This
         // way the original config
         // isn't lost if the XML from the marshal is hosed.
@@ -239,12 +239,12 @@ public abstract class DestinationPathManager {
         JaxbUtils.marshal(allPaths, stringWriter);
         String writerString = stringWriter.toString();
         saveXML(writerString);
-
+    
         /*
          * TODO: what do do about this?  Should this be here?
          * Appears that everything is handled through the update
          * method when a member of field is requested.
-         *
+         * 
          * Delete after all Notifd tests are passing.
          */
         //reload();
@@ -257,15 +257,15 @@ public abstract class DestinationPathManager {
      * @throws java.io.IOException if any.
      */
     protected abstract void saveXML(String writerString) throws IOException;
-
+    
     /**
-     *
+     * 
      */
     private Header rebuildHeader() {
         Header header = oldHeader;
-
+    
         header.setCreated(FORMATTER.format(new Date()));
-
+    
         return header;
     }
 
