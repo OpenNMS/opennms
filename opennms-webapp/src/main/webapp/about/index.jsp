@@ -1,25 +1,25 @@
 <%--
+    This file is part of BlueBirdOps(tm).
 
-    Licensed to The OpenNMS Group, Inc (TOG) under one or more
-    contributor license agreements.  See the LICENSE.md file
-    distributed with this work for additional information
-    regarding copyright ownership.
+    BlueBirdOps is Copyright (C) 2024 BlueBirdOps Contributors.
 
-    TOG licenses this file to You under the GNU Affero General
-    Public License Version 3 (the "License") or (at your option)
-    any later version.  You may not use this file except in
-    compliance with the License.  You may obtain a copy of the
-    License at:
+    Portions Copyright (C) 2002-2024 The OpenNMS Group, Inc.
 
-         https://www.gnu.org/licenses/agpl-3.0.txt
+    See the LICENSE.md file distributed with this work for additional
+    information regarding copyright ownership.
 
-    Unless required by applicable law or agreed to in writing,
-    software distributed under the License is distributed on an
-    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
-    either express or implied.  See the License for the specific
-    language governing permissions and limitations under the
-    License.
+    BlueBirdOps is free software: you can redistribute it and/or modify it
+    under the terms of the GNU Affero General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or (at your
+    option) any later version.
 
+    BlueBirdOps is distributed in the hope that it will be useful, but WITHOUT
+    ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+    FITNESS FOR A PARTICULAR PURPOSE. See the GNU Affero General Public License
+    for more details.
+
+    You should have received a copy of the GNU Affero General Public License
+    along with BlueBirdOps. If not, see <https://www.gnu.org/licenses/>.
 --%>
 <%@page language="java"
 	contentType="text/html"
@@ -62,6 +62,19 @@
           .build(request);
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />
+
+  <div class="card">
+    <div class="card-header">
+      <span>About BlueBirdOps</span>
+    </div>
+    <div class="card=body">
+      <p>
+      BlueBirdOps is a community-focused project which builds on the legacy of
+      OpenNMS&reg; Horizon&trade;. Its development is coordinated independently
+      by the BlueBirdOps contributors.
+      </p>
+    </div>
+  </div>
 
   <div class="card">
     <div class="card-header">
@@ -144,17 +157,25 @@
   </div>
   <div class="card-body">
   <p>
-    <a href="http://www.opennms.org/">OpenNMS&reg;</a> is a registered
-    trademark, and Horizon&trade;, Meridian&trade;, and Compass&trade; are
-    trademarks, of <a href="http://www.opennms.com">The OpenNMS Group, Inc.</a>
-    Horizon&trade; software by OpenNMS&reg; and Meridian&trade; software by OpenNMS&reg;, as
-    distributed here, are copyright &copy; 2002-2023
-    <a href="http://www.opennms.com/">The OpenNMS Group, Inc.</a>
+    The BlueBirdOps software, as distributed here, is Copyright &copy; 2024 by
+    the BlueBirdOps contributors. BlueBirdOps is a trademark of HACS Group LLC.
   </p>
   <p>
-    OpenNMS is a derivative work, containing both original code, included
-    code and modified code that was published under the GNU Affero General Public
-    License. Please see the source for detailed copyright notices.
+    BlueBirdOps is a derivative work, containing original code, included code,
+    and modified code that was published under the GNU Affero General Public
+    License or a compatible license. Please see the source code for detailed
+    copyright notices, but some notable copyright holders are listed below:
+  </p>
+  <ul>
+    <li>The OpenNMS Horizon 33.0.x code base is Copyright &copy;
+       2002-2024 by <a href="http://www.opennms.com/">The OpenNMS Group,
+       Inc</a>.</li>
+    <li>Source code files whose comments list other copyright holders are as
+      indicated therein.</li>
+  </ul>
+  <p>
+    OpenNMS is a registered trademark of <a href="http://www.opennms.com">The
+    OpenNMS Group, Inc</a>.
   </p>
   <p>
     The source code for this release can be downloaded
