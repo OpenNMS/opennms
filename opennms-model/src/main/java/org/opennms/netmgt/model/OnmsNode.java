@@ -194,6 +194,8 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
 
     private List<OnmsMetaData> m_requisitionedMetaData = new ArrayList<>();
 
+    private Integer parentID;
+
     /**
      * <p>
      * Constructor for OnmsNode. This constructor should only be used
@@ -322,6 +324,20 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      */
     public void setParent(OnmsNode parent) {
         m_parent = parent;
+    }
+    @Transient
+    @XmlElement(name = "parent.id")
+    @JsonIgnore
+    public Integer getParentID() {
+
+        if( m_parent != null ) {
+           return m_parent.getId();
+        }
+        return null;
+    }
+
+    public void setParentID(Integer parentID) {
+        this.parentID = parentID;
     }
 
     @XmlEnum
