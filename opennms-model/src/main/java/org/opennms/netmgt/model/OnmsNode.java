@@ -194,8 +194,6 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
 
     private List<OnmsMetaData> m_requisitionedMetaData = new ArrayList<>();
 
-    private Integer m_parentID;
-
     /**
      * <p>
      * Constructor for OnmsNode. This constructor should only be used
@@ -330,15 +328,9 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     public Integer getParentID() {
 
         if( m_parent != null ) {
-           this.m_parentID= m_parent.getId();
-        }
-        return this.m_parentID;
-    }
-
-    public void setParentID(Integer parentID) {
-        if( m_parent != null ) {
-            this.m_parentID= m_parent.getId();
-        }
+          return m_parent.getId();
+         }
+          return null;
     }
 
     @XmlEnum
@@ -1118,7 +1110,6 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         .add("type", m_type == null ? null : m_type.toString())
         .add("operatingSystem", m_operatingSystem)
         .add("lastIngressFlow", m_lastIngressFlow)
-        .add("m_parentID" ,m_parentID)
         .add("lastEgressFlow", m_lastEgressFlow)
         .toString();
     }
