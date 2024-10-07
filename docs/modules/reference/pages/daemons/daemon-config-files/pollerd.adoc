@@ -17,7 +17,8 @@ Performs xref:operation:deep-dive/service-assurance/introduction.adoc[service as
 | poller-configuration.xml
 | Contains service monitor configurations for service availability checks and global daemon configuration. +
 Restart is required when monitors are created or removed. +
-A reload event loads changed configuration parameters of existing monitors, but will not load new monitors.
+A reload event loads changed configuration parameters of existing monitors, but will not load new monitors. +
+A reload event loads changes within a package definition including `filter`, `include-range` and `exclude-range`. Outside of a package definition that is either an element or attribute of `poller-configuration`, a restart is required for the changes to take effect. 
 | Yes
 | Yes
 
