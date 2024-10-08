@@ -515,7 +515,7 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
     }
 
     @Override
-    public List<OnmsNode> findNodeWithMetaData(String context, String key, String value) {
+    public List<OnmsNode> findNodeWithMetaData(String context, String key, String value, boolean matchEnumeration) {
         return Collections.emptyList();
     }
 }

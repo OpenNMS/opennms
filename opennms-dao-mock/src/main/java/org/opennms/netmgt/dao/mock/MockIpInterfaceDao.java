@@ -192,7 +192,7 @@ public class MockIpInterfaceDao extends AbstractMockDao<OnmsIpInterface, Integer
     }
 
     @Override
-    public List<OnmsIpInterface> findInterfacesWithMetadata(String context, String key, String value) {
+    public List<OnmsIpInterface> findInterfacesWithMetadata(String context, String key, String value, final boolean matchEnumeration) {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 

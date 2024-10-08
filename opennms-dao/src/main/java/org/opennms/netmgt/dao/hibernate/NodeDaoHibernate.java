@@ -586,10 +586,8 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
         return null;
     }
 
-
-
-    public List<OnmsNode> findNodeWithMetaData(final String context, final String key, final String value) {
-        return getHibernateTemplate().execute(session -> (List<OnmsNode>) session.createSQLQuery("SELECT n.nodeid FROM node n, node_metadata m WHERE m.id = n.nodeid AND context = :context AND key = :key AND value = :value ORDER BY n.nodeid")
+    public List<OnmsNode> findNodeWithMetaData(final String context, final String key, final String value, final boolean matchEnumeration) {
+        return getHibernateTemplate().execute(session -> (List<OnmsNode>) session.createSQLQuery("SELECT n.nodeid FROM node n, node_metadata m WHERE m.id = n.nodeid AND context = :context AND key = :key AND value " + (matchEnumeration ? "~ CONCAT('^',:value,'$|^',:value,'[ ,]+|[ ,]+',:value,'|[ ,]+',:value,'[ ,]+')" : "= :value" ) + " ORDER BY n.nodeid")
                 .setString("context", context)
                 .setString("key", key)
                 .setString("value", value)
