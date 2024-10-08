@@ -43,8 +43,8 @@ import javax.xml.bind.JAXB;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Semantics;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.xml.Element;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.xml.IpfixElements;
+import org.opennms.netmgt.telemetry.api.xml.Element;
+import org.opennms.netmgt.telemetry.api.xml.IpfixElements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -25,23 +25,24 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.xml;
+package org.opennms.netmgt.telemetry.api.xml;
 
 import java.util.Objects;
 
-public class Scope {
-    private long pen;
+public class Element {
+    private int id;
     private String name;
+    private String dataType;
 
-    public Scope() {
+    public Element() {
     }
 
-    public long getPen() {
-        return pen;
+    public int getId() {
+        return id;
     }
 
-    public void setPen(long pen) {
-        this.pen = pen;
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
@@ -52,11 +53,20 @@ public class Scope {
         this.name = name;
     }
 
+    public String getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
+    }
+
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Scope{");
-        sb.append("pen=").append(pen);
+        final StringBuilder sb = new StringBuilder("Element{");
+        sb.append("id=").append(id);
         sb.append(", name='").append(name).append('\'');
+        sb.append(", dataType='").append(dataType).append('\'');
         sb.append('}');
         return sb.toString();
     }
@@ -65,12 +75,12 @@ public class Scope {
     public boolean equals(Object object) {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
-        Scope scope = (Scope) object;
-        return pen == scope.pen && Objects.equals(name, scope.name);
+        Element element = (Element) object;
+        return id == element.id && Objects.equals(name, element.name) && Objects.equals(dataType, element.dataType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pen, name);
+        return Objects.hash(id, name, dataType);
     }
 }

@@ -27,20 +27,27 @@
  *******************************************************************************/
 package org.opennms.netmgt.telemetry.protocols.netflow.adapter.common;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.time.Instant;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.script.ScriptException;
+import javax.xml.bind.DataBindingException;
+import javax.xml.bind.JAXB;
 
 import org.opennms.core.mate.api.ContextKey;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
+import org.opennms.netmgt.telemetry.api.xml.IpfixElements;
 import org.opennms.netmgt.telemetry.protocols.cache.NodeInfo;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLogEntry;
@@ -110,6 +117,12 @@ public class NetflowTelemetryAdapter extends AbstractScriptedCollectionAdapter {
         }
 
         final Map<String, Object> data = flowMessage.getRawMessageList().stream().collect(HashMap::new, (m, v)->m.put(v.getName(), mapToJavaTypes(v)), HashMap::putAll);
+        final Map<String,Object> props = new TreeMap<>();
+        try {
+            props.put("ipfixElements", getIpFixElementsMap());
+        } catch (IOException e) {
+            LOG.error("Error while loading custom IpFix information elements: {}", e.getMessage());
+        }
         try {
             return Stream.of(new CollectionSetWithAgent(agent, builder.build(agent, data, message.getTimestamp())));
         } catch (final ScriptException e) {
@@ -154,6 +167,46 @@ public class NetflowTelemetryAdapter extends AbstractScriptedCollectionAdapter {
                 return null;
         }
 
+    }
+
+    final Map<File, Long> accessTimes = new HashMap<>();
+    final Map<String, IpfixElements> ipfixElementsMap = new HashMap<>();
+
+    private synchronized Map<String, IpfixElements> getIpFixElementsMap() throws IOException {
+        final Path ipfixDotD = Paths.get(System.getProperty("karaf.etc")).resolve("ipfix.d");
+
+        try (Stream<Path> stream = Files.list(ipfixDotD)) {
+            final Set<File> files = stream.filter(path -> !Files.isDirectory(path))
+                    .filter(path -> path.getFileName().toString().endsWith(".xml"))
+                    .map(Path::toFile)
+                    .collect(Collectors.toSet());
+
+            boolean reload = false;
+
+            for(final File file : files) {
+                if (!accessTimes.containsKey(file) || file.lastModified() > accessTimes.get(file)) {
+                    reload = true;
+                    break;
+                }
+            }
+
+            if (reload) {
+                ipfixElementsMap.clear();
+                for (final File file : files) {
+                    final IpfixElements ipfixElements;
+                    try {
+                        ipfixElements = JAXB.unmarshal(file, IpfixElements.class);
+                    } catch (DataBindingException e) {
+                        LOG.error("Cannot load file {}", file.getAbsolutePath(), e);
+                        continue;
+                    }
+                    ipfixElementsMap.put(file.getName(), ipfixElements);
+                    accessTimes.put(file,file.lastModified());
+                }
+            }
+        }
+
+        return ipfixElementsMap;
     }
 
     public void setCollectionAgentFactory(final CollectionAgentFactory collectionAgentFactory) {
