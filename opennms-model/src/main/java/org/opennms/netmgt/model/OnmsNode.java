@@ -307,7 +307,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      *
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
-
+    @XmlTransient
     @JsonIgnore
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="nodeParentID")
