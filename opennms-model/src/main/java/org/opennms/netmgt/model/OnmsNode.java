@@ -193,7 +193,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     private List<OnmsMetaData> m_metaData = new ArrayList<>();
 
     private List<OnmsMetaData> m_requisitionedMetaData = new ArrayList<>();
-
+    private Integer nodeParentId;
     /**
      * <p>
      * Constructor for OnmsNode. This constructor should only be used
@@ -307,7 +307,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      *
      * @return a {@link org.opennms.netmgt.model.OnmsNode} object.
      */
-    @XmlTransient
+
     @JsonIgnore
     @ManyToOne(fetch=FetchType.LAZY)
     @JoinColumn(name="nodeParentID")
@@ -323,14 +323,17 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     public void setParent(OnmsNode parent) {
         m_parent = parent;
     }
-    @Transient
-    @XmlAttribute(name = "parent.id")
-    public Integer getParentID() {
 
-        if( m_parent != null ) {
-          return m_parent.getId();
-         }
-          return null;
+
+    // This already maps to the existing column ,readonly
+    @XmlAttribute(name = "nodeParentID")
+    @Column(name = "nodeParentID",insertable = false, updatable = false)
+    public Integer getNodeParentId() {
+        return nodeParentId;
+    }
+
+    public void setNodeParentId(Integer nodeParentId) {
+        this.nodeParentId = nodeParentId;
     }
 
     @XmlEnum
