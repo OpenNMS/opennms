@@ -20,12 +20,12 @@
 /// License.
 ///
 
+import { useNodeExport } from '@/components/Nodes/hooks/useNodeExport'
+import { IpInterface, IpInterfaceApiResponse, Node, NodeApiResponse, NodeColumnSelectionItem, QueryParameters } from '@/types'
 import { describe, expect, test, vi } from 'vitest'
 import { mock } from 'vitest-mock-extended'
 import getExportDataResponseJson from './data/getExportDataResponse.json'
 import getExportDataResponseCsv from './data/getExportDataResponseCSV.json'
-import { useNodeExport } from '@/components/Nodes/hooks/useNodeExport'
-import { Node, NodeApiResponse, NodeColumnSelectionItem, QueryParameters } from '@/types'
 
 const { generateBlob, getExportData } = useNodeExport()
 
@@ -79,8 +79,50 @@ const createNodeResponse = () => {
   return response
 }
 
+const createIpInterfaceResponse = () => {
+  const ipInterface1 = mock<IpInterface>()
+  ipInterface1.lastIngressFlow = null
+  ipInterface1.ifIndex = ''
+  ipInterface1.ipAddress = '192.168.0.1'
+  ipInterface1.lastEgressFlow = null
+  ipInterface1.isManaged = 'M'
+  ipInterface1.snmpPrimary = 'N'
+  ipInterface1.monitoredServiceCount = 0
+  ipInterface1.isDown = true
+  ipInterface1.id = '1'
+  ipInterface1.lastCapsdPoll = 1728390352124
+  ipInterface1.nodeId = 1
+
+  const ipInterface2 = mock<IpInterface>()
+  ipInterface2.lastIngressFlow = null
+  ipInterface2.ifIndex = ''
+  ipInterface2.ipAddress = '192.168.99.106'
+  ipInterface2.lastEgressFlow = null
+  ipInterface2.isManaged = 'M'
+  ipInterface2.snmpPrimary = 'N'
+  ipInterface2.monitoredServiceCount = 0
+  ipInterface2.isDown = true
+  ipInterface2.id = '2'
+  ipInterface2.lastCapsdPoll = 1728390352124
+  ipInterface2.nodeId = 106
+
+  const response = {
+    count: 2,
+    offset: 0,
+    totalCount: 2,
+    ipInterface: [ipInterface1, ipInterface2]
+  } as IpInterfaceApiResponse
+
+  return response
+}
+
 vi.mock('@/services/nodeService', () => ({
   getNodes: vi.fn(() => createNodeResponse())
+}))
+
+vi.mock('@/services/ipInterfaceService', async () => ({
+  getNodeIpInterfaceQuery: vi.fn(),
+  getIpInterfaces: vi.fn(() => createIpInterfaceResponse())
 }))
 
 describe('Nodes useNodeExport test', () => {

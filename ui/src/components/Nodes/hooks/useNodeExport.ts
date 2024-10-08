@@ -20,16 +20,41 @@
 /// License.
 ///
 
+import { getIpInterfaces, getNodeIpInterfaceQuery } from '@/services/ipInterfaceService'
 import { getNodes } from '@/services/nodeService'
 import {
+  IpInterface,
   Node,
   NodeApiResponse,
   NodeColumnSelectionItem,
   QueryParameters
 } from '@/types'
 import { hasEgressFlow, hasIngressFlow } from '../utils'
+import { useIpInterfaceQuery } from './useIpInterfaceQuery'
 
 export const useNodeExport = () => {
+
+  const getIpInterfacesForNodes = async (nodeIds: string[], managedOnly: boolean): Promise<Map<string, IpInterface[]> | boolean> => {
+    if (nodeIds.length === 0) {
+      return false
+    }
+    const query = getNodeIpInterfaceQuery(nodeIds, managedOnly)
+    const queryParameters = {
+      limit: 0,
+      _s: query
+    } as QueryParameters
+    const resp = await getIpInterfaces(queryParameters)
+    const nodeToIpInterfaceMap = new Map<string, IpInterface[]>()
+    if (resp) {
+      // find updated list of IpInterfaces for each node and update the node => ip map
+      for (const id of nodeIds) {
+        const ipsThisNode = resp.ipInterface.filter(ip => ip.nodeId.toString() === id)
+        nodeToIpInterfaceMap.set(id, ipsThisNode)
+      }
+      return nodeToIpInterfaceMap
+    }
+    return false
+  }
   /**
    * Create Node export data as a string, with given query parameters/filters and currently configured columns.
    * @param format Export format, either 'csv' or 'json'
@@ -48,10 +73,18 @@ export const useNodeExport = () => {
       return ''
     }
 
-    const nodeResponse = resp as NodeApiResponse
+    const nodeResponse: NodeApiResponse = resp
     const nodes: Node[] = nodeResponse.node
-
-    const exportableNodes = nodes.map(n => buildExportableNode(columns, n))
+    const nodeIds = nodes.map(n => n.id)
+    const interfacesMap = await getIpInterfacesForNodes(nodeIds, false)
+    const nodeToIpInterfaceMap = interfacesMap as Map<string, IpInterface[]>
+    const exportableNodes = [] as any[]
+    const { getBestIpInterfaceForNode } = useIpInterfaceQuery()
+    nodes.forEach((node) => {
+      const exportableNode = buildExportableNode(columns, node)
+      exportableNode.ipaddress = getBestIpInterfaceForNode(node.id, nodeToIpInterfaceMap).label
+      exportableNodes.push(exportableNode)
+    })
 
     if (format === 'json') {
       return JSON.stringify(exportableNodes, null, 2)
