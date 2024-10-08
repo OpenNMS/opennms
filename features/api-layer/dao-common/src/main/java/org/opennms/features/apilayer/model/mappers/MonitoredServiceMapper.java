@@ -38,6 +38,6 @@ public interface MonitoredServiceMapper {
 
     @AfterMapping
     default  void mapStatus(OnmsMonitoredService onmsMonitoredService, @MappingTarget ImmutableMonitoredService.Builder target) {
-        target.setStatus(!onmsMonitoredService.isDown());
+        target.setStatus(onmsMonitoredService.getStatus().equals("A") && onmsMonitoredService.getCurrentOutages().isEmpty());
     }
 }
