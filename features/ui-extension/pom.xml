@@ -7,7 +7,7 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>33.0.9-SNAPSHOT</version>
+        <version>33.0.9</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>ui-extension</artifactId>
