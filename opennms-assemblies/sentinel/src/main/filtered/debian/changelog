@@ -1,3 +1,12 @@
+opennms-sentinel (33.0.9-1) stable; urgency=medium
+  
+  * Release 33.0.9 contains a bunch of security updates, bug fix and an enhancement.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.0.9/index.html
+ 
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 08 Oct 2024 10:24:00 -0500
+
 opennms-sentinel (33.0.8-1) stable; urgency=medium
   
   * Release 33.0.8 contains a bunch of bug fixes and an enhancement.
