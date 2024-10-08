@@ -324,7 +324,6 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
         m_parent = parent;
     }
 
-
     // This already maps to the existing column ,readonly
     @XmlAttribute(name = "nodeParentID")
     @Column(name = "nodeParentID",insertable = false, updatable = false)
