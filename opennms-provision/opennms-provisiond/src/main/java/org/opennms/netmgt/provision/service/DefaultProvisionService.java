@@ -1033,6 +1033,12 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                     }
                 }
 
+                // If any categories were removed or new ones are to be added, reset the cache
+                if (changed || !categories.isEmpty()) {
+                    // attributes changed, resetting cache
+                    m_categoryCache.set(loadCategoryMap());
+                }
+
                 // the remainder of requisitioned categories get added
                 for (final String cat : categories) {
                     m_categoriesAdded.add(cat);
