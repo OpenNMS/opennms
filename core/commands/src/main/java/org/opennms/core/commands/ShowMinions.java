@@ -45,9 +45,8 @@ public class ShowMinions implements Action {
 
     @Override
     public Object execute() {
-        final OnmsMinionCollection coll = new OnmsMinionCollection(minionDao.findAll());
-
         try {
+            final OnmsMinionCollection coll = new OnmsMinionCollection(minionDao.findAll());
             ShellTable table = new ShellTable();
             table.column("Minion ID");
             table.column("Location");

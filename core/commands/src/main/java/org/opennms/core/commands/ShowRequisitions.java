@@ -47,9 +47,8 @@ public class ShowRequisitions implements Action {
 
     @Override
     public Object execute() {
-        final Set<Requisition> coll = deployedForeignSourceRepository.getRequisitions();
-
         try {
+            final Set<Requisition> coll = deployedForeignSourceRepository.getRequisitions();
             ShellTable table = new ShellTable();
             table.column("Requisition Name");
             table.column("Last Import Date");

@@ -48,10 +48,9 @@ public class ShowLocations implements Action {
 
     @Override
     public Object execute() {
-        final List<OnmsMonitoringLocation> onmsMonitoringLocationList = monitoringLocationDao.findAll();
-        Collections.sort(onmsMonitoringLocationList, Comparator.comparing(OnmsMonitoringLocation::getLocationName));
-
         try {
+            final List<OnmsMonitoringLocation> onmsMonitoringLocationList = monitoringLocationDao.findAll();
+            Collections.sort(onmsMonitoringLocationList, Comparator.comparing(OnmsMonitoringLocation::getLocationName));
             ShellTable table = new ShellTable();
             table.column("Location Name");
             table.column("Monitoring Area");
