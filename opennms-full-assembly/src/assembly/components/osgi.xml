@@ -25,6 +25,8 @@
         <exclude>**/*xstream*/1.4.8_1</exclude>
         <exclude>**/*xstream*/1.4.8_1/*</exclude>
         <exclude>%regex[.*org\/bouncycastle\/(bcprov|bctls|bcutil|bcpkix)-jdk18on\/1.7[56]\/?.*]</exclude>
+        <exclude>**/zookeeper/3.4.14</exclude>
+        <exclude>**/zookeeper/3.4.14/*</exclude>
       </excludes>
     </fileSet>
   </fileSets>
