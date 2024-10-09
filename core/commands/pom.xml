@@ -53,7 +53,7 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-web-api</artifactId>
+      <artifactId>opennms-provision-persistence</artifactId>
     </dependency>
   </dependencies>
 </project>
