@@ -2,6 +2,29 @@
 
 = Changelog
 
+[[releasenotes-changelog-33.0.9]]
+
+== Release 33.0.9
+
+Release 33.0.9 contains a bunch of security updates, bug fix and an enhancement.
+
+The codename for Horizon 33.0.9 is https://wikipedia.org/wiki/$$Cartrema_americana$$[_Devilwood_].
+
+=== Task
+
+* Update grpc to to the next version to address CVEs (Issue https://issues.opennms.org/browse/NMS-16180[NMS-16180])
+* Update org.apache.kafka:kafka to version 3.6.2 or higher. (Issue https://issues.opennms.org/browse/NMS-16507[NMS-16507])
+* Purge jettison 1.4.x from the system directory (Issue https://issues.opennms.org/browse/NMS-16513[NMS-16513])
+* Update BouncyCastle bcpkix to 1.78 (Issue https://issues.opennms.org/browse/NMS-16514[NMS-16514])
+
+=== Bug
+
+* Usage statistics reporter throws an NPE in the stdout on startup (Issue https://issues.opennms.org/browse/NMS-16435[NMS-16435])
+
+=== Configuration
+
+* Need to Update the Example Event Forwarder Script (Issue https://issues.opennms.org/browse/NMS-16501[NMS-16501])
+
 [[releasenotes-changelog-33.0.8]]
 
 == Release 33.0.8
