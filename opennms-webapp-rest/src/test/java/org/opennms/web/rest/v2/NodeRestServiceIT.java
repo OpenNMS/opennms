@@ -266,6 +266,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         List<OnmsNode> list =  m_databasePopulator.getNodeDao().findByLabel("Child");
         if(list!=null && !list.isEmpty()) {
 
+            Assert.assertNotNull(parent.getId());
             Assert.assertEquals(parent.getId(),list.get(0).getNodeParentId());
 
         }
