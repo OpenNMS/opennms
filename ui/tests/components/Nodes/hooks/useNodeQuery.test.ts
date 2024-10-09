@@ -230,7 +230,7 @@ describe('Nodes useNodeQuery test', () => {
         {
           foreignSource: 'FS',
           foreignId: '',
-          foreignSourceId: '',
+          foreignSourceId: ''
         }
       ],
       [
@@ -241,7 +241,7 @@ describe('Nodes useNodeQuery test', () => {
         {
           foreignSource: '',
           foreignId: 'ID',
-          foreignSourceId: '',
+          foreignSourceId: ''
         }
       ],
       [
@@ -252,7 +252,7 @@ describe('Nodes useNodeQuery test', () => {
         {
           foreignSource: '',
           foreignId: '',
-          foreignSourceId: 'FS:FID',
+          foreignSourceId: 'FS:FID'
         }
       ],
       [
@@ -263,7 +263,7 @@ describe('Nodes useNodeQuery test', () => {
         {
           foreignSource: '',
           foreignId: '',
-          foreignSourceId: 'FS:FID',
+          foreignSourceId: 'FS:FID'
         }
       ],
       [
@@ -276,7 +276,7 @@ describe('Nodes useNodeQuery test', () => {
         {
           foreignSource: 'FS',
           foreignId: 'ID',
-          foreignSourceId: 'FS:FID',
+          foreignSourceId: 'FS:FID'
         }
       ]
     ]) (
