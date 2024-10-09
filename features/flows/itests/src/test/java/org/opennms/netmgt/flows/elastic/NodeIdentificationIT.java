@@ -107,6 +107,7 @@ public class NodeIdentificationIT {
     private int nodeBId;
     private int nodeCId;
     private int nodeDId;
+    private int nodeEId;
 
     @Before
     public void before() {
@@ -117,6 +118,7 @@ public class NodeIdentificationIT {
         nodeBId = this.databasePopulator.getNodeDao().save(buildNodeB());
         nodeCId = this.databasePopulator.getNodeDao().save(buildNodeC());
         nodeDId = this.databasePopulator.getNodeDao().save(buildNodeD());
+        nodeEId = this.databasePopulator.getNodeDao().save(buildNodeE());
 
         this.interfaceToNodeCache.dataSourceSync();
     }
@@ -195,7 +197,7 @@ public class NodeIdentificationIT {
 
     private OnmsNode buildNodeC() {
         final NetworkBuilder builder = new NetworkBuilder();
-        builder.addNode("nodeB").setForeignSource("nodeIdTest:").setForeignId("C").setType(OnmsNode.NodeType.ACTIVE);
+        builder.addNode("nodeC").setForeignSource("nodeIdTest:").setForeignId("C").setType(OnmsNode.NodeType.ACTIVE);
         builder.addInterface("192.168.33.33").setIsManaged("M").setIsSnmpPrimary("P");
         OnmsNode node = builder.getCurrentNode();
         node.getMetaData().add(new OnmsMetaData("testContext", "testKey", "55055,33033 , 44044"));
@@ -204,10 +206,19 @@ public class NodeIdentificationIT {
 
     private OnmsNode buildNodeD() {
         final NetworkBuilder builder = new NetworkBuilder();
-        builder.addNode("nodeB").setForeignSource("nodeIdTest:").setForeignId("D").setType(OnmsNode.NodeType.ACTIVE);
+        builder.addNode("nodeD").setForeignSource("nodeIdTest:").setForeignId("D").setType(OnmsNode.NodeType.ACTIVE);
         builder.addInterface("192.168.88.88").setIsManaged("M").setIsSnmpPrimary("P");
         OnmsNode node = builder.getCurrentNode();
         node.getPrimaryInterface().getMetaData().add(new OnmsMetaData("testContext", "testKey", "88088, 77077"));
+        return node;
+    }
+
+    private OnmsNode buildNodeE() {
+        final NetworkBuilder builder = new NetworkBuilder();
+        builder.addNode("nodeE").setForeignSource("nodeIdTest:").setForeignId("E").setType(OnmsNode.NodeType.ACTIVE);
+        builder.addInterface("192.168.77.77").setIsManaged("M").setIsSnmpPrimary("P");
+        OnmsNode node = builder.getCurrentNode();
+        node.getMetaData().add(new OnmsMetaData("testContext", "testKey", "55055,.\\*{}(?) , 44044"));
         return node;
     }
 
@@ -272,6 +283,10 @@ public class NodeIdentificationIT {
                 final Optional<NodeInfo> nodeInfoD2 = nodeInfoCache.getNodeInfoFromCache(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, "3.3.3.3", new ContextKey("testContext", "testKey"), "77077");
                 Assert.assertThat(nodeInfoD2.isPresent(), is(true));
                 Assert.assertThat(nodeInfoD2.get().getNodeId(), is(nodeDId));
+
+                final Optional<NodeInfo> nodeInfoE = nodeInfoCache.getNodeInfoFromCache(MonitoringLocationDao.DEFAULT_MONITORING_LOCATION_ID, "3.3.3.3", new ContextKey("testContext", "testKey"), ".\\*{}(?)");
+                Assert.assertThat(nodeInfoE.isPresent(), is(true));
+                Assert.assertThat(nodeInfoE.get().getNodeId(), is(nodeEId));
             }
         });
     }

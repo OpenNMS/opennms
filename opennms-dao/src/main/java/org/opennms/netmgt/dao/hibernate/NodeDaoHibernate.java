@@ -587,7 +587,10 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     }
 
     public List<OnmsNode> findNodeWithMetaData(final String context, final String key, final String value, final boolean matchEnumeration) {
-        return getHibernateTemplate().execute(session -> (List<OnmsNode>) session.createSQLQuery("SELECT n.nodeid FROM node n, node_metadata m WHERE m.id = n.nodeid AND context = :context AND key = :key AND value " + (matchEnumeration ? "~ CONCAT('(?:^[ ,]*|,[ ]*)', :value, '(?=[ ]*,|,?[ ]*$)')" : "= :value" ) + " ORDER BY n.nodeid")
+        // what is happening here?
+        // 1. in the case matchEnumeration is set to true, we try to find the given value by using the following regular expression: (?:^[ ,]*|,[ ]*)stringToSearchFor(?=[ ]*,|,?[ ]*$)
+        // 2. of course the value to search for needs to be escaped, so we use REGEXP_REPLACE(:value, '([\.\+\*\?\^\$\(\)\[\]\{\}\|\\])', '\\\1', 'g') here
+        return getHibernateTemplate().execute(session -> (List<OnmsNode>) session.createSQLQuery("SELECT n.nodeid FROM node n, node_metadata m WHERE m.id = n.nodeid AND context = :context AND key = :key AND value " + (matchEnumeration ? "~ CONCAT('(?:^[ ,]*|,[ ]*)', REGEXP_REPLACE(:value, '([\\.\\+\\*\\?\\^\\$\\(\\)\\[\\]\\{\\}\\|\\\\])', '\\\\\\1', 'g'), '(?=[ ]*,|,?[ ]*$)')" : "= :value" ) + " ORDER BY n.nodeid")
                 .setString("context", context)
                 .setString("key", key)
                 .setString("value", value)
