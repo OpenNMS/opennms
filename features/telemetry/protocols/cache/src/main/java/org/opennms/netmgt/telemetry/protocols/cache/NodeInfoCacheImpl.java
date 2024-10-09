@@ -158,7 +158,7 @@ public class NodeInfoCacheImpl implements NodeInfoCache {
         // First, try to find interface
         final List<OnmsIpInterface> ifaces;
         try (Timer.Context ctx = this.nodeLoadTimer.time()) {
-            ifaces = this.ipInterfaceDao.findInterfacesWithMetadata(contextKey.getContext(), contextKey.getKey(), value);
+            ifaces = this.ipInterfaceDao.findInterfacesWithMetadata(contextKey.getContext(), contextKey.getKey(), value, true);
         }
         if (!ifaces.isEmpty()) {
             final var iface = ifaces.get(0);
@@ -168,7 +168,7 @@ public class NodeInfoCacheImpl implements NodeInfoCache {
         // Alternatively, try to find node and chose primary interface
         final List<OnmsNode> nodes;
         try (Timer.Context ctx = this.nodeLoadTimer.time()) {
-            nodes = this.nodeDao.findNodeWithMetaData(contextKey.getContext(), contextKey.getKey(), value);
+            nodes = this.nodeDao.findNodeWithMetaData(contextKey.getContext(), contextKey.getKey(), value, true);
         }
         if(!nodes.isEmpty()) {
             final var node = nodes.get(0);
