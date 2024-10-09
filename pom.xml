@@ -1148,7 +1148,7 @@
                    <exclude>javax.xml.bind:jaxb-api</exclude>        <!-- use: jaxb-dependencies -->
                    <exclude>jdom:jdom</exclude>                      <!-- use: org.apache.servicemix.bundles.jdom -->
                    <exclude>log4j:log4j</exclude>                    <!-- use: log4j2 -->
-                   <exclude>nekohtml:nekohtml</exclude>              <!-- use: net.sourceforge.nekohtml:nekohtml -->
+                   <exclude>nekohtml:nekohtml</exclude>              <!-- use: org.nokogiri:nekohtml -->
                    <exclude>org.apache.geronimo.specs/geronimo-jms_2.0_spec</exclude>   <!-- use: javax.jms:javax.jms-api -->
                    <exclude>org.apache.velocity:velocity</exclude>   <!-- use: org.apache.velocity:velocity-engine-core -->
                    <exclude>org.springframework:*</exclude>          <!-- use: org.apache.servicemix.bundles.spring-* -->
@@ -1610,7 +1610,7 @@
     <activemqVersion>5.15.16</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.17</batikVersion>
-    <bouncyCastleVersion>1.76</bouncyCastleVersion>
+    <bouncyCastleVersion>1.78.1</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
@@ -1649,7 +1649,7 @@
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.5</c3p0Version>
     <curatorVersion>5.6.0</curatorVersion>
-    <cxfVersion>3.5.5</cxfVersion>
+    <cxfVersion>3.5.9</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <dnsjavaVersion>3.5.3_1</dnsjavaVersion>
@@ -1661,6 +1661,7 @@
     <eddsaVersion>0.3.0</eddsaVersion>
     <elasticsearchNettyVersion>4.1.69.Final</elasticsearchNettyVersion>
     <elasticsearchTargetVersion>7.6.2</elasticsearchTargetVersion>
+    <esapiVersion>2.3.0.0</esapiVersion>
     <felixBridgeVersion>4.0.12</felixBridgeVersion>
     <felixProxyVersion>3.0.6</felixProxyVersion>
     <fopVersion>2.9</fopVersion>
@@ -1672,7 +1673,7 @@
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
     <groovyVersion>2.5.23</groovyVersion>
-    <grpcVersion>1.46.0</grpcVersion>
+    <grpcVersion>1.66.0</grpcVersion>
     <gsonVersion>2.9.1</gsonVersion>
     <guavaVersion>25.1-jre</guavaVersion>
     <guavaOsgiVersion>25.1.0</guavaOsgiVersion>
@@ -1693,9 +1694,9 @@
     <httpasyncclientVersion>4.1.5</httpasyncclientVersion>
     <ipaddressVersion>5.4.0</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
-    <jackson2Version>2.14.2</jackson2Version>
+    <jackson2Version>2.16.2</jackson2Version>
     <jmsApiVersion>2.0.1</jmsApiVersion>
-    <snakeyamlVersion>1.33</snakeyamlVersion>
+    <snakeyamlVersion>2.2</snakeyamlVersion>
     <spiflyVersion>1.3.6</spiflyVersion>
     <jacocoVersion>0.8.9</jacocoVersion>
     <jasperreportsVersion>6.20.0</jasperreportsVersion>
@@ -1767,7 +1768,7 @@
     <slingJohnzonVersion>1.2.16</slingJohnzonVersion>
     <!-- END: versions must match versions provided by embedded Karaf -->
     <kafkaBundleVersion>3.5.1_1</kafkaBundleVersion>
-    <kafkaVersion>3.6.0</kafkaVersion>
+    <kafkaVersion>3.6.2</kafkaVersion>
     <kotlinVersion>1.9.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
@@ -1775,7 +1776,7 @@
     <logbackClassicVersion>1.2.13</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
     <mavenApiVersion>3.9.6</mavenApiVersion>
-    <mavenResolverApiVersion>1.9.15</mavenResolverApiVersion>
+    <mavenResolverApiVersion>2.0.1</mavenResolverApiVersion>
     <minaVersion>2.2.3</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
@@ -1785,7 +1786,7 @@
     <paxExamVersion>4.13.5</paxExamVersion>
     <pktsVersion>3.0.10</pktsVersion>
     <protobufVersion>3.24.4</protobufVersion>
-    <postgresqlVersion>42.5.4</postgresqlVersion>
+    <postgresqlVersion>42.5.5</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>3.6.0</okioVersion>
@@ -1821,7 +1822,7 @@
     <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
     <sonarVersion>3.9.1.2184</sonarVersion>
     <spockVersion>2.3-groovy-2.5</spockVersion>
-    <swaggerUIVersion>3.13.0</swaggerUIVersion>
+    <swaggerUIVersion>3.23.11</swaggerUIVersion>
     <swaggerVersion>2.1.12</swaggerVersion>
     <swaggerParserVersion>2.0.33</swaggerParserVersion>
     <swaggerRequestValidatorVersion>2.39.0</swaggerRequestValidatorVersion>
@@ -4913,9 +4914,9 @@
         <version>3.0.1</version>
       </dependency>
       <dependency>
-        <groupId>net.sourceforge.nekohtml</groupId>
+        <groupId>org.nokogiri</groupId>
         <artifactId>nekohtml</artifactId>
-        <version>1.9.22-atlassian-4</version>
+        <version>1.9.22.noko2</version>
       </dependency>
       <dependency>
         <groupId>io.netty</groupId>

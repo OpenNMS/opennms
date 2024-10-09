@@ -28,25 +28,28 @@
 
 package org.opennms.netmgt.provision.detector.simple.support;
 
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.handler.codec.oneone.OneToOneEncoder;
+import java.util.List;
+
+import io.netty.channel.ChannelHandlerContext;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
+
+import io.netty.handler.codec.MessageToMessageDecoder;
+import io.netty.handler.codec.MessageToMessageEncoder;
 
 /**
  * <p>LineOrientedRequestEncoder class.</p>
  *
  * @author Seth
  */
-public class LineOrientedRequestEncoder extends OneToOneEncoder {
+public class LineOrientedRequestEncoder extends MessageToMessageEncoder<Object> {
 
     /**
      * This method encodes {@link LineOrientedRequest} objects into {@link String} instances
      * that contain the byte representation of the request.
      */
     @Override
-    public Object encode(final ChannelHandlerContext ctx, final Channel channel, final Object msg) throws Exception {
+    public void encode(final ChannelHandlerContext ctx, final Object msg, final List<Object> messages) throws Exception {
         LineOrientedRequest request = (LineOrientedRequest)msg;
-        return request.getRequest();
+        messages.add(request.getRequest());
     }
 }

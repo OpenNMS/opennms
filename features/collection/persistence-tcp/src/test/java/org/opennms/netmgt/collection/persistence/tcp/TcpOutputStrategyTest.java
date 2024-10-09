@@ -41,22 +41,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.jboss.netty.handler.codec.protobuf.ProtobufDecoder;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
@@ -77,8 +63,16 @@ import org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import org.awaitility.core.ConditionTimeoutException;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.protobuf.ProtobufDecoder;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -99,18 +93,22 @@ public class TcpOutputStrategyTest {
     public static void setUpClass() {
         // Setup a quick Netty TCP server that decodes the protobuf messages
         // and appends these to a list when received
-        ChannelFactory factory = new NioServerSocketChannelFactory();
-        ServerBootstrap bootstrap = new ServerBootstrap(factory);
-        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
-            public ChannelPipeline getPipeline() {
-                return Channels.pipeline(
-                        new ProtobufDecoder(PerformanceDataReadings.getDefaultInstance()),
-                        new PerfDataServerHandler());
-            }
-        });
-        bootstrap.setOption("reuseAddress", true);
-        Channel channel = bootstrap.bind(new InetSocketAddress(0));
-        InetSocketAddress addr = (InetSocketAddress)channel.getLocalAddress();
+        EventLoopGroup bossLoopGroup = new NioEventLoopGroup();
+        EventLoopGroup workerLoopGroup = new NioEventLoopGroup();
+
+        ServerBootstrap bootstrap = new ServerBootstrap();
+        bootstrap.group(bossLoopGroup, workerLoopGroup)
+                .childOption(ChannelOption.SO_REUSEADDR, true)
+                .channel(NioServerSocketChannel.class)
+                        .childHandler(new ChannelInitializer<>() {
+                            @Override
+                            protected void initChannel(Channel channel) throws Exception {
+                                channel.pipeline().addLast(new ProtobufDecoder(PerformanceDataReadings.getDefaultInstance())).addLast(new PerfDataServerHandler());
+                            }
+                        });
+
+        Channel channel = bootstrap.bind(new InetSocketAddress(0)).syncUninterruptibly().channel();
+        InetSocketAddress addr = (InetSocketAddress)channel.localAddress();
 
         // Point the TCP exporter to our server
         System.setProperty("org.opennms.rrd.tcp.host", addr.getHostString());
@@ -121,10 +119,11 @@ public class TcpOutputStrategyTest {
         System.setProperty("rrd.base.dir", tempFolder.getRoot().getAbsolutePath());
     }
 
-    public static class PerfDataServerHandler extends SimpleChannelHandler {
+    public static class PerfDataServerHandler extends ChannelInboundHandlerAdapter {
+
         @Override
-        public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
-            allReadings.add((PerformanceDataReadings) e.getMessage());
+        public void channelRead(ChannelHandlerContext ctx, Object obj) {
+            allReadings.add((PerformanceDataReadings) obj);
         }
     }
 

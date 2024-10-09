@@ -60,9 +60,9 @@
       </exclusions>
     </dependency>
     <dependency>
-      <groupId>net.sourceforge.nekohtml</groupId>
+      <groupId>org.nokogiri</groupId>
       <artifactId>nekohtml</artifactId>
-      <version>1.9.22</version>
+      <version>1.9.22.noko2</version>
       <scope>runtime</scope>
     </dependency>
     <dependency>
@@ -97,6 +97,25 @@
         <exclusion>
           <groupId>org.apache.santuario</groupId>
           <artifactId>xmlsec</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.owasp.esapi</groupId>
+          <artifactId>esapi</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.owasp.esapi</groupId>
+      <artifactId>esapi</artifactId>
+      <version>${esapiVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
