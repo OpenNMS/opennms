@@ -1675,9 +1675,9 @@
     <groovyVersion>2.5.23</groovyVersion>
     <grpcVersion>1.66.0</grpcVersion>
     <gsonVersion>2.9.1</gsonVersion>
-    <guavaVersion>25.1-jre</guavaVersion>
-    <guavaOsgiVersion>25.1.0</guavaOsgiVersion>
-    <guavagRPCVersion>28.2-jre</guavagRPCVersion>
+    <guavaVersion>32.1.3-jre</guavaVersion>
+    <guavaOsgiVersion>32.1.3.jre</guavaOsgiVersion>
+    <guavagRPCVersion>32.1.3-jre</guavagRPCVersion>
     <gwtVersion>2.9.0</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
