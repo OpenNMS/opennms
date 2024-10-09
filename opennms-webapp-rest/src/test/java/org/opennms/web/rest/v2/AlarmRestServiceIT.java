@@ -801,4 +801,26 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
     }
 
 
+    @Test
+    @JUnitTemporaryDatabase
+    public void createNodeWithParent() throws Exception{
+
+        final NetworkBuilder builder = new NetworkBuilder();
+        builder.addNode("Parent").setForeignSource("JUnit").setForeignId("Parent").setType(NodeType.ACTIVE);
+        final OnmsNode parent = builder.getCurrentNode();
+        m_databasePopulator.getNodeDao().save(parent);
+
+        builder.addNode("Child").setForeignSource("Junit").setForeignId("Child").setType(NodeType.ACTIVE)
+                .setParent(parent).setNodeParentId(parent.getId());
+        final OnmsNode child = builder.getCurrentNode();
+        m_databasePopulator.getNodeDao().save(child);
+        m_databasePopulator.getNodeDao().flush();
+
+        List<OnmsNode> list =  m_databasePopulator.getNodeDao().findByLabel("Child");
+       if(list!=null && !list.isEmpty()) {
+
+           Assert.assertEquals(parent.getId(),list.get(0).getNodeParentId());
+
+       }
+    }
 }
