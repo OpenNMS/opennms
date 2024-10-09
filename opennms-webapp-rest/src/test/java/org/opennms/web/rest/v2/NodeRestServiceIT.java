@@ -27,19 +27,25 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.List;
 
 import javax.ws.rs.core.MediaType;
 
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -70,7 +76,8 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public NodeRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
     }
-
+    @Autowired
+    private DatabasePopulator m_databasePopulator;
     @Override
     protected void afterServletStart() throws Exception {
         MockLogAppender.setupLogging(true, "DEBUG");
@@ -241,5 +248,26 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendData(POST, MediaType.APPLICATION_JSON, "/nodes/1/categories", category.toString(), 201);
         LOG.warn(sendRequest(GET, "/nodes/1/categories", 200));
     }
+    @Test
+    @JUnitTemporaryDatabase
+    public void createNodeWithParent() throws Exception{
 
+        final NetworkBuilder builder = new NetworkBuilder();
+        builder.addNode("Parent").setForeignSource("JUnit").setForeignId("Parent").setType(OnmsNode.NodeType.ACTIVE);
+        final OnmsNode parent = builder.getCurrentNode();
+        m_databasePopulator.getNodeDao().save(parent);
+
+        builder.addNode("Child").setForeignSource("Junit").setForeignId("Child").setType(OnmsNode.NodeType.ACTIVE)
+                .setParent(parent).setNodeParentId(parent.getId());
+        final OnmsNode child = builder.getCurrentNode();
+        m_databasePopulator.getNodeDao().save(child);
+        m_databasePopulator.getNodeDao().flush();
+
+        List<OnmsNode> list =  m_databasePopulator.getNodeDao().findByLabel("Child");
+        if(list!=null && !list.isEmpty()) {
+
+            Assert.assertEquals(parent.getId(),list.get(0).getNodeParentId());
+
+        }
+    }
 }
