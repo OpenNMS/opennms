@@ -51,9 +51,5 @@
       <groupId>org.opennms</groupId>
       <artifactId>opennms-model</artifactId>
     </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-provision-persistence</artifactId>
-    </dependency>
   </dependencies>
 </project>
