@@ -70,7 +70,7 @@
     "sass-loader": "^13.3.2",
     "splitpanes": "^3.1.5",
     "vite-svg-loader": "^4.0.0",
-    "vue": "^3.3.4",
+    "vue": "^3.5.11",
     "vue-diff": "^1.2.4",
     "vue-router": "^4.2.4",
     "vue3-ace-editor": "^2.2.4"
