@@ -1928,8 +1928,8 @@
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>3.6.0</okioVersion>
     <openid4javaVersion>0.9.6</openid4javaVersion>
-    <opennmsApiVersion>1.6.0</opennmsApiVersion>
-    <opennmsApiVersionOsgi>1.6.0</opennmsApiVersionOsgi>
+    <opennmsApiVersion>1.6.1-SNAPSHOT</opennmsApiVersion>
+    <opennmsApiVersionOsgi>1.6.1.SNAPSHOT</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>

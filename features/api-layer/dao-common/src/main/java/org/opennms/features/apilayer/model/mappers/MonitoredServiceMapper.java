@@ -21,8 +21,11 @@
  */
 package org.opennms.features.apilayer.model.mappers;
 
+import org.mapstruct.AfterMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
 import org.opennms.integration.api.v1.model.immutables.ImmutableMonitoredService;
 import org.opennms.netmgt.model.OnmsMonitoredService;
 
@@ -30,5 +33,11 @@ import org.opennms.netmgt.model.OnmsMonitoredService;
 public interface MonitoredServiceMapper {
 
     @Mapping(target = "name", source = "serviceType.name")
+    @Mapping(target = "status", ignore= true)
     ImmutableMonitoredService map(OnmsMonitoredService onmsMonitoredService);
+
+    @AfterMapping
+    default  void mapStatus(OnmsMonitoredService onmsMonitoredService, @MappingTarget ImmutableMonitoredService.Builder target) {
+        target.setStatus(onmsMonitoredService.getStatus().equals("A") && onmsMonitoredService.getCurrentOutages().isEmpty());
+    }
 }
