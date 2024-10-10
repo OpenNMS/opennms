@@ -265,10 +265,9 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         m_databasePopulator.getNodeDao().save(child);
         m_databasePopulator.getNodeDao().flush();
 
-        LOG.warn(sendRequest(GET, "/nodes", 200));
-        LOG.warn(sendRequest(GET, "/nodes/1", 200)); // By ID
-
-        final String response = sendRequest(GET, "/nodes/2", 200);
+        Assert.assertNotNull(child.getId());
+        Assert.assertNotNull(parent.getId());
+        final String response = sendRequest(GET, "/nodes/"+child.getId(), 200);
 
         final JSONObject object = new JSONObject(response);
         Assert.assertEquals(Optional.ofNullable(parent.getId()), Optional.of(object.getInt("nodeParentID")));
