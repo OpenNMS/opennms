@@ -249,7 +249,6 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         LOG.warn(sendRequest(GET, "/nodes/1/categories", 200));
     }
     @Test
-    @JUnitTemporaryDatabase
     public void createNodeWithParent() throws Exception{
 
         final NetworkBuilder builder = new NetworkBuilder();
