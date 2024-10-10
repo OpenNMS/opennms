@@ -189,3 +189,14 @@ This results in the following tags:
 
 * `Tag("cat_myFirstCategory", "myFirstCategory")`
 * `Tag("cat_mySecondCategory", "mySecondCategory")`
+
+=== Expose resource label and tags for latency resource
+
+You can expose resource label as a tag by setting
+
+* `org.opennms.timeseries.tin.metatags.tag.resourceLabel=${resource:label}`
+
+Latency resource seems to be missing node label and location, you can expose these by setting
+
+* `org.opennms.timeseries.tin.metatags.tag.nodeLabel=${resource:node_label}`
+* `org.opennms.timeseries.tin.metatags.tag.nodeLocation=${resource:location}`

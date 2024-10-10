@@ -24,6 +24,9 @@ package org.opennms.netmgt.collection.api;
 import org.opennms.netmgt.collection.support.DefaultTimeKeeper;
 import org.opennms.netmgt.model.ResourcePath;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>CollectionResource interface.</p>
  *
@@ -94,5 +97,10 @@ public interface CollectionResource extends ResourceIdentifier, CollectionVisita
      * @return a {@link org.opennms.netmgt.collection.api.TimeKeeper} object or null to indicate that {@link DefaultTimeKeeper} should be used.
      */
     TimeKeeper getTimeKeeper();
+
+    // Can be used to add additional tags required by TimeSeries like Prometheus
+    default Map<String, String> getTags() {
+        return new HashMap<>();
+    }
 
 }
