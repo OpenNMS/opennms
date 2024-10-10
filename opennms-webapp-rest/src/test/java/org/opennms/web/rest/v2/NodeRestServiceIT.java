@@ -28,9 +28,12 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
 import org.junit.Assert;
 import org.junit.Test;
@@ -262,12 +265,12 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         m_databasePopulator.getNodeDao().save(child);
         m_databasePopulator.getNodeDao().flush();
 
-        List<OnmsNode> list =  m_databasePopulator.getNodeDao().findByLabel("Child");
-        if(list!=null && !list.isEmpty()) {
+        LOG.warn(sendRequest(GET, "/nodes", 200));
+        LOG.warn(sendRequest(GET, "/nodes/1", 200)); // By ID
 
-            Assert.assertNotNull(parent.getId());
-            Assert.assertEquals(parent.getId(),list.get(0).getNodeParentId());
+        final String response = sendRequest(GET, "/nodes/2", 200);
 
-        }
+        final JSONObject object = new JSONObject(response);
+        Assert.assertEquals(Optional.ofNullable(parent.getId()), Optional.of(object.getInt("nodeParentID")));
     }
 }
