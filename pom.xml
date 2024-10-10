@@ -1652,7 +1652,8 @@
     <cxfVersion>3.5.9</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
-    <dnsjavaVersion>3.5.3_1</dnsjavaVersion>
+    <serviceMixDnsjavaVersion>3.5.3_1</serviceMixDnsjavaVersion>
+    <dnsjavaVersion>3.6.1</dnsjavaVersion>
     <dom4jVersion>2.1.4</dom4jVersion>
     <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>

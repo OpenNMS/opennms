@@ -18,7 +18,19 @@
     <dependency>
       <groupId>org.apache.servicemix.bundles</groupId>
       <artifactId>org.apache.servicemix.bundles.dnsjava</artifactId>
+      <version>${serviceMixDnsjavaVersion}</version>
+      <exclusions>
+        <exclusion>
+          <groupId>dnsjava</groupId>
+          <artifactId>dnsjava</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>dnsjava</groupId>
+      <artifactId>dnsjava</artifactId>
       <version>${dnsjavaVersion}</version>
+      <scope>compile</scope>
     </dependency>
   </dependencies>
 </project>
