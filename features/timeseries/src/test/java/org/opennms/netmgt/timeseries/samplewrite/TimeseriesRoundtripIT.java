@@ -23,6 +23,7 @@ package org.opennms.netmgt.timeseries.samplewrite;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -61,6 +62,7 @@ import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTagMatcher;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesFetchRequest;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ResourceType;
 import org.opennms.netmgt.collection.api.ResourceTypeMapper;
@@ -145,6 +147,9 @@ public class TimeseriesRoundtripIT {
         config.put(CONFIG_PREFIX_FOR_TAGS + "vendor", "${asset:vendor}");
         config.put(CONFIG_PREFIX_FOR_TAGS + "if-description", "${interface:if-description}");
         config.put(CONFIG_KEY_FOR_CATEGORIES, "true");
+        config.put(CONFIG_PREFIX_FOR_TAGS + "resource_label", "${resource:label}");
+        config.put(CONFIG_PREFIX_FOR_TAGS + "node_location", "${resource:location}");
+        config.put(CONFIG_PREFIX_FOR_TAGS + "node_label", "${resource:node_label}");
         metaTagDataLoader.setConfig(new MetaTagConfiguration(config));
     }
 
@@ -229,6 +234,25 @@ public class TimeseriesRoundtripIT {
         testForMetaTag("snmp/1/metrics", "m1", "vendor","myVendor");
         testForMetaTag("snmp/1/1/if-metrics", "m3",  "if-description","myDescription");
         testForMetaTag("snmp/1/metrics", "m1",  "cat_myCategory","myCategory");
+    }
+
+
+    @Test
+    public void verifyLatencyResourceTags() {
+        var collectionResource = mock(CollectionResource.class);
+        var resourceTags = new HashMap<String, String>();
+        String location = "Minion";
+        String nodeLabel = "meridian-2024";
+        String resourceLabel = "localhost-response_time-127.0.0.1";
+        resourceTags.put("location", location);
+        resourceTags.put("node_label", nodeLabel);
+        when(collectionResource.getTags()).thenReturn(resourceTags);
+        when(collectionResource.getInterfaceLabel()).thenReturn(resourceLabel);
+        var tags = metaTagDataLoader.load(collectionResource);
+        assertEquals(3, tags.size());
+        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("resource_label")));
+        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("node_location")));
+        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("node_label")));
     }
 
     private void testForNumericAttribute(String resourceId, String name, Double expectedValue) throws StorageException {
