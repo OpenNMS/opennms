@@ -1,7 +1,6 @@
 package org.opennms.netmgt.provision.requisition.command;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
 
 import org.apache.karaf.shell.api.action.Action;
@@ -29,10 +28,9 @@ public class AddRequisitionedNode implements Action {
     private String requisitionName;
     @Option(name = "-l", aliases = "--location", description = "Minion Location")
     String location = null;
-    @Option(name = "-p", aliases = "--primary-interface", description = "The SNMP primary interface IP address", required = true)
-    String primaryInterface;
-    @Option(name = "-i", aliases = "--interface", description = "Non-primary interface IP address, multiple '-i' ok, e.g. \"-i 127.1.1.1 -i 127.2.2.2", multiValued = true)
-    List<String> otherInterface = null;
+    @Option(name = "-i", aliases = "--interface", description = "interfaces, comma separated list of 'ipAddr,snmpPrimary[P|S|N],SERVICE1,SERVICE2,SERVICE3'. Only one Primary(P) interface is allowed.\n " +
+            "The minimum required is an IP, and an SnmpPrimary value.\nExample: '--interface 10.1.1.1,P,ICMP,SNMP,HTTP'", multiValued = true, required = true)
+    List<String> interfaces = null;
     @Option(name = "-c", aliases = "--category", description = "Node categories, multiple '-c' ok, e.g. \"-c foo -c bar -c baz\"", multiValued = true)
     List<String> categories = null;
     @Option(name = "-a", aliases = "--asset", description = "Node assets, multiple '-a' ok, 'key=value' pairs, e.g. \"-a operatingSystem=Windows -a vendor=Microsoft\"", multiValued = true)
@@ -67,22 +65,17 @@ public class AddRequisitionedNode implements Action {
             } else {
                 // if not create it
                 theRequisition = createNewRequisition(requisitionName);
+                System.out.println("Created requisition '" + requisitionName + "'.");
             }
 
             // create the node
             RequisitionNode theNode = createNode();
 
-            //create the primary interface
+            //create interfaces
             List<RequisitionInterface> theInterfaces = new ArrayList<>();
-            RequisitionInterface thePrimaryInterface = createPrimaryInterface();
-            theInterfaces.add(thePrimaryInterface);
-
-            //create any other interfaces
-            if (otherInterface != null) {
-                List<RequisitionInterface> theOtherInterfaces = createOtherInterface();
-                for (RequisitionInterface theseInterfaces : theOtherInterfaces) {
-                    theInterfaces.add(theseInterfaces);
-                }
+            if (interfaces != null) {
+                List<RequisitionInterface> allTheseInterfaces = createInterfaceFromCSV();
+                theInterfaces.addAll(allTheseInterfaces);
             }
             theNode.setInterfaces(theInterfaces);
 
@@ -104,7 +97,7 @@ public class AddRequisitionedNode implements Action {
                 theNode.setAssets(theAssets);
             }
             if (verbose) {
-                System.out.println("Verbose Node XML:");
+                System.out.println("Node XML:");
                 System.out.println(JaxbUtils.marshal(theNode));
                 System.out.println();
             }
@@ -171,41 +164,30 @@ public class AddRequisitionedNode implements Action {
         }
         return theNode;
     }
-    private RequisitionInterface createPrimaryInterface() {
-            // set up primary interface and services
-            final RequisitionInterface intf = new RequisitionInterface();
-            intf.setIpAddr(primaryInterface);
-            intf.setSnmpPrimary(PrimaryType.PRIMARY);
-            intf.setManaged(Boolean.TRUE);
-            intf.setStatus(1);
-
-            if (monitoredServices != null && !monitoredServices.isEmpty()) {
-                for (String service : monitoredServices) {
-                    service = service.trim();
-                    intf.insertMonitoredService(new RequisitionMonitoredService(service));
+    private List<RequisitionInterface> createInterfaceFromCSV() {
+        List<RequisitionInterface> allTheseInterfaces = new ArrayList<>();
+        try {
+            for (String theseOptions : interfaces) {
+                String[] interfaceVals = theseOptions.split(",");
+                if (interfaceVals.length < 2) {
+                    throw new RuntimeException("Invalid argument count to --interface, minimum required is 'ipAddr,SnmpPrimary'");
                 }
+                RequisitionInterface thisInterface = new RequisitionInterface();
+                thisInterface.setIpAddr(interfaceVals[0]); // 0 is always ipaddr
+                thisInterface.setSnmpPrimary(PrimaryType.get(interfaceVals[1])); //1 is always P,S.N
+                thisInterface.setManaged(true);
+                thisInterface.setStatus(1);
+                for (int i = 2; i < interfaceVals.length; i++) { // 2 ... N are MonitoredServices
+                    thisInterface.insertMonitoredService(new RequisitionMonitoredService(interfaceVals[i]));
+                }
+                allTheseInterfaces.add(thisInterface);
             }
-            return intf;
         }
-    private List<RequisitionInterface> createOtherInterface() {
-            // set up secondary interface and services
-            List<RequisitionInterface> intfs = new ArrayList<>();
-            for (String thisInterface : otherInterface) {
-                final RequisitionInterface intf = new RequisitionInterface();
-                intf.setIpAddr(thisInterface);
-                intf.setSnmpPrimary(PrimaryType.SECONDARY);
-                intf.setManaged(Boolean.TRUE);
-                intf.setStatus(1);
-
-                if (monitoredServices != null && !monitoredServices.isEmpty()) {
-                    for (String service : monitoredServices) {
-                        service = service.trim();
-                        intf.insertMonitoredService(new RequisitionMonitoredService(service));
-                    }
-                }
-                intfs.add(intf);
-            }
-            return intfs;
+        catch(Exception e) {
+            System.out.println(e.getMessage());
+            e.printStackTrace(System.out);
+        }
+        return allTheseInterfaces;
         }
     private List<RequisitionMetaData> createNodeMetadata() {
         List<RequisitionMetaData> allThisMetaData = new ArrayList<>();

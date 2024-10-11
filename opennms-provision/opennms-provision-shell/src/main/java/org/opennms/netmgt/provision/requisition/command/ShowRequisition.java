@@ -32,10 +32,12 @@ import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.Completion;
+import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.apache.karaf.shell.support.table.ShellTable;
 
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
 import org.opennms.netmgt.provision.persist.requisition.*;
@@ -49,6 +51,9 @@ public class ShowRequisition implements Action {
     @Reference
     private ForeignSourceRepository deployedForeignSourceRepository;
 
+    @Option(name = "-x", aliases = "--xml", description = "Display requisition XML instead of as a table")
+    private boolean asXML = false;
+
     @Argument(index = 0, name = "requisitionName", description = "Requisition name", required = true, multiValued = false)
     @Completion(RequisitionNameCompleter.class)
     private String requisitionName;
@@ -56,7 +61,7 @@ public class ShowRequisition implements Action {
     @Override
     public Object execute() {
         try {
-            if (doesRequisitionExist()) {
+            if (doesRequisitionExist() && !asXML) {
                 final Requisition req = deployedForeignSourceRepository.getRequisition(requisitionName);
                 ShellTable reqTable = new ShellTable();
                 reqTable.column("Requisition Name");
@@ -116,6 +121,12 @@ public class ShowRequisition implements Action {
                     nodeTable.print(System.out);
                     System.out.println();
                 }
+            }
+            else if (doesRequisitionExist() && asXML) {
+                final Requisition req = deployedForeignSourceRepository.getRequisition(requisitionName);
+                System.out.println("Requisition XML:");
+                System.out.println(JaxbUtils.marshal(req));
+                System.out.println();
             }
             else {
                 System.out.println("Requisition '" + requisitionName + "' not found.");
