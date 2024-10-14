@@ -46,6 +46,7 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.opennms.core.spring.BeanUtils;
@@ -1033,10 +1034,16 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                     }
                 }
 
-                // If any categories were removed or new ones are to be added, reset the cache
-                if (changed || !categories.isEmpty()) {
+                // If some categories were removed or there are new to be added, reset the cache.
+                if (m_categoryCache.get() != null && (changed || !categories.isEmpty())) {
+                    LOG.debug("Categories added: {}", categories);
+                    LOG.debug("Categories removed: {}", m_categoriesDeleted);
+                    LOG.debug("Current categories in cache");
+                    logCache(m_categoryCache.get());
                     // attributes changed, resetting cache
                     m_categoryCache.set(loadCategoryMap());
+                    LOG.debug("Reloaded Categories in cache");
+                    logCache(m_categoryCache.get());
                 }
 
                 // the remainder of requisitioned categories get added
@@ -1103,6 +1110,25 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             }
         }.execute();
 
+    }
+
+    private void logCache(Map<String, OnmsCategory> categoryMap) {
+        try {
+                List<Map<String, String>> resultList = new ArrayList<>();
+
+                // Iterate over the map and extract key and m_id
+                for (Map.Entry<String, OnmsCategory> entry : categoryMap.entrySet()) {
+                    Map<String, String> jsonEntry = new HashMap<>();
+                    jsonEntry.put(entry.getKey(), String.valueOf(entry.getValue().getId()));
+                    resultList.add(jsonEntry);
+                }
+
+                // Convert the list to JSON
+                String json = new ObjectMapper().writeValueAsString(resultList);
+                LOG.debug("Categories: {}", json);
+        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
+            LOG.error("Error serializing category cache to JSON", e);
+        }
     }
 
     public Set<String> getCategoriesForNode(final OnmsNode node) {
