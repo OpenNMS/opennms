@@ -267,6 +267,7 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
 
         Assert.assertNotNull(child.getId());
         Assert.assertNotNull(parent.getId());
+        sendRequest(GET, "/nodes/"+parent.getId(), 200);
         final String response = sendRequest(GET, "/nodes/"+child.getId(), 200);
 
         final JSONObject object = new JSONObject(response);
