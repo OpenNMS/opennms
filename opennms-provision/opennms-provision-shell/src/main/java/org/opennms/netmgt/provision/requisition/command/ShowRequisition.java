@@ -40,7 +40,13 @@ import org.apache.karaf.shell.support.table.ShellTable;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepositoryException;
-import org.opennms.netmgt.provision.persist.requisition.*;
+import org.opennms.netmgt.provision.persist.requisition.Requisition;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionAsset;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionCategory;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionInterface;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMetaData;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionMonitoredService;
+import org.opennms.netmgt.provision.persist.requisition.RequisitionNode;
 
 import java.util.ArrayList;
 import java.util.List;

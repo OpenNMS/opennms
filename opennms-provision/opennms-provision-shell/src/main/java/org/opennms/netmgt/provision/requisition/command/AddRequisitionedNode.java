@@ -101,7 +101,7 @@ public class AddRequisitionedNode implements Action {
                 System.out.println(JaxbUtils.marshal(theNode));
                 System.out.println();
             }
-            theRequisition.insertNode(theNode);
+            theRequisition.insertNode(theNode); //insert and put are equivalent
             theRequisition.validate();
             deployedForeignSourceRepository.save(theRequisition);
         }
