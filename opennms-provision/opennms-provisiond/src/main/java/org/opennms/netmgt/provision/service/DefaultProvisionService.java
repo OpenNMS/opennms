@@ -948,6 +948,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         m_foreignSourceRepository = foreignSourceRepository;
     }
 
+    public void setCategoriesInCache(final Map<String, OnmsCategory> categoryCache) {
+        m_categoryCache.set(categoryCache);
+    }
+
     /**
      * <p>getForeignSourceRepository</p>
      *
@@ -1036,14 +1040,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
                 // If some categories were removed or there are new to be added, reset the cache.
                 if (m_categoryCache.get() != null && (changed || !categories.isEmpty())) {
-                    LOG.debug("Categories added: {}", categories);
-                    LOG.debug("Categories removed: {}", m_categoriesDeleted);
-                    LOG.debug("Current categories in cache");
-                    logCache(m_categoryCache.get());
-                    // attributes changed, resetting cache
-                    m_categoryCache.set(loadCategoryMap());
-                    LOG.debug("Reloaded Categories in cache");
-                    logCache(m_categoryCache.get());
+                      m_categoryCache.set(loadCategoryMap());
                 }
 
                 // the remainder of requisitioned categories get added
@@ -1110,25 +1107,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
             }
         }.execute();
 
-    }
-
-    private void logCache(Map<String, OnmsCategory> categoryMap) {
-        try {
-                List<Map<String, String>> resultList = new ArrayList<>();
-
-                // Iterate over the map and extract key and m_id
-                for (Map.Entry<String, OnmsCategory> entry : categoryMap.entrySet()) {
-                    Map<String, String> jsonEntry = new HashMap<>();
-                    jsonEntry.put(entry.getKey(), String.valueOf(entry.getValue().getId()));
-                    resultList.add(jsonEntry);
-                }
-
-                // Convert the list to JSON
-                String json = new ObjectMapper().writeValueAsString(resultList);
-                LOG.debug("Categories: {}", json);
-        } catch (com.fasterxml.jackson.core.JsonProcessingException e) {
-            LOG.error("Error serializing category cache to JSON", e);
-        }
     }
 
     public Set<String> getCategoriesForNode(final OnmsNode node) {
