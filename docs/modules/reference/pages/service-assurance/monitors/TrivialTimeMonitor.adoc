@@ -1,8 +1,9 @@
 
 = TrivialTimeMonitor
+:description: Learn about the TrivialTimeMonitor in OpenNMS {page-component-title} to send the time as a 32-bit unsigned integer in binary format, in network byte order.
 
 TrivialTimeMonitor connects to a server that supports the Time Protocol and sends the time as a 32-bit unsigned integer in binary format and in network byte order, representing the number of seconds since 00:00 (midnight) 1 January, 1900 GMT, and fails if the defined clock skew is too large.
-NOTE: This detector utilizes the Time Protocol, not NTP.
+NOTE: This detector uses the Time Protocol, not NTP.
 
 == Monitor facts
 

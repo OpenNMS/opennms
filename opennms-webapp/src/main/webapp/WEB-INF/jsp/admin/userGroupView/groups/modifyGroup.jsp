@@ -54,16 +54,18 @@
     String[] availableUsers = group.getRemainingUsers(Arrays.asList(allUsers)).toArray(new String[0]);
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Modify Group" />
-  <jsp:param name="headTitle" value="Modify" />
-  <jsp:param name="headTitle" value="Groups" />
-  <jsp:param name="headTitle" value="Admin" />
-  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users and Groups</a>" />
-  <jsp:param name="breadcrumb" value="<a href='admin/userGroupView/groups/list.htm'>Group List</a>" />
-  <jsp:param name="breadcrumb" value="Modify Group" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Modify")
+          .headTitle("Groups")
+          .headTitle("Admin")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Users and Groups", "admin/userGroupView/index.jsp")
+          .breadcrumb("Group List", "admin/userGroupView/groups/list.htm")
+          .breadcrumb("Modify Group")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script type="text/javascript" >
     

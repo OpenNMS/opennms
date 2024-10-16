@@ -57,6 +57,12 @@
     <dependency>
       <groupId>org.jolokia</groupId>
       <artifactId>jolokia-client-java</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>bsh</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.opennms.features</groupId>

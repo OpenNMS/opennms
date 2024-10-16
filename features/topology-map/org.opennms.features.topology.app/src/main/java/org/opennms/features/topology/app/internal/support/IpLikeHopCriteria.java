@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,10 +28,8 @@
 
 package org.opennms.features.topology.app.internal.support;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.stream.Collectors;
 
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -39,16 +37,13 @@ import org.opennms.features.topology.api.GraphContainer;
 import org.opennms.features.topology.api.support.hops.VertexHopCriteria;
 import org.opennms.features.topology.api.topo.AbstractCollapsibleVertex;
 import org.opennms.features.topology.api.topo.BackendGraph;
-import org.opennms.features.topology.api.topo.DefaultVertexRef;
 import org.opennms.features.topology.api.topo.GraphProvider;
-import org.opennms.features.topology.api.topo.RefComparator;
 import org.opennms.features.topology.api.topo.SearchCriteria;
 import org.opennms.features.topology.api.topo.SearchResult;
 import org.opennms.features.topology.api.topo.Vertex;
 import org.opennms.features.topology.api.topo.VertexRef;
 import org.opennms.features.topology.app.internal.IpInterfaceProvider;
 import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

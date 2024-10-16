@@ -1,5 +1,6 @@
 
 = Topology
+:description: Learn about the Topology dashlet, which displays a topology map in the {page-component-title} operator board.
 
 The Topology dashlet shows a xref:deep-dive/topology/topology.adoc[topology map] in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board].
 

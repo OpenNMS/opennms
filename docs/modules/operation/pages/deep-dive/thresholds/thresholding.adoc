@@ -1,6 +1,6 @@
 
 = Thresholding
-:description: Overview of thresholding in OpenNMS Horizon/Meridian to define limits against a managed entity's performance metrics.
+:description: Overview of thresholding in {page-component-title} to define limits against a managed entity's performance metrics.
 
 A threshold lets you define limits against a managed entity's network performance metrics.
 When a value goes above or below the specified limit, an event is triggered.

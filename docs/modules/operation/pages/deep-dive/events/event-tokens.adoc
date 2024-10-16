@@ -1,6 +1,6 @@
 
 = Replacement Tokens
-:description: List of replacement tokens you can use in OpenNMS Horizon/Meridian to insert relevant information into events. Includes hardware and parameter tokens.
+:description: List of replacement tokens you can use in {page-component-title} to insert relevant information into events. Includes hardware and parameter tokens.
 
 You can use replacement tokens (event substitution tokens) to insert additional relevant information into event descriptions, log messages, operator instructions, and automatic actions.
 The tokens are replaced by values from the event when its text is generated.

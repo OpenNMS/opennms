@@ -1,0 +1,65 @@
+
+= Info Rest Service
+
+Service that provides information about the {page-component-title} instance.
+
+== GETs (reading data)
+
+[caption=]
+.Info rest service GET functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| /info
+| Get info about the server.
+|===
+
+.Response
+[source,json]
+[subs="attributes"]
+----
+{
+    "displayVersion": "{page-component-version}",
+    "version": "{page-component-version}",
+    "packageName": "{package-prefix}",
+    "packageDescription": "OpenNMS",
+    "ticketerConfig": {
+        "plugin": null,
+        "enabled": false
+    },
+    "datetimeformatConfig": {
+        "zoneId": "UTC",
+        "datetimeformat": "yyyy-MM-dd'T'HH:mm:ssxxx"
+    },
+    "services": {
+        "Eventd": "running",
+        "Alarmd": "running",
+        "Bsmd": "running",
+        "Ticketer": "running",
+        "Queued": "running",
+        "Actiond": "running",
+        "Notifd": "running",
+        "Scriptd": "running",
+        "Rtcd": "running",
+        "Pollerd": "running",
+        "SnmpPoller": "running",
+        "EnhancedLinkd": "running",
+        "Collectd": "running",
+        "Discovery": "running",
+        "Vacuumd": "running",
+        "EventTranslator": "running",
+        "PassiveStatusd": "running",
+        "Statsd": "running",
+        "Provisiond": "running",
+        "Reportd": "running",
+        "Ackd": "running",
+        "JettyServer": "running",
+        "KarafStartupMonitor": "running",
+        "Syslogd": "running",
+        "Telemetryd": "running",
+        "Trapd": "running",
+        "PerspectivePoller": "running"
+    }
+}
+----

@@ -1,7 +1,7 @@
 
 [[backup-script]]
 = Configure Backup Script
-:description: How to use the SSH scripting engine for device configuration backup and details about vendor TFTP support in OpenNMS Horizon/Meridian.
+:description: How to use the SSH scripting engine for device configuration backup and details about vendor TFTP support in {page-component-title}.
 
 {page-component-title} uses an SSH scripting engine to run the commands on devices to upload their configuration settings.
 You must create a script for each device type whose configuration you want to back up, and save the scripts in `$\{OPENNMS_HOME}/etc/device-config`.
@@ -124,84 +124,30 @@ There are several example scripts available in `$\{OPENNMS_HOME}/etc/examples/de
 We recommend that you limit the privileges of any user accounts used for configuration retrieval.
 The following examples demonstrate how to configure a `dcb` user account, specify its password (`Pa55w0rd`), and limit its privileges to only configuration retrieval commands.
 
-==== ArubaOS configuration
+[{tabs}]
+====
+ArubaOS::
++
+--
+include::dcb-accounts/aruba-os.adoc[]
+--
 
-This script creates a `dcb` user account based on a custom user group (`dcb-group`).
-The user group has limited privileges, which are passed on to the `dcb` account.
+ArubaOS-CX::
++
+--
+include::dcb-accounts/aruba-oscx.adoc[]
+--
 
-[source, script]
-----
-aruba-os# configure
-aruba-os(config)# aaa authorization commands local
-aruba-os(config)# aaa authorization group "dcb-group" 1 match-command "copy running-config tftp .*" permit
-aruba-os(config)# aaa authorization group "dcb-group" 2 match-command "show running-config" permit
-aruba-os(config)# aaa authorization group "dcb-group" 3 match-command "copy startup-config tftp .*" permit
-aruba-os(config)# aaa authorization group "dcb-group" 4 match-command "show startup-config" permit
-aruba-os(config)# aaa authentication local-user "dcb" group "dcb-group" password plaintext
-New password for dcb: Pa55w0rd
-Please retype new password for dcb: Pa55w0rd
-aruba-os(config)# exit
-----
+Cisco IOS::
++
+--
+include::dcb-accounts/cisco-ios.adoc[]
+--
 
-==== ArubaOS-CX configuration
+Juniper Junos::
++
+--
+include::dcb-accounts/juniper.adoc[]
+--
+====
 
-This script creates a `dcb` user account based on a custom user group (`dcb-group`).
-The user group has limited privileges, which are passed on to the `dcb` account.
-
-[source, script]
-----
-aruba-os-cx# config
-aruba-os-cx(config)# user-group dcb-group
-aruba-os-cx(config-usr-grp-dcb-group)# permit cli command "copy startup-config tftp.*"
-aruba-os-cx(config-usr-grp-dcb-group)# permit cli command "copy running-config tftp.*"
-aruba-os-cx(config-usr-grp-dcb-group)# permit cli command "show running-config"
-aruba-os-cx(config-usr-grp-dcb-group)# deny cli command ".*"
-aruba-os-cx(config-usr-grp-dcb-group)# exit
-aruba-os-cx(config)# user dcb group dcb-group password
-Enter password: Pa55w0rd
-Confirm password: Pa55w0rd
-aruba-os-cx(config)#
-----
-
-==== Cisco IOS configuration
-
-This script creates a `dcb` user account based on a custom privilege configuration:
-
-[source, script]
-----
-cisco-ios#configure terminal
-cisco-ios(config)#username dcb privilege 2 secret Pa55w0rd
-cisco-ios(config)#privilege exec level 2 copy running-config
-cisco-ios(config)#privilege exec level 2 copy startup-config
-cisco-ios(config)#exit
-----
-
-==== Juniper Junos configuration
-
-This script creates a `dcb` user account based on a custom login class (`dcb-class`).
-The login class has limited privileges, which are passed on to the `dcb` account.
-
-[source, script]
-----
-admin@juniper-junos# set system login class dcb-class permissions all
-
-[edit]
-admin@juniper-junos# set system login class dcb-class allow-commands "(exit)|(start shell)|(show configuration.*)"
-
-[edit]
-admin@juniper-junos# set system login class dcb-class deny-commands .*
-
-[edit]
-admin@juniper-junos# set system login user dcb uid 1006
-
-[edit]
-admin@juniper-junos# set system login user dcb class dcb-class
-
-[edit]
-admin@juniper-junos# set system login user dcb authentication plain-text-password
-New password: Pa55w0rd
-Retype new password: Pa55w0rd
-
-[edit]
-admin@juniper-junos# exit
-----

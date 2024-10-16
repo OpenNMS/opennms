@@ -1,6 +1,6 @@
 [[dcb-requisition]]
 = Create Requisition for Device Configuration Backup
-:description: How to create a requisition for device configuration backup in OpenNMS Horizon/Meridian.
+:description: How to create a requisition for device configuration backup in {page-component-title}.
 
 After you have xref:operation:deep-dive/device-config-backup/ssh.adoc#backup-script[created a backup script for each device type] and xref:operation:deep-dive/device-config-backup/configuration.adoc#poller-config[configured the TFTP port], you can create a requisition for each device whose configuration you want to back up.
 

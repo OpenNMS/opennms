@@ -48,9 +48,9 @@ jobs:
       - run:
           name: Publish to Cloudsmith
           command: .circleci/scripts/publish-cloudsmith.sh
-      - run:
-          name: Publish to Azure
-          command: .circleci/scripts/publish-azure.sh
+#      - run:
+#          name: Publish to Azure
+#          command: .circleci/scripts/publish-azure.sh
   publish-maven:
     executor: build-executor
     resource_class: xlarge
@@ -84,6 +84,7 @@ jobs:
               -DskipITs=true \
               -DskipSurefire=true \
               -DskipFailsafe=true \
+              -Dbuild.sbom=false \
               -Dbuild.skip.tarball=true \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \

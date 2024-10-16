@@ -1,5 +1,6 @@
 
 = Mapping Events to Elasticsearch
+:description: Read an overview of index mapping events to Elasticsearch in {page-component-title}.
 
 == Overview of Index Mapping
 

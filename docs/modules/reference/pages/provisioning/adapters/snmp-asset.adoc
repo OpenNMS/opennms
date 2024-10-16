@@ -1,5 +1,6 @@
 [[adapter-snmp-asset]]
 = SNMP Asset
+:description: Learn how to configure and use the SNMP asset adapter to collect SNMP values and populate asset records for nodes in OpenNMS {page-component-title}.
 
 The SNMP asset provisioning adapter collects SNMP values to populate asset records for the node.
 This can be very useful for automatically populating asset fields in a large number of managed systems.
@@ -22,9 +23,9 @@ NOTE: By default, this adapter runs 5 minutes after a provisiond `nodeScanComple
 To use this feature you have to install the SNMP asset provisioning plugin from the repository.
 
 * For RPM-based distributions:
-** `yum install opennms-plugin-provisioning-snmp-asset`
+** `yum install {package-prefix}-plugin-provisioning-snmp-asset`
 * For Debian-based distributions:
-** `apt-get install opennms-plugin-provisioning-snmp-asset`
+** `apt-get install {package-prefix}-plugin-provisioning-snmp-asset`
 
 == Configuration
 

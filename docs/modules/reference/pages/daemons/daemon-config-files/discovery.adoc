@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-discovery]]
 = Discovery
+:description: Learn about the OpenNMS {page-component-title} discovery daemon, which scans unknown nodes to auto discover potential nodes to monitor.
 
 Scans unknown nodes to xref:operation:deep-dive/provisioning/auto-discovery.adoc[auto discover] potential nodes to monitor.
 

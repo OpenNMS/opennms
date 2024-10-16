@@ -36,6 +36,10 @@
           <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>net.i2p.crypto</groupId>
+            <artifactId>eddsa</artifactId>
+        </dependency>
+        <dependency>
             <groupId>io.vavr</groupId>
             <artifactId>vavr</artifactId>
         </dependency>

@@ -34,19 +34,16 @@
 	session="true"
 %>
 
-<% String breadcrumb1 = "<a href='admin/index.jsp'> Admin </a>"; %>
-<% String breadcrumb2 = "<a href='admin/discovery/index.jsp'> Discovery </a>"; %>
-<% String breadcrumb3 = "Configuration Updated"; %>
-
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Discovery Configuration Updated" />
-  <jsp:param name="headTitle" value="Discovery" />
-  <jsp:param name="headTitle" value="Admin" />
-  <jsp:param name="location" value="admin" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb1%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb2%>" />
-  <jsp:param name="breadcrumb" value="<%=breadcrumb3%>" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Discovery")
+          .headTitle("Admin")
+          .breadcrumb("Admin","admin/index.jsp")
+          .breadcrumb("Discovery", "admin/discovery/index.jsp")
+          .breadcrumb("Configuration Updated")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="card">
   <div class="card-header">

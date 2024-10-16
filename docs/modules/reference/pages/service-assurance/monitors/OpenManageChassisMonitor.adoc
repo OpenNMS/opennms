@@ -1,5 +1,6 @@
 
 = OpenManageChassisMonitor
+:description: Learn about the OpenManageChassisMonitor in OpenNMS {page-component-title} that tests the status of a Dell chassis by querying its SNMP agent.
 
 The OpenManageChassis monitor tests the status of a Dell chassis by querying its SNMP agent.
 The monitor polls the value of the node's SNMP OID .1.3.6.1.4.1.674.10892.1.300.10.1.4.1 (MIB-Dell-10892::chassisStatus).

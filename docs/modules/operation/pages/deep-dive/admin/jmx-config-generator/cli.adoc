@@ -1,5 +1,6 @@
 
 = CLI-Based Utility
+:description: Learn how to install and use the command line-based JMX Configuration Generator generator tool with {page-component-title} (Debian and RPM).
 
 The JMX Configuration Generator command line-based (CLI) tool is not installed by default.
 ifeval::["{page-component-name}" == "meridian"]

@@ -1,6 +1,6 @@
 
 = Mattermost Notifications
-:description: How to use webhooks to configure OpenNMS Horizon/Meridian to send notifications through Mattermost.
+:description: How to use webhooks to configure {page-component-title} to send notifications through Mattermost.
 
 If your organization uses https://mattermost.com/[Mattermost], you can configure {page-component-title} to send notices to any channel via an incoming webhook.
 You must configure an incoming webhook in your Mattermost settings and manually configure some settings in your {page-component-title} instance.

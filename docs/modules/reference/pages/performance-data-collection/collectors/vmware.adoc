@@ -1,5 +1,6 @@
 
 = VmwareCollector
+:description: Learn how to configure the VmwareCollector in OpenNMS {page-component-title} to collect performance metrics from managed entities from vCenter.
 
 The VmwareCollector collects performance metrics for managed entities from vCenter.
 

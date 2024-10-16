@@ -2,8 +2,9 @@
 
 [[http-handler]]
 = HTTP(S) Handler
+:description: Learn how the HTTP(S) handler in OpenNMS {page-component-title} can import a requisition definition from an XML document served by a remote web server.
 
-The HTTP(S) handler imports a properly-formatted requisition definition from an XML document served by a remote web server.
+The HTTP(S) handler imports a properly formatted requisition definition from an XML document served by a remote web server.
 
 == Configure HTTP(S) requisition
 

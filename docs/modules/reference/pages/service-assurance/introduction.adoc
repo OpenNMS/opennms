@@ -1,5 +1,6 @@
 [[service-monitors]]
 = Service Monitors
+:description: Learn about service monitors in {page-component-title} including configuration parameters and how to use placeholders in them.
 
 This section describes all available built-in monitors for xref:operation:deep-dive/service-assurance/introduction.adoc[service assurance].
 You can configure them to allow complex monitoring to meet the needs of your environment.

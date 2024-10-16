@@ -125,13 +125,23 @@
 	}
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-    <jsp:param name="title" value="Alarm Detail" />
-    <jsp:param name="headTitle" value="Detail" />
-    <jsp:param name="headTitle" value="Alarms" />
-    <jsp:param name="breadcrumb" value="<a href='alarm/index.htm'>Alarms</a>" />
-    <jsp:param name="breadcrumb" value='<%= (alarm.isSituation() ? "Situation " : "Alarm ") + alarm.getId()%>' />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Detail")
+          .headTitle("Alarms")
+          .breadcrumb("Alarms", "alarm/index.htm")
+          .breadcrumb((alarm.isSituation() ? "Situation " : "Alarm ") + alarm.getId())
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
+
+<script type="text/javascript">
+    let url = new URL(location.href);
+    if (!url.searchParams.has('id')) {
+        url.searchParams.set('id', '${alarmId}');
+        window.location.href = url.href;
+    }
+</script>
 
 <div class="card">
   <div class="card-header">
@@ -481,10 +491,10 @@
   <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
 	         <form class="form" method="post" action="alarm/saveStickyMemo.htm">
                  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-				<textarea class="w-100 mb-1" name="stickyMemoBody" ><%=(alarm.getStickyMemo() != null && alarm.getStickyMemo().getBody() != null) ? alarm.getStickyMemo().getBody() : ""%></textarea>
+				<textarea <%=request.isUserInRole(Authentication.ROLE_READONLY)?"readonly":""%> class="w-100 mb-1" name="stickyMemoBody" ><%=(alarm.getStickyMemo() != null && alarm.getStickyMemo().getBody() != null) ? alarm.getStickyMemo().getBody() : ""%></textarea>
 				<input type="hidden" name="alarmId" value="<%=alarm.getId() %>"/>
-                <form:input class="btn btn-sm btn-secondary" type="submit" value="Save" />
-                <form:input class="btn btn-sm btn-secondary" type="button" value="Delete" onclick="document.getElementById('deleteStickyForm').submit();"/>
+                <input <%=request.isUserInRole(Authentication.ROLE_READONLY)?"disabled":""%> class="btn btn-sm btn-secondary" type="submit" value="Save" />
+                <input <%=request.isUserInRole(Authentication.ROLE_READONLY)?"disabled":""%> class="btn btn-sm btn-secondary" type="button" value="Delete" onclick="document.getElementById('deleteStickyForm').submit();"/>
 	         </form>
 	         <form id="deleteStickyForm" method="post" action="alarm/removeStickyMemo.htm">
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
@@ -519,10 +529,10 @@
   <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
             <form class="form" method="post" action="alarm/saveJournalMemo.htm">
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                <textarea class="w-100 mb-1" name="journalMemoBody" ><%=(alarm.getReductionKeyMemo() != null && alarm.getReductionKeyMemo().getBody() != null) ? alarm.getReductionKeyMemo().getBody() : ""%></textarea>
+                <textarea <%=request.isUserInRole(Authentication.ROLE_READONLY)?"readonly":""%> class="w-100 mb-1" name="journalMemoBody" ><%=(alarm.getReductionKeyMemo() != null && alarm.getReductionKeyMemo().getBody() != null) ? alarm.getReductionKeyMemo().getBody() : ""%></textarea>
                 <input type="hidden" name="alarmId" value="<%=alarm.getId()%>"/>
-                <form:input class="btn btn-sm btn-secondary" type="submit" value="Save" />
-                <form:input class="btn btn-sm btn-secondary" type="button" value="Delete" onclick="document.getElementById('deleteJournalForm').submit();"/>
+                <input <%=request.isUserInRole(Authentication.ROLE_READONLY)?"disabled":""%> class="btn btn-sm btn-secondary" type="submit" value="Save"/>
+                <input <%=request.isUserInRole(Authentication.ROLE_READONLY)?"disabled":""%> class="btn btn-sm btn-secondary" type="button" value="Delete" onclick="document.getElementById('deleteJournalForm').submit();"/>
             </form>
             <form id="deleteJournalForm" method="post" action="alarm/removeJournalMemo.htm">
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>

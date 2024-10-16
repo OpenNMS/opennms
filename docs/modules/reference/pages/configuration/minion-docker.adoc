@@ -1,5 +1,6 @@
 [[minion-docker]]
 = Minion Docker
+:description: Learn about startup arguments and environment variables for the Docker with the OpenNMS {page-component-title} Minion.
 
 == Startup arguments
 
@@ -35,7 +36,7 @@
 
 .Settings when using Apache Kafka
 
-If you want to use Apache Kafka the environment variable names are converted with a prefix convention:
+If you want to use Apache Kafka, the environment variable names are converted with a prefix convention:
 
 * Prefix `KAFKA_RPC_` will be written to `org.opennms.core.ipc.rpc.kafka.cfg`
 * Prefix `KAFKA_SINK_` will be written to `org.opennms.core.ipc.sink.kafka.cfg`
@@ -61,6 +62,6 @@ bootstrap.servers=192.168.1.1,192.168.1.2
 [options="header, autowidth"]
 |===
 | Mountpoint                | Description
-| `/opt/minion-etc-overlay` | Lets you overwrite files relative to `/opt/minion/etc`
+| `/opt/minion-etc-overlay` | Lets you overwrite files relative to `/opt/minion/etc`.
 | `/keystore`               | Directory with credentials for encrypted keystore file
 |===

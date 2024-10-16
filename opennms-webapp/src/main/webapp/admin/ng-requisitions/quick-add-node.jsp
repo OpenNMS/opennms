@@ -30,14 +30,15 @@
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="nobreadcrumbs" value="true" />
-    <jsp:param name="ngapp" value="onms-requisitions" />
-    <jsp:param name="title" value="Quick-Add Node" />
-    <jsp:param name="headTitle" value="Quick-Add Node" />
-    <jsp:param name="headTitle" value="Admin" />
-    <jsp:param name="location" value="admin" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Quick-Add Node")
+          .headTitle("Admin")
+          .ngApp("onms-requisitions")
+          .flags("nobreadcrumbs")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div ng-view></div>
 <div growl></div>

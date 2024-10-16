@@ -1,5 +1,6 @@
 
 = Data Collection
+:description: Learn what anonymous use statistics {page-component-title} collects and publishes.
 
 When enabled, the Data Choices module collects anonymous use statistics.
 It publishes them on system startup and every 24 hours after.

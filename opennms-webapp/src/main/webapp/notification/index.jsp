@@ -34,12 +34,13 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Notifications" />
-  <jsp:param name="headTitle" value="Notifications" />
-  <jsp:param name="location" value="notifications" />
-  <jsp:param name="breadcrumb" value="Notifications" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Notifications")
+          .breadcrumb("Notifications")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="row">
   <div class="col-md-6">

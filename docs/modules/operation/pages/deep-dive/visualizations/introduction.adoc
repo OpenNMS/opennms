@@ -1,4 +1,5 @@
 
 = Visualizations
+:description: Introduction to the documentation on visualizations you can use in {page-component-title} to model the data collected from your monitored network.
 
 This section describes the visualizations that you can use to model the data collected from your monitored network.

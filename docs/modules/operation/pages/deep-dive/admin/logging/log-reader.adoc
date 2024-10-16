@@ -1,5 +1,6 @@
 
 = Instrumentation Log Reader
+:description: Learn how to use the instrumentation log reader to view how long data collection takes for each node in {page-component-title}.
 
 The instrumentation log reader provides information on how long data collection takes for each node in the system, and which nodes are taking the most time.
 You can view this information in the Instrumentation Log Statistics UI:

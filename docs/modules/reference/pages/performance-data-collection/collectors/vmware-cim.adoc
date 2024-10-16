@@ -1,5 +1,6 @@
 
 = VmwareCimCollector
+:description: Learn how to configure the VmwareCimCollector in OpenNMS {page-component-title} to collect ESXi host and sensor metrics from vCenter.
 
 The VmwareCimCollector collects ESXi host and sensor metrics from vCenter.
 

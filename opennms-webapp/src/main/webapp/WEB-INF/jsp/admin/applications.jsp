@@ -33,13 +33,14 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-	<jsp:param name="title" value="Applications" />
-	<jsp:param name="headTitle" value="Applications" />
-	<jsp:param name="breadcrumb"
-		value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb" value="Applications" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Applications")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Applications")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
       <div class="card-header">
         <span>Applications</span>

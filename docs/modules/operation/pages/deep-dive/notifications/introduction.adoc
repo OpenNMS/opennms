@@ -1,7 +1,7 @@
 
 [[ga-notifications-introduction]]
 = Notifications
-:description: Overview of notifications in OpenNMS Horizon/Meridian to alert users about events that happen in the network.
+:description: Overview of notifications in {page-component-title} to alert users about events that happen in the network.
 
 {page-component-title} uses notifications to inform users about events that happen in the network.
 Notifications allow you to keep track of your network status without having to log in and look at the UI.

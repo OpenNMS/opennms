@@ -64,12 +64,13 @@
     }
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Assets" />
-  <jsp:param name="headTitle" value="Assets" />
-  <jsp:param name="location" value="asset" />
-  <jsp:param name="breadcrumb" value="Assets" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Assets")
+          .breadcrumb("Assets")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="row">
   <div class="col-md-6">

@@ -34,12 +34,14 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="https://www.owasp.org/index.php/OWASP_Java_Encoder_Project" prefix="e"%>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-	<jsp:param name="title" value="Site Status Page" />
-	<jsp:param name="headTitle" value="Site Status" />
-	<jsp:param name="breadcrumb" value="Site Status" />
-    <jsp:param name="breadcrumb" value="${e:forHtmlAttribute(view.columnValue)}" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Site Status")
+          .breadcrumb("Site Status")
+          .breadcrumb("${e:forHtmlAttribute(view.columnValue)}")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="card">
   <div class="card-header">

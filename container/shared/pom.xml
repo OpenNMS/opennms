@@ -38,8 +38,6 @@
             <plugin>
                 <groupId>org.apache.karaf.tooling</groupId>
                 <artifactId>karaf-maven-plugin</artifactId>
-                <version>${karafVersion}</version>
-                <extensions>true</extensions>
                 <configuration>
                     <blacklistedRepositories>
                         <!-- make sure the custom opennms karaf repo doesn't make it in -->
@@ -50,6 +48,8 @@
                         <repository>mvn:org.opennms.karaf/opennms/${project.version}/xml/karaf-extensions</repository>
                         <!-- OPENNMS: Additional tools -->
                         <repository>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</repository>
+                        <!-- OPENNMS: get a good version of pax-cdi-features for inclusion -->
+                        <repository>mvn:org.ops4j.pax.cdi/pax-cdi-features/${paxCdiVersion}/xml/features</repository>
                     </bootRepositories>
                     <installedFeatures>
                         <feature>wrapper</feature>

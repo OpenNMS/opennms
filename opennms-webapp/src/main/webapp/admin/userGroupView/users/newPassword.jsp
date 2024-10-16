@@ -34,14 +34,15 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="New Password" />
-  <jsp:param name="headTitle" value="New Password" />
-  <jsp:param name="headTitle" value="Users" />
-  <jsp:param name="headTitle" value="Admin" />
-  <jsp:param name="quiet" value="true" />
-  <jsp:param name="nobreadcrumbs" value="true" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("New Password")
+          .headTitle("Users")
+          .headTitle("Admin")
+          .flags("nobreadcrumbs", "quiet")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 
 <script type="text/javascript">

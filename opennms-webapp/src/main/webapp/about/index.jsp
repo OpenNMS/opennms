@@ -63,11 +63,13 @@
    	}
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="About" />
-  <jsp:param name="headTitle" value="About" />
-  <jsp:param name="breadcrumb" value="About" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("About")
+          .breadcrumb("About")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
   <div class="card">
     <div class="card-header">

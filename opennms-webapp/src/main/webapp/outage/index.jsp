@@ -34,12 +34,13 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Outages" />
-  <jsp:param name="headTitle" value="Outages" />
-  <jsp:param name="location" value="outage" />
-  <jsp:param name="breadcrumb" value="Outages" />  
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Outages")
+          .breadcrumb("Outages")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script type="text/javascript">
 function validateId() {

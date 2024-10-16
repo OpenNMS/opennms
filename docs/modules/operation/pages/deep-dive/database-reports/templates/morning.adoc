@@ -1,5 +1,6 @@
 
 = Early Morning Report
+:description: Learn how to create a report in {page-component-title} that provides a global overview of outages, notifications, and events over the previous 24 hours.
 
 This report provides a global overview of outages, notifications, and events over the past 24 hours.
 It has no parameters, but you can customize the report with a company logo (approximately 195px by 50px) in the page header.

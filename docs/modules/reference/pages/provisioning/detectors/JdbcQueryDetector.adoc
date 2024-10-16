@@ -1,5 +1,6 @@
 
 = JDBC Query Detector
+:description: Learn how the JDBCQueryDetector in OpenNMS {page-component-title} connects to a JDBC-enabled database and checks for any result from a user-specified SQL query.
 
 The JDBCQueryDetector connects to a JDBC-enabled database and checks for any result from a user-specified SQL query.
 If the query returns a result, the detector returns the `detected` value.

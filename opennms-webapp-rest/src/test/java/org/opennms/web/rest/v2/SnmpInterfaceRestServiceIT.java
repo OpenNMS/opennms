@@ -30,7 +30,6 @@ package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertEquals;
 
-import org.jfree.util.Log;
 import org.json.JSONArray;
 import org.json.JSONObject;
 import org.junit.Test;
@@ -91,10 +90,10 @@ public class SnmpInterfaceRestServiceIT extends AbstractSpringJerseyRestTestCase
                 "</node>";
         sendPost("/nodes", node1, 201);
 
-        Log.warn(sendRequest(GET, "/nodes/1/snmpinterfaces", 204));
-        Log.warn(sendRequest(GET, "/nodes/1/snmpinterfaces/6", 404));
-        Log.warn(sendRequest(GET, "/snmpinterfaces", 204));
-        Log.warn(sendRequest(GET, "/snmpinterfaces/1", 404));
+        LOG.warn(sendRequest(GET, "/nodes/1/snmpinterfaces", 204));
+        LOG.warn(sendRequest(GET, "/nodes/1/snmpinterfaces/6", 404));
+        LOG.warn(sendRequest(GET, "/snmpinterfaces", 204));
+        LOG.warn(sendRequest(GET, "/snmpinterfaces/1", 404));
 
         String snmpInterface1 = "<snmpInterface ifIndex=\"6\">" +
                 "<ifAdminStatus>1</ifAdminStatus>" +

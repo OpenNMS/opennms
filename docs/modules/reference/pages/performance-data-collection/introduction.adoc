@@ -1,5 +1,6 @@
 [[ref-performance-data-collectors]]
 = Collectors
+:description: Overview of official documentation for collectors in OpenNMS {page-component-title}.
 
 This section describes all available built-in xref:operation:deep-dive/performance-data-collection/introduction.adoc[performance data collectors].
 You can configure them to allow complex monitoring to meet the needs of your environment.

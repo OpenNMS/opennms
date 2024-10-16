@@ -141,6 +141,7 @@ mv "%{buildroot}%{sentinelinstprefix}/etc/sentinel.conf" "%{buildroot}%{_sysconf
 
 # fix the permissions-fixing scripts
 sed -i \
+	-e 's,^\([ \t]*\)*OPENNMS_HOME[ \t]*=.*$,\1SENTINEL_HOME="%{sentinelinstprefix}",g' \
     -e 's,OPENNMS_HOME,SENTINEL_HOME,g' \
     -e 's,opennms,sentinel,g' \
     '%{buildroot}%{sentinelinstprefix}/bin/fix-permissions' \
@@ -187,6 +188,7 @@ rm -rf %{buildroot}
 %attr(644,sentinel,sentinel) %{_unitdir}/sentinel.service
 %attr(644,sentinel,sentinel) %config(noreplace) %{_sysconfdir}/sysconfig/sentinel
 %attr(644,sentinel,sentinel) %{sentinelinstprefix}/etc/featuresBoot.d/.readme
+%attr(644,sentinel,sentinel) %{sentinelinstprefix}/etc/featuresBoot.d/*.boot
 
 %pre
 ROOT_INST="${RPM_INSTALL_PREFIX0}"

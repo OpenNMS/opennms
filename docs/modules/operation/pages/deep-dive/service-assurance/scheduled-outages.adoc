@@ -1,6 +1,6 @@
 
 = Scheduled Outages
-:description: How to define scheduled outages to suppress notifications with OpenNMS Horizon/Meridian, and how to schedule an outage for a node.
+:description: How to define scheduled outages to suppress notifications with {page-component-title}, and how to schedule an outage for a node.
 
 Scheduled outages let you suppress notifications and pause status polling, threshold checking, and data collection during a specified time period.
 You might want to schedule an outage for any of the following reasons:

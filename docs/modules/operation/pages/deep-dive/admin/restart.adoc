@@ -1,5 +1,6 @@
 
 = Shutdown and Restart {page-component-title}
+:description: Learn the recommended order to shut down and restart components in {page-component-title}: core, persistence/messaging, and database layers.
 
 This section provides an example of the order to follow when shutting down and restarting a sample {page-component-title} system: {page-component-title} core layer, persistence and messaging layer, and database layer.
 

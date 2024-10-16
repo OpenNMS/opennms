@@ -1,5 +1,6 @@
 
 = LdapsMonitor
+:description: Learn about the LdapsMonitor in OpenNMS {page-component-title} that tests the response of an SSL-enabled LDAP server.
 
 The LDAPS monitor tests the response of an SSL-enabled LDAP server.
 The LDAPS monitor is an SSL-enabled extension of the LDAP monitor with a default TCP port value of 636.

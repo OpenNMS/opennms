@@ -1,5 +1,6 @@
 
 = SnmpCollector
+:description: Learn how to configure the SNMPCollector in OpenNMS {page-component-title} to collect performance data through SNMP.
 
 The SnmpCollector collects performance data through SNMP.
 Configure credentials to access SNMP agents in the Web UI (*Admin>Configure SNMP Community Names by IP Address*).

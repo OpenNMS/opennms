@@ -130,13 +130,15 @@
     }
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Post Event" />
-  <jsp:param name="headTitle" value="Post Event" />
-  <jsp:param name="headTitle" value="Admin" />
-  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="Post Event" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Post Event")
+          .headTitle("Admin")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Post Event")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <%
     String eventXml = JaxbUtils.marshal(event);

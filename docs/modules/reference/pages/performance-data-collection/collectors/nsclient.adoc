@@ -1,5 +1,6 @@
 
 = NSClientCollector
+:description: Learn how to configure and use the NSClientCollector in OpenNMS {page-component-title} to collect performance data over HTTP from NSClient.
 
 The NSClientCollector collects performance data over HTTP from NSClient.
 
@@ -8,7 +9,7 @@ The NSClientCollector collects performance data over HTTP from NSClient.
 [options="autowidth"]
 |===
 | Class Name          | `org.opennms.protocols.nsclient.collector.NSClientCollector`
-| Package             | opennms-plugin-protocol-nsclient
+| Package             | {package-prefix}-plugin-protocol-nsclient
 | Supported on Minion | Yes
 | Configuration Files | $OPENNMS_HOME/etc/nsclient-datacollection-config.xml
 |===

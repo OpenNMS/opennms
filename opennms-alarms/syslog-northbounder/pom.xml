@@ -59,7 +59,7 @@
     <dependency>
       <groupId>org.graylog2</groupId>
       <artifactId>syslog4j</artifactId>
-      <version>0.9.60</version>
+      <version>0.9.61</version>
       <exclusions>
         <exclusion>
           <groupId>commons-pool</groupId>

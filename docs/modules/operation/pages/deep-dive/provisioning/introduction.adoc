@@ -1,7 +1,7 @@
 
 [[ga-provisioning-introduction]]
 = Provisioning
-:description: Overview of inventory provisioning in OpenNMS Horizon/Meridian: automatic and directed discovery, and node asset import.
+:description: Overview of inventory provisioning in {page-component-title}: automatic and directed discovery, and node asset import.
 
 Provisioning is a process that imports node and service definitions either from an external source, such as DNS or HTTP, or via the {page-component-title} web UI.
 The Provisiond daemon maintains your managed entity inventory through policy-based provisioning.

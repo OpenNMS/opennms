@@ -1,5 +1,6 @@
 
 = Criteria Builder
+:description: Learn how to configure the criteria builder to filter dashlet information in the {page-component-title} operator board.
 
 The criteria builder is a generic component used to filter dashlet information in an xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board].
 Some dashlets use this component in certain situations to filter displayed information.

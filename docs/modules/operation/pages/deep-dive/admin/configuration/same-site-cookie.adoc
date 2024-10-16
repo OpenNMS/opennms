@@ -1,5 +1,6 @@
 
 = SameSite Cookie Attribute
+:description: Learn how to configure the SameSite Cookie attribute in {page-component-title} to relax the cookie enforcement policy.
 
 The SameSite Cookie attribute controls access to cookies and helps prevent various cross-site scripting (XSS) and cross-site request forgery (CSRF) attacks.
 This attribute tells browsers how to handle first- or third-party cookies and identifies whether to allow a cookie to be accessed.
@@ -17,6 +18,7 @@ To change the enforcement policy, you must edit `$OPENNMS_HOME/jetty-webapps/ope
 <session-config>
   <cookie-config>
     <http-only>true</http-only>
+    <secure>false</secure>
     <comment>__SAME_SITE_STRICT__</comment> <1>
   </cookie-config>
   <session-timeout>-1</session-timeout>

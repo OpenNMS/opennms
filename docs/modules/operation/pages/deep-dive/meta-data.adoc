@@ -1,6 +1,7 @@
 
 [[metadata-overview]]
 = Metadata
+:description: Learn how to create and associate metadata with nodes, interfaces, and services in {page-component-title}.
 
 {page-component-title} supports the assignment of arbitrary metadata to nodes, interfaces and services.
 You can use this metadata to dynamically configure service monitoring, performance data collection, service detection, and expression-based thresholds.
@@ -20,6 +21,7 @@ You can view the metadata that is currently assigned to nodes, interfaces, and s
 .Node metadata
 image::metadata/metadata-view.png["{page-component-title} web UI showing a node's associated metadata"]
 
+[[metadata-contexts]]
 == Contexts
 
 Contexts distinguish different kinds of metadata use.

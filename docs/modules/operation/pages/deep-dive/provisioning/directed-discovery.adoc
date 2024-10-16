@@ -1,7 +1,7 @@
 
 [[directed-discovery]]
 = Directed Discovery
-:description: How to manually add nodes to OpenNMS Horizon/Meridian through the requisition UI, through the REST API, and via newSuspect events.
+:description: How to manually add nodes to {page-component-title} through the requisition UI, through the REST API, and via newSuspect events.
 
 Directed discovery is the process of manually adding nodes to {page-component-title} through the requisition UI.
 

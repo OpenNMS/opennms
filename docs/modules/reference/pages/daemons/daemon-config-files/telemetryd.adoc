@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-telemetryd]]
 = Telemetryd
+:description: Learn about telemetryd in OpenNMS {page-component-title}, which processes telemetry data received from nodes.
 
 Processes xref:operation:deep-dive/telemetryd/introduction.adoc[telemetry] data received from nodes.
 

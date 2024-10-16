@@ -16,13 +16,6 @@
     <repository>mvn:org.apache.karaf.features/enterprise/${karafVersion}/xml/features</repository>
     <repository>mvn:org.apache.activemq/activemq-karaf/${activemqVersion}/xml/features</repository>
 
-    <!-- Required by sentinel-jms -->
-    <feature name="geronimo-jms-api" description="Apache Geronimo :: JMS :: API" version="${geronimoVersion}">
-        <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-annotation_1.0_spec/${geronimoVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimoVersion}</bundle>
-        <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jms_1.1_spec/${geronimoVersion}</bundle>
-    </feature>
-
     <feature name="sentinel-distpoller-dao" description="Sentinel :: DAO :: Distpoller" version="${project.version}">
         <feature>opennms-dao-api</feature>
         <bundle>mvn:org.opennms.features.distributed/core-api/${project.version}</bundle>
@@ -30,16 +23,9 @@
     </feature>
 
     <feature name="sentinel-jms" description="Sentinel :: Core :: JMS" version="${project.version}">
-        <feature>sentinel-core</feature>
-        <feature>geronimo-jms-api</feature>
-
-        <!-- Needed by activemq-camel -->
-        <bundle>mvn:javax.annotation/javax.annotation-api/1.3</bundle>
-        <feature>activemq-camel</feature>
-        <bundle>mvn:org.opennms.features.distributed/jms/${project.version}</bundle>
-
+        <feature prerequisite="true">opennms-distributed-core-jms</feature>
         <feature>opennms-core-ipc-sink-camel-server</feature>
-        <!-- Sink Client-->
+        <!-- Sink Client -->
         <feature>opennms-core-ipc-sink-camel</feature>
         <feature>sentinel-events-forwarder</feature>
     </feature>
@@ -80,6 +66,9 @@
 
         <!-- SystemProperties -->
         <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
+
+        <!-- work around a startup race condition in jetty by way of pax-web -->
+        <bundle start-level="20">mvn:org.opennms.container/noop-jetty-extension/${project.version}</bundle>
     </feature>
 
     <feature name="sentinel-events-forwarder" description="OpenNMS :: Sentinel :: Events Forwarder" version="${project.version}">
@@ -97,10 +86,10 @@
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.dao-shell/${project.version}</bundle>
     </feature>
 
-    <feature name="sentinel-telemetry" description="OpenNMS :: Sentinel :: Telemetry" version="${project.version}">
+    <feature name="sentinel-telemetry" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Telemetry" version="${project.version}">
         <feature>sentinel-timeseries-api</feature>
 
-        <feature version="${netty4Version}">netty4</feature>
+        <feature version="${netty4Version}">netty</feature>
         <feature>dropwizard-metrics</feature>
         <!-- Needed to bootstrap opennms-core-ipc-sink-api Spring context -->
         <feature>camel-spring</feature>
@@ -127,8 +116,12 @@
         <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.sentinel/${project.version}</bundle>
     </feature>
 
-    <feature name="sentinel-flows" description="OpenNMS :: Sentinel :: Flows" version="${project.version}">
+    <feature name="sentinel-flows" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Flows" version="${project.version}">
+        <feature>bson</feature>
+        <feature>commons-csv</feature>
+        <feature>dropwizard-metrics</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
+        <feature>rate-limited-logger</feature>
         <feature>sentinel-telemetry</feature>
         <feature>opennms-jest</feature>
         <feature>opennms-integration-api</feature>
@@ -136,17 +129,14 @@
         <feature>opennms-dnsresolver-netty</feature>
         <feature>sentinel-kvstore-api</feature>
         <feature>opennms-kafka</feature>
-        <feature>rate-limited-logger</feature>
-        <bundle>mvn:com.google.protobuf/protobuf-java-util/${protobufVersion}</bundle>
+        <bundle>wrap:mvn:com.google.protobuf/protobuf-java-util/${protobufVersion}$overwrite=merge&amp;Import-Package=javax.annotation;version=!,*</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.kafka-persistence/${project.version}</bundle>
-        <bundle>wrap:mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.elastic/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.processing/${project.version}</bundle>
-        <bundle>wrap:mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
-        <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
+        <bundle>wrap:mvn:org.freemarker/freemarker/${freemarkerVersion}$Bundle-SymbolicName=org.freemarker&amp;Bundle-Version=${freemarkerVersion}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.transport/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/${project.version}</bundle>
@@ -157,31 +147,31 @@
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 
-    <feature name="sentinel-telemetry-nxos" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: NXOS" version="${project.version}">
+    <feature name="sentinel-telemetry-nxos" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: NXOS" version="${project.version}">
         <feature>sentinel-telemetry</feature>
         <feature>opennms-telemetry-nxos</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 
-    <feature name="sentinel-telemetry-jti" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: JTI" version="${project.version}">
+    <feature name="sentinel-telemetry-jti" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: JTI" version="${project.version}">
         <feature>sentinel-telemetry</feature>
         <feature>opennms-telemetry-jti</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 
-    <feature name="sentinel-telemetry-graphite" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: Graphite" version="${project.version}">
+    <feature name="sentinel-telemetry-graphite" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: Graphite" version="${project.version}">
         <feature>sentinel-telemetry</feature>
         <feature>opennms-telemetry-graphite</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 
-    <feature name="sentinel-telemetry-bmp" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: BMP" version="${project.version}">
+    <feature name="sentinel-telemetry-bmp" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: BMP" version="${project.version}">
         <feature>sentinel-telemetry</feature>
         <feature>opennms-telemetry-bmp-adapter</feature>
         <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.collection/${project.version}</bundle>
     </feature>
 
-    <feature name="sentinel-telemetry-bmp-persist" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: BMP" version="${project.version}">
+    <feature name="sentinel-telemetry-bmp-persist" start-level="${earlyStartLevel}" description="OpenNMS :: Sentinel :: Telemetry :: Adapters :: BMP" version="${project.version}">
         <feature>sentinel-telemetry</feature>
         <feature>opennms-telemetry-bmp-adapter</feature>
     </feature>
@@ -270,13 +260,11 @@
     </feature>
 
     <feature name="sentinel-config-dao-common" version="${project.version}" description="OpenNMS :: Config DAO :: Common">
+        <feature>jackson1</feature>
         <feature>resilience4j</feature>
         <feature>sentinel-kvstore-api</feature>
         <feature>opennms-config-dao-api</feature>
         <bundle>mvn:org.opennms/org.opennms.config-dao.common-impl/${project.version}</bundle>
-        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}</bundle>
-        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}</bundle>
-        <bundle dependency="true">mvn:org.codehaus.jackson/jackson-xc/${jacksonVersion}</bundle>
     </feature>
 
     <feature name="sentinel-config-dao-thresholding" version="${project.version}" description="OpenNMS :: Config DAO :: Thresholding">

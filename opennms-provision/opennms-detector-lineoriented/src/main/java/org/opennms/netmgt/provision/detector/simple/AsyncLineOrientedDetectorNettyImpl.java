@@ -28,12 +28,12 @@
 
 package org.opennms.netmgt.provision.detector.simple;
 
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.handler.codec.frame.DelimiterBasedFrameDecoder;
-import org.jboss.netty.handler.codec.frame.Delimiters;
-import org.jboss.netty.handler.codec.string.StringDecoder;
-import org.jboss.netty.handler.codec.string.StringEncoder;
-import org.jboss.netty.util.CharsetUtil;
+import io.netty.channel.ChannelPipeline;
+import io.netty.handler.codec.Delimiters;
+import io.netty.handler.codec.DelimiterBasedFrameDecoder;
+import io.netty.handler.codec.string.StringDecoder;
+import io.netty.handler.codec.string.StringEncoder;
+import io.netty.util.CharsetUtil;
 import org.opennms.netmgt.provision.detector.simple.request.LineOrientedRequest;
 import org.opennms.netmgt.provision.detector.simple.response.LineOrientedResponse;
 import org.opennms.netmgt.provision.detector.simple.support.LineOrientedRequestEncoder;

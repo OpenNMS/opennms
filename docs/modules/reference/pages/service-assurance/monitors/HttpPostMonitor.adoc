@@ -1,5 +1,6 @@
 
 = HttpPostMonitor
+:description: Learn about the HttpPostMonitor in OpenNMS {page-component-title} that lets you to HTTP Post any content to a remote URI.
 
 If you need to HTTP POST any arbitrary content to a remote URI (for example, HTTP POST to a web API endpoint), use the HttpPostMonitor.
 

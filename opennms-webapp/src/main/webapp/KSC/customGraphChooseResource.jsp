@@ -33,16 +33,18 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="ngapp" value="onms-ksc-wizard" />
-  <jsp:param name="title" value="Key SNMP Customized Performance Reports" />
-  <jsp:param name="headTitle" value="Choose Resource" />
-  <jsp:param name="headTitle" value="KSC" />
-  <jsp:param name="headTitle" value="Reports" />
-  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="<a href='KSC/index.jsp'>KSC Reports</a>" />
-  <jsp:param name="breadcrumb" value="Custom Graph" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Choose Resource")
+          .headTitle("KSC")
+          .headTitle("Reports")
+          .breadcrumb("Reports", "report/index.jsp")
+          .breadcrumb("KSC Reports", "KSC/index.jsp")
+          .breadcrumb("Custom Graph")
+          .ngApp("onms-ksc-wizard")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="container-fluid" ng-controller="KSCResourceCtrl">
 

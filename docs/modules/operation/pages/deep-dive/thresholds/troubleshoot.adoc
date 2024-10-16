@@ -1,7 +1,7 @@
 
 [[troubleshoot-thresholds]]
 = Troubleshoot and Manage Thresholds
-:description: Troubleshoot and manage thresholds in OpenNMS Horizon/Meridian: enumerate persisted threshold states, display state details, and clear persisted states.
+:description: Troubleshoot and manage thresholds in {page-component-title}: enumerate persisted threshold states, display state details, and clear persisted states.
 
 This section includes shell commands that can help to debug and manage thresholding.
 

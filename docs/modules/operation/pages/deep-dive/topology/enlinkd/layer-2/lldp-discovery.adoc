@@ -1,5 +1,6 @@
 
 = Link Layer Discovery
+:description: Learn more about Link Layer Discovery (LLDP) in {page-component-title} topology mapping including supported OIDs.
 
 The Link Layer Discovery Protocol (LLDP) is a vendor-neutral link layer protocol.
 Network devices use it to advertise their identity, capabilities, and neighbors.

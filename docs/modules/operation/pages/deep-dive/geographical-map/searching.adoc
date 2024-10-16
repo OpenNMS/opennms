@@ -1,8 +1,9 @@
-# Map Search
+= Map Search
+:description: Learn how to search the geographical map in {page-component-title}.
 
 The search bar lets you do a simple text search, as well as searching particular fields associated with the node.
 
-## Search fields
+== Search fields
 
 You can search the following fields:
 
@@ -43,7 +44,7 @@ You can search the following fields:
 
 Note that all searches are case-insensitive.
 
-## Substring matching example
+== Substring matching example
 
 To search for text in one of the fields, use the following syntax:
 
@@ -51,7 +52,7 @@ To search for text in one of the fields, use the following syntax:
 
 If the search is `nodelabel:server` it will match a node's label like `server1.opennms.com` or `server2.opennms.com`.
 
-### Exact Matching Example
+=== Exact Matching Example
 
 To search for an exact match of a field, use the following syntax:
 
@@ -59,9 +60,9 @@ To search for an exact match of a field, use the following syntax:
 
 If the search is `nodelabel=server1.opennms.com` it will only match a node's label like `server1.opennms.com`.
 
-## Link to a search
+== Link to a search
 
-It is possible to create a link to the `node-maps` URL that already has a pre-filled search defintion by adding a `#search/searchtext` into the URL.
+It is possible to create a link to the `node-maps` URL that already has a pre-filled search definition by adding a `#search/searchtext` into the URL.
 
 For example, to link to the node label search from the substring match example above, write the URL as follows:
 

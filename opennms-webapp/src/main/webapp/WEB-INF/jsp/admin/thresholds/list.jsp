@@ -33,14 +33,16 @@
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" import="org.opennms.web.api.Util" %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-	<jsp:param name="title" value="Thresholds Configuration" />
-	<jsp:param name="headTitle" value="List" />
-	<jsp:param name="headTitle" value="Thresholds" />
-	<jsp:param name="headTitle" value="Admin" />
-	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-    <jsp:param name="breadcrumb" value="Threshold Groups" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("List")
+          .headTitle("Thresholds")
+          .headTitle("Admin")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Threshold Groups")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="card">
   <div class="card-header">

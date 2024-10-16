@@ -1,6 +1,7 @@
 
 [[telemetryd-listener-udp]]
 = UDP Listener
+:description: Learn how to configure and use the UDP listener in OpenNMS {page-component-title} to open a UDP socket and forward the received packets to a parser.
 
 Use the UDP listener to open a UDP socket and forward the received packets to a parser.
 

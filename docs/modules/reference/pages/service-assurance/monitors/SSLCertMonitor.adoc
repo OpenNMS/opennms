@@ -1,5 +1,6 @@
 
 = SSLCertMonitor
+:description: Learn how to configure and use the SSLCertMonitor in OpenNMS {page-component-title} to test if an SSL certificate a remote network server presents is valid.
 
 This monitor tests if an SSL certificate a remote network server presents is valid.
 A certificate is invalid if its initial time is prior to the current time, if the current time is within the configured number of days before the expiration time, or if the common name is valid.

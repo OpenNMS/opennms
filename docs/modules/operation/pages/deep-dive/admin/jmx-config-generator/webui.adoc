@@ -1,5 +1,6 @@
 
 = Web-Based Utility
+:description: Learn how to configure and use the web-based JMX Configuration Generator generator tool with {page-component-title}.
 
 Complex JMX data collection configurations can be generated using the web-based tool.
 

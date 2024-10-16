@@ -1,5 +1,6 @@
 
 = Default Calendar Report
+:description: Learn about the Calendar report, which contains monthly availability statistics and daily averages for all services that {page-component-title} monitors.
 
 The default calendar report is generated directly from the {page-component-title} Java code.
 As such, it has no optional parameters to modify.

@@ -1,5 +1,6 @@
 
 = WmiMonitor
+:description: Learn how to configure and use the WmiMonitor in OpenNMS {page-component-title} to test the availability of WMI services on remote interfaces.
 
 The WMI monitor tests the availability of WMI services on remote interfaces.
 

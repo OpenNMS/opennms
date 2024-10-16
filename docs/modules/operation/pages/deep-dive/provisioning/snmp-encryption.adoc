@@ -1,5 +1,5 @@
 == Encrypt SNMP credentials
-:description: How to encrypt SNMP credentials in OpenNMS Horizon/Meridian, including Karaf commands.
+:description: How to encrypt SNMP credentials in {page-component-title}, including Karaf commands.
 
 You can save SNMP credentials like readCommunity/WriteCommunity and authPassPhrase/privPassPhrase on the file system in encrypted format.
 

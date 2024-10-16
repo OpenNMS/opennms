@@ -14,9 +14,6 @@
     This module is used to provide a single artifact that the opennms project
     can depend on to use the hibernate library.
   </description>
-  <properties>
-    <hibernateVersion>3.6.10.Final</hibernateVersion> 
-  </properties>
   <dependencies>
     <dependency>
       <groupId>org.hibernate</groupId>

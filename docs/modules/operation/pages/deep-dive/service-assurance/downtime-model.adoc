@@ -1,7 +1,7 @@
 
 [[ga-service-assurance-downtime-model]]
 = Detect Short Service Outages
-:description: How to detect short service outages with OpenNMS Horizon/Meridian using a downtime model to reduce the monitoring interval to every 30 seconds.
+:description: How to detect short service outages with {page-component-title} using a downtime model to reduce the monitoring interval to every 30 seconds.
 
 By default, the monitoring interval for a service is five minutes.
 You can use the configurable downtime model to detect short service outages, like those caused by automatic network rerouting.
@@ -22,32 +22,15 @@ The scheduler changed the polling interval back to five minutes.
 <downtime interval="30000" begin="0" end="300000" /><!-- 30s, 0, 5m --> <1>
 <downtime interval="300000" begin="300000" end="43200000" /><!-- 5m, 5m, 12h --> <2>
 <downtime interval="600000" begin="43200000" end="432000000" /><!-- 10m, 12h, 5d --> <3>
-<downtime interval="3600000" begin="432000000" delete="never"/><!-- 1h, 5d --> <4>
 ----
 
 <1> From 0 seconds after an outage is detected until 5 minutes, set the polling interval to 30 seconds.
 <2> After 5 minutes of an ongoing outage until 12 hours, set the polling interval to 5 minutes.
 <3> After 12 hours of an ongoing outage until 5 days, set the polling interval to 10 minutes.
-<4> After 5 days of an ongoing outage, the service will be polled only once per hour.
-Services are not deleted during this time.
 
-The last downtime model can have the `delete` attribute; this lets you influence the service lifecycle.
-It defines the intended behavior if a service does not come back online after the specified period of time.
-The following attributes can modify `delete`:
+Note that after five days of an ongoing outage, the service will be polled only once per hour.
 
-[options="autowidth"]
-|===
-| Value | Description
+Any edits to the downtime model take effect after restarting the pollerd daemon, and apply to both existing and new outages.
+For example, if an existing outage is being polled every 30 seconds for five minutes, but you change the downtime model during that period to a 45-second interval, the outage will be polled every 45 seconds for the remainder of the five minutes.
 
-| never
-| Services will never be deleted automatically (default value).
-
-| managed
-| Only managed services will be deleted.
-
-| always
-| Managed and unmanaged services will be deleted.
-
-| not set
-| Assumes a default value of `never`.
-|===
+Pollerd identifies the services as either up or down.

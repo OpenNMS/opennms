@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -43,6 +43,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.opennms.core.test.MockLogAppender;
 
 import com.google.common.collect.Lists;
 import com.google.common.io.Files;
@@ -56,8 +57,24 @@ public class KarafExtenderTest {
 
     @Before
     public void setUp() {
+        MockLogAppender.setupLogging();
         System.setProperty("karaf.home", tempFolder.getRoot().getAbsolutePath());
         karafExtender = new KarafExtender();
+    }
+
+    @Test
+    public void canGetRepositories() throws Exception {
+        tempFolder.newFolder("system").mkdirs();
+
+        final var repFolder = tempFolder.newFolder("repositories");
+        repFolder.mkdirs();
+
+        new File(repFolder, "empty").mkdirs();
+        new File(repFolder, "release").mkdirs();
+        new File(repFolder, "snapshot").mkdirs();
+
+        final var repositories = karafExtender.getRepositories();
+        assertEquals("there should be 4 repositories", 4, repositories.size());
     }
 
     @Test
@@ -120,6 +137,14 @@ public class KarafExtenderTest {
 
     @Test
     public void canGenerateRepositoryList() throws IOException, URISyntaxException {
+        File systemFolder = tempFolder.newFolder("system");
+        systemFolder.mkdirs();
+
+        Files.write("mvn:group.id/artifact.id/2.0.0/xml",
+                new File(systemFolder, "features.uri"), StandardCharsets.UTF_8);
+        Files.write("  # comment\n" + "system-feature",
+                new File(systemFolder, "features.boot"), StandardCharsets.UTF_8);
+
         // Create repositories
         File repositories = tempFolder.newFolder("repositories");
         repositories.mkdirs();
@@ -153,7 +178,10 @@ public class KarafExtenderTest {
                         Lists.newArrayList(Feature.builder().withName("released-feature").build())),
                 new Repository(snapshotRepository.toPath(),
                         Lists.newArrayList(new URI("mvn:other.group.id/other.artifact.id/1.0-SNAPSHOT/xml")),
-                        Lists.newArrayList(Feature.builder().withName("snapshot-feature").build()))),
+                        Lists.newArrayList(Feature.builder().withName("snapshot-feature").build())),
+                new Repository(systemFolder.toPath(),
+                        Lists.newArrayList(new URI("mvn:group.id/artifact.id/2.0.0/xml")),
+                        Lists.newArrayList(Feature.builder().withName("system-feature").build()))),
                 karafExtender.getRepositories());
     }
 

@@ -16,6 +16,10 @@ umask 002
 export SENTINEL_HOME="/opt/sentinel"
 SENTINEL_OVERLAY_ETC="/opt/sentinel-etc-overlay"
 SENTINEL_OVERLAY="/opt/sentinel-overlay"
+CONFD_KEY_STORE="${SENTINEL_HOME}/sentinel-config.yaml"
+CONFD_CONFIG_DIR="${SENTINEL_HOME}/confd"
+CONFD_BIN="/usr/bin/confd"
+CONFD_CONFIG_FILE="${CONFD_CONFIG_DIR}/confd.toml"
 
 export KARAF_OPTS="-Djava.locale.providers=CLDR,COMPAT -Djdk.util.zip.disableZip64ExtraFieldValidation=true"
 
@@ -122,6 +126,15 @@ applyOverlayConfig() {
   fi 
 }
 
+applyConfd() {
+  if [ -f "${CONFD_KEY_STORE}" ]; then
+    echo "Found a configuration key store, applying configuration via confd."
+    runConfd
+  else
+    echo "No configuration key store present, skipping confd configuration."
+  fi
+}
+
 applyKarafDebugLogging() {
   if [ -n "$KARAF_DEBUG_LOGGING" ]; then
     echo "Updating Karaf debug logging"
@@ -142,6 +155,17 @@ start() {
     exec ./karaf server ${SENTINEL_DEBUG}
 }
 
+runConfd() {
+  # Create any directories that confd might write to
+  while IFS= read -r dir; do
+    local dirToCreate="$SENTINEL_HOME"/"$dir"
+    echo "Creating $dirToCreate so confd can write to it"
+    mkdir -p "$dirToCreate"
+  done < "$CONFD_CONFIG_DIR"/directories
+
+  "$CONFD_BIN" -onetime -config-file "$CONFD_CONFIG_FILE"
+}
+
 # Evaluate arguments for build script.
 if [[ "${#}" == 0 ]]; then
     usage
@@ -154,6 +178,7 @@ while getopts csdfh flag; do
         c)
             useEnvCredentials
             initConfig
+            applyConfd
             applyOverlayConfig
             applyKarafDebugLogging
             start
@@ -164,12 +189,14 @@ while getopts csdfh flag; do
         d)
             SENTINEL_DEBUG="debug"
             initConfig
+            applyConfd
             applyOverlayConfig
             applyKarafDebugLogging
             start
             ;;
         f)
             initConfig
+            applyConfd
             applyOverlayConfig
             applyKarafDebugLogging
             start

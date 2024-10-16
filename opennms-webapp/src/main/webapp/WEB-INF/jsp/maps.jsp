@@ -32,10 +32,12 @@
 <%@ page contentType="text/html;charset=UTF-8" language="java"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="title" value="Maps" />
-    <jsp:param name="breadcrumb" value="Maps" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .breadcrumb("Maps")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="card">
     <div class="card-header">

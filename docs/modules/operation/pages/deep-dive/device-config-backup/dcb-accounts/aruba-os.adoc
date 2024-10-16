@@ -1,0 +1,16 @@
+This script creates a `dcb` user account based on a custom user group (`dcb-group`).
+The user group has limited privileges, which are passed on to the `dcb` account.
+
+[source, script]
+----
+aruba-os# configure
+aruba-os(config)# aaa authorization commands local
+aruba-os(config)# aaa authorization group "dcb-group" 1 match-command "copy running-config tftp .*" permit
+aruba-os(config)# aaa authorization group "dcb-group" 2 match-command "show running-config" permit
+aruba-os(config)# aaa authorization group "dcb-group" 3 match-command "copy startup-config tftp .*" permit
+aruba-os(config)# aaa authorization group "dcb-group" 4 match-command "show startup-config" permit
+aruba-os(config)# aaa authentication local-user "dcb" group "dcb-group" password plaintext
+New password for dcb: Pa55w0rd
+Please retype new password for dcb: Pa55w0rd
+aruba-os(config)# exit
+----

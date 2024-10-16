@@ -1,6 +1,6 @@
 
 = Alarm Lifecycle
-:description: Example of alarm lifecycle and lifetime rules in OpenNMS Horizon/Meridian.
+:description: Example of alarm lifecycle and lifetime rules in {page-component-title}.
 
 The following is an example of the alarm lifecycle based on a `nodeLostService` event.
 

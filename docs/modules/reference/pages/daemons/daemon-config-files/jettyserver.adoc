@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-jettyserver]]
 = JettyServer
+:description: Learn about the JettyServer in OpenNMS {page-component-title}, which provides and manages the web user interface service.
 
 Provides and manages the web user interface service.
 

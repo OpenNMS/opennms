@@ -1,5 +1,6 @@
 
 = Configuration Tester
+:description: Learn how the configuration tester can help you identify configuration problems in {page-component-title}.
 
 To identify configuration problems, use the configuration tester located in `$\{OPENNMS_HOME}/bin/`.
 You can use the tool when {page-component-title} is either running or stopped.

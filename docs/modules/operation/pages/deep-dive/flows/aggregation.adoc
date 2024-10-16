@@ -1,5 +1,6 @@
 
 = Aggregate Flows with REST API
+:description: Learn how to use the REST API to aggregate flows in {page-component-title}, and alleviate computation load on the Elasticsearch cluster.
 
 The flow query engine supports rendering the top _N_ metrics from pre-aggregated documents stored in Elasticsearch.
 You can use these statistics to help alleviate computation load on the Elasticsearch cluster, particularly in environments with large volumes of flows (more than 10,000 per second).

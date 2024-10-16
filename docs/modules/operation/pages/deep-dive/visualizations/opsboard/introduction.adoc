@@ -1,5 +1,6 @@
 
 = Operator Board
+:description: Learn about the operator board in {page-component-title}, which provides customizable dashlets to display information like alarms and availability maps.
 
 An operator board helps Network Operations Centers (NOCs) visualize network monitoring information.
 You can use and arrange customizable dashlets to display different types of information (alarms, availability maps, and so on) on the board.

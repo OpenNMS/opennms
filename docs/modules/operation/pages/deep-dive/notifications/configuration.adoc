@@ -1,6 +1,6 @@
 
 = Notification Configuration
-:description: Advanced notification configuration options in OpenNMS Horizon/Meridian: configure path outages.
+:description: Advanced notification configuration options in {page-component-title}: configure path outages.
 
 The xref:operation:quick-start/notification-config.adoc[Configure Notifications] chapter in the Quick Start section includes basic procedures to configure and customize {page-component-title} notifications.
 This section presents more advanced notification configuration options.
@@ -16,7 +16,7 @@ Because you get a notification that the router on the far end of the WAN link is
 
 See xref:operation:deep-dive/service-assurance/path-outages.adoc[Use Path Outages to Suppress Notifications] for additional information.
 
-You can configure a path outage for an individual node by setting a parent on the node in a requisition:
+You can configure a path outage for an individual node by setting a parent on the node in a requisition or by doing the following:
 
 . Click the *gear* symbol in the top-right of the screen.
 . Under Event Management, click menu:Configure Notifications[Configure Path Outages].

@@ -2,6 +2,7 @@
 
 [[dns-handler]]
 = DNS Handler
+:description: Learn how to configure and use the DNS handler in OpenNMS {page-component-title} to request a zone transfer from a DNS server to retrieve A and AAAA records.
 
 The DNS handler requests a zone transfer (AXFR) from a DNS server.
 The A and AAAA records are retrieved and used to build an import requisition.

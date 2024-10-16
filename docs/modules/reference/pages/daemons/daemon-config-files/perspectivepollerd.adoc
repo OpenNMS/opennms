@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-perspectivepoller]]
 = PerspectivePoller
+:description: Learn about the PerspectivePoller in OpenNMS {page-component-title}, which queries aggregated percentage availability for a given specific application and its services.
 
 Queries aggregated percentage availability for a given specific application and its services, as part of xref:operation:deep-dive/service-assurance/application-perspective-monitoring/introduction.adoc[Application Perspective Monitoring].
 

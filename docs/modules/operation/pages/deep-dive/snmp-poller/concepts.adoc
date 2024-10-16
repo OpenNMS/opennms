@@ -1,7 +1,8 @@
 [[snmp-interface-poller]]
 = SNMP Interface Poller
+:description: Learn how the SNMP Interface Poller in {page-component-title} monitors the SNMP interfaces not being directly monitored by the Service Assurance monitor.
 
-{page-component-title} can monitor the status of an SNMP interface that is not directly monitored by a <<deep-dive/service-assurance/introduction.adoc#ga-service-assurance, Service Assurance>> monitor.
+{page-component-title} can monitor the status of an SNMP interface that the <<deep-dive/service-assurance/introduction.adoc#ga-service-assurance, Service Assurance>> monitor is not directly monitoring.
 
 IMPORTANT: This feature is not related to SNMP polling and collecting.
 This optional feature is used to generate events when device interfaces have a change in their `ifAdminStatus` or `ifOperStatus` states.

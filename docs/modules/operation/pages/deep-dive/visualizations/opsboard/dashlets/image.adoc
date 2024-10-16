@@ -1,5 +1,6 @@
 
 = Image
+:description: Learn about the Image dashlet, which displays a custom image in the {page-component-title} operator board.
 
 The Image dashlet displays a custom image in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board].
 

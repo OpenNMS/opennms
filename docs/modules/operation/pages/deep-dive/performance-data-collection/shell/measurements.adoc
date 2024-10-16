@@ -1,7 +1,7 @@
-
+// This file is included in deployment:time-series-storage/newts/resourcecli.adoc.  Any change to this file name will need to be updated in that file as well.
 [[ga-performance-mgmt-measurements-shell]]
 = Measurements & Resources
-:description: Karaf Shell command in OpenNMS Horizon/Meridian that help enumerate, view, and manage measurement-related resources.
+:description: Karaf Shell command in {page-component-title} that help enumerate, view, and manage measurement-related resources.
 
 The following Karaf Shell commands are made available to help enumerate, view, and manage measurement-related resources.
 

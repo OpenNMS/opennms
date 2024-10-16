@@ -35,7 +35,7 @@
 // Version 1.0
 //
 
-
+syntax = "proto2";
 import "telemetry_top.proto";
 option java_package = "org.opennms.netmgt.telemetry.protocols.jti.adapter.proto";
 

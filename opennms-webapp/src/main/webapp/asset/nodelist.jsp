@@ -54,12 +54,14 @@
     AclUtils.NodeAccessChecker accessChecker = AclUtils.getNodeAccessChecker(getServletContext());
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Asset List" />
-  <jsp:param name="headTitle" value="Asset List" />
-  <jsp:param name="breadcrumb" value="<a href='asset/index.jsp'>Assets</a>" />
-  <jsp:param name="breadcrumb" value="Asset List" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Asset List")
+          .breadcrumb("Assets", "asset/index.jsp")
+          .breadcrumb("Asset List")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
  <% if (request.getParameter("showMessage") != null && request.getParameter("showMessage").equalsIgnoreCase("true")) { %>
  <br />

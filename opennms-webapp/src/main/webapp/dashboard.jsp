@@ -31,13 +31,13 @@
 
 <%@page language="java" contentType="text/html" session="true" %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-    <jsp:param name="title" value="Dashboard" />
-    <jsp:param name="headTitle" value="Dashboard" />
-    <jsp:param name="location" value="dashboard" />
-    <jsp:param name="vaadinEmbeddedStyles" value="true" />
-    <jsp:param name="breadcrumb" value="Dashboard" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Dashboard")
+          .breadcrumb("Dashboard")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <%
     String viewName = "";

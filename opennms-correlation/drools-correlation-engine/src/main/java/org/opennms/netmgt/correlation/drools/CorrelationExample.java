@@ -36,7 +36,7 @@ import java.util.Map;
 import java.util.Scanner;
 
 import org.apache.commons.lang.builder.ToStringBuilder;
-import org.drools.core.io.impl.ClassPathResource;
+import org.drools.io.ClassPathResource;
 import org.kie.api.KieServices;
 import org.kie.api.logger.KieRuntimeLogger;
 import org.kie.api.runtime.KieSession;

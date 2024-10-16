@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-statsd]]
 = Statsd
+:description: Learn about statsd in OpenNMS {page-component-title}, which generates statistical TopN reports based on node data.
 
 The statsd daemon generates statistical TopN reports based on node data.
 

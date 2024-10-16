@@ -1,5 +1,6 @@
 
 = Secure Jetty with HTTPS
+:description: Learn how to configure the built-in Jetty web server in {page-component-title} to support HTTPS.
 
 If you access the {page-component-title} web UI via untrusted networks, it is best practice to use HTTPS to protect incoming web sessions.
 This section explains how to configure {page-component-title}'s built-in Jetty web server to support HTTPS.

@@ -51,15 +51,17 @@
    String showNodes = WebSecurityUtils.sanitizeString(request.getParameter("showNodes"));
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Validate Path Outage" />
-  <jsp:param name="headTitle" value="Validate Path Outage" />
-  <jsp:param name="headTitle" value="Admin" />
-  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="<a href='admin/notification/index.jsp'>Configure Notifications</a>" />
-  <jsp:param name="breadcrumb" value="<a href='admin/notification/noticeWizard/buildPathOutage.jsp?newRule=IPADDR+IPLIKE+*.*.*.*&showNodes=on'>Configure Path Outages</a>" />
-  <jsp:param name="breadcrumb" value="Validate Path Outage" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Validate Path Outage")
+          .headTitle("Admin")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Configure Notifications", "admin/notification/index.jsp")
+          .breadcrumb("Configure Path Outages", "admin/notification/noticeWizard/buildPathOutage.jsp?newRule=IPADDR+IPLIKE+*.*.*.*&showNodes=on")
+          .breadcrumb("Validate Path Outage")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script type="text/javascript" >
   

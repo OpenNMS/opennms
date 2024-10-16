@@ -39,7 +39,14 @@ public class OpenNMSUserDetailsService implements UserDetailsService, Initializi
 	private SpringSecurityUserDao m_userDao;
 	private boolean m_trimRealm = false;
 	
-        @Override
+    public OpenNMSUserDetailsService() {
+    }
+
+    public OpenNMSUserDetailsService(final SpringSecurityUserDao userDao) {
+        m_userDao = userDao;
+    }
+
+	@Override
 	public void afterPropertiesSet() throws Exception {
 	    Assert.notNull(m_userDao);
 	}

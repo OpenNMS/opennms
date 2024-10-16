@@ -1,6 +1,6 @@
 
 = Reduce Functions
-:description: Overview of reduce functions in OpenNMS Horizon/Meridian to use alarm severity information to aggregate business service operational status.
+:description: Overview of reduce functions in {page-component-title} to use alarm severity information to aggregate business service operational status.
 
 A reduce function uses alarm severity information from the edges to aggregate the operational status for a business service.
 

@@ -1,6 +1,6 @@
 
 = Business Service Definition
-:description: Overview business service definitions in OpenNMS Horizon/Meridian.
+:description: Overview business service definitions in {page-component-title}.
 
 The status of service monitors and any kind of alarm can be used to drive the operational status of a business service.
 A business service is defined with the following components:

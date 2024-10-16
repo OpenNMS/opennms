@@ -36,12 +36,14 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Inventory Reports" />
-  <jsp:param name="headTitle" value="Inventory Reports" />
-  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="Inventory(Rancid) Reports" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Inventory Reports")
+          .breadcrumb("Reports", "report/index.jsp")
+          .breadcrumb("Inventory(Rancid) Reports")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="row">
     <div class="col-md-6">

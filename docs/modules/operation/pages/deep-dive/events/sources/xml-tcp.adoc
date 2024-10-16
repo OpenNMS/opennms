@@ -1,6 +1,6 @@
 
 [[ga-events-sources-xml-tcp]]
 = XML-TCP
-:description: Create custom events in OpenNMS Horizon/Meridian by sending properly formatted XML data over a TCP socket.
+:description: Create custom events in {page-component-title} by sending properly formatted XML data over a TCP socket.
 
 Any application or script can create custom events in {page-component-title} by sending properly formatted XML data over a TCP socket.

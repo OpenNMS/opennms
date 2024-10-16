@@ -1,7 +1,7 @@
 
 [[ga-user-maintenance]]
 = User Maintenance
-:description: User maintenance in OpenNMS Horizon/Meridian: changing passwords, deletion, advanced configuration in users.xml.
+:description: User maintenance in {page-component-title}: changing passwords, deletion, advanced configuration in users.xml.
 
 Users are entities with login accounts in the {page-component-title} system.
 Ideally, each user account corresponds to only one person.

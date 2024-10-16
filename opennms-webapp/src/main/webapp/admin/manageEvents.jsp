@@ -34,14 +34,14 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Manage Events Configuration" />
-  <jsp:param name="headTitle" value="Manage Events Configuration" />
-  <jsp:param name="location" value="admin" />
-  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="Manage Events Configuration" />
-  <jsp:param name="vaadinEmbeddedStyles" value="true" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Manage Events Configuration")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Manage Events Configuration")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <iframe name="mib-compiler-events" src="admin/admin-events" class="vaadin-fullscreen" frameborder="0"></iframe>
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

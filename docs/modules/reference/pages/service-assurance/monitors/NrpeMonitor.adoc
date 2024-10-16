@@ -1,5 +1,6 @@
 
 = NrpeMonitor
+:description: Learn about the NrpeMonitor in OpenNMS {page-component-title} that lets you test plugins and checks running on the Nagios Remote Plugin Executor framework.
 
 The NrpeMonitor lets you test plugins and checks running on the link:https://exchange.nagios.org/directory/Addons/Monitoring-Agents/[Nagios Remote Plugin Executor] (NRPE) framework.
 

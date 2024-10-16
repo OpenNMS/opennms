@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-snmppoller]]
 = SnmpPoller
+:description: Learn about the OpenNMS {page-component-title} SnmpPoller, which monitors the state of SNMP interfaces based on the admin and operational state of the interface.
 
 Monitors the state of xref:operation:deep-dive/snmp-poller/concepts.adoc[SNMP interfaces] based on the administrative and operational state of the interface.
 This is independent of the xref:operation:deep-dive/performance-data-collection/introduction.adoc[data collection] functionality.

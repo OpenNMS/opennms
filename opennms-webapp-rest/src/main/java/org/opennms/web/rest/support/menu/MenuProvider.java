@@ -28,23 +28,28 @@
 
 package org.opennms.web.rest.support.menu;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableSet;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.Consumer;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Unmarshaller;
+
+import org.opennms.core.resource.Vault;
 import org.opennms.web.api.Authentication;
 import org.opennms.web.rest.support.menu.xml.MenuXml;
+
+import com.google.common.base.Strings;
+import com.google.common.collect.ImmutableSet;
 
 /**
  * Creates a MainMenu object that is used by the MenuRestService, which provides this data to the
@@ -106,6 +111,16 @@ public class MenuProvider {
             mainMenu.noticeStatus = context.getNoticeStatus();
             // TODO: Remove
             mainMenu.notices = buildNotices(context);
+
+            mainMenu.copyrightDates = String.format("2002-%d", LocalDate.now().getYear());
+            mainMenu.version = Vault.getProperty("version.display");
+
+            var tileProviders = getTileProviders();
+
+            if (!tileProviders.isEmpty()) {
+                mainMenu.userTileProviders.clear();
+                mainMenu.userTileProviders.addAll(tileProviders);
+            }
 
             // Parse out menu data from "dispatcher-servlet.xml"
             MenuXml.BeansElement xBeans = null;
@@ -428,6 +443,29 @@ public class MenuProvider {
         }
 
         return Optional.empty();
+    }
+
+    /**
+     * Get a list of user-defined Tile Providers. Currently we only actually support a single user-defined one.
+     * These are specified in the `opennms/etc/opennms.properties' file.
+     * The tile providers are used in the Vue Geographical Map, for example if the user wants to specify
+     * a map tile provider server in their own private network.
+     */
+    private List<TileProviderItem> getTileProviders() {
+        final var list = new ArrayList<TileProviderItem>();
+        final String url = System.getProperty("gwt.openlayers.url");
+        final String attribution = System.getProperty("gwt.openlayers.options.attribution");
+
+        if (!Strings.isNullOrEmpty(url)) {
+            var item = new TileProviderItem();
+            item.name = "User-Defined";
+            item.url = url;
+            item.attribution = !Strings.isNullOrEmpty(attribution) ? attribution : "";
+
+            list.add(item);
+        }
+
+        return list;
     }
 
     private void setFromBeanProperty(MenuXml.BeanPropertyElement propElem, String name, Consumer<String> consumer) {

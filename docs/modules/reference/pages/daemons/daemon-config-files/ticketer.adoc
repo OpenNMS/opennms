@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-ticketer]]
 = Ticketer
+:description: Learn about the OpenNMS {page-component-title} ticketer, which creates tickets in external systems based on alarm status.
 
 Creates xref:operation:deep-dive/ticketing/introduction.adoc[tickets] in external systems based on alarm status.
 

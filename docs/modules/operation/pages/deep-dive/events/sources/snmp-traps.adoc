@@ -1,7 +1,7 @@
 
 [[ga-events-sources-snmp-traps]]
 = SNMP Traps
-:description: All about events and SNMP traps in OpenNMS Horizon/Meridian: definitions, parm replacement token, varbinds, and traps forwarded by proxy.
+:description: All about events and SNMP traps in {page-component-title}: definitions, parm replacement token, varbinds, and traps forwarded by proxy.
 
 {page-component-title} can receive and process SNMP traps/informs from SNMP-capable devices out of the box.
 It receives SNMP traps via the xref:reference:daemons/daemon-config-files/trapd.adoc[trapd service daemon], which is enabled by default.
@@ -354,3 +354,10 @@ To configure {page-component-title} to honor `snmpTrapAddress` when present, set
 <1> Set the SNMP trap daemon listening port to `1162/udp`.
 <2> Don't create new nodes when receiving an SNMP trap with an unknown source IP address.
 <3> Try to use the identifier source IP address from the `snmpTrapAddress` varbind instead of the UDP source IP address.
+
+If you are using Minions to receive traps, edit the `${MINION_HOME}/etc/org.opennms.netmgt.trapd.cfg` file on each Minion to include the following setting:
+
+[source, properties]
+----
+trapd.useAddressFromVarbind=true
+----

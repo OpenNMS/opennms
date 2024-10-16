@@ -67,13 +67,13 @@ try {
 pageContext.setAttribute("canForecast", canForecast);
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="ngapp" value="forecast" />
-  <jsp:param name="title" value="Forecasting" />
-  <jsp:param name="quiet" value="true" />
-  <jsp:param name="nobreadcrumbs" value="true" />
-  <jsp:param name="usebackshift" value="true" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .ngApp("forecast")
+          .flags("nobreadcrumbs", "quiet", "usebackshift")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script>
 if (! <%= canForecast %>) {

@@ -1,0 +1,32 @@
+
+[[ref-daemon-config-files-tl1d]]
+= TL1d
+:description: Learn about tl1d in OpenNMS {page-component-title}, which processes TL1 messages into events.
+
+Handles processing of xref:operation:deep-dive/events/sources/tl1.adoc[TL1 messages] into events.
+
+.TL1d configuration file overview
+[options="header"]
+[cols="2,3,1,1"]
+|===
+| File
+| Description
+| Reload Event
+| Restart Required
+
+| tl1d-configuration.xml
+| Configure generic behavior of Tl1d.
+| yes
+| no
+|===
+
+.TL1d log file overview
+[options="header"]
+[cols="2,3"]
+|===
+| File
+| Description
+
+| tl1d.log
+| Logs relating to Tl1 message parsing.
+|===

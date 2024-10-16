@@ -1,14 +1,18 @@
 [[ga-flow-support-thresholding]]
 = Thresholding Flow Applications
+:description: Learn how to create thresholds on flows data in {page-component-title} to generate alarms when the traffic amount violates these thresholds.
 
-Flows are categorized in applications using the <<deep-dive/flows/classification-engine.adoc#ga-flow-support-classification-engine, Classification Engine>>.
+The <<deep-dive/flows/classification-engine.adoc#ga-flow-support-classification-engine, Classification Engine>> categorizes flows in applications.
 OpenNMS supports summing up the bytesIn/bytesOut data of flow records based on these flow applications.
 Users can define thresholds on this data to generate alarms when the amount of traffic violates these thresholds.
 
+[[configure-flow-thresholding]]
 == Configure thresholding for flow applications
 
-To enable thresholding for flows you need to enable the `applicationThresholding` flag in the adapter's definition.
-Note that thresholding on flow applications also works without enabling data collection on flow applications.
+To enable thresholding for flows you need to enable the `applicationThresholding` flag in the adapter's definition in `telemetry-configuration.xml`.
+
+Note that you do not need to enable or configure telemetryd on the core to support flows thresholding if you are using Sentinels for processing telemetryd data.
+Thresholding on flow applications also works without enabling data collection on flow applications.
 
 .Example of enabling thresholding for the NetFlow v9 adapter in telemetryd-configuration.xml
 [source, xml]
@@ -85,7 +89,7 @@ You can set the following properties:
 | Default
 
 | flowThreshold.stepSizeMs
-| Interval for checking thresholds and doing data collection in milliseconds.
+| Interval for checking thresholds and doing data collection, in milliseconds.
 | 300000
 
 | flowThreshold.idleTimeoutMs
@@ -93,3 +97,36 @@ You can set the following properties:
 | 900000
 
 |===
+
+== Application threshold behavior
+
+This section describes how flows thresholds work in specific scenarios.
+
+=== Undefined application
+
+If a flow threshold does not specify an application, you will see the following behavior:
+
+* If the `filterOperator` is set to OR, there must be at least one filter or the threshold configuration will not match.
+
+* If the `filterOperator` is set to AND, an empty list of filters will result in a match.
+
+=== Apply flow threshold to all applications
+
+You may want to create a flow threshold that applies to all applications; for example, "if any application consumes more than X bandwidth ...".
+
+To apply a flow threshold to all applications, use a `match-all` regex expression like `.*` inside the filter.
+
+=== Flows thresholds per application
+
+Note that you cannot apply flows thresholds to the total bandwidth for a location.
+You can apply them only to a single resource; in this case, the interface of the exporting device.
+
+== Flow thresholds with Sentinel
+
+{page-component-title} synchronizes thresholds from the core to Sentinels using the key-value store.
+The default implementation uses the default PostgreSQL database.
+
+You do not need to configure thresholds on Sentinel; just make sure you have enabled the `applicationThresholding` flag in the adapter's definition in `telemetry-configuration.xml` as described in xref:deep-dive/flows/thresholding.adoc#configure-flow-thresholding [configure thresholding for flows applications].
+
+Threshold configuration and state are synced dynamically to all places where needed.
+A triggered threshold results in an event, which Sentinel sends back to the core for further processing and transformation into alarms, and so on.

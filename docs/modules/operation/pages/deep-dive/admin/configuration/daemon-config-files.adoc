@@ -1,5 +1,6 @@
 
 = Daemon Configuration Files
+:description: Learn how to change daemon configuration files in {page-component-title} and which daemons require you to restart to load configuration updates.
 
 This section explains how to implement changes to daemon configuration files, and which daemons require you to restart {page-component-title} to load configuration updates.
 

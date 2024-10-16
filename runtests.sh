@@ -54,7 +54,6 @@ mvn \
            -Dbuild.skip.tarball=true \
            -DfailIfNoTests=false \
            -DskipITs=false \
-           -Dci.rerunFailingTestsCount=0 \
            -o \
            -B \
            -fae \

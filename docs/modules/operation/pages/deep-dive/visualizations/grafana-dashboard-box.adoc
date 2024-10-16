@@ -1,5 +1,6 @@
 
 = Grafana Dashboard Box
+:description: Learn how {page-component-title} uses Grafana to generate visualizations, including those displayed in the Grafana Dashboard Box.
 
 {page-component-title} uses http://grafana.org/[Grafana] to generate visualizations, including those displayed in the Grafana Dashboard Box.
 

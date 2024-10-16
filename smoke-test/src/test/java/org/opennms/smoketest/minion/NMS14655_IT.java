@@ -1,8 +1,8 @@
 package org.opennms.smoketest.minion;
 
-import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 
 import java.io.PrintStream;
 import java.util.regex.Matcher;
@@ -17,10 +17,14 @@ import org.opennms.smoketest.stacks.MinionProfile;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.CommandTestUtils;
 import org.opennms.smoketest.utils.SshClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy;
 
 @Category(MinionTests.class)
 public class NMS14655_IT {
+    private static final Logger LOG = LoggerFactory.getLogger(NMS14655_IT.class);
+
     @ClassRule
     public static final MinionContainer MINION_CONTAINER = new MinionContainer(StackModel.newBuilder().build(), MinionProfile.newBuilder()
             .withId("00000000-0000-0000-0000-000000ddba11")
@@ -41,6 +45,8 @@ public class NMS14655_IT {
                 .until(() -> {
                     final String bundleCount = ssh("bundle:list | grep SCV | wc -l");
                     final String scvBundles = ssh("bundle:list | grep SCV");
+                    LOG.warn("bundleCount: {}", bundleCount);
+                    LOG.warn("SCV bundles: {}", scvBundles);
                     return bundleCount.contains("3") && scvBundles.contains("Dominion gRPC Impl") && !scvBundles.contains("JCEKS Impl");
                 });
     }

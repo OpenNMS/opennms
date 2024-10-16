@@ -299,28 +299,39 @@ const setBoundingBox = (nodeLabels: string[]) => {
 
 const invalidateSizeFn = () => leafletObject.value.invalidateSize()
 
-/***** Tile Layer *****/
+/**
+ * Tile provider for the Tile Layer menu. These are the default ones, but user can add an additional one
+ * in 'opennms/etc/opennms.properties' file, gwt.openlayers.url and gwt.openlayers.options.attribution
+ * properties.
+ */
 const tileProviders = [
   {
     name: 'OpenStreetMap',
     visible: true,
     attribution:
       '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
-    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
   },
   {
     name: 'OpenTopoMap',
     visible: false,
     url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
     attribution:
-      'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)',
-  },
+      'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+  }
 ]
 
 onMounted(async () => {
   store.dispatch('mapModule/getNodes')
   store.dispatch('nodesModule/getNodes')
   store.dispatch('ipInterfacesModule/getAllIpInterfaces')
+
+  if (mainMenu.value.userTileProviders && mainMenu.value.userTileProviders?.length > 0) {
+    tileProviders.push({
+      ...mainMenu.value.userTileProviders[0],
+      visible: false
+    })
+  }
 })
 
 defineExpose({ invalidateSizeFn })

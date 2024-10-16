@@ -1,6 +1,7 @@
 
 [[filter-parameters]]
 = Parameters
+:description: View a list of filter/rule parameters, grouped by component, in OpenNMS {page-component-title}.
 
 This is a partial list of rule parameters, grouped by component.
 You can add parameters not available in `database-schema.xml` for use in filter expressions as long as you follow the existing database table hierarchy.

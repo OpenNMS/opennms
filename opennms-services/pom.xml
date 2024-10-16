@@ -278,11 +278,11 @@
       <exclusions>
         <exclusion>
           <groupId>org.bouncycastle</groupId>
-          <artifactId>bcpkix-jdk15on</artifactId>
+          <artifactId>bcpkix-jdk18on</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.bouncycastle</groupId>
-          <artifactId>bcprov-jdk15on</artifactId>
+          <artifactId>bcprov-jdk18on</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -299,6 +299,12 @@
     <dependency>
       <groupId>org.jolokia</groupId>
       <artifactId>jolokia-client-java</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>bsh</groupId>
+          <artifactId>*</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
@@ -328,9 +334,8 @@
       <artifactId>org.opennms.config-dao.poll-outages.impl</artifactId>
       <version>${project.version}</version>
     </dependency>
-    <!-- BeanShell scripting language -->
     <dependency>
-      <groupId>bsh</groupId>
+      <groupId>org.apache-extras.beanshell</groupId>
       <artifactId>bsh</artifactId>
       <scope>runtime</scope>
     </dependency>

@@ -1,5 +1,6 @@
 [[adapters]]
 = Adapters
+:description: Overview of provisioning adapters section in the OpenNMS {page-component-title} documentation: requisition node enrichment.
 
 The {page-component-title} Provisiond API supports xref:operation:deep-dive/provisioning/introduction.adoc[provisioning] adapters (plugins) for integration with external systems during the provisioning import phase.
 These adapters let OpenNMS exchange data with other systems, allowing the enrichment of node data.

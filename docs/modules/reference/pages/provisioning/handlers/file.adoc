@@ -3,8 +3,9 @@
 
 [[file-handler]]
 = File Handler
+:description: Learn how to use the File handler in OpenNMS {page-component-title} to import a properly formatted requisition definition from a locally stored XML file.
 
-The file handler imports a properly-formatted requisition definition from an XML file stored locally on the server.
+The file handler imports a properly formatted requisition definition from an XML file stored locally on the server.
 
 == Configure file requisition
 

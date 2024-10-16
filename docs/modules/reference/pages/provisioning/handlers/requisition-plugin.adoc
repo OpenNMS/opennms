@@ -3,6 +3,7 @@
 
 [[requisition-plugin]]
 = Requisition Plugins
+:description: Learn about experimental plugins in OpenNMS {page-component-title} that can provision nodes from other platforms: OpenDaylight, ACI, PRIS.
 
 {page-component-title} provides some experimental plugins that can provision nodes from additional platforms, including software-defined networking, hypervisor, and configuration management database (CMDB) platforms.
 

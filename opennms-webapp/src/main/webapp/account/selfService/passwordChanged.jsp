@@ -33,12 +33,14 @@
 	contentType="text/html"
 	session="true"
 %>
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Password Changed" />
-  <jsp:param name="headTitle" value="Password Changed" />
-  <jsp:param name="breadcrumb" value="<a href='account/selfService/index.jsp'>Self-Service</a>" />
-  <jsp:param name="breadcrumb" value="Password Changed" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Password Changed")
+          .breadcrumb("Self-Service", "account/selfService/index.jsp")
+          .breadcrumb("Password Changed")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <h3 class="alert alert-success">Password successfully changed.</h3>
 

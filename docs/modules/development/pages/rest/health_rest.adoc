@@ -61,7 +61,7 @@ A tag could be: +
 Requests without parameters will return all available health check components.
 
 .Response
-[source,javascript]
+[source,json]
 ----
 {
     "healthy": true,

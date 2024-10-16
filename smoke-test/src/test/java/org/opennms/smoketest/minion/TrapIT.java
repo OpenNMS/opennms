@@ -27,22 +27,21 @@
  *******************************************************************************/
 package org.opennms.smoketest.minion;
 
-import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.notNullValue;
 
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.util.Date;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.experimental.categories.Category;
 import org.opennms.core.criteria.Criteria;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.utils.InetAddressUtils;
@@ -58,9 +57,8 @@ import org.opennms.netmgt.snmp.SnmpTrapBuilder;
 import org.opennms.netmgt.snmp.SnmpUtils;
 import org.opennms.netmgt.snmp.SnmpV3TrapBuilder;
 import org.opennms.smoketest.stacks.IpcStrategy;
-import org.opennms.smoketest.stacks.OpenNMSStack;
-import org.opennms.smoketest.junit.MinionTests;
 import org.opennms.smoketest.stacks.NetworkProtocol;
+import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.HibernateDaoFactory;
@@ -103,6 +101,7 @@ public class TrapIT {
         Criteria criteria = new CriteriaBuilder(OnmsEvent.class)
                 .eq("eventUei", "uei.opennms.org/generic/traps/SNMP_Warm_Start")
                 .ge("eventTime", startOfTest)
+                .eq("ipAddr", "192.168.0.123")
                 .toCriteria();
 
         // Send traps to the Minion listener until one makes it through
@@ -127,6 +126,7 @@ public class TrapIT {
             // warmStart
             pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(".1.3.6.1.6.3.1.1.5.2")));
             pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(SnmpObjId.get(".1.3.6.1.4.1.5813")));
+            pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.18.1.3.0"), SnmpUtils.getValueFactory().getIpAddress(InetAddress.getByName("192.168.0.123")));
             pdu.send(InetAddressUtils.str(trapAddr.getAddress()), trapAddr.getPort(), "public");
         } catch (Throwable e) {
             LOG.error(e.getMessage(), e);

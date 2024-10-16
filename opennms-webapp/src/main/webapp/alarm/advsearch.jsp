@@ -34,13 +34,15 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Advanced Alarm Search" />
-  <jsp:param name="headTitle" value="Advanced Search" />
-  <jsp:param name="headTitle" value="Alarms" />
-  <jsp:param name="breadcrumb" value="<a href='alarm/index.htm'>Alarms</a>" />
-  <jsp:param name="breadcrumb" value="Advanced Alarm Search" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Advanced Search")
+          .headTitle("Alarms")
+          .breadcrumb("Alarms", "alarm/index.htm")
+          .breadcrumb("Advanced Alarm Search")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <jsp:include page="/includes/alarm-advquerypanel.jsp" flush="false" />
 

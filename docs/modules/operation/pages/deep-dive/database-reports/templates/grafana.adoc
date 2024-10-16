@@ -1,5 +1,6 @@
 
 = Grafana Dashboard Reports
+:description: Learn how to create, schedule, and email a PDF report from an existing Grafana dashboard in {page-component-title}.
 
 {page-component-title} provides three templates to create a PDF report from an existing Grafana dashboard.
 You can also schedule and email these PDF reports to anyone, meaning you can do the following:
@@ -15,13 +16,13 @@ image::database-reports/Dashboard-pdf.png["Example of a {page-component-title} d
 == Before you begin
 
 This feature requires {page-component-title} and an instance of Grafana with at least one dashboard and panel configured.
-{page-component-title} lets you create a report for any Grafana dashboard, not just those created using the https://docs.opennms.com/helm/latest/index.html[OpenNMS plugin for Grafana].
+{page-component-title} lets you create a report for any Grafana dashboard, not just those created using the https://docs.opennms.com/grafana-plugin/latest/index.html[OpenNMS plugin for Grafana].
 
 You must set Grafana as a data source by <<grafana-endpoint, configuring the Grafana endpoint>>.
 
 If you are using the Docker image for Grafana, you must complete additional configuration steps.
 Refer to Grafana's https://grafana.com/docs/grafana/latest/administration/image_rendering/#remote-rendering-service[Remote rendering service documentation] for more information on how to set up remote rendering.
-Additional details are available on https://github.com/grafana/grafana-image-renderer/blob/master/docs/remote_rendering_using_docker.md[GitHub].
+Additional details are available on https://github.com/grafana/grafana-image-renderer#run-in-docker[GitHub].
 
 [[grafana-endpoint]]
 === Configure Grafana endpoint

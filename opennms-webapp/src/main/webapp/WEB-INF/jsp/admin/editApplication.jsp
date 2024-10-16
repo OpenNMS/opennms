@@ -33,15 +33,15 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-	<jsp:param name="title" value="Application" />
-	<jsp:param name="headTitle" value="Application" />
-	<jsp:param name="breadcrumb"
-               value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb"
-	           value="<a href='admin/applications.htm'>Applications</a>" />
-	<jsp:param name="breadcrumb" value="Show" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Application")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Applications", "admin/applications.htm")
+          .breadcrumb("Show")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
     <div class="card">
       <div class="card-header">
@@ -92,7 +92,7 @@
             <label for="input_locationAdd">Available locations</label>
             <select name="locationAdds" id="input_locationAdd" class="form-control" size="10" multiple>
               <c:forEach items="${model.monitoringLocations}" var="location">
-                <option value="${location.locationName}">${fn:escapeXml(location.locationName)}</option>
+                <option value="${fn:escapeXml(location.locationName)}">${fn:escapeXml(location.locationName)}</option>
               </c:forEach>
             </select>
           </div>
@@ -106,7 +106,7 @@
             <label for="input_locationDelete">Locations on application</label>
             <select name="locationDeletes" id="input_locationDelete" class="form-control" size="10" multiple>
               <c:forEach items="${model.sortedMemberLocations}" var="location">
-                <option value="${location.locationName}">${fn:escapeXml(location.locationName)}</option>
+                <option value="${fn:escapeXml(location.locationName)}">${fn:escapeXml(location.locationName)}</option>
               </c:forEach>
             </select>
           </div>

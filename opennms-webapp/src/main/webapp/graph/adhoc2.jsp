@@ -96,15 +96,17 @@
 
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Custom Resource Graphs" />
-  <jsp:param name="headTitle" value="Custom" />
-  <jsp:param name="headTitle" value="Resource Graphs" />
-  <jsp:param name="headTitle" value="Reports" />
-  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-  <jsp:param name="breadcrumb" value="<a href='graph/index.jsp'>Resource Graphs</a>" />
-  <jsp:param name="breadcrumb" value="Custom" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Custom")
+          .headTitle("Resource Graphs")
+          .headTitle("Reports")
+          .breadcrumb("Reports", "report/index.jsp")
+          .breadcrumb("Resource Graphs", "graph/index.jsp")
+          .breadcrumb("Custom")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 
 <c:choose>

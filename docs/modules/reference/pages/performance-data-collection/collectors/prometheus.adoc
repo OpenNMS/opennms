@@ -1,6 +1,7 @@
 
 [[ga-performance-mgmt-collectors-prometheus-collector]]
 = PrometheusCollector
+:description: Learn how to configure the PrometheusCollector in OpenNMS {page-component-title} to collect performance data via HTTP(S) using the Prometheus Exposition format.
 
 The PrometheusCollector collects performance metrics via HTTP(S) using the text-based https://github.com/prometheus/docs/blob/master/content/docs/instrumenting/exposition_formats.md#text-based-format[Prometheus Exposition format].
 Many applications have adopted it and it is in the process of being standardized in the https://openmetrics.io/[OpenMetrics] project.

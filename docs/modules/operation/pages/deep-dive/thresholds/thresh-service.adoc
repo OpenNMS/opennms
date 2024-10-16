@@ -1,6 +1,6 @@
 
 = Thresholding Service
-:description: Overview of thresholding service in OpenNMS Horizon/Meridian to maintain the state of the performance metrics. Distributed thresholding with Sentinel.
+:description: Overview of thresholding service in {page-component-title} to maintain the state of the performance metrics. Distributed thresholding with Sentinel.
 
 The Thresholding Service maintains the state of the performance metrics and generates alarms when thresholds are triggered (armed) or cleared (unarmed).
 The service listens for and compares performance metrics after they are persisted to the time series database.

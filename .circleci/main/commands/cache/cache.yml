@@ -1,14 +1,20 @@
 commands:
-  shallow-clone:
-      description: "Quick shallow checkout"
-      steps:
+  setup-github:
+     description: "Set Up Github SSH Access"
+     steps:
         - run:
-            name: git clone
             command: |
               install -d -m 700 ~/.ssh
               ssh-keyscan github.com >> ~/.ssh/known_hosts
               ssh-keyscan -p 443 ssh.github.com >> ~/.ssh/known_hosts
               chmod 600 ~/.ssh/known_hosts
+  shallow-clone:
+      description: "Quick shallow checkout"
+      steps:
+        - setup-github
+        - run:
+            name: git clone
+            command: |
               git clone --no-checkout --filter=tree:0 "${CIRCLE_REPOSITORY_URL}" .
               if [ -n "${CIRCLE_TAG}" ]; then
                 git checkout --force "${CIRCLE_TAG}"
@@ -23,6 +29,7 @@ commands:
             keys:
               - source-v4-{{ .Branch }}-{{ .Revision }}
               - source-v4-{{ .Branch }}-
+        - setup-github
         - checkout
         - run:
             name: git config merge.renameLimit
@@ -42,9 +49,11 @@ commands:
   checkout-for-pushing:
       description: "Configure a cached checkout that can push upstream"
       steps:
-        - add_ssh_keys:
-            fingerprints:
-              - "66:9a:2d:a8:ad:7b:cc:7c:d2:ee:55:94:01:72:ac:2a"
+        - setup-github
+        #- add_ssh_keys:
+        #    fingerprints:
+        #      - "6a:c7:42:e6:e3:26:76:95:f4:0a:7a:5b:9c:b3:19:0e"
+        #      #- "66:9a:2d:a8:ad:7b:cc:7c:d2:ee:55:94:01:72:ac:2a"
         - checkout
         - run:
             name: Create git identity

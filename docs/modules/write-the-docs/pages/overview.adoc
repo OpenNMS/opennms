@@ -1,5 +1,6 @@
 
 = Write the Docs
+:description: Read the OpenNMS {page-component-title} technical writing style guide for the standards and best practices for writing content for us. All contributions welcome!
 
 The OpenNMS Group Technical Writing Style Guide is the set of standards for writing our content, to make it consistent and intuitive.
 The OpenNMS software is free and open source, and we welcome any kind of contribution.

@@ -1,5 +1,6 @@
 [[selinux-icmp]]
 = SELinux and ICMP permissions
+:description: Learn how to configure a policy that lets OpenNMS {page-component-title} bind to the ICMP service with SELinux enabled on your OpenNMS server.
 
 If you have SELinux enabled on your {page-component-title} server, you must also configure a policy that allows {page-component-title} to bind to the ICMP service.
 

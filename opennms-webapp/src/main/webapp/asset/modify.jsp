@@ -32,14 +32,16 @@
 
 <% pageContext.setAttribute("nodeId", request.getParameter("node")); %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-  <jsp:param name="ngapp" value="onms-assets" />
-  <jsp:param name="title" value="Modify Asset" />
-  <jsp:param name="headTitle" value="Modify" />
-  <jsp:param name="headTitle" value="Asset" />
-  <jsp:param name="breadcrumb" value="<a href ='asset/index.jsp'>Assets</a>" />
-  <jsp:param name="breadcrumb" value="Modify" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Modify")
+          .headTitle("Asset")
+          .breadcrumb("Assets", "asset/index.jsp")
+          .breadcrumb("Modify")
+          .ngApp("onms-assets")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">
   <jsp:param name="asset" value="jquery-ui-js" />

@@ -1,5 +1,6 @@
 
 = Enable Request Logs
+:description: Learn how to enable HTTP request logs for Jetty in {page-component-title}.
 
 You can enable HTTP request logs for Jetty by removing the comment tags from the following snippet in `etc/jetty.xml`:
 

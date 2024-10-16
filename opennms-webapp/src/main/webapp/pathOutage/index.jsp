@@ -40,12 +40,13 @@
 <%@ page import="org.opennms.features.topology.link.TopologyProvider" %>
 <%@ page import="org.opennms.netmgt.dao.hibernate.PathOutageManagerDaoImpl" %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-  <jsp:param name="title" value="Path Outages" />
-  <jsp:param name="headTitle" value="Path Outages" />
-  <jsp:param name="location" value="pathOutage" />
-  <jsp:param name="breadcrumb" value="Path Outages" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Path Outages")
+          .breadcrumb("Path Outages")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <%
         List<String[]> testPaths = PathOutageManagerDaoImpl.getInstance().getAllCriticalPaths();

@@ -44,17 +44,20 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.lib</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.web</artifactId>
+    </dependency>
+    <dependency>
+        <groupId>org.json</groupId>
+        <artifactId>json</artifactId>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
       <scope>provided</scope>
-    </dependency>
-    <dependency>
-        <groupId>org.json</groupId>
-        <artifactId>json</artifactId>
-        <version>${jsonVersion}</version>
     </dependency>
   </dependencies>
 

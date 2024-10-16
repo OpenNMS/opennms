@@ -1,4 +1,5 @@
 = HostResourceSWRun Detector
+:description: Learn how the HostResourceSWRun Detector in OpenNMS {page-component-title} tests the running state of one or more processes via SNMP.
 
 This detector tests the running state of one or more processes.
 It does this via SNMP by inspecting the http://www.ietf.org/rfc/rfc2790[HOST-RESOURCES-MIB] hrSwRunTable.

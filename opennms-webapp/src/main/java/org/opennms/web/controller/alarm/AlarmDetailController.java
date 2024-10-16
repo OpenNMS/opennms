@@ -31,6 +31,7 @@ package org.opennms.web.controller.alarm;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -52,6 +53,7 @@ import org.opennms.web.filter.Filter;
 import org.opennms.web.servlet.XssRequestWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
 import org.springframework.util.Assert;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.multiaction.MultiActionController;
@@ -147,9 +149,20 @@ public class AlarmDetailController extends MultiActionController {
         return mv;
     }
 
+    private void checkRole(HttpServletRequest httpServletRequest) throws ServletException {
+        final Authentication authentication = (Authentication) httpServletRequest.getUserPrincipal();
+        final boolean isAdmin = authentication.getAuthorities().stream().anyMatch(g -> Objects.equals(org.opennms.web.api.Authentication.ROLE_ADMIN, g.getAuthority()));
+        final boolean isReadOnly = authentication.getAuthorities().stream().anyMatch(g -> Objects.equals(org.opennms.web.api.Authentication.ROLE_READONLY, g.getAuthority()));
+        if (!isAdmin && isReadOnly) {
+            throw new ServletException("User '" + authentication.getName() + "', is a read-only user!");
+        }
+    }
+
     public ModelAndView removeStickyMemo(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
         int alarmId;
         String alarmIdString = "";
+
+        checkRole(httpServletRequest);
 
         // Try to parse alarm ID from string to integer
         try {
@@ -168,6 +181,8 @@ public class AlarmDetailController extends MultiActionController {
         int alarmId;
         String alarmIdString = "";
 
+        checkRole(httpServletRequest);
+
         // Try to parse alarm ID from string to integer
         try {
             alarmIdString = httpServletRequest.getParameter("alarmId");
@@ -185,6 +200,8 @@ public class AlarmDetailController extends MultiActionController {
         int alarmId;
         String alarmIdString = "";
 
+        checkRole(httpServletRequest);
+
         // Try to parse alarm ID from string to integer
         try {
             alarmIdString = httpServletRequest.getParameter("alarmId");
@@ -201,6 +218,8 @@ public class AlarmDetailController extends MultiActionController {
     public ModelAndView saveJournalMemo(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws Exception {
         int alarmId;
         String alarmIdString = "";
+
+        checkRole(httpServletRequest);
 
         // Try to parse alarm ID from string to integer
         try {

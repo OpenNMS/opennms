@@ -1,5 +1,6 @@
 
 = PrTableMonitor
+:description: Learn how to configure and use the PrTableMonitor in OpenNMS {page-component-title} to test the prTable of a Net-SNMP agent.
 
 The PrTableMonitor monitor tests the link:http://www.net-snmp.org/docs/mibs/ucdavis.html#prTable[prTable] of a Net-SNMP agent.
 

@@ -1,6 +1,7 @@
 
 [[ga-enlinkd-layer-3-link-discovery]]
 = Layer 3 Link Discovery
+:description: Learn how the Enhanced Link Daemon discovers Layer 3 network links in {page-component-title}.
 
 Using enlinkd, it is possible to get links based on data from network routing applications.
 You can use the following routing daemons to provide links-based Layer 3 information:

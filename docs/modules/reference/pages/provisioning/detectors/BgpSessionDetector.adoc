@@ -1,4 +1,5 @@
 = BGP Session Detector
+:description: Learn how the BGPSessionDetector in OpenNMS {page-component-title} checks if a BGP Session to a peering partner (peer-ip) is configured.
 
 The BGPSessionDetector checks if a BGP Session to a peering partner (peer-ip) is configured.
 A BGP peering session is detected when a _bgpPeerEntry_ from the RFC1269 MIB (`.1.3.6.1.2.1.15.3.1`) exists and can be queried using SNMP.

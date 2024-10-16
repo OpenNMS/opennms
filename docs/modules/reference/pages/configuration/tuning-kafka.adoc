@@ -1,4 +1,5 @@
 = Tuning Apache Kafka
+:description: Learn about default Kafka settings in OpenNMS {page-component-title} and how to change them to meet your system requirements, including multi-tenancy.
 
 The configuration is shipped with some defaults, but depending on the size and network topology you might need to tune the Apache Kafka environment to meet certain needs.
 Set Apache Kafka options directly in the `org.opennms.core.ipc.rpc.kafka.cfg` and `org.opennms.core.ipc.sink.kafka.cfg` file.

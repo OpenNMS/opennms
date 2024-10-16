@@ -108,17 +108,16 @@
     <c:param name="filter" value='<%="ifindex=" + ifIndex%>'/>
 </c:url>
 
-<%
-String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>";
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle(ipAddr)
+          .headTitle("Interface")
+          .breadcrumb("Search", "element/index.jsp")
+          .breadcrumb("Node", "element/node.jsp?node=" + nodeId)
+          .breadcrumb("Interface")
+          .build(request);
 %>
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Interface" />
-  <jsp:param name="headTitle" value="<%= ipAddr %>" />
-  <jsp:param name="headTitle" value="Interface" />
-  <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-  <jsp:param name="breadcrumb" value="<%= nodeBreadCrumb %>" />
-  <jsp:param name="breadcrumb" value="Interface" />
-</jsp:include>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <%
 if (request.isUserInRole( Authentication.ROLE_ADMIN )) {

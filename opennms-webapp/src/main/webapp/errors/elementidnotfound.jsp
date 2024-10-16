@@ -42,12 +42,14 @@
 %>
 
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Error" />
-  <jsp:param name="headTitle" value="ID Not Found for <%=einfe.getElemType()%>" />
-  <jsp:param name="headTitle" value="Error" />
-  <jsp:param name="breadcrumb" value="Error" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("ID Not Found for " + einfe.getElemType())
+          .headTitle("Error")
+          .breadcrumb("Error")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <h1><%=einfe.getElemType(true)%> ID Not Found</h1>
 

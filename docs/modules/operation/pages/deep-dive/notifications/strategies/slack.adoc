@@ -1,6 +1,6 @@
 
 = Slack Notifications
-:description: How to use webhooks to configure OpenNMS Horizon/Meridian to send notifications through Slack.
+:description: How to use webhooks to configure {page-component-title} to send notifications through Slack.
 
 If your organization uses https://slack.com/[Slack], you can configure {page-component-title} to send notices to any channel via an incoming webhook.
 You must configure an incoming webhook in your Slack settings and manually configure some settings in your {page-component-title} instance.
@@ -53,12 +53,12 @@ Use it for the notifications you want to go to the second channel.
       </argument>
    </command>
 ----
-<1>Replace with a valid webhook for your desired channel
+<1> Replace with a valid webhook for your desired channel.
 
 Create `slack.properties` in your `opennms.properties.d` directory, and insert the following property:
 
 [source, properties]
-org.opennms.netmgt.notifd.slack.webhookURL=https://hooks.slack.com/services/AEJ7IIYAI/XOOTH3EOD/c3fc4a662c8e07fe072aeeec
+org.opennms.netmgt.notifd.slack.webhookURL=https://hooks.slack.com/services/A00000000/X00000000/XXXXXXXXXXXXXXXXXXXXXXXX
 
 Customize its values as appropriate for your organization.
 

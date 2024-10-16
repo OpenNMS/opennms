@@ -1,14 +1,15 @@
 
 [[telemetryd-bmp-statistics-adapter]]
 = BMP Telemetry Adapter
+:description: Learn about the BMP telemetry adapter in OpenNMS {page-component-title} that handles BMP statistics that the BMP parser receives and parses.
 
-The BMP telemetry adapter handles BMP statistics received and parsed by the xref:telemetryd/protocols/bmp/parser.adoc[BMP Parser].
+The BMP telemetry adapter handles BMP statistics that the xref:telemetryd/protocols/bmp/parser.adoc[BMP parser] receives and parses.
 Statistics received from the router are associated as performance data with that router.
 The router must exist as a regular node in {page-component-title}.
 
 {page-component-title} uses the IP address exported in BMP messages to associate a router with the appropriate {page-component-title} node.
-In addition, the node's metadata can be used to specify a BGP ID, which will be used to associate routers.
-If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a `context:key` metadata name, which will be used to look up a node that has stored the queried BGP ID as a value in the specified key.
+In addition, you can use the node's metadata to specify a BGP ID to associate routers.
+If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a `context:key` metadata name, used to look up a node that has stored the queried BGP ID as a value in the specified key.
 
 == Facts
 

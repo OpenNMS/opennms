@@ -1,6 +1,7 @@
 
 [[ref-policies]]
 = Policies
+:description: Overview of the provisioning policies section in the OpenNMS {page-component-title} documentation, including common parameters and policy ordering.
 
 This section describes all available built-in xref:operation:deep-dive/provisioning/introduction.adoc[provisioning] policies.
 You can configure them to allow node modifications or change provisioning behavior to meet the needs of your environment.

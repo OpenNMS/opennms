@@ -1,7 +1,9 @@
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-  <jsp:param name="title" value="Login" />
-  <jsp:param name="quiet" value="true" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .flags("quiet")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 <%@ taglib prefix='c' uri='http://java.sun.com/jsp/jstl/core'%>
 <%--
 /*******************************************************************************
@@ -142,6 +144,12 @@
           && session != null) {
       session.removeAttribute("SPRING_SECURITY_SAVED_REQUEST");
   }
+
+  // If login page is called in an authorized session, just redirect to dashboard
+  if (request.getUserPrincipal() != null) {
+    response.sendRedirect("index.jsp");
+    return;
+  }
 %>
 <script>
   window.onload = function() {
@@ -159,6 +167,7 @@
       </div>
 
       <form class="" id="loginForm" name="loginForm" role="form" method="post" action="<c:url value='j_spring_security_check'/>" autocomplete="off">
+        <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
         <div class="form-content">
           <div class="form-group">
             <input type="text" id="input_j_username" name="j_username"

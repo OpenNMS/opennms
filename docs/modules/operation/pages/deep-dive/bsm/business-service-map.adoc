@@ -1,6 +1,6 @@
 
 = Business Service Topology
-:description: How the topology map in OpenNMS Horizon/Meridian lets you view business service hierarchies: simulation mode, edit icons, and sharing.
+:description: How the topology map in {page-component-title} lets you view business service hierarchies: simulation mode, edit icons, and sharing.
 
 Business services can depend on each other.
 Together, they build a business service hierarchy.

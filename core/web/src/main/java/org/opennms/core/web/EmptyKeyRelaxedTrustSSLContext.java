@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2007-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2007-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -83,6 +83,7 @@ public final class EmptyKeyRelaxedTrustSSLContext extends SSLContextSpi {
 
     private final SSLContext m_delegate;
 
+    @SuppressWarnings({"java:S4423","java:S4830"})
     public EmptyKeyRelaxedTrustSSLContext() {
         SSLContext customContext = null;
 
@@ -105,15 +106,12 @@ public final class EmptyKeyRelaxedTrustSSLContext extends SSLContextSpi {
 
                 @Override
                 public X509Certificate[] getAcceptedIssuers() {
-                    return null;
+                    return new X509Certificate[] {};
                 }}
             };
             customContext = SSLContext.getInstance("SSL");
             customContext.init(keyManager, trustManagers, new java.security.SecureRandom());
-        } catch (NoSuchAlgorithmException e) {
-            // Should never happen
-            LOG.error("Could not find SSL algorithm in JVM", e);
-        } catch (KeyManagementException e) {
+        } catch (KeyManagementException|NoSuchAlgorithmException e) {
             // Should never happen
             LOG.error("Could not find SSL algorithm in JVM", e);
         }

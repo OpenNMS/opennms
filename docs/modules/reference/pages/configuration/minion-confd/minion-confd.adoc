@@ -1,6 +1,7 @@
 
 [[minion-confd]]
 = Configuring Minion via confd
+:description: Learn how to configure the Minion via confd in OpenNMS {page-component-title}: mount, YAML file contents, Kafka sink, and so on.
 
 For information on testing confd templates, see xref:configuration/minion-confd/test-confd.adoc#confd-template-test[Test confd templates].
 
@@ -39,30 +40,49 @@ org.opennms.instance.id: "<instance id>"
 
 Writes specified configuration to `$\{MINION_HOME}/etc/instance-id.properties`.
 
-=== Kafka RPC
+=== Kafka
+
+When using Kafka instead of the embedded Active MQ, settings for Kafka IPC (Twin) will take precedence over any RPC- and Sink-specific settings.
+
+[source, yaml]
+----
+ipc:
+    kafka:
+        bootstrap.servers: "127.0.0.1:9092"
+        # Any other keys necessary can be specified here
+----
+
+Writes the specified configuration settings to `$\{MINION_HOME}/etc/org.opennms.core.ipc.kafka.cfg`.
+If the `bootstrap.servers` key is specified, `$\{MINION_HOME}/etc/featuresBoot.d/kafka-ipc.boot` is also updated.
+
+==== Kafka RPC
+
+NOTE: This is optional if you are not using Twin settings via `ipc.kafka`.
 
 [source, yaml]
 ----
 ipc:
     rpc:
         kafka:
-            boostrap.servers: "127.0.0.1:9092"
+            bootstrap.servers: "127.0.0.1:9092"
             acks: 1
             max.request.size: 5000000
             # Any other keys necessary can be specified here
 ----
 
-Writes the specified configuration settings to `$\{MINION/HOME}/etc/org.opennms.core.ipc.rpc.kafka.cfg`.
-If the `bootstrap.servers` key is specified, `$\{MINION/HOME}/etc/featuresBoot.d/kafka-rpc.boot` is also updated.
+Writes the specified configuration settings to `$\{MINION_HOME}/etc/org.opennms.core.ipc.rpc.kafka.cfg`.
+If the `bootstrap.servers` key is specified, `$\{MINION_HOME}/etc/featuresBoot.d/kafka-rpc.boot` is also updated.
 
-=== Kafka SINK
+==== Kafka Sink
+
+NOTE: This is optional if you are not using Twin settings via `ipc.kafka`.
 
 [source, yaml]
 ----
 ipc:
     sink:
         kafka:
-            boostrap.servers: "127.0.0.1:9092"
+            bootstrap.servers: "127.0.0.1:9092"
             compression.type: "gzip"
             request.timeout.ms: 30000
             max.partition.fetch.bytes: 5000000
@@ -71,8 +91,8 @@ ipc:
             # Any other keys necessary can be specified here
 ----
 
-Writes the specified configuration settings to `$\{MINION/HOME}/etc/org.opennms.core.ipc.sink.kafka.cfg`.
-If the `bootstrap.servers` key is specified, `$\{MINION/HOME}/etc/featuresBoot.d/kafka-sink.boot` is also updated.
+Writes the specified configuration settings to `$\{MINION_HOME}/etc/org.opennms.core.ipc.sink.kafka.cfg`.
+If the `bootstrap.servers` key is specified, `$\{MINION_HOME}/etc/featuresBoot.d/kafka-sink.boot` is also updated.
 
 === Sink off heap
 
@@ -86,7 +106,7 @@ ipc:
             offHeapFilePath: ""
 ----
 
-Writes the specified configuration settings to `$\{MINION/HOME}/etc/org.opennms.core.ipc.sink.offheap.cfg`.
+Writes the specified configuration settings to `$\{MINION_HOME}/etc/org.opennms.core.ipc.sink.offheap.cfg`.
 
 === Single port flows
 
@@ -106,7 +126,7 @@ telemetry:
                 port: 50000
 ----
 
-Writes the specified configuration settings to `$\{MINION/HOME}/etc/org.opennms.features.telemtry.listeners-udp-single-port-flows.cfg`.
+Writes the specified configuration settings to `$\{MINION_HOME}/etc/org.opennms.features.telemetry.listeners-udp-single-port-flows.cfg`.
 
 === Telemetry flow listeners
 
@@ -144,7 +164,7 @@ netmgt:
         # Any other keys necessary can be specified here
 ----
 
-Writes the specified configuration settings to `$\{MINION/HOME}/etc/org.opennms.netmgt.syslog.cfg`.
+Writes the specified configuration settings to `$\{MINION_HOME}/etc/org.opennms.netmgt.syslog.cfg`.
 
 === Traps
 
@@ -157,7 +177,7 @@ netmgt:
         # Any other keys necessary can be specified here
 ----
 
-Writes the specified configuration settings to `$\{MINION/HOME}/etc/org.opennms.netmgt.trapd.cfg`.
+Writes the specified configuration settings to `$\{MINION_HOME}/etc/org.opennms.netmgt.trapd.cfg`.
 
 === System properties
 
@@ -170,9 +190,9 @@ system:
         # Any other keys necessary can be specified here
 ----
 
-Writes the specified configuration settings to `$\{MINION/HOME}/etc/confd.system.properties`.
-`$\{MINION/HOME}/ect/confd.system.properties` is automatically appended to `etc/system.properties`.
-If the `JAEGER_AGENT_HOST` or `JAEGER_ENDPOINT` keys are specified, `$\{MINION/HOME}/etc/featuresBoot.d/jaeger.boot` is also updated.
+Writes the specified configuration settings to `$\{MINION_HOME}/etc/confd.system.properties`.
+`$\{MINION_HOME}/ect/confd.system.properties` is automatically appended to `etc/system.properties`.
+If the `JAEGER_AGENT_HOST` or `JAEGER_ENDPOINT` keys are specified, `$\{MINION_HOME}/etc/featuresBoot.d/jaeger.boot` is also updated.
 
 === Karaf properties
 
@@ -195,8 +215,8 @@ karaf:
 
 Writes the specified configuration settings to the following files:
 
-* `$\{MINION/HOME}/etc/org.apache.karaf.shell.cfg` for content under `shell`.
-* `$\{MINION/HOME}/etc/org.apache.karaf.management.cfg` for content under `management`.
+* `$\{MINION_HOME}/etc/org.apache.karaf.shell.cfg` for content under `shell`.
+* `$\{MINION_HOME}/etc/org.apache.karaf.management.cfg` for content under `management`.
 
 === Jetty properties
 
@@ -208,7 +228,7 @@ jetty:
         port: 8181
 ----
 
-Writes the specified configuration settings to `$\{MINION/HOME}/etc/org.ops4j.pax.web.cfg`.
+Writes the specified configuration settings to `$\{MINION_HOME}/etc/org.ops4j.pax.web.cfg`.
 
 === Secure credentials vault provider
 
@@ -233,4 +253,4 @@ process-env:
 ----
 
 Use to specify an arbitrary list of Java options.
-Writes the specified configuration settings to `$\{MINION/HOME}/etc/minion-process.env`, which contains `key=value` pairs that are set in the Minion process environment.
+Writes the specified configuration settings to `$\{MINION_HOME}/etc/minion-process.env`, which contains `key=value` pairs that are set in the Minion process environment.

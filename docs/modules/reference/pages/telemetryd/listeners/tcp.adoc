@@ -1,6 +1,7 @@
 
 [[telemetryd-listener-tcp]]
 = TCP Listener
+:description: Learn how the TCP listener in OpenNMS {page-component-title} accepts incoming TCP connections and forwards the TCP stream to a single parser.
 
 The TCP Listener accepts incoming TCP connections and forwards the TCP stream to a single parser.
 

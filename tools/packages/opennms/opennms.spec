@@ -65,7 +65,6 @@ Requires(pre):		%{name}-webui       = %{version}-%{release}
 Requires:		%{name}-webui       = %{version}-%{release}
 Requires(pre):		%{name}-core        = %{version}-%{release}
 Requires:		%{name}-core        = %{version}-%{release}
-Requires:		opennms-plugin-cloud >= 1.0.0
 Requires(pre):		postgresql-server  >= 10
 Requires:		postgresql-server  >= 10
 Requires(pre):		%{jdk}

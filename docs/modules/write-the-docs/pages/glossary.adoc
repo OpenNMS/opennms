@@ -1,5 +1,6 @@
 
 = Glossary
+:description: Read the glossary of terms associated with the OpenNMS {page-component-title} editorial style guide, including language best practices.
 
 This glossary supplements the OpenNMS Group Editorial Style Guide.
 While it might be useful to consult when writing or editing documentation, it is for reference only.

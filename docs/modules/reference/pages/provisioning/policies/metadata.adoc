@@ -1,9 +1,10 @@
 = Metadata Policies
+:description: Learn about the node and interface metadata policies in OpenNMS {page-component-title} to set metadata for provisioned nodes and discovered interfaces on them.
 
 == Node metadata policy
 
-The Metadata Policy lets you set node-level metadata in the context `requisition` for provisioned nodes.
+The Metadata policy lets you set node-level metadata in the context `requisition` for provisioned nodes.
 
 == Interface metadata policy
 
-The Metadata Policy lets you set interface-level metadata in the context `requisition` for provisioned nodes.
+The Interface Metadata policy lets you set interface-level metadata in the context `requisition` for discovered interfaces on provisioned nodes.

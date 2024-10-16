@@ -1,6 +1,7 @@
 
 [[ga-elasticsearch-integration-situation-feedback]]
 = Situation Feedback
+:description: Learn about how situation feedback is persisted in OpenNMS/Meridian.
 
 NOTE: Full documentation on situation feedback is available  <<deep-dive/alarm-correlation/situation-feedback.adoc#ga-situation-feedback, here>>.
 

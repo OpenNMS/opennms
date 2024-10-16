@@ -1,5 +1,6 @@
 
 = Summary
+:description: Learn about the Summary dashlet, which displays a trend of incoming alarms for a given time in the {page-component-title} operator board.
 
 The Summary dashlet shows a trend of incoming alarms spanning a given time frame in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board].
 

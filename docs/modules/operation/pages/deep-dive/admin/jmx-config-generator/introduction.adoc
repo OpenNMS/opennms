@@ -1,5 +1,6 @@
 
 = JMX Configuration Generator
+:description: Learn how the JMX Configuration Generator generates valid, complex JMX data collection configuration and RRD graph definitions for {page-component-title}.
 
 {page-component-title} implements the JMX protocol to collect long-term performance data for Java applications.
 There are a wide variety of metrics available, and administrators have to select which information to collect.

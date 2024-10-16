@@ -1,5 +1,6 @@
 
 = External Authentication
+:description: Learn how to configure external authentication like Active Directory, Novell eDirectory, or another LDAP-enabled directory in {page-component-title}.
 
 If you have an existing directory for authenticating users, you can configure {page-component-title} to use that system to grant users access to log in, in addition to allowing log in from users defined directly within your {page-component-title} server.
 

@@ -96,13 +96,15 @@
 %>
 
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Outage List" />
-  <jsp:param name="headTitle" value="List" />
-  <jsp:param name="headTitle" value="Outage" />
-  <jsp:param name="breadcrumb" value="<a href='outage/index.jsp' title='Outages System Page'>Outages</a>" />
-  <jsp:param name="breadcrumb" value="List" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("List")
+          .headTitle("Outage")
+          .breadcrumb("Outages", "outage/index.jsp")
+          .breadcrumb("List")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
     <jsp:include page="/includes/search-constraints-box.jsp" />
     <br/>

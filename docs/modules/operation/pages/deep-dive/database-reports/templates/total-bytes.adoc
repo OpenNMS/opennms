@@ -1,5 +1,6 @@
 
 = Total Bytes Transferred by Interface Report
+:description: Learn how to create a report in {page-component-title} that summarizes the number of bytes transferred by each interface that matches a category.
 
 This report provides a summary of the total number of bytes transferred by each interface whose category matches the one specified.
 The data is listed over a specified time period.

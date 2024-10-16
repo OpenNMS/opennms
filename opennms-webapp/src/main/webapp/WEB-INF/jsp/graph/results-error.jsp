@@ -37,18 +37,19 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 
-<c:import url="/includes/bootstrap.jsp">
-    <c:param name="title" value="Resource Graph Results" />
-    <c:param name="headTitle" value="Results" />
-    <c:param name="headTitle" value="Resource Graphs" />
-    <c:param name="headTitle" value="Reports" />
-    <c:param name="breadcrumb" value="<a href='report/index.jsp'>Reports</a>" />
-    <c:param name="breadcrumb" value="<a href='graph/index.jsp'>Resource Graphs</a>"/>
-    <c:param name="breadcrumb" value="Results" />
-    <c:param name="scrollSpy" value="#results-sidebar" />
-    <c:param name="meta"       value="<meta http-equiv='X-UA-Compatible' content='IE=Edge' />"/>
-    <c:param name="renderGraphs" value="true" />
-</c:import>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Results")
+          .headTitle("Resource Graphs")
+          .headTitle("Reports")
+          .breadcrumb("Reports", "report/index.jsp")
+          .breadcrumb("Resource Graphs", "graph/index.jsp")
+          .breadcrumb("Results")
+          .scrollSpy("#results-sidebar")
+          .flags("renderGraphs")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="row">
   <div class="col-md-12 text-center">

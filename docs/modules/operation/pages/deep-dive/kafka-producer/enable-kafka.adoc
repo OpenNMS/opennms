@@ -1,5 +1,6 @@
 
 = Enable the Kafka Producer
+:description: Learn how to enable the Kafka Producer to let {page-component-title} forward events, alarms, nodes, topologies, and metrics to Kafka.
 
 The Kafka Producer is disabled by default and can be enabled as follows.
 

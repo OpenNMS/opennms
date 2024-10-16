@@ -17,9 +17,14 @@ vi docker-compose.yml
 ---
 version: '3'
 
-services:  
+services:
   minion:
+ifeval::["{page-component-title}" == "Horizon"]
     image: opennms/minion:{full-display-version}
+endif::[]
+ifeval::["{page-component-title}" == "Meridian"]
+    image: opennms/meridian-minion:{full-display-version}
+endif::[]
     container_name: minion<1>
     environment:
       TZ: 'America/New_York'<2>
@@ -28,7 +33,7 @@ services:
     command: ["-c"]
     volumes:
       - ./minion-config.yaml:/opt/minion/minion-config.yaml<5>
-      #- ./keystore/scv.jce:/opt/minion/scv.jce<6>
+      #- ./keystore/scv.jce:/opt/minion/etc/scv.jce<6>
     healthcheck:
       test: "/health.sh"<7>
       interval: 30s
@@ -87,7 +92,7 @@ netmgt:
 <4> Enable the Syslog listener on the Minion on port 1514/udp.
 <5> Enable the SNMP trap listener on the Minion on port 1162/udp.
 
-TIP: To run with Apache Kafka or configure flow listeners, see the configuration reference in the link:https://github.com/OpenNMS/opennms/blob/master/opennms-container/minion/CONFD_README.md[Confd readme].
+TIP: To run with Apache Kafka or configure flow listeners, see the xref:reference:configuration/minion-confd/minion-confd.adoc#minion-confd[Minion configuration reference].
 
 Next, we need to create the keystore file and add the credentials for connecting to the core {page-component-title} server.
 
@@ -96,17 +101,17 @@ Next, we need to create the keystore file and add the credentials for connecting
 ----
 mkdir keystore
 chown -R 10001:10001 keystore<1>
-docker-compose run -v $(pwd)/keystore:/keystore minion -s<2>
+docker-compose run --rm -v $(pwd)/keystore:/keystore minion -s<2>
 ----
-<1> Assign permissions so the container user account can write within the directory.
-<2> When prompted, enter the username and password for a `ROLE_MINOIN` user account on the {page-component-title} server.
+<1> Assign ownership so the container user account can write within the directory.
+<2> When prompted, enter the username and password for a `ROLE_MINION` user account on the {page-component-title} server.
 You may be prompted for the same username and password twice.
 
 .Edit the `docker-compose.yml` file to uncomment the keystore file
 [source, diff]
 ----
--      #- ./keystore/scv.jce:/opt/minion/scv.jce
-+      - ./keystore/scv.jce:/opt/minion/scv.jce
+-      #- ./keystore/scv.jce:/opt/minion/etc/scv.jce
++      - ./keystore/scv.jce:/opt/minion/etc/scv.jce
 ----
 
 .Validate your Docker Compose file

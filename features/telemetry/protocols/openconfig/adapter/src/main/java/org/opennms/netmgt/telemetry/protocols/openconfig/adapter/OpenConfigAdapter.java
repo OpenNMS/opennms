@@ -28,13 +28,10 @@
 
 package org.opennms.netmgt.telemetry.protocols.openconfig.adapter;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
-import java.util.Optional;
-import java.util.stream.Stream;
-
-import javax.script.ScriptException;
-
+import com.codahale.metrics.MetricRegistry;
+import com.google.common.base.Strings;
+import com.google.common.collect.Iterables;
+import com.google.protobuf.InvalidProtocolBufferException;
 import org.opennms.features.openconfig.proto.gnmi.Gnmi;
 import org.opennms.features.openconfig.proto.jti.Telemetry;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -54,10 +51,11 @@ import org.springframework.transaction.TransactionStatus;
 import org.springframework.transaction.support.TransactionCallback;
 import org.springframework.transaction.support.TransactionOperations;
 
-import com.codahale.metrics.MetricRegistry;
-import com.google.common.base.Strings;
-import com.google.common.collect.Iterables;
-import com.google.protobuf.InvalidProtocolBufferException;
+import javax.script.ScriptException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
+import java.util.Optional;
+import java.util.stream.Stream;
 
 public class OpenConfigAdapter extends AbstractScriptedCollectionAdapter {
 
@@ -91,13 +89,13 @@ public class OpenConfigAdapter extends AbstractScriptedCollectionAdapter {
             } else {
                 Gnmi.SubscribeResponse subscribeResponse = Gnmi.SubscribeResponse.parseFrom(message.getByteArray());
                 Gnmi.Notification notification = subscribeResponse.getUpdate();
-                long timeStamp = notification != null ? notification.getTimestamp() : message.getTimestamp();
+                long timeStamp = notification.getTimestamp();
                 CollectionAgent agent = getCollectionAgent(messageLog, null);
                 return buildCollectionSet(agent, subscribeResponse, timeStamp);
 
             }
         } catch (InvalidProtocolBufferException e) {
-            LOG.warn("Invalid packet: {}", e);
+            LOG.warn("Invalid packet: ", e);
             return Stream.empty();
         }
 

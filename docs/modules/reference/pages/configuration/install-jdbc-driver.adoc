@@ -1,6 +1,7 @@
 
 [[install-jdbc-driver-core]]
 = Install JDBC Driver on {page-component-title} Core
+:description: Learn how to install a JDBC driver in OpenNMS {page-component-title} to detect, poll, or collect on JDBC services.
 
 To detect, poll, or collect any JDBC service, you must install the appropriate JDBC driver.
 
@@ -25,5 +26,5 @@ collect org.opennms.netmgt.collectd.JdbcCollector 127.0.0.1 driver=org.mysql.jdb
 .If the JDBC driver is not available or the driver classname is incorrect, the collect command returns an error
 [source, karaf]
 ----
-Collect failed with: java.util.concurrent.ExecutionException: java.lang.RuntimeException: Unable to load driver class: java.lang.ClassNotFoundException: org.mariadb.jdbc.Driver 
+Collect failed with: java.util.concurrent.ExecutionException: java.lang.RuntimeException: Unable to load driver class: java.lang.ClassNotFoundException: org.mariadb.jdbc.Driver
 ----

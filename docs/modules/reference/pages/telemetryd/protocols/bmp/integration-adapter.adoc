@@ -1,9 +1,10 @@
 
 [[telemetryd-openbmp-integration-adapter]]
 = OpenBMP Integration Adapter
+:description: Learn about the OpenBMP integration adapter in OpenNMS {page-component-title} that handles BMP statistics the BMP parser receives and parses.
 
 The OpenBMP integration adapter can integrate with an existing https://github.com/OpenBMP[OpenBMP] installation.
-It handles BMP messages the xref:telemetryd/protocols/bmp/parser.adoc[BMP Parser] receives and parses, and creates OpenBMP-compatible messages, which are then passed to the OpenBMP Kafka cluster.
+It handles BMP messages the xref:telemetryd/protocols/bmp/parser.adoc[BMP parser] receives and parses, and creates OpenBMP-compatible messages, which are then passed to the OpenBMP Kafka cluster.
 
 This setup replaces the collector component of OpenBMP.
 

@@ -1,5 +1,6 @@
 
 = Interface Availability Report
+:description: Learn how to create an Interface Availability report in {page-component-title}, which summarizes interface availability for interfaces with outages.
 
 This report shows a summary of interface availability for interfaces with outages.
 It's a multi-page report that provides the following data for all router interfaces, organized by IP address, over the specified date range:

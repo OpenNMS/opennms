@@ -1,5 +1,6 @@
 
 = JDBC Stored Procedure Detector
+:description: Learn how the JDBCStoredProcedureDetector in OpenNMS {page-component-title} connects to a JDBC-enabled database and checks the result of a stored procedure.
 
 The JDBCStoredProcedureDetector connects to a JDBC-enabled database and checks the result of a stored procedure.
 The result of the stored procedure must be a Boolean value (representing true or false).

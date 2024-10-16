@@ -1,5 +1,5 @@
 
 = Deep Dive
-:description: Overview of deep-dive section that provides in-depth procedures on OpenNMS Horizon/Meridian tasks and features.
+:description: Overview of deep-dive section that provides in-depth procedures on {page-component-title} tasks and features.
 
 This section provides in-depth procedures on many {page-component-title} tasks and features.

@@ -1,7 +1,7 @@
 
 [[ga-pollerd-packages]]
 = Poller Packages
-:description: How to group service configurations into polling packages to define more complex monitoring configurations with OpenNMS Horizon/Meridian.
+:description: How to group service configurations into polling packages to define more complex monitoring configurations with {page-component-title}.
 
 You can group service configurations into polling packages to define more complex monitoring configurations.
 This allows you to assign different service configurations to nodes.
@@ -38,38 +38,7 @@ You can also exclude IP interfaces:
 
 == Response time configuration
 
-The definition of polling packages lets you configure similar services with different polling intervals.
-All the response time measurements are persisted in RRD files and require a definition.
-Each polling package contains an RRD definition:
-
-.RRD configuration for polling package
-[source, xml]
-----
-<package name="example1">
-  <filter>IPADDR != '0.0.0.0'</filter>
-  <include-range begin="1.1.1.1" end="254.254.254.254" />
-  <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
-  <rrd step="300"> <1>
-    <rra>RRA:AVERAGE:0.5:1:2016</rra> <2>
-    <rra>RRA:AVERAGE:0.5:12:1488</rra> <3>
-    <rra>RRA:AVERAGE:0.5:288:366</rra> <4>
-    <rra>RRA:MAX:0.5:288:366</rra> <5>
-    <rra>RRA:MIN:0.5:288:366</rra> <6>
-</rrd>
-----
-
-<1> Polling interval for all services in this polling package is reflected in the step size of 300 seconds.
-All services in this package must be polled on a 5-minute interval, otherwise response time measurements are not persisted correctly.
-<2> 1 step size is persisted 2016 times: 1 * 5 min * 2016 = 7 d, 5 min accuracy for 7 d.
-<3> 12 steps average persistence 1488 times: 12 * 5 min * 1488 = 62 d, aggregated to 60 min for 62 d.
-<4> 288 steps average persistence 366 times: 288 * 5 min * 366 = 366 d, aggregated to 24 h for 366 d.
-<5> 288 steps maximum from 24 h persisted for 366 d.
-<6> 288 steps minimum from 24 h persisted for 366 d.
-
-WARNING: The RRD configuration and the service polling interval must be aligned.
-In other cases, the persisted response time data is not correctly displayed in the response time graph.
-
-IMPORTANT: If you change the polling interval afterwards, you must recreate existing RRD files with the new definitions.
+include::../retention.adoc[]
 
 == Service status persistence
 

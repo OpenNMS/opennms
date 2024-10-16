@@ -1,5 +1,6 @@
 
 = Other Errors
+:description: Read about errors you may encounter if OpenNMS {page-component-title} does not start as expected, and how to fix them.
 
 This section describes other errors that you may encounter when {page-component-title} does not start as expected.
 

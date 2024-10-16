@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -37,11 +37,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 
+import org.opennms.core.utils.StringUtils;
 import org.opennms.features.geocoder.GeocoderConfiguration;
 import org.opennms.features.geocoder.GeocoderConfigurationException;
-
-import com.google.common.base.Strings;
 
 public class MapquestConfiguration extends GeocoderConfiguration {
 
@@ -79,10 +79,10 @@ public class MapquestConfiguration extends GeocoderConfiguration {
 
     @Override
     public void validate() throws GeocoderConfigurationException {
-        if (Strings.isNullOrEmpty(urlTemplate)) {
+        if (StringUtils.isEmpty(urlTemplate)) {
             throw new GeocoderConfigurationException(URL_KEY, PROVIDE_A_VALUE_TEXT);
         }
-        if (Strings.isNullOrEmpty(apiKey)) {
+        if (StringUtils.isEmpty(apiKey)) {
             throw new GeocoderConfigurationException(API_KEY_KEY, PROVIDE_A_VALUE_TEXT);
         }
         // Try parsing the URL
@@ -109,4 +109,29 @@ public class MapquestConfiguration extends GeocoderConfiguration {
         configuration.setUseSystemProxy(getBoolean(properties, USE_SYSTEM_PROXY_KEY, false));
         return configuration;
     }
+
+	@Override
+	public int hashCode() {
+		return 31
+				* super.hashCode()
+				+ Objects.hash(apiKey, urlTemplate, useSystemProxy);
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!super.equals(obj)) {
+			return false;
+		}
+		if (!(obj instanceof MapquestConfiguration)) {
+			return false;
+		}
+		final MapquestConfiguration that = (MapquestConfiguration) obj;
+		return Objects.equals(this.apiKey, that.apiKey)
+				&& Objects.equals(this.urlTemplate, that.urlTemplate)
+				&& this.useSystemProxy == that.useSystemProxy;
+	}
+
 }

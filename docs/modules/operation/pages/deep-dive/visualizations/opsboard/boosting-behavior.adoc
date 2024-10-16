@@ -1,5 +1,6 @@
 
 = Boost Configuration
+:description: Learn how to configure how often dashlet visualizations appear in the {page-component-title} operator board.
 
 You can increase the frequency of certain dashlets in an xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board] by modifying the following settings:
 

@@ -31,16 +31,18 @@
 
 <%@page language="java" contentType="text/html" session="true" %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-	<jsp:param name="title" value="New Group" />
-	<jsp:param name="headTitle" value="New" />
-	<jsp:param name="headTitle" value="Groups" />
-	<jsp:param name="headTitle" value="Admin" />
-	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users and Groups</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/groups/list.htm'>Group List</a>" />
-	<jsp:param name="breadcrumb" value="New Group" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("New")
+          .headTitle("Groups")
+          .headTitle("Admin")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Users and Groups", "admin/userGroupView/index.jsp")
+          .breadcrumb("Group List", "admin/userGroupView/groups/list.htm")
+          .breadcrumb("New Group")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script type="text/javascript">
   function validateFormInput()

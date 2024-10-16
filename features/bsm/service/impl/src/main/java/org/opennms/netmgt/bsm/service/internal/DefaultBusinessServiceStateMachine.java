@@ -52,7 +52,6 @@ import java.util.stream.Collectors;
 
 import javax.imageio.ImageIO;
 
-import org.apache.commons.collections15.Transformer;
 import org.opennms.netmgt.bsm.service.AlarmProvider;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateChangeHandler;
 import org.opennms.netmgt.bsm.service.BusinessServiceStateMachine;
@@ -412,28 +411,20 @@ public class DefaultBusinessServiceStateMachine implements BusinessServiceStateM
 
             VisualizationImageServer<GraphVertex, GraphEdge> vv = new VisualizationImageServer<GraphVertex, GraphEdge>(layout, layout.getSize());
             vv.setPreferredSize(new Dimension(1200,1200)); // Viewing area size
-            vv.getRenderContext().setVertexLabelTransformer(new Transformer<GraphVertex,String>() {
-                @Override
-                public String transform(GraphVertex vertex) {
-                    if (vertex.getBusinessService() != null) {
-                        return String.format("BS[%s]", vertex.getBusinessService().getName());
-                    }
-                    if (vertex.getIpService() != null) {
-                        IpService ipService = vertex.getIpService();
-                        return String.format("IP_SERVICE[%s,%s]", ipService.getId(), ipService.getServiceName());
-                    }
-                    if (vertex.getReductionKey() != null) {
-                        return String.format("RK[%s]", vertex.getReductionKey());
-                    }
-                    return "UNKNOWN";
+            vv.getRenderContext().setVertexLabelTransformer((GraphVertex vertex) -> {
+                if (vertex.getBusinessService() != null) {
+                    return String.format("BS[%s]", vertex.getBusinessService().getName());
                 }
-            });
-            vv.getRenderContext().setEdgeLabelTransformer(new Transformer<GraphEdge,String>() {
-                @Override
-                public String transform(GraphEdge edge) {
-                    return String.format("%s", edge.getMapFunction().getClass().getSimpleName());
+                if (vertex.getIpService() != null) {
+                    IpService ipService = vertex.getIpService();
+                    return String.format("IP_SERVICE[%s,%s]", ipService.getId(), ipService.getServiceName());
                 }
+                if (vertex.getReductionKey() != null) {
+                    return String.format("RK[%s]", vertex.getReductionKey());
+                }
+                return "UNKNOWN";
             });
+            vv.getRenderContext().setEdgeLabelTransformer((GraphEdge edge) -> String.format("%s", edge.getMapFunction().getClass().getSimpleName()));
 
             // Create the buffered image
             BufferedImage image = (BufferedImage) vv.getImage(

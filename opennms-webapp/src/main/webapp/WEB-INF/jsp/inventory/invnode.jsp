@@ -38,15 +38,17 @@
 
 
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-<jsp:param name="title" value="Inventory" />
-<jsp:param name="headTitle" value="${model.id}" />
-<jsp:param name="headTitle" value="Inventory" />
-<jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-  <jsp:param name="breadcrumb" value="<a href='element/node.jsp?node=${model.db_id}'>Node</a>" />
-  <jsp:param name="breadcrumb" value="<a href='inventory/rancid.htm?node=${model.db_id}'>Rancid</a>" />
-<jsp:param name="breadcrumb" value="Inventory" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("${model.id}")
+          .headTitle("Inventory")
+          .breadcrumb("Search", "element/index.jsp")
+          .breadcrumb("Node", "element/node.jsp?node=${model.db_id}")
+          .breadcrumb("Rancid", "inventory/rancid.htm?node=${model.db_id}")
+          .breadcrumb("Inventory")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 
 <div class="row">

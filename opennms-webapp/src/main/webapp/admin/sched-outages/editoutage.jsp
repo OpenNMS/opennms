@@ -618,16 +618,17 @@ Could not find an outage to edit because no outage name parameter was specified 
 	boolean hasMatchAny = theOutage.getInterfaces().contains(matchAnyInterface);
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-	<jsp:param name="title" value="Edit Outage" />
-	<jsp:param name="headTitle" value="Edit" />
-	<jsp:param name="headTitle" value="Scheduled Outages" />
-	<jsp:param name="headTitle" value="Admin" />
-	<jsp:param name="location" value="admin" />
-	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/sched-outages/index.jsp'>Scheduled Outages</a>" />
-	<jsp:param name="breadcrumb" value="Edit" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Edit")
+          .headTitle("Scheduled Outages")
+          .headTitle("Admin")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Scheduled Outages", "admin/sched-outages/index.jsp")
+          .breadcrumb("Edit")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">
     <jsp:param name="asset" value="jquery-ui-base-theme" />

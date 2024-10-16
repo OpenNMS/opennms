@@ -1,5 +1,6 @@
 
 = JDBCQueryMonitor
+:description: Learn about the JDBCQueryMonitor in OpenNMS {page-component-title} that runs a SQL query against a database and verifies the result of the query.
 
 The JDBCQueryMonitor runs an SQL query against a database and is able to verify the result of the query.
 A read-only connection is made, preventing the monitor from being able to alter data.

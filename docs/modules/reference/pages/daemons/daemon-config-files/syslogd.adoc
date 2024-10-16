@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-syslogd]]
 = Syslogd
+:description: Learn about syslogd in OpenNMS {page-component-title}, which processes syslog messages into events.
 
 Handles processing of xref:operation:deep-dive/events/sources/syslog.adoc[syslog messages] into events.
 
@@ -18,9 +19,20 @@ Handles processing of xref:operation:deep-dive/events/sources/syslog.adoc[syslog
 | yes
 | no
 
-| syslogd/*.xml
+| syslog/*.xml
 | Defines individual mappings between message text and UEIs.
 Files in this folder must be specified as an include directive in `syslog-configuration.xml`.
 | yes
 | no
+|===
+
+.Syslogd log file overview
+[options="header"]
+[cols="2,3"]
+|===
+| File
+| Description
+
+| syslogd.log
+| Logs relating to syslog message parsing.
 |===

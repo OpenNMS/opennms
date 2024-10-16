@@ -61,6 +61,9 @@
         <constructor-arg ref="dispatcherServletPath"/>
     </bean>
 
+    <bean id="newsfeedProvider" class="org.opennms.web.rest.support.newsfeed.NewsFeedProvider">
+    </bean>
+
     <jaxrs:server id="cxf-rest-v2" address="/" basePackages="org.opennms.web.rest.v2,org.opennms.web.rest.v2.bsm,,org.opennms.web.rest.v2.status">
       <jaxrs:properties>
         <!-- Use the ResourceContextProvider defined above -->

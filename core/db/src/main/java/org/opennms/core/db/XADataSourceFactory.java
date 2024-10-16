@@ -87,7 +87,7 @@ public abstract class XADataSourceFactory {
 		}
 
 		final JdbcDataSource ds = m_dataSourceConfigFactory.getJdbcDataSource(dsName);
-		final ConnectionPool pool = m_dataSourceConfigFactory.getConnectionPool();
+		final ConnectionPool pool = ConnectionPool.merge(ds.getConnectionPool(), m_dataSourceConfigFactory.getConnectionPool());
 		String urlString = ds.getUrl();
 		if (urlString.startsWith("jdbc:")) {
 			urlString = urlString.substring("jdbc:".length());

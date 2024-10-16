@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-if ssh -o StrictHostKeyChecking=no -p 8201 localhost health-check | grep --quiet "Everything is awesome"; then 
+if curl http://localhost:8181/minion/rest/health/probe | grep --quiet "Everything is awesome"; then 
   exit 0;
 else
   exit 1;

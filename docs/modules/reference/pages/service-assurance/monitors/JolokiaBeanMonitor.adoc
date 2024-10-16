@@ -1,5 +1,6 @@
 
 = JolokiaBeanMonitor
+:description: Learn about the JolokiaBeanMonitor in OpenNMS {page-component-title} that lets you run a method or poll an attribute via JMX using the Jolokia framework.
 
 The JolokiaBeanMonitor is a JMX monitor specialized for the use with the link:http://www.jolokia.org[Jolokia framework].
 Use the JolokiaBeanMonitor when you need to run a method via JMX or poll an attribute via JMX.

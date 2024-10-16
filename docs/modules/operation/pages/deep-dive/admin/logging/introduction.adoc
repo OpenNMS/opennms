@@ -1,5 +1,6 @@
 
 = Logging
+:description: Learn how logging works in {page-component-title}, including logging level options.
 
 {page-component-title} stores logs under the name of the daemon that was acting on a process (for example, logs for xref:deep-dive/service-assurance/introduction.adoc[service assurance checks] that are run by pollerd are stored in `pollerd.log`).
 Log files are available in `$\{OPENNMS_HOME}/logs`, which is a symlink to `/var/log/opennms`.

@@ -1,4 +1,5 @@
 = SNMP Metadata
+:description: Learn how to configure and use the SNMP metadata adapter to enrich nodes with SNMP data in OpenNMS {page-component-title}.
 
 The SNMP Metadata adapter can be used to enrich a node with data gathered from SNMP.
 This data is stored in the node's metadata context `snmp` and can be displayed in the Web UI and also queried via ReST.

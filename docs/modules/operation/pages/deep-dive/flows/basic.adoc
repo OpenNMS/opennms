@@ -1,6 +1,7 @@
 
 [[flows-basic]]
 = Basic Flows Setup
+:description: Get started with flows data collection in {page-component-title} including configuring Elasticsearch, Kafka, and protocol listeners.
 
 This section describes how to get started with flows to collect, enrich (classify), persist, and visualize flows.
 
@@ -60,7 +61,7 @@ elasticIndexStrategy=daily
 == Multi-protocol listener
 
 With most tools, if you are monitoring multiple flow protocols, you must set up a listener on its own UDP port for each protocol.
-However, {page-component-title} allows a multi-port listener option; this listener, named `Multi-UDP-9999`, is enabled by default and monitors multiple protocols on a single UDP port (`9999`). 
+However, {page-component-title} allows a multi-port listener option; this listener, named `Multi-UDP-9999`, is enabled by default and monitors multiple protocols on a single UDP port (`9999`).
 The default configuration includes support for Netflow v5, Netflow v9, sFlow, and IPFIX.
 You can edit `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml` to change the port number and add or remove protocols.
 

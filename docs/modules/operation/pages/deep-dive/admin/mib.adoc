@@ -1,5 +1,6 @@
 
 = SNMP MIB Compiler
+:description: Learn how to import a MIB file and create event definitions in {page-component-title}.
 
 Management Information Base (MIB) files are text files written in https://en.wikipedia.org/wiki/ASN.1[Abstract Syntax Notation].
 They describe Simple Network Management Protocol (SNMP) elements for specific devices.

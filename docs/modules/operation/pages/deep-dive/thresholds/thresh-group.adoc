@@ -1,7 +1,7 @@
 
 [[threshold-group]]
 = Create a Threshold Group
-:description: How to create a threshold group in OpenNMS Horizon/Meridian to associate a set of thresholds to a service. Includes list of default threshold groups.
+:description: How to create a threshold group in {page-component-title} to associate a set of thresholds to a service. Includes list of default threshold groups.
 
 A threshold group associates a set of thresholds to a service (for example, thresholds that apply to all Cisco devices).
 {page-component-title} includes the following preconfigured, editable threshold groups:

@@ -7,9 +7,227 @@
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.dependencies</groupId>
-  <artifactId>jasper-dependencies</artifactId>
-  <packaging>pom</packaging>
+  <artifactId>jasper-shaded</artifactId>
+  <packaging>bundle</packaging>
   <name>OpenNMS :: Dependencies :: Jasper Report</name>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>${maven.shade.plugin.version}</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <artifactSet>
+            <includes>
+              <include>com.lowagie:itext</include>
+              <include>net.sf.jasperreports:jasperreports</include>
+              <include>org.codehaus.castor:castor-xml</include>
+              <include>org.jfree:jfreechart</include>
+            </includes>
+          </artifactSet>
+          <relocations>
+            <relocation>
+              <pattern>com.lowagie</pattern>
+              <shadedPattern>org.opennms.shaded.jasper.com.lowagie</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.jfree.chart</pattern>
+              <shadedPattern>org.opennms.shaded.jasper.org.jfree.chart</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.jfree.data</pattern>
+              <shadedPattern>org.opennms.shaded.jasper.org.jfree.data</shadedPattern>
+            </relocation>
+            <relocation>
+              <pattern>org.exolab.castor</pattern>
+              <shadedPattern>org.opennms.shaded.jasper.org.exolab.castor</shadedPattern>
+            </relocation>
+          </relocations>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <configuration>
+          <instructions>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+            <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
+            <Bundle-Version>${project.version}</Bundle-Version>
+            <Export-Package>
+              net.sf.jasperreports.ant;version="${jasperreportsVersion}",
+              net.sf.jasperreports.charts;version="${jasperreportsVersion}",
+              net.sf.jasperreports.charts.base;version="${jasperreportsVersion}",
+              net.sf.jasperreports.charts.design;version="${jasperreportsVersion}",
+              net.sf.jasperreports.charts.fill;version="${jasperreportsVersion}",
+              net.sf.jasperreports.charts.type;version="${jasperreportsVersion}",
+              net.sf.jasperreports.charts.util;version="${jasperreportsVersion}",
+              net.sf.jasperreports.charts.xml;version="${jasperreportsVersion}",
+              net.sf.jasperreports.compilers;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.barbecue;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.barcode4j;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.charts;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.headertoolbar;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.headertoolbar.actions;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.headertoolbar.json;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.headertoolbar.json.resources;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.headertoolbar.resources;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.headertoolbar.resources.images;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.headertoolbar.resources.images.format;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.headertoolbar.resources.images.jive;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.headertoolbar.resources.images.style;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.headertoolbar.resources.require;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.iconlabel;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.items;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.list;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.map;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.map.fill;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.map.resources;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.map.resources.require;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.map.resources.templates;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.map.type;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.sort;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.sort.actions;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.sort.resources;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.sort.resources.images;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.spiderchart;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.spiderchart.type;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.table;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.table.fill;version="${jasperreportsVersion}",
+              net.sf.jasperreports.components.table.util;version="${jasperreportsVersion}",
+              net.sf.jasperreports.crosstabs;version="${jasperreportsVersion}",
+              net.sf.jasperreports.crosstabs.base;version="${jasperreportsVersion}",
+              net.sf.jasperreports.crosstabs.design;version="${jasperreportsVersion}",
+              net.sf.jasperreports.crosstabs.fill;version="${jasperreportsVersion}",
+              net.sf.jasperreports.crosstabs.fill.calculation;version="${jasperreportsVersion}",
+              net.sf.jasperreports.crosstabs.interactive;version="${jasperreportsVersion}",
+              net.sf.jasperreports.crosstabs.type;version="${jasperreportsVersion}",
+              net.sf.jasperreports.crosstabs.xml;version="${jasperreportsVersion}",
+              net.sf.jasperreports.data;version="${jasperreportsVersion}",
+              net.sf.jasperreports.data.bean;version="${jasperreportsVersion}",
+              net.sf.jasperreports.data.cache;version="${jasperreportsVersion}",
+              net.sf.jasperreports.data.csv;version="${jasperreportsVersion}",
+              net.sf.jasperreports.data.ds;version="${jasperreportsVersion}",
+              net.sf.jasperreports.data.ejbql;version="${jasperreportsVersion}",
+              net.sf.jasperreports.data.empty;version="${jasperreportsVersion}",
+              net.sf.jasperreports.data.excel;version="${jasperreportsVersion}",
+              net.sf.jasperreports.data.hibernate;version="${jasperreportsVersion}",
+              net.sf.jasperreports.data.hibernate.spring;version="${jasperreportsVersion}",
+              net.sf.jasperreports.data.http;version="${jasperreportsVersion}",
+              net.sf.jasperreports.data.jdbc;version="${jasperreportsVersion}",
+              net.sf.jasperreports.data.jndi;version="${jasperreportsVersion}",
+              net.sf.jasperreports.data.json;version="${jasperreportsVersion}",
+              net.sf.jasperreports.data.mondrian;version="${jasperreportsVersion}",
+              net.sf.jasperreports.data.provider;version="${jasperreportsVersion}",
+              net.sf.jasperreports.data.qe;version="${jasperreportsVersion}",
+              net.sf.jasperreports.data.xls;version="${jasperreportsVersion}",
+              net.sf.jasperreports.data.xlsx;version="${jasperreportsVersion}",
+              net.sf.jasperreports.data.xml;version="${jasperreportsVersion}",
+              net.sf.jasperreports.data.xmla;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.analytics;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.analytics.data;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.analytics.dataset;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.base;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.component;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.convert;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.data;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.design;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.design.events;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.dtds;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.export;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.export.data;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.export.draw;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.export.oasis;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.export.ooxml;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.export.ooxml.docx;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.export.ooxml.docx._rels;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.export.ooxml.pptx;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.export.ooxml.pptx._rels;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.export.ooxml.pptx.ppt;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.export.ooxml.pptx.ppt.slideLayouts;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.export.ooxml.pptx.ppt.slideLayouts._rels;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.export.ooxml.pptx.ppt.slideMasters;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.export.ooxml.pptx.ppt.slideMasters._rels;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.export.ooxml.pptx.ppt.theme;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.export.ooxml.type;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.export.ooxml.xlsx;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.export.ooxml.xlsx._rels;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.export.tabulator;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.export.type;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.export.zip;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.fill;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.fonts;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.images;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.part;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.print;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.query;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.scriptlets;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.style;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.type;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.util;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.util.xml;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.virtualization;version="${jasperreportsVersion}",
+              net.sf.jasperreports.engine.xml;version="${jasperreportsVersion}",
+              net.sf.jasperreports.export;version="${jasperreportsVersion}",
+              net.sf.jasperreports.export.annotations;version="${jasperreportsVersion}",
+              net.sf.jasperreports.export.parameters;version="${jasperreportsVersion}",
+              net.sf.jasperreports.export.pdf;version="${jasperreportsVersion}",
+              net.sf.jasperreports.export.type;version="${jasperreportsVersion}",
+              net.sf.jasperreports.extensions;version="${jasperreportsVersion}",
+              net.sf.jasperreports.fonts;version="${jasperreportsVersion}",
+              net.sf.jasperreports.fonts.icons;version="${jasperreportsVersion}",
+              net.sf.jasperreports.functions;version="${jasperreportsVersion}",
+              net.sf.jasperreports.functions.annotations;version="${jasperreportsVersion}",
+              net.sf.jasperreports.governors;version="${jasperreportsVersion}",
+              net.sf.jasperreports.j2ee;version="${jasperreportsVersion}",
+              net.sf.jasperreports.j2ee.servlets;version="${jasperreportsVersion}",
+              net.sf.jasperreports.olap;version="${jasperreportsVersion}",
+              net.sf.jasperreports.olap.mapping;version="${jasperreportsVersion}",
+              net.sf.jasperreports.olap.mondrian;version="${jasperreportsVersion}",
+              net.sf.jasperreports.olap.olap4j;version="${jasperreportsVersion}",
+              net.sf.jasperreports.olap.result;version="${jasperreportsVersion}",
+              net.sf.jasperreports.olap.xmla;version="${jasperreportsVersion}",
+              net.sf.jasperreports.parts;version="${jasperreportsVersion}",
+              net.sf.jasperreports.parts.subreport;version="${jasperreportsVersion}",
+              net.sf.jasperreports.renderers;version="${jasperreportsVersion}",
+              net.sf.jasperreports.repo;version="${jasperreportsVersion}",
+              net.sf.jasperreports.search;version="${jasperreportsVersion}",
+              net.sf.jasperreports.swing;version="${jasperreportsVersion}",
+              net.sf.jasperreports.types;version="${jasperreportsVersion}",
+              net.sf.jasperreports.types.date;version="${jasperreportsVersion}",
+              net.sf.jasperreports.util;version="${jasperreportsVersion}",
+              net.sf.jasperreports.view;version="${jasperreportsVersion}",
+              net.sf.jasperreports.view.images;version="${jasperreportsVersion}",
+              net.sf.jasperreports.view.save;version="${jasperreportsVersion}",
+              net.sf.jasperreports.web;version="${jasperreportsVersion}",
+              net.sf.jasperreports.web.actions;version="${jasperreportsVersion}",
+              net.sf.jasperreports.web.commands;version="${jasperreportsVersion}",
+              net.sf.jasperreports.web.listeners;version="${jasperreportsVersion}",
+              net.sf.jasperreports.web.servlets;version="${jasperreportsVersion}",
+              net.sf.jasperreports.web.servlets.resources;version="${jasperreportsVersion}",
+              net.sf.jasperreports.web.servlets.resources.require;version="${jasperreportsVersion}",
+              net.sf.jasperreports.web.servlets.resources.require.report;version="${jasperreportsVersion}",
+              net.sf.jasperreports.web.servlets.resources.require.util;version="${jasperreportsVersion}",
+              net.sf.jasperreports.web.servlets.resources.require.viewer;version="${jasperreportsVersion}",
+              net.sf.jasperreports.web.servlets.resources.templates;version="${jasperreportsVersion}",
+              net.sf.jasperreports.web.servlets.resources.viewer;version="${jasperreportsVersion}",
+              net.sf.jasperreports.web.util;version="${jasperreportsVersion}"
+            </Export-Package>
+          </instructions>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
   <dependencies>
     <dependency>
       <groupId>net.sf.jasperreports</groupId>
@@ -23,6 +241,10 @@
         <exclusion>
           <groupId>eclipse</groupId>
           <artifactId>jdtcore</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.jfree</groupId>
+          <artifactId>jfreechart</artifactId>
         </exclusion>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -90,14 +312,23 @@
       <artifactId>jcl-over-slf4j</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>jfreechart-dependencies</artifactId>
-      <type>pom</type>
+      <groupId>org.jfree</groupId>
+      <artifactId>jfreechart</artifactId>
+      <!-- jasper uses 1.0.19, so we shade it and minimize exposure -->
+      <version>1.0.19</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jfree</groupId>
+      <artifactId>jcommon</artifactId>
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>spring-dependencies</artifactId>
       <type>pom</type>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.commons</groupId>
+      <artifactId>commons-collections4</artifactId>
     </dependency>
     <dependency>
       <groupId>commons-digester</groupId>

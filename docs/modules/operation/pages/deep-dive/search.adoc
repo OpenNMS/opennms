@@ -1,5 +1,6 @@
 
 = Search
+:description: Learn how to search the Web UI in {page-component-title} for nodes and the areas of the UI to complete specific tasks.
 
 You can search in the {page-component-title} web UI using either the search bar at the top of each page or the Search view.
 

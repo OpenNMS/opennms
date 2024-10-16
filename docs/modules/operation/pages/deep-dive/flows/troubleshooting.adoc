@@ -1,5 +1,6 @@
 
 = Flows Troubleshooting
+:description: Get tips for troubleshooting flows and associated features in {page-component-title}.
 
 This section describes troubleshooting methods for flows and associated features.
 

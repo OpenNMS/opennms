@@ -169,6 +169,18 @@
             <scope>test</scope>
         </dependency>
         <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.kv-store.json.postgres</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.config.dao</groupId>
+            <artifactId>org.opennms.features.config.dao.impl</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.features.config</groupId>
             <artifactId>org.opennms.features.config.upgrade</artifactId>
             <version>${project.version}</version>

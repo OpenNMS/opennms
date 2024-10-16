@@ -34,14 +34,14 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Manage SNMP Collections and Data Collection Groups" />
-  <jsp:param name="headTitle" value="Manage SNMP Collections and Data Collection Groups" />
-  <jsp:param name="location" value="admin" />
-  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="Manage SNMP Collections and Data Collection Groups" />
-  <jsp:param name="vaadinEmbeddedStyles" value="true" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Manage SNMP Collections and Data Collection Groups")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Manage SNMP Collections and Data Collection Groups")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <iframe name="mib-compiler-snmp" id="vaadin-content" src="admin/admin-snmp-collections" frameborder="0" class="vaadin-fullscreen"></iframe>
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

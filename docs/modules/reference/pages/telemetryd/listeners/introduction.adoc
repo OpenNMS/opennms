@@ -1,5 +1,6 @@
 
 [[ref-listener]]
 = Listener Reference
+:description: Overview of telemetryd listener documentation in OpenNMS {page-component-title}.
 
-This section describes the available Telemetryd listeners.
+This section describes the available telemetryd listeners.

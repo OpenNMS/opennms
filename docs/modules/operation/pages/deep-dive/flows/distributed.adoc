@@ -1,6 +1,7 @@
 
 [[flows-remote]]
 = Using Minions as a Flow Collector
+:description: Learn how to set up distributed flows data collection in {page-component-title} with Minion.
 
 Beyond a basic flows setup, you may want to add a Minion to collect flows data from hard-to-reach or remote locations.
 
@@ -43,8 +44,8 @@ TIP: If using a configuration management, you can create and use the properties 
 name = Netflow-5
 class-name = org.opennms.netmgt.telemetry.listeners.UdpListener
 parameters.port = 8877
-parsers.0.name Netflow-5-Parser
-parsers.0.class-name org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser
+parsers.0.name = Netflow-5-Parser
+parsers.0.class-name = org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser
 ----
 
 NOTE: You must also enable the associated protocol, in this case `Netflow-5`, on {page-component-title} to process the messages.

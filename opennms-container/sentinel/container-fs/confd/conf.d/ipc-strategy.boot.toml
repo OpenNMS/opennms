@@ -1,0 +1,7 @@
+[template]
+src = "ipc-strategy.boot.tmpl"
+dest = "/opt/sentinel/etc/featuresBoot.d/ipc-strategy.boot"
+keys = [
+    "/ipc/kafka/bootstrap-servers"
+]
+reload_cmd = "/opt/sentinel/confd/scripts/remove-if-empty /opt/sentinel/etc/featuresBoot.d/ipc-strategy.boot"

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2005-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -42,6 +42,7 @@ import java.util.Optional;
 import java.util.regex.Pattern;
 
 import javax.swing.filechooser.FileSystemView;
+import javax.xml.XMLConstants;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -50,17 +51,13 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.base.Strings;
 
 public abstract class StringUtils {
-
-    private static final Logger LOG = LoggerFactory.getLogger(StringUtils.class);
-
     private static final boolean HEADLESS = Boolean.getBoolean("java.awt.headless");
     private static final Pattern WINDOWS_DRIVE = Pattern.compile("^[A-Za-z]\\:\\\\");
+
+    private StringUtils() {}
 
     /**
      * Convenience method for creating arrays of strings suitable for use as
@@ -91,6 +88,7 @@ public abstract class StringUtils {
      *             If <code>s</code> is null or if <code>delim</code>
      *             already exists in <code>s</code>.
      */
+    @Deprecated(since = "31.0.3")
     public static String[] createCommandArray(String s, char delim) {
         return createCommandArray(s);
     }
@@ -227,17 +225,19 @@ public abstract class StringUtils {
     public static String prettyXml(String xml) throws TransformerException {
         StringWriter out = new StringWriter();
 
-        TransformerFactory transFactory = TransformerFactory.newInstance();
-        Transformer transformer  = transFactory.newTransformer();
+        final TransformerFactory transFactory = TransformerFactory.newInstance();
+        transFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_DTD, "");
+        transFactory.setAttribute(XMLConstants.ACCESS_EXTERNAL_STYLESHEET, "");
 
+        final Transformer transformer  = transFactory.newTransformer();
         // Set options on the transformer so that it will indent the XML properly
         transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");
         transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "2");
 
-        StreamResult result = new StreamResult(out);
-        Source source = new StreamSource(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
+        final StreamResult result = new StreamResult(out);
+        final Source source = new StreamSource(new ByteArrayInputStream(xml.getBytes(StandardCharsets.UTF_8)));
 
         // Run the transformer to put the XML into the StringWriter
         transformer.transform(source, result);
@@ -315,12 +315,8 @@ public abstract class StringUtils {
         }
 
         // If only whitespace characters remained on A, then we have a match
-        if (alen - i == 0) {
-            return true;
-        }
-
-        // There are extra characters at the tail of A, that don't show up in B
-        return false;
+        // Otherwise, there are extra characters at the tail of A, that don't show up in B
+        return alen - i == 0;
     }
 
     public static boolean isEmpty(final String text) {
@@ -329,6 +325,10 @@ public abstract class StringUtils {
 
     public static boolean hasText(final String text) {
         return text != null && text.trim().length() > 0;
+    }
+
+    public static String trim(final String text) {
+        return text == null? null : text.trim();
     }
 
     /**
@@ -365,9 +365,9 @@ public abstract class StringUtils {
      * @return Integer representing the string value
      */
     public static Integer parseDecimalInt(String value, boolean throwExceptions) {
-        final int length = value.length();
+        final int length = value == null? 0 : value.length();
 
-        if (value == null || length < 1) {
+        if (length < 1) {
             if (throwExceptions) {
                 throw new NumberFormatException("Null or empty value");
             } else {

@@ -1,18 +1,31 @@
 
 = BGP Monitoring Protocol
+:description: Learn how the BGP Monitoring Protocol (BMP) integration in OpenNMS {page-component-title} helps you to see what the Border Gateway Protocol is doing.
 
-The BGP Monitoring Protocol (BMP) provides a convenient interface for obtaining route views.
-The integration in {page-component-title} lets you use these route views, status updates, and statistics for monitoring and management.
+The https://datatracker.ietf.org/doc/html/rfc7854[BGP Monitoring Protocol] (BMP) monitors Border Gateway Protocol (BGP) sessions and provides a convenient interface to monitor BGP routing information on the routing device.
+
+The BMP integration in {page-component-title} lets you use these route views, status updates, and statistics for advanced monitoring and management, providing visibility into what BGP is doing.
+
+== {page-component-title} BMP integration
+
+{page-component-title} leverages https://www.snas.io/[OpenBMP], an application that was developed as a reference implementation for receiving BMP messages from network equipment and presenting the state of the BGP network to the user.
+
+BGP runs on routers and high-end switches.
+Those devices can send BMP data to {page-component-title} directly or through a {page-component-title} Minion collector.
 
 .BMP integration overview
-image::bmp/bmp_integration_overview.png[width=70%]
+image::bmp/bmp_integration_overview_2.png[width=70%]
 
-The following sections provide details about associated parsers, adapters, and listeners.
+The {page-component-title} BMP parser accepts BMP connections from router packets using a TCP listener.
+Two adapters in OpenNMS read BMP data, including an inventory list of connected routers and the peers they are established with, and stats and data about what is being exchanged over those peers:
 
-== Distributed BMP processing with Sentinel
+* *BMP telemetry adapter:* Handles BMP statistics the BMP parser has received and parsed.
+Statistics received from the router are associated as performance data with that router.
+View metrics and statistics related to that peer and apply thresholding.
 
-You can use Sentinel to process BMP statistics ingested by one or more Minions in order to alleviate load on the core.
-All of the BMP-related adapters can run on Sentinel, allowing you to generate events and metrics, and ingest route changes.
-In this mode, events are sent back to the message broker for the core to process and metrics are persisted directly to the time series database.
+* *BMP peer status adapter:* Handles BMP Peer Up and Down messages that the BMP parser receives and parses, and converts them to OpenNMS events.
+Allows alarm creation based on up/down status.
 
-TIP: The https://github.com/OpenNMS-forge/bmp-playground[BMP Playground] provides a virtual lab that you can use to simulate BGP, BMP, and to see how the {page-component-title} components can be configured at runtime.
+You can configure the parser and adapters in the `telemetryd-configuration.xml` file.
+
+TIP: The https://github.com/OpenNMS-forge/bmp-playground[BMP Playground] provides a virtual lab that you can use to simulate BGP and BMP, and to see how the {page-component-title} components can be configured at runtime.

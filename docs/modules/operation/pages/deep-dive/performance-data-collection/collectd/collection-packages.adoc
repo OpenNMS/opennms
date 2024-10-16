@@ -1,6 +1,6 @@
 
 = Configure Collector Packages
-:description: Configure collector packages in OpenNMS Horizon/Meridian to provide information collectd needs to activate data collection: attributes and guidelines.
+:description: Configure collector packages in {page-component-title} to provide information collectd needs to activate data collection: attributes and guidelines.
 
 Collector packages in `collectd-configuration.xml` contain the information (IP addresses, interfaces, services, and connection parameters) that collectd needs to activate data collection.
 
@@ -34,7 +34,9 @@ The following tags are also available for an interface filter:
 
 [cols="1,3,3"]
 |===
-| Tag | Description | Example
+| Tag
+| Description
+| Example
 
 | specific
 | Specify an actual IP address to include in the package.
@@ -70,6 +72,11 @@ The following example illustrates collector package attributes that use some of 
 <3> Evaluate IPv4 rule to collect for all IPv4 interfaces in the given range.
 <4> Evaluate IPv6 rule to collect for all IPv6 interfaces in the given range.
 
+[[ga-rrd-retention]]
+== Default metric retention
+
+include::../../retention.adoc[]
+
 [[ga-collectd-packages-services]]
 == Service configuration attributes
 
@@ -102,9 +109,11 @@ For a list of collector-specific parameters and their default values, refer to t
 
 [caption=]
 .Common service attributes
+[cols="1,3"]
 [options="autowidth"]
 |===
-| Attribute | Description
+| Attribute
+| Description
 
 | name
 | Service name

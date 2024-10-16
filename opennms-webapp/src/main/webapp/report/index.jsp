@@ -36,13 +36,14 @@
 
 
 <%@page import="org.opennms.core.resource.Vault"%>
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="title" value="Reports" />
-    <jsp:param name="headTitle" value="Reports" />
-    <jsp:param name="location" value="report" />
-    <jsp:param name="breadcrumb" value="Reports" />
-    <jsp:param name="ngapp" value="onms.default.apps" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Reports")
+          .breadcrumb("Reports")
+          .ngApp("onms.default.apps")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="row">
   <div class="col-md-5">

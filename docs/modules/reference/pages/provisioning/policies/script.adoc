@@ -1,5 +1,6 @@
 
 = Script Policy
+:description: Learn about the Script policy in OpenNMS {page-component-title} to use Groovy scripts to modify provisioned node data.
 
 This policy lets you use Groovy scripts to modify provisioned node data.
 These scripts have to be placed in the `$\{OPENNMS_HOME}/etc/script-policies` directory.

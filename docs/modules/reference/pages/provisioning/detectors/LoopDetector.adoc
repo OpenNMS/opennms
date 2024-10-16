@@ -1,4 +1,5 @@
 = Loop Detector
+:description: Learn how the LoopDetector gives OpenNMS {page-component-title} users the ability to force a service onto an interface during service detection.
 
 The LoopDetector gives {page-component-title} users the ability to force a service onto an interface during service detection.
 You can use the LoopDetector to ensure a specific service is added to all nodes without performing a check against the node.

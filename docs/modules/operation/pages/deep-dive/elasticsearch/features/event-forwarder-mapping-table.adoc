@@ -1,5 +1,6 @@
 [[ga-elastic-field-index]]
 = Table of Index Mapping
+:description: View a table that describes the mapping of {page-component-title} events to the raw events index and internal Elasticsearch fields.
 
 The following table describes the mapping of simple {page-component-title} events to the Raw Events Index.
 Note that fields that begin with an underscore (_) are internal to Elasticsearch.

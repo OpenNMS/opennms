@@ -1,6 +1,6 @@
 [[ga-provisioning-meta-data]]
 = MetaData assigned to nodes
-:description: How to use arbitrary metadata in requisitions for OpenNMS Horizon/Meridian provisioning.
+:description: How to use arbitrary metadata in requisitions for {page-component-title} provisioning.
 
 A requisition can contain arbitrary link:#ga-meta-data[metadata] for each node, interface, and service it contains.
 During provisioning, the metadata is copied to the model and persisted in the database.

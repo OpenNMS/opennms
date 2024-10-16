@@ -1,6 +1,7 @@
 = WMI Service Detector
+:description: Learn how the WMIDetector in OpenNMS {page-component-title} detects the availability of WMIConfiguration on a device when using Provisiond to scan it.
 
-The WMIDetector detects the availability of WMIConfiguration on a device when scanning it using Provisiond.
+The WMIDetector detects the availability of WMIConfiguration on a device when using Provisiond to scan it.
 By default, it expects to make a WMI query to the `Win32_ComputerSystem` class, checking for `OK` from the Status object.
 
 == Detector facts

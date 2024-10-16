@@ -1,6 +1,7 @@
 
 [[ref-detectors]]
 = Detectors
+:description: Get an overview of detectors in OpenNMS {page-component-title} and common configuration parameters assocciated with them.
 
 This section describes all available built-in xref:operation:deep-dive/provisioning/introduction.adoc[provisioning] detectors.
 You can configure them to allow complex detection to meet the needs of your environment.

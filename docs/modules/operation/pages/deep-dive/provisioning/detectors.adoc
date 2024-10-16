@@ -1,6 +1,6 @@
 [[ga-detectors]]
 = Detectors
-:description: Overview of detectors in OpenNMS Horizon/Meridian to detect available services on nodes automatically. Introduction to metadata domain-specific language.
+:description: Overview of detectors in {page-component-title} to detect available services on nodes automatically. Introduction to metadata domain-specific language.
 
 Use detectors within the provisioning process to detect available services on nodes automatically.
 

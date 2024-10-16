@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-bsmd]]
 = Bsmd
+:description: Learn about the OpenNMS {page-component-title} business services monitoring daemon (bsmd), which tracks the operational status of all business services.
 
 Handles calculation of the operational status of the defined xref:operation:deep-dive/bsm/introduction.adoc[business services].
 The daemon tracks the operational status of all business services and sends events when there are operational status changes.

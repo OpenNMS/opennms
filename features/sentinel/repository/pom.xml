@@ -16,7 +16,6 @@
             <plugin>
                 <groupId>org.apache.karaf.tooling</groupId>
                 <artifactId>karaf-maven-plugin</artifactId>
-                <version>${karafVersion}</version>
                 <executions>
                     <execution>
                         <id>features-add-to-repository</id>
@@ -26,6 +25,10 @@
                         </goals>
                         <configuration>
                             <descriptors>
+                                <!-- override default external versions with ones we expect -->
+                                <repository>mvn:org.ops4j.pax.cdi/pax-cdi-features/${paxCdiVersion}/xml/features</repository>
+                                <repository>mvn:org.apache.cxf.karaf/apache-cxf/${cxfVersion}/xml/features</repository>
+                                <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/camel</descriptor>
                                 <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
                                 <!-- Add OpenNMS features -->
                                 <descriptor>mvn:org.opennms.newts/newts-karaf/${newtsVersion}/xml/features</descriptor>

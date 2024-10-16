@@ -1,6 +1,7 @@
 
 [[asset-topology]]
 = Asset Topology Provider
+:description: Learn how to set up and configure asset-based topologies via Karaf or events in {page-component-title}: GraphML, asset layers, and node filtering.
 
 {page-component-title} lets users define arbitrarily complex layered topologies using http://graphml.graphdrawing.org/[GraphML] (see xref:development:graph/graph.adoc[]).
 The Asset Topology Provider avoids the need for users to work directly with GraphML by directly generating a layered GraphML topology based on node parameters and the contents of the node asset table.

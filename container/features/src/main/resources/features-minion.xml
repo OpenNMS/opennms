@@ -28,6 +28,7 @@
 
     <feature name="minion-heartbeat-producer" description="OpenNMS :: Minion :: Heartbeat Producer" version="${project.version}">
       <feature version="${guavaOsgiVersion}">guava</feature>
+      <feature>minion-api-layer</feature>
       <feature>minion-core-api</feature>
       <feature>opennms-core</feature>
       <feature>opennms-core-ipc-sink-api</feature>
@@ -129,17 +130,17 @@
       <bundle>mvn:org.opennms.features.minion.shell/org.opennms.features.minion.shell.collection/${project.version}</bundle>
     </feature>
 
-    <feature name="minion-telemetryd-receivers" description="Minion :: Telemetry :: Receivers" version="${project.version}">
-      <feature version="${netty4Version}">netty4</feature>
-      <feature>opennms-dnsresolver-api</feature>
+    <feature name="minion-telemetryd-receivers" start-level="${earlyStartLevel}" description="Minion :: Telemetry :: Receivers" version="${project.version}">
+      <feature>bson</feature>
+      <feature>commons-csv</feature>
       <feature>dropwizard-metrics</feature>
+      <feature version="${netty4Version}">netty</feature>
+      <feature>opennms-dnsresolver-api</feature>
       <feature>opennms-util</feature>
       <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
       <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
-      <bundle>mvn:org.mongodb/bson/${bsonVersion}</bundle>
-      <bundle>mvn:org.apache.commons/commons-csv/${commonsCsvVersion}</bundle>
-      <bundle>wrap:mvn:io.pkts/pkts-core/${pktsVersion}</bundle>
-      <bundle>wrap:mvn:io.pkts/pkts-buffers/${pktsVersion}</bundle>
+      <bundle>wrap:mvn:io.pkts/pkts-core/${pktsVersion}$Bundle-SymbolicName=io.pkts.core&amp;Bundle-Version=${pktsVersion}</bundle>
+      <bundle>wrap:mvn:io.pkts/pkts-buffers/${pktsVersion}$Bundle-SymbolicName=io.pkts.buffers&amp;Bundle-Version=${pktsVersion}</bundle>
       <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.jaxb/${project.version}</bundle>
@@ -158,9 +159,11 @@
     </feature>
 
     <feature name="opennms-core-ipc-grpc-client" description="OpenNMS :: Core :: IPC :: GRPC :: Client" version="${project.version}">
+      <feature>dropwizard-metrics</feature>
       <feature>opennms-core-ipc-sink-api</feature>
       <feature>opennms-core-ipc-rpc-api</feature>
-      <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
+        <bundle>wrap:mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}$overwrite=merge&amp;Karaf-Commands=none</bundle>
+        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
       <bundle>mvn:org.opennms.core.ipc.grpc/org.opennms.core.ipc.grpc.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.ipc.grpc/org.opennms.core.ipc.grpc.client/${project.version}</bundle>
       <feature>opennms-core-ipc-twin-grpc-subscriber</feature>
@@ -177,6 +180,7 @@
     </feature>
 
     <feature name="dominion-grpc-client" description="Dominion :: GRPC :: Client" version="${project.version}">
+        <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>minion-core-api</feature>
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.minion/dominion-grpc-client/${project.version}</bundle>
@@ -193,6 +197,7 @@
         <bundle dependency="true">mvn:io.vavr/vavr/0.10.0</bundle>
         <feature>commons-lang3</feature>
         <bundle>mvn:org.opennms.features.minion/health-check/${project.version}</bundle>
+        <bundle start-level="20">mvn:org.opennms.container/noop-jetty-extension/${project.version}</bundle>
     </feature>
 
     <feature name="minion-api-layer" version="${project.version}" description="Minion :: API Layer">

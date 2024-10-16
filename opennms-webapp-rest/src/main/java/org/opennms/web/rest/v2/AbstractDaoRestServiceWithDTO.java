@@ -569,10 +569,16 @@ public abstract class AbstractDaoRestServiceWithDTO<T,D,Q,K extends Serializable
         }
     }
 
-    protected WebApplicationException getException(final Status status, String msg, String... params) throws WebApplicationException {
+    protected static WebApplicationException getException(final Status status, String msg, String... params) throws WebApplicationException {
         if (params != null) msg = MessageFormatter.arrayFormat(msg, params).getMessage();
         LOG.error(msg);
         return new WebApplicationException(Response.status(status).type(MediaType.TEXT_PLAIN).entity(msg).build());
+    }
+
+    protected static void checkUserDefinedMetadataContext(final String context) {
+        if (!context.startsWith("X-")) {
+            throw getException(Status.FORBIDDEN, "Only metadata in contexts starting with 'X-' can be modified");
+        }
     }
 
     /**

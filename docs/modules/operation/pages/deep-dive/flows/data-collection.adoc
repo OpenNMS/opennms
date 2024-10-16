@@ -1,5 +1,6 @@
 [[ga-flow-support-data-collection]]
 = Data Collection of Flow Applications
+:description: Learn how to profile network throughput by an application in {page-component-title}.
 
 Flows are categorized in applications using the <<deep-dive/flows/classification-engine.adoc#ga-flow-support-classification-engine, Classification Engine>>.
 OpenNMS supports summing up the bytesIn/bytesOut data of flow records based on these flow applications and the collection of this data.

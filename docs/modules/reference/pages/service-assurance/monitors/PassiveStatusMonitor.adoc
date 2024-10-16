@@ -1,5 +1,6 @@
 
 = PassiveStatusMonitor
+:description: Learn how to configure the PassiveStatusMonitor in OpenNMS {page-component-title} to maintain the status of passive services in memory with a hash table.
 
 Passive nodes are nodes that {page-component-title} is unable to directly communicate with because either they are 'not real' or because there is no network path directly to the device.
 They are termed 'Passive' because {page-component-title} cannot actively poll them and instead passively relies on information sent from somewhere else.

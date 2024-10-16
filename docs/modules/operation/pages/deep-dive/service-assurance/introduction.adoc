@@ -1,7 +1,7 @@
 
 [[ga-service-assurance]]
 = Service Assurance
-:description: Overview of how OpenNMS Horizon/Meridian test availability of services and devices and their latency through service monitors.
+:description: Overview of how {page-component-title} test availability of services and devices and their latency through service monitors.
 
 This section describes how {page-component-title} tests the availability of a service or device and measures its latency.
 In {page-component-title}, a service monitor framework fulfills these tasks.

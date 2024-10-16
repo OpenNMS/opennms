@@ -55,6 +55,7 @@
     </annotation>
     <complexType>
       <sequence>
+        <element ref="this:connection-pool" minOccurs="0" maxOccurs="1" />
         <element ref="this:param" minOccurs="0" maxOccurs="unbounded">
         </element>
       </sequence>

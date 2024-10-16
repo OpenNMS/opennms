@@ -1,0 +1,10 @@
+[template]
+src = "org.opennms.netmgt.distributed.datasource.cfg.tmpl"
+dest = "/opt/sentinel/etc/org.opennms.netmgt.distributed.datasource.cfg"
+keys = [
+    "/datasource/url",
+    "/datasource/username",
+    "/datasource/password",
+    "/datasource/database-name",
+]
+reload_cmd = "/opt/sentinel/confd/scripts/remove-if-empty /opt/sentinel/etc/org.opennms.netmgt.distributed.datasource.cfg"

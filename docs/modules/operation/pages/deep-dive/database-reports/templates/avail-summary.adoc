@@ -1,5 +1,6 @@
 
 = Availability Summary Report
+:description: Learn about the Availability Summary report in {page-component-title}, which provides a summary of availability across one or more node tags.
 
 This report provides a summary of availability across one or more node tags.
 It is the default configuration when viewing data over the past seven days.

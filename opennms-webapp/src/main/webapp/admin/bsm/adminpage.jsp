@@ -33,14 +33,14 @@
         session="true"
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-    <jsp:param name="title" value="Manage Business Services" />
-    <jsp:param name="headTitle" value="Manage Business Services" />
-    <jsp:param name="location" value="admin" />
-    <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-    <jsp:param name="breadcrumb" value="Business Services" />
-    <jsp:param name="vaadinEmbeddedStyles" value="true" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Manage Business Services")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Business Services")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <iframe name="bsm-admin-page" id="vaadin-content" src="admin/bsm-admin-page" frameborder="0" class="vaadin-fullscreen"></iframe>
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

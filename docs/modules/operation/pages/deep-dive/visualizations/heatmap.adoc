@@ -1,5 +1,6 @@
 
 = Heatmap
+:description: Learn about the heatmap visualization in {page-component-title}, which displays unacknowledged alarms or ongoing outages, depending on its configuration.
 
 The heatmap visualization displays either unacknowledged alarms or ongoing outages, depending on its configuration.
 You can apply the visualization to categories, foreign sources, or node services.

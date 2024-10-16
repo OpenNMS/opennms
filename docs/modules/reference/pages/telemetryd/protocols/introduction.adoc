@@ -1,5 +1,6 @@
 
 [[ref-protocol]]
 = Protocol Reference
+:description: Overview of the telemetryd protocol adapters section in the OpenNMS {page-component-title} documentation for parsing flow and/or telemetry data.
 
-This section describes the available Telemetryd protocol adapters for parsing flow and/or telemetry data.
+This section describes the available telemetryd protocol adapters for parsing flow and/or telemetry data.

@@ -45,11 +45,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="title" value="Application Status" />
-    <jsp:param name="headTitle" value="Application Status" />
-    <jsp:param name="breadcrumb" value="Application Status" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Application Status")
+          .breadcrumb("Application Status")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <style>
     .scrollable {

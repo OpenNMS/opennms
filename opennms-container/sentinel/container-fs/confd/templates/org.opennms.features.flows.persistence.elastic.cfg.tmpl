@@ -1,0 +1,17 @@
+{{- /* Upon updating this file please ensure that the schema sentinel-config-schema.yml accurately reflects the keys that
+are used by this template. */ -}}
+{{if exists "/elasticsearch/url" -}}
+elasticUrl = {{getv "/elasticsearch/url"}}
+{{end -}}
+{{if exists "/elasticsearch/index-strategy" -}}
+elasticIndexStrategy = {{getv "/elasticsearch/index-strategy"}}
+{{end -}}
+{{if exists "/elasticsearch/replicas" -}}
+settings.index.number_of_replicas = {{getv "/elasticsearch/replicas"}}
+{{end -}}
+{{if exists "/elasticsearch/conn-timeout" -}}
+connTimeout = {{getv "/elasticsearch/conn-timeout"}}
+{{end -}}
+{{if exists "/elasticsearch/read-timeout" -}}
+readTimeout = {{getv "/elasticsearch/read-timeout"}}
+{{end -}}

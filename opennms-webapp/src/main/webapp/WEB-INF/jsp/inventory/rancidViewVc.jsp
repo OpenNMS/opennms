@@ -36,15 +36,17 @@
 
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="ViewVC" />
-  <jsp:param name="headTitle" value="${model.id}" />
-  <jsp:param name="headTitle" value="ViewVC" />
-  <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-  <jsp:param name="breadcrumb" value="<a href='element/node.jsp?node=${model.db_id}'>Node</a>" />
-  <jsp:param name="breadcrumb" value="<a href='inventory/rancid.htm?node=${model.db_id}'>Rancid</a>" />
-  <jsp:param name="breadcrumb" value="ViewVC Group ${model.group}" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("${model.id}")
+          .headTitle("ViewVC")
+          .breadcrumb("Search", "element/index.jsp")
+          .breadcrumb("Node", "element/node.jsp?node=${model.db_id}")
+          .breadcrumb("Rancid", "inventory/rancid.htm?node=${model.db_id}")
+          .breadcrumb("ViewVC Group ${model.group}")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="row">
     <div class="col-md-12">

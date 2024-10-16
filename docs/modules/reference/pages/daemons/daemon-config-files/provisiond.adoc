@@ -1,5 +1,6 @@
 
 = Provisiond
+:description: Learn about the OpenNMS {page-component-title} provision daemon (provisiond), which scans nodes from requisition and import files and from `newSuspect` events.
 
 The provision daemon scans nodes from requisition and import files, and from `newSuspect` events.
 The scanned nodes are then added to the database.
@@ -15,13 +16,6 @@ We recommend that you use the {page-component-title} web UI to update configurat
 |===
 | File  | Description   | Reload Event  | Restart Required
 
-ifeval::["{page-component-title}" == "Meridian"]
-| provisiond-configuration.xml
-| Sets requisition definitions for defined discovery of nodes and foreign sources.
-| Yes
-| Yes
-
-endif::[]
 | default-foreign-source.xml
 | List of xref:provisioning/detectors.adoc[detectors] and xref:provisioning/policies.adoc[policies] to apply when scanning requisitioned nodes.
 Does not exist by default. +
@@ -53,4 +47,47 @@ Also includes service detection and policy results.
 
 | GeoIpProvisioningAdapter.log
 | Logs related to the xref:reference:provisioning/adapters/geoip.adoc[GeoIP provisioning plugin].
+|===
+
+== Provisiond thread configuration
+
+Provisiond uses for a few thread pools to manage various tasks.
+You can configure these via the Web UI by selecting menu:Info[External Requisitions] in the top menu bar.
+
+NOTE: Any changes to the thread pools require a restart of the {page-component-title} service to apply the new thread limits.
+
+
+.Provisiond thread pool descriptions
+[cols="1,1,5"]
+|===
+| Pool  | Default Size | Description
+
+| Import
+| 8
+| Number of threads to allocate for importing requisitions.
+This pool determines the number of requisitions that can be imported at one time.
+Increase this number if you have a large number of requisitions.
+
+Import threads will check the requisition against the database to determine what add, change, or delete operations are necessary.
+They will also attempt to pull SNMP system information from the node into the database.
+Once this inventory update is complete, the import thread will schedule the node for scanning or rescanning as necessary.
+
+| Scan
+| 10
+| Number of threads to allocate for node scan tasks.
+This pool is used for running detectors against a node.
+This applies to both the initial scan and rescans of existing nodes and requisitions.
+Increase this number if you have a large number of nodes in a single requisition.
+
+
+| Rescan
+| 10
+| Number of threads to allocate for automated rescanning existing nodes.
+This pool is used for rescanning nodes in a requisition based on the foreign source definition or the external requisition schedule.
+Rescan threads will spawn a scan thread to process the applicable detectors, so this value typically should be the same as the Scan thread pool size.
+
+| Write
+| 8
+| Number of threads to allocate for writing to the database.
+This value typically does not need to be modified under most use cases.
 |===

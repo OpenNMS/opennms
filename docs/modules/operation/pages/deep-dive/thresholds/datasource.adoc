@@ -1,6 +1,6 @@
 
 = Thresholding Tasks
-:description: Thresholding tasks in OpenNMS Horizon/Meridian: use metadata, confirm you are collecting metrics, and determine the data source.
+:description: Thresholding tasks in {page-component-title}: use metadata, confirm you are collecting metrics, and determine the data source.
 
 For information on how to create a basic or expression-based threshold, see xref:quick-start/thresholding.adoc[] in the Quick Start section.
 This section describes related thresholding tasks.

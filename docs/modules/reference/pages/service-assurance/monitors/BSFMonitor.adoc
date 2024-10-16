@@ -1,5 +1,6 @@
 
 = BSFMonitor
+:description: Learn how to configure and use the BSFMonitor in OpenNMS {page-component-title} to determine the status of a service through a Bean Scripting Framework.
 
 This monitor runs a Bean Scripting Framework (http://commons.apache.org/proper/commons-bsf/[BSF])-compatible script to determine the status of a service.
 Users can write scripts to perform highly customized service checks.

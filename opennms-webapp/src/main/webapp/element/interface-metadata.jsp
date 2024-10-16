@@ -51,20 +51,19 @@
     final OnmsIpInterface entity = NetworkElementFactory
             .getInstance(getServletContext())
             .getNode(nodeId).getIpInterfaceByIpAddress(ipAddr);
-
-    final String nodeBreadCrumb = "<a href='element/node.jsp?node=" + nodeId  + "'>Node</a>";
-    final String interfaceBreadCrumb = "<a href='element/interface.jsp?node=" + nodeId  + "&intf=" + ipAddr + "'>Interface</a>";
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-    <jsp:param name="title" value="Metadata" />
-    <jsp:param name="headTitle" value="<%= ipAddr %>" />
-    <jsp:param name="headTitle" value="Meta-Data" />
-    <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-    <jsp:param name="breadcrumb" value="<%= nodeBreadCrumb %>" />
-    <jsp:param name="breadcrumb" value="<%= interfaceBreadCrumb %>" />
-    <jsp:param name="breadcrumb" value="Meta-Data" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle(ipAddr)
+          .headTitle("Meta-Data")
+          .breadcrumb("Search", "element/index.jsp")
+          .breadcrumb("Node", "element/node.jsp?node=" + nodeId)
+          .breadcrumb("Interface", "element/interface.jsp?node=" + nodeId  + "&intf=" + ipAddr)
+          .breadcrumb("Meta-Data")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <h4>Meta-Data for Interface: <strong><%= ipAddr %></strong></h4>
 

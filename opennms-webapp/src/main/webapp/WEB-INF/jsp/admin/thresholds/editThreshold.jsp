@@ -32,16 +32,18 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-	<jsp:param name="title" value="Threshold Editor" />
-	<jsp:param name="headTitle" value="Edit Threshold" />
-	<jsp:param name="headTitle" value="Thresholds" />
-	<jsp:param name="headTitle" value="Admin" />
-	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/thresholds/index.jsp'>Threshold Groups</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/thresholds/index.jsp?groupName=${groupName}&editGroup'>Edit Group</a>" />
-	<jsp:param name="breadcrumb" value="Edit Threshold" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Edit Threshold")
+          .headTitle("Thresholds")
+          .headTitle("Admin")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Threshold Groups", "admin/thresholds/index.jsp")
+          .breadcrumb("Edit Group", "admin/thresholds/index.jsp?groupName=${groupName}&editGroup")
+          .breadcrumb("Edit Threshold")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <form name="frm" role="form" action="admin/thresholds/index.htm" method="post">
 <input type="hidden" name="finishThresholdEdit" value="1"/>

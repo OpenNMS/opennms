@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
+ * Copyright (C) 2019-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -209,14 +209,18 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
         @Override
         protected void finished(final Description description) {
+            final String testName = description.getMethodName();
+            LOG.debug("Test {} finished.", testName);
             cleanUp();
         }
 
         protected void cleanUp() {
+            LOG.debug("=== cleanup starting ===");
             try {
                 deleteTestRequisition();
                 deleteTestUser();
                 deleteTestGroup();
+                LOG.debug("=== cleanup complete ===");
             } catch (final Exception e) {
                 LOG.error("Cleaning up failed. Future tests will be in an unhandled state.", e);
             }
@@ -275,6 +279,9 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     public void login() {
+        // Start with a clean slate
+        getDriver().manage().deleteAllCookies();
+
         getDriver().get(getBaseUrlInternal() + "opennms/login.jsp");
 
         waitForLogin();

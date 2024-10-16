@@ -1,5 +1,6 @@
 
 = Log File Viewer
+:description: Learn how to view log files in the {page-component-title} web UI.
 
 You can view log files in the {page-component-title} web UI.
 To do so, click menu:Info[Logs] in the top menu bar.

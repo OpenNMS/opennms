@@ -38,7 +38,7 @@
         :error="getError('importThreads')"
         type="number"
         label="Import"
-        hint="Number of threads to allocate for importing requisitions."
+        hint="Number of threads to allocate for requisition import tasks."
         v-model="threadPoolData.importThreads"
         @keypress="enterCheck"
       />
@@ -46,7 +46,7 @@
         :error="getError('scanThreads')"
         type="number"
         label="Scan"
-        hint="Number of threads to allocate for scanning new nodes."
+        hint="Number of threads to allocate for manual scanning tasks."
         v-model="threadPoolData.scanThreads"
         @keypress="enterCheck"
       />
@@ -54,7 +54,7 @@
         :error="getError('rescanThreads')"
         type="number"
         label="Rescan"
-        hint="Number of threads to allocate for rescanning existing nodes."
+        hint="Number of threads to allocate for scheduled rescanning tasks."
         v-model="threadPoolData.rescanThreads"
         @keypress="enterCheck"
       />
@@ -254,4 +254,3 @@ const getError = (key: string) => {
   margin-bottom: 10px;
 }
 </style>
-

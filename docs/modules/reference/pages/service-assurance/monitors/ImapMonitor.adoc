@@ -1,6 +1,7 @@
 
 [[poller-imap-monitor]]
 = ImapMonitor
+:description: Learn about the ImapMonitor in OpenNMS {page-component-title} that checks if an IMAP server is functional.
 
 This monitor checks if an IMAP server is functional.
 The test initializes an IMAP connection to send a logout command and verify server response.

@@ -1,0 +1,9 @@
+{{- /* Upon updating this file please ensure that the schema sentinel-config-schema.yml accurately reflects the keys that
+are used by this template. */ -}}
+{{if (exists "/ipc/kafka/bootstrap.servers") -}}
+!sentinel-jms
+sentinel-kafka
+{{else}}
+sentinel-jms
+!sentinel-kafka
+{{end -}}

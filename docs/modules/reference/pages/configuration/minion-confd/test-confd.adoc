@@ -1,14 +1,15 @@
 
 [[confd-template-test]]
-= Test confd templates
+= Test confd Templates
+:description: Learn how to test confd template changes locally using a Minion Docker container in OpenNMS {page-component-title}.
 
-To locally test `confd` template changes, run a Minion container and map the corresponding files into the container. 
+To locally test `confd` template changes, run a Minion container and map the corresponding files into the container.
 The following procedure, which requires a Minion Docker container, might be useful:
 
-. Download a Minion Docker image from a build in CircleCI. 
-This can be found as an artifact of the `tarball-assembly` job. 
+. Download a Minion Docker image from a build in CircleCI.
+This can be found as an artifact of the `tarball-assembly` job.
 . Load the image into Docker: `docker load minion.oci`.
-. Create a `docker-compose.yaml` file in the parent folder of the checked-out `opennms` repo. 
+. Create a `docker-compose.yaml` file in the parent folder of the checked-out `opennms` repo.
 See below for a sample compose file.
 . Start the image: `docker-compose up -d`.
 . Open a shell in the container using `docker exec -ti minion bash` or look at the logs `docker logs minion`.

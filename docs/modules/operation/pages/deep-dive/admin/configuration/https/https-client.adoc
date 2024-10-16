@@ -1,6 +1,7 @@
 
 [[ga-operation-https-client]]
 = SSL Client Connections
+:description: Learn how to create a custom Java truststore in {page-component-title} to establish SSL connections with monitored nodes.
 
 The Java truststore enables {page-component-title} to establish SSL connections with monitored nodes.
 

@@ -1,5 +1,6 @@
 
 = Housekeeping Tasks
+:description: Read about recommended housekeeping tasks to complete to ensure optimum system performance with {page-component-title}, and to perform before upgrading.
 
 This section describes housekeeping tasks that you may want to perform to ensure optimum system performance.
 We recommend that you complete some of these tasks before upgrading your {page-component-title} instance.

@@ -39,15 +39,17 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="https://www.owasp.org/index.php/OWASP_Java_Encoder_Project" prefix="e"%>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-	<jsp:param name="title" value="Threshold Group" />
-	<jsp:param name="headTitle" value="Edit Group" />
-	<jsp:param name="headTitle" value="Thresholds" />
-	<jsp:param name="headTitle" value="Admin" />
-	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/thresholds/index.jsp'>Threshold Groups</a>" />
-	<jsp:param name="breadcrumb" value="Edit Group" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Edit Group")
+          .headTitle("Thresholds")
+          .headTitle("Admin")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Threshold Groups", "admin/thresholds/index.jsp")
+          .breadcrumb("Edit Group")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script type="text/javascript">
     function submitNewNotificationForm(uei) {

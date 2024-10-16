@@ -38,16 +38,18 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn" %>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt" %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-	<jsp:param name="title" value="On-Call Role Configuration" />
-	<jsp:param name="headTitle" value="Edit Schedule" />
-	<jsp:param name="headTitle" value="On-Call Roles" />
-	<jsp:param name="headTitle" value="Admin" />
-	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/index.jsp'>Users, Groups and On-Call Roles</a>" />
-	<jsp:param name="breadcrumb" value="<a href='admin/userGroupView/roles'>On-Call Role List</a>" />
-	<jsp:param name="breadcrumb" value="Edit Entry" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Edit Schedule")
+          .headTitle("On-Call Roles")
+          .headTitle("Admin")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Users, Groups and On-Call Roles", "admin/userGroupView/index.jsp")
+          .breadcrumb("On-Call Role List", "admin/userGroupView/roles")
+          .breadcrumb("Edit Entry")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="card">
   <div class="card-header">

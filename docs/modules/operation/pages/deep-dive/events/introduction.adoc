@@ -1,7 +1,7 @@
 
 [[events]]
 = Events
-:description: Overview of events (structured historical records of things in OpenNMS Horizon/Meridian), event definition files and the event bus.
+:description: Overview of events (structured historical records of things in {page-component-title}), event definition files and the event bus.
 
 Events are structured historical records of things that happen in {page-component-title} and the nodes, interfaces, and services it monitors.
 Events are central to the operation of the {page-component-title} platform, so it's critical to have a firm grasp of this topic.

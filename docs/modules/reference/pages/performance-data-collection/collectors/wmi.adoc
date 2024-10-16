@@ -1,5 +1,6 @@
 
 = WmiCollector
+:description: Configure the WmiCollector in OpenNMS {page-component-title} to collect performance metrics from Windows systems using Windows Management Instrumentation (WMI).
 
 The WmiCollector collects performance metrics from Windows systems using Windows Management Instrumentation (WMI).
 

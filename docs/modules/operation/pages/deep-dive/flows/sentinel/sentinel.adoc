@@ -1,6 +1,7 @@
 
 [[flows-scaling]]
 = Scale Flow Processing with Sentinel
+:description: Learn how to scale flows data collection in {page-component-title} with Sentinel; configure PosgreSQL database, Elasticsearch, and message brokers.
 
 When your flows data collection volume increases to the point that {page-component-title} is too busy processing flows, you can add one or more Sentinels to do the processing instead.
 Sentinel can do the following:

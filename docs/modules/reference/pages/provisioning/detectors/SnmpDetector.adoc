@@ -1,4 +1,5 @@
 = SNMP Service Detector
+:description: Learn how the SNMPDetector in OpenNMS {page-component-title} finds and assigns services based on SNMP.
 
 The SNMPDetector finds and assigns services based on SNMP.
 It binds a service with a given name when a particular scalar or table SNMP OID matches defined criteria.

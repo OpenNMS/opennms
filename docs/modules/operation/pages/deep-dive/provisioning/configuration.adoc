@@ -1,7 +1,7 @@
 
 [[beyond-quick-start]]
 = Configuration Options
-:description: Overview of inventory provisioning configuration options in OpenNMS Horizon/Meridian with cross-reference to quick start inventory section.
+:description: Overview of inventory provisioning configuration options in {page-component-title} with cross-reference to quick start inventory section.
 
 The xref:operation:quick-start/inventory.adoc[Provision Inventory] Quick Start section provides an overview and basic procedures to start provisioning using the default configuration.
 

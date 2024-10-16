@@ -1,7 +1,7 @@
 
 [[ga-user-groups]]
 = Groups
-:description: How to create user groups and add members to them in OpenNMS Horizon/Meridian.
+:description: How to create user groups and add members to them in {page-component-title}.
 
 Groups in {page-component-title} are collections of users.
 They may be used to organize users, such as in the case of an instance with many users or permissions sets.

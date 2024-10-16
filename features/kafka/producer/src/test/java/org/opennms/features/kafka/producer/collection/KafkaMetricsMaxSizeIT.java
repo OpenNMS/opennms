@@ -28,23 +28,13 @@
 
 package org.opennms.features.kafka.producer.collection;
 
-import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.equalTo;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
-
 import com.google.protobuf.DoubleValue;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.KafkaProducer;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.serialization.ByteArraySerializer;
 import org.apache.kafka.common.serialization.StringSerializer;
+import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.After;
 import org.junit.Assert;
@@ -56,6 +46,17 @@ import org.mockito.hamcrest.MockitoHamcrest;
 import org.opennms.core.test.kafka.JUnitKafkaServer;
 import org.opennms.features.kafka.producer.KafkaForwarderIT;
 import org.opennms.features.kafka.producer.model.CollectionSetProtos;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Hashtable;
+import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
+
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.equalTo;
 
 
 public class KafkaMetricsMaxSizeIT {
@@ -92,31 +93,10 @@ public class KafkaMetricsMaxSizeIT {
     public void testHandlingMaxSizeWithMultipleResources() {
         // Mock max size to be 120 bytes ( At least minimum of one resource size)
         Mockito.when(kafkaPersister.checkForMaxSize(MockitoHamcrest.intThat(Matchers.greaterThan(140)))).thenReturn(true);
-        CollectionSetProtos.CollectionSet.Builder builder = CollectionSetProtos.CollectionSet.newBuilder();
-        builder.setTimestamp(System.currentTimeMillis());
-        CollectionSetProtos.NodeLevelResource nodeLevelResource = CollectionSetProtos.NodeLevelResource.newBuilder().setNodeId(5).setNodeLabel("kafka-test")
-                .setForeignId("fs").setForeignSource("fs").build();
-        CollectionSetProtos.NumericAttribute numericAttribute = CollectionSetProtos.NumericAttribute.newBuilder()
-                .setName("num-interfaces")
-                .setGroup("interfaces")
-                .setValue(5)
-                .setMetricValue(DoubleValue.of(5))
-                .setType(CollectionSetProtos.NumericAttribute.Type.GAUGE).build();
-        builder.addResource(CollectionSetProtos.CollectionSetResource.newBuilder()
-                .setNode(nodeLevelResource)
-                .addNumeric(numericAttribute)
-                .build());
-        CollectionSetProtos.InterfaceLevelResource interfaceLevelResource = CollectionSetProtos.InterfaceLevelResource.newBuilder().setNode(nodeLevelResource).setInstance("lo").build();
-        builder.addResource(CollectionSetProtos.CollectionSetResource.newBuilder().setInterface(interfaceLevelResource).addNumeric(numericAttribute).build());
-
-        CollectionSetProtos.GenericTypeResource genericTypeResource = CollectionSetProtos.GenericTypeResource.newBuilder().setNode(nodeLevelResource)
-                .setInstance("sink-consumer-events")
-                .setType("sink-consumer").build();
-        builder.addResource(CollectionSetProtos.CollectionSetResource.newBuilder().setGeneric(genericTypeResource).addNumeric(numericAttribute)).build();
-
-        CollectionSetProtos.CollectionSet collectionSet = builder.build();
+        CollectionSetProtos.CollectionSet collectionSet = buildCollectionSet();
         kafkaPersister.bisectAndSendMessageToKafka(collectionSet);
         await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(3));
+        MatcherAssert.assertThat(kafkaConsumer.getNumOfMetricRecords().get(), Matchers.greaterThan(1));
         List<CollectionSetProtos.CollectionSet> collectionSetList = kafkaConsumer.getCollectionSetValues();
         CollectionSetProtos.CollectionSet.Builder result = CollectionSetProtos.CollectionSet.newBuilder();
         collectionSetList.forEach(result::mergeFrom);
@@ -156,9 +136,50 @@ public class KafkaMetricsMaxSizeIT {
 
     }
 
+    private CollectionSetProtos.CollectionSet buildCollectionSet() {
+        CollectionSetProtos.CollectionSet.Builder builder = CollectionSetProtos.CollectionSet.newBuilder();
+        builder.setTimestamp(System.currentTimeMillis());
+        CollectionSetProtos.NodeLevelResource nodeLevelResource = CollectionSetProtos.NodeLevelResource.newBuilder().setNodeId(5).setNodeLabel("kafka-test")
+                .setForeignId("fs").setForeignSource("fs").build();
+        CollectionSetProtos.NumericAttribute numericAttribute = CollectionSetProtos.NumericAttribute.newBuilder()
+                .setName("num-interfaces")
+                .setGroup("interfaces")
+                .setValue(5)
+                .setMetricValue(DoubleValue.of(5))
+                .setType(CollectionSetProtos.NumericAttribute.Type.GAUGE).build();
+        builder.addResource(CollectionSetProtos.CollectionSetResource.newBuilder()
+                .setNode(nodeLevelResource)
+                .addNumeric(numericAttribute)
+                .build());
+        CollectionSetProtos.InterfaceLevelResource interfaceLevelResource = CollectionSetProtos.InterfaceLevelResource.newBuilder().setNode(nodeLevelResource).setInstance("lo").build();
+        builder.addResource(CollectionSetProtos.CollectionSetResource.newBuilder().setInterface(interfaceLevelResource).addNumeric(numericAttribute).build());
+
+        CollectionSetProtos.GenericTypeResource genericTypeResource = CollectionSetProtos.GenericTypeResource.newBuilder().setNode(nodeLevelResource)
+                .setInstance("sink-consumer-events")
+                .setType("sink-consumer").build();
+        builder.addResource(CollectionSetProtos.CollectionSetResource.newBuilder().setGeneric(genericTypeResource).addNumeric(numericAttribute)).build();
+
+        return builder.build();
+    }
+
+    @Test
+    public void testDisablingOfMetricsSplitting() {
+        Mockito.when(kafkaPersister.checkForMaxSize(MockitoHamcrest.intThat(Matchers.greaterThan(140)))).thenReturn(true);
+        Mockito.when(kafkaPersister.getDisableMetricsSplitting()).thenReturn(true);
+        CollectionSetProtos.CollectionSet collectionSet = buildCollectionSet();
+        kafkaPersister.bisectAndSendMessageToKafka(collectionSet);
+        await().atMost(30, TimeUnit.SECONDS).pollInterval(5, TimeUnit.SECONDS).until(() -> kafkaConsumer.getCollectionSetValues().size(), equalTo(1));
+        MatcherAssert.assertThat(kafkaConsumer.getNumOfMetricRecords().get(), Matchers.is(1));
+        List<CollectionSetProtos.CollectionSet> collectionSetList = kafkaConsumer.getCollectionSetValues();
+        CollectionSetProtos.CollectionSet.Builder result = CollectionSetProtos.CollectionSet.newBuilder();
+        collectionSetList.forEach(result::mergeFrom);
+        Assert.assertEquals(collectionSet, result.build());
+    }
+
     @After
     public void destroy() {
         kafkaConsumer.clearCollectionSetValues();
+        kafkaConsumer.clearNumofMetricRecords();
         kafkaConsumer.shutdown();
         executor.shutdown();
     }

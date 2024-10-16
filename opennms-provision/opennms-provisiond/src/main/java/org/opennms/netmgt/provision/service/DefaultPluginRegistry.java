@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2009-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2009-2023 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -33,6 +33,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
+
+import javax.validation.Valid;
 
 import org.opennms.core.soa.ServiceRegistry;
 import org.opennms.core.spring.BeanUtils;
@@ -83,14 +85,18 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
         addAllExtensions(m_snmpInterfacePolicies, SnmpInterfacePolicy.class, OnmsPolicy.class);
     }
     
+    private static void trace(String format, Object... args) {
+        LOG.trace(format, args);
+    }
+
     private static void debug(String format, Object... args) {
         LOG.debug(format, args);
     }
-    
+
     private static void info(String format, Object... args) {
         LOG.info(format, args);
     }
-    
+
     private static void error(Throwable cause, String format, Object... args) {
         if (cause == null) {
             LOG.error(format, args);
@@ -118,13 +124,13 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
     
     /** {@inheritDoc} */
     @Override
-    public <T> T getPluginInstance(Class<T> pluginClass, PluginConfig pluginConfig) {
+    public <T> T getPluginInstance(Class<T> pluginClass, @Valid PluginConfig pluginConfig) {
         T pluginInstance = beanWithNameOfType(pluginConfig.getPluginClass(), pluginClass);
         if (pluginInstance == null) {
             return null;
         }
         
-        Map<String, String> parameters = new HashMap<String, String>(pluginConfig.getParameterMap());
+        Map<String, String> parameters = new HashMap<>(pluginConfig.getParameterMap());
 
 
         BeanWrapper wrapper = PropertyAccessorFactory.forBeanPropertyAccess(pluginInstance);
@@ -155,8 +161,7 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
                 // if not, the policy definition seems to be broken
                 error(null,"Policy class not found or not a policy class: '{}' of type {}", beanName, pluginClass);
             } else {
-                // log only for debug
-                debug("Failed to find bean {} with name {} of type {}", bean, beanName, pluginClass);
+                trace("Bean {} with name {} is a policy, but does not match requested type {}", bean, beanName, pluginClass);
             }
         }
         return bean;

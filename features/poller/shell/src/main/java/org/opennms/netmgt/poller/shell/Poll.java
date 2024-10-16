@@ -52,6 +52,11 @@ import org.apache.karaf.shell.api.action.Completion;
 import org.apache.karaf.shell.api.action.Option;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.FallbackScope;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.MapScope;
+import org.opennms.core.mate.api.Scope;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.features.deviceconfig.service.DeviceConfigUtil;
@@ -107,6 +112,9 @@ public class Poll implements Action {
 
     @Reference
     public LocationAwarePollerClient locationAwarePollerClient;
+
+    @Reference
+    public EntityScopeProvider entityScopeProvider;
 
     @Reference
     public NodeDao nodeDao;
@@ -183,8 +191,13 @@ public class Poll implements Action {
         if (className != null) {
             System.out.printf("Monitor: %s%n", className);
         }
-        for (Map.Entry<String,Object> e : parameters.entrySet()) {
-            System.out.printf("Parameter %s: %s%n", e.getKey(), e.getValue());
+
+        final Scope scope = entityScopeProvider.getScopeForService(nodeId, ipAddress, serviceName);
+
+        for (final Map.Entry<String,Object> e : parameters.entrySet()) {
+            System.out.printf("Parameter %s:%n", e.getKey());
+            System.out.printf("  - configured: %s%n", e.getValue());
+            System.out.printf("  - effective: %s%n", Interpolator.interpolate((String) e.getValue(), scope).output);
         }
 
         while (true) {

@@ -13,7 +13,7 @@
   http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-4.2.xsd
   http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd
-  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.19.1.xsd
+  http://camel.apache.org/schema/spring http://camel.apache.org/schema/spring/camel-spring-2.21.5.xsd
 ">
 
   <context:annotation-config />

@@ -1,5 +1,6 @@
 
 = Serial Interface Utilization Summary Report
+:description: Learn how to create a report in {page-component-title} that provides availability data for serial interfaces in a specified date range.
 
 This report provides the following availability data for serial interfaces over the specified date range:
 

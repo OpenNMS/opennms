@@ -28,15 +28,15 @@
  *******************************************************************************/
 
 --%>
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-    <jsp:param name="norequirejs" value="true" />
-
-    <jsp:param name="title" value="Endpoint Configuration" />
-    <jsp:param name="ngapp" value="onms.endpoints" />
-    <jsp:param name="headTitle" value="Endpoint Configuration" />
-    <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-    <jsp:param name="breadcrumb" value="Endpoint Configuration" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Endpoint Configuration")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Endpoint Configuration")
+          .ngApp("onms.endpoints")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">
   <jsp:param name="asset" value="onms-endpoints" />

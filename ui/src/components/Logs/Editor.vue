@@ -75,7 +75,7 @@ const getLog = (reverse: boolean) => {
 watchEffect(() => content.value = logString.value)
 const init = (editor: any) => {
   // activate and hide seach box
-  ace.config.loadModule('ace/ext/searchbox', (m) => m.Search(editor))
+  ace.config.loadModule('ace/ext/searchbox', (m: any) => m.Search(editor))
   editor.searchBox.hide()
 
   editor.setFontSize(15)

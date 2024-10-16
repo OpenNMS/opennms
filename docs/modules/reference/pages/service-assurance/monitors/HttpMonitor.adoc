@@ -1,6 +1,7 @@
 
 [[poller-http-monitor]]
 = HttpMonitor
+:description: Learn about the HttpMonitor in OpenNMS {page-component-title} that tests the response of an HTTP server on a specific HTTP GET command.
 
 The HTTP monitor tests the response of an HTTP server on a specific HTTP GET command.
 During the poll, the monitor attempts to connect on the specified port(s).

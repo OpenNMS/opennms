@@ -1,5 +1,6 @@
 
 = Geocoder Service
+:description: Learn how to enable the geocoder service in {page-component-title} to resolve geolocation information with Google, MapQuest, and Nominatim.
 
 The geocoder service resolves geolocation information in {page-component-title}.
 {page-component-title} also supports several external geocoder services.

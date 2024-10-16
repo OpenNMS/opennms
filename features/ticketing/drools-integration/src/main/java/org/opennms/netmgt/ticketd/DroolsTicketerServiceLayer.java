@@ -30,7 +30,7 @@ package org.opennms.netmgt.ticketd;
 
 import java.util.Map;
 
-import org.drools.core.io.impl.FileSystemResource;
+import org.drools.io.FileSystemResource;
 import org.kie.api.KieBase;
 import org.kie.api.runtime.KieSession;
 import org.kie.internal.utils.KieHelper;

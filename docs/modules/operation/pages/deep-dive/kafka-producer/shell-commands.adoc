@@ -1,5 +1,6 @@
 
 = Shell Commands
+:description: Learn about the Kafka Producer's shell commands to help administer and debug this service in {page-component-title}.
 
 The Kafka Producer also provides a series of shell commands to help administer and debug the service.
 

@@ -14,7 +14,7 @@
 
     <complexType>
       <sequence>
-        <element maxOccurs="unbounded" minOccurs="1" ref="this:snmp-collection">
+        <element maxOccurs="unbounded" minOccurs="0" ref="this:snmp-collection">
           <annotation>
             <documentation>SNMP data collection element</documentation>
           </annotation>

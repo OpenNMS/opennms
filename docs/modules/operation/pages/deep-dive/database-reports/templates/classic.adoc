@@ -1,5 +1,6 @@
 
 = Default Classic Report
+:description: Learn about the Classic report, which contains monthly availability statistics for all services that {page-component-title} monitored over the past year.
 
 The default classic report is generated directly from the {page-component-title} Java code.
 As such, it has no optional parameters to modify.

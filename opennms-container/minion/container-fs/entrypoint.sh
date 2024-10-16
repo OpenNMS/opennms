@@ -209,6 +209,7 @@ configure() {
       [[ $assignment =~ ^#.* ]] && continue
       export "$assignment"
     done < "$MINION_PROCESS_ENV_CFG"
+    export JAVA_OPTS="$CUSTOM_JAVA_OPTS $JAVA_OPTS"
   fi
   if [[ -f "$MINION_SERVER_CERTS_CFG" ]]; then
     # cacerts is a symlink to a file, so *do not* put /. on the target

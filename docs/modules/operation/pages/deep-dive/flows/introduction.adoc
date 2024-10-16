@@ -1,6 +1,7 @@
 
 [[ga-flow-support-introduction]]
 = Flows
+:description: Learn how flows data collection in {page-component-title} provides a picture of your network traffic.
 
 Flows are summaries of network traffic sent by network devices (switches, routers, and so on).
 This information includes, but is not limited to, source and destination addresses, source and destination ports, octet count, and duration of activity.

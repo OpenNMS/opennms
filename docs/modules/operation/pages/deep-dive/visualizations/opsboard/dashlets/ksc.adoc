@@ -1,6 +1,7 @@
 
 [[ksc]]
 = KSC Reports
+:description: Learn about the KSC Reports dashlet, which displays an existing Kapersky Security Center (KSC) report in the {page-component-title} operator board.
 
 The KSC Reports dashlet displays an existing https://opennms.discourse.group/t/ksc-report-configuration/2209[KSC report] in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board].
 KSC reports provide a way to generate prefabricated graphical views of collected data.

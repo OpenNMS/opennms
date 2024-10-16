@@ -1,5 +1,6 @@
 
 = Feature Matrix
+:description: View the list of features in {page-component-title} that leverage Elasticsearch.
 
 The following features leverage Elasticsearch and are compatible with version 7.x.
 

@@ -1,6 +1,6 @@
 
 = Shell Commands
-:description: Overview of Karaf shell commands to help administer and diagnose issues related to service assurance with OpenNMS Horizon/Meridian.
+:description: Overview of Karaf shell commands to help administer and diagnose issues related to service assurance with {page-component-title}.
 
 A number of Karaf Shell commands are available to help administer and diagnose issues related to service assurance.
 

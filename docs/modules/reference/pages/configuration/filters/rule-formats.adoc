@@ -1,12 +1,13 @@
 
 [[filter-rule-format]]
-= Rule formats 
+= Rule formats
+:description: View the formats for filters/rules in OpenNMS {page-component-title}: CDATA construct, GUI construct, and catinc.
 
 There are at least two formats for these rules in xml (GUI format follows).
 
 == CDATA construct
 
-In this example, the entire rule is wrapped in `<![CDATA[...]]>` so that you do not have to escape ampersands ("&"). 
+In this example, the entire rule is wrapped in `<![CDATA[...]]>` so that you do not have to escape ampersands ("&").
 The CDATA bits are in bold:
 
 [source]
@@ -33,12 +34,12 @@ For the GUI, drop the unescaped value into the text field:
 
 == catinc
 
-Sometimes you need to include hosts that belong to more than one category, via an AND operator. 
-For example, you need to include all hosts that belong to BOTH production and Linux groups. 
+Sometimes you need to include hosts that belong to more than one category, via an AND operator.
+For example, you need to include all hosts that belong to BOTH production and Linux groups.
 
 You cannot do this using any variation of, for example, (categoryName == 'Production') & (categoryName == 'Linux').
 
-Use the `catinc` function as follows: 
+Use the `catinc` function as follows:
 
 [source]
 <rule> <![CDATA[((IPADDR != '0.0.0.0') & catincProduction & catincLinux)]]> </rule>

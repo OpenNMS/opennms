@@ -1,5 +1,6 @@
 
 = Event Analysis Report
+:description: Learn about the Event Analysis report in {page-component-title}, which provides an analysis of all events over the previous 30 days.
 
 This report provides an analysis of all events over the past 30 days.
 It contains the following sections:

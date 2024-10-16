@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-queued]]
 = Queued
+:description: Learn about queued in OpenNMS {page-component-title}, which handles scheduling tasks to run in the future.
 
 Handles scheduling tasks to run in the future.
 

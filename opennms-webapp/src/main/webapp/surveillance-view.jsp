@@ -35,13 +35,13 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
-    <jsp:include page="/includes/bootstrap.jsp" flush="false" >
-        <jsp:param name="title" value="Surveillance View" />
-        <jsp:param name="headTitle" value="Surveillance" />
-        <jsp:param name="location" value="surveillance-view" />
-        <jsp:param name="vaadinEmbeddedStyles" value="true" />
-        <jsp:param name="breadcrumb" value="Surveillance" />
-    </jsp:include>
+    <%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Surveillance")
+          .breadcrumb("Surveillance")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
     <%
         String viewName = "";

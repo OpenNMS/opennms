@@ -1,6 +1,7 @@
 
 [[topology]]
 = Topology
+:description: Get an overview of how to visualize {page-component-title} monitored nodes and their relationships to each other.
 
 A topology describes network elements (devices, services) and the connections between them.
 OpenNMS can display a user-configured xref:operation:deep-dive/topology/topology.adoc#topology-map[topology map] to help visualize your network topology.

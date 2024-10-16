@@ -67,14 +67,17 @@
 %>
 
 <%@page import="org.opennms.core.resource.Vault"%>
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Node Management" />
-  <jsp:param name="headTitle" value="Node Management" />
-  <jsp:param name="headTitle" value="Admin" />
-  <jsp:param name="location" value="nodemanagement" />
-  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="Node Management" />
-</jsp:include>
+<%@ page import="org.opennms.netmgt.model.OnmsIpInterface" %>
+<%@ page import="org.opennms.core.utils.InetAddressUtils" %>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Node Management")
+          .headTitle("Admin")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Node Management")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script type="text/javascript" >
 
@@ -119,6 +122,17 @@
     Configure SNMP Data Collection per Interface</a>
   </p>
 
+  <%
+    final OnmsIpInterface onmsIpInterface = node_db.getPrimaryInterface();
+    if (onmsIpInterface != null) {
+      final String primaryIpAddress = InetAddressUtils.str(onmsIpInterface.getIpAddress());
+      %>
+        <p>
+          <a href="admin/snmpConfig?action=get&ipAddress=<%=primaryIpAddress%>#updateForm">Configure SNMP Community Strings</a>
+        </p>
+      <%
+    }
+  %>
   <% if (!isRequisitioned) { %>
   <p>
     <a href="admin/nodemanagement/deletenode.jsp?node=<%=nodeId%>">Delete

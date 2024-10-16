@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,6 +30,7 @@ package org.opennms.features.distributed.coordination.zookeeper;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
 
 import java.net.ServerSocket;
@@ -45,6 +46,7 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.distributed.coordination.api.DomainManager;
 import org.opennms.features.distributed.coordination.api.Role;
 
@@ -66,6 +68,7 @@ public class ZookeeperDomainManagerIT {
 
     @Before
     public void setup() throws Exception {
+        MockLogAppender.setupLogging(true, "DEBUG");
         int freePort;
 
         try (ServerSocket socket = new ServerSocket(0)) {
@@ -80,7 +83,14 @@ public class ZookeeperDomainManagerIT {
 
     @After
     public void cleanup() throws Exception {
+        if (manager != null) {
+            manager.deregister(id);
+        }
         testServer.stop();
+        testServer.close();
+        if (manager != null) {
+            assertFalse(manager.isAnythingRegistered());
+        }
     }
 
     /**
@@ -174,6 +184,7 @@ public class ZookeeperDomainManagerIT {
             standbyFutures.get(futureIndex.get()).get(10, TimeUnit.SECONDS);
             futureIndex.incrementAndGet();
         }
+        assertEquals(numFlaps, futureIndex.get());
     }
     
     private void register() {

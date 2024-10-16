@@ -1,5 +1,6 @@
 [[snmp-interface-policy]]
 = SNMP Interface Policy
+:description: Learn how the SNMP Interface policy controls persistence discovered SNMP interface entities in OpenNMS {page-component-title} and SNMP collection parameters.
 
 This policy controls whether to persist the discovered SNMP interface entities and whether {page-component-title} should collect performance metrics from the SNMP agent for specific SNMP interfaces.
 

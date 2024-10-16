@@ -1,5 +1,6 @@
 
 = VmwareCimMonitor
+:description: Learn how to configure and use the VmwareCimMonitor in OpenNMS {page-component-title} to test the health status from all host system (host) sensor data.
 
 This monitor is part of the VMware integration provided by Provisiond.
 The monitor is specialized to test the health status provided from all host system (host) sensor data.

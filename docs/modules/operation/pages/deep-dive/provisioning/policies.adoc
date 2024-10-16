@@ -1,6 +1,6 @@
 [[policies]]
 = Policies
-:description: Overview of policy API in OpenNMS Horizon/Meridian to control persistence of discovered IP and SNMP interface entities.
+:description: Overview of policy API in {page-component-title} to control persistence of discovered IP and SNMP interface entities.
 
 The Policy API in Provisiond lets you control the persistence of discovered IP and SNMP interface entities and node tags during the scan phase.
 
@@ -12,6 +12,19 @@ The matchBehavior action is a boolean control that determines how the optional p
 Setting this parameter’s value to `ALL_PARAMETERS` causes Provisiond to evaluate each optional parameter with boolean AND logic and the value `ANY_PARAMETERS` causes OR logic to be applied.
 
 String values are assumed to be a substring match, unless the parameter is prefixed with `~` to indicate the policy should evaluate as a regular expression.
+
+== Policy types
+
+There are three types of policy: node, IP interface, and SNMP interface.
+
+=== Node
+
+Node policies apply to the node as a whole, and are applied during node scans relatively early in the process, potentially before any interfaces are discovered.
+
+=== IP and SNMP interface
+
+The interface policies are applied during the node scan, and are intended to filter and update interfaces that are discovered through SNMP.
+NOTE: They do not apply to interfaces defined in the requisition.
 
 == Supported policies
 

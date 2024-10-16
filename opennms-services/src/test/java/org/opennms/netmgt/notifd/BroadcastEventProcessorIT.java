@@ -136,7 +136,7 @@ public class BroadcastEventProcessorIT extends NotificationsITCase {
             System.out.println(entry.getKey() + " => " + entry.getValue());
         }
          */
-        assertEquals("High disk Threshold exceeded on 0.0.0.0, dsk-usr-pcent with Crap! RUN AWAY! We need 20% on the SAN and there's only 15%", paramMap.get("-tm"));
+        assertEquals("High disk Threshold exceeded on 0.0.0.0, dsk-usr-pcent with Crap! RUN AWAY! We need 20% on the SAN and there&#39;s only 15%", paramMap.get("-tm"));
         expandResult = NotificationManager.expandNotifParms("Notice #%noticeid%: Disk threshold exceeded on %nodelabel%: %parm[all]%.", paramMap);
         assertEquals("Notice #9999: Disk threshold exceeded on %nodelabel%: %parm[all]%.", expandResult);
     }

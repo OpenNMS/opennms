@@ -1,6 +1,6 @@
 
 = Step 4: Set Up Performance Data Collection
-:description: Step 4 of OpenNMS Horizon/Meridian setup: set up performance data collection and SNMP collectors and data collection groups.
+:description: Step 4 of {page-component-title} setup: set up performance data collection and SNMP collectors and data collection groups.
 
 This section describes performance data collection in {page-component-title}.
 

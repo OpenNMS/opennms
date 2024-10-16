@@ -1,7 +1,7 @@
 
 [[welcome]]
 = Welcome to the {page-component-title} Documentation
-:description: Overview of OpenNMS Horizon/Meridian documentation including product architecture diagram and how to navigate the documentation.
+:description: Overview of {page-component-title} documentation including product architecture diagram and how to navigate the documentation.
 
 [options="autowidth"]
 |===
@@ -25,11 +25,11 @@ to collect, present, and store network monitoring information.
 
 {page-component-title} collects data on the devices, interfaces, and services you define during provisioning.
 It triggers alarms when it detects a problem, and also stores the metrics it collects over a long period of time.
-Not only can you monitor and troubleshoot problems on your local and remote networks, you can also analyze trends and anticipate problems for better capacity management and network optimization. 
+Not only can you monitor and troubleshoot problems on your local and remote networks, you can also analyze trends and anticipate problems for better capacity management and network optimization.
 
 The following shows a sample full stack {page-component-title} implementation:
 
-image::opennms-full-stack.png[]
+image::diagram_implementation.png[]
 
 . OpenNMS core
 . Kafka message broker

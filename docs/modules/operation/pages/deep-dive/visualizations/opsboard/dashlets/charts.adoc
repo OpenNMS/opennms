@@ -1,5 +1,6 @@
 
 = Charts
+:description: Learn how the Charts dashlet displays predefined bar graphs in the {page-component-title} operator board and Charts UI, and how to create a custom chart.
 
 The Charts dashlet displays predefined bar graphs in the Charts UI (menu:Reports[Charts]) and the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board].
 You can also <<custom-chart, create custom charts>> in `charts-configuration.xml`.

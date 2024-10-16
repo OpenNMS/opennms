@@ -34,14 +34,14 @@
         session="true"
         %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Surveillance Views Config Web UI" />
-  <jsp:param name="headTitle" value="Surveillance Views Config Web UI" />
-  <jsp:param name="location" value="admin" />
-  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="Surveillance Views Config Web UI" />
-  <jsp:param name="vaadinEmbeddedStyles" value="true" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Surveillance Views Config Web UI")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Surveillance Views Config Web UI")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <iframe name="surveillance-views-config" src="admin/vaadin-surveillance-views-config" class="vaadin-fullscreen" frameborder="0"></iframe>
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

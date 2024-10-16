@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-enlinkd]]
 = Enlinkd
+:description: Learn about the OpenNMS {page-component-title} enhanced link daemon (enlinkd), which collects topology information via SNMP to determine connections between nodes.
 
 The enhanced link daemon collects xref:operation:deep-dive/topology/enlinkd/introduction.adoc[topology information] via SNMP to determine connections between nodes.
 The daemon essentially asks each device the following question: "What is the network topology, from your point of view?"

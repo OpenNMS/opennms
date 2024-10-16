@@ -1,5 +1,5 @@
 syntax = "proto3";
-
+option java_package = "org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto";
 package mdt_dialout;
 
 service gRPCMdtDialout {

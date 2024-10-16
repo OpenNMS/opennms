@@ -1,5 +1,6 @@
 
 = SmbMonitor
+:description: Learn how to configure and use the SmbMonitor in OpenNMS {page-component-title} to test the NetBIOS over TCP/IP name resolution in Microsoft Windows environments.
 
 This monitor tests the NetBIOS over TCP/IP name resolution in Microsoft Windows environments.
 The monitor tries to retrieve a NetBIOS name for the IP address of the interface.

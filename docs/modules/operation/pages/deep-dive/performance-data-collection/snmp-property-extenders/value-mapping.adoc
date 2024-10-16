@@ -1,6 +1,6 @@
 
 = Value Mapping Property Extender
-:description: Value Mapping property extender in OpenNMS Horizon/Meridian works as a lookup table to convert collected values to different data types.
+:description: Value Mapping property extender in {page-component-title} works as a lookup table to convert collected values to different data types.
 
 The Value Mapping property extender provides a mechanism that works as a lookup table for converting collected values to a different data type.
 This lets you do things such as map an enumerated set of string values to a corresponding set of integer values, or the other way around.
@@ -33,3 +33,27 @@ There are currently three parameters with fixed names:
 |===
 
 The remaining parameters are named for the input values, and their values represent the output values.
+
+
+The following example shows how to convert a collected string to a numerical value, and store it as a separate metric.
+This example assumes that the OID returns one of `OK`, `MISSING`,`ERROR`, OR `UNKNOWN`.
+These values will be stored as an integer from 0 to 3, based on the mapping.
+By defining these values in order, thresholding could be applied to the `wordGauge` metric to alert when the value falls out of the acceptable range.
+If any other value is returned, the metric will store a default value of `-1`.
+
+
+[source, xml]
+----
+<group name="snmp-value-mapping" ifType="all">
+    <mibObj oid=".1.3.6.1.4.1.2.3.4.5.6.7.8" instance="the-instance" alias="word" type="string"/>
+    <property instance="the-instance" alias="wordGauge" class-name="org.opennms.netmgt.collectd.ValueMappingPropertyExtender">
+        <parameter key="source-attribute" value="word"/>
+        <parameter key="target-type" value="gauge"/>
+        <parameter key="OK" value="0"/>
+        <parameter key="MISSING" value="1"/>
+        <parameter key="ERROR" value="2"/>
+        <parameter key="UNKNOWN" value="3"/>
+        <parameter key="default-value" value="-1"/>
+    </property>
+</group>
+----

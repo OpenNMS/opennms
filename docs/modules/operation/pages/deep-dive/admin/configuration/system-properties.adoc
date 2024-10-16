@@ -1,6 +1,7 @@
 
 [[system-properties]]
 = Configure System Properties
+:description: Learn how properties files let you configure {page-component-title} global behavior settings.
 
 Properties files let you configure {page-component-title}'s global behavior settings.
 They are stored in `$\{OPENNMS_HOME}/etc`.

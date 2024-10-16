@@ -1,6 +1,6 @@
 
 = Step 2: Turn on Default Notifications
-:description: Step 2 of OpenNMS Horizon/Meridian setup: turn on default notifications, notification definitions, and configuring destination paths.
+:description: Step 2 of {page-component-title} setup: turn on default notifications, notification definitions, and configuring destination paths.
 
 This section describes how to turn default notifications on in {page-component-title}.
 

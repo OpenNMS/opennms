@@ -1,5 +1,6 @@
 
 = Availability by Node Report
+:description: Learn about the Availability by Node report in {page-component-title}, which provides a summary of availability by node across one or more node tags.
 
 This report provides a summary of availability by node across one or more node tags.
 

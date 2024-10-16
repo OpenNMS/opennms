@@ -1,5 +1,6 @@
 
 = Database Reports
+:description: Learn about database reports in {page-component-title}, including a list of templates, how to create a custom report, and info. on Jaspersoft Studio.
 
 Reporting on data from your monitoring system is important for strategic and operational decisions.
 Database reports provide access to the {page-component-title} JasperReports engine, and let you create and customize report templates.

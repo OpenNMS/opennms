@@ -1,6 +1,7 @@
 
 [[ga-enlinkd-layer-2-link-discovery]]
 = Layer 2 Link Discovery
+:description: Learn how the Enhanced Link Daemon discovers Layer 2 network links in {page-component-title}.
 
 Enlinkd is able to discover Layer 2 network links based on the following protocols:
 

@@ -1,6 +1,6 @@
 
 = Collectd Administration
-:description: Collectd administration in OpenNMS Horizon/Meridian.
+:description: Collectd administration in {page-component-title}.
 
 This section describes reference and administrative information associated with the collectd service.
 

@@ -1,4 +1,5 @@
 = Time to Live (TTL) for RPCs
+:description: Learn about time-to-live (TTL) with remote procedure calls (RPCs) in OpenNMS {page-component-title}: global, pollerd, collectd, provisiond, and so on.
 
 Remote procedure calls (RPCs) between {page-component-title} Core and Minion include a time limit which, if exceeded, aborts the requests and discards any subsequent responses.
 We call this limit the time-to-live or TTL.
@@ -8,7 +9,7 @@ Our modules and services have different rules for determining the TTL.
 
 TIP: To troubleshoot TTLs, consider enabling the Open Tracing integration in {page-component-title} Core instance and the Minion.
 
-== TTLs in Pollerd & Collectd
+== TTLs in pollerd and collectd
 
 The TTL used when invoking monitors and collectors remotely is:
 
@@ -17,7 +18,7 @@ The TTL used when invoking monitors and collectors remotely is:
 
 These rules apply to all monitors and collectors, excluding the `SnmpCollector`.
 
-== TTLs for the SNMP Collector
+== TTLs for the SNMP collector
 
 The TTL used when invoking the `SnmpCollector` remotely is:
 
@@ -33,7 +34,7 @@ The TTL used when invoking other types of SNMP requests remotely is:
 
 TIP: These rules apply to SNMP queries like agent scans in provisiond, table scans in enlinkd, etc...
 
-== TTLs for Provisiond Detectors
+== TTLs for provisiond detectors
 
 The TTL used when invoking detectors remotely is:
 

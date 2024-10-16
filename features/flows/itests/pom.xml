@@ -48,13 +48,13 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>keytool-maven-plugin</artifactId>
-                <version>1.7</version>
                 <configuration>
                     <alias>localhost</alias>
                     <keysize>2048</keysize>
                     <keyalg>RSA</keyalg>
                     <dname>CN=localhost, OU=Flows baby flows, O=The OpenNMS Group, C=US</dname>
                     <ext>SubjectAlternativeName=dns:localhost</ext>
+                    <storetype>jks</storetype>
                 </configuration>
             </plugin>
         </plugins>
@@ -82,7 +82,7 @@
             <!-- Override joda to match the version used by Beam in Nephron -->
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-            <version>2.10.5</version>
+            <version>2.12.5</version>
         </dependency>
 
         <dependency>
@@ -180,6 +180,10 @@
             <version>${nephronVersion}</version>
             <scope>test</scope>
             <exclusions>
+                <exclusion>
+                    <groupId>com.squareup.okio</groupId>
+                    <artifactId>okio</artifactId>
+                </exclusion>
                 <exclusion>
                     <groupId>org.opennms.nephron</groupId>
                     <artifactId>nephron-proto</artifactId>

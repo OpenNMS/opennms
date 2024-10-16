@@ -1,6 +1,6 @@
 = Cisco CBQoS property extender
 This property extender is used only in very specific circumstances.
-:description: Cisco CBQoS property extender in OpenNMS Horizon/Meridian to include string properties across `ifXTable` and some MIB tables.
+:description: Cisco CBQoS property extender in {page-component-title} to include string properties across `ifXTable` and some MIB tables.
 
 == When to use Cisco CBQoS property extender
 

@@ -1,5 +1,6 @@
 [[receive-snmp-traps]]
 = Receive SNMP traps/informs
+:description: Learn about how to configure a policy that lets OpenNMS {page-component-title} bind to the ICMP service with SELinux enabled on your OpenNMS server.
 
 {page-component-title} lets you receive and process SNMP traps and informs out of the box.
 The {page-component-title} services run as an unprivileged user and cannot bind on port numbers below `1024` without escalated privileges.

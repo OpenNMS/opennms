@@ -1,5 +1,6 @@
 
 = RTC
+:description: Learn about the RTC dashlet, which displays your {page-component-title} service-level agreements (SLA) categories in the operator board.
 
 The RTC dashlet displays your {page-component-title} SLA categories in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board].
 You can configure the SLA categories on the {page-component-title} home page.

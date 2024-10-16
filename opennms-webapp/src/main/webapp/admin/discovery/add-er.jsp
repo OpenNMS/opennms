@@ -69,11 +69,13 @@
     }
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-    <jsp:param name="title" value="Add Exclude Range" />
-    <jsp:param name="headTitle" value="Admin" />
-    <jsp:param name="quiet" value="true" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Admin")
+          .flags("quiet")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">
     <jsp:param name="asset" value="ipaddress-js" />

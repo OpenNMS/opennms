@@ -1,5 +1,6 @@
 
 = Transparent Bridge Discovery
+:description: Learn more about discovering Layer 2 network links using bridge forwarding in {page-component-title} topology mapping, including supported OIDs.
 
 Discovering xref:deep-dive/topology/enlinkd/layer-2-discovery.adoc[Layer 2 network links] using the bridge forwarding table requires a special algorithm that is based on https://dl.acm.org/doi/10.1145/964723.383078[_Topology Discovery for Large Ethernet Networks_].
 The gathered information is used to classify links as macLinks and bridgeLinks.

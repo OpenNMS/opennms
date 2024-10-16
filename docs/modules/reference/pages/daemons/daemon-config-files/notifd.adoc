@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-notifd]]
 = Notifd
+:description: Learn about notifd in OpenNMS {page-component-title}, which generates notifications to system operators for desired events.
 
 Generates xref:operation:deep-dive/notifications/introduction.adoc[notifications] to system operators for desired events.
 

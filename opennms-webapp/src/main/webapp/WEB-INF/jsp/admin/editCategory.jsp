@@ -33,34 +33,34 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-	<jsp:param name="title" value="Category" />
-	<jsp:param name="headTitle" value="Category" />
-	<jsp:param name="breadcrumb"
-               value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb"
-	           value="<a href='admin/categories.htm'>Category</a>" />
-	<jsp:param name="breadcrumb" value="Show" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Category")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Category", "admin/categories.htm")
+          .breadcrumb("Show")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script type="text/javascript">
 var nodesToAddAuto = [
-  <c:forEach items="${model.nodes}" var="node"><c:if test="${node.foreignSource == null}">{ "id": "${node.id}", "label": "${node.label}" },</c:if>
+  <c:forEach items="${model.nodes}" var="node"><c:if test="${node.foreignSource == null}">{ "id": "${node.id}", "label": "${fn:escapeXml(node.label)}" },</c:if>
   </c:forEach>
 ];
 
 var nodesToDeleteAuto = [
-  <c:forEach items="${model.sortedMemberNodes}" var="node"><c:if test="${node.foreignSource == null}">{ "id": "${node.id}", "label": "${node.label}" },</c:if>
+  <c:forEach items="${model.sortedMemberNodes}" var="node"><c:if test="${node.foreignSource == null}">{ "id": "${node.id}", "label": "${fn:escapeXml(node.label)}" },</c:if>
   </c:forEach>
 ];
 
 var nodesToAddReq = [
-  <c:forEach items="${model.nodes}" var="node"><c:if test="${node.foreignSource != null}">{ "id": "${node.id}", "label": "${node.label}", "foreignSource": "${node.foreignSource}", "foreignId": "${node.foreignId}" },</c:if>
+  <c:forEach items="${model.nodes}" var="node"><c:if test="${node.foreignSource != null}">{ "id": "${node.id}", "label": "${fn:escapeXml(node.label)}", "foreignSource": "${node.foreignSource}", "foreignId": "${node.foreignId}" },</c:if>
   </c:forEach>
 ];
 
 var nodesToDeleteReq = [
-  <c:forEach items="${model.sortedMemberNodes}" var="node"><c:if test="${node.foreignSource != null}">{ "id": "${node.id}", "label": "${node.label}", "foreignSource": "${node.foreignSource}", "foreignId": "${node.foreignId}" },</c:if>
+  <c:forEach items="${model.sortedMemberNodes}" var="node"><c:if test="${node.foreignSource != null}">{ "id": "${node.id}", "label": "${fn:escapeXml(node.label)}", "foreignSource": "${node.foreignSource}", "foreignId": "${node.foreignId}" },</c:if>
   </c:forEach>
 ];
 

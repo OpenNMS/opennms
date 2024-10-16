@@ -1,5 +1,6 @@
 
 = VmwareMonitor
+:description: Learn how to configure and use the VmwareMonitor in OpenNMS {page-component-title} to test the power state of a virtual machine or host system.
 
 This monitor is part of the VMWare integration that provisiond provides.
 It tests the power state of a virtual machine or host system.

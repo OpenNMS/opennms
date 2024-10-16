@@ -1,9 +1,0 @@
-aliases:
-  - &setup_dct_env
-    name: Setup DCT environment
-    command: |
-      echo "export DOCKER_CONTENT_TRUST=1" >> $BASH_ENV
-      echo "export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=\"$DCT_DELEGATE_KEY_PASSPHRASE\"" >> $BASH_ENV
-      echo "export MINION_DK_REPO=docker.io/opennms/minion" >> $BASH_ENV
-      echo "export MINION_AZ_REPO=opennmspubacr.azurecr.io/opennms/minion" >> $BASH_ENV
-      echo "export KEY_FOLDER=~/.docker/trust/private" >> $BASH_ENV

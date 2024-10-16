@@ -1,5 +1,6 @@
 
 = Map
+:description: Learn about the Map dashlet, which displays a geographical map in the {page-component-title} operator board.
 
 The Map dashlet displays the https://opennms.discourse.group/t/geographical-maps/2212[geographical map] in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board].
 

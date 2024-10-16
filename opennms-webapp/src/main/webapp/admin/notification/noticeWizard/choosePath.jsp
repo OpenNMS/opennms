@@ -81,14 +81,16 @@
     }
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Choose Path" />
-  <jsp:param name="headTitle" value="Choose Path" />
-  <jsp:param name="headTitle" value="Admin" />
-  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="<a href='admin/notification/index.jsp'>Configure Notifications</a>" />
-  <jsp:param name="breadcrumb" value="Choose Path" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Choose Path")
+          .headTitle("Admin")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Configure Notifications", "admin/notification/index.jsp")
+          .breadcrumb("Choose Path")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script type="text/javascript" >
   

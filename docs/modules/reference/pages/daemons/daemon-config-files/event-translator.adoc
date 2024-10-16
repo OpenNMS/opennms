@@ -1,6 +1,7 @@
 
 [[ref-daemon-event-translate]]
 = Event Translator
+:description: Learn about the event translator, which transforms and enhances the data from OpenNMS {page-component-title} events that other daemons generate.
 
 The event translator transforms and enhances the data from {page-component-title} events that other daemons generate.
 It enables better integration with external systems, based on data from sources internal and external to {page-component-title}.

@@ -1,6 +1,8 @@
 
 = JmxCollector
 
+:description: Learn how to configure and use the JmxCollector in OpenNMS {page-component-title} to collect performance data via Java Management Extensions (JMX).
+
 The JmxCollector collects performance data via Java Management Extensions (JMX).
 Attributes are extracted from the available MBeans.
 

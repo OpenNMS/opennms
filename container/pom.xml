@@ -19,5 +19,6 @@
     <module>extender</module>
     <module>spring-extender</module>
     <module>shared</module>
+    <module>noop-jetty-extension</module>
   </modules>
 </project>

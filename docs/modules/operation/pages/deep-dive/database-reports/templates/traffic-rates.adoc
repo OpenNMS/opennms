@@ -1,5 +1,6 @@
 
 = Traffic Rates for Nodes by Interface Report
+:description: Learn how to create a report in {page-component-title} that summarizes the the average and peak traffic rates for nodes that match a specified node tag.
 
 This report provides a summary of the average and peak traffic rates for nodes whose category matches the specified node tag.
 The data is listed over a specified time period.

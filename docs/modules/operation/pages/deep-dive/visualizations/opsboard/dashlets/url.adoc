@@ -1,5 +1,6 @@
 
 = URL
+:description: Learn about the URL dashlet, the content of a web page or web application in the {page-component-title} operator board.
 
 The URL dashlet shows the content of a web page or other web application in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board] (for example, another monitoring system or web application).
 

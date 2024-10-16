@@ -1,5 +1,6 @@
 
 = NetScalerGroupHealthMonitor
+:description: Learn about the NetScalerGroupHealthMonitor in OpenNMS {page-component-title} that performs Citrix and NetScaler load-balancing checks.
 
 This monitor is designed for Citrix(R) NetScaler(R) load-balancing checks.
 It checks if more than x percent of the servers assigned to a specific group on a load-balanced service are active.

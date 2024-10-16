@@ -41,12 +41,14 @@
 %>
 
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Error" />
-  <jsp:param name="headTitle" value="Alarm ID Not Found" />
-  <jsp:param name="headTitle" value="Error" />
-  <jsp:param name="breadcrumb" value="Error" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Alarm ID Not Found")
+          .headTitle("Error")
+          .breadcrumb("Error")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <h1>Alarm Cleared or Not Found</h1>
 

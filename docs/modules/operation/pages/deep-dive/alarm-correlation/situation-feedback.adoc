@@ -1,6 +1,6 @@
 
 = Alarm Correlation
-:description: How to configure OpenNMS Horizon/Meridian to provide real-time feedback on alarm correlation.
+:description: Learn how to configure {page-component-title} to provide real-time feedback on alarm correlation.
 
 This section describes how to configure {page-component-title} to provide real-time feedback on alarm correlation.
 

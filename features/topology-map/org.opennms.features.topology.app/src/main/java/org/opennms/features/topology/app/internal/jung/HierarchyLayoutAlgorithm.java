@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2015-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * Copyright (C) 2015-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -31,7 +31,6 @@ package org.opennms.features.topology.app.internal.jung;
 
 import java.awt.geom.Point2D;
 import java.util.Collection;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -118,11 +117,8 @@ public class HierarchyLayoutAlgorithm extends AbstractLayoutAlgorithm {
         final Collection<Vertex> displayVertices = g.getDisplayVertices();
 
         // Sort by level
-        final List<Vertex> sortedVertices = displayVertices.stream().filter(v -> v instanceof LevelAware).sorted(new Comparator<Vertex>() {
-            @Override
-            public int compare(Vertex o1, Vertex o2) {
-                return Integer.compare(((LevelAware) o1).getLevel(), ((LevelAware) o2).getLevel());
-            }
+        final List<Vertex> sortedVertices = displayVertices.stream().filter(v -> v instanceof LevelAware).sorted((Vertex o1, Vertex o2) -> {
+            return Integer.compare(((LevelAware) o1).getLevel(), ((LevelAware) o2).getLevel());
         }).collect(Collectors.toList());
 
         // Build the graph
@@ -144,14 +140,13 @@ public class HierarchyLayoutAlgorithm extends AbstractLayoutAlgorithm {
         layout.horizontalSqueeze(displayVertices);
 
         for(VertexRef v : displayVertices) {
-            Point2D p = layout.transform(v);
+            Point2D p = layout.apply(v);
             graphLayout.setLocation(v, new Point(p.getX(), p.getY()));
         }
     }
 
     private HierarchyLayout<VertexRef, Edge> createTreeLayout(final Graph g) {
         final edu.uci.ics.jung.graph.DirectedGraph<VertexRef, Edge> jungGraph = convert(g);
-        HierarchyLayout<VertexRef, Edge> layout = new HierarchyLayout<>(jungGraph, ELBOW_ROOM * 2, ELBOW_ROOM * 2);
-        return layout;
+        return new HierarchyLayout<>(jungGraph, ELBOW_ROOM * 2, ELBOW_ROOM * 2);
     }
 }

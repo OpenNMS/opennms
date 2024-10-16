@@ -1,5 +1,6 @@
 
 = TcaCollector
+:description: Learn how to configure the TcaCollector in OpenNMS {page-component-title} to collect special SNMP data from Juniper TCA devices.
 
 The TcaCollector collects special SNMP data from Juniper TCA devices.
 

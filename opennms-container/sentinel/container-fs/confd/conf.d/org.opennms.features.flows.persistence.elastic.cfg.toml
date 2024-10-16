@@ -1,0 +1,11 @@
+[template]
+src = "org.opennms.features.flows.persistence.elastic.cfg.tmpl"
+dest = "/opt/sentinel/etc/org.opennms.features.flows.persistence.elastic.cfg"
+keys = [
+    "/elasticsearch/url",
+    "/elasticsearch/index-strategy",
+    "/elasticsearch/replicas",
+    "/elasticsearch/conn-timeout",
+    "/elasticsearch/read-timeout",
+]
+reload_cmd = "/opt/sentinel/confd/scripts/remove-if-empty /opt/sentinel/etc/org.opennms.features.flows.persistence.elastic.cfg"

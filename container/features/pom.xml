@@ -10,6 +10,11 @@
   <artifactId>opennms</artifactId>
   <packaging>pom</packaging>
   <name>OpenNMS :: OSGi Container :: Karaf Features</name>
+  <properties>
+    <systemStartLevel>30</systemStartLevel>
+    <earlyStartLevel>60</earlyStartLevel>
+    <lateStartLevel>100</lateStartLevel>
+  </properties>
   <build>
     <plugins>
       <!-- Filter the features.xml files -->
@@ -29,6 +34,11 @@
                   <filtering>true</filtering>
                 </resource>
               </resources>
+              <encoding>UTF-8</encoding>
+              <escapeString>\</escapeString>
+              <nonFilteredFileExtensions>
+                <nonFilteredFileExtension>swp</nonFilteredFileExtension>
+              </nonFilteredFileExtensions>
             </configuration>
           </execution>
           <!-- karaf-maven-plugin:verify doesn't know about external sun.nio.* packages, so we need to put a custom config in there -->
@@ -72,6 +82,60 @@
                   <excludes>**/custom.properties</excludes>
                 </artifactItem>
               </artifactItems>
+            </configuration>
+          </execution>
+          <execution>
+            <id>copy-camel-feature</id>
+            <phase>process-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.apache.camel.karaf</groupId>
+                  <artifactId>apache-camel</artifactId>
+                  <version>${camelVersion}</version>
+                  <classifier>features</classifier>
+                  <type>xml</type>
+                  <overWrite>false</overWrite>
+                  <outputDirectory>${project.build.directory}/downloaded-features</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>com.google.code.maven-replacer-plugin</groupId>
+        <artifactId>replacer</artifactId>
+        <version>1.5.3</version>
+        <executions>
+          <execution>
+            <id>exec</id>
+            <phase>package</phase>
+            <goals>
+              <goal>replace</goal>
+            </goals>
+            <configuration>
+              <file>${project.build.directory}/downloaded-features/apache-camel-${camelVersion}-features.xml</file>
+              <replacements>
+                <!-- fix CXF dependency with the weird/bad version and lock it to ours -->
+                <replacement>
+                  <token>apache-cxf/[\d\.]+</token>
+                  <value>apache-cxf/${cxfVersion}</value>
+                </replacement>
+                <!-- fix an issue with resolving multiple versions of spring by forcing the dep to force spring 4.2 -->
+                <replacement>
+                  <token>\[4\.\d,5\)</token>
+                  <value>[4.2,4.3)</value>
+                </replacement>
+                <!-- standardize on the "final" version of jms-api 2.x -->
+                <replacement>
+                  <token>org.apache.geronimo.specs/geronimo-jms_2.0_spec/1.0-alpha-2</token>
+                  <value>javax.jms/javax.jms-api/${jmsApiVersion}</value>
+                </replacement>
+              </replacements>
             </configuration>
           </execution>
         </executions>
@@ -123,6 +187,11 @@
                   <type>xml</type>
                   <classifier>features</classifier>
                 </artifact>
+                <artifact>
+                  <file>${project.build.directory}/downloaded-features/apache-camel-${camelVersion}-features.xml</file>
+                  <type>xml</type>
+                  <classifier>camel</classifier>
+                </artifact>
               </artifacts>
             </configuration>
           </execution>
@@ -131,8 +200,6 @@
       <plugin>
           <groupId>org.apache.karaf.tooling</groupId>
           <artifactId>karaf-maven-plugin</artifactId>
-          <version>${karafVersion}</version>
-          <extensions>true</extensions>
           <configuration>
             <skip>${skipTests}</skip>
           </configuration>
@@ -154,6 +221,7 @@
                           <descriptor>file:${project.build.directory}/classes/features-experimental.xml</descriptor>
                           <descriptor>file:${project.build.directory}/classes/features-minion.xml</descriptor>
                           <descriptor>file:${project.build.directory}/classes/features-sentinel.xml</descriptor>
+                          <descriptor>file:${project.build.directory}/downloaded-features/apache-camel-${camelVersion}-features.xml</descriptor>
                           <descriptor>file:${project.build.directory}/classes/karaf-extensions.xml</descriptor>
                           <descriptor>file:${project.build.directory}/classes/spring-legacy.xml</descriptor>
                       </descriptors>
@@ -166,11 +234,90 @@
                           <feature>eventadmin</feature>
                       </framework>
                       <features>
-                          <feature>minion-api-layer</feature>
-                          <feature>sentinel-api-layer</feature>
-                          <feature>sentinel-timeseries-api</feature>
-                          <feature>opennms-timseries-api</feature>
+                          <!-- core features -->
+                          <feature>bouncycastle</feature>
+                          <feature>bson</feature>
+                          <feature>cassandra-driver</feature>
+                          <feature>commons-beanutils</feature>
+                          <feature>commons-cli</feature>
+                          <feature>commons-codec</feature>
+                          <feature>commons-collections</feature>
+                          <feature>commons-compress</feature>
+                          <feature>commons-configuration</feature>
+                          <feature>commons-csv</feature>
+                          <feature>commons-digester</feature>
+                          <feature>commons-exec</feature>
+                          <feature>commons-io</feature>
+                          <feature>commons-jexl</feature>
+                          <feature>commons-jxpath</feature>
+                          <feature>commons-lang</feature>
+                          <feature>commons-lang3</feature>
+                          <feature>commons-net</feature>
+                          <feature>commons-pool2</feature>
+                          <feature>dropwizard-metrics</feature>
+                          <feature>fst</feature>
+                          <feature>guava</feature>
+                          <feature>guava-dependencies</feature>
+                          <feature>guava17</feature>
+                          <feature>guava18</feature>
+                          <feature>guava21</feature>
+                          <feature>guava31</feature>
+                          <feature>jackson-core</feature>
+                          <feature>jackson-dataformat-xml</feature>
+                          <feature>jackson-dataformat-yaml</feature>
+                          <feature>jackson-datatype-jdk8</feature>
+                          <feature>jackson-datatype-json</feature>
+                          <feature>jackson-datatype-jsr310</feature>
+                          <feature>jackson1</feature>
+                          <feature>java-native-access</feature>
+                          <feature>javax.mail</feature>
+                          <feature>javax.servlet</feature>
+                          <feature>javax.validation</feature>
+                          <feature>jetty</feature>
+                          <feature>netty</feature>
+                          <feature>org.json</feature>
+                          <feature>pax-jetty</feature>
+                          <feature>scv-api</feature>
+                          <feature>scv-jceks-impl</feature>
+                          <feature>scv-shell</feature>
+                          <feature>snakeyaml</feature>
+                          <feature>ssh</feature>
+                          <feature>zookeeper-dependencies</feature>
+
+                          <!-- base API features -->
+                          <feature>opennms-activemq-pool</feature>
+                          <feature>opennms-camel-amqp</feature>
+                          <feature>opennms-core-camel</feature>
+                          <feature>opennms-core-daemon</feature>
+                          <feature>opennms-core-ipc-jms</feature>
+                          <feature>opennms-core-ipc-rpc-api</feature>
+                          <feature>opennms-core-ipc-sink-camel-common</feature>
+                          <feature>opennms-core-ipc-sink-camel</feature>
+                          <feature>opennms-core-ipc-sink-camel-server</feature>
+                          <feature>opennms-core-ipc-twin-jms</feature>
+                          <feature>opennms-distributed-core-jms</feature>
+                          <feature>opennms-events-api</feature>
+                          <feature>opennms-health</feature>
+                          <feature>opennms-health-api</feature>
                           <feature>opennms-newts</feature>
+                          <feature>opennms-poller-monitors-core</feature>
+                          <feature>opennms-telemetry-daemon</feature>
+                          <feature>opennms-timeseries-api</feature>
+
+                          <!-- minion features -->
+                          <feature>dominion-grpc-client</feature>
+                          <feature>dominion-secure-credentials-vault</feature>
+                          <feature>minion-api-layer</feature>
+                          <feature>minion-heartbeat-producer</feature>
+                          <feature>minion-snmp-proxy</feature>
+                          <feature>opennms-dao-minion</feature>
+                          <feature>opennms-trapd-listener</feature>
+
+                          <!-- sentinel features -->
+                          <feature>sentinel-api-layer</feature>
+                          <feature>sentinel-events-forwarder</feature>
+                          <feature>sentinel-jms</feature>
+                          <feature>sentinel-timeseries-api</feature>
                       </features>
                       <configuration>file:${project.build.directory}/apache-karaf-${karafVersion}/etc/config.properties</configuration>
                   </configuration>
@@ -208,6 +355,12 @@
     <dependency>
       <groupId>org.opennms.container</groupId>
       <artifactId>org.opennms.container.jaas-login-module</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.container</groupId>
+      <artifactId>noop-jetty-extension</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -817,4 +970,13 @@
       <scope>provided</scope>
     </dependency>
   </dependencies>
+
+  <!-- override a bad repo that's causing issues -->
+  <repositories>
+    <repository>
+      <id>spring-ext</id>
+      <name>OpenNMS Mega-Repository (spring-ext override)</name>
+      <url>https://maven.opennms.org/repository/everything/</url>
+    </repository>
+  </repositories>
 </project>

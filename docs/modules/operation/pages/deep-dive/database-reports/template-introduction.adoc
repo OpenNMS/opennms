@@ -1,5 +1,6 @@
 
 = Report Templates
+:description: Get an overview of report templates in {page-component-title}, including scheduling and delivery information.
 
 {page-component-title} includes a number of <<deep-dive/database-reports/database.adoc#db-report-sample-templates, sample report templates>>.
 You can use them as-is, modify them, or use them as examples on which to base your own custom report templates.

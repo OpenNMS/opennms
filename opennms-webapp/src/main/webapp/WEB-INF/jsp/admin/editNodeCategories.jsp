@@ -33,15 +33,15 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-	<jsp:param name="title" value="Category" />
-	<jsp:param name="headTitle" value="Category" />
-	<jsp:param name="breadcrumb"
-               value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb"
-	           value="<a href='admin/categories.htm'>Category</a>" />
-	<jsp:param name="breadcrumb" value="Show" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Category")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Category", "admin/categories.htm")
+          .breadcrumb("Show")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script type="text/javascript">
 function toggleFormEnablement() {

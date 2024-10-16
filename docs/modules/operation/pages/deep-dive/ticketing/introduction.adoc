@@ -1,5 +1,6 @@
 
 = Ticketing
+:description: Learn how the ticketer plugin helps {page-component-title} create and update tickets in external systems based on new or resolved alarms.
 
 The ticketing integration lets {page-component-title} create and update tickets in external systems in response to new or resolved alarms.
 

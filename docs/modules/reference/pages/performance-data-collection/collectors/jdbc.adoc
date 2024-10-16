@@ -1,5 +1,6 @@
 
 = JDBC Collector
+:description: Learn how to configure and use the JDBCCollector in OpenNMS {page-component-title} to collect performance data via JDBC drivers.
 
 The JDBCCollector collects performance data via JDBC drivers.
 Attributes are retrieved using SQL queries.

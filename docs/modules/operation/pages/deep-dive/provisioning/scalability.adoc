@@ -1,6 +1,6 @@
 
 = Addressing Scalability
-:description: How to address scalability in OpenNMS Horizon/Meridian: parallelization and non-blocking I/O, policies, auto rescanning, and disabling rescan.
+:description: How to address scalability in {page-component-title}: parallelization and non-blocking I/O, policies, auto rescanning, and disabling rescan.
 
 The explosive growth and density of the IT systems being deployed today to support non-traditional IP services impacts management systems like never before, and demands tremendous amounts of scalability.
 The scalability of a management system is defined by its capacity to manage large numbers of entities coupled with its efficiency for managing the entities.

@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-karaf]]
 = Karaf
+:description: Learn about the Karaf daemon, which is the core runtime module that manages all other daemon services within the OpenNMS {page-component-title} system.
 
 The core runtime module that manages all other daemon services running within the {page-component-title} system.
 

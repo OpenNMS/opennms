@@ -35,7 +35,6 @@ import org.opennms.core.mate.api.Interpolator;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.search.api.Match;
 import org.opennms.netmgt.search.api.SearchResultItem;
-import org.opennms.netmgt.search.providers.node.NodeRef;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -48,15 +47,20 @@ public class SearchResultItemBuilder {
     public SearchResultItemBuilder withOnmsNode(final OnmsNode node, final EntityScopeProvider entityScopeProvider) {
         Objects.requireNonNull(node);
 
-        final NodeRef nodeRef = new NodeRef(node);
-        searchResultItem.setIdentifier(nodeRef.asString());
+        searchResultItem.setIdentifier(node.getNodeId());
         searchResultItem.setUrl("element/node.jsp?node=" + node.getId());
         searchResultItem.setLabel(node.getLabel());
         searchResultItem.setInfo(Interpolator.interpolate(CUSTOM_INFO, entityScopeProvider.getScopeForNode(node.getId())).output);
-        searchResultItem.setProperties(ImmutableMap.<String, String>builder()
-                .put("label", node.getLabel())
-                .put("foreignId", node.getForeignId())
-                .put("foreignSource", node.getForeignSource()).build());
+
+        final var properties = ImmutableMap.<String, String>builder()
+                .put("label", node.getLabel());
+        if (node.getForeignId() != null) {
+            properties.put("foreignId", node.getForeignId());
+        }
+        if(node.getForeignSource() != null) {
+            properties.put("foreignSource", node.getForeignSource());
+        }
+        searchResultItem.setProperties(properties.build());
 
         return this;
     }

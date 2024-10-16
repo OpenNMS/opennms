@@ -1,6 +1,7 @@
 
 [[file-editor]]
 = File Editor
+:description: Learn how to use the File Editor in OpenNMS {page-component-title} to view and edit configuration (.xml, .cfg, etc.) files through the UI.
 
 The File Editor page lets you view and edit configuration files (`.xml`, `.cfg`, `.drl`, and so on) in the {page-component-title} UI instead of having to edit them in your local file system (for example, by locating the file in your `/etc` directory and editing it with a text editor).
 To access the file editor, log in to the web UI and click menu:Info[File Editor] in the top menu bar.

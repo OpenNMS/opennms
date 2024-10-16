@@ -163,17 +163,17 @@
             break;
         }
     }
-
-    String nodeBreadCrumb = "<a href='element/node.jsp?node=" + node.getId()  + "'>Node</a>";
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Hardware Inventory" />
-  <jsp:param name="headTitle" value="Hardware Inventory" />
-  <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-  <jsp:param name="breadcrumb" value="<%= nodeBreadCrumb %>" />
-  <jsp:param name="breadcrumb" value="Hardware Inventory" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Hardware Inventory")
+          .breadcrumb("Search", "element/index.jsp")
+          .breadcrumb("Node", "element/node.jsp?node=" + node.getId())
+          .breadcrumb("Hardware Inventory")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">
   <jsp:param name="asset" value="jquery-treegrid-js" />

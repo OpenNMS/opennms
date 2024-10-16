@@ -1,5 +1,6 @@
 
 = Surveillance
+:description: Learn about the Surveillance dashlet, which displays aggregated monitoring results in the {page-component-title} operator board.
 
 The Surveillance dashlet shows a given xref:deep-dive/visualizations/surveillance-view.adoc[surveillance view] in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board].
 

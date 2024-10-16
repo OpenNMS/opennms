@@ -1,6 +1,7 @@
 
 [[topology-map]]
 = Topology Map
+:description: Learn how to configure the topology map in {page-component-title}, including icon mappings and creating new icons.
 
 This section describes how to configure the topology map.
 

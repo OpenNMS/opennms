@@ -1,6 +1,7 @@
 
 [[ga-flow-support-classification-engine]]
 = Flows Classification
+:description: Learn more about the {page-component-title} classification engine that helps improve flows management through rules filters that group flows.
 
 For improved flows management, {page-component-title} uses a classification engine that applies predefined and user-defined rules to filter and classify flows.
 The included predefined rules are based on the https://www.iana.org/assignments/service-names-port-numbers/service-names-port-numbers.xhtml[IANA Service Name and Transport Protocol Port Number Registry].

@@ -1,5 +1,6 @@
 
 = XmlCollector
+:description: Learn how to configure the XmlCollector in OpenNMS {page-component-title} to collect and extract metrics from XML and JSON documents.
 
 The XmlCollector collects and extracts metrics from XML and JSON documents.
 

@@ -239,7 +239,7 @@ public class CollectionSetMapper {
         String nodeCriteria = null;
         if (resource.getParent() != null) {
             String[] resourcePathArray = resource.getParent().elements();
-            if (resourcePathArray != null) {
+            if (resourcePathArray != null && resourcePathArray.length > 0) {
                 if (ResourceTypeUtils.FOREIGN_SOURCE_DIRECTORY.equals(resourcePathArray[0])
                         && resourcePathArray.length == 3) {
                     // parent denotes nodeCriteria, form fs:fid
@@ -258,7 +258,9 @@ public class CollectionSetMapper {
         // Check if resource parent is an IpAddress.
         if (resource.getParent() != null && resource.getParent().elements().length == 1) {
             String[] resourcePathArray = resource.getParent().elements();
-            validIp = checkForValidIpAddress(resourcePathArray[0]);
+            if (resourcePathArray != null && resourcePathArray.length > 0) {
+                validIp = checkForValidIpAddress(resourcePathArray[0]);
+            }
         }
         if (resource.getPath() != null && validIp) {
             // extract path which consists of location and IpAddress.

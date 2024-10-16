@@ -1,5 +1,6 @@
 
 = Grafana
+:description: Learn about the Grafana dashlet, which displays a Grafana dashboard in the {page-component-title} operator board.
 
 The Grafana dashlet displays a Grafana dashboard in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board] with data spanning a defined time range.
 The xref:deep-dive/visualizations/grafana-dashboard-box.adoc[Grafana Dashboard Box] configuration is used to access the Grafana instance.

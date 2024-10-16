@@ -1,5 +1,6 @@
 [[adapter-geoip]]
 = GeoIP
+:description: Learn how the GeoIP provisioning adapter in OpenNMS {page-component-title} enriches node asset data with location information.
 
 Use the GeoIP Provisioning Adapter to enrich a node's asset data with location information.
 It uses the GeoIP2 Databases from MaxMind to look up longitude/latitude values for a given IP address.

@@ -1,5 +1,6 @@
 
 = Alarms
+:description: Learn about the Alarms dashlet that displays short descriptions of alarms in the {page-component-title} operator board.
 
 The Alarms dashlet displays a table with short descriptions of alarms in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board].
 

@@ -1,5 +1,6 @@
 
 = Secure Credentials Vault
+:description: Learn how to configure the secure credentials vault to encrypt the credentials that {page-component-title} uses.
 
 The secure credentials vault lets you encrypt credentials that {page-component-title} uses.
 It stores them in the Java keystore (JKS) format.

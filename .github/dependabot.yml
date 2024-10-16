@@ -4,9 +4,9 @@ updates:
   - package-ecosystem: "npm"
     # Look for `package.json` and `lock` files in the `root` directory
     directory: "/ui"
-    target-branch: "develop"
+    target-branch: "foundation-2024"
     reviewers:
-      - "mikewrosey"
+      - "OpenNMS/dependabot-reviewers-node"
     labels:
       - "dependency update"
     commit-message:
@@ -14,6 +14,13 @@ updates:
       include: "scope"
     schedule:
       interval: "weekly"
+    groups:
+      feather:
+        patterns:
+          - "@featherds/*"
+        update-types:
+          - "minor"
+          - "patch"
 
   - package-ecosystem: "npm"
     # Look for `package.json` and `lock` files in the `root` directory
@@ -21,7 +28,7 @@ updates:
     target-branch: "foundation-2023"
     versioning-strategy: "increase-if-necessary"
     reviewers:
-      - "rangerrick"
+      - "OpenNMS/dependabot-reviewers-node"
     labels:
       - "dependency update"
     commit-message:
@@ -29,6 +36,27 @@ updates:
       include: "scope"
     schedule:
       interval: "daily"
+    groups:
+      babel-and-eslint:
+        patterns:
+          - "*babel*"
+          - "*eslint*"
+        update-types:
+          - "minor"
+          - "patch"
+      jest:
+        patterns:
+          - "*jest*"
+        update-types:
+          - "minor"
+          - "patch"
+      webpack:
+        patterns:
+          - "*webpack*"
+          - "*-loader"
+        update-types:
+          - "minor"
+          - "patch"
     # these will need to be dealt with in a more deliberate way
     ignore:
       - dependency-name: "angular"
@@ -53,7 +81,7 @@ updates:
     directory: "/"
     target-branch: "foundation-2023"
     reviewers:
-      - "rangerrick"
+      - "OpenNMS/dependabot-reviewers-maven"
     labels:
       - "dependency update"
     commit-message:

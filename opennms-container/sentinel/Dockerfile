@@ -1,7 +1,7 @@
 ##
 # Use Java base image and setup required DEBS as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubuntu-3.0.1.b220-jre-11"
+ARG BASE_IMAGE="opennms/deploy-base:ubuntu-3.4.0.b268-jre-11"
 
 FROM ${BASE_IMAGE} as sentinel-tarball
 
@@ -98,12 +98,18 @@ RUN install -d -o 10001 -g 0 -m 775 \
     ln -s /usr/share/sentinel/etc /etc/sentinel && \
     ln -s /usr/share/sentinel /opt/sentinel
 
-COPY ./container-fs/* /
+# Install entrypoint wrapper and health check script
+COPY container-fs/entrypoint.sh /
+COPY container-fs/health.sh /
 
 # Allow to send ICMP messages as non-root user
 RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
     echo ${JAVA_HOME}/lib/jli > /etc/ld.so.conf.d/java-latest.conf && \
     ldconfig
+
+# Install confd.io configuration files and scripts and ensure they are executable
+COPY ./container-fs/confd/ /opt/sentinel/confd/
+RUN chmod +x /opt/sentinel/confd/scripts/*
 
 VOLUME [ "/usr/share/sentinel/deploy", "/usr/share/sentinel/etc", "/usr/share/sentinel/data" ]
 

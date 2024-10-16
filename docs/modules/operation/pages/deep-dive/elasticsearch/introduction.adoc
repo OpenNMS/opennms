@@ -1,7 +1,8 @@
 
 = Elasticsearch Integration
+:description: Learn how to persist and forward data from {page-component-title} to Elasticsearch.
 
-{page-component-title} can persist/forward certain data to Elasticsearch.
+{page-component-title} can persist and forward certain data to Elasticsearch.
 The following sections describe the configuration possibilities as well as the available features.
 Internally, all Elasticsearch integrations use the https://github.com/searchbox-io/Jest[Jest library] to access the Elasticsearch REST interface.
 

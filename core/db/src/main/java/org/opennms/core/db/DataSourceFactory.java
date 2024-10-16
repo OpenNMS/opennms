@@ -71,22 +71,22 @@ public abstract class DataSourceFactory {
     private static final List<Runnable> m_closers = new LinkedList<>();
 
     private static ClosableDataSource parseDataSource(final String dsName) {
-        String factoryClass = null;
+        final var jdbcDataSource = m_dataSourceConfigFactory.getJdbcDataSource(dsName);
 
-        ConnectionPool connectionPool = m_dataSourceConfigFactory.getConnectionPool();
-        factoryClass = connectionPool.getFactory();
+        final var connectionPool = ConnectionPool.merge(jdbcDataSource.getConnectionPool(), m_dataSourceConfigFactory.getConnectionPool());
+        final var factoryClass = connectionPool.getFactory();
 
     	ClosableDataSource dataSource = null;
 		final String defaultClassName = DEFAULT_FACTORY_CLASS.getName();
-    	try {
+        try {
     		final Class<?> clazz = Class.forName(factoryClass);
     		final Constructor<?> constructor = clazz.getConstructor(new Class<?>[] { JdbcDataSource.class });
-    		dataSource = (ClosableDataSource)constructor.newInstance(new Object[] { m_dataSourceConfigFactory.getJdbcDataSource(dsName) });
+    		dataSource = (ClosableDataSource)constructor.newInstance(new Object[] {jdbcDataSource});
     	} catch (final Throwable t) {
     		LOG.debug("Unable to load {}, falling back to the default dataSource ({})", factoryClass, defaultClassName, t);
     		try {
 				final Constructor<?> constructor = ((Class<?>) DEFAULT_FACTORY_CLASS).getConstructor(new Class<?>[] { JdbcDataSource.class });
-				dataSource = (ClosableDataSource)constructor.newInstance(new Object[] { m_dataSourceConfigFactory.getJdbcDataSource(dsName) });
+				dataSource = (ClosableDataSource)constructor.newInstance(new Object[] {jdbcDataSource});
 			} catch (final Throwable cause) {
 			    if (isUnfilteredConfigException(cause)) {
 			        throw new IllegalArgumentException("Failed to load " + defaultClassName + " because the configuration is unfiltered. If you see this in a unit/integration test, you can ignore it.");
@@ -107,7 +107,7 @@ public abstract class DataSourceFactory {
     		dataSource.setMaxPool(connectionPool.getMaxPool());
     		dataSource.setMaxSize(connectionPool.getMaxSize());
     	}
-    	
+
     	return dataSource;
     }
 

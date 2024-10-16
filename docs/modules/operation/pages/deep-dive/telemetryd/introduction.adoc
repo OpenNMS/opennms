@@ -1,6 +1,7 @@
 
 [[ga-telemetryd]]
 = Telemetry Daemon
+:description: Learn about the telemetry daemon in {page-component-title} to support applications that use different protocols to transfer metrics data.
 
 The telemetry daemon (telemetryd) provides an extensible framework that you can use to handle sensor data pushed to {page-component-title}.
 You can use the framework to support applications that use different protocols to transfer metrics data.

@@ -1,6 +1,6 @@
 
 = On-Call Roles
-:description: How to create on-call roles in OpenNMS Horizon/Meridian and assign pre-defined duty schedules to groups of users.
+:description: How to create on-call roles in {page-component-title} and assign pre-defined duty schedules to groups of users.
 
 On-call roles let you assign a predefined <<deep-dive/user-management/user-config.adoc#ga-user-schedule, duty schedule>> to an existing group of users.
 A common use case is to have system engineers in on-call rotations with a defined schedule.

@@ -1,16 +1,16 @@
  jobs:
   code-coverage:
-    executor: build-executor
+    executor: coverage-executor
     resource_class: xlarge
     steps:
       - cached-checkout
       - attach_workspace:
           at: ~/
       - cached-download:
-          url: https://repo1.maven.org/maven2/org/jacoco/org.jacoco.cli/0.8.8/org.jacoco.cli-0.8.8-nodeps.jar
+          url: https://repo1.maven.org/maven2/org/jacoco/org.jacoco.cli/0.8.11/org.jacoco.cli-0.8.11-nodeps.jar
           file: /tmp/jacoco-cli.jar
       - cached-download:
-          url: https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-4.7.0.2747.zip
+          url: https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-5.0.1.3006.zip
           file: /tmp/sonar-scanner-cli.zip
       - extract-pom-version
       - restore-maven-cache
@@ -24,6 +24,6 @@
           name: Run SonarQube Code Analysis
           when: always
           command: |
-            export MAVEN_OPTS="-Xmx12g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            export MAVEN_OPTS="-Xmx12g -XX:ReservedCodeCacheSize=2g -XX:+TieredCompilation -XX:+UseShenandoahGC"
             .circleci/scripts/sonar.sh
       - save-sonar-cache

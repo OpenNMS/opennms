@@ -1,10 +1,11 @@
-# Geographical Maps
+= Geographical Maps
+:description: Learn more about the geographical map in {page-component-title} that displays nodes with address asset information, including dynamic alarm status.
 
 OpenNMS includes a geographical map which can show nodes with address asset information on a world map, including dynamic alarm status.
 
 The geographical map is located in the *Maps* menu or by going to the page of a node that has an address and/or longitude/latitude defined in its asset fields, and following the *View in Geographical Map* link.
 
-## Markers and clusters
+== Markers and clusters
 
 The geographical map displays each node that has an associated longitude and latitude in the database.
 If a node does not have coordinates recorded, update the requisition to include address asset fields and verify the xref:deep-dive/admin/configuration/geocoder.adoc[geocoder service] is configured and enabled.
@@ -14,7 +15,7 @@ A marker with a number in it indicates a cluster and the number of nodes in it.
 Hover over a cluster to show the contents of the nodes it contains.
 Click on a marker to show the summary of the nodes it contains.
 
-## Status
+== Status
 
 A node's marker displays as the color associated with the most severe alarm for that node.
 A cluster's marker displays as the color of the highest severity of the nodes the marker contains.

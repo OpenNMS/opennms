@@ -56,12 +56,14 @@
     
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Connection Error" />
-  <jsp:param name="headTitle" value="Connection Error" />
-  <jsp:param name="headTitle" value="Error" />
-  <jsp:param name="breadcrumb" value="Error" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Connection Error")
+          .headTitle("Error")
+          .breadcrumb("Error")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <h1>Connection Error</h1>
 

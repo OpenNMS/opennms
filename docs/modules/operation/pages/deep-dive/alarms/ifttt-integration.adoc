@@ -1,6 +1,6 @@
 
 = IFTTT Integration
-:description: How to integrate the IFTTT service with OpenNMS Horizon/Meridian to combine web applications and trigger actions of other services.
+:description: How to integrate the IFTTT service with {page-component-title} to combine web applications and trigger actions of other services.
 
 The IFTTT service lets you combine web applications using simple conditional instructions.
 Each supported service has several triggers that you can use to trigger the actions of other services.

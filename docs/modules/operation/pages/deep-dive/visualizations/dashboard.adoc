@@ -1,5 +1,6 @@
 
 = {page-component-title} Dashboard
+:description: Learn how to customize {page-component-title}'s dashboard components: surveillance view, alarms, notifications, outages, and resource graphs.
 
 This section describes the {page-component-title} dashboard and its customization options.
 

@@ -2,6 +2,7 @@
 
 [[ref-ticketing-tsrm]]
 = TSRM Ticketing Plugin
+:description: Learn how to set up and use the TSRM Ticketing Plugin to create Tivoli Service Request Manager incidents in response to {page-component-title} alarms.
 
 The TSRM ticketing plugin creates TSRM incidents in response to {page-component-title} alarms.
 

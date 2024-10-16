@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2017-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -38,6 +38,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
@@ -57,6 +58,7 @@ import kafka.server.KafkaConfig;
 import kafka.server.KafkaServer;
 import scala.Option;
 import scala.collection.JavaConverters;
+import scala.collection.mutable.Buffer;
 
 /**
  * This class starts up an embedded Kafka server for use in integration
@@ -140,7 +142,7 @@ public class JUnitKafkaServer extends ExternalResource {
 
         if (zkServer != null) {
             try {
-                zkServer.stop();
+                zkServer.close();
             } catch (IOException e) {
                 LOG.warn("Failed to stop the ZooKeeper server.", e);
             }

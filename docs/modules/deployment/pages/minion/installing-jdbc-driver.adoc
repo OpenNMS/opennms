@@ -4,6 +4,9 @@
 :description: How to install JDBC driver on an OpenNMS Minion with MySQL and Karaf.
 
 To detect, poll, or collect any JDBC service, you must install the corresponding JDBC driver.
+The driver for PostgreSQL is included on the Minion without any additional configuration needed.
+
+NOTE: This is an optional step and is only needed if you are monitoring a JDBC service that is not PostgreSQL.
 
 We reference the `repository directory` relative to the Minion home directory.
 Depending on your operating system, the home directory is `/usr/share/minion` for Debian and Ubuntu, or `/opt/minion` for CentOS and RHEL.

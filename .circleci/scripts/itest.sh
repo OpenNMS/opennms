@@ -96,6 +96,7 @@ retry sudo apt update && \
                 jrrd2 \
                 jicmp \
                 jicmp6 \
+                openjdk-11-jdk-headless \
             || exit 1
 
 export JAVA_HOME=/usr/lib/jvm/java-11-openjdk-amd64
@@ -155,7 +156,6 @@ ionice nice ./compile.pl "${MAVEN_ARGS[@]}" \
            -Dfailsafe.failIfNoSpecifiedTests=false \
            -DrunPingTests=false \
            -DskipITs=false \
-           -Dci.rerunFailingTestsCount="${CCI_RERUN_FAILTEST:-0}" \
            --batch-mode \
            "${CCI_FAILURE_OPTION:--fail-fast}" \
            -Dorg.opennms.core.test-api.dbCreateThreads=1 \

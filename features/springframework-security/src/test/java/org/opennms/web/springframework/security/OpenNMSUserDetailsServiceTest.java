@@ -32,8 +32,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoMoreInteractions;
 import static org.mockito.Mockito.when;
 
+import org.junit.After;
+import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.model.OnmsUser;
 import org.opennms.test.ThrowableAnticipator;
@@ -41,46 +44,44 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 
 public class OpenNMSUserDetailsServiceTest {
-	
-	@Test
-	public void testDaoSetter() {
-		SpringSecurityUserDao userDao = mock(SpringSecurityUserDao.class);
-		OpenNMSUserDetailsService detailsService = new OpenNMSUserDetailsService();
-		
-		detailsService.setUserDao(userDao);
+	private SpringSecurityUserDao userDao = mock(SpringSecurityUserDao.class);
+	private OpenNMSUserDetailsService detailsService;
+
+	@Before
+	public void setUp() throws Exception {
+	    userDao = mock(SpringSecurityUserDao.class);
+	    detailsService = new OpenNMSUserDetailsService(userDao);
+	}
+
+	@After
+	public void tearDown() throws Exception {
+        verifyNoMoreInteractions(userDao);
 	}
 
 	@Test
 	public void testDaoGetter() {
-		SpringSecurityUserDao userDao = mock(SpringSecurityUserDao.class);
-		OpenNMSUserDetailsService detailsService = new OpenNMSUserDetailsService();
-		detailsService.setUserDao(userDao);
 		assertEquals("getUsersDao returned what we passed to setUsersDao", userDao, detailsService.getUserDao());
+
+        verifyNoMoreInteractions(userDao);
 	}
 
 	@Test
 	public void testGetUser() {
-		SpringSecurityUserDao userDao = mock(SpringSecurityUserDao.class);
-		OpenNMSUserDetailsService detailsService = new OpenNMSUserDetailsService();
-		detailsService.setUserDao(userDao);
-
 		SpringSecurityUser user = new SpringSecurityUser(new OnmsUser());
 		when(userDao.getByUsername("test_user")).thenReturn(user);
 
 		UserDetails userDetails = detailsService.loadUserByUsername("test_user");
 		
-		verify(userDao);
-		
+		verify(userDao).getByUsername("test_user");
+
 		assertNotNull("user object from DAO not null", userDetails);
 		assertEquals("user objects", user, userDetails);
+
+		verifyNoMoreInteractions(userDao);
 	}
 
 	@Test
 	public void testGetUnknownUser() {
-		SpringSecurityUserDao userDao = mock(SpringSecurityUserDao.class);
-		OpenNMSUserDetailsService detailsService = new OpenNMSUserDetailsService();
-		detailsService.setUserDao(userDao);
-		
 		when(userDao.getByUsername("test_user")).thenReturn(null);
 		
 		ThrowableAnticipator ta = new ThrowableAnticipator();
@@ -91,7 +92,11 @@ public class OpenNMSUserDetailsServiceTest {
 		} catch (Throwable t) {
 			ta.throwableReceived(t);
 		}
-		verify(userDao);
+
+		verify(userDao).getByUsername("test_user");
+
 		ta.verifyAnticipated();
+
+		verifyNoMoreInteractions(userDao);
 	}
 }

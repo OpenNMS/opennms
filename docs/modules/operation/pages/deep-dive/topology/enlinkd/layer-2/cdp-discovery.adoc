@@ -1,5 +1,6 @@
 
 = Cisco Discovery Protocol
+:description: Learn more about the Cisco Discovery Protocol (CDP) in {page-component-title} topology mapping, including supported OIDs.
 
 The https://learningnetwork.cisco.com/s/article/cisco-discovery-protocol-cdp-x[Cisco Discovery Protocol] (CDP) is a proprietary link layer protocol developed by Cisco.
 Network devices use the protocol to advertise their identities, capabilities, and neighbors.

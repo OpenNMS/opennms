@@ -1,5 +1,7 @@
 
 = CitrixMonitor
+:description: Learn about the CitrixMonitor in OpenNMS {page-component-title} that tests if a Citrix or XenApp server is providing the ICA protocol on TCP 1494.
+
 
 This monitor tests if a Citrix(R) Server or XenApp Server(R) is providing the Independent Computing Architecture (ICA) protocol on TCP 1494.
 The monitor opens a TCP socket and tests the greeting banner returns with ICA; otherwise, the service is unavailable.

@@ -1,5 +1,6 @@
 
 = Maintenance Contracts Strategy Report
+:description: Learn how to create a report in {page-component-title} that helps you create and review your network device maintenance strategy.
 
 This is an assessment management report that can help you create and review your network device maintenance strategy.
 

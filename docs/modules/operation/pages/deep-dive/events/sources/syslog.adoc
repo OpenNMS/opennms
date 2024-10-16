@@ -1,7 +1,7 @@
 
 [[ga-events-sources-syslog]]
 = Syslog Messages
-:description: All about events and syslog messages in OpenNMS Horizon/Meridian: parsers and RadixTreeSyslogParser parameters and tokens.
+:description: All about events and syslog messages in {page-component-title}: parsers and RadixTreeSyslogParser parameters and tokens.
 
 Syslog messages sent over the network to {page-component-title} can be transformed into events according to preconfigured rules.
 
@@ -16,7 +16,7 @@ You can use parsers to convert syslog message fields into {page-component-title}
 .Syslog message parsers
 [options="autowidth"]
 |===
-| Parser    | Description
+| Parser | Description
 
 | org.opennms.netmgt.syslogd.CustomSyslogParser
 | Uses a regex statement to parse the syslog header.
@@ -49,7 +49,7 @@ Arrange the patterns in the file from most specific to least specific, since the
 .`RadixTreeSyslogParser` parameter patterns
 [options="autowidth"]
 |===
-| Pattern   | Description
+| Pattern | Description
 
 | HOSTNAME
 | String containing only valid hostname characters (alphanumeric plus '.', '-' and '_').
@@ -81,10 +81,10 @@ Because this matches any character, it must be followed by a delimiter in the pa
 .`RadixTreeSyslogParser` semantic tokens
 [cols="1,3"]
 |===
-| Semantic Token    | Description
+| Semantic Token | Description
 
 | day
-| Two-digit day of month (01–31)
+| Two-digit day of month (01-31)
 
 | facilityPriority
 | Facility-priority integer
@@ -93,7 +93,7 @@ Because this matches any character, it must be followed by a delimiter in the pa
 | String hostname (unqualified or FQDN), IPv4 address, or IPv6 address.
 
 | hour
-| Two-digit hour of day (00–23)
+| Two-digit hour of day (00-23)
 
 | message
 | Remaining string message.
@@ -102,10 +102,10 @@ Because this matches any character, it must be followed by a delimiter in the pa
 | String message ID
 
 | minute
-| Two-digit minute (0–59)
+| Two-digit minute (0-59)
 
 | month
-| Two-digit month (01–12)
+| Two-digit month (01-12)
 
 | parm*
 | Generic string parameter where the parameter's key is the identifier following "parm" in the semantic token (for example, `parmComponentId` maps to a string parameter with key "ComponentId").
@@ -117,7 +117,7 @@ Because this matches any character, it must be followed by a delimiter in the pa
 | String process name
 
 | second
-| Two-digit second (00–59)
+| Two-digit second (00-59)
 
 | secondFraction
 | One- to six-digit fractional second value as a string.
@@ -131,3 +131,36 @@ Because this matches any character, it must be followed by a delimiter in the pa
 | year
 | Four-digit year
 |===
+
+== Examples
+
+There are some sample syslog event parsing definitions in `$\{OPENNMS_HOME}/etc/syslog` you can use as a base for customizing your own event parsing.
+
+=== Discard messages
+
+If there are syslog messages you do not want to keep, you can set the UEI to `DISCARD-MATCHING-MESSAGES`.
+This will flag the message as `donotpersist` so it will be dropped and not written to the database.
+
+[source, xml]
+----
+<ueiMatch>
+    <match type="regex" expression="^.*(\[api-status-warning\].*deprecated).*$" />
+    <uei>DISCARD-MATCHING-MESSAGES</uei>
+</ueiMatch>
+----
+
+=== Facility/Severity filtering
+
+If you have similar messages coming in with different syslog facility or severity flags, but only want to capture events that match a specific value, you can specify a filter in the syslogd configuration.
+
+[source, xml]
+----
+<ueiMatch>
+    <facility>local0</facility>
+    <severity>Warning</severity>
+    <match type="regex" expression="^.*Certificate (.*) expired on (.*)$" />
+    <uei>uei.opennms.org/custom/syslog/certExpired</uei>
+    <parameter-assignment matching-group="1" parameter-name="certName" />
+    <parameter-assignment matching-group="2" parameter-name="expireDate" />
+</ueiMatch>
+----

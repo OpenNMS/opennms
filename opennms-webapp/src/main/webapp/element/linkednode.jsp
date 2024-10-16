@@ -83,14 +83,16 @@
 	IsisElementNode isiselem = enlinkdfactory.getIsisElement(nodeId);
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="headTitle" value="${nodeLabel}" />
-  <jsp:param name="headTitle" value="Linked Node Info" />
-  <jsp:param name="title" value="Linked Node Info" />
-  <jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-  <jsp:param name="breadcrumb" value="<a href='element/node.jsp?node=${nodeId}'>Node</a>" />
-  <jsp:param name="breadcrumb" value="Links" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("${nodeLabel}")
+          .headTitle("Linked Node Info")
+          .breadcrumb("Search", "element/index.jsp")
+          .breadcrumb("Node", "element/node.jsp?node=${nodeId}")
+          .breadcrumb("Links")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script type="text/javascript">
   function setDown(node, intf){

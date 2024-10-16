@@ -1,6 +1,6 @@
 
 = Notification Commands
-:description: Default notification commands in OpenNMS Horizon/Meridian and how to create custom commands.
+:description: Default notification commands in {page-component-title} and how to create custom commands.
 
 A notification command is a named, reusable execution profile for a Java class or external program command used to convey notices to targets.
 {page-component-title} includes several default notification commands.

@@ -1,6 +1,6 @@
 
 = Step 8: Configure Notifications
-:description: Step 8 of OpenNMS Horizon/Meridian setup: configure event notifications and create filter rules.
+:description: Step 8 of {page-component-title} setup: configure event notifications and create filter rules.
 
 This section describes how to configure and customize your {page-component-title} notifications.
 

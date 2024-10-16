@@ -35,9 +35,9 @@
       <type>pom</type>
     </dependency>
     <dependency>
-      <groupId>io.searchbox</groupId>
+      <groupId>org.opennms.features.jest</groupId>
       <artifactId>jest-complete-osgi</artifactId>
-      <version>${jestVersion}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>

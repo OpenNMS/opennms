@@ -45,14 +45,15 @@
 <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Instrumentation Log Reader" />
-  <jsp:param name="headTitle" value="Admin" />
-  <jsp:param name="headTitle" value="Instrumentation Log Reader" />
-  <jsp:param name="location" value="Instrumentation Log Reader" />  
-  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="Instrumentation Log Reader" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Admin")
+          .headTitle("Instrumentation Log Reader")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Instrumentation Log Reader")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <%
 

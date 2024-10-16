@@ -185,8 +185,6 @@
       <plugin>
         <groupId>org.apache.karaf.tooling</groupId>
         <artifactId>karaf-maven-plugin</artifactId>
-        <version>${karafVersion}</version>
-
         <executions>
           <execution>
             <id>features-add-to-repository</id>
@@ -206,6 +204,8 @@
                 <!-- Karaf standard and Spring features, replaced by our modified versions -->
                 <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
                 <!-- <descriptor>mvn:org.apache.karaf.features/spring-legacy/${karafVersion}/xml/features</descriptor> -->
+                <!-- Pax CDI features -->
+                <repository>mvn:org.ops4j.pax.cdi/pax-cdi-features/${paxCdiVersion}/xml/features</repository>
                 <!-- Pax Exam features -->
                 <descriptor>mvn:org.ops4j.pax.exam/pax-exam-features/${paxExamVersion}/xml</descriptor>
                 <!-- Pax Web features -->
@@ -354,9 +354,8 @@
                 <feature>guava17</feature>
                 <feature>guava</feature>
                 <feature>hibernate36</feature>
-                <feature>hibernate-validator41</feature>
+                <feature>hibernate-validator4</feature>
                 <feature>jaxb</feature>
-                <feature>jfreechart</feature>
                 <feature>jolokia</feature>
                 <feature>jrobin</feature>
                 <feature>json-lib</feature>
@@ -503,9 +502,11 @@
                 <feature>opennms-config-management-osgi-del</feature>
                 <feature>opennms-config-management-osgi-cm</feature>
                 <feature>opennms-scv-rest</feature>
+
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>
                 <feature>opennms-dao-minion</feature>
+
                 <!-- Lots of deviceconfig features -->
                 <feature>opennms-deviceconfig-rest</feature>
                 <feature>opennms-deviceconfig-sink</feature>
@@ -516,6 +517,8 @@
                 
                 <feature>inmemory-timeseries-plugin</feature>
 
+                <!-- pulled in by a transient dependency, so be sure we get our newer one -->
+                <feature>zookeeper-dependencies</feature>
               </features>
               <repository>${project.build.directory}/opennms-repo</repository>
             </configuration>

@@ -24,8 +24,10 @@ printf '%s' "${AZURE_DCT_CI_KEY}" | base64 -d > "${PRIVATE_KEY_FOLDER}/${AZURE_D
 printf '%s' "${AZURE_DCT_REPO_MINION_KEY}" | base64 -d > "${PRIVATE_KEY_FOLDER}/${AZURE_DCT_REPO_MINION_KEY_ID}.key"
 chmod 600 "${PRIVATE_KEY_FOLDER}"/*
 
-export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE="${AZURE_DCT_CI_PASSPHRASE}"
-docker trust key load "${PRIVATE_KEY_FOLDER}/${AZURE_DCT_CI_KEY_ID}.key"
+if [ "${DOCKER_CONTENT_TRUST}" -eq 1 ]; then
+  export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE="${AZURE_DCT_CI_PASSPHRASE}"
+  docker trust key load "${PRIVATE_KEY_FOLDER}/${AZURE_DCT_CI_KEY_ID}.key"
+fi
 
 # shellcheck disable=SC2043
 for TYPE in minion; do
@@ -47,10 +49,14 @@ for TYPE in minion; do
     cosign_sign "${DOCKER_REPO}@${_sha256}" "/tmp/artifacts/xml/${_file_tag}-sbom.xml"
   done
 
-  export NOTARY_TARGETS_PASSPHRASE="${AZURE_DCT_REPO_MINION_KEY_PASSPHRASE}"
   for _publish_tag in "${DOCKER_TAGS[@]}"; do
     create_and_push_manifest "${DOCKER_REPO}" "${DOCKER_BRANCH_TAG}" "${_publish_tag}"
-    do_with_retries notary -d ~/.docker/trust/ -s "https://${DOCKER_SERVER}" addhash "${DOCKER_REPO}" "${_publish_tag}" "${DOCKER_IMAGE_BYTES_SIZE}" --sha256 "${DOCKER_IMAGE_SHA_256}" --publish --verbose
+
+    if [ "${DOCKER_CONTENT_TRUST}" -eq 1 ]; then
+      export NOTARY_TARGETS_PASSPHRASE="${AZURE_DCT_REPO_MINION_KEY_PASSPHRASE}"
+      do_with_retries notary -d ~/.docker/trust/ -s "https://${DOCKER_SERVER}" addhash "${DOCKER_REPO}" "${_publish_tag}" "${DOCKER_IMAGE_BYTES_SIZE}" --sha256 "${DOCKER_IMAGE_SHA_256}" --publish --verbose
+    fi
+
     cosign_sign "${DOCKER_REPO}@sha256:${DOCKER_IMAGE_SHA_256}"
   done
 

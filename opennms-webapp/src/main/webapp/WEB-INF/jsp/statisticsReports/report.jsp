@@ -34,14 +34,15 @@
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="ec" uri="http://www.extremecomponents.org" %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Statistics Report" />
-  <jsp:param name="headTitle" value="Statistics Report" />
-  <jsp:param name="location" value="reports" />
-  <jsp:param name="breadcrumb" value="<a href='report/index.jsp'>Report</a>"/>
-  <jsp:param name="breadcrumb" value="<a href='statisticsReports/index.htm'>Statistics Reports</a>"/>
-  <jsp:param name="breadcrumb" value="Report"/>
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Statistics Report")
+          .breadcrumb("Report", "report/index.jsp")
+          .breadcrumb("Statistics Reports", "statisticsReports/index.htm")
+          .breadcrumb("Report")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="card">
   <div class="card-header">

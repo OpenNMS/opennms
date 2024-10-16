@@ -43,6 +43,11 @@
       <artifactId>guava</artifactId>
     </dependency>
     <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>${gsonVersion}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.flows</groupId>
       <artifactId>org.opennms.features.flows.api</artifactId>
       <version>${project.version}</version>

@@ -1,6 +1,6 @@
 
 = Alarm Sounds
-:description: How to configure OpenNMS Horizon/Meridian to generate sounds for alarms.
+:description: How to configure {page-component-title} to generate sounds for alarms.
 
 In certain situations, you may want an audible indication of a change in alarm state.
 The Alarms List page has the optional ability to generate a sound either when new alarms are created, or on each change to an alarm event count on the page.

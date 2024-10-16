@@ -1,5 +1,6 @@
 
 = Surveillance View
+:description: Get an overview of the surveillance view in {page-component-title} including the matrix display and custom configuration.
 
 The surveillance view displays an overview of your monitored network's status, and serves as the foundation of the xref:deep-dive/visualizations/dashboard.adoc[{page-component-title} dashboard].
 You can filter and customize the data displayed as desired.

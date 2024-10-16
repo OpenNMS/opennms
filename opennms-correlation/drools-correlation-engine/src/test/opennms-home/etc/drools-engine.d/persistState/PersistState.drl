@@ -3,7 +3,6 @@ package org.opennms.netmgt.correlation.drools;
 import org.opennms.netmgt.correlation.drools.DroolsCorrelationEngine;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.model.events.EventBuilder;
-import org.drools.core.spi.KnowledgeHelper
 import org.drools.core.QueryResultsImpl;
 
 global DroolsCorrelationEngine engine;

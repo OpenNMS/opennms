@@ -1,5 +1,6 @@
 
 = IS-IS Discovery
+:description: Learn more about IS-IS link discovery in {page-component-title} topology mapping, including supported OIDs.
 
 IS-IS links are found in the `isisISAdjTable` (defined in the https://datatracker.ietf.org/doc/html/rfc4444[ISIS-MIB] module).
 This table has the information needed to find the Adjacency Intermediate System.

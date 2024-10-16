@@ -43,8 +43,8 @@
         </dependency>
 
         <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-web-api</artifactId>
+            <groupId>org.opennms.features</groupId>
+            <artifactId>org.opennms.features.charts</artifactId>
             <scope>provided</scope>
         </dependency>
 

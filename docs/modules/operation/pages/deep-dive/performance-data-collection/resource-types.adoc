@@ -1,7 +1,7 @@
 
 [[resource-types]]
 = Resource Types
-:description: Using resource types in OpenNMS Horizon/Meridian to group sets of performance data measurements: persistence selector strategies and storage strategies.
+:description: Using resource types in {page-component-title} to group sets of performance data measurements: persistence selector strategies and storage strategies.
 
 {page-component-title} uses resource types to group sets of performance data measurements for persisting, indexing, and displaying in the web UI.
 Each resource type has a unique name, label definitions for display in the UI, and strategy definitions for archiving the measurements for long-term analysis.

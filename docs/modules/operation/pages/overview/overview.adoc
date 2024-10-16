@@ -1,7 +1,7 @@
 
 [[overview]]
 = Overview
-:description: Overview of the operation section for the OpenNMS Horizon/Meridian documentation, which provides information to configure and use the software.
+:description: Overview of the operation section for the {page-component-title} documentation, which provides information to configure and use the software.
 
 The Operation section provides information and procedures for configuration and use of the {page-component-title} platform.
 The section uses a task-based approach, and the chapters are arranged in the order we recommend to start working with {page-component-title}.

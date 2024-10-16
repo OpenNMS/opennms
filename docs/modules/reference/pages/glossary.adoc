@@ -1,6 +1,7 @@
 
 [[glossary]]
 = Glossary
+:description: View definitions for common terms used in OpenNMS {page-component-title}.
 
 == A
 
@@ -169,7 +170,7 @@ notifications:: Messages delivered to a set of recipients.
 
 == O
 
-https://docs.opennms.com/helm/latest[OpenNMS plugin for Grafana]:: A Grafana plugin for creating flexible dashboards to display and customize fault, flow, and performance data from {page-component-title}.
+https://docs.opennms.com/grafana-plugin/latest[OpenNMS plugin for Grafana]:: A Grafana plugin for creating flexible dashboards to display and customize fault, flow, and performance data from {page-component-title}.
 Previously known as Helm.
 
 xref:operation:deep-dive/visualizations/opsboard/introduction.adoc[Operator board]:: Customizable dashboard to visualize monitoring information.

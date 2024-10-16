@@ -4,7 +4,7 @@
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
 # as additional layers into the final image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubuntu-3.0.1.b220-jre-11"
+ARG BASE_IMAGE="opennms/deploy-base:ubuntu-3.4.0.b268-jre-11"
 
 FROM ${BASE_IMAGE} as minion-base
 
@@ -92,6 +92,9 @@ COPY ./minion-config-schema.yml /opt/minion/confd/
 
 # Create the directory for server certificates
 RUN install -d -m 750 /opt/minion/server-certs
+
+# Create prom-jmx-exporter folder
+RUN install -d -m 770 /opt/prom-jmx-exporter && chown 10001:0 /opt/prom-jmx-exporter
 
 # Arguments for labels should not invalidate caches
 ARG BUILD_DATE="1970-01-01T00:00:00+0000"

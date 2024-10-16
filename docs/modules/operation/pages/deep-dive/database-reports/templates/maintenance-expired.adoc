@@ -1,5 +1,6 @@
 
 = Maintenance Contracts Expired Report
+:description: Learn how to create a report in {page-component-title} that shows all assets with maintenance contracts that expire within a certain period.
 
 This is an asset management report that shows all assets with maintenance contracts that will expire within a threshold period, which starts on the day that the report is generated and extends for the number of days specified in the `Warning Threshold` parameter.
 This report can also show assets with maintenance contracts that have already expired.

@@ -1,5 +1,6 @@
 [[jmx-exporter]]
 = Prometheus JMX exporter
+:description: Learn how to set up out-of-band monitoring of the Java virtual machine (JVM) with the Minion process in OpenNMS {page-component-title}.
 
 To provide an out-of-band monitoring of the JVM with the Minion process, this container image ships with the Prometheus JMX exporter.
 The default configuration, which you can edit, appears in the `minion-config.yaml` file:

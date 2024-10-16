@@ -60,14 +60,16 @@
 <c:choose>
 	<c:when test="<%=(ipAddr == null)%>">
 		<c:set var="returnUrl" value="${nodeLink}"/>
-		<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-			<jsp:param name="title" value="Rescan" />
-			<jsp:param name="headTitle" value="Rescan" />
-			<jsp:param name="headTitle" value="Element" />
-			<jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-			<jsp:param name="breadcrumb" value="<a href='${fn:escapeXml(nodeLink)}'>Node</a>" />
-			<jsp:param name="breadcrumb" value="Rescan" />
-		</jsp:include>
+		<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Rescan")
+          .headTitle("Element")
+          .breadcrumb("Search", "element/index.jsp")
+          .breadcrumb("Node", "${nodeLink}")
+          .breadcrumb("Rescan")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 	</c:when>
 	<c:otherwise>
 		<c:url var="interfaceLink" value="element/interface.jsp">
@@ -75,15 +77,17 @@
 			<c:param name="intf" value="<%=WebSecurityUtils.sanitizeString(ipAddr)%>"/>
 		</c:url>
 		<c:set var="returnUrl" value="${interfaceLink}"/>
-		<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-			<jsp:param name="title" value="Rescan" />
-			<jsp:param name="headTitle" value="Rescan" />
-			<jsp:param name="headTitle" value="Element" />
-			<jsp:param name="breadcrumb" value="<a href='element/index.jsp'>Search</a>" />
-			<jsp:param name="breadcrumb" value="<a href='${fn:escapeXml(nodeLink)}'>Node</a>" />
-			<jsp:param name="breadcrumb" value="<a href='${fn:escapeXml(interfaceLink)}'>Interface</a>" />
-			<jsp:param name="breadcrumb" value="Rescan" />
-		</jsp:include>
+		<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Rescan")
+          .headTitle("Element")
+          .breadcrumb("Search", "element/index.jsp")
+          .breadcrumb("Node", "${nodeLink}")
+          .breadcrumb("Interface", "${fn:escapeXml(interfaceLink)}")
+          .breadcrumb("Rescan")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 	</c:otherwise>
 </c:choose>
 

@@ -347,7 +347,7 @@ public class TimelineRestService extends OnmsRestService {
     @Autowired
     private NodeDao m_nodeDao;
 
-    private OnmsOutageCollection queryOutages(final UriInfo uriInfo, final int nodeId, final String ipAddress, final String serviceName, final long start, final long end) {
+    private OnmsOutageCollection queryOutages(final UriInfo uriInfo, final int nodeId, final String ipAddress, final int serviceId, final long start, final long end) {
         OnmsOutageCollection onmsOutageCollection;
 
         final CriteriaBuilder builder = new CriteriaBuilder(OnmsOutage.class);
@@ -363,7 +363,7 @@ public class TimelineRestService extends OnmsRestService {
 
         builder.le("ifLostService", endDate);
 
-        builder.eq("serviceType.name", serviceName);
+        builder.eq("serviceType.id", serviceId);
         builder.eq("ipInterface.ipAddress", InetAddressUtils.addr(ipAddress));
         builder.isNull("perspective");
 
@@ -414,11 +414,11 @@ public class TimelineRestService extends OnmsRestService {
     @GET
     @Produces("text/html")
     @Transactional
-    @Path("html/{nodeId}/{ipAddress}/{serviceName}/{start}/{end}/{width}")
-    public Response html(@Context final UriInfo uriInfo, @PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceName") final String serviceName, @PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
+    @Path("html/{nodeId}/{ipAddress}/{serviceId}/{start}/{end}/{width}")
+    public Response html(@Context final UriInfo uriInfo, @PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceId") final int serviceId, @PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
         long delta = end - start;
 
-        OnmsOutageCollection onmsOutageCollection = queryOutages(uriInfo, nodeId, ipAddress, serviceName, start, end);
+        OnmsOutageCollection onmsOutageCollection = queryOutages(uriInfo, nodeId, ipAddress, serviceId, start, end);
 
         BufferedImage bufferedImage = new BufferedImage(width, 20, BufferedImage.TYPE_INT_ARGB);
 
@@ -430,7 +430,6 @@ public class TimelineRestService extends OnmsRestService {
         int numLabels = TimescaleDescriptor.computeNumberOfLabels(graphics2D, delta, width);
 
         final String encodedIpAddress = URLEncoder.encode(ipAddress, "UTF-8");
-        final String encodedServiceName = URLEncoder.encode(serviceName, "UTF-8");
 
         final StringBuffer htmlBuffer = new StringBuffer();
 
@@ -439,7 +438,7 @@ public class TimelineRestService extends OnmsRestService {
         htmlBuffer.append("/");
         htmlBuffer.append(encodedIpAddress);
         htmlBuffer.append("/");
-        htmlBuffer.append(encodedServiceName);
+        htmlBuffer.append(serviceId);
         htmlBuffer.append("/");
         htmlBuffer.append(start);
         htmlBuffer.append("/");
@@ -451,13 +450,13 @@ public class TimelineRestService extends OnmsRestService {
         htmlBuffer.append("-");
         htmlBuffer.append(encodedIpAddress);
         htmlBuffer.append("-");
-        htmlBuffer.append(encodedServiceName);
+        htmlBuffer.append(serviceId);
         htmlBuffer.append("\"><map name=\"");
         htmlBuffer.append(nodeId);
         htmlBuffer.append("-");
         htmlBuffer.append(encodedIpAddress);
         htmlBuffer.append("-");
-        htmlBuffer.append(encodedServiceName);
+        htmlBuffer.append(serviceId);
         htmlBuffer.append("\">");
 
         for (TimescaleDescriptor desc : TIMESCALE_DESCRIPTORS) {
@@ -477,11 +476,11 @@ public class TimelineRestService extends OnmsRestService {
     @GET
     @Produces("image/png")
     @Transactional
-    @Path("image/{nodeId}/{ipAddress}/{serviceName}/{start}/{end}/{width}")
-    public Response image(@Context final UriInfo uriInfo, @PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceName") final String serviceName, @PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
+    @Path("image/{nodeId}/{ipAddress}/{serviceId}/{start}/{end}/{width}")
+    public Response image(@Context final UriInfo uriInfo, @PathParam("nodeId") final int nodeId, @PathParam("ipAddress") final String ipAddress, @PathParam("serviceId") final int serviceId, @PathParam("start") final long start, @PathParam("end") final long end, @PathParam("width") final int width) throws IOException {
         long delta = end - start;
 
-        OnmsOutageCollection onmsOutageCollection = queryOutages(uriInfo, nodeId, ipAddress, serviceName, start, end);
+        OnmsOutageCollection onmsOutageCollection = queryOutages(uriInfo, nodeId, ipAddress, serviceId, start, end);
         OnmsNode node = m_nodeDao.get(nodeId);
 
         BufferedImage bufferedImage = new BufferedImage(width, 20, BufferedImage.TYPE_INT_ARGB);

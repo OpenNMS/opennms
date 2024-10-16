@@ -34,14 +34,14 @@
         session="true"
         %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-    <jsp:param name="title" value="Ops Board Configuration" />
-    <jsp:param name="headTitle" value="Ops Board Configuration" />
-    <jsp:param name="location" value="admin" />
-    <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-    <jsp:param name="breadcrumb" value="Ops Board Configuration" />
-    <jsp:param name="vaadinEmbeddedStyles" value="true" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Ops Board Configuration")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Ops Board Configuration")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <iframe name="wallboard-config" src="admin/wallboard-config" class="vaadin-fullscreen" frameborder="0"></iframe>
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

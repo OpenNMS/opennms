@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-reportd]]
 = Reportd
+:description: Learn about reportd in OpenNMS {page-component-title}, which handles database report generation and scheduling.
 
 The reportd daemon handles database report generation and scheduling.
 

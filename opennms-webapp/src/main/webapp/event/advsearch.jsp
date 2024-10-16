@@ -34,13 +34,15 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Advanced Event Search" />
-  <jsp:param name="headTitle" value="Advanced Search" />
-  <jsp:param name="headTitle" value="Events" />
-  <jsp:param name="breadcrumb" value="<a href='event/index'>Events</a>" />
-  <jsp:param name="breadcrumb" value="Advanced Event Search" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Advanced Search")
+          .headTitle("Events")
+          .breadcrumb("Events", "event/index")
+          .breadcrumb("Advanced Event Search")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <jsp:include page="/includes/event-advquerypanel.jsp" flush="false" />
 

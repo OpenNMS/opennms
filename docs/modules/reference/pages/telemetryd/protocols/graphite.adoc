@@ -1,5 +1,6 @@
 
 = Graphite Telemetry
+:description: Learn how the Graphite telemetry adapter uses the plaintext protocol push telemetry data over UDP to OpenNMS {page-component-title}.
 
 The Graphite telemetry adapter lets you push telemetry data over UDP to {page-component-title} using the link:https://graphite.readthedocs.io/en/latest/feeding-carbon.html#the-plaintext-protocol[plaintext protocol].
 

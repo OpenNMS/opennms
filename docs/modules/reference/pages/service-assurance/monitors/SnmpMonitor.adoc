@@ -1,5 +1,7 @@
 
 = SnmpMonitor
+:description: Learn how to configure and use the SnmpMonitor in OpenNMS {page-component-title} to provide a common platform to monitor states and results from SNMP agents.
+
 
 The SNMP monitor provides a common platform to monitor states and results from SNMP agents.
 This monitor has two basic operation modes:

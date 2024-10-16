@@ -34,14 +34,14 @@
 	session="true"
 %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="JMX Configuration Generator" />
-  <jsp:param name="headTitle" value="JMX Configuration Generator" />
-  <jsp:param name="location" value="admin" />
-  <jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-  <jsp:param name="breadcrumb" value="JMX Configuration Generator" />
-  <jsp:param name="vaadinEmbeddedStyles" value="true" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("JMX Configuration Generator")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("JMX Configuration Generator")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <iframe id="vaadin-content" name="jmx-config-ui" src="admin/jmx-config-tool" frameborder="0" class="vaadin-fullscreen"></iframe>
 <jsp:include page="/includes/bootstrap-footer.jsp" flush="true"/>

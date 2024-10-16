@@ -1,5 +1,6 @@
 
 = JDBCStoredProcedureMonitor
+:description: Learn about the JDBCStoredProcedureMonitor in OpenNMS {page-component-title} that checks the result of a stored procedure in a remote database.
 
 The JDBCStoredProcedureMonitor checks the result of a stored procedure in a remote database.
 The result of the stored procedure has to be a boolean value (representing true or false).

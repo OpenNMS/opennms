@@ -1,6 +1,7 @@
 
 [[ref-daemon-config-files-rtcd]]
 = Rtcd
+:description: Learn about rtcd, which calculates the availability percentages displayed on the OpenNMS {page-component-title} home page.
 
 Calculates the availability percentages displayed on the {page-component-title} home page.
 This daemon checks the database and updates availability data by sending REST calls to the server.

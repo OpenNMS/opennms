@@ -1,5 +1,6 @@
 
 = SNMP Interface Availability Report
+:description: Learn how to create a report in {page-component-title} that shows availability data for SNMP interfaces over a specified date range.
 
 This report provides the following availability data for SNMP interfaces, sorted by IP address, over the specified date range:
 

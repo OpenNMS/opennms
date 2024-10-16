@@ -48,12 +48,13 @@
 <%@taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %>
 <%@taglib uri="../../taglib.tld" prefix="onms" %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Alarms" />
-  <jsp:param name="headTitle" value="Alarms" />
-  <jsp:param name="location" value="alarm" />  
-  <jsp:param name="breadcrumb" value="Alarms" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Alarms")
+          .breadcrumb("Alarms")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <div class="row">
   <div class="col-md-6">

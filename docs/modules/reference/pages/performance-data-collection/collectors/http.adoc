@@ -1,5 +1,6 @@
 
 = HttpCollector
+:description: Learn how to configure and use the HttpCollector in OpenNMS {page-component-title} to collect performance data via HTTP and HTTPS.
 
 The HttpCollector collects performance data via HTTP and HTTPS.
 Attributes are extracted from the HTTP responses using a regular expression.

@@ -1,5 +1,6 @@
 
 = Startup Configuration
+:description: Learn about startup settings you can configure in {page-component-title}.
 
 There are a number of startup settings that you can configure, including `JAVA_HEAP_SIZE`.
 {page-component-title} startup scripts load `$\{OPENNMS_HOME}/etc/opennms.conf` early in their startup, if that file exists.

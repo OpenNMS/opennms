@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -156,9 +156,9 @@ public class NodeDetailPageIT extends OpenNMSSeleniumIT {
             createNodeWithInterfaces("nodeWith11Interfaces", 11);
             
             getDriver().get(getBaseUrlInternal()+"opennms/element/node.jsp?node=test:nodeWith10Interfaces");
+            waitForElement(By.id("onms-interfaces"));
 
             setImplicitWait(1, SECONDS);
-
             Assert.assertEquals(1, driver.findElements(By.id("availability-box")).size());
             Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.1")).size());
             Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.2")).size());
@@ -171,9 +171,12 @@ public class NodeDetailPageIT extends OpenNMSSeleniumIT {
             Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.9")).size());
             Assert.assertEquals(1, driver.findElements(By.linkText("192.168.1.10")).size());
             Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.11")).size());
+            setImplicitWait();
 
             driver.get(getBaseUrlInternal()+"opennms/element/node.jsp?node=test:nodeWith11Interfaces");
+            waitForElement(By.id("onms-interfaces"));
 
+            setImplicitWait(1, SECONDS);
             Assert.assertEquals(0, driver.findElements(By.id("availability-box")).size());
             Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.1")).size());
             Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.2")).size());
@@ -186,6 +189,7 @@ public class NodeDetailPageIT extends OpenNMSSeleniumIT {
             Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.9")).size());
             Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.10")).size());
             Assert.assertEquals(0, driver.findElements(By.linkText("192.168.1.11")).size());
+            setImplicitWait();
         } finally {
             sendDelete("rest/nodes/test:nodeWith10Interfaces", 202);
             sendDelete("rest/nodes/test:nodeWith11Interfaces", 202);

@@ -1,4 +1,5 @@
 = Sentinel Features
+:description: Discover some of the Sentinel features you can install manually in OpenNMS {page-component-title}: core, Java Message Service (JMS), Kafka, flows, and so on.
 
 The following list contains some features which may be installed manually:
 
@@ -326,3 +327,81 @@ admin@sentinel> config:update
 
 Please note, that the file `/opt/sentinel/etc/junos-telemetry-interface.groovy` must also be provided manually,
 e.g. by manually copying it over from _{page-component-title}_.
+
+== Configure Sentinel via confd
+
+=== Mount
+When starting the Sentinel container, mount a YAML file to the following path `/opt/sentinel/sentinel-config.yaml`.
+
+Any configuration provided to confd will overwrite configuration specified as environment variables.
+Direct overlay of specific configuration files will overwrite the corresponding config provided by confd.
+
+=== Contents
+The following describes the keys available in `sentinel-config.yaml` to configure the Sentinel via confd.
+
+==== Sentinel controller config
+[source, yaml]
+----
+broker-url: "<broker url>"
+id: "<id>"
+location: "<location>"
+----
+Config specified will be written to `etc/org.opennms.sentinel.controller.cfg`.
+
+==== User/password
+Supplying the broker username/password via YAML file for configuration via confd is not supported.
+
+==== Sentinel Elasticsearch config
+[source, yaml]
+----
+elasticsearch:
+url: "http://elastic-ip:9200"
+index-strategy: "hourly"
+replicas: 0
+conn-timeout: 30000
+read-timeout: 60000
+----
+Config specified will be written to `etc/org.opennms.features.flows.persistence.elastic.cfg`.
+
+==== Sentinel datasource config
+[source, yaml]
+----
+datasource:
+url: "jdbc:postgresql://localhost:5432/opennms"
+username: "postgres"
+password: "postgres"
+database-name: "opennms"
+----
+Config specified will be written to `etc/org.opennms.netmgt.distributed.datasource.cfg`.
+
+==== Sentinel Kafka config
+[source, yaml]
+----
+ipc:
+kafka:
+bootstrap.servers: "my-kafka-ip-1:9092,my-kafka-ip-2:9092"
+group.id: "OpenNMS"
+----
+Config specified will be written to `etc/org.opennms.core.ipc.sink.kafka.cfg` and `etc/org.opennms.core.ipc.sink.kafka.consumer.cfg`.
+
+==== Telemetry flow adapters
+You can configure individual flow adapters and any number of uniquely named listeners.
+See the example below for how to specify parameters and parsers.
+[source, yaml]
+----
+telemetry:
+flows:
+adapters:
+NetFlow-5:
+class-name: "org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5Adapter"
+parameters:
+some-key: "some-value"
+----
+Config specified will be written to `deploy/confd-flows-feature.xml`.
+
+==== Instance ID
+[source, yaml]
+----
+org.opennms.instance.id: "<instance id>"
+----
+Config specified will be written to `etc/custom.system.properties`.

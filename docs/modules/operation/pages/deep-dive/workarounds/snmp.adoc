@@ -1,5 +1,6 @@
 
 = Overriding SNMP Client Behavior
+:description: Learn about SNMP error-status handling in {page-component-title}, and how to configure the Circuit Breaker, and Bulkhead options to alleviate DNS load.
 
 By default, the SNMP subsystem in {page-component-title} does not treat any https://tools.ietf.org/html/rfc3416[RFC 3416] `error-status` as fatal.
 Instead, it will attempt to continue the request, if possible.

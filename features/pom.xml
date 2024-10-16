@@ -174,6 +174,9 @@
     <!-- IfTtt integration -->
     <module>ifttt</module>
 
+    <!-- JFreeChart charts -->
+    <module>charts</module>
+
     <module>jest</module>
     <module>dnsresolver</module>
     <module>karaf-health</module>

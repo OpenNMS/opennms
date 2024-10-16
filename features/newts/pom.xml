@@ -21,6 +21,10 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
+            <Import-Package>
+              com.google.common.*;version="[18.0,26)",
+              *
+            </Import-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -55,6 +59,13 @@
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>newts-dependencies</artifactId>
       <type>pom</type>
+    </dependency>
+    <!-- match the version newts/cassandra need, but don't let it pollute dependencies elsewhere -->
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>18.0</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>com.googlecode.concurrent-trees</groupId>
@@ -107,6 +118,12 @@
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.yaml</groupId>
+      <artifactId>snakeyaml</artifactId>
+      <version>1.33</version>
       <scope>test</scope>
     </dependency>
   </dependencies>

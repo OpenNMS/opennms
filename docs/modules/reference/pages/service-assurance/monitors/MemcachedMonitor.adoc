@@ -1,5 +1,6 @@
 
 = MemcachedMonitor
+:description: Learn about the MemcachedMonitor in OpenNMS {page-component-title} that monitors Memcached, a distributed memory object caching system.
 
 Monitors link:http://memcached.org[Memcached], a distributed memory object caching system.
 To monitor the service availability, the monitor tests if it can request the Memcached statistics.

@@ -38,13 +38,16 @@
                 java.lang.StringBuilder"
  %>
 <%@ page import="org.opennms.web.utils.ExceptionUtils" %>
-
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Error" />
-  <jsp:param name="headTitle" value="Unexpected Error" />
-  <jsp:param name="headTitle" value="Error" />
-  <jsp:param name="breadcrumb" value="Error " />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<%@ page import="org.slf4j.LoggerFactory" %>
+<%@ page import="org.slf4j.Logger" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Unexpected Error")
+          .headTitle("Error")
+          .breadcrumb("Error ")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <%
 
@@ -98,32 +101,36 @@ if(showStrackTrace) {
   stBuilder.append("Print of stack trace is disabled");
 }
 
-String errorDetails = 
-"System Details\n" +
-"--------------\n" +
-"OpenNMS Version: " + Vault.getProperty("version.display") + "\n" +
-"Java Version: " + System.getProperty("java.version") + " " + System.getProperty("java.vendor") + "\n" +
-"Java Virtual Machine: " + System.getProperty("java.vm.version") + " " + System.getProperty("java.vm.vendor") + "\n" +
-"Operating System: " + System.getProperty("os.name") + " " +  System.getProperty("os.version") + " " + (System.getProperty("os.arch")) + "\n" +
-"Servlet Container: " + application.getServerInfo() + " (Servlet Spec " + application.getMajorVersion() + "." + application.getMinorVersion() + ")\n" +
-"User Agent: " + request.getHeader("User-Agent") + "\n" +
-"\n" +
-"\n" +
-"Request Details\n" +
-"---------------\n" +
-"Locale: " + request.getLocale() + "\n" +
-"Method: " + request.getMethod() + "\n" +
-"Path Info: " + request.getPathInfo() + "\n" +
-"Path Info (translated): " + request.getPathTranslated() + "\n" +
-"Protocol: " + request.getProtocol() + "\n" +
-"URI: " + request.getRequestURI() + "\n" +
-"URL: " + request.getRequestURL() + "\n" +
-"Scheme: " + request.getScheme() + "\n" +
-"Server Name: " + request.getServerName() + "\n" +
-"Server Port: " + request.getServerPort() + "\n" +
-"\n" +
-"Exception Stack Trace\n" +
-"---------------------\n" + stBuilder.toString();
+final Logger LOG = LoggerFactory.getLogger(this.getClass());
+
+String errorDetails = "";
+if (LOG.isDebugEnabled()) {
+  errorDetails += "System Details\n" +
+    "--------------\n" +
+    "OpenNMS Version: " + Vault.getProperty("version.display") + "\n" +
+    "Java Version: " + System.getProperty("java.version") + " " + System.getProperty("java.vendor") + "\n" +
+    "Java Virtual Machine: " + System.getProperty("java.vm.version") + " " + System.getProperty("java.vm.vendor") + "\n" +
+    "Operating System: " + System.getProperty("os.name") + " " +  System.getProperty("os.version") + " " + (System.getProperty("os.arch")) + "\n" +
+    "Servlet Container: " + application.getServerInfo() + " (Servlet Spec " + application.getMajorVersion() + "." + application.getMinorVersion() + ")\n" +
+    "User Agent: " + request.getHeader("User-Agent") + "\n" +
+    "\n\n";
+}
+
+errorDetails += "Request Details\n" +
+  "---------------\n" +
+  "Locale: " + request.getLocale() + "\n" +
+  "Method: " + request.getMethod() + "\n" +
+  "Path Info: " + request.getPathInfo() + "\n" +
+  "Path Info (translated): " + request.getPathTranslated() + "\n" +
+  "Protocol: " + request.getProtocol() + "\n" +
+  "URI: " + request.getRequestURI() + "\n" +
+  "URL: " + request.getRequestURL() + "\n" +
+  "Scheme: " + request.getScheme() + "\n" +
+  "Server Name: " + request.getServerName() + "\n" +
+  "Server Port: " + request.getServerPort() + "\n" +
+  "\n" +
+  "Exception Stack Trace\n" +
+  "---------------------\n" + stBuilder.toString();
 
 userSession.setAttribute("errorReportSubject", "Uncaught " + exception.getClass().getSimpleName() + " in webapp");
 userSession.setAttribute("errorReportDetails", errorDetails);
@@ -210,6 +217,10 @@ userSession.setAttribute("errorReportDetails", errorDetails);
   </table>
 </div> <!-- panel -->
 
+<%
+  if (LOG.isDebugEnabled()) {
+%>
+
 <div class="card">
   <div class="card-header">
     <span>System Details</span>
@@ -241,6 +252,9 @@ userSession.setAttribute("errorReportDetails", errorDetails);
     </tr>
   </table>
 </div> <!-- panel -->
+<%
+  }
+%>
 
 <div class="card">
   <div class="card-header">

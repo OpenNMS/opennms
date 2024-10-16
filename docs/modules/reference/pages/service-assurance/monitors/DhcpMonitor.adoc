@@ -1,5 +1,6 @@
 
 = DhcpMonitor
+:description: Learn about the DHCPMonitor in OpenNMS {page-component-title} that checks the availability and functionality of DHCP servers.
 
 Use this monitor to check the availability and functionality of DHCP servers.
 The DhcpMonitor is run by Pollerd and opens a background process to listen for incoming DHCP responses.

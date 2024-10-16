@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,7 +25,6 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-// source: mdt_dialout.proto
 
 package org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto;
 
@@ -46,20 +45,24 @@ public final class MdtDialout {
 
     /**
      * <code>int64 ReqId = 1;</code>
+     * @return The reqId.
      */
     long getReqId();
 
     /**
      * <code>bytes data = 2;</code>
+     * @return The data.
      */
     com.google.protobuf.ByteString getData();
 
     /**
      * <code>string errors = 3;</code>
+     * @return The errors.
      */
     java.lang.String getErrors();
     /**
      * <code>string errors = 3;</code>
+     * @return The bytes for errors.
      */
     com.google.protobuf.ByteString
         getErrorsBytes();
@@ -67,7 +70,7 @@ public final class MdtDialout {
   /**
    * Protobuf type {@code mdt_dialout.MdtDialoutArgs}
    */
-  public  static final class MdtDialoutArgs extends
+  public static final class MdtDialoutArgs extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:mdt_dialout.MdtDialoutArgs)
       MdtDialoutArgsOrBuilder {
@@ -77,9 +80,15 @@ public final class MdtDialout {
       super(builder);
     }
     private MdtDialoutArgs() {
-      reqId_ = 0L;
       data_ = com.google.protobuf.ByteString.EMPTY;
       errors_ = "";
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new MdtDialoutArgs();
     }
 
     @java.lang.Override
@@ -87,74 +96,26 @@ public final class MdtDialout {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private MdtDialoutArgs(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!parseUnknownFieldProto3(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-            case 8: {
-
-              reqId_ = input.readInt64();
-              break;
-            }
-            case 18: {
-
-              data_ = input.readBytes();
-              break;
-            }
-            case 26: {
-              java.lang.String s = input.readStringRequireUtf8();
-
-              errors_ = s;
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return MdtDialout.internal_static_mdt_dialout_MdtDialoutArgs_descriptor;
+      return org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.internal_static_mdt_dialout_MdtDialoutArgs_descriptor;
     }
 
+    @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return MdtDialout.internal_static_mdt_dialout_MdtDialoutArgs_fieldAccessorTable
+      return org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.internal_static_mdt_dialout_MdtDialoutArgs_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              MdtDialout.MdtDialoutArgs.class, MdtDialout.MdtDialoutArgs.Builder.class);
+              org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs.class, org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs.Builder.class);
     }
 
     public static final int REQID_FIELD_NUMBER = 1;
     private long reqId_;
     /**
      * <code>int64 ReqId = 1;</code>
+     * @return The reqId.
      */
+    @java.lang.Override
     public long getReqId() {
       return reqId_;
     }
@@ -163,7 +124,9 @@ public final class MdtDialout {
     private com.google.protobuf.ByteString data_;
     /**
      * <code>bytes data = 2;</code>
+     * @return The data.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString getData() {
       return data_;
     }
@@ -172,7 +135,9 @@ public final class MdtDialout {
     private volatile java.lang.Object errors_;
     /**
      * <code>string errors = 3;</code>
+     * @return The errors.
      */
+    @java.lang.Override
     public java.lang.String getErrors() {
       java.lang.Object ref = errors_;
       if (ref instanceof java.lang.String) {
@@ -187,7 +152,9 @@ public final class MdtDialout {
     }
     /**
      * <code>string errors = 3;</code>
+     * @return The bytes for errors.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getErrorsBytes() {
       java.lang.Object ref = errors_;
@@ -203,6 +170,7 @@ public final class MdtDialout {
     }
 
     private byte memoizedIsInitialized = -1;
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -212,6 +180,7 @@ public final class MdtDialout {
       return true;
     }
 
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       if (reqId_ != 0L) {
@@ -223,9 +192,10 @@ public final class MdtDialout {
       if (!getErrorsBytes().isEmpty()) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, errors_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
@@ -242,7 +212,7 @@ public final class MdtDialout {
       if (!getErrorsBytes().isEmpty()) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, errors_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
@@ -252,20 +222,19 @@ public final class MdtDialout {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof MdtDialout.MdtDialoutArgs)) {
+      if (!(obj instanceof org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs)) {
         return super.equals(obj);
       }
-      MdtDialout.MdtDialoutArgs other = (MdtDialout.MdtDialoutArgs) obj;
+      org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs other = (org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs) obj;
 
-      boolean result = true;
-      result = result && (getReqId()
-          == other.getReqId());
-      result = result && getData()
-          .equals(other.getData());
-      result = result && getErrors()
-          .equals(other.getErrors());
-      result = result && unknownFields.equals(other.unknownFields);
-      return result;
+      if (getReqId()
+          != other.getReqId()) return false;
+      if (!getData()
+          .equals(other.getData())) return false;
+      if (!getErrors()
+          .equals(other.getErrors())) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+      return true;
     }
 
     @java.lang.Override
@@ -282,74 +251,74 @@ public final class MdtDialout {
       hash = (53 * hash) + getData().hashCode();
       hash = (37 * hash) + ERRORS_FIELD_NUMBER;
       hash = (53 * hash) + getErrors().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
 
-    public static MdtDialout.MdtDialoutArgs parseFrom(
+    public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static MdtDialout.MdtDialoutArgs parseFrom(
+    public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static MdtDialout.MdtDialoutArgs parseFrom(
+    public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static MdtDialout.MdtDialoutArgs parseFrom(
+    public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static MdtDialout.MdtDialoutArgs parseFrom(byte[] data)
+    public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static MdtDialout.MdtDialoutArgs parseFrom(
+    public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static MdtDialout.MdtDialoutArgs parseFrom(java.io.InputStream input)
+    public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static MdtDialout.MdtDialoutArgs parseFrom(
+    public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static MdtDialout.MdtDialoutArgs parseDelimitedFrom(java.io.InputStream input)
+    public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static MdtDialout.MdtDialoutArgs parseDelimitedFrom(
+    public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static MdtDialout.MdtDialoutArgs parseFrom(
+    public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static MdtDialout.MdtDialoutArgs parseFrom(
+    public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -357,13 +326,15 @@ public final class MdtDialout {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(MdtDialout.MdtDialoutArgs prototype) {
+    public static Builder newBuilder(org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
@@ -381,34 +352,31 @@ public final class MdtDialout {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:mdt_dialout.MdtDialoutArgs)
-        MdtDialout.MdtDialoutArgsOrBuilder {
+        org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgsOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return MdtDialout.internal_static_mdt_dialout_MdtDialoutArgs_descriptor;
+        return org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.internal_static_mdt_dialout_MdtDialoutArgs_descriptor;
       }
 
+      @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return MdtDialout.internal_static_mdt_dialout_MdtDialoutArgs_fieldAccessorTable
+        return org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.internal_static_mdt_dialout_MdtDialoutArgs_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                MdtDialout.MdtDialoutArgs.class, MdtDialout.MdtDialoutArgs.Builder.class);
+                org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs.class, org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs.Builder.class);
       }
 
-      // Construct using mdt_dialout.MdtDialout.MdtDialoutArgs.newBuilder()
+      // Construct using org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
+
       }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
-      }
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         reqId_ = 0L;
@@ -420,25 +388,29 @@ public final class MdtDialout {
         return this;
       }
 
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return MdtDialout.internal_static_mdt_dialout_MdtDialoutArgs_descriptor;
+        return org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.internal_static_mdt_dialout_MdtDialoutArgs_descriptor;
       }
 
-      public MdtDialout.MdtDialoutArgs getDefaultInstanceForType() {
-        return MdtDialout.MdtDialoutArgs.getDefaultInstance();
+      @java.lang.Override
+      public org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs getDefaultInstanceForType() {
+        return org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs.getDefaultInstance();
       }
 
-      public MdtDialout.MdtDialoutArgs build() {
-        MdtDialout.MdtDialoutArgs result = buildPartial();
+      @java.lang.Override
+      public org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs build() {
+        org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      public MdtDialout.MdtDialoutArgs buildPartial() {
-        MdtDialout.MdtDialoutArgs result = new MdtDialout.MdtDialoutArgs(this);
+      @java.lang.Override
+      public org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs buildPartial() {
+        org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs result = new org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs(this);
         result.reqId_ = reqId_;
         result.data_ = data_;
         result.errors_ = errors_;
@@ -446,43 +418,50 @@ public final class MdtDialout {
         return result;
       }
 
+      @java.lang.Override
       public Builder clone() {
-        return (Builder) super.clone();
+        return super.clone();
       }
+      @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.setField(field, value);
+        return super.setField(field, value);
       }
+      @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
-        return (Builder) super.clearField(field);
+        return super.clearField(field);
       }
+      @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-        return (Builder) super.clearOneof(oneof);
+        return super.clearOneof(oneof);
       }
+      @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           int index, java.lang.Object value) {
-        return (Builder) super.setRepeatedField(field, index, value);
+        return super.setRepeatedField(field, index, value);
       }
+      @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
           java.lang.Object value) {
-        return (Builder) super.addRepeatedField(field, value);
+        return super.addRepeatedField(field, value);
       }
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof MdtDialout.MdtDialoutArgs) {
-          return mergeFrom((MdtDialout.MdtDialoutArgs)other);
+        if (other instanceof org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs) {
+          return mergeFrom((org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(MdtDialout.MdtDialoutArgs other) {
-        if (other == MdtDialout.MdtDialoutArgs.getDefaultInstance()) return this;
+      public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs other) {
+        if (other == org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs.getDefaultInstance()) return this;
         if (other.getReqId() != 0L) {
           setReqId(other.getReqId());
         }
@@ -493,42 +472,76 @@ public final class MdtDialout {
           errors_ = other.errors_;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
 
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        MdtDialout.MdtDialoutArgs parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 8: {
+                reqId_ = input.readInt64();
+
+                break;
+              } // case 8
+              case 18: {
+                data_ = input.readBytes();
+
+                break;
+              } // case 18
+              case 26: {
+                errors_ = input.readStringRequireUtf8();
+
+                break;
+              } // case 26
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (MdtDialout.MdtDialoutArgs) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
 
       private long reqId_ ;
       /**
        * <code>int64 ReqId = 1;</code>
+       * @return The reqId.
        */
+      @java.lang.Override
       public long getReqId() {
         return reqId_;
       }
       /**
        * <code>int64 ReqId = 1;</code>
+       * @param value The reqId to set.
+       * @return This builder for chaining.
        */
       public Builder setReqId(long value) {
         
@@ -538,6 +551,7 @@ public final class MdtDialout {
       }
       /**
        * <code>int64 ReqId = 1;</code>
+       * @return This builder for chaining.
        */
       public Builder clearReqId() {
         
@@ -549,12 +563,16 @@ public final class MdtDialout {
       private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
       /**
        * <code>bytes data = 2;</code>
+       * @return The data.
        */
+      @java.lang.Override
       public com.google.protobuf.ByteString getData() {
         return data_;
       }
       /**
        * <code>bytes data = 2;</code>
+       * @param value The data to set.
+       * @return This builder for chaining.
        */
       public Builder setData(com.google.protobuf.ByteString value) {
         if (value == null) {
@@ -567,6 +585,7 @@ public final class MdtDialout {
       }
       /**
        * <code>bytes data = 2;</code>
+       * @return This builder for chaining.
        */
       public Builder clearData() {
         
@@ -578,6 +597,7 @@ public final class MdtDialout {
       private java.lang.Object errors_ = "";
       /**
        * <code>string errors = 3;</code>
+       * @return The errors.
        */
       public java.lang.String getErrors() {
         java.lang.Object ref = errors_;
@@ -593,6 +613,7 @@ public final class MdtDialout {
       }
       /**
        * <code>string errors = 3;</code>
+       * @return The bytes for errors.
        */
       public com.google.protobuf.ByteString
           getErrorsBytes() {
@@ -609,6 +630,8 @@ public final class MdtDialout {
       }
       /**
        * <code>string errors = 3;</code>
+       * @param value The errors to set.
+       * @return This builder for chaining.
        */
       public Builder setErrors(
           java.lang.String value) {
@@ -622,6 +645,7 @@ public final class MdtDialout {
       }
       /**
        * <code>string errors = 3;</code>
+       * @return This builder for chaining.
        */
       public Builder clearErrors() {
         
@@ -631,6 +655,8 @@ public final class MdtDialout {
       }
       /**
        * <code>string errors = 3;</code>
+       * @param value The bytes for errors to set.
+       * @return This builder for chaining.
        */
       public Builder setErrorsBytes(
           com.google.protobuf.ByteString value) {
@@ -643,11 +669,13 @@ public final class MdtDialout {
         onChanged();
         return this;
       }
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
-        return super.setUnknownFieldsProto3(unknownFields);
+        return super.setUnknownFields(unknownFields);
       }
 
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
@@ -658,22 +686,34 @@ public final class MdtDialout {
     }
 
     // @@protoc_insertion_point(class_scope:mdt_dialout.MdtDialoutArgs)
-    private static final MdtDialout.MdtDialoutArgs DEFAULT_INSTANCE;
+    private static final org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new MdtDialout.MdtDialoutArgs();
+      DEFAULT_INSTANCE = new org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs();
     }
 
-    public static MdtDialout.MdtDialoutArgs getDefaultInstance() {
+    public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
     private static final com.google.protobuf.Parser<MdtDialoutArgs>
         PARSER = new com.google.protobuf.AbstractParser<MdtDialoutArgs>() {
+      @java.lang.Override
       public MdtDialoutArgs parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-          return new MdtDialoutArgs(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -686,7 +726,8 @@ public final class MdtDialout {
       return PARSER;
     }
 
-    public MdtDialout.MdtDialoutArgs getDefaultInstanceForType() {
+    @java.lang.Override
+    public org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -710,20 +751,14 @@ public final class MdtDialout {
       "ialoutArgs\022\r\n\005ReqId\030\001 \001(\003\022\014\n\004data\030\002 \001(\014\022" +
       "\016\n\006errors\030\003 \001(\t2^\n\016gRPCMdtDialout\022L\n\nMdt" +
       "Dialout\022\033.mdt_dialout.MdtDialoutArgs\032\033.m" +
-      "dt_dialout.MdtDialoutArgs\"\000(\0010\001b\006proto3"
+      "dt_dialout.MdtDialoutArgs\"\000(\0010\001B;\n9org.o" +
+      "pennms.netmgt.telemetry.protocols.nxos.a" +
+      "dapter.protob\006proto3"
     };
-    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
-          public com.google.protobuf.ExtensionRegistry assignDescriptors(
-              com.google.protobuf.Descriptors.FileDescriptor root) {
-            descriptor = root;
-            return null;
-          }
-        };
-    com.google.protobuf.Descriptors.FileDescriptor
+    descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
-        }, assigner);
+        });
     internal_static_mdt_dialout_MdtDialoutArgs_descriptor =
       getDescriptor().getMessageTypes().get(0);
     internal_static_mdt_dialout_MdtDialoutArgs_fieldAccessorTable = new

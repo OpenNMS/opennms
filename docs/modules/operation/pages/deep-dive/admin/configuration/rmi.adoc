@@ -1,5 +1,6 @@
 
 = Enable RMI
+:description: Learn how to enable the RMI port in {page-component-title} to let you access Horizon/Meridian via jconsole and remotely manage your instance.
 
 By default, the {page-component-title} server's RMI port is disabled for security reasons.
 When enabled, it lets you access {page-component-title} via `jconsole` and remotely manage your instance.

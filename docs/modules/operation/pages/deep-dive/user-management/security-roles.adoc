@@ -1,7 +1,7 @@
 
 [[ga-role-user-management-roles]]
 = Assign User Permissions
-:description: How to assign user permissions in OpenNMS Horizon/Meridian: default security roles (admin, RTC, asset editor, etc.) and creating custom security roles.
+:description: How to assign user permissions in {page-component-title}: default security roles (admin, RTC, asset editor, etc.) and creating custom security roles.
 
 You can control user permission levels by creating and assigning security roles.
 These roles regulate access to the {page-component-title} web UI and the REST API to exchange monitoring and inventory information.

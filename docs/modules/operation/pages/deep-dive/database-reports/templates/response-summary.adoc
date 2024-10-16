@@ -1,5 +1,6 @@
 
 = Response Time Summary Report
+:description: Learn how to create a Response Time Summary report in {page-component-title}, which displays ICMP latency statistics for each IP interface.
 
 This report has a table for each node tag that contains the matching nodes.
 For each IP interface, the minimum, average, and maximum ICMP latency are displayed.

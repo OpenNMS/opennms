@@ -1,5 +1,6 @@
 
 = RRD
+:description: Learn about the RRD dashlet, which displays one or more round-robin database (RRD) graphs in the {page-component-title} operator board.
 
 The RRD dashlet shows one or more RRD graphs in the xref:deep-dive/visualizations/opsboard/introduction.adoc[operator board].
 If you choose to display more than one graph, you can arrange and order them in multiple columns and rows.

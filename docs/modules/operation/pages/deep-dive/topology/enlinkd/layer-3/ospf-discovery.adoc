@@ -1,5 +1,6 @@
 
 = OSPF Discovery
+:description: Learn more about OSPF link discovery in {page-component-title} topology mapping, including supported OIDs.
 
 OSPF links are found in the `ospfNbrTable` (defined in the OSPF-MIB module) and persisted in the `ospfLink` table.
 

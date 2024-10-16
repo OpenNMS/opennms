@@ -31,13 +31,15 @@
 
 <%@ page contentType="text/html;charset=UTF-8" language="java" %>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false">
-	<jsp:param name="title" value="Manage Minions" />
-	<jsp:param name="headTitle" value="Manage Minions" />
-	<jsp:param name="breadcrumb" value="<a href='admin/index.jsp'>Admin</a>" />
-	<jsp:param name="breadcrumb" value="Manage Minions" />
-	<jsp:param name="ngapp" value="onms.default.apps" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("Manage Minions")
+          .breadcrumb("Admin", "admin/index.jsp")
+          .breadcrumb("Manage Minions")
+          .ngApp("onms.default.apps")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <jsp:include page="/assets/load-assets.jsp" flush="false">
   <jsp:param name="asset" value="minion-elementList" />

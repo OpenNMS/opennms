@@ -1,5 +1,6 @@
 
 = Kafka Producer
+:description: Learn how the Kafka Producer enables {page-component-title} forward events, alarms, nodes, topologies, and metrics to Kafka.
 
 The Kafka Producer feature lets {page-component-title} forward events, alarms, nodes, topologies, and metrics to Kafka.
 
@@ -65,3 +66,25 @@ The records are keyed in this fashion to help ensure that collection sets relate
 When enabled (this functionality is disabled by default), the metrics are written to a topic named `metrics`.
 
 NOTE: When exclusively writing to Kafka, no metrics or resource graphs will be available on the {page-component-title} instance.
+
+== Schema
+View the https://github.com/OpenNMS/opennms/blob/develop/features/kafka/producer/src/main/proto/opennms-kafka-producer.proto[Kafka Producer schema] on GitHub.
+Change branches or tags to see a version from that point in time.
+
+Note that the schema link takes you to the default `develop` branch in the `opennms` repository, which is the release candidate for the next major release (for example, 33.0.0).
+The content of the branch is a work-in-progress.
+
+The *switch branches/tags* drop-down displays a list of all branches associated with the Horizon project, including Meridian branches.
+
+ifeval::["{page-component-title}" == "Horizon"]
+The branches for current and past {page-component-title} releases are labelled `release-X.x``; for example, `release-32.x`.
+{page-component-title} releases before 31.x are labelled `master-X`; for example, `master-28`.
+The earliest {page-component-title} branch with the Kafka Producer schema is `master-21`.
+If you select an earlier version, you will get a `404-page not found` error for the schema page.
+endif::[]
+
+ifeval::["{page-component-title}" == "Meridian"]
+You can find the latest {page-component-title} releases in branches labelled `foundation-YYYY`; for example, `foundation-2023`.
+The earliest {page-component-title} branch with the Kafka Producer schema is `foundation-2018``.
+If you select an earlier version, you will get a `404-page not found` error for the schema page.
+endif::[]

@@ -1,5 +1,6 @@
 
 = Win32ServiceMonitor
+:description: Learn how to configure and use the Win32ServiceMonitor in {page-component-title} to monitor the running state of any Windows service.
 
 The Win32ServiceMonitor lets {page-component-title} monitor the running state of any Windows service.
 The service status is monitored using the Microsoft Windows-provided SNMP agent providing the link:http://technet.microsoft.com/en-us/library/cc977581.aspx[LAN Manager MIB-II].

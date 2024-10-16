@@ -4,6 +4,8 @@
 sudo dnf -y install java-11-openjdk-headless
 ----
 
+NOTE: On some distributions, such as Oracle Linux 8, you may also need to manually install the `tzdata-java` package.
+
 ifeval::["{page-component-title}" == "Horizon"]
 include::../../repos/rhel-centos/horizon-rhel8.adoc[]
 endif::[]
@@ -15,12 +17,7 @@ endif::[]
 .Install the {page-component-title} Minion package
 [source, console]
 ----
-ifeval::["{page-component-title}" == "Horizon"]
-sudo dnf -y install opennms-minion
-endif::[]
-ifeval::["{page-component-title}" == "Meridian"]
-sudo dnf -y install meridian-minion
-endif::[]
+sudo dnf -y install {package-prefix}-minion
 ----
 
 TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.

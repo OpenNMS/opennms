@@ -1,4 +1,5 @@
 = CiscoPingMibMonitor
+:description: Learn about the CiscoPingMibMonitor in OpenNMS {page-component-title} that supports the CISCO-PING-MIB.
 
 This monitor creates conceptual rows (entries) in the ciscoPingTable on Cisco IOS devices that support the http://www.circitor.fr/Mibs/Html/C/CISCO-PING-MIB.php[CISCO-PING-MIB].
 These entries direct the remote IOS device to ping an IPv4 or IPv6 address with a configurable set of parameters.

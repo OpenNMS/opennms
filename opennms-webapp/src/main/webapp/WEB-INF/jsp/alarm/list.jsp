@@ -150,13 +150,15 @@
 %>
 <c:set var="baseHref" value="<%=Util.calculateUrlBase(request)%>"/>
 
-<jsp:include page="/includes/bootstrap.jsp" flush="false" >
-  <jsp:param name="title" value="Alarm List" />
-  <jsp:param name="headTitle" value="List" />
-  <jsp:param name="headTitle" value="Alarms" />
-  <jsp:param name="breadcrumb" value="<a href='${baseHref}alarm/index.htm' title='Alarms System Page'>Alarms</a>" />
-  <jsp:param name="breadcrumb" value="List" />
-</jsp:include>
+<%@ page import="org.opennms.web.utils.Bootstrap" %>
+<% Bootstrap.with(pageContext)
+          .headTitle("List")
+          .headTitle("Alarms")
+          .breadcrumb("Alarms", "${baseHref}alarm/index.htm")
+          .breadcrumb("List")
+          .build(request);
+%>
+<jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <c:url var="alarmListLink" value="alarm/list">
   <c:param name="display" value="<%=parms.getDisplay()%>"/>

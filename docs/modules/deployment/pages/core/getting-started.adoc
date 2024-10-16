@@ -3,8 +3,7 @@
 = Installation and Configuration
 :description: Install and configure OpenNMS instance including PostgreSQL set up on CentOS/RHEL 7-9, Debian/Ubuntu, and Docker.
 
-This section explains how to install and configure a new {page-component-title} instance.
-It describes how to do the following tasks:
+This section explains how to install and configure a new {page-component-title} instance, including the following tasks:
 
 * Install all required OpenNMS {page-component-title} components, including PostgreSQL, on a single node.
 * Run {page-component-title} core and PostgreSQL with the default configuration.
@@ -19,6 +18,30 @@ ifeval::["{page-component-title}" == "Meridian"]
 endif::[]
 * Sign in to the web UI and change the `admin` account's default password.
 
+== DNS considerations
+
+If you are planning a large deployment, you may need to review your DNS configuration to ensure name lookups can be processed quickly.
+DNS lookups may be preformed by different processes, including while provisioning new nodes and when receiving syslog messages.
+It is vital that DNS lookups can be performed quickly to prevent them from becoming a bottleneck, which can happen if your deployment covers thousands of nodes.
+One way to mitigate DNS performance is to setup your {page-component-title} as a secondary DNS server so that it is able to self-host DNS records for your network.
+
+ifeval::["{page-component-title}" == "Horizon"]
+== Quick installation
+
+If you want to get started quickly with OpenNMS Horizon on a bare metal system or a virtual machine, you can check out our https://github.com/opennms-forge/opennms-install[quick install scripts].
+This convenient script installs Horizon on Debian or Red Hat compatible systems, running the steps documented in this section of the deployment guide.
+Use this quick starting point to evaluate and explore how to configure Horizon before moving to more complex distributed environments.
+
+=== Scope
+
+* Bootstrap a single-node Horizon system on RPM or DEB-based systems quickly, with the latest stable release.
+* Installation follows the best-practices from our official docs.
+* Script is only for new installs and does not deal with existing installations or upgrades.
+* Script does not configure or install Minions, Sentinels, or distributed time series storage like Newts or Cortex.
+
+endif::[]
+
+
 == Requirements
 
 The following components and settings are required to set up a new {page-component-title} instance:
@@ -26,7 +49,7 @@ The following components and settings are required to set up a new {page-compone
 ifeval::["{page-component-title}" == "Meridian"]
 * Credentials to access the Meridian repositories.
 endif::[]
-* A Linux physical server, or a virtual machine running a <<core/system-requirements.adoc#operating-systems-core, supported Linux operating system>>.
+* A Linux physical server, or a virtual machine running a <<system-requirements.adoc#operating-systems-core, supported Linux operating system>>.
 * Internet access to download the installation packages.
 * A working DNS server, and a localhost and server name that resolve properly.
 * A system user with administrative permissions (`sudo`) to perform installation.
@@ -161,6 +184,7 @@ endif::[]
 
 After you start the {page-component-title} core services, you can access the web application at `\http://core-instance-ip:8980/opennms`.
 The default user credentials are as follows:
+
 * *Username:* `admin`
 * *Password:* `admin`
 
@@ -204,4 +228,3 @@ Nodes with this service have JMX-based data collection performed on Java JVM sta
 == Next steps
 
 See the xref:operation:quick-start/introduction.adoc[Quick Start guide] for more information on setting up and configuring your {page-component-title} instance.
-

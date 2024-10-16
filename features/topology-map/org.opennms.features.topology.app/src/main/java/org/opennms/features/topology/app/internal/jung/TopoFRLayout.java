@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * Copyright (C) 2014-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -34,13 +34,13 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.collections4.map.LazyMap;
+
 import edu.uci.ics.jung.algorithms.layout.AbstractLayout;
 import edu.uci.ics.jung.algorithms.layout.util.RandomLocationTransformer;
 import edu.uci.ics.jung.algorithms.util.IterativeContext;
 import edu.uci.ics.jung.graph.Graph;
 import edu.uci.ics.jung.graph.util.Pair;
-import org.apache.commons.collections15.Factory;
-import org.apache.commons.collections15.map.LazyMap;
 
 public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements IterativeContext {
     private static double PERCENTAGE = 0.25;
@@ -53,11 +53,7 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
     private int mMaxIterations = 700;
 
     private Map<V, FRVertexData> frVertexData =
-            LazyMap.decorate(new HashMap<V, FRVertexData>(), new Factory<FRVertexData>() {
-                public FRVertexData create() {
-                    return new FRVertexData();
-                }
-            });
+            LazyMap.lazyMap(new HashMap<V, FRVertexData>(), FRVertexData::new);
 
     private double attraction_multiplier = 0.75;
 
@@ -174,7 +170,7 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
     protected synchronized void calcPositions(V v) {
         FRVertexData fvd = getFRData(v);
         if(fvd == null) return;
-        Point2D xyd = transform(v);
+        Point2D xyd = apply(v);
         double deltaLength = fvd.norm();
         if(deltaLength <= 0.005) return;
 
@@ -227,8 +223,8 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
             // both locked, do nothing
             return;
         }
-        Point2D p1 = transform(v1);
-        Point2D p2 = transform(v2);
+        Point2D p1 = apply(v1);
+        Point2D p2 = apply(v2);
         if(p1 == null || p2 == null) return;
         double xDelta = p1.getX() - p2.getX();
         double yDelta = p1.getY() - p2.getY();
@@ -265,8 +261,8 @@ public class TopoFRLayout<V, E>  extends AbstractLayout<V, E> implements Iterati
         try {
             for(V v2 : getGraph().getVertices()) {
                 if (v1 != v2) {
-                    Point2D p1 = transform(v1);
-                    Point2D p2 = transform(v2);
+                    Point2D p1 = apply(v1);
+                    Point2D p2 = apply(v2);
                     if(p1 == null || p2 == null) continue;
                     double xDelta = p1.getX() - p2.getX();
                     double yDelta = p1.getY() - p2.getY();

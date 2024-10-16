@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -32,13 +32,12 @@ import static org.opennms.core.web.HttpClientWrapperConfigHelper.PARAMETER_KEYS.
 
 import java.util.Map;
 
-import org.opennms.core.utils.ParameterMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class HttpClientWrapperConfigHelper {
 
-    private final static Logger LOG = LoggerFactory.getLogger(HttpClientWrapperConfigHelper.class);
+    private static final Logger LOG = LoggerFactory.getLogger(HttpClientWrapperConfigHelper.class);
 
     public enum PARAMETER_KEYS {
         useSystemProxy("use-system-proxy");
@@ -55,10 +54,27 @@ public class HttpClientWrapperConfigHelper {
     }
 
     public static void setUseSystemProxyIfDefined(HttpClientWrapper httpClientWrapper, Map<String, Object> keyedParameters) {
-        if (ParameterMap.getKeyedBoolean(keyedParameters, useSystemProxy.getKey(), false)) {
+        if (getKeyedBoolean(keyedParameters, useSystemProxy.getKey(), false)) {
             httpClientWrapper.useSystemProxySettings();
             LOG.debug("setting useSystemProxySettings() on HttpClientWrapper");
         }
+    }
+
+    // TODO: silly to pull in org.opennms.core.lib just for this, refactor org.opennms.core.utils.ParameterMap someday
+    private static boolean getKeyedBoolean(final Map<String, Object> map, final String key, final boolean defaultValue) {
+        if (map == null) return defaultValue;
+
+        final Object value = map.get(key);
+        if (value == null) return defaultValue;
+
+        if (value instanceof String) {
+            return Boolean.valueOf((String)value);
+        }
+        if (value instanceof Boolean) {
+            return ((Boolean)value).booleanValue();
+        }
+
+        return defaultValue;
     }
 
 }
