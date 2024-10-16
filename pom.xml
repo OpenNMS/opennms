@@ -1781,7 +1781,7 @@
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.5</c3p0Version>
     <curatorVersion>5.6.0</curatorVersion>
-    <cxfVersion>3.5.8</cxfVersion>
+    <cxfVersion>3.5.9</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <dnsjavaVersion>2.1.9_1</dnsjavaVersion>
@@ -1795,6 +1795,7 @@
     <elasticsearchDriftPluginVersion>2.0.5</elasticsearchDriftPluginVersion>
     <elasticsearchTargetVersion>7.17.9</elasticsearchTargetVersion>
     <errorProneAnnotationsVersion>2.25.0</errorProneAnnotationsVersion>
+    <esapiVersion>2.3.0.0</esapiVersion>
     <felixBridgeVersion>4.1.6</felixBridgeVersion>
     <felixProxyVersion>3.0.6</felixProxyVersion>
     <fopVersion>2.9</fopVersion>
@@ -1911,7 +1912,7 @@
     <logbackClassicVersion>1.2.13</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
     <mavenApiVersion>3.9.6</mavenApiVersion>
-    <mavenResolverApiVersion>1.9.15</mavenResolverApiVersion>
+    <mavenResolverApiVersion>2.0.1</mavenResolverApiVersion>
     <minaVersion>2.2.3</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
@@ -1927,8 +1928,8 @@
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>3.6.0</okioVersion>
     <openid4javaVersion>0.9.6</openid4javaVersion>
-    <opennmsApiVersion>1.6.0</opennmsApiVersion>
-    <opennmsApiVersionOsgi>1.6.0</opennmsApiVersionOsgi>
+    <opennmsApiVersion>1.6.1</opennmsApiVersion>
+    <opennmsApiVersionOsgi>1.6.1</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
@@ -1960,7 +1961,7 @@
     <sonarVersion>3.9.1.2184</sonarVersion>
     <spiflyVersion>1.3.6</spiflyVersion>
     <spockVersion>2.3-groovy-2.5</spockVersion>
-    <swaggerUIVersion>3.13.0</swaggerUIVersion>
+    <swaggerUIVersion>3.23.11</swaggerUIVersion>
     <swaggerVersion>2.1.12</swaggerVersion>
     <swaggerParserVersion>2.0.33</swaggerParserVersion>
     <swaggerRequestValidatorVersion>2.42.0</swaggerRequestValidatorVersion>
