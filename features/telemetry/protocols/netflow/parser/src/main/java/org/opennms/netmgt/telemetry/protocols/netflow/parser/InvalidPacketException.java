@@ -31,6 +31,10 @@ public class InvalidPacketException extends Exception {
         super(appendPosition(String.format(fmt, args), buffer));
     }
 
+    public InvalidPacketException(final InvalidPacketException cause, final String fmt, final Object... args) {
+        super(cause.getMessage() + "\n" + String.format(fmt, args), cause);
+    }
+
     public InvalidPacketException(final ByteBuf buffer, final String message, final Throwable cause) {
         super(appendPosition(message, buffer), cause);
     }
