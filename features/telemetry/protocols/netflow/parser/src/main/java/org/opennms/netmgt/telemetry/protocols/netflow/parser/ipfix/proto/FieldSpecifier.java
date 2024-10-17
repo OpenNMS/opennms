@@ -100,7 +100,11 @@ public final class FieldSpecifier implements Field, Scope {
 
     @Override
     public Value<?> parse(final Session.Resolver resolver, final ByteBuf buffer) throws InvalidPacketException, MissingTemplateException {
-        return this.informationElement.parse(resolver, buffer);
+        try {
+            return this.informationElement.parse(resolver, buffer);
+        } catch (final InvalidPacketException e) {
+            throw new InvalidPacketException(e, "Failed to parse IPFix information element: enterpriseNumber=%s informationElementId=%d", this.enterpriseNumber, this.informationElementId);
+        }
     }
 
     @Override
