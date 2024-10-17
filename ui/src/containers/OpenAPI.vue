@@ -80,11 +80,20 @@ const setup = async () => {
 
   if (protocol === https) {
     const openApiSpecString = JSON.stringify(openApiSpec)
-    const modifiedOpenApiSpecString = openApiSpecString.replaceAll(http, https)
+    let modifiedOpenApiSpecString;
+    if (!(openApiSpecString.includes("https"))) {
+      modifiedOpenApiSpecString= openApiSpecString.replaceAll(http, https)
+    }else{
+    modifiedOpenApiSpecString = openApiSpecString
+    }
     modifiedOpenApiSpec = JSON.parse(modifiedOpenApiSpecString)
-
     const openApiSpecStringV1 = JSON.stringify(openApiSpecV1)
-    const modifiedOpenApiSpecStringV1 = openApiSpecStringV1.replaceAll(http, https)
+    let modifiedOpenApiSpecStringV1;
+    if (!(openApiSpecStringV1.includes("https"))) {
+     modifiedOpenApiSpecStringV1 = openApiSpecStringV1.replaceAll(http, https)
+    }else{
+         modifiedOpenApiSpecStringV1 = openApiSpecStringV1
+    }
     modifiedOpenApiV1Spec = JSON.parse(modifiedOpenApiSpecStringV1)
   }
 
