@@ -64,7 +64,11 @@ public final class DataSet extends FlowSet<DataRecord> {
 
         final List<DataRecord> records = new LinkedList();
         while (buffer.isReadable(minimumRecordLength)) {
-            records.add(new DataRecord(this, resolver, template, buffer));
+            try {
+                records.add(new DataRecord(this, resolver, template, buffer));
+            } catch (final InvalidPacketException e) {
+                throw new InvalidPacketException(e, "Failed to parse Netflow9 data record: template=%d", this.template.id);
+            }
         }
 
         if (records.size() == 0) {
