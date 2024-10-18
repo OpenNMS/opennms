@@ -41,7 +41,7 @@ import 'vue-diff/dist/index.css'
 
 import dateFormatDirective from './directives/v-date'
 import { externalComponent, getJSPath } from './components/Plugin/utils'
-import { library } from '@fortawesome/fontawesome-svg-core'
+import { IconDefinition, library } from '@fortawesome/fontawesome-svg-core'
 
 // font-awesome
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -88,7 +88,7 @@ const icons = [
   faSignOut,
   faUser,
   faUsers
-]
+] as IconDefinition[]
 library.add(...icons);
 
 
