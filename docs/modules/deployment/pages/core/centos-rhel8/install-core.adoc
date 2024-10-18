@@ -9,7 +9,7 @@ endif::[]
 .Install {page-component-title} with all built-in dependencies
 [source, console]
 
-==== sudo yum -y install {package-prefix}
+== sudo yum -y install {package-prefix}
 
 If you want time series trending and forecast functions you must install the link:https://www.r-project.org/[R project] packages.
 The additional download size for packages is ~390 MB.
