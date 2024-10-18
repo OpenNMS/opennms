@@ -1883,7 +1883,7 @@
     <junit4Version>4.13.2</junit4Version>
     <junit5Version>5.9.2</junit5Version>
     <junit5PlatformVersion>1.9.2</junit5PlatformVersion>
-    <karafVersion>4.3.10</karafVersion>
+    <karafVersion>4.4.6</karafVersion>
     <!-- BEGIN: versions must match versions provided by embedded Karaf -->
     <eclipseOsgiVersion>3.17.200</eclipseOsgiVersion>
     <felixCmJsonVersion>1.0.6</felixCmJsonVersion>
