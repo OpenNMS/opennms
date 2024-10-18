@@ -62,6 +62,7 @@ import org.xbill.DNS.Name;
 import org.xbill.DNS.NameTooLongException;
 import org.xbill.DNS.OPTRecord;
 import org.xbill.DNS.Opcode;
+import org.xbill.DNS.RRSIGRecord;
 import org.xbill.DNS.RRset;
 import org.xbill.DNS.Rcode;
 import org.xbill.DNS.Record;
@@ -463,9 +464,9 @@ public class DNSServer {
             final RRset[] rrsets;
             final Cache cache = getCache(dclass);
             if (glue) {
-                rrsets = cache.findAnyRecords(name, type);
+                rrsets = cache.findAnyRecords(name, type).toArray(new RRset[0]);
             } else {
-                rrsets = cache.findRecords(name, type);
+                rrsets = cache.findRecords(name, type).toArray(new RRset[0]);
             }
             if (rrsets == null || rrsets.length == 0) {
                 return null;
@@ -481,7 +482,7 @@ public class DNSServer {
         }
         if ((flags & FLAG_SIGONLY) == 0) {
             @SuppressWarnings("unchecked")
-            final Iterator<Record> it = rrset.rrs();
+            final Iterator<Record> it = rrset.rrs().iterator();
             while (it.hasNext()) {
                 final Record r = it.next();
                 if (r.getName().isWild() && !name.isWild()) {
@@ -493,7 +494,7 @@ public class DNSServer {
         }
         if ((flags & (FLAG_SIGONLY | FLAG_DNSSECOK)) != 0) {
             @SuppressWarnings("unchecked")
-            final Iterator<Record> it = rrset.sigs();
+            final Iterator<RRSIGRecord> it = rrset.sigs().iterator();
             while (it.hasNext()) {
                 final Record r = it.next();
                 if (r.getName().isWild() && !name.isWild()) {
@@ -519,7 +520,7 @@ public class DNSServer {
         if (!sr.isDelegation()) return;
         final RRset nsRecords = sr.getNS();
         @SuppressWarnings("unchecked")
-        final Iterator<Record> it = nsRecords.rrs();
+        final Iterator<Record> it = nsRecords.rrs().iterator();
         while (it.hasNext()) {
             final Record r = it.next();
             response.addRecord(r, Section.AUTHORITY);
@@ -604,7 +605,7 @@ public class DNSServer {
                 response.getHeader().setFlag(Flags.AA);
             rcode = addAnswer(response, newname, type, dclass, iterations + 1, flags);
         } else if (sr.isSuccessful()) {
-            final RRset[] rrsets = sr.answers();
+            final RRset[] rrsets = sr.answers().toArray(new RRset[0]);
             for (int i = 0; i < rrsets.length; i++)
                 addRRset(name, response, rrsets[i], Section.ANSWER, flags);
             if (zone != null) {
