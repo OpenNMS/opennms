@@ -177,7 +177,14 @@ public class NetworkBuilder {
             m_node.setSysName(nodesysname);
             return this;
         }
-
+        public NodeBuilder setParent(final OnmsNode parent) {
+            m_node.setParent(parent);
+            return this;
+        }
+        public NodeBuilder setNodeParentId(Integer id) {
+            m_node.setNodeParentId(id);
+            return this;
+        }
 
     }
 

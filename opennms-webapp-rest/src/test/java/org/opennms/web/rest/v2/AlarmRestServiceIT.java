@@ -806,6 +806,4 @@ public class AlarmRestServiceIT extends AbstractSpringJerseyRestTestCase {
             Assert.assertEquals(totalCount, object.getInt("totalCount"));
         }
     }
-
-
 }
