@@ -104,6 +104,7 @@ public class DnsRequisitionProvider extends AbstractRequisitionProvider<DnsRequi
 
     @SuppressWarnings("unchecked")
     private static List<Record> getRecords(ZoneTransferIn xfer) throws IOException, ZoneTransferException {
+        xfer.run();
         return xfer.getAXFR();
     }
 
