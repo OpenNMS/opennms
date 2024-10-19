@@ -23,6 +23,7 @@ package org.opennms.netmgt.provision;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 
@@ -220,17 +221,17 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
             }
             DnsRecord record = new DnsRecord(node,m_level);
             LOG.debug("doUpdate: DnsRecord: hostname: {} zone: {} ip address {}", record.getHostname(), record.getZone(), record.getIp().getHostAddress());
-            DnsRecord oldRecord = m_nodeDnsRecordMap.get(Integer.valueOf(node.getId()));
+            DnsRecord oldRecord = m_nodeDnsRecordMap.get(node.getId());
 
             Update update = new Update(Name.fromString(record.getZone()));
 
-            if (oldRecord != null && oldRecord.getHostname() != record.getHostname()) {
+            if (oldRecord != null && !Objects.equals(oldRecord.getHostname(), record.getHostname())) {
                 update.delete(Name.fromString(oldRecord.getHostname()), Type.A);
             }
             update.replace(Name.fromString(record.getHostname()), Type.A, 3600, record.getIp().getHostAddress());
-            m_resolver.send(update);
+            m_resolver.sendAsync(update);
 
-            m_nodeDnsRecordMap.put(Integer.valueOf(op.getNodeId()), record);
+            m_nodeDnsRecordMap.put(op.getNodeId(), record);
         } catch (Throwable e) {
             LOG.error("addNode: Error handling node added event.", e);
             sendAndThrow(op.getNodeId(), e);
@@ -239,14 +240,14 @@ public class DnsProvisioningAdapter extends SimpleQueuedProvisioningAdapter impl
 
     private void doDelete(AdapterOperation op) {
         try {
-            DnsRecord record = m_nodeDnsRecordMap.get(Integer.valueOf(op.getNodeId()));
+            DnsRecord record = m_nodeDnsRecordMap.get(op.getNodeId());
 
             if (record != null) {
                 Update update = new Update(Name.fromString(record.getZone()));
                 update.delete(Name.fromString(record.getHostname()), Type.A);
-                m_resolver.send(update);
+                m_resolver.sendAsync(update);
 
-                m_nodeDnsRecordMap.remove(Integer.valueOf(op.getNodeId()));
+                m_nodeDnsRecordMap.remove(op.getNodeId());
             }
         } catch (Throwable e) {
             LOG.error("deleteNode: Error handling node deleted event.", e);
