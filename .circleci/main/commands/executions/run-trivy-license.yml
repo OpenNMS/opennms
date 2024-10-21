@@ -13,7 +13,7 @@ commands:
       - run:
           name: Run Trivy
           command: |
-            trivy fs --scanners license --include-dev-deps  -f json -o ~/project/target/artifacts/licenses-dev-deps.json .
+            /tmp/bin/trivy fs --scanners license --include-dev-deps  -f json -o ~/project/target/artifacts/licenses-dev-deps.json .
       - store_artifacts:
           path: ~/project/target/artifacts
           destination: artifacts
