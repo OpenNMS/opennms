@@ -3,3 +3,4 @@
   #commands:executions/run-build#
   #commands:executions/run-integration-tests#
   #commands:executions/run-empty#
+  #commands:executions/run-trivy-license#

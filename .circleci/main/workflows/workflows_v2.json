@@ -110,7 +110,7 @@
         },
         "experimental": {
             "extends": [
-                "empty"
+                "trivy-license"
             ]
         }
     },
@@ -124,6 +124,11 @@
                 },
                 "user_overridable": false
             }
+        },
+        "trivy-license": {
+            "context": [
+                "CircleCI"
+            ]
         },
         "build": {
             "context": [

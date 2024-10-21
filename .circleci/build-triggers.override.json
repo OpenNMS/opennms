@@ -10,5 +10,5 @@
     "oci": false,
     "build-publish": false,
     "trivy-scan": false,
-    "experimental": false
+    "experimental": true
 }

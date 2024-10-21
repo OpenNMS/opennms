@@ -1,0 +1,21 @@
+commands:
+  run-trivy-license:
+    description: "Run Trivy Scan to Extract License"
+    steps:
+      - cached-checkout
+      - restore-maven-cache
+      - restore-nodejs-cache
+      - run:
+          name: Compile OpenNMS
+          command: |
+            trivy fs --scanners license --include-dev-deps  -f json -o ~/project/target/artifacts/licenses-dev-deps.json .
+      - store_artifacts:
+          path: ~/project/target/artifacts
+          destination: artifacts
+      #- persist_to_workspace:
+      #    root: ~/
+      #    paths:
+      #      - project/target/structure-graph.json
+      #      - .m2/repository/org/opennms
+      #      # is this even necessary anymore?
+      #      - .artifacts
