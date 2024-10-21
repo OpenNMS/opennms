@@ -128,7 +128,11 @@
         "trivy-license": {
             "context": [
                 "CircleCI"
-            ]
+            ],
+            "requires": [
+                "build"
+            ],
+            "user_overridable": false
         },
         "build": {
             "context": [
