@@ -1,5 +1,5 @@
 {
-    "build-deploy": true,
+    "build-deploy": false,
     "coverage": false,
     "docs": false,
     "ui": false,
@@ -9,6 +9,6 @@
     "debs": false,
     "oci": false,
     "build-publish": false,
-    "trivy-scan": true,
+    "trivy-scan": false,
     "experimental": false
 }
