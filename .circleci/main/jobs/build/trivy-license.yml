@@ -1,5 +1,5 @@
 jobs:
-  build:
+  trivy-license:
     executor: build-executor
     # Building currently requires the xlarge containers in order for the webpack compilation
     # in the core/web-assets module to complete reliably
