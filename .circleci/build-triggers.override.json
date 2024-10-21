@@ -9,6 +9,6 @@
     "debs": false,
     "oci": false,
     "build-publish": false,
-    "trivy-scan": false,
+    "trivy-scan": true,
     "experimental": false
 }
