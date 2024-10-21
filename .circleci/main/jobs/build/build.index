@@ -4,3 +4,4 @@
   #jobs:build/empty#
   #jobs:build/build-ui#
   #jobs:build/build-docs#
+  #jobs:build/trivy-license#
