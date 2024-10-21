@@ -7,6 +7,10 @@ commands:
           at: ~/
       - restore-maven-cache
       - run:
+          name: Install trivy
+          command: |
+            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /tmp/bin
+      - run:
           name: Run Trivy
           command: |
             trivy fs --scanners license --include-dev-deps  -f json -o ~/project/target/artifacts/licenses-dev-deps.json .
