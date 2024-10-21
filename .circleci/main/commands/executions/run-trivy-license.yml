@@ -3,10 +3,11 @@ commands:
     description: "Run Trivy Scan to Extract License"
     steps:
       - cached-checkout
+      - attach_workspace:
+          at: ~/
       - restore-maven-cache
-      - restore-nodejs-cache
       - run:
-          name: Compile OpenNMS
+          name: Run Trivy
           command: |
             trivy fs --scanners license --include-dev-deps  -f json -o ~/project/target/artifacts/licenses-dev-deps.json .
       - store_artifacts:
