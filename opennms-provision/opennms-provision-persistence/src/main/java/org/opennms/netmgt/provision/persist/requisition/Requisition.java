@@ -41,6 +41,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.persistence.Transient;
 import javax.xml.bind.ValidationException;
@@ -464,9 +466,21 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     	if (m_foreignSource == null) {
     	    throw new ValidationException("Requisition 'foreign-source' must be set!");
     	}
-    	if (m_foreignSource.contains("/")) {
-            throw new ValidationException("Foreign Source (" + m_foreignSource + ") contains invalid characters. ('/' is forbidden.)");
-    	}
+
+        //regex for invalid characters [: / \ ? & * ' "] in requisition Name/Foreign Source
+        Pattern pattern = Pattern.compile("[:/\\\\?&*\"']");
+        Matcher matcher = pattern.matcher(m_foreignSource);
+
+        Set<Character> invalidCharacters = new HashSet<>();
+
+        while (matcher.find()) {
+            invalidCharacters.add(matcher.group().charAt(0));
+        }
+
+        if (!invalidCharacters.isEmpty()) {
+            throw new ValidationException("Foreign Source (" + m_foreignSource + ") contains invalid characters: "
+                    + invalidCharacters + " (':, /, \\, ?, &, *, ', \"' are forbidden)");
+        }
 
         // new ArrayList to prevent ConcurrentModificationException
         for (final RequisitionNode node : new ArrayList<>(m_nodes)) {

@@ -114,4 +114,103 @@ public class RequisitionTest {
 			assertTrue("foreignId2 should have 2 errors", e.getMessage().contains("foreignId2 (2 found)"));
 		}
 	}
+
+	@Test
+	public void testRequisitionValidationForInvalidCharacters() {
+		final List<RequisitionNode> nodes = new ArrayList<>();
+
+		final Requisition req = new Requisition();
+		req.updateDateStamp();
+		req.updateLastImported();
+
+		req.setForeignSource("foreign:Source1");
+
+		final RequisitionNode foreignId1 = new RequisitionNode();
+		foreignId1.setForeignId("foreignId1");
+		foreignId1.setNodeLabel("foreign ID 1");
+
+		nodes.add(foreignId1);
+		req.setNodes(nodes);
+
+		try {
+			req.validate();
+			fail();
+		} catch (final ValidationException e) {
+			assertTrue("error should say ForeignSource contains invalid characters",
+					e.getMessage().contains("contains invalid characters: [:]"));
+		}
+
+		req.setForeignSource("foreign/Source1");
+		try {
+			req.validate();
+			fail();
+		} catch (final ValidationException e) {
+			assertTrue("error should say ForeignSource contains invalid characters",
+					e.getMessage().contains("contains invalid characters: [/]"));
+		}
+
+		req.setForeignSource("foreign\\Source1");
+		try {
+			req.validate();
+			fail();
+		} catch (final ValidationException e) {
+			assertTrue("error should say ForeignSource contains invalid characters",
+					e.getMessage().contains("contains invalid characters: [\\]"));
+		}
+
+		req.setForeignSource("foreign?Source1");
+		try {
+			req.validate();
+			fail();
+		} catch (final ValidationException e) {
+			assertTrue("error should say ForeignSource contains invalid characters",
+					e.getMessage().contains("contains invalid characters: [?]"));
+		}
+
+		req.setForeignSource("foreign&Source1");
+		try {
+			req.validate();
+			fail();
+		} catch (final ValidationException e) {
+			assertTrue("error should say ForeignSource contains invalid characters",
+					e.getMessage().contains("contains invalid characters: [&]"));
+		}
+
+		req.setForeignSource("foreign*Source1");
+		try {
+			req.validate();
+			fail();
+		} catch (final ValidationException e) {
+			assertTrue("error should say ForeignSource contains invalid characters",
+					e.getMessage().contains("contains invalid characters: [*]"));
+		}
+
+		req.setForeignSource("foreign'Source1");
+		try {
+			req.validate();
+			fail();
+		} catch (final ValidationException e) {
+			assertTrue("error should say ForeignSource contains invalid characters",
+					e.getMessage().contains("contains invalid characters: [']"));
+		}
+
+		req.setForeignSource("foreign\"Source1");
+		try {
+			req.validate();
+			fail();
+		} catch (final ValidationException e) {
+			assertTrue("error should say ForeignSource contains invalid characters",
+					e.getMessage().contains("contains invalid characters: [\"]"));
+		}
+
+		req.setForeignSource("foreign & * Source1");
+
+		try {
+			req.validate();
+			fail();
+		} catch (final ValidationException e) {
+			assertTrue("error should say ForeignSource contains invalid characters",
+					e.getMessage().contains("contains invalid characters: [&, *]"));
+		}
+	}
 }
