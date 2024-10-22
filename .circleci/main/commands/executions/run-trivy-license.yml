@@ -14,6 +14,8 @@ commands:
           name: Run Trivy
           command: |
             /tmp/bin/trivy fs --scanners license --include-dev-deps  -f json -o ~/project/target/artifacts/licenses-dev-deps.json .
+            cat ~/project/target/artifacts/licenses-dev-deps.json| jq '.Results[].Licenses[]? | "\(.PkgName);\(.Name)"' | sort | uniq > ~/project/target/artifacts/licenses-dev-deps.txt
+
       - store_artifacts:
           path: ~/project/target/artifacts
           destination: artifacts
