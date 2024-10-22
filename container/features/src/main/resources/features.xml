@@ -86,7 +86,6 @@
     </feature>
     <feature name="dnsjava" version="${serviceMixDnsjavaVersion}" description="dnsjava">
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.dnsjava/${serviceMixDnsjavaVersion}</bundle>
-        <bundle dependency="true">mvn:dnsjava/dnsjava/${dnsjavaVersion}</bundle>
     </feature>
     <feature name="fop" version="${fopVersion}" description="Apache :: XML Graphics :: FOP">
         <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/fop/${fopVersion}$Bundle-SymbolicName=org.apache.xmlgraphics.fop&amp;Bundle-Version=${fopVersion}</bundle>
