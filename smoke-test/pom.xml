@@ -65,7 +65,7 @@
     <testcontainers.version>1.19.6</testcontainers.version>
     <netty4Version>4.1.100.Final</netty4Version>
     <jna.version>5.8.0</jna.version>
-    <okhttpVersion>3.10.0</okhttpVersion>
+    <okhttpVersion>3.5.0</okhttpVersion>
     <test.fork.count>0</test.fork.count>
     <!-- Limit ITs to 30 minutes by default -->
     <test.fork.timeout>1800</test.fork.timeout>
