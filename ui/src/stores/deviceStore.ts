@@ -53,7 +53,7 @@ export const useDeviceStore = defineStore('deviceStore', () => {
 
     if (resp) {
       deviceConfigBackups.value = resp.data || []
-      const contentRange = resp.headers['content-range']
+      const contentRange = resp.headers['content-range'] ?? ''
       const total = contentRange?.length > 0 ? parseInt(contentRange, 10) : 0
 
       if (!Number.isNaN(total)) {
