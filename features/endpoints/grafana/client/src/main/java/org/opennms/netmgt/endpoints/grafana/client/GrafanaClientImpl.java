@@ -22,167 +22,212 @@
 package org.opennms.netmgt.endpoints.grafana.client;
 
 import java.io.ByteArrayOutputStream;
-import java.io.IOException;
+import java.io.BufferedReader;
 import java.io.InputStream;
-import java.security.cert.CertificateException;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.TimeUnit;
 
-import javax.net.ssl.SSLContext;
-import javax.net.ssl.SSLSocketFactory;
-import javax.net.ssl.TrustManager;
-import javax.net.ssl.X509TrustManager;
-
-import com.google.gson.GsonBuilder;
-import org.json.JSONObject;
-import org.json.JSONTokener;
 import org.opennms.netmgt.endpoints.grafana.api.Dashboard;
 import org.opennms.netmgt.endpoints.grafana.api.DashboardWithMeta;
 import org.opennms.netmgt.endpoints.grafana.api.GrafanaClient;
 import org.opennms.netmgt.endpoints.grafana.api.Panel;
-
-import com.google.common.base.Strings;
 import com.google.gson.Gson;
 
-import okhttp3.Call;
-import okhttp3.Callback;
-import okhttp3.HttpUrl;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.Response;
-import okhttp3.ResponseBody;
+;
 
 public class GrafanaClientImpl implements GrafanaClient {
     private final GrafanaServerConfiguration config;
-
-    private final Gson gson;
-    private final OkHttpClient client;
-    private final HttpUrl baseUrl;
+    private final GrafanaClient client; // Class-level variable
 
     public GrafanaClientImpl(GrafanaServerConfiguration grafanaServerConfiguration) {
         this.config = Objects.requireNonNull(grafanaServerConfiguration);
-        baseUrl = HttpUrl.parse(grafanaServerConfiguration.getUrl());
+        GrafanaClient tempClient = null;
+        try {
+            tempClient = this;
+            List<Dashboard> list = getDashboards();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        this.client = tempClient;
+    }
 
-        OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                .connectTimeout(config.getConnectTimeoutSeconds(), TimeUnit.SECONDS)
-                .readTimeout(config.getReadTimeoutSeconds(), TimeUnit.SECONDS);
-        builder = configureToIgnoreCertificate(builder);
-        client = builder.build();
+    private HttpURLConnection createConnection(String endpoint, String method) throws Exception {
+        URL url = new URL(config.getUrl() + endpoint);
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        connection.setRequestMethod(method);
+        connection.setConnectTimeout((int) config.getConnectTimeoutSeconds() * 1000);
+        connection.setReadTimeout((int) config.getReadTimeoutSeconds() * 1000);
+        connection.setRequestProperty("Content-Type", "application/json");
+        return connection;
+    }
 
-        // The schema changed between Grafana 7 and 8 for the `datasource` property on panels.
-        this.gson = new GsonBuilder()
-                .registerTypeAdapter(Panel.class, new PanelDeserializer())
-                .create();
+    public String sendRequest(String endpoint, String requestBody) throws Exception {
+        HttpURLConnection connection = createConnection(endpoint, "POST");
+
+        connection.setDoOutput(true);
+        try (OutputStream os = connection.getOutputStream()) {
+            byte[] input = requestBody.getBytes("utf-8");
+            os.write(input, 0, input.length);
+        }
+
+        if (connection.getResponseCode() == HttpURLConnection.HTTP_OK) {
+            try (BufferedReader br = new BufferedReader(new InputStreamReader(connection.getInputStream(), "utf-8"))) {
+                StringBuilder response = new StringBuilder();
+                String responseLine;
+                while ((responseLine = br.readLine()) != null) {
+                    response.append(responseLine.trim());
+                }
+                return response.toString();
+            }
+        } else {
+            throw new RuntimeException("Request failed with code: " + connection.getResponseCode());
+        }
     }
 
     @Override
     public List<Dashboard> getDashboards() throws IOException {
-        final HttpUrl url = baseUrl.newBuilder()
-                .addPathSegment("api")
-                .addPathSegment("search")
-                .query("query=&type=dash-db")
-                .build();
-        final Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Authorization", "Bearer " + config.getApiKey())
-                .build();
+        String url = String.format("%s/api/search?query=&type=dash-db", config.getUrl());
+        HttpURLConnection connection = null;
 
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException("Request failed: " + extractMessageFromErrorResponse(response));
+        try {
+            // Create the connection
+            connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Authorization", "Bearer " + config.getApiKey());
+            connection.setConnectTimeout((int) config.getConnectTimeoutSeconds() * 1000);
+            connection.setReadTimeout((int) config.getReadTimeoutSeconds() * 1000);
+
+            int responseCode = connection.getResponseCode();
+
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
+                    }
+
+                    return Arrays.asList(new Gson().fromJson(response.toString(), Dashboard[].class));
+                }
+            } else {
+                throw new IOException("Request failed: " + responseCode);
             }
-            final String json = response.body().string();
-            final Dashboard[] dashboards = gson.fromJson(json, Dashboard[].class);
-            return Arrays.asList(dashboards);
+        } catch (IOException e) {
+            throw new IOException("Request failed: " + e.getMessage(), e);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
         }
     }
-
     @Override
     public Dashboard getDashboardByUid(String uid) throws IOException {
-        final HttpUrl url = baseUrl.newBuilder()
-                .addPathSegment("api")
-                .addPathSegment("dashboards")
-                .addPathSegment("uid")
-                .addPathSegment(uid)
-                .build();
+        String url = String.format("%s/api/dashboards/uid/%s", config.getUrl(), uid);
+        HttpURLConnection connection = null;
 
-        final Request request = new Request.Builder()
-                .url(url)
-                .addHeader("Authorization", "Bearer " + config.getApiKey())
-                .build();
+        try {
+            connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Authorization", "Bearer " + config.getApiKey());
+            connection.setConnectTimeout((int) config.getConnectTimeoutSeconds() * 1000);
+            connection.setReadTimeout((int) config.getReadTimeoutSeconds() * 1000);
 
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                throw new IOException("Request failed: " + extractMessageFromErrorResponse(response));
-            }
-            final String json = response.body().string();
-            final DashboardWithMeta dashboardWithMeta = gson.fromJson(json, DashboardWithMeta.class);
-            // Copy the meta-data over to the dashboard for ease of use
-            dashboardWithMeta.getDashboard().setMeta(dashboardWithMeta.getMeta());
-            return dashboardWithMeta.getDashboard();
-        }
-    }
+            int responseCode = connection.getResponseCode();
 
-    @Override
-    public CompletableFuture<byte[]> renderPngForPanel(Dashboard dashboard, Panel panel, int width, int height, long from, long to, String timezone, Map<String, String> variables) {
-        final HttpUrl.Builder builder = baseUrl.newBuilder()
-                .addPathSegment("render")
-                .addPathSegment("d-solo")
-                .addPathSegment(dashboard.getUid())
-                .addPathSegments(dashboard.getMeta().getSlug());
 
-        // Query parameters
-        builder.addQueryParameter("panelId", Integer.toString(panel.getId()))
-                .addQueryParameter("from", Long.toString(from))
-                .addQueryParameter("to", Long.toString(to))
-                .addQueryParameter("width", Integer.toString(width))
-                .addQueryParameter("height", Integer.toString(height))
-                // Set a render timeout equal to the client's read timeout
-                .addQueryParameter("timeout", Integer.toString(config.getReadTimeoutSeconds()))
-                .addQueryParameter("theme", "light"); // Use the light theme
-        if (!Strings.isNullOrEmpty(timezone)) {
-            builder.addQueryParameter("tz", timezone);
-        }
-        variables.forEach((k,v) -> builder.addQueryParameter("var-"+ k, v));
-
-        final Request request = new Request.Builder()
-                .url(builder.build())
-                .addHeader("Authorization", "Bearer " + config.getApiKey())
-                .build();
-
-        final CompletableFuture<byte[]> future = new CompletableFuture<>();
-        client.newCall(request).enqueue(new Callback() {
-            @Override
-            public void onFailure(Call call, IOException e) {
-                future.completeExceptionally(e);
-            }
-
-            @Override
-            public void onResponse(Call call, Response response) {
-                try (ResponseBody responseBody = response.body()) {
-                    if (!response.isSuccessful()) {
-                        try {
-                            future.completeExceptionally(new IOException("Request failed: " + extractMessageFromErrorResponse(response)));
-                        } catch (IOException e) {
-                            future.completeExceptionally(new IOException("Could not extract message from error response", e));
-                        }
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                try (BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+                    StringBuilder response = new StringBuilder();
+                    String line;
+                    while ((line = reader.readLine()) != null) {
+                        response.append(line);
                     }
 
-                    try (InputStream is = responseBody.byteStream()) {
-                        future.complete(inputStreamToByteArray(is));
-                    } catch (IOException e) {
-                        future.completeExceptionally(e);
+                    DashboardWithMeta dashboardWithMeta = new Gson().fromJson(response.toString(), DashboardWithMeta.class);
+
+                    if (dashboardWithMeta != null) {
+                        dashboardWithMeta.getDashboard().setMeta(dashboardWithMeta.getMeta());
+                        return dashboardWithMeta.getDashboard();
+                    } else {
+                        throw new IOException("Dashboard not found");
                     }
                 }
+            } else {
+                throw new IOException("Request failed: " + responseCode);
             }
-        });
+        } catch (IOException e) {
+            throw new IOException("Request failed: " + e.getMessage(), e);
+        } finally {
+            if (connection != null) {
+                connection.disconnect();
+            }
+        }
+    }
+    @Override
+    public CompletableFuture<byte[]> renderPngForPanel(Dashboard dashboard, Panel panel, int width, int height, long from, long to, String timezone, Map<String, String> variables) {
+        CompletableFuture<byte[]> future = new CompletableFuture<>();
+
+        // Build the URL with query parameters
+        StringBuilder urlBuilder = new StringBuilder(String.format("%s/render/d-solo/%s/%s?", config.getUrl(), dashboard.getUid(), dashboard.getMeta().getSlug()));
+        urlBuilder.append("panelId=").append(panel.getId())
+                .append("&from=").append(from)
+                .append("&to=").append(to)
+                .append("&width=").append(width)
+                .append("&height=").append(height)
+                .append("&timeout=").append(config.getReadTimeoutSeconds())
+                .append("&theme=light");
+
+        if (timezone != null && !timezone.isEmpty()) {
+            urlBuilder.append("&tz=").append(timezone);
+        }
+
+        variables.forEach((k, v) -> urlBuilder.append("&var-").append(k).append("=").append(v));
+
+        String url = urlBuilder.toString();
+        HttpURLConnection connection = null;
+
+        try {
+
+            connection = (HttpURLConnection) new URL(url).openConnection();
+            connection.setRequestMethod("GET");
+            connection.setRequestProperty("Authorization", "Bearer " + config.getApiKey());
+            connection.setConnectTimeout((int) config.getConnectTimeoutSeconds() * 1000);
+            connection.setReadTimeout((int) config.getReadTimeoutSeconds() * 1000);
+
+            HttpURLConnection finalConnection = connection;
+            new Thread(() -> {
+                try {
+                    int responseCode = finalConnection.getResponseCode();
+
+                    if (responseCode != HttpURLConnection.HTTP_OK) {
+                        future.completeExceptionally(new IOException("Request failed: " + responseCode));
+                        return;
+                    }
+
+                    try (InputStream inputStream = finalConnection.getInputStream()) {
+                        byte[] imageBytes = inputStream.readAllBytes();
+                        future.complete(imageBytes);
+                    }
+                } catch (IOException e) {
+                    future.completeExceptionally(e);
+                } finally {
+                    finalConnection.disconnect();
+                }
+            }).start();
+        } catch (IOException e) {
+            future.completeExceptionally(e);
+        }
+
         return future;
     }
-
     private static byte[] inputStreamToByteArray(InputStream is) throws IOException {
         ByteArrayOutputStream buffer = new ByteArrayOutputStream();
         int nRead;
@@ -193,53 +238,7 @@ public class GrafanaClientImpl implements GrafanaClient {
         buffer.flush();
         return buffer.toByteArray();
     }
-
-    private static OkHttpClient.Builder configureToIgnoreCertificate(OkHttpClient.Builder builder) {
-        try {
-
-            // Create a trust manager that does not validate certificate chains
-            final TrustManager[] trustAllCerts = new TrustManager[] {
-                    new X509TrustManager() {
-                        @Override
-                        public void checkClientTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
-                        }
-
-                        @Override
-                        public void checkServerTrusted(java.security.cert.X509Certificate[] chain, String authType) throws CertificateException {
-                        }
-
-                        @Override
-                        public java.security.cert.X509Certificate[] getAcceptedIssuers() {
-                            return new java.security.cert.X509Certificate[]{};
-                        }
-                    }
-            };
-
-            // Install the all-trusting trust manager
-            final SSLContext sslContext = SSLContext.getInstance("SSL");
-            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
-            // Create an ssl socket factory with our all-trusting manager
-            final SSLSocketFactory sslSocketFactory = sslContext.getSocketFactory();
-
-            builder.sslSocketFactory(sslSocketFactory, (X509TrustManager)trustAllCerts[0]);
-            builder.hostnameVerifier((hostname, session) -> true);
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
-        return builder;
-    }
-
-    private static String extractMessageFromErrorResponse(Response response) throws IOException {
-        final String contentType = response.header("Content-Type");
-        if (contentType.toLowerCase().contains("application/json")) {
-            final JSONTokener tokener = new JSONTokener(response.body().string());
-            final JSONObject json = new JSONObject(tokener);
-            if (json.has("message")) {
-                return json.getString("message");
-            } else {
-                return json.toString();
-            }
-        }
-        return response.body().string();
+    public GrafanaClient getClient() {
+        return client;
     }
 }
