@@ -127,9 +127,15 @@ if changed_files:
             print(" ", "*", item)
     print()
 
+
+check_build = []
+combine_build_element = ""
+
 if What_to_build:
     print("What we want to build:")
     for item in What_to_build:
+        check_build.append(item)
+        combine_build_element += item + ','
         print(" ", "*", item)
     print()
 
@@ -210,9 +216,19 @@ if "trigger-build" in mappings:
         or "release-" in branch_name
         or "foundation-" in branch_name
     ) and "merge-foundation/" not in branch_name:
-        print("Executing workflow: build-publish")
-        build_mappings["build-publish"] = mappings["trigger-build"]
-        print()
+         for item in check_build:
+            if (("docs" in item or "ui" in item or "circleci_configuration" in item) and len(check_build) == 1) or (("docs" in combine_build_element  and "ui" in combine_build_element and len(check_build) == 2) or \
+                ("docs" in combine_build_element  and "circleci_configuration" in combine_build_element and len(check_build) == 2) or ("circleci_configuration" in combine_build_element  and "ui" in combine_build_element and len(check_build) == 2 ))  or \
+                ("docs" in combine_build_element  and "ui" in combine_build_element and "circleci_configuration" in combine_build_element  and len(check_build) == 3):
+              del mappings["trigger-build"]
+              check_build.clear()
+              del combine_build_element
+              break
+            else:
+              print("Executing workflow: build-publish")
+              build_mappings["build-publish"] = mappings["trigger-build"]
+              print()
+              break
     elif "merge-foundation/" in branch_name and not build_trigger_override_found:
         print("Execute workflow: merge-foundation")
         print()
@@ -235,14 +251,26 @@ if "trigger-build" in mappings:
         What_to_build.clear()
         build_mappings["master-branch"] = True
     elif not build_trigger_override_found and "merge-foundation/" not in branch_name:
-        print("Executing workflow: build-deploy")
-        print()
-        build_mappings["build-deploy"] = mappings["trigger-build"]
+        for item in check_build:
+            if (("docs" in item or "ui" in item or "circleci_configuration" in item) and len(check_build) == 1) or (("docs" in combine_build_element  and "ui" in combine_build_element and len(check_build) == 2) or \
+                ("docs" in combine_build_element  and "circleci_configuration" in combine_build_element and len(check_build) == 2) or ("circleci_configuration" in combine_build_element  and "ui" in combine_build_element and len(check_build) == 2 ))  or \
+                ("docs" in combine_build_element  and "ui" in combine_build_element and "circleci_configuration" in combine_build_element  and len(check_build) == 3):
+              del mappings["trigger-build"]
+              check_build.clear()
+              del combine_build_element
+              break
+            else:        
+              print("Executing workflow: build-deploy")
+              print()
+              build_mappings["build-deploy"] = mappings["trigger-build"]
+              break
 
 if "trigger-docs" in mappings:
+
     build_mappings["docs"] = mappings["trigger-docs"]
 
 if "trigger-ui" in mappings:
+
     build_mappings["ui"] = mappings["trigger-ui"]
 
 if "trigger-coverage" in mappings:
