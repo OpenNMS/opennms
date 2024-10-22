@@ -102,6 +102,8 @@ public class JsmiMibParser implements MibParser, Serializable {
     /** The missing dependencies. */
     private List<String> missingDependencies = new ArrayList<>();
 
+    private static final String MISSING_DESCR = "MIB Object is missing the description field";
+
     /**
      * Instantiates a new JLIBSMI MIB parser.
      */
@@ -140,6 +142,7 @@ public class JsmiMibParser implements MibParser, Serializable {
         final Map<String,File> mibDirectoryFiles = new HashMap<String,File>();
         for (final File file : mibDirectory.listFiles()) {
             mibDirectoryFiles.put(file.getName().toLowerCase(), file);
+
         }
 
         // Parse MIB
@@ -278,6 +281,7 @@ public class JsmiMibParser implements MibParser, Serializable {
         List<PrefabGraph> graphs = new ArrayList<>();
         LOG.info("Generating graph templates for {}", module.getId());
         NameCutter cutter = new NameCutter();
+        String name = ""; 
         try {
             for (SmiVariable v : module.getVariables()) {
                 String groupName = getGroupName(v);
@@ -290,10 +294,13 @@ public class JsmiMibParser implements MibParser, Serializable {
                 }
                 int order = 1;
                 if (typeName != null && !typeName.toLowerCase().contains("string")) {
-                    String name = groupName + '.' + v.getId();
+                    name = groupName + '.' + v.getId();
                     String title = getMibName() + "::" + groupName + "::" + v.getId();
                     String alias = cutter.trimByCamelCase(v.getId(), 19); // RRDtool/JRobin DS size restriction.
-                    String descr = v.getDescription().replaceAll("[\n\r]", "").replaceAll("\\s+", " ");
+                    String descr = MISSING_DESCR;
+                    if (v.getDescription() != null) { // missing descriptions are a source of pain; don't NPE, just work.
+                        descr = v.getDescription().replaceAll("[\n\r]", "").replaceAll("\\s+", " ");
+                    }
                     final StringBuilder sb = new StringBuilder();
                     sb.append("--title=\"").append(title).append("\" \\\n");
                     sb.append(" DEF:var={rrd1}:").append(alias).append(":AVERAGE \\\n");
@@ -309,7 +316,7 @@ public class JsmiMibParser implements MibParser, Serializable {
         } catch (Throwable e) {
             String errors = e.getMessage();
             if (errors == null || errors.trim().equals(""))
-                errors = "An unknown error accured when generating graph templates from the MIB " + module.getId();
+                errors = "An unknown error accured when generating graph templates from the MIB " + module.getId() + " at " + name + "."; // log the name so we know where to look when graph generation fails
             LOG.error("Graph templates parsing error: {}", errors, e);
             errorHandler.addError(errors);
             return null;
