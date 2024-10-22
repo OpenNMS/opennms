@@ -4,4 +4,4 @@
 * xref:develop-docs.adoc[]
 * xref:write-docs.adoc[]
 * xref:build-docs.adoc[]
-* xref:glossary.adoc[] 
+* xref:glossary.adoc[]
