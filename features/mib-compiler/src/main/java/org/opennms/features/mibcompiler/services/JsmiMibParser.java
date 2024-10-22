@@ -142,7 +142,6 @@ public class JsmiMibParser implements MibParser, Serializable {
         final Map<String,File> mibDirectoryFiles = new HashMap<String,File>();
         for (final File file : mibDirectory.listFiles()) {
             mibDirectoryFiles.put(file.getName().toLowerCase(), file);
-
         }
 
         // Parse MIB
