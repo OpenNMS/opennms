@@ -50,7 +50,7 @@
   "@fortawesome/vue-fontawesome": "^3.0.6",
   "@vueuse/core": "^9.13.0",
   "ace-builds": "^1.32.6",
-  "axios": "^0.27.2",
+  "axios": "^0.28.0",
   "chart.js": "^3.9.1",
   "chartjs-plugin-zoom": "^2.0.1",
   "cronstrue": "^2.11.0",
@@ -110,6 +110,10 @@
   "yarn": ">=1.22.18"
   },
   "resolutions": {
-  "@antfu/utils": "^0.7.3"
+  "@antfu/utils": "^0.7.3",
+  "undici": "5.28.4",
+  "micromatch": "^4.0.8"
   }
-  }  
+  }
+  
+  
