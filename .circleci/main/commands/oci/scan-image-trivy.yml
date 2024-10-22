@@ -53,7 +53,7 @@ commands:
             #/tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 -o /tmp/report.txt --no-progress opennms/${TAG}
       - store_artifacts:
           path: /tmp/report.json
-          destination: report.json
+          destination: horizon33-report.json
       - store_artifacts:
           path: /tmp/report.txt
           destination: report.txt
