@@ -89,4 +89,4 @@ with open('filtered_vulnerabilities.csv', 'w') as outfile:
         ]
         outfile.write(','.join(line) + '\n')
 
-print("Output saved to '/tmp/filtered_vulnerabilities.txt' and '/tmp/filtered_vulnerabilities.csv'")
+print("Output saved to 'filtered_vulnerabilities.txt' and 'filtered_vulnerabilities.csv'")
