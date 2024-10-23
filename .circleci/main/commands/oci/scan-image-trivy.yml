@@ -63,9 +63,9 @@ commands:
           command: |
             python3 .circleci/pyscripts/analyze_trivy_report.py
       - store_artifacts:
-          path: /tmp/filtered_vulnerabilities.txt
+          path: filtered_vulnerabilities.txt
           destination: filtered_vulnerabilities.txt
           
       - store_artifacts:
-          path: /tmp/filtered_vulnerabilities.csv
+          path: filtered_vulnerabilities.csv
           destination: filtered_vulnerabilities.csv
