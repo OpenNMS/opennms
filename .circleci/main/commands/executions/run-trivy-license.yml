@@ -21,10 +21,4 @@ commands:
       - store_artifacts:
           path: ~/project/target/artifacts
           destination: artifacts
-      #- persist_to_workspace:
-      #    root: ~/
-      #    paths:
-      #      - project/target/structure-graph.json
-      #      - .m2/repository/org/opennms
-      #      # is this even necessary anymore?
-      #      - .artifacts
+
