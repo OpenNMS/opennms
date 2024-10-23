@@ -70,7 +70,7 @@
 <table class="table table-sm">
   <tr>
     <th>Version:</th>
-    <td><a href="https://docs.opennms.com/<%=Vault.getProperty("opennms.product")%>/<%=Vault.getProperty("release.version")%>/releasenotes/whatsnew.html" target="_blank" title="Release Notes"><%=Vault.getProperty("opennms.product")%> - <%=Vault.getProperty("release.version")%></a></td>
+    <td><a href="https://docs.opennms.com/<%=Vault.getProperty("opennms.product")%>/<%=Vault.getProperty("version.display")%>/releasenotes/whatsnew.html" target="_blank" title="Release Notes"><%=Vault.getProperty("opennms.product")%> - <%=Vault.getProperty("version.display")%></a></td>
   </tr>
 
   <tr>
