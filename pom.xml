@@ -1668,6 +1668,8 @@
     <mock.db.adminPassword/>
     <mock.runSnmpTests>false</mock.runSnmpTests>
     <mock.snmpHost>localhost</mock.snmpHost>
+    <install.product>meridian</install.product>
+    <product.name>${install.product}</product.name>
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
