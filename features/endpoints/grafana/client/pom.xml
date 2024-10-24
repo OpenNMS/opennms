@@ -21,7 +21,7 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <!--<Embed-Dependency>*;artifactId=okhttp|gson|okio</Embed-Dependency>-->
+            <Embed-Dependency>*;artifactId=okhttp|gson|okio</Embed-Dependency>
             <Embed-Transitive>true</Embed-Transitive>
             <Import-Package>
               dalvik.system;resolution:=optional,
@@ -55,12 +55,12 @@
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>okhttp</artifactId>
-      <version>${okhttpVersion}</version>
+      <version>3.10.0</version>
     </dependency>
     <dependency>
       <groupId>com.squareup.okio</groupId>
       <artifactId>okio</artifactId>
-      <version>${okioVersion}</version>
+      <version>1.14.0</version>
     </dependency>
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
