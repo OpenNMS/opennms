@@ -112,6 +112,8 @@ public class DcbEndToEndIT {
     @ClassRule
     public static final GenericContainer<?> TARGET_CONTAINER = new GenericContainer<>(
             new ImageFromDockerfile().withDockerfileFromBuilder(builder -> builder.from("linuxserver/openssh-server")
+                                                                 .run("echo \"HostKeyAlgorithms ssh-ed25519\" >> /etc/ssh/sshd_config")
+                                                                 .run("kill -SIGHUP $(pgrep -f \"sshd\")")
                                                                  .run("apk add --update tftp-hpa")
                                                                  .build()))
             .withEnv("PASSWORD_ACCESS", "true")
