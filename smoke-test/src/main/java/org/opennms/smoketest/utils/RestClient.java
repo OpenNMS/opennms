@@ -49,6 +49,7 @@ import javax.ws.rs.core.GenericType;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import joptsimple.internal.Strings;
 import org.glassfish.jersey.client.ClientProperties;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.measurements.model.QueryRequest;
@@ -426,7 +427,7 @@ public class RestClient {
                 .accept(MediaType.APPLICATION_JSON)
                 .get(String.class);
 
-        if (result == null) {
+        if (Strings.isNullOrEmpty(result)) {
             return null;
         }
 
