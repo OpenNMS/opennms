@@ -37,7 +37,6 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.net.UnknownHostException;
-import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.time.Instant;
@@ -46,6 +45,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import net.i2p.crypto.eddsa.EdDSASecurityProvider;
 import org.apache.commons.io.output.TeeOutputStream;
 import org.apache.commons.lang3.text.StrSubstitutor;
 import org.apache.sshd.client.ClientBuilder;
@@ -77,6 +77,8 @@ public class SshScriptingServiceImpl implements SshScriptingService {
     boolean disableIOCollection;
 
     private String scriptDebugOutput;
+
+    private EdDSASecurityProvider edDSASecurityProvider;
 
     public void setTftpServerIPv4Address(final String tftpServerIPv4Address) throws UnknownHostException {
         if (!Strings.isNullOrEmpty(tftpServerIPv4Address)) {
