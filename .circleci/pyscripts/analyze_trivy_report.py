@@ -1,7 +1,7 @@
 import json
 
 # Load the Trivy output
-with open('report.json') as f:
+with open('/tmp/report.json') as f:
     data = json.load(f)
 
 # List to store filtered vulnerabilities
