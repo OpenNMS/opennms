@@ -22,7 +22,8 @@
 @XmlSchema(
     namespace="",
     elementFormDefault = XmlNsForm.QUALIFIED
-)package org.opennms.web.rest.support.newsfeed.xml;
+)
+package org.opennms.web.rest.support.newsfeed.xml;
 
 import javax.xml.bind.annotation.XmlNsForm;
 import javax.xml.bind.annotation.XmlSchema;

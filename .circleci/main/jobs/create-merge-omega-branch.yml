@@ -1,0 +1,43 @@
+jobs: 
+  create-merge-omega-branch:
+    executor: base-executor
+    steps:
+      - when:
+          condition: << pipeline.parameters.main_branch >>
+          steps:
+            - restore_cache:
+                keys:
+                  - omega-v2-{{ .Branch }}-{{ .Revision }}
+                  - omega-v2-{{ .Branch }}-
+                  - omega-v2-
+            - checkout-for-pushing
+            - run:
+                name: Add Omega remote if necessary
+                command: |
+                  REMOTE_OMEGA="$(git remote | grep -c -E '^omega$' || :)"
+                  if [ "$REMOTE_OMEGA" -eq 0 ]; then
+                    git remote add omega git@github.com:OpenNMS/opennms-omega.git
+                  fi
+            - run:
+                name: git fetch omega
+                command: |
+                  git fetch omega
+            - save_cache:
+                key: omega-v2-{{ .Branch }}-{{ .Revision }}
+                paths:
+                  - ".git"
+            - run:
+                name: Checkout target branch and merge from source
+                command: |
+                  export GIT_MERGE_AUTOEDIT=no
+                  if git rev-parse << pipeline.parameters.main_branch >> >/dev/null 2>&1; then
+                    git checkout << pipeline.parameters.main_branch >>
+                  else
+                    git checkout -b << pipeline.parameters.main_branch >> omega/<< pipeline.parameters.main_branch >>
+                  fi
+                  git reset --hard omega/<< pipeline.parameters.main_branch >>
+                  git merge origin/<< pipeline.parameters.main_branch >>
+            - run:
+                name: Push to Omega github
+                command: git push -f omega << pipeline.parameters.main_branch >>:<< pipeline.parameters.main_branch >>
+

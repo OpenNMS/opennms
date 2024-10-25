@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>33.0.10-SNAPSHOT</version>
+        <version>34.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.container</groupId>
@@ -131,6 +131,32 @@
                     </libraries>
                     <javase>1.8</javase>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-overrides</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.opennms.karaf</groupId>
+                                    <artifactId>opennms</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>overrides</classifier>
+                                    <type>properties</type>
+                                    <outputDirectory>${project.build.directory}/assembly/etc</outputDirectory>
+                                    <destFileName>overrides.properties</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <artifactId>maven-clean-plugin</artifactId>
