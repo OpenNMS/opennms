@@ -1648,7 +1648,7 @@
         <!--<bundle>mvn:org.opennms.features.endpoints.grafana/org.opennms.features.endpoints.grafana.api/${project.version}</bundle>-->
         <!--<bundle>mvn:org.opennms.features.endpoints.grafana.persistence/org.opennms.features.endpoints.grafana.persistence.api/${project.version}</bundle>-->
         <!--<bundle>mvn:org.opennms.features.endpoints.grafana.persistence/org.opennms.features.endpoints.grafana.persistence.impl/${project.version}</bundle>-->
-        <bundle dependency="true">mvn:org.jetbrains.kotlin/kotlin-osgi-bundle/${kotlinVersion}</bundle>
+  <!--      <bundle dependency="true">mvn:org.jetbrains.kotlin/kotlin-osgi-bundle/${kotlinVersion}</bundle>-->
 
     </feature>
     <feature name="opennms-reporting" version="${project.version}" description="OpenNMS :: Features :: Reporting">

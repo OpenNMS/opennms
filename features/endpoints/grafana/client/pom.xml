@@ -55,12 +55,12 @@
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>okhttp</artifactId>
-      <version>3.10.0</version>
+      <version>${okhttp3Version}</version>
     </dependency>
     <dependency>
       <groupId>com.squareup.okio</groupId>
       <artifactId>okio</artifactId>
-      <version>1.14.0</version>
+      <version>${okioGrafanaVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>
