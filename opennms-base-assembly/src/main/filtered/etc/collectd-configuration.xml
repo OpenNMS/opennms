@@ -137,14 +137,14 @@
       <service name="Windows-Exporter" interval="300000" user-defined="false" status="on">
          <parameter key="collection" value="${requisition:collection|detector:collection|windows-exporter}" />
          <parameter key="thresholding-enabled" value="true" />
-         <parameter key="url" value="${requisition:url|detector:url|http://INTERFACE_ADDRESS:9182/metrics}" />
+	 <parameter key="url" value="http://${requisition:url|detector:url|INTERFACE_ADDRESS}:${requisition:port|9182}/metrics" />
          <parameter key="timeout" value="${requisition:collector-timeout|requisition:timeout|detector:timeout|3000}" />
          <parameter key="retry" value="${requisition:collector-retry|requisition:retry|detector:retry|2}" />
       </service>
       <service name="Node-Exporter" interval="300000" user-defined="false" status="on">
          <parameter key="collection" value="${requisition:collection|detector:collection|node-exporter}" />
          <parameter key="thresholding-enabled" value="true" />
-         <parameter key="url" value="${requisition:url|detector:url|http://INTERFACE_ADDRESS:9100/metrics}" />
+	 <parameter key="url" value="http://${requisition:url|detector:url|INTERFACE_ADDRESS}:${requisition:port|9100}/metrics" />
          <parameter key="timeout" value="${requisition:collector-timeout|requisition:timeout|detector:timeout|3000}" />
          <parameter key="retry" value="${requisition:collector-retry|requisition:retry|detector:retry|2}" />
       </service>
