@@ -115,15 +115,11 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
     @Test
     public void testVerifyEndpoint() {
         // Create a GrafanaEndpoint object
-        GrafanaEndpoint grafanaEndpoint = new GrafanaEndpoint();
-        grafanaEndpoint.setApiKey("testApiKey");
-        grafanaEndpoint.setUrl("https://test.url.com");
-        // Add any other necessary properties to the grafanaEndpoint
-
+        final GrafanaEndpoint dummyEndpoint = GrafanaEndpointRestIT.createDummyEndpoint();
         // Send POST request to /verify
         given()
                 .contentType("application/json")
-                .body(grafanaEndpoint)
+                .body(dummyEndpoint)
                 .when()
                 .post("/verify")
                 .then()
