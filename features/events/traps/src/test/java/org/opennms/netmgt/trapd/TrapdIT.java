@@ -255,6 +255,11 @@ public class TrapdIT {
     public void testSnmpV2cTrapWithAddressFromVarbind() throws Exception {
         // Enable the feature (disabled by default)
         m_trapdConfig.getConfig().setUseAddressFromVarbind(true);
+        m_trapdConfig.getConfig().setBatchSize(2);
+        m_trapdConfig.getConfig().setBatchInterval(1000);
+        int interval = m_trapdConfig.getConfig().getBatchInterval();
+        int batchSize = m_trapdConfig.getConfig().getBatchSize();
+        System.out.printf("Batch size = %d interval = %d", batchSize, interval);
 
         InetAddress remoteAddr = InetAddress.getByName("10.255.1.1");
 
@@ -267,6 +272,17 @@ public class TrapdIT {
         // The varbind with the address
         pdu.addVarBind(TrapUtils.SNMP_TRAP_ADDRESS_OID, SnmpUtils.getValueFactory().getIpAddress(InetAddress.getByName("10.255.1.1")));
 
+        InetAddress remoteAddr2 = InetAddress.getByName("10.255.1.2");
+
+        //SnmpObjId enterpriseId = SnmpObjId.get(".1.3.6.1.4.1.5813");
+        //SnmpObjId trapOID = SnmpObjId.get(enterpriseId, new SnmpInstId(1));
+        SnmpTrapBuilder pdu2 = SnmpUtils.getV2TrapBuilder();
+        pdu2.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
+        pdu2.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(trapOID));
+        pdu2.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(enterpriseId));
+        // The varbind with the address
+        pdu2.addVarBind(TrapUtils.SNMP_TRAP_ADDRESS_OID, SnmpUtils.getValueFactory().getIpAddress(InetAddress.getByName("10.255.1.2")));
+
         EventBuilder defaultTrapBuilder = new EventBuilder("uei.opennms.org/default/trap", "trapd");
         defaultTrapBuilder.setInterface(remoteAddr);
         defaultTrapBuilder.setSnmpVersion("v2c");
@@ -277,10 +293,21 @@ public class TrapdIT {
         newSuspectBuilder.setInterface(remoteAddr);
         m_mockEventIpcManager.getEventAnticipator().anticipateEvent(newSuspectBuilder.getEvent());
 
+        EventBuilder defaultTrapBuilder2 = new EventBuilder("uei.opennms.org/default/trap", "trapd");
+        defaultTrapBuilder2.setInterface(remoteAddr2);
+        defaultTrapBuilder2.setSnmpVersion("v2c");
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(defaultTrapBuilder2.getEvent());
+
+        EventBuilder newSuspectBuilder2 = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "trapd");
+        // The address in the newSuspect event should match the one specified in the varbind
+        newSuspectBuilder2.setInterface(remoteAddr2);
+        m_mockEventIpcManager.getEventAnticipator().anticipateEvent(newSuspectBuilder2.getEvent());
+
         pdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
+        pdu2.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
 
         // Wait until we received the expected events
-        await().until(() -> m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived(), hasSize(2));
+        await().until(() -> m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived(), hasSize(4));
     }
 
     @Test
