@@ -10,6 +10,7 @@ The router must exist as a regular node in {page-component-title}.
 {page-component-title} uses the IP address exported in BMP messages to associate a router with the appropriate {page-component-title} node.
 In addition, you can use the node's metadata to specify a BGP ID to associate routers.
 If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a `context:key` metadata name, used to look up a node that has stored the queried BGP ID as a value in the specified key.
+It is also possible to specify more than one associations by providing a comma-separated list of BGP IDs.
 
 == Facts
 
