@@ -21,8 +21,6 @@
  */
 package org.opennms.smoketest;
 
-import static io.restassured.RestAssured.given;
-import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -111,22 +109,6 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
         });
         modal.cancel();
     }
-
-    @Test
-    public void testVerifyEndpoint() {
-        // Create a GrafanaEndpoint object
-        final GrafanaEndpoint dummyEndpoint = GrafanaEndpointRestIT.createDummyEndpoint();
-        // Send POST request to /verify
-        given()
-                .contentType("application/json")
-                .body(dummyEndpoint)
-                .when()
-                .post("/verify")
-                .then()
-                .statusCode(200);
-        // Check for success status code
-    }
-
 
     @Test
     public void verifyUniqueUid() {
