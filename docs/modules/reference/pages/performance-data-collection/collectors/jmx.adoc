@@ -43,7 +43,7 @@ Attributes are extracted from the available MBeans.
 | Number of retries before failing.
 | 3
 
-| friendlyName
+| friendly-name
 | Name of the path to store the metrics.
 | Value of the port, or `jsr160` if no port is set.
 
