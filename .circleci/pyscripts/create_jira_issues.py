@@ -10,16 +10,11 @@ JIRA_URL = os.getenv("JIRA_URL")
 
 # Priority mapping based on severity
 PRIORITY_MAP = {
-    "Critical": "Critical",
-    "Blocker": "Blocker",
-    "Major": "Major",
-    "Minor": "Minor",
-    "Trivial": "Trivial",
-    "Highest": "Highest",
-    "High": "High",
-    "Medium": "Medium",
-    "Low": "Low",
-    "Lowest": "Lowest"
+    "CRITICAL": "Blocker",
+    "HIGH": "High",
+    "MEDIUM": "Medium",
+    "LOW": "Low",
+    "Trivial": "Trivial"
 }
 
 def parse_filtered_vulnerabilities(file_path):
