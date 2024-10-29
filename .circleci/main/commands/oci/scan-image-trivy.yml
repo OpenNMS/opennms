@@ -22,11 +22,8 @@ commands:
       - run:
           name: build << parameters.container_name >>=<< parameters.architecture >> container image
           command: |
-            # set up multi-arch
             docker container prune -f
             docker run --rm --privileged tonistiigi/binfmt:latest --install "<< parameters.architecture >>"
-
-            # export DOCKER_CONTENT_TRUST=1
             cd opennms-container/<< parameters.container_dir >>
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"
@@ -47,25 +44,10 @@ commands:
             docker image load -i ~/project/opennms-container/*/images/*.oci
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"
-            # Table result includes only package filenames. Use '--format json' option to get the full path to the package file.
             /tmp/bin/trivy image --severity HIGH,CRITICAL --vuln-type os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 50m --format json -o /tmp/report.json --no-progress opennms/${TAG}
       - store_artifacts:
           path: /tmp/report.json
           destination: report.json
-      - store_artifacts:
-          path: /tmp/report.txt
-          destination: report.txt
-      - run:
-          name: Run Python script to analyze trivy report
-          command: |
-            python3 .circleci/pyscripts/analyze_trivy_report.py
-      - store_artifacts:
-          path: filtered_vulnerabilities.txt
-          destination: filtered_vulnerabilities.txt
-          
-      - store_artifacts:
-          path: filtered_vulnerabilities.csv
-          destination: filtered_vulnerabilities.csv
       - run:
           name: Install jq
           command:  sudo apt-get install -y jq
@@ -78,7 +60,6 @@ commands:
             PROJECT_KEY="NMS"
             EPIC_KEY="NMS-16601"
 
-            # Read vulnerabilities from report.json
             findings=$(jq -c '.Results[]' /tmp/report.json)
 
             for finding in $findings; do
@@ -86,12 +67,9 @@ commands:
                 DESCRIPTION=$(echo $finding | jq -r .Description)
                 SEVERITY=$(echo $finding | jq -r .Severity)
 
-                # Check for existing issue
                 existing_issue=$(curl -s -u "$JIRA_USER:$JIRA_API_TOKEN" -X GET "$JIRA_URL?jql=summary~'$VULNERABILITY_ID' AND project='$PROJECT_KEY'")
                 
-                # Only create the issue if it doesn't exist
                 if [[ $(echo "$existing_issue" | jq '.total') -eq 0 ]]; then
-                    # Create JSON payload with epic link
                     ISSUE_PAYLOAD=$(printf '{
                         "fields": {
                             "project": {
@@ -104,15 +82,12 @@ commands:
                             },
                             "priority": {
                                 "name": "%s"
-                            },
-                            "customfield_10008": "%s"  # Replace with your epic link field ID
+                            }
                         }
-                    }' "$PROJECT_KEY" "$VULNERABILITY_ID" "$DESCRIPTION" "$SEVERITY" "$EPIC_KEY")
+                    }' "$PROJECT_KEY" "$VULNERABILITY_ID" "$DESCRIPTION" "$SEVERITY")
 
-                    # Create the JIRA issue
                     response=$(curl -s -u "$JIRA_USER:$JIRA_API_TOKEN" -X POST --data "$ISSUE_PAYLOAD" -H "Content-Type: application/json" "$JIRA_URL")
                     
-                    # Check for successful creation
                     if [[ $(echo "$response" | jq '.key') ]]; then
                         echo "Created issue: $(echo "$response" | jq '.key')"
                     else
