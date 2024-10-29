@@ -63,7 +63,7 @@ def create_issue(vulnerability):
             "project": {
                 "key": PROJECT_KEY
             },
-            "summary": f"Trivy Bug: {vulnerability['Title']}",
+            "summary": f"Trivy Bug: (Vuln ID: {vulnerability['VulnerabilityID']}): {vulnerability['Title']}",
             "description": (
                 f"**Vulnerability ID:** {vulnerability['VulnerabilityID']}\n"
                 f"**Severity:** {vulnerability['Severity']}\n"
