@@ -58,21 +58,15 @@ commands:
       - run:
           name: Create JIRA Issues for Trivy Findings
           command: |
-            # JIRA_URL="$JIRA_URL"
-            # JIRA_USER="$JIRA_USER"
-            # JIRA_API_TOKEN="$JIRA_API_TOKEN"
             PROJECT_KEY="NMS"
-            # EPIC_KEY="NMS-16601"
 
-            findings=$(jq -c '.Results[]' /tmp/report.json)
-
-            for finding in $findings; do
-                VULNERABILITY_ID=$(echo $finding | jq -r .VulnerabilityID)
-                DESCRIPTION=$(echo $finding | jq -r .Description)
-                SEVERITY=$(echo $finding | jq -r .Severity)
+            # Read the report.txt and parse the vulnerabilities
+            awk '/^│/{ if (NF > 0) { if ($3 != "UNKNOWN" && $3 != "Total") { print $2 ":" $3 " (" $4 ")"; } } }' /tmp/report.txt | while IFS=: read -r VULNERABILITY_ID SEVERITY_INFO; do
+                DESCRIPTION=$(echo "$SEVERITY_INFO" | cut -d'(' -f1 | xargs)
+                SEVERITY=$(echo "$SEVERITY_INFO" | grep -oP '\(\K[^)]+')
 
                 existing_issue=$(curl -s -u "$JIRA_USER:$JIRA_API_TOKEN" -X GET "$JIRA_URL?jql=summary~'$VULNERABILITY_ID' AND project='$PROJECT_KEY'")
-                
+
                 if [[ $(echo "$existing_issue" | jq '.total') -eq 0 ]]; then
                     ISSUE_PAYLOAD=$(printf '{
                         "fields": {
@@ -91,7 +85,7 @@ commands:
                     }' "$PROJECT_KEY" "$VULNERABILITY_ID" "$DESCRIPTION" "$SEVERITY")
 
                     response=$(curl -s -u "$JIRA_USER:$JIRA_API_TOKEN" -X POST --data "$ISSUE_PAYLOAD" -H "Content-Type: application/json" "$JIRA_URL")
-                    
+
                     if [[ $(echo "$response" | jq '.key') ]]; then
                         echo "Created issue: $(echo "$response" | jq '.key')"
                     else
