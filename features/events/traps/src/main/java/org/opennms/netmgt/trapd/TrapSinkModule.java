@@ -87,7 +87,7 @@ public class TrapSinkModule extends AbstractXmlSinkModule<TrapInformationWrapper
                 if(trapInfo != null) {
                     trapDTO = transformTrapInfo(trapInfo);
                     trapAddress = TrapUtils.getEffectiveTrapAddress(trapInfo, config.shouldUseAddressFromVarbind());
-                    if (config.shouldUseAddressFromVarbind()) {
+                    if(config.shouldUseAddressFromVarbind()) {
                         trapDTO.setTrapAddress(trapAddress);
                     }
                 } else {
