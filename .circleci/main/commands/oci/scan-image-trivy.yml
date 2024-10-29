@@ -54,11 +54,11 @@ commands:
       - run:
           name: Create JIRA Issues for Trivy Findings
           command: |
-            JIRA_URL="$JIRA_URL"
-            JIRA_USER="$JIRA_USER"
-            JIRA_API_TOKEN="$JIRA_API_TOKEN"
-            PROJECT_KEY="NMS"
-            EPIC_KEY="NMS-16601"
+            # JIRA_URL="$JIRA_URL"
+            # JIRA_USER="$JIRA_USER"
+            # JIRA_API_TOKEN="$JIRA_API_TOKEN"
+            # PROJECT_KEY="NMS"
+            # EPIC_KEY="NMS-16601"
 
             findings=$(jq -c '.Results[]' /tmp/report.json)
 
