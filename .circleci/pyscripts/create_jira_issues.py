@@ -89,7 +89,7 @@ def create_issue(vulnerability):
     print(f"Posting to URL: {JIRA_URL}/rest/api/2/issue")
     print(f"Payload: {json.dumps(issue_payload, indent=2)}")
     
-    response = requests.post(f"{JIRA_URL}", auth=(JIRA_USER, JIRA_API_TOKEN), 
+    response = requests.post(f"{JIRA_URL}/rest/api/2/issue", auth=(JIRA_USER, JIRA_API_TOKEN), 
                              headers={"Content-Type": "application/json"}, 
                              data=json.dumps(issue_payload))
     

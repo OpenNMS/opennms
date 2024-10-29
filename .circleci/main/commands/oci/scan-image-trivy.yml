@@ -70,6 +70,13 @@ commands:
           path: filtered_vulnerabilities.csv
           destination: filtered_vulnerabilities.csv
       - run:
-          name: Run Python script to create jira tickets
+          name: Install Python dependencies
           command: |
+            pip3 install requests
+      - run:
+          name: Run Python script to create Jira tickets
+          command: |
+            JIRA_USER="${JIRA_USER}" \
+            JIRA_API_TOKEN="${JIRA_API_TOKEN}" \
+            JIRA_URL="${JIRA_URL}" \
             python3 .circleci/pyscripts/create_jira_issues.py
