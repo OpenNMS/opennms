@@ -3,7 +3,6 @@ import os
 import re
 import json
 
-# Constants
 PROJECT_KEY = "NMS"
 JIRA_USER = os.getenv("JIRA_USER")
 JIRA_API_TOKEN = os.getenv("JIRA_API_TOKEN")
@@ -27,10 +26,10 @@ def parse_filtered_vulnerabilities(file_path):
     vulnerabilities = []
 
     with open(file_path, 'r') as file:
-        lines = file.readlines()[2:]  # Skip header lines
+        lines = file.readlines()[2:]
 
     for line in lines:
-        if line.strip():  # Ignore empty lines
+        if line.strip():
             fields = re.split(r'\s*\|\s*', line.strip())
             if len(fields) >= 10:
                 vulnerabilities.append({
