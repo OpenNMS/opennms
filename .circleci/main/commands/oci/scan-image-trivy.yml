@@ -62,6 +62,14 @@ commands:
           name: Run Python script to analyze trivy report
           command: |
             python3 .circleci/pyscripts/analyze_trivy_report.py
+
+      - run:
+          name: Run Python script to create Jira issues
+          command: |
+            JIRA_USER="${JIRA_USER}" \
+            JIRA_API_TOKEN="${JIRA_API_TOKEN}" \
+            JIRA_URL="${JIRA_URL}" \
+            python3 .circleci/pyscripts/create_jira_issues.py
       - store_artifacts:
           path: filtered_vulnerabilities.txt
           destination: filtered_vulnerabilities.txt
