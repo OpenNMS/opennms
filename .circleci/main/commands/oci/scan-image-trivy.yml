@@ -44,10 +44,14 @@ commands:
             docker image load -i ~/project/opennms-container/*/images/*.oci
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"
-            /tmp/bin/trivy image --severity HIGH,CRITICAL --vuln-type os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 60m --format json -o /tmp/report.json --no-progress opennms/${TAG}
+            /tmp/bin/trivy image --severity HIGH,CRITICAL --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 60m --format json -o /tmp/report.json --no-progress opennms/${TAG}
+            /tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m -o /tmp/report.txt --no-progress opennms/${TAG}
       - store_artifacts:
           path: /tmp/report.json
           destination: report.json
+      - store_artifacts:
+          path: /tmp/report.txt
+          destination: report.txt
       - run:
           name: Install jq
           command:  sudo apt-get update && sudo apt-get install -y jq
