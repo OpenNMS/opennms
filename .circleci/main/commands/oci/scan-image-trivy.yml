@@ -62,7 +62,7 @@ commands:
       - run:
           name: Run Python script to analyze trivy report
           command: |
-            python3 .circleci/pyscripts/analyze_trivy_report.py report.json
+            python3 .circleci/pyscripts/analyze_trivy_report.py /tmp/report.json
       - store_artifacts:
           path: report.txt
           destination: report.txt
@@ -73,7 +73,7 @@ commands:
       - run:
           name: Run Python script to analyze trivy report for Critical and High vulnerabilities
           command: |
-            python3 .circleci/pyscripts/analyze_trivy_report.py filtered_vulnerabilities.json
+            python3 .circleci/pyscripts/analyze_trivy_report.py /tmp/filtered_vulnerabilities.json
       - store_artifacts:
           path: filtered_vulnerabilities.txt
           destination: filtered_vulnerabilities.txt
