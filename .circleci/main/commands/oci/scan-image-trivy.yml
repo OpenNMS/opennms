@@ -44,8 +44,11 @@ commands:
             docker image load -i ~/project/opennms-container/*/images/*.oci
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"
-            /tmp/bin/trivy image --severity HIGH,CRITICAL --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 60m --format json -o /tmp/report.json --no-progress opennms/${TAG}
-            /tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m -o /tmp/report.txt --no-progress opennms/${TAG}
+            # Table result includes only package filenames. Use '--format json' option to get the full path to the package file.
+            #/tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 --format json -o /tmp/report.json --no-progress opennms/${TAG}
+            #/tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 --severity HIGH,CRITICAL --vuln-type os,library --format json -o /tmp/horizon33-report.json --no-progress opennms/${TAG}
+            /tmp/bin/trivy image --severity HIGH,CRITICAL --vuln-type os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 60m --format json -o /tmp/report.json --no-progress opennms/${TAG}
+            #/tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 -o /tmp/report.txt --no-progress opennms/${TAG}
       - store_artifacts:
           path: /tmp/report.json
           destination: report.json
@@ -53,45 +56,17 @@ commands:
           path: /tmp/report.txt
           destination: report.txt
       - run:
-          name: Install jq
-          command:  sudo apt-get update && sudo apt-get install -y jq
-      - run:
-          name: Create JIRA Issues for Trivy Findings
+          name: Run Python script to analyze trivy report
           command: |
-            PROJECT_KEY="NMS"
-
-            # Read the report.txt and parse the vulnerabilities
-            awk '/^│/{ if (NF > 0) { if ($3 != "UNKNOWN" && $3 != "Total") { print $2 ":" $3 " (" $4 ")"; } } }' /tmp/report.txt | while IFS=: read -r VULNERABILITY_ID SEVERITY_INFO; do
-                DESCRIPTION=$(echo "$SEVERITY_INFO" | cut -d'(' -f1 | xargs)
-                SEVERITY=$(echo "$SEVERITY_INFO" | grep -oP '\(\K[^)]+')
-
-                existing_issue=$(curl -s -u "$JIRA_USER:$JIRA_API_TOKEN" -X GET "$JIRA_URL?jql=summary~'$VULNERABILITY_ID' AND project='$PROJECT_KEY'")
-
-                if [[ $(echo "$existing_issue" | jq '.total') -eq 0 ]]; then
-                    ISSUE_PAYLOAD=$(printf '{
-                        "fields": {
-                            "project": {
-                                "key": "%s"
-                            },
-                            "summary": "Vulnerability: %s",
-                            "description": "%s",
-                            "issuetype": {
-                                "name": "Bug"
-                            },
-                            "priority": {
-                                "name": "%s"
-                            }
-                        }
-                    }' "$PROJECT_KEY" "$VULNERABILITY_ID" "$DESCRIPTION" "$SEVERITY")
-
-                    response=$(curl -s -u "$JIRA_USER:$JIRA_API_TOKEN" -X POST --data "$ISSUE_PAYLOAD" -H "Content-Type: application/json" "$JIRA_URL")
-
-                    if [[ $(echo "$response" | jq '.key') ]]; then
-                        echo "Created issue: $(echo "$response" | jq '.key')"
-                    else
-                        echo "Failed to create issue: $response"
-                    fi
-                else
-                    echo "Issue for vulnerability $VULNERABILITY_ID already exists."
-                fi
-            done
+            python3 .circleci/pyscripts/analyze_trivy_report.py
+      - store_artifacts:
+          path: filtered_vulnerabilities.txt
+          destination: filtered_vulnerabilities.txt
+          
+      - store_artifacts:
+          path: filtered_vulnerabilities.csv
+          destination: filtered_vulnerabilities.csv
+      - run:
+          name: Run Python script to create jira tickets
+          command: |
+            python3 .circleci/pyscripts/create_jira_issues.py
