@@ -54,7 +54,7 @@ class EventCreator {
         this.eventConfDao = Objects.requireNonNull(eventConfDao);
     }
 
-    public Event createEventFrom(final TrapDTO trapDTO, final String systemId, final String location, final InetAddress trapAddress) {
+    public Event createEventFrom(final TrapDTO trapDTO, final String systemId, final String location, final InetAddress trapAddress,boolean shouldUseAddressFromVarbind) {
         LOG.debug("{} trap - trapInterface: {}", trapDTO.getVersion(), trapDTO.getAgentAddress());
 
         // Set event data
@@ -88,7 +88,7 @@ class EventCreator {
         }
 
         // Resolve Node id and set, if known by OpenNMS
-        resolveNodeId(location, trapAddress)
+        resolveNodeId(location, shouldUseAddressFromVarbind ? trapDTO.getTrapAddress() : trapAddress)
                 .ifPresent(eventBuilder::setNodeid);
 
         // If there was no systemId in the trap message, assume that
