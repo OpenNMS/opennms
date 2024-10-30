@@ -26,12 +26,14 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.junit.Assert.assertTrue;
 
 import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
+import java.util.stream.Collectors;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -283,6 +285,44 @@ public class TrapdIT {
         await().until(() -> m_mockEventIpcManager.getEventAnticipator().getAnticipatedEventsReceived(), hasSize(2));
     }
 
+
+@Test
+    public void testSnmpV2cTrapWithAddressFromVarbind2() throws Exception {
+        // Enable the feature (disabled by default)
+        m_trapdConfig.getConfig().setUseAddressFromVarbind(true);
+        List<String> ipAddresses = Arrays.asList("10.255.1.1", "10.255.1.2", "10.255.1.3");
+        for (String ip : ipAddresses) {
+            InetAddress remoteAddr = InetAddress.getByName(ip);
+            SnmpObjId enterpriseId = SnmpObjId.get(".1.3.6.1.4.1.5813");
+            SnmpObjId trapOID = SnmpObjId.get(enterpriseId, new SnmpInstId(1));
+            SnmpTrapBuilder pdu = SnmpUtils.getV2TrapBuilder();
+            pdu.addVarBind(SnmpObjId.get(".1.3.6.1.2.1.1.3.0"), SnmpUtils.getValueFactory().getTimeTicks(0));
+            pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.1.0"), SnmpUtils.getValueFactory().getObjectId(trapOID));
+            pdu.addVarBind(SnmpObjId.get(".1.3.6.1.6.3.1.1.4.3.0"), SnmpUtils.getValueFactory().getObjectId(enterpriseId));
+
+            pdu.addVarBind(TrapUtils.SNMP_TRAP_ADDRESS_OID, SnmpUtils.getValueFactory().getIpAddress(remoteAddr));
+            EventBuilder defaultTrapBuilder = new EventBuilder("uei.opennms.org/default/trap", "trapd");
+            defaultTrapBuilder.setInterface(remoteAddr);
+            defaultTrapBuilder.setSnmpVersion("v2c");
+            m_mockEventIpcManager.getEventAnticipator().anticipateEvent(defaultTrapBuilder.getEvent());
+            EventBuilder newSuspectBuilder = new EventBuilder(EventConstants.NEW_SUSPECT_INTERFACE_EVENT_UEI, "trapd");
+
+            newSuspectBuilder.setInterface(remoteAddr);
+            m_mockEventIpcManager.getEventAnticipator().anticipateEvent(newSuspectBuilder.getEvent());
+            pdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
+        }
+    await().until(() -> {
+        List<Event> anticipatedEvents = m_mockEventIpcManager
+                .getEventAnticipator()
+                .getAnticipatedEventsReceived();
+        Assert.assertEquals(anticipatedEvents.stream().filter(x->x.getInterface().equals("10.255.1.1")).collect(Collectors.toList()).size(),2);
+        Assert.assertEquals(anticipatedEvents.stream().filter(x->x.getInterface().equals("10.255.1.2")).collect(Collectors.toList()).size(),2);
+        Assert.assertEquals(anticipatedEvents.stream().filter(x->x.getInterface().equals("10.255.1.3")).collect(Collectors.toList()).size(),2);
+        return anticipatedEvents;
+    }, hasSize(6));
+
+
+    }
     @Test
     public void testSnmpV3TrapNoAuthNoPriv() {
         testSnmpV3NotificationWithSecurityLevel(TrapOrInform.TRAP, SecurityLevel.noAuthNoPriv);
