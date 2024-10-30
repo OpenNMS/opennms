@@ -53,7 +53,7 @@ commands:
           name: Copy Trivy DB
           command: |
             mkdir -p /root/.cache/trivy/db
-            mv /tmp/trivy-db/trivy.db /root/.cache/trivy/db/trivy.db
+            mv /tmp/trivy-db/trivy-db*/trivy.db /root/.cache/trivy/db/trivy.db
 
       - run:
           name: Scan the local image with trivy
