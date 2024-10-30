@@ -50,12 +50,12 @@ commands:
             # Table result includes only package filenames. Use '--format json' option to get the full path to the package file.
             #/tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 --format json -o /tmp/report.json --no-progress opennms/${TAG}
             #/tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 --severity HIGH,CRITICAL --vuln-type os,library --format json -o /tmp/horizon33-report.json --no-progress opennms/${TAG}
-            /tmp/bin/trivy image --severity HIGH,CRITICAL --pkg-types os,library --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/filtered_vulnerabilities.json --no-progress opennms/${TAG}
-            /tmp/bin/trivy image --pkg-types os,library --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/report.json --no-progress opennms/${TAG}
+            /tmp/bin/trivy image --severity HIGH,CRITICAL --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/filtered_vulnerabilities.json --no-progress opennms/${TAG}
+            /tmp/bin/trivy image --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/report.json --no-progress opennms/${TAG}
             #/tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 -o /tmp/report.txt --no-progress opennms/${TAG}
-      # - store_artifacts:
-      #     path: /tmp/report.json
-      #     destination: report.json
+      - store_artifacts:
+          path: /tmp/report.json
+          destination: report.json
       # - store_artifacts:
       #     path: /tmp/report.txt
       #     destination: report.txt
