@@ -41,6 +41,19 @@ commands:
           name: Install trivy
           command: |
             curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /tmp/bin
+
+      - run:
+          name: Download Trivy DB
+          command: |
+            mkdir -p /tmp/trivy-db
+            curl -o /tmp/trivy-db/trivy.db.gz https://github.com/aquasecurity/trivy-db/releases/latest/download/trivy.db.gz
+            gunzip /tmp/trivy-db/trivy.db.gz  # Unzip the database
+      - run:
+          name: Copy Trivy DB
+          command: |
+            mkdir -p /root/.cache/trivy/db
+            mv /tmp/trivy-db/trivy.db /root/.cache/trivy/db/trivy.db
+
       - run:
           name: Scan the local image with trivy
           command: |
