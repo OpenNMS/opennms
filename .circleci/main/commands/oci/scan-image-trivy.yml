@@ -46,7 +46,7 @@ commands:
           name: Download Trivy DB
           command: |
             mkdir -p /tmp/trivy-db
-            curl -o /tmp/trivy-db/trivy.db.gz https://github.com/aquasecurity/trivy-db/releases/latest/download/trivy.db.gz
+            curl -o /tmp/trivy-db/trivy.db.gz https://github.com/aquasecurity/trivy-db/archive/refs/tags/v1-end-of-support.tar.gz
             gunzip /tmp/trivy-db/trivy.db.gz  # Unzip the database
       - run:
           name: Copy Trivy DB
