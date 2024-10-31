@@ -60,7 +60,7 @@ commands:
             python3 .circleci/pyscripts/analyze_trivy_report.py
 
       - run:
-          name: Run Python script to create Jira issues
+          name: Create Jira issues
           command: |
             JIRA_USER="${JIRA_USER}" \
             JIRA_API_TOKEN="${JIRA_API_TOKEN}" \

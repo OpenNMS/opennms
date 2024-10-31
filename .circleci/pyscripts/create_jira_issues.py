@@ -10,7 +10,7 @@ JIRA_URL = os.getenv("JIRA_URL")
 
 # Priority mapping based on severity
 PRIORITY_MAP = {
-    "CRITICAL": "Blocker",
+    "CRITICAL": "Critical",
     "HIGH": "High",
     "MEDIUM": "Medium",
     "LOW": "Low",
