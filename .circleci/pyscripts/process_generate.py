@@ -209,6 +209,29 @@ if build_mappings["experimental"] or "experimentalPath" in git_keywords:
 
     build_mappings["experimental"] = True
 
+def should_proceed(item, check_build, combine_build_element):
+    # Check if the item is one of the specified values and if check_build has one item
+    is_single_item = (item in ["docs", "ui", "circleci_configuration"] and len(check_build) == 1)
+
+    # Check if any two of the specified values are present in combine_build_element
+    is_two_items = (
+        (("docs" in combine_build_element and "ui" in combine_build_element) or
+         ("docs" in combine_build_element and "circleci_configuration" in combine_build_element) or
+         ("circleci_configuration" in combine_build_element and "ui" in combine_build_element)) and
+        len(check_build) == 2
+    )
+
+    # Check if all three specified values are present and if check_build has three items
+    is_three_items = (
+        "docs" in combine_build_element and
+        "ui" in combine_build_element and
+        "circleci_configuration" in combine_build_element and
+        len(check_build) == 3
+    )
+
+    # Return True if any of the conditions are met
+    return is_single_item or is_two_items or is_three_items
+
 if "trigger-build" in mappings:
     if (
         "develop" in branch_name
@@ -217,9 +240,7 @@ if "trigger-build" in mappings:
         or "foundation-" in branch_name
     ) and "merge-foundation/" not in branch_name:
          for item in check_build:
-            if ((item == "docs" or item == "ui" or item == "circleci_configuration") and len(check_build) == 1) or (("docs" in combine_build_element  and "ui," in combine_build_element and len(check_build) == 2) or \
-                ("docs" in combine_build_element  and "circleci_configuration" in combine_build_element and len(check_build) == 2) or ("circleci_configuration" in combine_build_element  and "ui," in combine_build_element and len(check_build) == 2 ))  or \
-                ("docs" in combine_build_element  and "ui," in combine_build_element and "circleci_configuration" in combine_build_element  and len(check_build) == 3):
+            if should_proceed(item, check_build, combine_build_element):
               del mappings["trigger-build"]
               check_build.clear()
               del combine_build_element
@@ -252,9 +273,7 @@ if "trigger-build" in mappings:
         build_mappings["master-branch"] = True
     elif not build_trigger_override_found and "merge-foundation/" not in branch_name:
         for item in check_build:
-            if ((item == "docs" or item == "ui" or item == "circleci_configuration") and len(check_build) == 1) or (("docs" in combine_build_element  and "ui," in combine_build_element and len(check_build) == 2) or \
-                ("docs" in combine_build_element  and "circleci_configuration" in combine_build_element and len(check_build) == 2) or ("circleci_configuration" in combine_build_element  and "ui," in combine_build_element and len(check_build) == 2 ))  or \
-                ("docs" in combine_build_element  and "ui," in combine_build_element and "circleci_configuration" in combine_build_element  and len(check_build) == 3):
+            if should_proceed(item, check_build, combine_build_element):
               del mappings["trigger-build"]
               check_build.clear()
               del combine_build_element
