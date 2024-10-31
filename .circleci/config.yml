@@ -1767,7 +1767,7 @@ jobs:
                   - omega-v2-{{ .Branch }}-{{ .Revision }}
                   - omega-v2-{{ .Branch }}-
                   - omega-v2-
-            - checkout-for-pushing
+            - cached-checkout-for-pushing
             - run:
                 name: Add Omega remote if necessary
                 command: |
