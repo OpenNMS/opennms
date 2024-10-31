@@ -1839,9 +1839,9 @@
     <skipPdfGeneration>true</skipPdfGeneration>
 
     <!-- nodejs development -->
-    <frontendPluginVersion>1.12.1</frontendPluginVersion>
-    <nodeVersion>v16.18.1</nodeVersion>
-    <npmVersion>8.19.3</npmVersion>
+    <frontendPluginVersion>1.14.2</frontendPluginVersion>
+    <nodeVersion>v18.20.2</nodeVersion>
+    <npmVersion>9.8.1</npmVersion>
 
     <!-- CI Settings -->
     <ci.instance>0</ci.instance>
