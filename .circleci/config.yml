@@ -592,12 +592,12 @@ workflows:
           filters:
             branches:
               only: << pipeline.parameters.main_branch >>
-      - create-merge-foundation-omega-branch:
-          requires:
-            - build
-          filters:
-            branches:
-              only: << pipeline.parameters.main_branch >>
+      #- create-merge-foundation-omega-branch:
+      #    requires:
+      #      - build
+      #    filters:
+      #      branches:
+      #        only: << pipeline.parameters.main_branch >>
       - merge-foundation-branch:
           requires:
             - build
@@ -987,16 +987,16 @@ workflows:
                     equal: [ true, << pipeline.parameters.is_pr >> ]
                 steps:
                   - jira/notify
-      - create-merge-foundation-omega-branch:
-          context:
-            - "CircleCI"
-          # technically only requires the RPM/deb builds, but only publish
-          # if everything passes
-          requires:
-            - build
-          filters:
-            branches:
-              only: << pipeline.parameters.main_branch >>
+      #- create-merge-foundation-omega-branch:
+      #    context:
+      #      - "CircleCI"
+      #    # technically only requires the RPM/deb builds, but only publish
+      #    # if everything passes
+      #    requires:
+      #      - build
+      #    filters:
+      #      branches:
+      #        only: << pipeline.parameters.main_branch >>
       - create-merge-foundation-branch:
           context:
             - "CircleCI"
