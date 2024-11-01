@@ -4,6 +4,8 @@ export ALEC_VERSION="latest"
 #export DEPLOY_FOLDER="/usr/share/opennms/deploy" 
 export DEPLOY_FOLDER="/opt/usr-plugins"
 
+mkdir -p "$DEPLOY_FOLDER"
+
 apt-get update
 apt-get install -y python3-pip wget curl jq
 pip3 install --upgrade cloudsmith-cli 
