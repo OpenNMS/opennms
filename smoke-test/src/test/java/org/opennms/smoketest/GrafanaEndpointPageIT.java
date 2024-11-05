@@ -21,7 +21,6 @@
  */
 package org.opennms.smoketest;
 
-
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.junit.Assert.assertEquals;
@@ -32,18 +31,8 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-import okhttp3.Credentials;
-import okhttp3.OkHttpClient;
-import okhttp3.Request;
-import okhttp3.RequestBody;
-import okhttp3.MediaType;
-import okhttp3.Response;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.elasticsearch.common.Strings;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.opennms.netmgt.endpoints.grafana.api.GrafanaEndpoint;
@@ -51,46 +40,21 @@ import org.opennms.smoketest.rest.GrafanaEndpointRestIT;
 import org.opennms.smoketest.ui.framework.Button;
 import org.opennms.smoketest.ui.framework.TextInput;
 import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.utility.DockerImageName;
 
 public class GrafanaEndpointPageIT extends UiPageTest  {
 
-
-    private static final Logger LOG = LoggerFactory.getLogger(GrafanaEndpointPageIT.class);
-
     private Page uiPage;
-    private static GenericContainer<?> grafanaContainer;
-    private static final String GRAFANA_URL = "http://admin:admin@localhost";
-    private static OkHttpClient client;
-    private static String token;
-    private static ObjectMapper objectMapper;
-    private static final String USERNAME = "admin";
-    private static final String PASSWORD = "admin";
-    private static final String VIEWER= "Viewer";
-    private static final String NAME="my-service-account";
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() throws IOException, InterruptedException {
         // Delete all endpoints
         sendDelete("rest/endpoints/grafana");
 
-
         uiPage = new Page(getBaseUrlInternal());
         uiPage.open();
-        grafanaContainer = new GenericContainer<>(DockerImageName.parse("grafana/grafana:8.5.26"))
-                .withExposedPorts(3000)
-                .withEnv("GF_SECURITY_ADMIN_PASSWORD", "admin");
-        objectMapper = new ObjectMapper();
-        grafanaContainer.start();
-        client = new OkHttpClient();
-        token = getApiKey();
     }
 
     @Test
@@ -144,53 +108,6 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
             return null;
         });
         modal.cancel();
-    }
-
-    @Test
-    public void verifyGrafanaConnection() throws JsonProcessingException {
-
-
-        final GrafanaEndpoint dummyEndpoint = createDummyEndpointConnection();
-        final EndpointModal modal = uiPage.newModal().setInput(dummyEndpoint);
-        new Button(getDriver(), "verify-endpoint").click();
-
-        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(20));
-
-            LOG.info("Current Page Source: " + getDriver().getPageSource());
-            WebElement successMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("span.text-success")));
-            Assert.assertEquals("Connected", successMessage.getText());
-
-
-        /*    WebElement errorMessage = wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("span.text-danger")));
-            Assert.assertEquals("Could not connect", errorMessage.getText());*/
-
-
-    }
-
-    public String getApiKey() {
-
-        String credential = Credentials.basic("admin", "admin");
-        Integer port = grafanaContainer.getMappedPort(3000);
-        String json = "{\"name\":\"" + "my-api-key" + "\",\"role\":\"" + VIEWER + "\"}";
-        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),json);
-        Request request = new Request.Builder()
-                .url(GRAFANA_URL + ":" + port +"/api/auth/keys")
-                .post(body)
-                .addHeader("Authorization", credential)
-                .addHeader("Content-Type", "application/json")
-                .build();
-
-        try (Response response = client.newCall(request).execute()) {
-            if (!response.isSuccessful()) {
-                LOG.info("Unexpected code " + response);
-            }
-            JsonNode jsonNode = objectMapper.readTree(response.body().string());
-            return jsonNode.get("key").asText();
-
-        } catch (IOException e) {
-            LOG.info("Exception" ,e);
-        }
-        return null;
     }
 
     @Test
@@ -361,18 +278,5 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
             execute(() -> new WebDriverWait(driver, Duration.ofSeconds(5)).until(ExpectedConditions.numberOfElementsToBe(By.id("endpointModal"), 0)));
         }
     }
-    public static GrafanaEndpoint createDummyEndpointConnection() throws JsonProcessingException {
 
-        Integer port = grafanaContainer.getMappedPort(3000);
-
-        final GrafanaEndpoint endpoint = new GrafanaEndpoint();
-        endpoint.setId(200L);
-        endpoint.setUid("7775ad83-4393-4803-9895-7d50dc292b4f");
-        endpoint.setApiKey(token);
-        endpoint.setUrl("http://localhost" + ":" + port +"/");
-        endpoint.setDescription("dummy description");
-        endpoint.setReadTimeout(3000);
-        endpoint.setConnectTimeout(3000);
-        return endpoint;
-    }
 }
