@@ -100,7 +100,7 @@ public class NodeAssetSearchProvider implements SearchProvider {
                         Restrictions.ilike("assetRecord.leaseExpires", QueryUtils.ilike(input)),
                         Restrictions.ilike("assetRecord.supportPhone", QueryUtils.ilike(input)),
                         Restrictions.ilike("assetRecord.maintContractExpiration", QueryUtils.ilike(input)),
-                        Restrictions.ilike("assetRecord.maintContract", QueryUtils.ilike(input)),
+                        Restrictions.ilike("assetRecord.maintcontract", QueryUtils.ilike(input)),
                         Restrictions.ilike("assetRecord.displayCategory", QueryUtils.ilike(input)),
                         Restrictions.ilike("assetRecord.pollerCategory", QueryUtils.ilike(input)),
                         Restrictions.ilike("assetRecord.thresholdCategory", QueryUtils.ilike(input)),
