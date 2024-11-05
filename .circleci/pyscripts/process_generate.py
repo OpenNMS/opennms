@@ -128,13 +128,11 @@ if changed_files:
     print()
 
 
-check_build = []
 combine_build_element = ""
 
 if What_to_build:
     print("What we want to build:")
     for item in What_to_build:
-        check_build.append(item)
         combine_build_element += item + ','
         print(" ", "*", item)
     print()
@@ -209,24 +207,24 @@ if build_mappings["experimental"] or "experimentalPath" in git_keywords:
 
     build_mappings["experimental"] = True
 
-def should_proceed(item, check_build, combine_build_element):
-    # Check if the item is one of the specified values and if check_build has one item
-    is_single_item = (item in ["docs", "ui", "circleci_configuration"] and len(check_build) == 1)
+def should_proceed(item, What_to_build, combine_build_element):
+    # Check if the item is one of the specified values and if What_to_build has one item
+    is_single_item = (item in ["docs", "ui", "circleci_configuration"] and len(What_to_build) == 1)
 
     # Check if any two of the specified values are present in combine_build_element
     is_two_items = (
         (("docs" in combine_build_element and "ui" in combine_build_element) or
          ("docs" in combine_build_element and "circleci_configuration" in combine_build_element) or
          ("circleci_configuration" in combine_build_element and "ui" in combine_build_element)) and
-        len(check_build) == 2
+        len(What_to_build) == 2
     )
 
-    # Check if all three specified values are present and if check_build has three items
+    # Check if all three specified values are present and if What_to_build has three items
     is_three_items = (
         "docs" in combine_build_element and
         "ui" in combine_build_element and
         "circleci_configuration" in combine_build_element and
-        len(check_build) == 3
+        len(What_to_build) == 3
     )
 
     # Return True if any of the conditions are met
@@ -239,10 +237,10 @@ if "trigger-build" in mappings:
         or "release-" in branch_name
         or "foundation-" in branch_name
     ) and "merge-foundation/" not in branch_name:
-         for item in check_build:
-            if should_proceed(item, check_build, combine_build_element):
+         for item in What_to_build:
+            if should_proceed(item, What_to_build, combine_build_element):
               del mappings["trigger-build"]
-              check_build.clear()
+              What_to_build.clear()
               del combine_build_element
               break
             else:
@@ -272,10 +270,10 @@ if "trigger-build" in mappings:
         What_to_build.clear()
         build_mappings["master-branch"] = True
     elif not build_trigger_override_found and "merge-foundation/" not in branch_name:
-        for item in check_build:
-            if should_proceed(item, check_build, combine_build_element):
+        for item in What_to_build:
+            if should_proceed(item, What_to_build, combine_build_element):
               del mappings["trigger-build"]
-              check_build.clear()
+              What_to_build.clear()
               del combine_build_element
               break
             else:        
