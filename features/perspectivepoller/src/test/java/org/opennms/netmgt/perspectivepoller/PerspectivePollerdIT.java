@@ -362,6 +362,7 @@ public class PerspectivePollerdIT implements InitializingBean, TemporaryDatabase
                                               .setIfOperStatus(1)
                                               .setIfSpeed(10000000)
                                               .setIfDescr("ATM0")
+                                              .setIfName("atm0")
                                               .setIfAlias("Initial ifAlias value")
                                               .setIfType(37)
                                               .setPhysAddr("34E45604BB69")
