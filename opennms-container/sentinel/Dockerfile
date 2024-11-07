@@ -59,8 +59,6 @@ RUN microdnf -y install ${REQUIRED_RPMS} && \
 ##
 FROM ${BASE_IMAGE} as sentinel-plugins
 
-COPY plugins.sh /tmp/plugins.sh 
-RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
 
 ##
 # Install and setup OpenNMS Sentinel
