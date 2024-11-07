@@ -66,12 +66,10 @@ public class DeleteRequisitionedNode implements Action {
                     count++;
                 }
                 System.out.println("Deleted " + count + " nodes");
+            } else {
+                System.out.println("Requisition '" + requisitionName + "' not found.");
             }
-            else {
-                System.out.println("Requisition '" + requisitionName  + "' not found.");
-            }
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             System.out.println(e.getMessage());
             e.printStackTrace(System.out);
         }
@@ -91,3 +89,4 @@ public class DeleteRequisitionedNode implements Action {
         }
         return reqExists;
     }
+}
