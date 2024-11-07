@@ -97,7 +97,28 @@ public class JdbcDataCollectionConfig implements Serializable, Comparable<JdbcDa
         
         return null;
     }
-    
+
+    public JdbcDataCollectionConfig merge(JdbcDataCollectionConfig other) {
+        if (other == null) {
+            return this;
+        }
+        // Overwrite the rrdRepository iff it's null
+        if (m_rrdRepository == null && other.m_rrdRepository != null) {
+            m_rrdRepository = other.m_rrdRepository;
+        }
+        // Merge the lists of collections and groups
+        getCollection().addAll(other.getCollection());
+        //getGroup().addAll(other.getGroup());
+        return this;
+    }
+
+    public List<JdbcDataCollection> getCollection() {
+        if (m_jdbcDataCollections == null) {
+            m_jdbcDataCollections = new ArrayList<JdbcDataCollection>();
+        }
+        return this.m_jdbcDataCollections;
+    }
+
     public RrdRepository buildRrdRepository(String collectionName) {
         JdbcRrd rrd = getDataCollectionByName(collectionName).getJdbcRrd();
         RrdRepository repo = new RrdRepository();
