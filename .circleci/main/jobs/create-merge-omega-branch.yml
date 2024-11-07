@@ -29,6 +29,10 @@ jobs:
             - run:
                 name: Checkout target branch and merge from source
                 command: |
+                  if [ "$CIRCLE_PROJECT_REPONAME" == "opennms-omega" ]; then
+                   exit 0
+                  fi
+
                   export GIT_MERGE_AUTOEDIT=no
                   if git rev-parse << pipeline.parameters.main_branch >> >/dev/null 2>&1; then
                     git checkout << pipeline.parameters.main_branch >>
