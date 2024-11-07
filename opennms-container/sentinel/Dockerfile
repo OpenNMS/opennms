@@ -69,7 +69,7 @@ FROM sentinel-base
 # We would have 755 for sentinel:root instead of 775 and prevents writing lock files in /usr/share/sentinel
 COPY --chown=10001:0 --from=sentinel-tarball /opt/usr-share /usr/share
 
-COPY --chown=10001:0 --from=sentinel-plugins /opt/usr-plugins /usr/share/opennms/deploy
+COPY --chown=10001:0 --from=sentinel-plugins  /usr/share/opennms/deploy
 
 SHELL ["/bin/bash", "-c"]
 
