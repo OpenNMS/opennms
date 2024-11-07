@@ -91,6 +91,7 @@ public class NetworkBuilderTest {
             .setIfOperStatus(1)
             .setIfSpeed(10000000)
             .setIfDescr("ATM0")
+            .setIfName("atm0")
             .setIfAlias("Initial ifAlias value")
             .setIfType(37)
             .addIpInterface("192.168.1.1").setIsManaged("M").setIsSnmpPrimary("P");

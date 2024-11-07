@@ -1674,6 +1674,8 @@
     <mock.db.adminPassword/>
     <mock.runSnmpTests>false</mock.runSnmpTests>
     <mock.snmpHost>localhost</mock.snmpHost>
+    <product.name>horizon</product.name>
+    <docs.product.version>33</docs.product.version>
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
@@ -1928,6 +1930,8 @@
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>3.6.0</okioVersion>
+    <okhttp3Version>3.10.0</okhttp3Version>
+    <okioGrafanaVersion>1.14.0</okioGrafanaVersion>
     <openid4javaVersion>0.9.6</openid4javaVersion>
     <opennmsApiVersion>1.6.1</opennmsApiVersion>
     <opennmsApiVersionOsgi>1.6.1</opennmsApiVersionOsgi>
