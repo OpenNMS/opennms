@@ -437,7 +437,7 @@
             "filters": {
                 "branches": {
                     "only": [
-                        "develop"
+                        "/^foundation.*/"
                     ]
                 },
                 "user_overridable": false
