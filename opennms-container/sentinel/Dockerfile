@@ -54,11 +54,6 @@ SHELL ["/bin/bash", "-c"]
 RUN microdnf -y install ${REQUIRED_RPMS} && \
     rm -rf /var/cache/yum
 
-##
-# Download plugins
-##
-FROM ${BASE_IMAGE} as sentinel-plugins
-
 
 ##
 # Install and setup OpenNMS Sentinel
@@ -68,8 +63,6 @@ FROM sentinel-base
 # If you copy from /usr/share/sentinel to /usr/share/sentinel the permissions are not preserved
 # We would have 755 for sentinel:root instead of 775 and prevents writing lock files in /usr/share/sentinel
 COPY --chown=10001:0 --from=sentinel-tarball /opt/usr-share /usr/share
-
-COPY --chown=10001:0 --from=sentinel-plugins  /usr/share/opennms/deploy
 
 SHELL ["/bin/bash", "-c"]
 
