@@ -108,7 +108,6 @@ public class JdbcDataCollectionConfig implements Serializable, Comparable<JdbcDa
         }
         // Merge the lists of collections and groups
         getCollection().addAll(other.getCollection());
-        //getGroup().addAll(other.getGroup());
         return this;
     }
 
