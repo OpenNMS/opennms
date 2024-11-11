@@ -42,7 +42,6 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ConfigFileConstants;
-import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.slf4j.Logger;
@@ -84,25 +83,26 @@ public class SendEventController extends AbstractController {
 
         List<String> excludeList = getExcludeList();
         TreeMap<String, String> sortedMap = new TreeMap<String, String>();
-            for (Event e : events) {
 
-                String uei = e.getUei();
-                // System.out.println(uei);
+        for (Event e : events) {
 
-                String label = e.getEventLabel();
-                // System.out.println(label);
+            String uei = e.getUei();
+            // System.out.println(uei);
 
-                String trimmedUei = stripUei(uei);
-                // System.out.println(trimmedUei);
+            String label = e.getEventLabel();
+            // System.out.println(label);
 
-                if (!excludeList.contains(trimmedUei)) {
-                    try {
-                        sortedMap.put(label , uei);
-                    } catch (NullPointerException ex) {
-                        LOG.error("Event{} configuration validation failed! Missing event label", e.getUei(), ex);
-                    }
+            String trimmedUei = stripUei(uei);
+            // System.out.println(trimmedUei);
+
+            if (!excludeList.contains(trimmedUei)) {
+                try {
+                    sortedMap.put(label, uei);
+                } catch (NullPointerException ex) {
+                    LOG.error("Event{} configuration validation failed! Missing event label", e.getUei(), ex);
                 }
             }
+        }
         for (Map.Entry<String, String> me : sortedMap.entrySet()) {
             buffer.append("<option value=" + me.getValue() + ">" + me.getKey()
                     + "</option>");
