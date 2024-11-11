@@ -42,8 +42,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.opennms.core.utils.BundleLists;
 import org.opennms.core.utils.ConfigFileConstants;
+import org.opennms.netmgt.config.DefaultEventConfDao;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.mvc.AbstractController;
@@ -56,6 +59,7 @@ import com.google.common.collect.Maps;
  * @author jwhite
  */
 public class SendEventController extends AbstractController {
+    private static final Logger LOG = LoggerFactory.getLogger(SendEventController.class);
     @Autowired
     private EventConfDao m_eventConfDao;
 
@@ -80,23 +84,25 @@ public class SendEventController extends AbstractController {
 
         List<String> excludeList = getExcludeList();
         TreeMap<String, String> sortedMap = new TreeMap<String, String>();
+            for (Event e : events) {
 
-        for (Event e : events) {
+                String uei = e.getUei();
+                // System.out.println(uei);
 
-            String uei = e.getUei();
-            // System.out.println(uei);
+                String label = e.getEventLabel();
+                // System.out.println(label);
 
-            String label = e.getEventLabel();
-            // System.out.println(label);
+                String trimmedUei = stripUei(uei);
+                // System.out.println(trimmedUei);
 
-            String trimmedUei = stripUei(uei);
-            // System.out.println(trimmedUei);
-
-            if (!excludeList.contains(trimmedUei)) {
-                sortedMap.put(label, uei);
-                // System.out.println("sortedMap.put('"+label+"', '"+uei+"')");
+                if (!excludeList.contains(trimmedUei)) {
+                    try {
+                        sortedMap.put(label , uei);
+                    } catch (NullPointerException ex) {
+                        LOG.error("Event{} configuration validation failed! Missing event label", e.getUei(), ex);
+                    }
+                }
             }
-        }
         for (Map.Entry<String, String> me : sortedMap.entrySet()) {
             buffer.append("<option value=" + me.getValue() + ">" + me.getKey()
                     + "</option>");
