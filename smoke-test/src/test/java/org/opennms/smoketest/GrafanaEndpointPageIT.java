@@ -72,7 +72,6 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
     private static final String USERNAME = "admin";
     private static final String PASSWORD = "admin";
     private static final String VIEWER= "Viewer";
-    private static final String NAME="my-service-account";
     private static GrafanaContainer grafanaContainer;
     private static final String GRAFANA_URL = " http://localhost";
 
@@ -146,7 +145,7 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
 
     public String createServiceAccount() {
 
-        String credential = Credentials.basic("admin", "admin");
+        String credential = Credentials.basic(USERNAME, PASSWORD);
         Integer port = grafanaContainer.getWebPort();
         String json = "{\"name\":\"" + "my-service-account" + "\",\"role\":\"" + VIEWER + "\"}";
         RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),json);
@@ -172,7 +171,7 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
 
     public String createToken(String serviceAccount) {
 
-        String credential = Credentials.basic("admin", "admin");
+        String credential = Credentials.basic(USERNAME, PASSWORD);
         Integer port = grafanaContainer.getWebPort();
         String json = "{\"name\":\"" + "my-service-account-token" +"\"}";
         RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),json);
