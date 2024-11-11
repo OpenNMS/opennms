@@ -174,7 +174,6 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
 
         String credential = Credentials.basic("admin", "admin");
         Integer port = grafanaContainer.getWebPort();
-        System.out.println("port: " + port);
         String json = "{\"name\":\"" + "my-service-account-token" +"\"}";
         RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),json);
         Request request = new Request.Builder()
@@ -188,7 +187,7 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
             if (!response.isSuccessful()) {
                 LOG.info("Unexpected code " + response);
             }
-            System.out.println("res" + response);
+
             JsonNode jsonNode = objectMapper.readTree(response.body().string());
             return jsonNode.get("key").asText();
 
@@ -202,14 +201,10 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
     public void verifyGrafanaConnection() throws JsonProcessingException {
 
         final GrafanaEndpoint endpoint = createEndpointConnection();
-        System.out.println(endpoint.getApiKey());
-        System.out.println(getBaseUrlInternal());
-        System.out.println(GRAFANA_URL + ":" +grafanaContainer.getWebPort());
         final EndpointModal modal = uiPage.newModal().setInput(endpoint);
         new Button(getDriver(), "verify-endpoint").click();
 
         WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(10));
-
         execute(() -> {
             pageContainsText("Connected");
             return null;
