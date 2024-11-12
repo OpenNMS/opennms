@@ -319,7 +319,7 @@ public class TrapdIT {
     newSuspectBuilder.setInterface(remoteAddr);
     m_mockEventIpcManager.getEventAnticipator().anticipateEvent(newSuspectBuilder.getEvent());
 
-    pdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
+
 
 
     InetAddress secondaryRemoteAddr = InetAddress.getByName("10.255.1.2");
@@ -342,6 +342,7 @@ public class TrapdIT {
 // The address in the secondarySuspect event should match the one specified in the varbind
     secondarySuspectBuilder.setInterface(secondaryRemoteAddr);
     m_mockEventIpcManager.getEventAnticipator().anticipateEvent(secondarySuspectBuilder.getEvent());
+    pdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
     secondaryPdu.send(localhost, m_trapdConfig.getSnmpTrapPort(), "public");
 
 
