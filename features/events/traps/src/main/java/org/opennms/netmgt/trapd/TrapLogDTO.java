@@ -53,7 +53,8 @@ public class TrapLogDTO implements Message {
 
     @XmlElement(name = "messages")
     private List<TrapDTO> messages = new ArrayList<>();
-
+    @XmlElement(name = "should-use-address-from-varbind")
+    private Boolean shouldUseAddressFromVarbind;
     // Default constructor for Jaxb
     public TrapLogDTO() {
 
@@ -101,6 +102,13 @@ public class TrapLogDTO implements Message {
         this.messages = messages;
     }
 
+    public Boolean getShouldUseAddressFromVarbind() {
+        return shouldUseAddressFromVarbind;
+    }
+
+    public void setShouldUseAddressFromVarbind(Boolean shouldUseAddressFromVarbind) {
+        this.shouldUseAddressFromVarbind = shouldUseAddressFromVarbind;
+    }
 
     @Override
     public int hashCode() {

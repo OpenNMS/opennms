@@ -54,18 +54,22 @@ class EventCreator {
         this.eventConfDao = Objects.requireNonNull(eventConfDao);
     }
 
-    public Event createEventFrom(final TrapDTO trapDTO, final String systemId, final String location, final InetAddress trapAddress,boolean shouldUseAddressFromVarbind) {
+    public Event createEventFrom(final TrapDTO trapDTO, final String systemId, final String location, final InetAddress trapAddress,Boolean shouldUseAddressFromVarbind) {
         LOG.debug("{} trap - trapInterface: {}", trapDTO.getVersion(), trapDTO.getAgentAddress());
 
         // Set event data
-       final InetAddress inetAddress =  shouldUseAddressFromVarbind ? trapDTO.getTrapAddress() : trapAddress;
+        final InetAddress sourceTrapAddress = Optional.ofNullable(shouldUseAddressFromVarbind)
+                .filter(Boolean::booleanValue)
+                .map(useVarbind -> trapDTO.getTrapAddress())
+                .orElse(trapAddress);
+
         final EventBuilder eventBuilder = new EventBuilder(null, "trapd");
         eventBuilder.setTime(new Date(trapDTO.getCreationTime()));
         eventBuilder.setCommunity(trapDTO.getCommunity());
         eventBuilder.setSnmpTimeStamp(trapDTO.getTimestamp());
         eventBuilder.setSnmpVersion(trapDTO.getVersion());
-        eventBuilder.setSnmpHost(str(inetAddress));
-        eventBuilder.setInterface(inetAddress);
+        eventBuilder.setSnmpHost(str(sourceTrapAddress));
+        eventBuilder.setInterface(sourceTrapAddress);
         eventBuilder.setHost(InetAddressUtils.toIpAddrString(trapDTO.getAgentAddress()));
 
         // Handle trap identity
@@ -89,7 +93,7 @@ class EventCreator {
         }
 
         // Resolve Node id and set, if known by OpenNMS
-        resolveNodeId(location, inetAddress)
+        resolveNodeId(location, sourceTrapAddress)
                 .ifPresent(eventBuilder::setNodeid);
 
         // If there was no systemId in the trap message, assume that
