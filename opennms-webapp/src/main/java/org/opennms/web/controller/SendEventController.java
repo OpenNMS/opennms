@@ -96,10 +96,10 @@ public class SendEventController extends AbstractController {
             // System.out.println(trimmedUei);
 
             if (!excludeList.contains(trimmedUei)) {
-                if(label != null && uei != null ) {
+                if (label != null && uei != null ) {
                     sortedMap.put(label, uei);
                 } else {
-                    LOG.warn("Event{} configuration validation failed! Missing event label", e.getUei());
+                    LOG.warn("Event configuration with uei {} failed to validate, missing event label", e.getUei());
                 }
             }
         }
