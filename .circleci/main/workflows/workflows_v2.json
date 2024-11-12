@@ -81,6 +81,7 @@
                 "create-merge-foundation-branch",
                 "create-merge-meridian-branch",
                 "create-merge-omega-branch",
+                "create-merge-omega-branch",
                 "merge-foundation-branch",
                 "merge-poweredby-branch"
             ]

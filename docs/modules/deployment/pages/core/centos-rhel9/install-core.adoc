@@ -7,7 +7,7 @@ include::../../repos/rhel-centos/meridian-rhel9.adoc[]
 endif::[]
 
 .Install {page-component-title} with all built-in dependencies
-[source, console]
+[source, console, subs="attributes"]
 ----
 sudo dnf -y install {package-prefix}
 ----
