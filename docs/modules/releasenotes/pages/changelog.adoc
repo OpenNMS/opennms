@@ -2,6 +2,41 @@
 
 = Changelog
 
+[[releasenotes-changelog-33.0.10]]
+
+== Release 33.0.10
+
+Release 33.0.10 contains a bunch of security updates, bug fix and enhancements.
+
+The codename for Horizon 33.0.10 is https://wikipedia.org/wiki/$$Amelanchier_arborea$$[_Downy Serviceberry_].
+
+=== Bug
+
+* Grafana reports endpoint failure (Issue https://issues.opennms.org/browse/NMS-16367[NMS-16367])
+* Version in about page points to invalid release notes (Issue https://issues.opennms.org/browse/NMS-16482[NMS-16482])
+* Structured Node List - some IP are missing (Issue https://issues.opennms.org/browse/NMS-16483[NMS-16483])
+* Installation instructions are broken and show an unresolved variable (Issue https://issues.opennms.org/browse/NMS-16490[NMS-16490])
+* Search does not return any results for Asset Search string Meridian 2024.1.3 (Issue https://issues.opennms.org/browse/NMS-16510[NMS-16510])
+* OpenNMS RESTful API provides incorrect URL in GUI after SSL enablement (Issue https://issues.opennms.org/browse/NMS-16530[NMS-16530])
+* Test case failures `org.opennms.features.newts.converter.`  numeric value is NaN (Issue https://issues.opennms.org/browse/NMS-16936[NMS-16936])
+* Test case failures: The markup in the document preceding the root element must be well-formed (Issue https://issues.opennms.org/browse/NMS-16949[NMS-16949])
+* Logging in TcpListener in Eventd is done with a foreign class (Issue https://issues.opennms.org/browse/NMS-16951[NMS-16951])
+
+=== Task
+
+* Replace babel/polyfill with core-js 3 (foundation-2021 branch) (Issue https://issues.opennms.org/browse/NMS-16477[NMS-16477])
+* Update dnsjava to version 3.6.0 if applicable (Issue https://issues.opennms.org/browse/NMS-16506[NMS-16506])
+* Update proton-j to 0.34 or latest for OSGI (Issue https://issues.opennms.org/browse/NMS-16549[NMS-16549])
+* Resolve jsoup version discrepancy seen in the dependency graph (Issue https://issues.opennms.org/browse/NMS-16552[NMS-16552])
+* Update Snakeyaml for indirect dependencies (Issue https://issues.opennms.org/browse/NMS-16570[NMS-16570])
+* Include nodeParentId in Rest API V2 returns for Node (Issue https://issues.opennms.org/browse/NMS-16571[NMS-16571])
+* Update linux UBI version to address security vulnerabilities (Issue https://issues.opennms.org/browse/NMS-16587[NMS-16587])
+
+=== Enhancement
+
+* Add Node Labels to timeseries data for pollerd services (Issue https://issues.opennms.org/browse/NMS-16497[NMS-16497])
+* Adding resourceLabels to TS data (Issue https://issues.opennms.org/browse/NMS-16498[NMS-16498])
+
 [[releasenotes-changelog-33.0.9]]
 
 == Release 33.0.9
