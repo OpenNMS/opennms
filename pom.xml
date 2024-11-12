@@ -1870,7 +1870,7 @@
     <jsonSmartVersion>2.5.0</jsonSmartVersion>
     <!-- generally tied with json-smart -->
     <accessorsSmartVersion>2.5.0</accessorsSmartVersion>
-    <jsoupVersion>1.7.2</jsoupVersion>
+    <jsoupVersion>1.15.3</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
     <junit4Version>4.13.2</junit4Version>
