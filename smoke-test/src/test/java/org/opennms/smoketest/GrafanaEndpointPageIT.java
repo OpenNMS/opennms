@@ -38,20 +38,20 @@ import okhttp3.RequestBody;
 import okhttp3.MediaType;
 import okhttp3.Response;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-
 import org.elasticsearch.common.Strings;
-import org.junit.Assert;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.ExternalResource;
 import org.opennms.netmgt.endpoints.grafana.api.GrafanaEndpoint;
 import org.opennms.smoketest.containers.GrafanaContainer;
+import org.opennms.smoketest.grafana.endpoint.GrafanaTokenDTO;
+import org.opennms.smoketest.grafana.endpoint.ServiceAccountDTO;
 import org.opennms.smoketest.rest.GrafanaEndpointRestIT;
 import org.opennms.smoketest.ui.framework.Button;
 import org.opennms.smoketest.ui.framework.TextInput;
 import org.openqa.selenium.By;
-import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
@@ -72,8 +72,28 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
     private static final String USERNAME = "admin";
     private static final String PASSWORD = "admin";
     private static final String VIEWER= "Viewer";
-    private static GrafanaContainer grafanaContainer;
     private static final String GRAFANA_URL = " http://localhost";
+    private static Integer GRAFANA_MAPPED_PORT =0;
+    @ClassRule
+    public static final ExternalResource grafanaContainer = new ExternalResource() {
+        private GrafanaContainer container;
+
+        @Override
+        protected void before() throws Throwable {
+            // Initialize and start the Grafana container
+            container = new GrafanaContainer();
+            container.start();
+            GRAFANA_MAPPED_PORT= container.getMappedPort(3000);
+        }
+
+        @Override
+        protected void after() {
+            // Stop the container after tests
+            if (container != null) {
+               container.stop();
+            }
+        }
+       };
 
     @Before
     public void setUp() throws Exception {
@@ -84,10 +104,9 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
         uiPage.open();
         objectMapper = new ObjectMapper();
         client = new OkHttpClient();
-        grafanaContainer = new GrafanaContainer();
-        grafanaContainer.start();
-        String serviceAccount = createServiceAccount();
+        int serviceAccount = createServiceAccount();
         token = createToken(serviceAccount);
+
     }
 
     @Test
@@ -143,14 +162,14 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
         modal.cancel();
     }
 
-    public String createServiceAccount() {
+    public Integer createServiceAccount() {
 
         String credential = Credentials.basic(USERNAME, PASSWORD);
-        Integer port = grafanaContainer.getWebPort();
+
         String json = "{\"name\":\"" + "my-service-account" + "\",\"role\":\"" + VIEWER + "\"}";
         RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),json);
         Request request = new Request.Builder()
-                .url(GRAFANA_URL + ":" + port +"/api/serviceaccounts")
+                .url(GRAFANA_URL + ":" + GRAFANA_MAPPED_PORT +"/api/serviceaccounts")
                 .post(body)
                 .addHeader("Authorization", credential)
                 .addHeader("Content-Type", "application/json")
@@ -160,25 +179,24 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
             if (!response.isSuccessful()) {
                 LOG.info("Unexpected code " + response);
             }
-            JsonNode jsonNode = objectMapper.readTree(response.body().string());
-            return jsonNode.get("id").asText();
-
+            String responseBody = response.body().string();
+            ServiceAccountDTO dto = objectMapper.readValue(responseBody, ServiceAccountDTO.class);
+            return dto.getId();
         } catch (IOException e) {
             LOG.info("Exception" ,e);
         }
         return null;
     }
 
-    public String createToken(String serviceAccount) {
+    public String createToken(int serviceAccount) {
 
         String credential = Credentials.basic(USERNAME, PASSWORD);
-        Integer port = grafanaContainer.getWebPort();
         String json = "{\"name\":\"" + "my-service-account-token" +"\"}";
         RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),json);
         Request request = new Request.Builder()
-                .url(GRAFANA_URL + ":" + port +"/api/serviceaccounts/"+Integer.parseInt(serviceAccount)+"/tokens")
+                .url(GRAFANA_URL + ":" + GRAFANA_MAPPED_PORT +"/api/serviceaccounts/"+serviceAccount+"/tokens")
                 .post(body)
-                      .addHeader("Authorization", credential)
+                 .addHeader("Authorization", credential)
                 .addHeader("Content-Type", "application/json")
                 .build();
 
@@ -186,9 +204,10 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
             if (!response.isSuccessful()) {
                 LOG.info("Unexpected code " + response);
             }
+            String responseBody = response.body().string();
+            GrafanaTokenDTO dto = objectMapper.readValue(responseBody, GrafanaTokenDTO.class);
+            return dto.getKey();
 
-            JsonNode jsonNode = objectMapper.readTree(response.body().string());
-            return jsonNode.get("key").asText();
 
         } catch (IOException e) {
             LOG.info("Exception" ,e);
@@ -331,7 +350,7 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
         }
     }
 
-    private class UIGrafanaEndpoint extends org.opennms.netmgt.endpoints.grafana.api.GrafanaEndpoint {
+    private class UIGrafanaEndpoint extends GrafanaEndpoint {
 
     }
 
@@ -382,13 +401,11 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
     }
     public static GrafanaEndpoint createEndpointConnection() throws JsonProcessingException {
 
-        Integer port = grafanaContainer.getWebPort();
-
         final GrafanaEndpoint endpoint = new GrafanaEndpoint();
         endpoint.setId(200L);
         endpoint.setUid("7775ad83-4393-4803-9895-7d50dc292b4f");
         endpoint.setApiKey(token);
-        endpoint.setUrl("http://localhost" + ":" + port +"/");
+        endpoint.setUrl("http://localhost" + ":" + GRAFANA_MAPPED_PORT +"/");
         endpoint.setDescription("dummy description");
         endpoint.setReadTimeout(3000);
         endpoint.setConnectTimeout(3000);

@@ -47,7 +47,8 @@ public enum NetworkProtocol {
     TFTP(UDP),
     BMP(TCP),
     IPFIX_TCP(TCP),
-    GRPC(TCP);
+    GRPC(TCP),
+    GRAFANA(TCP);
 
     private final InternetProtocol ipProtocol;
 
