@@ -26,7 +26,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>33.0.9</version>
+  <version>33.0.10</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -1668,10 +1668,12 @@
     <mock.db.adminPassword/>
     <mock.runSnmpTests>false</mock.runSnmpTests>
     <mock.snmpHost>localhost</mock.snmpHost>
+    <product.name>horizon</product.name>
+    <docs.product.version>33</docs.product.version>
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>33.0.9</opennms.osgi.version>
+    <opennms.osgi.version>33.0.10</opennms.osgi.version>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
@@ -1774,10 +1776,11 @@
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.5</c3p0Version>
     <curatorVersion>5.6.0</curatorVersion>
-    <cxfVersion>3.5.9</cxfVersion>
+    <cxfVersion>3.6.2</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
-    <dnsjavaVersion>3.5.3_1</dnsjavaVersion>
+    <serviceMixDnsjavaVersion>3.5.3_1</serviceMixDnsjavaVersion>
+    <dnsjavaVersion>3.6.1</dnsjavaVersion>
     <dom4jVersion>2.1.4</dom4jVersion>
     <dropwizardMetricsVersion>4.2.10</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
@@ -1867,7 +1870,7 @@
     <jsonSmartVersion>2.5.0</jsonSmartVersion>
     <!-- generally tied with json-smart -->
     <accessorsSmartVersion>2.5.0</accessorsSmartVersion>
-    <jsoupVersion>1.7.2</jsoupVersion>
+    <jsoupVersion>1.15.3</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
     <junit4Version>4.13.2</junit4Version>
@@ -1918,6 +1921,8 @@
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>3.6.0</okioVersion>
+    <okhttp3Version>3.10.0</okhttp3Version>
+    <okioGrafanaVersion>1.14.0</okioGrafanaVersion>
     <openid4javaVersion>0.9.6</openid4javaVersion>
     <opennmsApiVersion>1.6.0</opennmsApiVersion>
     <opennmsApiVersionOsgi>1.6.0</opennmsApiVersionOsgi>

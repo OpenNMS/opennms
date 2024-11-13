@@ -126,7 +126,7 @@ describe('Nodes queryStringParser test', () => {
       ['invalid iplike', { iplike: 'abc'}, null],
       ['invalid iplike localhost', { iplike: 'localhost'}, null],
       ['invalid partial iplike', { iplike: '192.168.'}, null],
-      ['invalid iplike', { iplike: 'A.B.C.D'}, null],
+      ['invalid iplike', { iplike: 'A.B.C.D'}, null]
     ]) (
       'parseIpLike: %s',
       (title, queryObject, expected) => {

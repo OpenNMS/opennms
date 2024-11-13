@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.endpoints</groupId>
     <artifactId>org.opennms.features.endpoints.grafana</artifactId>
-    <version>33.0.9</version>
+    <version>33.0.10</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.endpoints.grafana</groupId>
@@ -55,12 +55,12 @@
     <dependency>
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>okhttp</artifactId>
-      <version>${okhttpVersion}</version>
+      <version>${okhttp3Version}</version>
     </dependency>
     <dependency>
       <groupId>com.squareup.okio</groupId>
       <artifactId>okio</artifactId>
-      <version>${okioVersion}</version>
+      <version>${okioGrafanaVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.jetbrains.kotlin</groupId>

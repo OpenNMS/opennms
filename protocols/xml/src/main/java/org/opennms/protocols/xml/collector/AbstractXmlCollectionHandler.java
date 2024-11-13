@@ -59,6 +59,7 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Entities.EscapeMode;
+import org.jsoup.parser.Parser;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.features.distributed.kvstore.api.BlobStore;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -540,7 +541,7 @@ public abstract class AbstractXmlCollectionHandler implements XmlCollectionHandl
             return is;
         }
         try {
-            org.jsoup.nodes.Document doc = Jsoup.parse(is, "ISO-8859-9", "/");
+            org.jsoup.nodes.Document doc = Jsoup.parse(is, "ISO-8859-9", "/", Parser.xmlParser());
             doc.outputSettings().escapeMode(EscapeMode.xhtml);
             return new ByteArrayInputStream(doc.outerHtml().getBytes());
         } finally {

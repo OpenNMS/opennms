@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>nrtg</artifactId>
-    <version>33.0.9</version>
+    <version>33.0.10</version>
   </parent>
   <groupId>org.opennms.features.nrtg</groupId>
   <artifactId>nrtg-commander</artifactId>

@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>33.0.9</version>
+  <version>33.0.10</version>
   <name>OpenNMS Smoke Test</name>
   <url>http://opennms.org/</url>
   <description>Smoke Test APIs for OpenNMS</description>
@@ -684,6 +684,10 @@
           <groupId>org.codehaus.groovy</groupId>
           <artifactId>groovy-all</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>org.opennms.dependencies</groupId>
+          <artifactId>cxf-dependencies</artifactId>
+        </exclusion>
       </exclusions>
       <scope>test</scope>
     </dependency>
@@ -844,7 +848,7 @@
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.2.13</version>
+      <version>1.4.8</version>
     </dependency>
     <dependency>
       <groupId>org.slf4j</groupId>
@@ -954,6 +958,10 @@
         <exclusion>
           <groupId>jaxen</groupId>
           <artifactId>*</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>org.opennms.dependencies</groupId>
+          <artifactId>cxf-dependencies</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
