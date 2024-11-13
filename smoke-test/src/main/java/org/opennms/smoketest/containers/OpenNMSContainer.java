@@ -366,10 +366,6 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         return getMappedPort(OPENNMS_WEB_PORT);
     }
 
-    public int getGrafanaPort() {
-        return getMappedPort(GRAFANA_PORT);
-    }
-
     public InetSocketAddress getWebAddress() {
         return InetSocketAddress.createUnresolved(getContainerIpAddress(), getMappedPort(OPENNMS_WEB_PORT));
     }
