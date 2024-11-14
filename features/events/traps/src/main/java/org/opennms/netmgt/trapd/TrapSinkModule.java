@@ -97,7 +97,6 @@ public class TrapSinkModule extends AbstractXmlSinkModule<TrapInformationWrapper
                 if (accumulator == null) { // no log created yet
                     accumulator = new TrapLogDTO(distPoller.getId(), distPoller.getLocation(), trapAddress);
                 }
-                accumulator.setShouldUseAddressFromVarbind(config.shouldUseAddressFromVarbind());
                 accumulator.addMessage(trapDTO);
                 return accumulator;
             }

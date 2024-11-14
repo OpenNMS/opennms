@@ -120,8 +120,8 @@ public class TrapSinkConsumer implements MessageConsumer<TrapInformationWrapper,
 						eachMessage,
 						messageLog.getSystemId(),
 						messageLog.getLocation(),
-						messageLog.getTrapAddress(),
-						messageLog.getShouldUseAddressFromVarbind());
+						messageLog.getTrapAddress()
+				);
 				if (!shouldDiscard(event)) {
 					if (event.getSnmp() != null) {
 						trapdInstrumentation.incTrapsReceivedCount(event.getSnmp().getVersion());
