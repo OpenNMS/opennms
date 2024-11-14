@@ -36,12 +36,15 @@ import com.google.common.collect.Maps;
  */
 public class LatencyCollectionResource implements CollectionResource {
 
+    public final static String INTERFACE_INFO_IN_TAGS = "interface-info-in-tags";
     private final String m_serviceName;
     private final String m_ipAddress;
     private final String m_location;
     private final Map<AttributeGroupType, AttributeGroup> m_attributeGroups = Maps.newLinkedHashMap();
 
     private final Map<String, String> m_tags = Maps.newHashMap();
+
+    private final Map<String, String> m_serviceParams = Maps.newHashMap();
 
     /**
      * <p>Constructor for LatencyCollectionResource.</p>
@@ -210,5 +213,14 @@ public class LatencyCollectionResource implements CollectionResource {
     @Override
     public Map<String, String> getTags() {
         return m_tags;
+    }
+
+    @Override
+    public Map<String, String> getServiceParams() {
+        return m_serviceParams;
+    }
+
+    public void addServiceParam(String name, String value) {
+        m_serviceParams.put(name, value);
     }
 }

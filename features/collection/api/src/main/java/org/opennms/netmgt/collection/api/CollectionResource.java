@@ -103,4 +103,9 @@ public interface CollectionResource extends ResourceIdentifier, CollectionVisita
         return new HashMap<>();
     }
 
+    // Can be used to forward service parameters to persistence layer
+    default Map<String, String> getServiceParams() {
+        return new HashMap<>();
+    }
+
 }
