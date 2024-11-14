@@ -54,13 +54,11 @@ class EventCreator {
         this.eventConfDao = Objects.requireNonNull(eventConfDao);
     }
 
-    public Event createEventFrom(final TrapDTO trapDTO, final String systemId, final String location, final InetAddress trapAddress,Boolean shouldUseAddressFromVarbind) {
+    public Event createEventFrom(final TrapDTO trapDTO, final String systemId, final String location, final InetAddress trapAddress) {
         LOG.debug("{} trap - trapInterface: {}", trapDTO.getVersion(), trapDTO.getAgentAddress());
 
         // Set event data
-        final InetAddress sourceTrapAddress = Optional.ofNullable(shouldUseAddressFromVarbind)
-                .filter(Boolean::booleanValue)
-                .map(useVarbind -> trapDTO.getTrapAddress())
+        final InetAddress sourceTrapAddress = Optional.ofNullable(trapDTO.getTrapAddress())
                 .orElse(trapAddress);
 
         final EventBuilder eventBuilder = new EventBuilder(null, "trapd");
