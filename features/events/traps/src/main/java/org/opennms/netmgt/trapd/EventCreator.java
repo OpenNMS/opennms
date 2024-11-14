@@ -91,7 +91,7 @@ class EventCreator {
         }
 
         // Resolve Node id and set, if known by OpenNMS
-        resolveNodeId(location, sourceTrapAddress)
+        resolveNodeId(location, sourceTrapAddress )
                 .ifPresent(eventBuilder::setNodeid);
 
         // If there was no systemId in the trap message, assume that
