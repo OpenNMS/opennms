@@ -1807,19 +1807,12 @@ jobs:
           command: |
             echo "previous: << pipeline.parameters.previous_branch >>, main: << pipeline.parameters.main_branch >>, next: << pipeline.parameters.next_branch >>"
       - when:
-          condition:
-            and:
-             - << pipeline.parameters.next_branch >>
-             - equal: [ "opennms", << pipeline.trigger_parameters.gitlab.repo_name >> ]
+          condition: << pipeline.parameters.next_branch >>
           steps:
             - cached-checkout-for-pushing
             - run:
                 name: Checkout target branch and merge from source
                 command: |
-                  if [ "$CIRCLE_PROJECT_REPONAME" == "opennms-omega" ]; then
-                   exit 0
-                  fi
-
                   export GIT_MERGE_AUTOEDIT=no
                   git fetch --all
                   git checkout << pipeline.parameters.next_branch >>
