@@ -278,7 +278,7 @@ commands:
             .circleci/scripts/smoke.sh << parameters.suite >>
       - run:
           name: Gather system logs
-          when: always
+          when: true
           command: |
             mkdir -p ~/test-results/system-logs
             (dmesg || :) > ~/test-results/system-logs/dmesg 2>&1
@@ -288,7 +288,7 @@ commands:
             ls -alh ~/project/smoke-test/ || :
       - run:
           name: Gather test artifacts
-          when: always
+          when: true
           command: |
             mkdir -p ~/test-results/junit
             find . -type f -name failsafe-summary.xml -exec rm -f {} \;
@@ -301,11 +301,11 @@ commands:
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
-          when: always
+          when: true
           path: ~/test-results
           destination: test-results
       - store_artifacts:
-          when: always
+          when: true
           path: ~/test-artifacts
           destination: test-artifacts
   run-build:
@@ -409,7 +409,7 @@ commands:
             .circleci/scripts/itest.sh
       - run:
           name: Gather test results
-          when: always
+          when: true
           command: |
             mkdir -p ~/test-results/junit
             find . -type f -name failsafe-summary.xml -exec rm -f {} \;
@@ -417,7 +417,7 @@ commands:
             find . -type f -regex ".*/target/[^/]*-reports[^/]*/.*dump.*" -exec cp {} ~/test-results/junit/ \; || :
       - run:
           name: Gather tests
-          when: always
+          when: true
           command: |
             mkdir -p ~/generated-tests
             cp ./surefire_classname* ~/generated-tests/ || :
@@ -428,7 +428,7 @@ commands:
           steps:
             - run:
                 name: Compress Target Directories (Code Coverage)
-                when: always
+                when: true
                 command: |
                   .circleci/scripts/codecoverage-save.sh
             - persist_to_workspace:
@@ -437,7 +437,7 @@ commands:
                   - code-coverage
       - run:
           name: Gather system logs
-          when: always
+          when: true
           command: |
             mkdir -p ~/build-results/system-logs
             (dmesg || :) > ~/build-results/system-logs/dmesg 2>&1
@@ -447,15 +447,15 @@ commands:
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
-          when: always
+          when: true
           path: ~/test-results
           destination: test-results
       - store_artifacts:
-          when: always
+          when: true
           path: ~/build-results
           destination: build-results
       - store_artifacts:
-          when: always
+          when: true
           path: ~/generated-tests
           destination: generated-tests
   cache-workflow-assets:
@@ -1305,15 +1305,15 @@ jobs:
             cp opennms-container/minion/minion-config-schema.yml "./target/config-schema/"
             cp opennms-full-assembly/target/generated-sources/license/THIRD-PARTY.txt ./target/artifacts/
       - store_artifacts:
-          when: always
+          when: true
           path: ~/project/target/artifacts
           destination: artifacts
       - store_artifacts:
-          when: always
+          when: true
           path: ~/project/target/config-schema
           destination: config-schema
       - store_artifacts:
-          when: always
+          when: true
           path: ~/project/target/tarballs
           destination: tarballs
       - store_artifacts:
@@ -1554,7 +1554,7 @@ jobs:
           packages: target/debs/*.deb
       - run:
           name: Gather system logs
-          when: always
+          when: true
           command: |
             mkdir -p ~/build-results/system-logs
             (dmesg || :) > ~/build-results/system-logs/dmesg 2>&1
@@ -1562,7 +1562,7 @@ jobs:
             (free -m || :) > ~/build-results/system-logs/free 2>&1
             (docker stats --no-stream || :) > ~/build-results/system-logs/docker_stats 2>&1
       - store_artifacts:
-          when: always
+          when: true
           path: ~/build-results
           destination: build-results
       - store_artifacts:
@@ -1694,12 +1694,12 @@ jobs:
       - restore-sonar-cache
       - run:
           name: Restore Target Directories (Code Coverage)
-          when: always
+          when: true
           command: |
             .circleci/scripts/codecoverage-restore.sh
       - run:
           name: Run SonarQube Code Analysis
-          when: always
+          when: true
           command: |
             export MAVEN_OPTS="-Xms3G -Xmx3G"
             .circleci/scripts/sonar.sh
@@ -1786,6 +1786,10 @@ jobs:
             - run:
                 name: Checkout target branch and merge from source
                 command: |
+                  if [ "$CIRCLE_PROJECT_REPONAME" != "opennms" ]; then
+                   exit 0
+                  fi
+
                   export GIT_MERGE_AUTOEDIT=no
                   if git rev-parse << pipeline.parameters.main_branch >> >/dev/null 2>&1; then
                     git checkout << pipeline.parameters.main_branch >>
@@ -1794,9 +1798,7 @@ jobs:
                   fi
                   git reset --hard omega/<< pipeline.parameters.main_branch >>
                   git merge origin/<< pipeline.parameters.main_branch >>
-            - run:
-                name: Push to Omega github
-                command: git push -f omega << pipeline.parameters.main_branch >>:<< pipeline.parameters.main_branch >>
+                  git push -f omega << pipeline.parameters.main_branch >>:<< pipeline.parameters.main_branch >>
   create-merge-foundation-branch:
     <<: *docker_container_config
     steps:
