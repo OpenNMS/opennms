@@ -339,7 +339,7 @@ commands:
             .circleci/scripts/smoke.sh << parameters.suite >>
       - run:
           name: Gather system logs
-          when: always
+          #when: always
           command: |
             mkdir -p ~/test-results/system-logs
             (dmesg || :) > ~/test-results/system-logs/dmesg 2>&1
@@ -362,11 +362,11 @@ commands:
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
-          when: always
+          #when: always
           path: ~/test-results
           destination: test-results
       - store_artifacts:
-          when: always
+          #when: always
           path: ~/test-artifacts
           destination: test-artifacts
   run-build:
@@ -470,7 +470,7 @@ commands:
             .circleci/scripts/itest.sh
       - run:
           name: Gather test results
-          when: always
+          #when: true
           command: |
             mkdir -p ~/test-results/junit
             find . -type f -name failsafe-summary.xml -exec rm -f {} \;
@@ -478,7 +478,7 @@ commands:
             find . -type f -regex ".*/target/[^/]*-reports[^/]*/.*dump.*" -exec cp {} ~/test-results/junit/ \; || :
       - run:
           name: Gather tests
-          when: always
+          #when: true
           command: |
             mkdir -p ~/generated-tests
             cp target/find-tests/* ~/generated-tests/ || :
@@ -488,7 +488,7 @@ commands:
           steps:
             - run:
                 name: Save Code Coverage Data
-                when: always
+                #when: always
                 command: |
                   .circleci/scripts/codecoverage-save.sh integration-test
             - persist_to_workspace:
@@ -499,7 +499,7 @@ commands:
                   - project/target/structure-graph.json
       - run:
           name: Gather system logs
-          when: always
+          #when: true
           command: |
             mkdir -p ~/build-results/system-logs
             (dmesg || :) > ~/build-results/system-logs/dmesg 2>&1
@@ -509,15 +509,15 @@ commands:
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
-          when: always
+          #when: true
           path: ~/test-results
           destination: test-results
       - store_artifacts:
-          when: always
+          #when: true
           path: ~/build-results
           destination: build-results
       - store_artifacts:
-          when: always
+          #when: true
           path: ~/generated-tests
           destination: generated-tests
   cache-workflow-assets:
@@ -650,12 +650,12 @@ workflows:
           filters:
             branches:
               only: << pipeline.parameters.main_branch >>
-      #- create-merge-foundation-omega-branch:
-      #    requires:
-      #      - build
-      #    filters:
-      #      branches:
-      #        only: << pipeline.parameters.main_branch >>
+      - create-merge-to-omega-branch:
+          requires:
+            - build
+          filters:
+            branches:
+              only: << pipeline.parameters.main_branch >>
       - merge-foundation-branch:
           requires:
             - build
@@ -1083,16 +1083,16 @@ workflows:
                     equal: [ true, << pipeline.parameters.is_pr >> ]
                 steps:
                   - jira/notify
-      #- create-merge-foundation-omega-branch:
-      #    context:
-      #      - "CircleCI"
-      #    # technically only requires the RPM/deb builds, but only publish
-      #    # if everything passes
-      #    requires:
-      #      - build
-      #    filters:
-      #      branches:
-      #        only: << pipeline.parameters.main_branch >>
+      - create-merge-to-omega-branch:
+          context:
+            - "CircleCI"
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - build
+          filters:
+            branches:
+              only: << pipeline.parameters.main_branch >>
       - create-merge-foundation-branch:
           context:
             - "CircleCI"
@@ -1405,15 +1405,15 @@ jobs:
             cp opennms-container/minion/minion-config-schema.yml "./target/config-schema/"
             cp opennms-full-assembly/target/generated-sources/license/THIRD-PARTY.txt ./target/artifacts/
       - store_artifacts:
-          when: always
+          #when: true
           path: ~/project/target/artifacts
           destination: artifacts
       - store_artifacts:
-          when: always
+          #when: true
           path: ~/project/target/config-schema
           destination: config-schema
       - store_artifacts:
-          when: always
+          #when: true
           path: ~/project/target/tarballs
           destination: tarballs
       - store_artifacts:
@@ -1652,7 +1652,7 @@ jobs:
           packages: target/debs/*.deb
       - run:
           name: Gather system logs
-          when: always
+          #when: true
           command: |
             mkdir -p ~/build-results/system-logs
             (dmesg || :) > ~/build-results/system-logs/dmesg 2>&1
@@ -1660,7 +1660,7 @@ jobs:
             (free -m || :) > ~/build-results/system-logs/free 2>&1
             (docker stats --no-stream || :) > ~/build-results/system-logs/docker_stats 2>&1
       - store_artifacts:
-          when: always
+          #when: true
           path: ~/build-results
           destination: build-results
       - store_artifacts:
@@ -1796,12 +1796,12 @@ jobs:
       - restore-sonar-cache
       - run:
           name: Restore Target Directories (Code Coverage)
-          when: always
+          #when: true
           command: |
             .circleci/scripts/codecoverage-restore.sh
       - run:
           name: Run SonarQube Code Analysis
-          when: always
+          #when: true
           command: |
             export MAVEN_OPTS="-Xms1g -Xmx12g"
             .circleci/scripts/sonar.sh
@@ -1854,7 +1854,7 @@ jobs:
           at: ~/
       - run-smoke-tests:
           suite: minimal
-  create-merge-foundation-omega-branch:
+  create-merge-to-omega-branch:
     <<: *docker_container_config
     steps:
       - run:
@@ -1888,6 +1888,9 @@ jobs:
             - run:
                 name: Checkout target branch and merge from source
                 command: |
+                  if [ "$CIRCLE_PROJECT_REPONAME" != "opennms" ]; then
+                   exit 0
+                  fi
                   export GIT_MERGE_AUTOEDIT=no
                   if git rev-parse << pipeline.parameters.main_branch >> >/dev/null 2>&1; then
                     git checkout << pipeline.parameters.main_branch >>
@@ -1896,9 +1899,7 @@ jobs:
                   fi
                   git reset --hard omega/<< pipeline.parameters.main_branch >>
                   git merge origin/<< pipeline.parameters.main_branch >>
-            - run:
-                name: Push to Omega github
-                command: git push -f omega << pipeline.parameters.main_branch >>:<< pipeline.parameters.main_branch >>
+                  git push -f omega << pipeline.parameters.main_branch >>:<< pipeline.parameters.main_branch >>
   create-merge-foundation-branch:
     <<: *docker_container_config
     steps:
