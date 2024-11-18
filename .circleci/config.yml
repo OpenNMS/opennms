@@ -1752,7 +1752,7 @@ jobs:
           at: ~/
       - run-smoke-tests:
           suite: minimal
-  create-merge-foundation-omega-branch:
+  create-merge-to-omega-branch:
     <<: *docker_container_config
     steps:
       - run:
