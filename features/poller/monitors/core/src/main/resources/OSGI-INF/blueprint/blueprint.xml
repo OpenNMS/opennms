@@ -334,6 +334,13 @@
 		</service-properties>
 	</service>
 
+	<bean id="ptpMonitor" class="org.opennms.netmgt.poller.monitors.PtpMonitor" />
+	<service ref="ptpMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
+		<service-properties>
+			<entry key="type" value="org.opennms.netmgt.poller.monitors.PtpMonitor" />
+		</service-properties>
+	</service>
+
 	<bean id="prTableMonitor" class="org.opennms.netmgt.poller.monitors.PrTableMonitor" />
 	<service ref="prTableMonitor" interface="org.opennms.netmgt.poller.ServiceMonitor">
 		<service-properties>
