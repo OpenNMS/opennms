@@ -29,19 +29,20 @@
 package org.opennms.netmgt.poller;
 
 
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import org.junit.Before;
+import org.junit.Test;
+
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
 
 
 public class EscapeSequenceAdapterTest {
 
     private EscapeSequenceAdapter adapter;
 
-    @BeforeEach
+    @Before
     public void setUp() {
         adapter = new EscapeSequenceAdapter();
     }
@@ -53,13 +54,13 @@ public class EscapeSequenceAdapterTest {
         String expected = "Hello\rWorld\nTest";
         String result = adapter.unmarshal(input);
         assertNotNull(result, "Result should not be null");
-        assertEquals(expected, result, "Escape sequences should be replaced correctly");
+        assertEquals("Escape sequences should be replaced correctly", expected, result);
     }
 
     @Test
     public void testUnmarshalWithNullValue() throws Exception {
         String result = adapter.unmarshal(null);
-        assertNull(result, "Null input should return null");
+     assertNull("Null input should return null", result);
     }
 
     @Test
@@ -67,14 +68,14 @@ public class EscapeSequenceAdapterTest {
         String input = "Hello\rWorld\nTest";
         String expected = "Hello&#xd;World&#xa;Test";
         String result = adapter.marshal(input);
-        assertNotNull(result, "Result should not be null");
-        assertEquals(expected, result, "Special characters should be converted to escape sequences");
+        assertNotNull(result,"Result should not be null");
+        assertEquals("Special characters should be converted to escape sequences",expected, result);
     }
 
     @Test
     public void testMarshalWithNullValue() throws Exception {
         String result = adapter.marshal(null);
-        assertNull(result, "Null input should return null");
+        assertNull("Null input should return null",result);
     }
 
     @Test
@@ -82,8 +83,8 @@ public class EscapeSequenceAdapterTest {
         String input = "NoEscapeSequenceHere";
         String expected = "NoEscapeSequenceHere";
         String result = adapter.unmarshal(input);
-        assertNotNull(result, "Result should not be null");
-        assertEquals(expected, result, "Input without escape sequences should remain unchanged");
+        assertNotNull( "Result should not be null",result);
+        assertEquals("Input without escape sequences should remain unchanged",expected, result);
     }
 
     @Test
@@ -91,8 +92,7 @@ public class EscapeSequenceAdapterTest {
         String input = "NormalString";
         String expected = "NormalString";
         String result = adapter.marshal(input);
-        assertNotNull(result, "Result should not be null");
-        assertEquals(expected, result, "Input without special characters should remain unchanged");
+        assertNotNull( "Result should not be null",result);
+        assertEquals( "Input without special characters should remain unchanged",expected, result);
     }
-
 }
