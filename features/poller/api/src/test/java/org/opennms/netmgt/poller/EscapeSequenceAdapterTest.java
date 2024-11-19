@@ -29,7 +29,6 @@
 package org.opennms.netmgt.poller;
 
 
-
 import org.junit.Before;
 import org.junit.Test;
 
@@ -49,7 +48,6 @@ public class EscapeSequenceAdapterTest {
 
     @Test
     public void testUnmarshalWithEscapeSequences() throws Exception {
-
         String input = "Hello&#xd;World&#xa;Test";
         String expected = "Hello\rWorld\nTest";
         String result = adapter.unmarshal(input);
@@ -71,7 +69,6 @@ public class EscapeSequenceAdapterTest {
         assertNotNull(result,"Result should not be null");
         assertEquals("Special characters should be converted to escape sequences",expected, result);
     }
-
     @Test
     public void testMarshalWithNullValue() throws Exception {
         String result = adapter.marshal(null);
