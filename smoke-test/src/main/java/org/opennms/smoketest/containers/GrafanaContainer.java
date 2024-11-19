@@ -19,44 +19,30 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.smoketest.stacks;
+package org.opennms.smoketest.containers;
 
-import static org.opennms.smoketest.stacks.InternetProtocol.UDP;
-import static org.opennms.smoketest.stacks.InternetProtocol.TCP;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.Network;
+import org.testcontainers.lifecycle.TestLifecycleAware;
 
-import java.util.Objects;
 
 /**
- * Network protocols used by our services.
+ * This class encapsulates all the logic required to start an
+ * Grafana container and interface with the services
+ * it provides.
  *
- * This includes both ports for management and communication from devices.
- *
+ * @author musaidali
  */
-public enum NetworkProtocol {
-    SSH(TCP),
-    HTTP(TCP),
+public class GrafanaContainer extends GenericContainer<GrafanaContainer> implements TestLifecycleAware  {
 
-    // Java Debug Wire Protocol
-    JDWP(TCP),
+    public static final int WEB_PORT = 3000;
+    public static final String GRAFANA_ALIAS = "grafana";
+    public GrafanaContainer() {
+        super("grafana/grafana:11.3.0");
+            withEnv("GF_SECURITY_ADMIN_PASSWORD", "admin")
+                .withNetwork(Network.SHARED)
+                    .withExposedPorts(WEB_PORT);
 
-    SYSLOG(UDP),
-    SNMP(UDP),
-    JTI(UDP),
-    NXOS(UDP),
-    FLOWS(UDP),
-    TFTP(UDP),
-    BMP(TCP),
-    IPFIX_TCP(TCP),
-    GRPC(TCP),
-    GRAFANA(TCP);
 
-    private final InternetProtocol ipProtocol;
-
-    NetworkProtocol(InternetProtocol ipProtocol) {
-        this.ipProtocol = Objects.requireNonNull(ipProtocol);
-    }
-
-    public InternetProtocol getIpProtocol() {
-        return ipProtocol;
     }
 }
