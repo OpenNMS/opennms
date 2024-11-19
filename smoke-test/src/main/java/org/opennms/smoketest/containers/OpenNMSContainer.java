@@ -111,6 +111,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
     private static final int OPENNMS_GRPC_PORT = 8990;
     private static final int OPENNMS_BMP_PORT = 11019;
     private static final int OPENNMS_TFTP_PORT = 6969;
+    private static final int GRAFANA_PORT =3000;
 
     private static final boolean COLLECT_COVERAGE = "true".equals(System.getProperty("coverage", "false"));
 
@@ -127,6 +128,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
             .put(NetworkProtocol.GRPC, OPENNMS_GRPC_PORT)
             .put(NetworkProtocol.BMP, OPENNMS_BMP_PORT)
             .put(NetworkProtocol.TFTP, OPENNMS_TFTP_PORT)
+            .put(NetworkProtocol.GRAFANA,GRAFANA_PORT)
             .build();
 
     private final StackModel model;
