@@ -32,6 +32,7 @@ import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 @XmlRootElement(name="device-config")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -44,6 +45,7 @@ public class DeviceConfig {
     private String filename;
 
     @XmlAttribute(name="scriptOutput")
+    @XmlJavaTypeAdapter(EscapeSequenceAdapter.class)
     private String scriptOutput;
 
     public DeviceConfig(String scriptOutput) {
