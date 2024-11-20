@@ -412,13 +412,8 @@ public class TopologyIT extends OpenNMSSeleniumIT {
             testCase.getDriver().get(topologyUiUrl);
             // Wait for the "View" menu to be clickable and the loading indicator to be gone before
             // returning control to the test in order to make sure that the page is fully loaded
-         //   testCase.wait.until(ExpectedConditions.elementToBeClickable(getCriteriaForMenubarElement("View")));
-         //   testCase.wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("v-loading-indicator")));
-            try {
-                Thread.sleep(5000);
-            }catch (InterruptedException e) {
-
-            }
+           // testCase.wait.until(ExpectedConditions.elementToBeClickable(getCriteriaForMenubarElement("View")));
+            testCase.wait.until(ExpectedConditions.invisibilityOfElementLocated(By.className("v-loading-indicator")));
             return this;
         }
  
