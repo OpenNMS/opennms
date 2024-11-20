@@ -657,7 +657,7 @@ public class TopologyIT extends OpenNMSSeleniumIT {
         }
 
         private By getCriteriaForMenubarElement(String itemName) {
-            return By.xpath("//span[@class='v-menubar-menuitem-caption' and text()='" + itemName + "']/parent::*");
+            return By.xpath("//span[@class='v-menubar-menuitem-caption' and text()='" + itemName + "']");
         }
 
         private WebElement getShowEntireMapElement() {
