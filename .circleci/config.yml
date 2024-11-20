@@ -662,21 +662,21 @@ workflows:
           filters:
             branches:
               only: merge-foundation/<< pipeline.parameters.previous_branch_label >>-to-<< pipeline.parameters.main_branch_label >>
-      - create-merge-meridian-branch:
-          requires:
-            - build
-          filters:
-            branches:
-              only: /^foundation.*/
-      - merge-poweredby-branch:
-          # technically only requires the RPM/deb builds, but only publish
-          # if everything passes
-          requires:
-            - build
-          filters:
-            branches:
-              only:
-                - /^foundation.*/
+      #- create-merge-meridian-branch:
+      #    requires:
+      #      - build
+      #    filters:
+      #      branches:
+      #        only: /^foundation.*/
+      #- merge-poweredby-branch:
+      #    # technically only requires the RPM/deb builds, but only publish
+      #    # if everything passes
+      #    requires:
+      #      - build
+      #    filters:
+      #      branches:
+      #        only:
+      #          - /^foundation.*/
   docs:
     when:
       and:
@@ -1118,64 +1118,64 @@ workflows:
           filters:
             branches:
               only: merge-foundation/<< pipeline.parameters.previous_branch_label >>-to-<< pipeline.parameters.main_branch_label >>
-      - create-merge-meridian-branch:
-          # technically only requires the RPM/deb builds, but only publish
-          # if everything passes
-          requires:
-            - horizon-deb-build
-            - minion-deb-build
-            - sentinel-deb-build
-            - integration-test
-            - code-coverage
-            - smoke-test-core
-            - smoke-test-minion
-            - smoke-test-sentinel
-          filters:
-            branches:
-              only: /^foundation.*/
-      - merge-poweredby-branch:
-          # technically only requires the RPM/deb builds, but only publish
-          # if everything passes
-          requires:
-            - horizon-deb-build
-            - smoke-test-core
-            - smoke-test-minion
-            - smoke-test-sentinel
-            - integration-test
-            - code-coverage
-          filters:
-            branches:
-              only:
-                - /^foundation.*/
-      - publish-cloudsmith:
-          context:
-            - "CircleCI"
-            - "cloudsmith-publish-account"
-          # technically only requires the RPM/deb builds, but only publish
-          # if everything passes
-          requires:
-            - horizon-deb-build
-            - minion-deb-build
-            - sentinel-deb-build
-            - integration-test
-            - code-coverage
-            - smoke-test-core
-            - smoke-test-minion
-            - smoke-test-sentinel
-          filters:
-            branches:
-              only:
-                - develop
-                - /^master-.*/
-                - /^release-.*/
-                - /^foundation.*/
-          post-steps:
-            - when:
-                condition:
-                  not:
-                    equal: [ true, << pipeline.parameters.is_pr >> ]
-                steps:
-                  - jira/notify
+      #- create-merge-meridian-branch:
+      #    # technically only requires the RPM/deb builds, but only publish
+      #    # if everything passes
+      #    requires:
+      #      - horizon-deb-build
+      #      - minion-deb-build
+      #      - sentinel-deb-build
+      #      - integration-test
+      #      - code-coverage
+      #      - smoke-test-core
+      #      - smoke-test-minion
+      #      - smoke-test-sentinel
+      #    filters:
+      #      branches:
+      #        only: /^foundation.*/
+      #- merge-poweredby-branch:
+      #    # technically only requires the RPM/deb builds, but only publish
+      #    # if everything passes
+      #    requires:
+      #      - horizon-deb-build
+      #      - smoke-test-core
+      #      - smoke-test-minion
+      #      - smoke-test-sentinel
+      #      - integration-test
+      #      - code-coverage
+      #    filters:
+      #      branches:
+      #        only:
+      #          - /^foundation.*/
+      #- publish-cloudsmith:
+      #    context:
+      #      - "CircleCI"
+      #      - "cloudsmith-publish-account"
+      #    # technically only requires the RPM/deb builds, but only publish
+      #    # if everything passes
+      #    requires:
+      #      - horizon-deb-build
+      #      - minion-deb-build
+      #      - sentinel-deb-build
+      #      - integration-test
+      #      - code-coverage
+      #      - smoke-test-core
+      #      - smoke-test-minion
+      #      - smoke-test-sentinel
+      #    filters:
+      #      branches:
+      #        only:
+      #          - develop
+      #          - /^master-.*/
+      #          - /^release-.*/
+      #          - /^foundation.*/
+      #    post-steps:
+      #      - when:
+      #          condition:
+      #            not:
+      #              equal: [ true, << pipeline.parameters.is_pr >> ]
+      #          steps:
+      #            - jira/notify
 
 jobs:
   trigger-path-filtering:
