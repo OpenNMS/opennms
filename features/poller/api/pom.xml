@@ -51,5 +51,18 @@
       <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
+
+    <dependency>
+      <groupId>org.eclipse.persistence</groupId>
+      <artifactId>org.eclipse.persistence.core</artifactId>
+      <version>${eclipselinkVersion}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.persistence</groupId>
+      <artifactId>org.eclipse.persistence.moxy</artifactId>
+      <version>${eclipselinkVersion}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>
