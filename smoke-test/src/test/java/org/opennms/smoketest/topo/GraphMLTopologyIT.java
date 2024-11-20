@@ -296,9 +296,8 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
         Assert.assertEquals(1, topologyUIPage.getFocusedVertices().size());
     }
 
-
     @Test
-    //@Ignore("Started to fail after we added pluginRepository to override the jasper-third-party url in opennms-base-assembly pom file ; see NMS-16460")
+    @Ignore("Started to fail after we added pluginRepository to override the jasper-third-party url in opennms-base-assembly pom file ; see NMS-16460")
     public void verifyCanSetLayerViaUrlParameter() {
         adminPage(); // leave topology page to ensure the link actually works
         final String namespace = "acme:markets";
