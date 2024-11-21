@@ -50,20 +50,14 @@ This monitor implements the <<reference:service-assurance/introduction.adoc#ref-
 
 == Examples
 
-Example uses CentOS/RHEL path name.
-For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
-
 Note that you must include the `monitor` section for each service in your definition.
 
 [source, xml]
 ----
  <service name="PTP" interval="300000" user-defined="false" status="on">
-     <pattern><![CDATA[^PTP-(?<clockPort>.*)-(?<portState>.*)$]]></pattern>
-     <parameter key="clock-port" value="${pattern:clockPort|requisition:ptp:clockPort|default}" />
-     <parameter key="port-state" value="${pattern:portState|requisition:ptp:portState|default}" />
-  </service>
+   <parameter key="clock-port" value="${requisition:ptp:clockPort|default}" />
+   <parameter key="port-state" value="${requisition:ptp:portState|default}" />
+ </service>
 
-  <monitor service="PTP" class-name="org.opennms.netmgt.poller.monitors.PtpMonitor" />
+ <monitor service="PTP" class-name="org.opennms.netmgt.poller.monitors.PtpMonitor" />
 ----
-
-The pattern scheme also allows a user to just associate a service name like `PTP-Ethernet2-slave` to define the clock-port `Ethernet2` and desired port-state `slave`.
