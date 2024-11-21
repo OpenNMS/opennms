@@ -42,21 +42,19 @@ commands:
           command: |
             curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /tmp/bin
       - run:
-          name: Download Trivy DB
-          command: |
-            mkdir -p /tmp/trivy-db
-            /tmp/bin/trivy --cache-dir /tmp/trivy-db image --download-db-only
-      - run:
           name: Scan the local image with trivy
           command: |
             docker image load -i ~/project/opennms-container/*/images/*.oci
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"
-            /tmp/bin/trivy --cache-dir /tmp/trivy-db image --severity HIGH,CRITICAL --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/filtered_vulnerabilities.json --no-progress opennms/${TAG}
-            /tmp/bin/trivy --cache-dir /tmp/trivy-db image --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/report.json --no-progress opennms/${TAG}
+            /tmp/bin/trivy image --severity HIGH,CRITICAL --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/filtered_vulnerabilities.json --no-progress opennms/${TAG}
+            /tmp/bin/trivy image --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/report.json --no-progress opennms/${TAG}
       - store_artifacts:
           path: /tmp/report.json
           destination: report.json
+      - store_artifacts:
+          path: /tmp/filtered_vulnerabilities.json
+          destination: filtered_vulnerabilities.json
       # - store_artifacts:
       #     path: /tmp/report.txt
       #     destination: report.txt
