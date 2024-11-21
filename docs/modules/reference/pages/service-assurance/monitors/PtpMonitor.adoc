@@ -1,0 +1,69 @@
+
+= PtpMonitor
+:description: Learn how to configure and use the PtpMonitor in OpenNMS {page-component-title} to monitor the correct PTP port state for an interface.
+
+The Precision Time Protocol allows the precise synchronization of clocks in measurement and control systems implemented with packet-based networks.
+THE PRP monitor allows you to test the port state of SNMP-enabled interfaces using the https://www.rfc-editor.org/info/rfc8173[PTP MIB defined in RFC 8173].
+During the poll, it queries the device for the available clock-ports and their states and compares with a given expected state.
+If the state equals the desired state the service is considered up and down otherwise.
+The following states are available:
+
+ - initializing
+ - faulty
+ - disabled
+ - listening
+ - preMaster
+ - master
+ - passive
+ - uncalibrated
+ - slave
+
+== Monitor facts
+
+[cols="1,7"]
+|===
+| Class Name
+| `org.opennms.netmgt.poller.monitors.PtpMonitor`
+|===
+
+== Configuration and Use
+
+.Optional monitor-specific parameters for the PtpMonitor
+[options="header"]
+[cols="1,3,2"]
+|===
+| Parameter
+| Description
+| Default
+
+| clock-port
+| Name of the interface that must be in the specified state.
+| n/a
+
+| port-state
+| The desired state that the port must be in.
+| n/a
+
+|===
+
+This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
+
+== Examples
+
+Example uses CentOS/RHEL path name.
+For Debian/Ubuntu, use `/var/lib/opennms/rrd/response`.
+
+Note that you must include the `monitor` section for each service in your definition.
+
+[source, xml]
+----
+ <service name="PTP" interval="300000" user-defined="false" status="on">
+     <pattern><![CDATA[^PTP-(?<clockPort>.*)-(?<portState>.*)$]]></pattern>
+     <parameter key="clock-port" value="${pattern:clockPort|requisition:ptp:clockPort|default}" />
+     <parameter key="port-state" value="${pattern:portState|requisition:ptp:portState|default}" />
+  </service>
+
+  <monitor service="PTP" class-name="org.opennms.netmgt.poller.monitors.PtpMonitor" />
+----
+
+The pattern scheme also allows a user to just associate a service name like `PTP-Ethernet2-slave` to define the clock-port `Ethernet2` and desired port-state `slave`.
