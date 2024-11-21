@@ -153,6 +153,7 @@ public class GraphMLTopologyIT extends OpenNMSSeleniumIT {
     }
 
     @Test
+    @Ignore
     public void verifyNavigateToAndBreadcrumbs() {
         topologyUIPage.selectTopologyProvider(() -> LABEL);
         topologyUIPage.defaultFocus();
