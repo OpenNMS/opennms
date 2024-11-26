@@ -39,6 +39,7 @@ import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.api.LatencyCollectionResource;
+import org.opennms.netmgt.collection.support.builder.LatencyTypeResource;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -102,8 +103,13 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
                         resource.getServiceParams().containsKey(INTERFACE_INFO_IN_TAGS) &&
                         Boolean.parseBoolean(resource.getServiceParams().get(INTERFACE_INFO_IN_TAGS))) {
                     try {
-                        String ipAddress = ((LatencyCollectionResource) resource).getIpAddress();
-                        scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), ipAddress));
+                        if (resource instanceof LatencyCollectionResource) {
+                            String ipAddress = ((LatencyCollectionResource) resource).getIpAddress();
+                            scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), ipAddress));
+                        } else if (resource instanceof LatencyTypeResource) {
+                            String ipAddress = ((LatencyTypeResource) resource).getIpAddress();
+                            scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), ipAddress));
+                        }
                     } catch (ClassCastException e) {
                         // Should never happen.
                         LOG.error("Exception while casting resource {} to latency resource", resource);

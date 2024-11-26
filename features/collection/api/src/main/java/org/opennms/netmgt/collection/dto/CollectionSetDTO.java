@@ -21,15 +21,8 @@
  */
 package org.opennms.netmgt.collection.dto;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.OptionalLong;
-import java.util.Set;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -147,8 +140,8 @@ public class CollectionSetDTO implements CollectionSet {
         for (CollectionResourceDTO entry : this.collectionResources) {
             final Resource resource = entry.getResource();
             final AbstractCollectionResource collectionResource = CollectionSetBuilder.toCollectionResource(resource, agent);
-            resource.getTags().forEach(collectionResource::addTag);
-            resource.getServiceParams().forEach(collectionResource::addServiceParam);
+            Optional.ofNullable(resource).ifPresent(res -> resource.getTags().forEach(collectionResource::addTag));
+            Optional.ofNullable(resource).ifPresent(res -> resource.getServiceParams().forEach(collectionResource::addServiceParam));
             for (Attribute<?> attribute : entry.getAttributes()) {
                 final AttributeGroupType groupType = new AttributeGroupType(attribute.getGroup(), AttributeGroupType.IF_TYPE_ALL);
                 final AbstractCollectionAttributeType attributeType = new AbstractCollectionAttributeType(groupType) {

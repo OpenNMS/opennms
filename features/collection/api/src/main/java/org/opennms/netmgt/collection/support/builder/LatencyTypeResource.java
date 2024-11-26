@@ -105,6 +105,10 @@ public class LatencyTypeResource extends AbstractResource {
                 .toString();
     }
 
+    public String getIpAddress() {
+        return ipAddress;
+    }
+
     @Override
     public Map<String, String> getTags() {
         return tags;
