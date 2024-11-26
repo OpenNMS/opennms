@@ -147,6 +147,8 @@ public class CollectionSetDTO implements CollectionSet {
         for (CollectionResourceDTO entry : this.collectionResources) {
             final Resource resource = entry.getResource();
             final AbstractCollectionResource collectionResource = CollectionSetBuilder.toCollectionResource(resource, agent);
+            resource.getTags().forEach(collectionResource::addTag);
+            resource.getServiceParams().forEach(collectionResource::addServiceParam);
             for (Attribute<?> attribute : entry.getAttributes()) {
                 final AttributeGroupType groupType = new AttributeGroupType(attribute.getGroup(), AttributeGroupType.IF_TYPE_ALL);
                 final AbstractCollectionAttributeType attributeType = new AbstractCollectionAttributeType(groupType) {

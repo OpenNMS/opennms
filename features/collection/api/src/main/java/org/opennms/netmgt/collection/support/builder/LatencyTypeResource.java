@@ -23,6 +23,8 @@ package org.opennms.netmgt.collection.support.builder;
 
 import static org.opennms.netmgt.collection.api.CollectionResource.RESOURCE_TYPE_LATENCY;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Objects;
 
 import org.opennms.core.utils.LocationUtils;
@@ -36,6 +38,8 @@ public class LatencyTypeResource extends AbstractResource {
     private final String serviceName;
     private final String ipAddress;
     private final String location;
+    private final Map<String, String> tags = new HashMap<>();
+    private final Map<String, String> serviceParams = new HashMap<>();
 
     public LatencyTypeResource(String serviceName, String ipAddress, String location) {
         this.serviceName = serviceName;
@@ -99,5 +103,24 @@ public class LatencyTypeResource extends AbstractResource {
                 .add("ipAddress", ipAddress)
                 .add("location", location)
                 .toString();
+    }
+
+    @Override
+    public Map<String, String> getTags() {
+        return tags;
+    }
+
+    public void addTag(String name, String value) {
+        this.tags.put(name, value);
+    }
+
+    @Override
+    public Map<String, String> getServiceParams() {
+        return serviceParams;
+    }
+
+
+    public void addServiceParam(String name, String value) {
+        this.serviceParams.put(name, value);
     }
 }

@@ -42,6 +42,8 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
 import org.opennms.netmgt.rrd.RrdRepository;
 
+import static org.opennms.netmgt.collection.api.LatencyCollectionResource.INTERFACE_INFO_IN_TAGS;
+
 public class StatusStoringServiceMonitorAdaptor implements ServiceMonitorAdaptor {
     public static final int HEARTBEAT_STEP_MULTIPLIER = 2;
 
@@ -79,6 +81,7 @@ public class StatusStoringServiceMonitorAdaptor implements ServiceMonitorAdaptor
 
         final String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", svc.getSvcName().toLowerCase());
         final String rrdBaseName = ParameterMap.getKeyedString(parameters, "rrd-base-name", dsName);
+        Boolean snmpInfoInTags = ParameterMap.getKeyedBoolean(parameters, INTERFACE_INFO_IN_TAGS, false);
 
         // Build collection agent
         final CollectionAgentDTO agent = new CollectionAgentDTO();
@@ -92,6 +95,12 @@ public class StatusStoringServiceMonitorAdaptor implements ServiceMonitorAdaptor
         // Create collection set from response times as gauges and persist
         final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(agent);
         final LatencyTypeResource resource = new LatencyTypeResource(svc.getSvcName(), svc.getIpAddr(), svc.getNodeLocation());
+        resource.addTag("node_id", Integer.toString(svc.getNodeId()));
+        resource.addTag("node_label", svc.getNodeLabel());
+        resource.addTag("location", svc.getNodeLocation());
+        if (snmpInfoInTags) {
+            resource.addServiceParam(INTERFACE_INFO_IN_TAGS, "true");
+        }
         collectionSetBuilder.withGauge(resource, rrdBaseName, dsName, buildPollStatusValue(status));
 
         final CollectionSetDTO collectionSetDTO = collectionSetBuilder.build();
