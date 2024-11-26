@@ -28,6 +28,7 @@ import java.util.Objects;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -65,6 +66,11 @@ public class TrapDTO implements Message {
 	@XmlElementWrapper(name = "results")
 	@XmlElement(name = "result")
 	private List<SnmpResult> results = new ArrayList<>();
+
+	@XmlAttribute(name = "trap-address")
+	@XmlJavaTypeAdapter(InetAddressXmlAdapter.class)
+	private InetAddress trapAddress;
+
 
 	// No-arg constructor for JAXB
 	public TrapDTO() {
@@ -162,6 +168,14 @@ public class TrapDTO implements Message {
 
 	public void setRawMessage(byte[] rawMessage) {
 		this.rawMessage = rawMessage;
+	}
+
+	public InetAddress getTrapAddress() {
+		return trapAddress;
+	}
+
+	public void setTrapAddress(InetAddress trapAddress) {
+		this.trapAddress = trapAddress;
 	}
 
 	@Override
