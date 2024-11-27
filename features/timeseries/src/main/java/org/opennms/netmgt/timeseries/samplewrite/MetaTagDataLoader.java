@@ -52,7 +52,8 @@ import com.google.common.base.Strings;
 import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Maps;
 
-import static org.opennms.netmgt.collection.api.LatencyCollectionResource.INTERFACE_INFO_IN_TAGS;
+import static org.opennms.netmgt.collection.api.CollectionResource.INTERFACE_INFO_IN_TAGS;
+
 
 /** Loads meta data from OpenNMS, to be exposed to the TimeseriesStorage. This data is not relevant for the operation of
  * OpenNMS but can be used to enrich the data in the timeseries database to be used externally. */
@@ -102,17 +103,12 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
                 if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_LATENCY) &&
                         resource.getServiceParams().containsKey(INTERFACE_INFO_IN_TAGS) &&
                         Boolean.parseBoolean(resource.getServiceParams().get(INTERFACE_INFO_IN_TAGS))) {
-                    try {
-                        if (resource instanceof LatencyCollectionResource) {
-                            String ipAddress = ((LatencyCollectionResource) resource).getIpAddress();
-                            scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), ipAddress));
-                        } else if (resource instanceof LatencyTypeResource) {
-                            String ipAddress = ((LatencyTypeResource) resource).getIpAddress();
-                            scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), ipAddress));
-                        }
-                    } catch (ClassCastException e) {
-                        // Should never happen.
-                        LOG.error("Exception while casting resource {} to latency resource", resource);
+                    if (resource instanceof LatencyCollectionResource) {
+                        String ipAddress = ((LatencyCollectionResource) resource).getIpAddress();
+                        scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), ipAddress));
+                    } else if (resource instanceof LatencyTypeResource) {
+                        String ipAddress = ((LatencyTypeResource) resource).getIpAddress();
+                        scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), ipAddress));
                     }
                 }
                 // We cannot retrieve service meta-data - resource time resources contain the IP address and service name, but not the node

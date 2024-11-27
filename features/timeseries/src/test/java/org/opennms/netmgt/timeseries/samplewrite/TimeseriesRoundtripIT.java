@@ -251,7 +251,7 @@ public class TimeseriesRoundtripIT {
         resourceTags.put("node_label", nodeLabel);
         resourceTags.put("node_id", "1");
         var parameterMap = new HashMap<String, String>();
-        parameterMap.put(LatencyCollectionResource.INTERFACE_INFO_IN_TAGS, "true");
+        parameterMap.put(CollectionResource.INTERFACE_INFO_IN_TAGS, "true");
         when(collectionResource.getTags()).thenReturn(resourceTags);
         when(collectionResource.getServiceParams()).thenReturn(parameterMap);
         when(collectionResource.getInterfaceLabel()).thenReturn(resourceLabel);

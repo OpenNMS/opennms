@@ -36,7 +36,6 @@ import com.google.common.collect.Maps;
  */
 public class LatencyCollectionResource implements CollectionResource {
 
-    public final static String INTERFACE_INFO_IN_TAGS = "interface-info-in-tags";
     private final String m_serviceName;
     private final String m_ipAddress;
     private final String m_location;

@@ -50,7 +50,8 @@ import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static org.opennms.netmgt.collection.api.LatencyCollectionResource.INTERFACE_INFO_IN_TAGS;
+import static org.opennms.netmgt.collection.api.CollectionResource.INTERFACE_INFO_IN_TAGS;
+
 
 /**
  * <p>LatencyStoringServiceMonitorAdaptor class.</p>

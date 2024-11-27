@@ -42,7 +42,8 @@ import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
 import org.opennms.netmgt.rrd.RrdRepository;
 
-import static org.opennms.netmgt.collection.api.LatencyCollectionResource.INTERFACE_INFO_IN_TAGS;
+import static org.opennms.netmgt.collection.api.CollectionResource.INTERFACE_INFO_IN_TAGS;
+
 
 public class StatusStoringServiceMonitorAdaptor implements ServiceMonitorAdaptor {
     public static final int HEARTBEAT_STEP_MULTIPLIER = 2;
