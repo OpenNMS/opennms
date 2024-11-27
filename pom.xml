@@ -1665,7 +1665,7 @@
     <esapiVersion>2.3.0.0</esapiVersion>
     <felixBridgeVersion>4.0.12</felixBridgeVersion>
     <felixProxyVersion>3.0.6</felixProxyVersion>
-    <fopVersion>2.9</fopVersion>
+    <fopVersion>2.10</fopVersion>
     <freemarkerVersion>2.3.32</freemarkerVersion>
     <fstVersion>2.57</fstVersion>
     <!-- this has to match FST's direct dependency because we specify it in karaf features -->
