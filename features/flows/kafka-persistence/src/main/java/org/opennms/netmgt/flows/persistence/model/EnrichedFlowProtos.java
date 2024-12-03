@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2024 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,7 +25,6 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.netmgt.flows.persistence.model;
 
 public final class EnrichedFlowProtos {
@@ -57,7 +56,7 @@ public final class EnrichedFlowProtos {
   private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
-    java.lang.String[] descriptorData = {
+    String[] descriptorData = {
       "\n\022flowdocument.proto\032\036google/protobuf/wr" +
       "appers.proto\"[\n\010NodeInfo\022\026\n\016foreign_sour" +
       "ce\030\001 \001(\t\022\022\n\nforegin_id\030\002 \001(\t\022\017\n\007node_id\030" +
@@ -131,13 +130,13 @@ public final class EnrichedFlowProtos {
     internal_static_NodeInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_NodeInfo_descriptor,
-        new java.lang.String[] { "ForeignSource", "ForeginId", "NodeId", "Categories", });
+        new String[] { "ForeignSource", "ForeginId", "NodeId", "Categories", });
     internal_static_FlowDocument_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_FlowDocument_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_FlowDocument_descriptor,
-        new java.lang.String[] { "Timestamp", "NumBytes", "Direction", "DstAddress", "DstHostname", "DstAs", "DstMaskLen", "DstPort", "EngineId", "EngineType", "DeltaSwitched", "FirstSwitched", "LastSwitched", "NumFlowRecords", "NumPackets", "FlowSeqNum", "InputSnmpIfindex", "OutputSnmpIfindex", "IpProtocolVersion", "NextHopAddress", "NextHopHostname", "Protocol", "SamplingAlgorithm", "SamplingInterval", "SrcAddress", "SrcHostname", "SrcAs", "SrcMaskLen", "SrcPort", "TcpFlags", "Tos", "NetflowVersion", "Vlan", "SrcNode", "ExporterNode", "DestNode", "Application", "Host", "Location", "SrcLocality", "DstLocality", "FlowLocality", "ClockCorrection", "Dscp", "Ecn", });
+        new String[] { "Timestamp", "NumBytes", "Direction", "DstAddress", "DstHostname", "DstAs", "DstMaskLen", "DstPort", "EngineId", "EngineType", "DeltaSwitched", "FirstSwitched", "LastSwitched", "NumFlowRecords", "NumPackets", "FlowSeqNum", "InputSnmpIfindex", "OutputSnmpIfindex", "IpProtocolVersion", "NextHopAddress", "NextHopHostname", "Protocol", "SamplingAlgorithm", "SamplingInterval", "SrcAddress", "SrcHostname", "SrcAs", "SrcMaskLen", "SrcPort", "TcpFlags", "Tos", "NetflowVersion", "Vlan", "SrcNode", "ExporterNode", "DestNode", "Application", "Host", "Location", "SrcLocality", "DstLocality", "FlowLocality", "ClockCorrection", "Dscp", "Ecn", });
     com.google.protobuf.WrappersProto.getDescriptor();
   }
 

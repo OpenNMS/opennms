@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2024 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,11 +25,11 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.core.ipc.twin.model;
 
 /**
  * <pre>
+ *
  *Twin Response object sent by OpenNMS for RPC response as well as for Sink update.
  * </pre>
  *
@@ -59,11 +59,6 @@ private static final long serialVersionUID = 0L;
     return new TwinResponseProto();
   }
 
-  @java.lang.Override
-  public final com.google.protobuf.UnknownFieldSet
-  getUnknownFields() {
-    return this.unknownFields;
-  }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
     return org.opennms.core.ipc.twin.model.TwinMessageProto.internal_static_TwinResponseProto_descriptor;
@@ -71,7 +66,7 @@ private static final long serialVersionUID = 0L;
 
   @SuppressWarnings({"rawtypes"})
   @java.lang.Override
-  protected com.google.protobuf.MapField internalGetMapField(
+  protected com.google.protobuf.MapFieldReflectionAccessor internalGetMapFieldReflection(
       int number) {
     switch (number) {
       case 8:
@@ -90,7 +85,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int CONSUMER_KEY_FIELD_NUMBER = 1;
-  private volatile java.lang.Object consumerKey_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object consumerKey_ = "";
   /**
    * <code>string consumer_key = 1;</code>
    * @return The consumerKey.
@@ -128,7 +124,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int TWIN_OBJECT_FIELD_NUMBER = 2;
-  private com.google.protobuf.ByteString twinObject_;
+  private com.google.protobuf.ByteString twinObject_ = com.google.protobuf.ByteString.EMPTY;
   /**
    * <code>bytes twin_object = 2;</code>
    * @return The twinObject.
@@ -139,7 +135,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int SYSTEM_ID_FIELD_NUMBER = 3;
-  private volatile java.lang.Object systemId_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object systemId_ = "";
   /**
    * <code>string system_id = 3;</code>
    * @return The systemId.
@@ -177,7 +174,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int LOCATION_FIELD_NUMBER = 4;
-  private volatile java.lang.Object location_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object location_ = "";
   /**
    * <code>string location = 4;</code>
    * @return The location.
@@ -215,7 +213,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int IS_PATCH_OBJECT_FIELD_NUMBER = 5;
-  private boolean isPatchObject_;
+  private boolean isPatchObject_ = false;
   /**
    * <code>bool is_patch_object = 5;</code>
    * @return The isPatchObject.
@@ -226,7 +224,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int SESSION_ID_FIELD_NUMBER = 6;
-  private volatile java.lang.Object sessionId_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object sessionId_ = "";
   /**
    * <code>string session_id = 6;</code>
    * @return The sessionId.
@@ -264,7 +263,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int VERSION_FIELD_NUMBER = 7;
-  private int version_;
+  private int version_ = 0;
   /**
    * <code>int32 version = 7;</code>
    * @return The version.
@@ -286,6 +285,7 @@ private static final long serialVersionUID = 0L;
                 com.google.protobuf.WireFormat.FieldType.STRING,
                 "");
   }
+  @SuppressWarnings("serial")
   private com.google.protobuf.MapField<
       java.lang.String, java.lang.String> tracingInfo_;
   private com.google.protobuf.MapField<java.lang.String, java.lang.String>
@@ -296,18 +296,16 @@ private static final long serialVersionUID = 0L;
     }
     return tracingInfo_;
   }
-
   public int getTracingInfoCount() {
     return internalGetTracingInfo().getMap().size();
   }
   /**
    * <code>map&lt;string, string&gt; tracing_info = 8;</code>
    */
-
   @java.lang.Override
   public boolean containsTracingInfo(
       java.lang.String key) {
-    if (key == null) { throw new java.lang.NullPointerException(); }
+    if (key == null) { throw new NullPointerException("map key"); }
     return internalGetTracingInfo().getMap().containsKey(key);
   }
   /**
@@ -322,7 +320,6 @@ private static final long serialVersionUID = 0L;
    * <code>map&lt;string, string&gt; tracing_info = 8;</code>
    */
   @java.lang.Override
-
   public java.util.Map<java.lang.String, java.lang.String> getTracingInfoMap() {
     return internalGetTracingInfo().getMap();
   }
@@ -330,11 +327,12 @@ private static final long serialVersionUID = 0L;
    * <code>map&lt;string, string&gt; tracing_info = 8;</code>
    */
   @java.lang.Override
-
-  public java.lang.String getTracingInfoOrDefault(
+  public /* nullable */
+java.lang.String getTracingInfoOrDefault(
       java.lang.String key,
-      java.lang.String defaultValue) {
-    if (key == null) { throw new java.lang.NullPointerException(); }
+      /* nullable */
+java.lang.String defaultValue) {
+    if (key == null) { throw new NullPointerException("map key"); }
     java.util.Map<java.lang.String, java.lang.String> map =
         internalGetTracingInfo().getMap();
     return map.containsKey(key) ? map.get(key) : defaultValue;
@@ -343,10 +341,9 @@ private static final long serialVersionUID = 0L;
    * <code>map&lt;string, string&gt; tracing_info = 8;</code>
    */
   @java.lang.Override
-
   public java.lang.String getTracingInfoOrThrow(
       java.lang.String key) {
-    if (key == null) { throw new java.lang.NullPointerException(); }
+    if (key == null) { throw new NullPointerException("map key"); }
     java.util.Map<java.lang.String, java.lang.String> map =
         internalGetTracingInfo().getMap();
     if (!map.containsKey(key)) {
@@ -369,22 +366,22 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (!getConsumerKeyBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(consumerKey_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, consumerKey_);
     }
     if (!twinObject_.isEmpty()) {
       output.writeBytes(2, twinObject_);
     }
-    if (!getSystemIdBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(systemId_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, systemId_);
     }
-    if (!getLocationBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(location_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 4, location_);
     }
     if (isPatchObject_ != false) {
       output.writeBool(5, isPatchObject_);
     }
-    if (!getSessionIdBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(sessionId_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 6, sessionId_);
     }
     if (version_ != 0) {
@@ -405,24 +402,24 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (!getConsumerKeyBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(consumerKey_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, consumerKey_);
     }
     if (!twinObject_.isEmpty()) {
       size += com.google.protobuf.CodedOutputStream
         .computeBytesSize(2, twinObject_);
     }
-    if (!getSystemIdBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(systemId_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, systemId_);
     }
-    if (!getLocationBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(location_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, location_);
     }
     if (isPatchObject_ != false) {
       size += com.google.protobuf.CodedOutputStream
         .computeBoolSize(5, isPatchObject_);
     }
-    if (!getSessionIdBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(sessionId_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, sessionId_);
     }
     if (version_ != 0) {
@@ -549,11 +546,13 @@ private static final long serialVersionUID = 0L;
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
+
   public static org.opennms.core.ipc.twin.model.TwinResponseProto parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
+
   public static org.opennms.core.ipc.twin.model.TwinResponseProto parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -597,6 +596,7 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <pre>
+   *
    *Twin Response object sent by OpenNMS for RPC response as well as for Sink update.
    * </pre>
    *
@@ -612,7 +612,7 @@ private static final long serialVersionUID = 0L;
     }
 
     @SuppressWarnings({"rawtypes"})
-    protected com.google.protobuf.MapField internalGetMapField(
+    protected com.google.protobuf.MapFieldReflectionAccessor internalGetMapFieldReflection(
         int number) {
       switch (number) {
         case 8:
@@ -623,7 +623,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     @SuppressWarnings({"rawtypes"})
-    protected com.google.protobuf.MapField internalGetMutableMapField(
+    protected com.google.protobuf.MapFieldReflectionAccessor internalGetMutableMapFieldReflection(
         int number) {
       switch (number) {
         case 8:
@@ -654,20 +654,14 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
+      bitField0_ = 0;
       consumerKey_ = "";
-
       twinObject_ = com.google.protobuf.ByteString.EMPTY;
-
       systemId_ = "";
-
       location_ = "";
-
       isPatchObject_ = false;
-
       sessionId_ = "";
-
       version_ = 0;
-
       internalGetMutableTracingInfo().clear();
       return this;
     }
@@ -695,18 +689,38 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public org.opennms.core.ipc.twin.model.TwinResponseProto buildPartial() {
       org.opennms.core.ipc.twin.model.TwinResponseProto result = new org.opennms.core.ipc.twin.model.TwinResponseProto(this);
-      int from_bitField0_ = bitField0_;
-      result.consumerKey_ = consumerKey_;
-      result.twinObject_ = twinObject_;
-      result.systemId_ = systemId_;
-      result.location_ = location_;
-      result.isPatchObject_ = isPatchObject_;
-      result.sessionId_ = sessionId_;
-      result.version_ = version_;
-      result.tracingInfo_ = internalGetTracingInfo();
-      result.tracingInfo_.makeImmutable();
+      if (bitField0_ != 0) { buildPartial0(result); }
       onBuilt();
       return result;
+    }
+
+    private void buildPartial0(org.opennms.core.ipc.twin.model.TwinResponseProto result) {
+      int from_bitField0_ = bitField0_;
+      if (((from_bitField0_ & 0x00000001) != 0)) {
+        result.consumerKey_ = consumerKey_;
+      }
+      if (((from_bitField0_ & 0x00000002) != 0)) {
+        result.twinObject_ = twinObject_;
+      }
+      if (((from_bitField0_ & 0x00000004) != 0)) {
+        result.systemId_ = systemId_;
+      }
+      if (((from_bitField0_ & 0x00000008) != 0)) {
+        result.location_ = location_;
+      }
+      if (((from_bitField0_ & 0x00000010) != 0)) {
+        result.isPatchObject_ = isPatchObject_;
+      }
+      if (((from_bitField0_ & 0x00000020) != 0)) {
+        result.sessionId_ = sessionId_;
+      }
+      if (((from_bitField0_ & 0x00000040) != 0)) {
+        result.version_ = version_;
+      }
+      if (((from_bitField0_ & 0x00000080) != 0)) {
+        result.tracingInfo_ = internalGetTracingInfo();
+        result.tracingInfo_.makeImmutable();
+      }
     }
 
     @java.lang.Override
@@ -755,6 +769,7 @@ private static final long serialVersionUID = 0L;
       if (other == org.opennms.core.ipc.twin.model.TwinResponseProto.getDefaultInstance()) return this;
       if (!other.getConsumerKey().isEmpty()) {
         consumerKey_ = other.consumerKey_;
+        bitField0_ |= 0x00000001;
         onChanged();
       }
       if (other.getTwinObject() != com.google.protobuf.ByteString.EMPTY) {
@@ -762,10 +777,12 @@ private static final long serialVersionUID = 0L;
       }
       if (!other.getSystemId().isEmpty()) {
         systemId_ = other.systemId_;
+        bitField0_ |= 0x00000004;
         onChanged();
       }
       if (!other.getLocation().isEmpty()) {
         location_ = other.location_;
+        bitField0_ |= 0x00000008;
         onChanged();
       }
       if (other.getIsPatchObject() != false) {
@@ -773,6 +790,7 @@ private static final long serialVersionUID = 0L;
       }
       if (!other.getSessionId().isEmpty()) {
         sessionId_ = other.sessionId_;
+        bitField0_ |= 0x00000020;
         onChanged();
       }
       if (other.getVersion() != 0) {
@@ -780,6 +798,7 @@ private static final long serialVersionUID = 0L;
       }
       internalGetMutableTracingInfo().mergeFrom(
           other.internalGetTracingInfo());
+      bitField0_ |= 0x00000080;
       this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
@@ -808,37 +827,37 @@ private static final long serialVersionUID = 0L;
               break;
             case 10: {
               consumerKey_ = input.readStringRequireUtf8();
-
+              bitField0_ |= 0x00000001;
               break;
             } // case 10
             case 18: {
               twinObject_ = input.readBytes();
-
+              bitField0_ |= 0x00000002;
               break;
             } // case 18
             case 26: {
               systemId_ = input.readStringRequireUtf8();
-
+              bitField0_ |= 0x00000004;
               break;
             } // case 26
             case 34: {
               location_ = input.readStringRequireUtf8();
-
+              bitField0_ |= 0x00000008;
               break;
             } // case 34
             case 40: {
               isPatchObject_ = input.readBool();
-
+              bitField0_ |= 0x00000010;
               break;
             } // case 40
             case 50: {
               sessionId_ = input.readStringRequireUtf8();
-
+              bitField0_ |= 0x00000020;
               break;
             } // case 50
             case 56: {
               version_ = input.readInt32();
-
+              bitField0_ |= 0x00000040;
               break;
             } // case 56
             case 66: {
@@ -847,6 +866,7 @@ private static final long serialVersionUID = 0L;
                   TracingInfoDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
               internalGetMutableTracingInfo().getMutableMap().put(
                   tracingInfo__.getKey(), tracingInfo__.getValue());
+              bitField0_ |= 0x00000080;
               break;
             } // case 66
             default: {
@@ -907,11 +927,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setConsumerKey(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
+      if (value == null) { throw new NullPointerException(); }
       consumerKey_ = value;
+      bitField0_ |= 0x00000001;
       onChanged();
       return this;
     }
@@ -920,8 +938,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearConsumerKey() {
-      
       consumerKey_ = getDefaultInstance().getConsumerKey();
+      bitField0_ = (bitField0_ & ~0x00000001);
       onChanged();
       return this;
     }
@@ -932,12 +950,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setConsumerKeyBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       consumerKey_ = value;
+      bitField0_ |= 0x00000001;
       onChanged();
       return this;
     }
@@ -957,11 +973,9 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setTwinObject(com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
+      if (value == null) { throw new NullPointerException(); }
       twinObject_ = value;
+      bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
@@ -970,7 +984,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearTwinObject() {
-      
+      bitField0_ = (bitField0_ & ~0x00000002);
       twinObject_ = getDefaultInstance().getTwinObject();
       onChanged();
       return this;
@@ -1017,11 +1031,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setSystemId(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
+      if (value == null) { throw new NullPointerException(); }
       systemId_ = value;
+      bitField0_ |= 0x00000004;
       onChanged();
       return this;
     }
@@ -1030,8 +1042,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearSystemId() {
-      
       systemId_ = getDefaultInstance().getSystemId();
+      bitField0_ = (bitField0_ & ~0x00000004);
       onChanged();
       return this;
     }
@@ -1042,12 +1054,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setSystemIdBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       systemId_ = value;
+      bitField0_ |= 0x00000004;
       onChanged();
       return this;
     }
@@ -1093,11 +1103,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setLocation(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
+      if (value == null) { throw new NullPointerException(); }
       location_ = value;
+      bitField0_ |= 0x00000008;
       onChanged();
       return this;
     }
@@ -1106,8 +1114,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearLocation() {
-      
       location_ = getDefaultInstance().getLocation();
+      bitField0_ = (bitField0_ & ~0x00000008);
       onChanged();
       return this;
     }
@@ -1118,12 +1126,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setLocationBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       location_ = value;
+      bitField0_ |= 0x00000008;
       onChanged();
       return this;
     }
@@ -1143,8 +1149,9 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setIsPatchObject(boolean value) {
-      
+
       isPatchObject_ = value;
+      bitField0_ |= 0x00000010;
       onChanged();
       return this;
     }
@@ -1153,7 +1160,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearIsPatchObject() {
-      
+      bitField0_ = (bitField0_ & ~0x00000010);
       isPatchObject_ = false;
       onChanged();
       return this;
@@ -1200,11 +1207,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setSessionId(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
+      if (value == null) { throw new NullPointerException(); }
       sessionId_ = value;
+      bitField0_ |= 0x00000020;
       onChanged();
       return this;
     }
@@ -1213,8 +1218,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearSessionId() {
-      
       sessionId_ = getDefaultInstance().getSessionId();
+      bitField0_ = (bitField0_ & ~0x00000020);
       onChanged();
       return this;
     }
@@ -1225,12 +1230,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setSessionIdBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       sessionId_ = value;
+      bitField0_ |= 0x00000020;
       onChanged();
       return this;
     }
@@ -1250,8 +1253,9 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setVersion(int value) {
-      
+
       version_ = value;
+      bitField0_ |= 0x00000040;
       onChanged();
       return this;
     }
@@ -1260,7 +1264,7 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearVersion() {
-      
+      bitField0_ = (bitField0_ & ~0x00000040);
       version_ = 0;
       onChanged();
       return this;
@@ -1269,7 +1273,7 @@ private static final long serialVersionUID = 0L;
     private com.google.protobuf.MapField<
         java.lang.String, java.lang.String> tracingInfo_;
     private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-    internalGetTracingInfo() {
+        internalGetTracingInfo() {
       if (tracingInfo_ == null) {
         return com.google.protobuf.MapField.emptyMapField(
             TracingInfoDefaultEntryHolder.defaultEntry);
@@ -1277,8 +1281,7 @@ private static final long serialVersionUID = 0L;
       return tracingInfo_;
     }
     private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-    internalGetMutableTracingInfo() {
-      onChanged();;
+        internalGetMutableTracingInfo() {
       if (tracingInfo_ == null) {
         tracingInfo_ = com.google.protobuf.MapField.newMapField(
             TracingInfoDefaultEntryHolder.defaultEntry);
@@ -1286,20 +1289,20 @@ private static final long serialVersionUID = 0L;
       if (!tracingInfo_.isMutable()) {
         tracingInfo_ = tracingInfo_.copy();
       }
+      bitField0_ |= 0x00000080;
+      onChanged();
       return tracingInfo_;
     }
-
     public int getTracingInfoCount() {
       return internalGetTracingInfo().getMap().size();
     }
     /**
      * <code>map&lt;string, string&gt; tracing_info = 8;</code>
      */
-
     @java.lang.Override
     public boolean containsTracingInfo(
         java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
       return internalGetTracingInfo().getMap().containsKey(key);
     }
     /**
@@ -1314,7 +1317,6 @@ private static final long serialVersionUID = 0L;
      * <code>map&lt;string, string&gt; tracing_info = 8;</code>
      */
     @java.lang.Override
-
     public java.util.Map<java.lang.String, java.lang.String> getTracingInfoMap() {
       return internalGetTracingInfo().getMap();
     }
@@ -1322,11 +1324,12 @@ private static final long serialVersionUID = 0L;
      * <code>map&lt;string, string&gt; tracing_info = 8;</code>
      */
     @java.lang.Override
-
-    public java.lang.String getTracingInfoOrDefault(
+    public /* nullable */
+java.lang.String getTracingInfoOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+        /* nullable */
+java.lang.String defaultValue) {
+      if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetTracingInfo().getMap();
       return map.containsKey(key) ? map.get(key) : defaultValue;
@@ -1335,10 +1338,9 @@ private static final long serialVersionUID = 0L;
      * <code>map&lt;string, string&gt; tracing_info = 8;</code>
      */
     @java.lang.Override
-
     public java.lang.String getTracingInfoOrThrow(
         java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetTracingInfo().getMap();
       if (!map.containsKey(key)) {
@@ -1346,8 +1348,8 @@ private static final long serialVersionUID = 0L;
       }
       return map.get(key);
     }
-
     public Builder clearTracingInfo() {
+      bitField0_ = (bitField0_ & ~0x00000080);
       internalGetMutableTracingInfo().getMutableMap()
           .clear();
       return this;
@@ -1355,10 +1357,9 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>map&lt;string, string&gt; tracing_info = 8;</code>
      */
-
     public Builder removeTracingInfo(
         java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
       internalGetMutableTracingInfo().getMutableMap()
           .remove(key);
       return this;
@@ -1368,7 +1369,8 @@ private static final long serialVersionUID = 0L;
      */
     @java.lang.Deprecated
     public java.util.Map<java.lang.String, java.lang.String>
-    getMutableTracingInfo() {
+        getMutableTracingInfo() {
+      bitField0_ |= 0x00000080;
       return internalGetMutableTracingInfo().getMutableMap();
     }
     /**
@@ -1377,20 +1379,21 @@ private static final long serialVersionUID = 0L;
     public Builder putTracingInfo(
         java.lang.String key,
         java.lang.String value) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      if (value == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
+      if (value == null) { throw new NullPointerException("map value"); }
       internalGetMutableTracingInfo().getMutableMap()
           .put(key, value);
+      bitField0_ |= 0x00000080;
       return this;
     }
     /**
      * <code>map&lt;string, string&gt; tracing_info = 8;</code>
      */
-
     public Builder putAllTracingInfo(
         java.util.Map<java.lang.String, java.lang.String> values) {
       internalGetMutableTracingInfo().getMutableMap()
           .putAll(values);
+      bitField0_ |= 0x00000080;
       return this;
     }
     @java.lang.Override
