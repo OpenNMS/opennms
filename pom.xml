@@ -1800,7 +1800,7 @@
     <osgiEnterpriseVersion>7.0.0</osgiEnterpriseVersion>
     <owaspEncoderVersion>1.2.3</owaspEncoderVersion>
     <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
-    <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
+    <osgiJaxRsVersion>1.2.0.ONMS</osgiJaxRsVersion>
     <osMavenPluginVersion>1.7.1</osMavenPluginVersion>
     <opencsvVersion>2.3</opencsvVersion>
     <opentracingVersion>0.32.0</opentracingVersion>
