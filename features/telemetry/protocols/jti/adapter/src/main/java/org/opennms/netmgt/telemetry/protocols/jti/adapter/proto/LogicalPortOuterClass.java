@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2024 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,7 +25,6 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.netmgt.telemetry.protocols.jti.adapter.proto;
 
 public final class LogicalPortOuterClass {
@@ -70,6 +69,7 @@ public final class LogicalPortOuterClass {
   }
   /**
    * <pre>
+   *
    * Top-level message
    * </pre>
    *
@@ -95,11 +95,6 @@ public final class LogicalPortOuterClass {
       return new LogicalPort();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.internal_static_LogicalPort_descriptor;
@@ -114,6 +109,7 @@ public final class LogicalPortOuterClass {
     }
 
     public static final int INTERFACE_INFO_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.LogicalInterfaceInfo> interfaceInfo_;
     /**
      * <code>repeated .LogicalInterfaceInfo interface_info = 1;</code>
@@ -270,11 +266,13 @@ public final class LogicalPortOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.LogicalPort parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.LogicalPort parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -318,6 +316,7 @@ public final class LogicalPortOuterClass {
     }
     /**
      * <pre>
+     *
      * Top-level message
      * </pre>
      *
@@ -353,6 +352,7 @@ public final class LogicalPortOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (interfaceInfoBuilder_ == null) {
           interfaceInfo_ = java.util.Collections.emptyList();
         } else {
@@ -386,7 +386,13 @@ public final class LogicalPortOuterClass {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.LogicalPort buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.LogicalPort result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.LogicalPort(this);
-        int from_bitField0_ = bitField0_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.LogicalPort result) {
         if (interfaceInfoBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             interfaceInfo_ = java.util.Collections.unmodifiableList(interfaceInfo_);
@@ -396,8 +402,10 @@ public final class LogicalPortOuterClass {
         } else {
           result.interfaceInfo_ = interfaceInfoBuilder_.build();
         }
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.LogicalPort result) {
+        int from_bitField0_ = bitField0_;
       }
 
       @java.lang.Override
@@ -1017,6 +1025,7 @@ public final class LogicalPortOuterClass {
   }
   /**
    * <pre>
+   *
    * Logical Interaface information
    * </pre>
    *
@@ -1043,11 +1052,6 @@ public final class LogicalPortOuterClass {
       return new LogicalInterfaceInfo();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.internal_static_LogicalInterfaceInfo_descriptor;
@@ -1063,7 +1067,8 @@ public final class LogicalPortOuterClass {
 
     private int bitField0_;
     public static final int IF_NAME_FIELD_NUMBER = 1;
-    private volatile java.lang.Object ifName_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object ifName_ = "";
     /**
      * <pre>
      * Logical interface name (e.g. xe-0/0/0.0)
@@ -1123,7 +1128,7 @@ public final class LogicalPortOuterClass {
     }
 
     public static final int INIT_TIME_FIELD_NUMBER = 2;
-    private long initTime_;
+    private long initTime_ = 0L;
     /**
      * <pre>
      * Time reset
@@ -1150,7 +1155,7 @@ public final class LogicalPortOuterClass {
     }
 
     public static final int SNMP_IF_INDEX_FIELD_NUMBER = 3;
-    private int snmpIfIndex_;
+    private int snmpIfIndex_ = 0;
     /**
      * <pre>
      * Global Index
@@ -1177,7 +1182,8 @@ public final class LogicalPortOuterClass {
     }
 
     public static final int PARENT_AE_NAME_FIELD_NUMBER = 4;
-    private volatile java.lang.Object parentAeName_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object parentAeName_ = "";
     /**
      * <pre>
      * Name of the aggregate bundle
@@ -1579,11 +1585,13 @@ public final class LogicalPortOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.LogicalInterfaceInfo parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.LogicalInterfaceInfo parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1627,6 +1635,7 @@ public final class LogicalPortOuterClass {
     }
     /**
      * <pre>
+     *
      * Logical Interaface information
      * </pre>
      *
@@ -1670,32 +1679,26 @@ public final class LogicalPortOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         ifName_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         initTime_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000002);
         snmpIfIndex_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000004);
         parentAeName_ = "";
-        bitField0_ = (bitField0_ & ~0x00000008);
-        if (ingressStatsBuilder_ == null) {
-          ingressStats_ = null;
-        } else {
-          ingressStatsBuilder_.clear();
+        ingressStats_ = null;
+        if (ingressStatsBuilder_ != null) {
+          ingressStatsBuilder_.dispose();
+          ingressStatsBuilder_ = null;
         }
-        bitField0_ = (bitField0_ & ~0x00000010);
-        if (egressStatsBuilder_ == null) {
-          egressStats_ = null;
-        } else {
-          egressStatsBuilder_.clear();
+        egressStats_ = null;
+        if (egressStatsBuilder_ != null) {
+          egressStatsBuilder_.dispose();
+          egressStatsBuilder_ = null;
         }
-        bitField0_ = (bitField0_ & ~0x00000020);
-        if (opStateBuilder_ == null) {
-          opState_ = null;
-        } else {
-          opStateBuilder_.clear();
+        opState_ = null;
+        if (opStateBuilder_ != null) {
+          opStateBuilder_.dispose();
+          opStateBuilder_ = null;
         }
-        bitField0_ = (bitField0_ & ~0x00000040);
         return this;
       }
 
@@ -1722,12 +1725,18 @@ public final class LogicalPortOuterClass {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.LogicalInterfaceInfo buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.LogicalInterfaceInfo result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.LogicalInterfaceInfo(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.LogicalInterfaceInfo result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.ifName_ = ifName_;
           to_bitField0_ |= 0x00000001;
         }
-        result.ifName_ = ifName_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.initTime_ = initTime_;
           to_bitField0_ |= 0x00000002;
@@ -1737,36 +1746,28 @@ public final class LogicalPortOuterClass {
           to_bitField0_ |= 0x00000004;
         }
         if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.parentAeName_ = parentAeName_;
           to_bitField0_ |= 0x00000008;
         }
-        result.parentAeName_ = parentAeName_;
         if (((from_bitField0_ & 0x00000010) != 0)) {
-          if (ingressStatsBuilder_ == null) {
-            result.ingressStats_ = ingressStats_;
-          } else {
-            result.ingressStats_ = ingressStatsBuilder_.build();
-          }
+          result.ingressStats_ = ingressStatsBuilder_ == null
+              ? ingressStats_
+              : ingressStatsBuilder_.build();
           to_bitField0_ |= 0x00000010;
         }
         if (((from_bitField0_ & 0x00000020) != 0)) {
-          if (egressStatsBuilder_ == null) {
-            result.egressStats_ = egressStats_;
-          } else {
-            result.egressStats_ = egressStatsBuilder_.build();
-          }
+          result.egressStats_ = egressStatsBuilder_ == null
+              ? egressStats_
+              : egressStatsBuilder_.build();
           to_bitField0_ |= 0x00000020;
         }
         if (((from_bitField0_ & 0x00000040) != 0)) {
-          if (opStateBuilder_ == null) {
-            result.opState_ = opState_;
-          } else {
-            result.opState_ = opStateBuilder_.build();
-          }
+          result.opState_ = opStateBuilder_ == null
+              ? opState_
+              : opStateBuilder_.build();
           to_bitField0_ |= 0x00000040;
         }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -1814,8 +1815,8 @@ public final class LogicalPortOuterClass {
       public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.LogicalInterfaceInfo other) {
         if (other == org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.LogicalInterfaceInfo.getDefaultInstance()) return this;
         if (other.hasIfName()) {
-          bitField0_ |= 0x00000001;
           ifName_ = other.ifName_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.hasInitTime()) {
@@ -1825,8 +1826,8 @@ public final class LogicalPortOuterClass {
           setSnmpIfIndex(other.getSnmpIfIndex());
         }
         if (other.hasParentAeName()) {
-          bitField0_ |= 0x00000008;
           parentAeName_ = other.parentAeName_;
+          bitField0_ |= 0x00000008;
           onChanged();
         }
         if (other.hasIngressStats()) {
@@ -2004,11 +2005,9 @@ public final class LogicalPortOuterClass {
        */
       public Builder setIfName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         ifName_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2021,8 +2020,8 @@ public final class LogicalPortOuterClass {
        * @return This builder for chaining.
        */
       public Builder clearIfName() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         ifName_ = getDefaultInstance().getIfName();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -2037,11 +2036,9 @@ public final class LogicalPortOuterClass {
        */
       public Builder setIfNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         ifName_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2081,8 +2078,9 @@ public final class LogicalPortOuterClass {
        * @return This builder for chaining.
        */
       public Builder setInitTime(long value) {
-        bitField0_ |= 0x00000002;
+
         initTime_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2136,8 +2134,9 @@ public final class LogicalPortOuterClass {
        * @return This builder for chaining.
        */
       public Builder setSnmpIfIndex(int value) {
-        bitField0_ |= 0x00000004;
+
         snmpIfIndex_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -2222,11 +2221,9 @@ public final class LogicalPortOuterClass {
        */
       public Builder setParentAeName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
+        if (value == null) { throw new NullPointerException(); }
         parentAeName_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -2239,8 +2236,8 @@ public final class LogicalPortOuterClass {
        * @return This builder for chaining.
        */
       public Builder clearParentAeName() {
-        bitField0_ = (bitField0_ & ~0x00000008);
         parentAeName_ = getDefaultInstance().getParentAeName();
+        bitField0_ = (bitField0_ & ~0x00000008);
         onChanged();
         return this;
       }
@@ -2255,11 +2252,9 @@ public final class LogicalPortOuterClass {
        */
       public Builder setParentAeNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
+        if (value == null) { throw new NullPointerException(); }
         parentAeName_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -2306,11 +2301,11 @@ public final class LogicalPortOuterClass {
             throw new NullPointerException();
           }
           ingressStats_ = value;
-          onChanged();
         } else {
           ingressStatsBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000010;
+        onChanged();
         return this;
       }
       /**
@@ -2324,11 +2319,11 @@ public final class LogicalPortOuterClass {
           org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.IngressInterfaceStats.Builder builderForValue) {
         if (ingressStatsBuilder_ == null) {
           ingressStats_ = builderForValue.build();
-          onChanged();
         } else {
           ingressStatsBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000010;
+        onChanged();
         return this;
       }
       /**
@@ -2341,18 +2336,19 @@ public final class LogicalPortOuterClass {
       public Builder mergeIngressStats(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.IngressInterfaceStats value) {
         if (ingressStatsBuilder_ == null) {
           if (((bitField0_ & 0x00000010) != 0) &&
-              ingressStats_ != null &&
-              ingressStats_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.IngressInterfaceStats.getDefaultInstance()) {
-            ingressStats_ =
-              org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.IngressInterfaceStats.newBuilder(ingressStats_).mergeFrom(value).buildPartial();
+            ingressStats_ != null &&
+            ingressStats_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.IngressInterfaceStats.getDefaultInstance()) {
+            getIngressStatsBuilder().mergeFrom(value);
           } else {
             ingressStats_ = value;
           }
-          onChanged();
         } else {
           ingressStatsBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000010;
+        if (ingressStats_ != null) {
+          bitField0_ |= 0x00000010;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -2363,13 +2359,13 @@ public final class LogicalPortOuterClass {
        * <code>optional .IngressInterfaceStats ingress_stats = 5;</code>
        */
       public Builder clearIngressStats() {
-        if (ingressStatsBuilder_ == null) {
-          ingressStats_ = null;
-          onChanged();
-        } else {
-          ingressStatsBuilder_.clear();
-        }
         bitField0_ = (bitField0_ & ~0x00000010);
+        ingressStats_ = null;
+        if (ingressStatsBuilder_ != null) {
+          ingressStatsBuilder_.dispose();
+          ingressStatsBuilder_ = null;
+        }
+        onChanged();
         return this;
       }
       /**
@@ -2462,11 +2458,11 @@ public final class LogicalPortOuterClass {
             throw new NullPointerException();
           }
           egressStats_ = value;
-          onChanged();
         } else {
           egressStatsBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000020;
+        onChanged();
         return this;
       }
       /**
@@ -2480,11 +2476,11 @@ public final class LogicalPortOuterClass {
           org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.EgressInterfaceStats.Builder builderForValue) {
         if (egressStatsBuilder_ == null) {
           egressStats_ = builderForValue.build();
-          onChanged();
         } else {
           egressStatsBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000020;
+        onChanged();
         return this;
       }
       /**
@@ -2497,18 +2493,19 @@ public final class LogicalPortOuterClass {
       public Builder mergeEgressStats(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.EgressInterfaceStats value) {
         if (egressStatsBuilder_ == null) {
           if (((bitField0_ & 0x00000020) != 0) &&
-              egressStats_ != null &&
-              egressStats_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.EgressInterfaceStats.getDefaultInstance()) {
-            egressStats_ =
-              org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.EgressInterfaceStats.newBuilder(egressStats_).mergeFrom(value).buildPartial();
+            egressStats_ != null &&
+            egressStats_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.EgressInterfaceStats.getDefaultInstance()) {
+            getEgressStatsBuilder().mergeFrom(value);
           } else {
             egressStats_ = value;
           }
-          onChanged();
         } else {
           egressStatsBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000020;
+        if (egressStats_ != null) {
+          bitField0_ |= 0x00000020;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -2519,13 +2516,13 @@ public final class LogicalPortOuterClass {
        * <code>optional .EgressInterfaceStats egress_stats = 6;</code>
        */
       public Builder clearEgressStats() {
-        if (egressStatsBuilder_ == null) {
-          egressStats_ = null;
-          onChanged();
-        } else {
-          egressStatsBuilder_.clear();
-        }
         bitField0_ = (bitField0_ & ~0x00000020);
+        egressStats_ = null;
+        if (egressStatsBuilder_ != null) {
+          egressStatsBuilder_.dispose();
+          egressStatsBuilder_ = null;
+        }
+        onChanged();
         return this;
       }
       /**
@@ -2618,11 +2615,11 @@ public final class LogicalPortOuterClass {
             throw new NullPointerException();
           }
           opState_ = value;
-          onChanged();
         } else {
           opStateBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000040;
+        onChanged();
         return this;
       }
       /**
@@ -2636,11 +2633,11 @@ public final class LogicalPortOuterClass {
           org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.OperationalState.Builder builderForValue) {
         if (opStateBuilder_ == null) {
           opState_ = builderForValue.build();
-          onChanged();
         } else {
           opStateBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000040;
+        onChanged();
         return this;
       }
       /**
@@ -2653,18 +2650,19 @@ public final class LogicalPortOuterClass {
       public Builder mergeOpState(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.OperationalState value) {
         if (opStateBuilder_ == null) {
           if (((bitField0_ & 0x00000040) != 0) &&
-              opState_ != null &&
-              opState_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.OperationalState.getDefaultInstance()) {
-            opState_ =
-              org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.OperationalState.newBuilder(opState_).mergeFrom(value).buildPartial();
+            opState_ != null &&
+            opState_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.OperationalState.getDefaultInstance()) {
+            getOpStateBuilder().mergeFrom(value);
           } else {
             opState_ = value;
           }
-          onChanged();
         } else {
           opStateBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000040;
+        if (opState_ != null) {
+          bitField0_ |= 0x00000040;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -2675,13 +2673,13 @@ public final class LogicalPortOuterClass {
        * <code>optional .OperationalState op_state = 7;</code>
        */
       public Builder clearOpState() {
-        if (opStateBuilder_ == null) {
-          opState_ = null;
-          onChanged();
-        } else {
-          opStateBuilder_.clear();
-        }
         bitField0_ = (bitField0_ & ~0x00000040);
+        opState_ = null;
+        if (opStateBuilder_ != null) {
+          opStateBuilder_.dispose();
+          opStateBuilder_ = null;
+        }
+        onChanged();
         return this;
       }
       /**
@@ -2901,6 +2899,7 @@ public final class LogicalPortOuterClass {
   }
   /**
    * <pre>
+   *
    *  Interface inbound/Ingress traffic statistics
    * </pre>
    *
@@ -2926,11 +2925,6 @@ public final class LogicalPortOuterClass {
       return new IngressInterfaceStats();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.internal_static_IngressInterfaceStats_descriptor;
@@ -2946,7 +2940,7 @@ public final class LogicalPortOuterClass {
 
     private int bitField0_;
     public static final int IF_PACKETS_FIELD_NUMBER = 1;
-    private long ifPackets_;
+    private long ifPackets_ = 0L;
     /**
      * <pre>
      * Count of packets
@@ -2973,7 +2967,7 @@ public final class LogicalPortOuterClass {
     }
 
     public static final int IF_OCTETS_FIELD_NUMBER = 2;
-    private long ifOctets_;
+    private long ifOctets_ = 0L;
     /**
      * <pre>
      * Count of bytes
@@ -3000,7 +2994,7 @@ public final class LogicalPortOuterClass {
     }
 
     public static final int IF_UCAST_PACKETS_FIELD_NUMBER = 3;
-    private long ifUcastPackets_;
+    private long ifUcastPackets_ = 0L;
     /**
      * <pre>
      * Count of unicast packets
@@ -3027,7 +3021,7 @@ public final class LogicalPortOuterClass {
     }
 
     public static final int IF_MCAST_PACKETS_FIELD_NUMBER = 4;
-    private long ifMcastPackets_;
+    private long ifMcastPackets_ = 0L;
     /**
      * <pre>
      * Count of multicast packets
@@ -3054,6 +3048,7 @@ public final class LogicalPortOuterClass {
     }
 
     public static final int IF_FC_STATS_FIELD_NUMBER = 5;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.ForwardingClassAccounting> ifFcStats_;
     /**
      * <code>repeated .ForwardingClassAccounting if_fc_stats = 5;</code>
@@ -3284,11 +3279,13 @@ public final class LogicalPortOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.IngressInterfaceStats parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.IngressInterfaceStats parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3332,6 +3329,7 @@ public final class LogicalPortOuterClass {
     }
     /**
      * <pre>
+     *
      *  Interface inbound/Ingress traffic statistics
      * </pre>
      *
@@ -3367,14 +3365,11 @@ public final class LogicalPortOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         ifPackets_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000001);
         ifOctets_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000002);
         ifUcastPackets_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000004);
         ifMcastPackets_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000008);
         if (ifFcStatsBuilder_ == null) {
           ifFcStats_ = java.util.Collections.emptyList();
         } else {
@@ -3408,6 +3403,25 @@ public final class LogicalPortOuterClass {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.IngressInterfaceStats buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.IngressInterfaceStats result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.IngressInterfaceStats(this);
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.IngressInterfaceStats result) {
+        if (ifFcStatsBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) != 0)) {
+            ifFcStats_ = java.util.Collections.unmodifiableList(ifFcStats_);
+            bitField0_ = (bitField0_ & ~0x00000010);
+          }
+          result.ifFcStats_ = ifFcStats_;
+        } else {
+          result.ifFcStats_ = ifFcStatsBuilder_.build();
+        }
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.IngressInterfaceStats result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
@@ -3426,18 +3440,7 @@ public final class LogicalPortOuterClass {
           result.ifMcastPackets_ = ifMcastPackets_;
           to_bitField0_ |= 0x00000008;
         }
-        if (ifFcStatsBuilder_ == null) {
-          if (((bitField0_ & 0x00000010) != 0)) {
-            ifFcStats_ = java.util.Collections.unmodifiableList(ifFcStats_);
-            bitField0_ = (bitField0_ & ~0x00000010);
-          }
-          result.ifFcStats_ = ifFcStats_;
-        } else {
-          result.ifFcStats_ = ifFcStatsBuilder_.build();
-        }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -3642,8 +3645,9 @@ public final class LogicalPortOuterClass {
        * @return This builder for chaining.
        */
       public Builder setIfPackets(long value) {
-        bitField0_ |= 0x00000001;
+
         ifPackets_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -3697,8 +3701,9 @@ public final class LogicalPortOuterClass {
        * @return This builder for chaining.
        */
       public Builder setIfOctets(long value) {
-        bitField0_ |= 0x00000002;
+
         ifOctets_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -3752,8 +3757,9 @@ public final class LogicalPortOuterClass {
        * @return This builder for chaining.
        */
       public Builder setIfUcastPackets(long value) {
-        bitField0_ |= 0x00000004;
+
         ifUcastPackets_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -3807,8 +3813,9 @@ public final class LogicalPortOuterClass {
        * @return This builder for chaining.
        */
       public Builder setIfMcastPackets(long value) {
-        bitField0_ |= 0x00000008;
+
         ifMcastPackets_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -4174,6 +4181,7 @@ public final class LogicalPortOuterClass {
   }
   /**
    * <pre>
+   *
    *  Interface outbound/Egress traffic statistics
    * </pre>
    *
@@ -4198,11 +4206,6 @@ public final class LogicalPortOuterClass {
       return new EgressInterfaceStats();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.internal_static_EgressInterfaceStats_descriptor;
@@ -4218,7 +4221,7 @@ public final class LogicalPortOuterClass {
 
     private int bitField0_;
     public static final int IF_PACKETS_FIELD_NUMBER = 1;
-    private long ifPackets_;
+    private long ifPackets_ = 0L;
     /**
      * <pre>
      * Count of packets
@@ -4245,7 +4248,7 @@ public final class LogicalPortOuterClass {
     }
 
     public static final int IF_OCTETS_FIELD_NUMBER = 2;
-    private long ifOctets_;
+    private long ifOctets_ = 0L;
     /**
      * <pre>
      * Count of bytes
@@ -4411,11 +4414,13 @@ public final class LogicalPortOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.EgressInterfaceStats parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.EgressInterfaceStats parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4459,6 +4464,7 @@ public final class LogicalPortOuterClass {
     }
     /**
      * <pre>
+     *
      *  Interface outbound/Egress traffic statistics
      * </pre>
      *
@@ -4494,10 +4500,9 @@ public final class LogicalPortOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         ifPackets_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000001);
         ifOctets_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -4524,6 +4529,12 @@ public final class LogicalPortOuterClass {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.EgressInterfaceStats buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.EgressInterfaceStats result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.EgressInterfaceStats(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.EgressInterfaceStats result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
@@ -4534,9 +4545,7 @@ public final class LogicalPortOuterClass {
           result.ifOctets_ = ifOctets_;
           to_bitField0_ |= 0x00000002;
         }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -4683,8 +4692,9 @@ public final class LogicalPortOuterClass {
        * @return This builder for chaining.
        */
       public Builder setIfPackets(long value) {
-        bitField0_ |= 0x00000001;
+
         ifPackets_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -4738,8 +4748,9 @@ public final class LogicalPortOuterClass {
        * @return This builder for chaining.
        */
       public Builder setIfOctets(long value) {
-        bitField0_ |= 0x00000002;
+
         ifOctets_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -4856,6 +4867,7 @@ public final class LogicalPortOuterClass {
   }
   /**
    * <pre>
+   *
    *  Interface operational State details
    * </pre>
    *
@@ -4881,11 +4893,6 @@ public final class LogicalPortOuterClass {
       return new OperationalState();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.internal_static_OperationalState_descriptor;
@@ -4901,7 +4908,8 @@ public final class LogicalPortOuterClass {
 
     private int bitField0_;
     public static final int OPERATIONAL_STATUS_FIELD_NUMBER = 1;
-    private volatile java.lang.Object operationalStatus_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object operationalStatus_ = "";
     /**
      * <pre>
      * If the link is up/down
@@ -5073,11 +5081,13 @@ public final class LogicalPortOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.OperationalState parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.OperationalState parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5121,6 +5131,7 @@ public final class LogicalPortOuterClass {
     }
     /**
      * <pre>
+     *
      *  Interface operational State details
      * </pre>
      *
@@ -5156,8 +5167,8 @@ public final class LogicalPortOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         operationalStatus_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         return this;
       }
 
@@ -5184,15 +5195,19 @@ public final class LogicalPortOuterClass {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.OperationalState buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.OperationalState result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.OperationalState(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.OperationalState result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.operationalStatus_ = operationalStatus_;
           to_bitField0_ |= 0x00000001;
         }
-        result.operationalStatus_ = operationalStatus_;
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -5240,8 +5255,8 @@ public final class LogicalPortOuterClass {
       public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.OperationalState other) {
         if (other == org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.OperationalState.getDefaultInstance()) return this;
         if (other.hasOperationalStatus()) {
-          bitField0_ |= 0x00000001;
           operationalStatus_ = other.operationalStatus_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -5358,11 +5373,9 @@ public final class LogicalPortOuterClass {
        */
       public Builder setOperationalStatus(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         operationalStatus_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -5375,8 +5388,8 @@ public final class LogicalPortOuterClass {
        * @return This builder for chaining.
        */
       public Builder clearOperationalStatus() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         operationalStatus_ = getDefaultInstance().getOperationalStatus();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -5391,11 +5404,9 @@ public final class LogicalPortOuterClass {
        */
       public Builder setOperationalStatusBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         operationalStatus_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -5555,6 +5566,7 @@ public final class LogicalPortOuterClass {
   }
   /**
    * <pre>
+   *
    *  Interface forwarding class accounting
    * </pre>
    *
@@ -5580,11 +5592,6 @@ public final class LogicalPortOuterClass {
       return new ForwardingClassAccounting();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.internal_static_ForwardingClassAccounting_descriptor;
@@ -5600,7 +5607,8 @@ public final class LogicalPortOuterClass {
 
     private int bitField0_;
     public static final int IF_FAMILY_FIELD_NUMBER = 1;
-    private volatile java.lang.Object ifFamily_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object ifFamily_ = "";
     /**
      * <pre>
      * Interface protocol
@@ -5660,7 +5668,7 @@ public final class LogicalPortOuterClass {
     }
 
     public static final int FC_NUMBER_FIELD_NUMBER = 2;
-    private int fcNumber_;
+    private int fcNumber_ = 0;
     /**
      * <pre>
      * Forwarding class number
@@ -5687,7 +5695,7 @@ public final class LogicalPortOuterClass {
     }
 
     public static final int IF_PACKETS_FIELD_NUMBER = 3;
-    private long ifPackets_;
+    private long ifPackets_ = 0L;
     /**
      * <pre>
      * Count of packets
@@ -5714,7 +5722,7 @@ public final class LogicalPortOuterClass {
     }
 
     public static final int IF_OCTETS_FIELD_NUMBER = 4;
-    private long ifOctets_;
+    private long ifOctets_ = 0L;
     /**
      * <pre>
      * Count of bytes
@@ -5903,11 +5911,13 @@ public final class LogicalPortOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.ForwardingClassAccounting parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.ForwardingClassAccounting parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5951,6 +5961,7 @@ public final class LogicalPortOuterClass {
     }
     /**
      * <pre>
+     *
      *  Interface forwarding class accounting
      * </pre>
      *
@@ -5986,14 +5997,11 @@ public final class LogicalPortOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         ifFamily_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         fcNumber_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000002);
         ifPackets_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000004);
         ifOctets_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -6020,12 +6028,18 @@ public final class LogicalPortOuterClass {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.ForwardingClassAccounting buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.ForwardingClassAccounting result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.ForwardingClassAccounting(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.ForwardingClassAccounting result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.ifFamily_ = ifFamily_;
           to_bitField0_ |= 0x00000001;
         }
-        result.ifFamily_ = ifFamily_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.fcNumber_ = fcNumber_;
           to_bitField0_ |= 0x00000002;
@@ -6038,9 +6052,7 @@ public final class LogicalPortOuterClass {
           result.ifOctets_ = ifOctets_;
           to_bitField0_ |= 0x00000008;
         }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -6088,8 +6100,8 @@ public final class LogicalPortOuterClass {
       public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.ForwardingClassAccounting other) {
         if (other == org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.ForwardingClassAccounting.getDefaultInstance()) return this;
         if (other.hasIfFamily()) {
-          bitField0_ |= 0x00000001;
           ifFamily_ = other.ifFamily_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.hasFcNumber()) {
@@ -6230,11 +6242,9 @@ public final class LogicalPortOuterClass {
        */
       public Builder setIfFamily(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         ifFamily_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -6247,8 +6257,8 @@ public final class LogicalPortOuterClass {
        * @return This builder for chaining.
        */
       public Builder clearIfFamily() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         ifFamily_ = getDefaultInstance().getIfFamily();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -6263,11 +6273,9 @@ public final class LogicalPortOuterClass {
        */
       public Builder setIfFamilyBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         ifFamily_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -6307,8 +6315,9 @@ public final class LogicalPortOuterClass {
        * @return This builder for chaining.
        */
       public Builder setFcNumber(int value) {
-        bitField0_ |= 0x00000002;
+
         fcNumber_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -6362,8 +6371,9 @@ public final class LogicalPortOuterClass {
        * @return This builder for chaining.
        */
       public Builder setIfPackets(long value) {
-        bitField0_ |= 0x00000004;
+
         ifPackets_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -6417,8 +6427,9 @@ public final class LogicalPortOuterClass {
        * @return This builder for chaining.
        */
       public Builder setIfOctets(long value) {
-        bitField0_ |= 0x00000008;
+
         ifOctets_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }

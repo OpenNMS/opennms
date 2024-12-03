@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2024 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,14 +25,13 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.netmgt.telemetry.protocols.jti.adapter.proto;
 
 public final class CpuMemoryUtilizationOuterClass {
   private CpuMemoryUtilizationOuterClass() {}
   public static void registerAllExtensions(
       com.google.protobuf.ExtensionRegistryLite registry) {
-    registry.add(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.cpuMemoryUtilExt);
+    registry.add(CpuMemoryUtilizationOuterClass.cpuMemoryUtilExt);
   }
 
   public static void registerAllExtensions(
@@ -47,12 +46,12 @@ public final class CpuMemoryUtilizationOuterClass {
     /**
      * <code>repeated .CpuMemoryUtilizationSummary utilization = 1;</code>
      */
-    java.util.List<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary> 
+    java.util.List<CpuMemoryUtilizationSummary>
         getUtilizationList();
     /**
      * <code>repeated .CpuMemoryUtilizationSummary utilization = 1;</code>
      */
-    org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary getUtilization(int index);
+    CpuMemoryUtilizationSummary getUtilization(int index);
     /**
      * <code>repeated .CpuMemoryUtilizationSummary utilization = 1;</code>
      */
@@ -60,16 +59,17 @@ public final class CpuMemoryUtilizationOuterClass {
     /**
      * <code>repeated .CpuMemoryUtilizationSummary utilization = 1;</code>
      */
-    java.util.List<? extends org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummaryOrBuilder> 
+    java.util.List<? extends CpuMemoryUtilizationSummaryOrBuilder>
         getUtilizationOrBuilderList();
     /**
      * <code>repeated .CpuMemoryUtilizationSummary utilization = 1;</code>
      */
-    org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummaryOrBuilder getUtilizationOrBuilder(
+    CpuMemoryUtilizationSummaryOrBuilder getUtilizationOrBuilder(
         int index);
   }
   /**
    * <pre>
+   *
    * The top level message is CpuMemoryUtilization
    * </pre>
    *
@@ -88,73 +88,69 @@ public final class CpuMemoryUtilizationOuterClass {
       utilization_ = java.util.Collections.emptyList();
     }
 
-    @java.lang.Override
+    @Override
     @SuppressWarnings({"unused"})
-    protected java.lang.Object newInstance(
+    protected Object newInstance(
         UnusedPrivateParameter unused) {
       return new CpuMemoryUtilization();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.internal_static_CpuMemoryUtilization_descriptor;
+      return CpuMemoryUtilizationOuterClass.internal_static_CpuMemoryUtilization_descriptor;
     }
 
-    @java.lang.Override
-    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+    @Override
+    protected FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.internal_static_CpuMemoryUtilization_fieldAccessorTable
+      return CpuMemoryUtilizationOuterClass.internal_static_CpuMemoryUtilization_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization.class, org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization.Builder.class);
+              CpuMemoryUtilization.class, Builder.class);
     }
 
     public static final int UTILIZATION_FIELD_NUMBER = 1;
-    private java.util.List<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary> utilization_;
+    @SuppressWarnings("serial")
+    private java.util.List<CpuMemoryUtilizationSummary> utilization_;
     /**
      * <code>repeated .CpuMemoryUtilizationSummary utilization = 1;</code>
      */
-    @java.lang.Override
-    public java.util.List<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary> getUtilizationList() {
+    @Override
+    public java.util.List<CpuMemoryUtilizationSummary> getUtilizationList() {
       return utilization_;
     }
     /**
      * <code>repeated .CpuMemoryUtilizationSummary utilization = 1;</code>
      */
-    @java.lang.Override
-    public java.util.List<? extends org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummaryOrBuilder> 
+    @Override
+    public java.util.List<? extends CpuMemoryUtilizationSummaryOrBuilder>
         getUtilizationOrBuilderList() {
       return utilization_;
     }
     /**
      * <code>repeated .CpuMemoryUtilizationSummary utilization = 1;</code>
      */
-    @java.lang.Override
+    @Override
     public int getUtilizationCount() {
       return utilization_.size();
     }
     /**
      * <code>repeated .CpuMemoryUtilizationSummary utilization = 1;</code>
      */
-    @java.lang.Override
-    public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary getUtilization(int index) {
+    @Override
+    public CpuMemoryUtilizationSummary getUtilization(int index) {
       return utilization_.get(index);
     }
     /**
      * <code>repeated .CpuMemoryUtilizationSummary utilization = 1;</code>
      */
-    @java.lang.Override
-    public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummaryOrBuilder getUtilizationOrBuilder(
+    @Override
+    public CpuMemoryUtilizationSummaryOrBuilder getUtilizationOrBuilder(
         int index) {
       return utilization_.get(index);
     }
 
     private byte memoizedIsInitialized = -1;
-    @java.lang.Override
+    @Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -164,7 +160,7 @@ public final class CpuMemoryUtilizationOuterClass {
       return true;
     }
 
-    @java.lang.Override
+    @Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       for (int i = 0; i < utilization_.size(); i++) {
@@ -173,7 +169,7 @@ public final class CpuMemoryUtilizationOuterClass {
       getUnknownFields().writeTo(output);
     }
 
-    @java.lang.Override
+    @Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
@@ -188,15 +184,15 @@ public final class CpuMemoryUtilizationOuterClass {
       return size;
     }
 
-    @java.lang.Override
-    public boolean equals(final java.lang.Object obj) {
+    @Override
+    public boolean equals(final Object obj) {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization)) {
+      if (!(obj instanceof CpuMemoryUtilization)) {
         return super.equals(obj);
       }
-      org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization other = (org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization) obj;
+      CpuMemoryUtilization other = (CpuMemoryUtilization) obj;
 
       if (!getUtilizationList()
           .equals(other.getUtilizationList())) return false;
@@ -204,7 +200,7 @@ public final class CpuMemoryUtilizationOuterClass {
       return true;
     }
 
-    @java.lang.Override
+    @Override
     public int hashCode() {
       if (memoizedHashCode != 0) {
         return memoizedHashCode;
@@ -220,69 +216,71 @@ public final class CpuMemoryUtilizationOuterClass {
       return hash;
     }
 
-    public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization parseFrom(
+    public static CpuMemoryUtilization parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization parseFrom(
+    public static CpuMemoryUtilization parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization parseFrom(
+    public static CpuMemoryUtilization parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization parseFrom(
+    public static CpuMemoryUtilization parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization parseFrom(byte[] data)
+    public static CpuMemoryUtilization parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization parseFrom(
+    public static CpuMemoryUtilization parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization parseFrom(java.io.InputStream input)
+    public static CpuMemoryUtilization parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization parseFrom(
+    public static CpuMemoryUtilization parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization parseDelimitedFrom(java.io.InputStream input)
+
+    public static CpuMemoryUtilization parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization parseDelimitedFrom(
+
+    public static CpuMemoryUtilization parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization parseFrom(
+    public static CpuMemoryUtilization parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization parseFrom(
+    public static CpuMemoryUtilization parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -290,28 +288,29 @@ public final class CpuMemoryUtilizationOuterClass {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    @java.lang.Override
+    @Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization prototype) {
+    public static Builder newBuilder(CpuMemoryUtilization prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
-    @java.lang.Override
+    @Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
     }
 
-    @java.lang.Override
+    @Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
     /**
      * <pre>
+     *
      * The top level message is CpuMemoryUtilization
      * </pre>
      *
@@ -320,18 +319,18 @@ public final class CpuMemoryUtilizationOuterClass {
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
         // @@protoc_insertion_point(builder_implements:CpuMemoryUtilization)
-        org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationOrBuilder {
+        CpuMemoryUtilizationOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.internal_static_CpuMemoryUtilization_descriptor;
+        return CpuMemoryUtilizationOuterClass.internal_static_CpuMemoryUtilization_descriptor;
       }
 
-      @java.lang.Override
-      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      @Override
+      protected FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.internal_static_CpuMemoryUtilization_fieldAccessorTable
+        return CpuMemoryUtilizationOuterClass.internal_static_CpuMemoryUtilization_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization.class, org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization.Builder.class);
+                CpuMemoryUtilization.class, Builder.class);
       }
 
       // Construct using org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization.newBuilder()
@@ -340,13 +339,14 @@ public final class CpuMemoryUtilizationOuterClass {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+          BuilderParent parent) {
         super(parent);
 
       }
-      @java.lang.Override
+      @Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (utilizationBuilder_ == null) {
           utilization_ = java.util.Collections.emptyList();
         } else {
@@ -357,30 +357,36 @@ public final class CpuMemoryUtilizationOuterClass {
         return this;
       }
 
-      @java.lang.Override
+      @Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.internal_static_CpuMemoryUtilization_descriptor;
+        return CpuMemoryUtilizationOuterClass.internal_static_CpuMemoryUtilization_descriptor;
       }
 
-      @java.lang.Override
-      public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization getDefaultInstanceForType() {
-        return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization.getDefaultInstance();
+      @Override
+      public CpuMemoryUtilization getDefaultInstanceForType() {
+        return CpuMemoryUtilization.getDefaultInstance();
       }
 
-      @java.lang.Override
-      public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization build() {
-        org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization result = buildPartial();
+      @Override
+      public CpuMemoryUtilization build() {
+        CpuMemoryUtilization result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
         return result;
       }
 
-      @java.lang.Override
-      public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization buildPartial() {
-        org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization(this);
-        int from_bitField0_ = bitField0_;
+      @Override
+      public CpuMemoryUtilization buildPartial() {
+        CpuMemoryUtilization result = new CpuMemoryUtilization(this);
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(CpuMemoryUtilization result) {
         if (utilizationBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             utilization_ = java.util.Collections.unmodifiableList(utilization_);
@@ -390,54 +396,56 @@ public final class CpuMemoryUtilizationOuterClass {
         } else {
           result.utilization_ = utilizationBuilder_.build();
         }
-        onBuilt();
-        return result;
       }
 
-      @java.lang.Override
+      private void buildPartial0(CpuMemoryUtilization result) {
+        int from_bitField0_ = bitField0_;
+      }
+
+      @Override
       public Builder clone() {
         return super.clone();
       }
-      @java.lang.Override
+      @Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
+          Object value) {
         return super.setField(field, value);
       }
-      @java.lang.Override
+      @Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
         return super.clearField(field);
       }
-      @java.lang.Override
+      @Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
         return super.clearOneof(oneof);
       }
-      @java.lang.Override
+      @Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
+          int index, Object value) {
         return super.setRepeatedField(field, index, value);
       }
-      @java.lang.Override
+      @Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
+          Object value) {
         return super.addRepeatedField(field, value);
       }
-      @java.lang.Override
+      @Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization) {
-          return mergeFrom((org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization)other);
+        if (other instanceof CpuMemoryUtilization) {
+          return mergeFrom((CpuMemoryUtilization)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization other) {
-        if (other == org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilization.getDefaultInstance()) return this;
+      public Builder mergeFrom(CpuMemoryUtilization other) {
+        if (other == CpuMemoryUtilization.getDefaultInstance()) return this;
         if (utilizationBuilder_ == null) {
           if (!other.utilization_.isEmpty()) {
             if (utilization_.isEmpty()) {
@@ -469,18 +477,18 @@ public final class CpuMemoryUtilizationOuterClass {
         return this;
       }
 
-      @java.lang.Override
+      @Override
       public final boolean isInitialized() {
         return true;
       }
 
-      @java.lang.Override
+      @Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
         if (extensionRegistry == null) {
-          throw new java.lang.NullPointerException();
+          throw new NullPointerException();
         }
         try {
           boolean done = false;
@@ -491,9 +499,9 @@ public final class CpuMemoryUtilizationOuterClass {
                 done = true;
                 break;
               case 10: {
-                org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary m =
+                CpuMemoryUtilizationSummary m =
                     input.readMessage(
-                        org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary.PARSER,
+                        CpuMemoryUtilizationSummary.PARSER,
                         extensionRegistry);
                 if (utilizationBuilder_ == null) {
                   ensureUtilizationIsMutable();
@@ -520,22 +528,22 @@ public final class CpuMemoryUtilizationOuterClass {
       }
       private int bitField0_;
 
-      private java.util.List<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary> utilization_ =
+      private java.util.List<CpuMemoryUtilizationSummary> utilization_ =
         java.util.Collections.emptyList();
       private void ensureUtilizationIsMutable() {
         if (!((bitField0_ & 0x00000001) != 0)) {
-          utilization_ = new java.util.ArrayList<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary>(utilization_);
+          utilization_ = new java.util.ArrayList<CpuMemoryUtilizationSummary>(utilization_);
           bitField0_ |= 0x00000001;
          }
       }
 
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary, org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary.Builder, org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummaryOrBuilder> utilizationBuilder_;
+          CpuMemoryUtilizationSummary, CpuMemoryUtilizationSummary.Builder, CpuMemoryUtilizationSummaryOrBuilder> utilizationBuilder_;
 
       /**
        * <code>repeated .CpuMemoryUtilizationSummary utilization = 1;</code>
        */
-      public java.util.List<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary> getUtilizationList() {
+      public java.util.List<CpuMemoryUtilizationSummary> getUtilizationList() {
         if (utilizationBuilder_ == null) {
           return java.util.Collections.unmodifiableList(utilization_);
         } else {
@@ -555,7 +563,7 @@ public final class CpuMemoryUtilizationOuterClass {
       /**
        * <code>repeated .CpuMemoryUtilizationSummary utilization = 1;</code>
        */
-      public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary getUtilization(int index) {
+      public CpuMemoryUtilizationSummary getUtilization(int index) {
         if (utilizationBuilder_ == null) {
           return utilization_.get(index);
         } else {
@@ -988,11 +996,6 @@ public final class CpuMemoryUtilizationOuterClass {
       return new CpuMemoryUtilizationSummary();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.internal_static_CpuMemoryUtilizationSummary_descriptor;
@@ -1008,7 +1011,8 @@ public final class CpuMemoryUtilizationOuterClass {
 
     private int bitField0_;
     public static final int NAME_FIELD_NUMBER = 1;
-    private volatile java.lang.Object name_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object name_ = "";
     /**
      * <pre>
      * Name of the partition.
@@ -1068,7 +1072,7 @@ public final class CpuMemoryUtilizationOuterClass {
     }
 
     public static final int SIZE_FIELD_NUMBER = 2;
-    private long size_;
+    private long size_ = 0L;
     /**
      * <pre>
      * The total size of the partition in bytes
@@ -1095,7 +1099,7 @@ public final class CpuMemoryUtilizationOuterClass {
     }
 
     public static final int BYTES_ALLOCATED_FIELD_NUMBER = 3;
-    private long bytesAllocated_;
+    private long bytesAllocated_ = 0L;
     /**
      * <pre>
      * The amount of memory currently allocated from the partition in bytes
@@ -1122,7 +1126,7 @@ public final class CpuMemoryUtilizationOuterClass {
     }
 
     public static final int UTILIZATION_FIELD_NUMBER = 4;
-    private int utilization_;
+    private int utilization_ = 0;
     /**
      * <pre>
      * The amount of memory that is currently allocated, expressed
@@ -1151,6 +1155,7 @@ public final class CpuMemoryUtilizationOuterClass {
     }
 
     public static final int APPLICATION_UTILIZATION_FIELD_NUMBER = 5;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationPerApplication> applicationUtilization_;
     /**
      * <pre>
@@ -1386,11 +1391,13 @@ public final class CpuMemoryUtilizationOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1470,14 +1477,11 @@ public final class CpuMemoryUtilizationOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         name_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         size_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000002);
         bytesAllocated_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000004);
         utilization_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000008);
         if (applicationUtilizationBuilder_ == null) {
           applicationUtilization_ = java.util.Collections.emptyList();
         } else {
@@ -1511,12 +1515,31 @@ public final class CpuMemoryUtilizationOuterClass {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary(this);
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary result) {
+        if (applicationUtilizationBuilder_ == null) {
+          if (((bitField0_ & 0x00000010) != 0)) {
+            applicationUtilization_ = java.util.Collections.unmodifiableList(applicationUtilization_);
+            bitField0_ = (bitField0_ & ~0x00000010);
+          }
+          result.applicationUtilization_ = applicationUtilization_;
+        } else {
+          result.applicationUtilization_ = applicationUtilizationBuilder_.build();
+        }
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.name_ = name_;
           to_bitField0_ |= 0x00000001;
         }
-        result.name_ = name_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.size_ = size_;
           to_bitField0_ |= 0x00000002;
@@ -1529,18 +1552,7 @@ public final class CpuMemoryUtilizationOuterClass {
           result.utilization_ = utilization_;
           to_bitField0_ |= 0x00000008;
         }
-        if (applicationUtilizationBuilder_ == null) {
-          if (((bitField0_ & 0x00000010) != 0)) {
-            applicationUtilization_ = java.util.Collections.unmodifiableList(applicationUtilization_);
-            bitField0_ = (bitField0_ & ~0x00000010);
-          }
-          result.applicationUtilization_ = applicationUtilization_;
-        } else {
-          result.applicationUtilization_ = applicationUtilizationBuilder_.build();
-        }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -1588,8 +1600,8 @@ public final class CpuMemoryUtilizationOuterClass {
       public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary other) {
         if (other == org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationSummary.getDefaultInstance()) return this;
         if (other.hasName()) {
-          bitField0_ |= 0x00000001;
           name_ = other.name_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.hasSize()) {
@@ -1769,11 +1781,9 @@ public final class CpuMemoryUtilizationOuterClass {
        */
       public Builder setName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1786,8 +1796,8 @@ public final class CpuMemoryUtilizationOuterClass {
        * @return This builder for chaining.
        */
       public Builder clearName() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         name_ = getDefaultInstance().getName();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -1802,11 +1812,9 @@ public final class CpuMemoryUtilizationOuterClass {
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1846,8 +1854,9 @@ public final class CpuMemoryUtilizationOuterClass {
        * @return This builder for chaining.
        */
       public Builder setSize(long value) {
-        bitField0_ |= 0x00000002;
+
         size_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -1901,8 +1910,9 @@ public final class CpuMemoryUtilizationOuterClass {
        * @return This builder for chaining.
        */
       public Builder setBytesAllocated(long value) {
-        bitField0_ |= 0x00000004;
+
         bytesAllocated_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -1959,8 +1969,9 @@ public final class CpuMemoryUtilizationOuterClass {
        * @return This builder for chaining.
        */
       public Builder setUtilization(int value) {
-        bitField0_ |= 0x00000008;
+
         utilization_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -2491,11 +2502,6 @@ public final class CpuMemoryUtilizationOuterClass {
       return new CpuMemoryUtilizationPerApplication();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.internal_static_CpuMemoryUtilizationPerApplication_descriptor;
@@ -2511,7 +2517,8 @@ public final class CpuMemoryUtilizationOuterClass {
 
     private int bitField0_;
     public static final int NAME_FIELD_NUMBER = 1;
-    private volatile java.lang.Object name_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object name_ = "";
     /**
      * <pre>
      * Application name
@@ -2571,7 +2578,7 @@ public final class CpuMemoryUtilizationOuterClass {
     }
 
     public static final int BYTES_ALLOCATED_FIELD_NUMBER = 2;
-    private long bytesAllocated_;
+    private long bytesAllocated_ = 0L;
     /**
      * <pre>
      * Number of bytes allocated
@@ -2598,7 +2605,7 @@ public final class CpuMemoryUtilizationOuterClass {
     }
 
     public static final int ALLOCATIONS_FIELD_NUMBER = 3;
-    private long allocations_;
+    private long allocations_ = 0L;
     /**
      * <pre>
      *  Number of allocations
@@ -2625,7 +2632,7 @@ public final class CpuMemoryUtilizationOuterClass {
     }
 
     public static final int FREES_FIELD_NUMBER = 4;
-    private long frees_;
+    private long frees_ = 0L;
     /**
      * <pre>
      *  Number of frees
@@ -2652,7 +2659,7 @@ public final class CpuMemoryUtilizationOuterClass {
     }
 
     public static final int ALLOCATIONS_FAILED_FIELD_NUMBER = 5;
-    private long allocationsFailed_;
+    private long allocationsFailed_ = 0L;
     /**
      * <pre>
      * Number of allocations failed
@@ -2859,11 +2866,13 @@ public final class CpuMemoryUtilizationOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationPerApplication parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationPerApplication parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2942,16 +2951,12 @@ public final class CpuMemoryUtilizationOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         name_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         bytesAllocated_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000002);
         allocations_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000004);
         frees_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000008);
         allocationsFailed_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
 
@@ -2978,12 +2983,18 @@ public final class CpuMemoryUtilizationOuterClass {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationPerApplication buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationPerApplication result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationPerApplication(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationPerApplication result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.name_ = name_;
           to_bitField0_ |= 0x00000001;
         }
-        result.name_ = name_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.bytesAllocated_ = bytesAllocated_;
           to_bitField0_ |= 0x00000002;
@@ -3000,9 +3011,7 @@ public final class CpuMemoryUtilizationOuterClass {
           result.allocationsFailed_ = allocationsFailed_;
           to_bitField0_ |= 0x00000010;
         }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -3050,8 +3059,8 @@ public final class CpuMemoryUtilizationOuterClass {
       public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationPerApplication other) {
         if (other == org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.CpuMemoryUtilizationOuterClass.CpuMemoryUtilizationPerApplication.getDefaultInstance()) return this;
         if (other.hasName()) {
-          bitField0_ |= 0x00000001;
           name_ = other.name_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.hasBytesAllocated()) {
@@ -3200,11 +3209,9 @@ public final class CpuMemoryUtilizationOuterClass {
        */
       public Builder setName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -3217,8 +3224,8 @@ public final class CpuMemoryUtilizationOuterClass {
        * @return This builder for chaining.
        */
       public Builder clearName() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         name_ = getDefaultInstance().getName();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -3233,11 +3240,9 @@ public final class CpuMemoryUtilizationOuterClass {
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -3277,8 +3282,9 @@ public final class CpuMemoryUtilizationOuterClass {
        * @return This builder for chaining.
        */
       public Builder setBytesAllocated(long value) {
-        bitField0_ |= 0x00000002;
+
         bytesAllocated_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -3332,8 +3338,9 @@ public final class CpuMemoryUtilizationOuterClass {
        * @return This builder for chaining.
        */
       public Builder setAllocations(long value) {
-        bitField0_ |= 0x00000004;
+
         allocations_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -3387,8 +3394,9 @@ public final class CpuMemoryUtilizationOuterClass {
        * @return This builder for chaining.
        */
       public Builder setFrees(long value) {
-        bitField0_ |= 0x00000008;
+
         frees_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -3442,8 +3450,9 @@ public final class CpuMemoryUtilizationOuterClass {
        * @return This builder for chaining.
        */
       public Builder setAllocationsFailed(long value) {
-        bitField0_ |= 0x00000010;
+
         allocationsFailed_ = value;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }

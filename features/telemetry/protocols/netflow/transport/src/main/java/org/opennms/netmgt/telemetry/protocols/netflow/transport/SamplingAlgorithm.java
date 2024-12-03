@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2024 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,14 +25,13 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.netmgt.telemetry.protocols.netflow.transport;
 
 /**
  * Protobuf enum {@code SamplingAlgorithm}
  */
 public enum SamplingAlgorithm
-    implements com.google.protobuf.ProtocolMessageEnum {
+        implements com.google.protobuf.ProtocolMessageEnum {
   /**
    * <code>UNASSIGNED = 0;</code>
    */
@@ -105,7 +104,7 @@ public enum SamplingAlgorithm
   public final int getNumber() {
     if (this == UNRECOGNIZED) {
       throw new java.lang.IllegalArgumentException(
-          "Can't get the number of an unknown enum value.");
+              "Can't get the number of an unknown enum value.");
     }
     return value;
   }
@@ -139,41 +138,41 @@ public enum SamplingAlgorithm
   }
 
   public static com.google.protobuf.Internal.EnumLiteMap<SamplingAlgorithm>
-      internalGetValueMap() {
+  internalGetValueMap() {
     return internalValueMap;
   }
   private static final com.google.protobuf.Internal.EnumLiteMap<
-      SamplingAlgorithm> internalValueMap =
-        new com.google.protobuf.Internal.EnumLiteMap<SamplingAlgorithm>() {
-          public SamplingAlgorithm findValueByNumber(int number) {
-            return SamplingAlgorithm.forNumber(number);
-          }
-        };
+          SamplingAlgorithm> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<SamplingAlgorithm>() {
+            public SamplingAlgorithm findValueByNumber(int number) {
+              return SamplingAlgorithm.forNumber(number);
+            }
+          };
 
   public final com.google.protobuf.Descriptors.EnumValueDescriptor
-      getValueDescriptor() {
+  getValueDescriptor() {
     if (this == UNRECOGNIZED) {
       throw new java.lang.IllegalStateException(
-          "Can't get the descriptor of an unrecognized enum value.");
+              "Can't get the descriptor of an unrecognized enum value.");
     }
     return getDescriptor().getValues().get(ordinal());
   }
   public final com.google.protobuf.Descriptors.EnumDescriptor
-      getDescriptorForType() {
+  getDescriptorForType() {
     return getDescriptor();
   }
   public static final com.google.protobuf.Descriptors.EnumDescriptor
-      getDescriptor() {
+  getDescriptor() {
     return org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowProtos.getDescriptor().getEnumTypes().get(1);
   }
 
   private static final SamplingAlgorithm[] VALUES = values();
 
   public static SamplingAlgorithm valueOf(
-      com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
     if (desc.getType() != getDescriptor()) {
       throw new java.lang.IllegalArgumentException(
-        "EnumValueDescriptor is not for this type.");
+              "EnumValueDescriptor is not for this type.");
     }
     if (desc.getIndex() == -1) {
       return UNRECOGNIZED;

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2024 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,7 +25,6 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto;
 
 public final class TelemetryBis {
@@ -192,9 +191,9 @@ public final class TelemetryBis {
      */
     long getCollectionEndTime();
 
-    public org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.Telemetry.NodeIdCase getNodeIdCase();
+    org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.Telemetry.NodeIdCase getNodeIdCase();
 
-    public org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.Telemetry.SubscriptionCase getSubscriptionCase();
+    org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.Telemetry.SubscriptionCase getSubscriptionCase();
   }
   /**
    * Protobuf type {@code Telemetry}
@@ -220,11 +219,6 @@ public final class TelemetryBis {
       return new Telemetry();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.internal_static_Telemetry_descriptor;
@@ -238,7 +232,9 @@ public final class TelemetryBis {
               org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.Telemetry.class, org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.Telemetry.Builder.class);
     }
 
+    private int bitField0_;
     private int nodeIdCase_ = 0;
+    @SuppressWarnings("serial")
     private java.lang.Object nodeId_;
     public enum NodeIdCase
         implements com.google.protobuf.Internal.EnumLite,
@@ -278,6 +274,7 @@ public final class TelemetryBis {
     }
 
     private int subscriptionCase_ = 0;
+    @SuppressWarnings("serial")
     private java.lang.Object subscription_;
     public enum SubscriptionCase
         implements com.google.protobuf.Internal.EnumLite,
@@ -445,7 +442,8 @@ public final class TelemetryBis {
     }
 
     public static final int ENCODING_PATH_FIELD_NUMBER = 6;
-    private volatile java.lang.Object encodingPath_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object encodingPath_ = "";
     /**
      * <pre>
      * string   sensor_path = 5;               // not produced
@@ -491,7 +489,7 @@ public final class TelemetryBis {
     }
 
     public static final int COLLECTION_ID_FIELD_NUMBER = 8;
-    private long collectionId_;
+    private long collectionId_ = 0L;
     /**
      * <pre>
      * string   model_version = 7;             // not produced
@@ -506,7 +504,7 @@ public final class TelemetryBis {
     }
 
     public static final int COLLECTION_START_TIME_FIELD_NUMBER = 9;
-    private long collectionStartTime_;
+    private long collectionStartTime_ = 0L;
     /**
      * <code>uint64 collection_start_time = 9;</code>
      * @return The collectionStartTime.
@@ -517,7 +515,7 @@ public final class TelemetryBis {
     }
 
     public static final int MSG_TIMESTAMP_FIELD_NUMBER = 10;
-    private long msgTimestamp_;
+    private long msgTimestamp_ = 0L;
     /**
      * <code>uint64 msg_timestamp = 10;</code>
      * @return The msgTimestamp.
@@ -528,6 +526,7 @@ public final class TelemetryBis {
     }
 
     public static final int DATA_GPBKV_FIELD_NUMBER = 11;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryField> dataGpbkv_;
     /**
      * <code>repeated .TelemetryField data_gpbkv = 11;</code>
@@ -575,7 +574,7 @@ public final class TelemetryBis {
      */
     @java.lang.Override
     public boolean hasDataGpb() {
-      return dataGpb_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <code>.TelemetryGPBTable data_gpb = 12;</code>
@@ -590,11 +589,11 @@ public final class TelemetryBis {
      */
     @java.lang.Override
     public org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryGPBTableOrBuilder getDataGpbOrBuilder() {
-      return getDataGpb();
+      return dataGpb_ == null ? org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryGPBTable.getDefaultInstance() : dataGpb_;
     }
 
     public static final int COLLECTION_END_TIME_FIELD_NUMBER = 13;
-    private long collectionEndTime_;
+    private long collectionEndTime_ = 0L;
     /**
      * <pre>
      * uint64   heartbeat_sequence_number = 14; // not produced
@@ -628,7 +627,7 @@ public final class TelemetryBis {
       if (subscriptionCase_ == 3) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, subscription_);
       }
-      if (!getEncodingPathBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(encodingPath_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 6, encodingPath_);
       }
       if (collectionId_ != 0L) {
@@ -643,7 +642,7 @@ public final class TelemetryBis {
       for (int i = 0; i < dataGpbkv_.size(); i++) {
         output.writeMessage(11, dataGpbkv_.get(i));
       }
-      if (dataGpb_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(12, getDataGpb());
       }
       if (collectionEndTime_ != 0L) {
@@ -664,7 +663,7 @@ public final class TelemetryBis {
       if (subscriptionCase_ == 3) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, subscription_);
       }
-      if (!getEncodingPathBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(encodingPath_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, encodingPath_);
       }
       if (collectionId_ != 0L) {
@@ -683,7 +682,7 @@ public final class TelemetryBis {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(11, dataGpbkv_.get(i));
       }
-      if (dataGpb_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(12, getDataGpb());
       }
@@ -839,11 +838,13 @@ public final class TelemetryBis {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.Telemetry parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.Telemetry parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -907,40 +908,42 @@ public final class TelemetryBis {
 
       // Construct using org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.Telemetry.newBuilder()
       private Builder() {
-
+        maybeForceBuilderInitialization();
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getDataGpbkvFieldBuilder();
+          getDataGpbFieldBuilder();
+        }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         encodingPath_ = "";
-
         collectionId_ = 0L;
-
         collectionStartTime_ = 0L;
-
         msgTimestamp_ = 0L;
-
         if (dataGpbkvBuilder_ == null) {
           dataGpbkv_ = java.util.Collections.emptyList();
         } else {
           dataGpbkv_ = null;
           dataGpbkvBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000001);
-        if (dataGpbBuilder_ == null) {
-          dataGpb_ = null;
-        } else {
-          dataGpb_ = null;
+        bitField0_ = (bitField0_ & ~0x00000040);
+        dataGpb_ = null;
+        if (dataGpbBuilder_ != null) {
+          dataGpbBuilder_.dispose();
           dataGpbBuilder_ = null;
         }
         collectionEndTime_ = 0L;
-
         nodeIdCase_ = 0;
         nodeId_ = null;
         subscriptionCase_ = 0;
@@ -971,36 +974,57 @@ public final class TelemetryBis {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.Telemetry buildPartial() {
         org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.Telemetry result = new org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.Telemetry(this);
-        int from_bitField0_ = bitField0_;
-        if (nodeIdCase_ == 1) {
-          result.nodeId_ = nodeId_;
-        }
-        if (subscriptionCase_ == 3) {
-          result.subscription_ = subscription_;
-        }
-        result.encodingPath_ = encodingPath_;
-        result.collectionId_ = collectionId_;
-        result.collectionStartTime_ = collectionStartTime_;
-        result.msgTimestamp_ = msgTimestamp_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        buildPartialOneofs(result);
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.Telemetry result) {
         if (dataGpbkvBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) != 0)) {
+          if (((bitField0_ & 0x00000040) != 0)) {
             dataGpbkv_ = java.util.Collections.unmodifiableList(dataGpbkv_);
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000040);
           }
           result.dataGpbkv_ = dataGpbkv_;
         } else {
           result.dataGpbkv_ = dataGpbkvBuilder_.build();
         }
-        if (dataGpbBuilder_ == null) {
-          result.dataGpb_ = dataGpb_;
-        } else {
-          result.dataGpb_ = dataGpbBuilder_.build();
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.Telemetry result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.encodingPath_ = encodingPath_;
         }
-        result.collectionEndTime_ = collectionEndTime_;
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.collectionId_ = collectionId_;
+        }
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.collectionStartTime_ = collectionStartTime_;
+        }
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          result.msgTimestamp_ = msgTimestamp_;
+        }
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000080) != 0)) {
+          result.dataGpb_ = dataGpbBuilder_ == null
+              ? dataGpb_
+              : dataGpbBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000100) != 0)) {
+          result.collectionEndTime_ = collectionEndTime_;
+        }
+        result.bitField0_ |= to_bitField0_;
+      }
+
+      private void buildPartialOneofs(org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.Telemetry result) {
         result.nodeIdCase_ = nodeIdCase_;
+        result.nodeId_ = this.nodeId_;
         result.subscriptionCase_ = subscriptionCase_;
-        onBuilt();
-        return result;
+        result.subscription_ = this.subscription_;
       }
 
       @java.lang.Override
@@ -1049,6 +1073,7 @@ public final class TelemetryBis {
         if (other == org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.Telemetry.getDefaultInstance()) return this;
         if (!other.getEncodingPath().isEmpty()) {
           encodingPath_ = other.encodingPath_;
+          bitField0_ |= 0x00000004;
           onChanged();
         }
         if (other.getCollectionId() != 0L) {
@@ -1064,7 +1089,7 @@ public final class TelemetryBis {
           if (!other.dataGpbkv_.isEmpty()) {
             if (dataGpbkv_.isEmpty()) {
               dataGpbkv_ = other.dataGpbkv_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000040);
             } else {
               ensureDataGpbkvIsMutable();
               dataGpbkv_.addAll(other.dataGpbkv_);
@@ -1077,7 +1102,7 @@ public final class TelemetryBis {
               dataGpbkvBuilder_.dispose();
               dataGpbkvBuilder_ = null;
               dataGpbkv_ = other.dataGpbkv_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000040);
               dataGpbkvBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getDataGpbkvFieldBuilder() : null;
@@ -1154,22 +1179,22 @@ public final class TelemetryBis {
               } // case 26
               case 50: {
                 encodingPath_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000004;
                 break;
               } // case 50
               case 64: {
                 collectionId_ = input.readUInt64();
-
+                bitField0_ |= 0x00000008;
                 break;
               } // case 64
               case 72: {
                 collectionStartTime_ = input.readUInt64();
-
+                bitField0_ |= 0x00000010;
                 break;
               } // case 72
               case 80: {
                 msgTimestamp_ = input.readUInt64();
-
+                bitField0_ |= 0x00000020;
                 break;
               } // case 80
               case 90: {
@@ -1189,12 +1214,12 @@ public final class TelemetryBis {
                 input.readMessage(
                     getDataGpbFieldBuilder().getBuilder(),
                     extensionRegistry);
-
+                bitField0_ |= 0x00000080;
                 break;
               } // case 98
               case 104: {
                 collectionEndTime_ = input.readUInt64();
-
+                bitField0_ |= 0x00000100;
                 break;
               } // case 104
               default: {
@@ -1320,10 +1345,8 @@ public final class TelemetryBis {
        */
       public Builder setNodeIdStr(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  nodeIdCase_ = 1;
+        if (value == null) { throw new NullPointerException(); }
+        nodeIdCase_ = 1;
         nodeId_ = value;
         onChanged();
         return this;
@@ -1355,10 +1378,8 @@ public final class TelemetryBis {
        */
       public Builder setNodeIdStrBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         nodeIdCase_ = 1;
         nodeId_ = value;
         onChanged();
@@ -1441,10 +1462,8 @@ public final class TelemetryBis {
        */
       public Builder setSubscriptionIdStr(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  subscriptionCase_ = 3;
+        if (value == null) { throw new NullPointerException(); }
+        subscriptionCase_ = 3;
         subscription_ = value;
         onChanged();
         return this;
@@ -1476,10 +1495,8 @@ public final class TelemetryBis {
        */
       public Builder setSubscriptionIdStrBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         subscriptionCase_ = 3;
         subscription_ = value;
         onChanged();
@@ -1539,11 +1556,9 @@ public final class TelemetryBis {
        */
       public Builder setEncodingPath(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         encodingPath_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -1556,8 +1571,8 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder clearEncodingPath() {
-        
         encodingPath_ = getDefaultInstance().getEncodingPath();
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
@@ -1572,12 +1587,10 @@ public final class TelemetryBis {
        */
       public Builder setEncodingPathBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         encodingPath_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -1605,8 +1618,9 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder setCollectionId(long value) {
-        
+
         collectionId_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -1619,7 +1633,7 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder clearCollectionId() {
-        
+        bitField0_ = (bitField0_ & ~0x00000008);
         collectionId_ = 0L;
         onChanged();
         return this;
@@ -1640,8 +1654,9 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder setCollectionStartTime(long value) {
-        
+
         collectionStartTime_ = value;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -1650,7 +1665,7 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder clearCollectionStartTime() {
-        
+        bitField0_ = (bitField0_ & ~0x00000010);
         collectionStartTime_ = 0L;
         onChanged();
         return this;
@@ -1671,8 +1686,9 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder setMsgTimestamp(long value) {
-        
+
         msgTimestamp_ = value;
+        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -1681,7 +1697,7 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder clearMsgTimestamp() {
-        
+        bitField0_ = (bitField0_ & ~0x00000020);
         msgTimestamp_ = 0L;
         onChanged();
         return this;
@@ -1690,9 +1706,9 @@ public final class TelemetryBis {
       private java.util.List<org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryField> dataGpbkv_ =
         java.util.Collections.emptyList();
       private void ensureDataGpbkvIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!((bitField0_ & 0x00000040) != 0)) {
           dataGpbkv_ = new java.util.ArrayList<org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryField>(dataGpbkv_);
-          bitField0_ |= 0x00000001;
+          bitField0_ |= 0x00000040;
          }
       }
 
@@ -1842,7 +1858,7 @@ public final class TelemetryBis {
       public Builder clearDataGpbkv() {
         if (dataGpbkvBuilder_ == null) {
           dataGpbkv_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000040);
           onChanged();
         } else {
           dataGpbkvBuilder_.clear();
@@ -1919,7 +1935,7 @@ public final class TelemetryBis {
           dataGpbkvBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryField, org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryField.Builder, org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryFieldOrBuilder>(
                   dataGpbkv_,
-                  ((bitField0_ & 0x00000001) != 0),
+                  ((bitField0_ & 0x00000040) != 0),
                   getParentForChildren(),
                   isClean());
           dataGpbkv_ = null;
@@ -1935,7 +1951,7 @@ public final class TelemetryBis {
        * @return Whether the dataGpb field is set.
        */
       public boolean hasDataGpb() {
-        return dataGpbBuilder_ != null || dataGpb_ != null;
+        return ((bitField0_ & 0x00000080) != 0);
       }
       /**
        * <code>.TelemetryGPBTable data_gpb = 12;</code>
@@ -1957,11 +1973,11 @@ public final class TelemetryBis {
             throw new NullPointerException();
           }
           dataGpb_ = value;
-          onChanged();
         } else {
           dataGpbBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000080;
+        onChanged();
         return this;
       }
       /**
@@ -1971,11 +1987,11 @@ public final class TelemetryBis {
           org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryGPBTable.Builder builderForValue) {
         if (dataGpbBuilder_ == null) {
           dataGpb_ = builderForValue.build();
-          onChanged();
         } else {
           dataGpbBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000080;
+        onChanged();
         return this;
       }
       /**
@@ -1983,38 +1999,40 @@ public final class TelemetryBis {
        */
       public Builder mergeDataGpb(org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryGPBTable value) {
         if (dataGpbBuilder_ == null) {
-          if (dataGpb_ != null) {
-            dataGpb_ =
-              org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryGPBTable.newBuilder(dataGpb_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000080) != 0) &&
+            dataGpb_ != null &&
+            dataGpb_ != org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryGPBTable.getDefaultInstance()) {
+            getDataGpbBuilder().mergeFrom(value);
           } else {
             dataGpb_ = value;
           }
-          onChanged();
         } else {
           dataGpbBuilder_.mergeFrom(value);
         }
-
+        if (dataGpb_ != null) {
+          bitField0_ |= 0x00000080;
+          onChanged();
+        }
         return this;
       }
       /**
        * <code>.TelemetryGPBTable data_gpb = 12;</code>
        */
       public Builder clearDataGpb() {
-        if (dataGpbBuilder_ == null) {
-          dataGpb_ = null;
-          onChanged();
-        } else {
-          dataGpb_ = null;
+        bitField0_ = (bitField0_ & ~0x00000080);
+        dataGpb_ = null;
+        if (dataGpbBuilder_ != null) {
+          dataGpbBuilder_.dispose();
           dataGpbBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
        * <code>.TelemetryGPBTable data_gpb = 12;</code>
        */
       public org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryGPBTable.Builder getDataGpbBuilder() {
-        
+        bitField0_ |= 0x00000080;
         onChanged();
         return getDataGpbFieldBuilder().getBuilder();
       }
@@ -2069,8 +2087,9 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder setCollectionEndTime(long value) {
-        
+
         collectionEndTime_ = value;
+        bitField0_ |= 0x00000100;
         onChanged();
         return this;
       }
@@ -2083,7 +2102,7 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder clearCollectionEndTime() {
-        
+        bitField0_ = (bitField0_ & ~0x00000100);
         collectionEndTime_ = 0L;
         onChanged();
         return this;
@@ -2303,7 +2322,7 @@ public final class TelemetryBis {
     org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryFieldOrBuilder getFieldsOrBuilder(
         int index);
 
-    public org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryField.ValueByTypeCase getValueByTypeCase();
+    org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryField.ValueByTypeCase getValueByTypeCase();
   }
   /**
    * Protobuf type {@code TelemetryField}
@@ -2329,11 +2348,6 @@ public final class TelemetryBis {
       return new TelemetryField();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.internal_static_TelemetryField_descriptor;
@@ -2348,6 +2362,7 @@ public final class TelemetryBis {
     }
 
     private int valueByTypeCase_ = 0;
+    @SuppressWarnings("serial")
     private java.lang.Object valueByType_;
     public enum ValueByTypeCase
         implements com.google.protobuf.Internal.EnumLite,
@@ -2403,7 +2418,7 @@ public final class TelemetryBis {
     }
 
     public static final int TIMESTAMP_FIELD_NUMBER = 1;
-    private long timestamp_;
+    private long timestamp_ = 0L;
     /**
      * <code>uint64 timestamp = 1;</code>
      * @return The timestamp.
@@ -2414,7 +2429,8 @@ public final class TelemetryBis {
     }
 
     public static final int NAME_FIELD_NUMBER = 2;
-    private volatile java.lang.Object name_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object name_ = "";
     /**
      * <code>string name = 2;</code>
      * @return The name.
@@ -2672,6 +2688,7 @@ public final class TelemetryBis {
     }
 
     public static final int FIELDS_FIELD_NUMBER = 15;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryField> fields_;
     /**
      * <code>repeated .TelemetryField fields = 15;</code>
@@ -2728,7 +2745,7 @@ public final class TelemetryBis {
       if (timestamp_ != 0L) {
         output.writeUInt64(1, timestamp_);
       }
-      if (!getNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, name_);
       }
       if (valueByTypeCase_ == 4) {
@@ -2782,7 +2799,7 @@ public final class TelemetryBis {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt64Size(1, timestamp_);
       }
-      if (!getNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, name_);
       }
       if (valueByTypeCase_ == 4) {
@@ -3010,11 +3027,13 @@ public final class TelemetryBis {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryField parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryField parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3089,17 +3108,16 @@ public final class TelemetryBis {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         timestamp_ = 0L;
-
         name_ = "";
-
         if (fieldsBuilder_ == null) {
           fields_ = java.util.Collections.emptyList();
         } else {
           fields_ = null;
           fieldsBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000800);
         valueByTypeCase_ = 0;
         valueByType_ = null;
         return this;
@@ -3128,48 +3146,38 @@ public final class TelemetryBis {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryField buildPartial() {
         org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryField result = new org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryField(this);
-        int from_bitField0_ = bitField0_;
-        result.timestamp_ = timestamp_;
-        result.name_ = name_;
-        if (valueByTypeCase_ == 4) {
-          result.valueByType_ = valueByType_;
-        }
-        if (valueByTypeCase_ == 5) {
-          result.valueByType_ = valueByType_;
-        }
-        if (valueByTypeCase_ == 6) {
-          result.valueByType_ = valueByType_;
-        }
-        if (valueByTypeCase_ == 7) {
-          result.valueByType_ = valueByType_;
-        }
-        if (valueByTypeCase_ == 8) {
-          result.valueByType_ = valueByType_;
-        }
-        if (valueByTypeCase_ == 9) {
-          result.valueByType_ = valueByType_;
-        }
-        if (valueByTypeCase_ == 10) {
-          result.valueByType_ = valueByType_;
-        }
-        if (valueByTypeCase_ == 11) {
-          result.valueByType_ = valueByType_;
-        }
-        if (valueByTypeCase_ == 12) {
-          result.valueByType_ = valueByType_;
-        }
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        buildPartialOneofs(result);
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryField result) {
         if (fieldsBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) != 0)) {
+          if (((bitField0_ & 0x00000800) != 0)) {
             fields_ = java.util.Collections.unmodifiableList(fields_);
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000800);
           }
           result.fields_ = fields_;
         } else {
           result.fields_ = fieldsBuilder_.build();
         }
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryField result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.timestamp_ = timestamp_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.name_ = name_;
+        }
+      }
+
+      private void buildPartialOneofs(org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryField result) {
         result.valueByTypeCase_ = valueByTypeCase_;
-        onBuilt();
-        return result;
+        result.valueByType_ = this.valueByType_;
       }
 
       @java.lang.Override
@@ -3221,13 +3229,14 @@ public final class TelemetryBis {
         }
         if (!other.getName().isEmpty()) {
           name_ = other.name_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         if (fieldsBuilder_ == null) {
           if (!other.fields_.isEmpty()) {
             if (fields_.isEmpty()) {
               fields_ = other.fields_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000800);
             } else {
               ensureFieldsIsMutable();
               fields_.addAll(other.fields_);
@@ -3240,7 +3249,7 @@ public final class TelemetryBis {
               fieldsBuilder_.dispose();
               fieldsBuilder_ = null;
               fields_ = other.fields_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000800);
               fieldsBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getFieldsFieldBuilder() : null;
@@ -3320,17 +3329,17 @@ public final class TelemetryBis {
                 break;
               case 8: {
                 timestamp_ = input.readUInt64();
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 8
               case 18: {
                 name_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 18
               case 34: {
-                valueByTypeCase_ = 4;
                 valueByType_ = input.readBytes();
+                valueByTypeCase_ = 4;
                 break;
               } // case 34
               case 42: {
@@ -3340,38 +3349,38 @@ public final class TelemetryBis {
                 break;
               } // case 42
               case 48: {
-                valueByTypeCase_ = 6;
                 valueByType_ = input.readBool();
+                valueByTypeCase_ = 6;
                 break;
               } // case 48
               case 56: {
-                valueByTypeCase_ = 7;
                 valueByType_ = input.readUInt32();
+                valueByTypeCase_ = 7;
                 break;
               } // case 56
               case 64: {
-                valueByTypeCase_ = 8;
                 valueByType_ = input.readUInt64();
+                valueByTypeCase_ = 8;
                 break;
               } // case 64
               case 72: {
-                valueByTypeCase_ = 9;
                 valueByType_ = input.readSInt32();
+                valueByTypeCase_ = 9;
                 break;
               } // case 72
               case 80: {
-                valueByTypeCase_ = 10;
                 valueByType_ = input.readSInt64();
+                valueByTypeCase_ = 10;
                 break;
               } // case 80
               case 89: {
-                valueByTypeCase_ = 11;
                 valueByType_ = input.readDouble();
+                valueByTypeCase_ = 11;
                 break;
               } // case 89
               case 101: {
-                valueByTypeCase_ = 12;
                 valueByType_ = input.readFloat();
+                valueByTypeCase_ = 12;
                 break;
               } // case 101
               case 122: {
@@ -3434,8 +3443,9 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder setTimestamp(long value) {
-        
+
         timestamp_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -3444,7 +3454,7 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder clearTimestamp() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         timestamp_ = 0L;
         onChanged();
         return this;
@@ -3491,11 +3501,9 @@ public final class TelemetryBis {
        */
       public Builder setName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -3504,8 +3512,8 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder clearName() {
-        
         name_ = getDefaultInstance().getName();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -3516,12 +3524,10 @@ public final class TelemetryBis {
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         name_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -3549,10 +3555,8 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder setBytesValue(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  valueByTypeCase_ = 4;
+        if (value == null) { throw new NullPointerException(); }
+        valueByTypeCase_ = 4;
         valueByType_ = value;
         onChanged();
         return this;
@@ -3630,10 +3634,8 @@ public final class TelemetryBis {
        */
       public Builder setStringValue(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  valueByTypeCase_ = 5;
+        if (value == null) { throw new NullPointerException(); }
+        valueByTypeCase_ = 5;
         valueByType_ = value;
         onChanged();
         return this;
@@ -3657,10 +3659,8 @@ public final class TelemetryBis {
        */
       public Builder setStringValueBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         valueByTypeCase_ = 5;
         valueByType_ = value;
         onChanged();
@@ -3690,6 +3690,7 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder setBoolValue(boolean value) {
+
         valueByTypeCase_ = 6;
         valueByType_ = value;
         onChanged();
@@ -3731,6 +3732,7 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder setUint32Value(int value) {
+
         valueByTypeCase_ = 7;
         valueByType_ = value;
         onChanged();
@@ -3772,6 +3774,7 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder setUint64Value(long value) {
+
         valueByTypeCase_ = 8;
         valueByType_ = value;
         onChanged();
@@ -3813,6 +3816,7 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder setSint32Value(int value) {
+
         valueByTypeCase_ = 9;
         valueByType_ = value;
         onChanged();
@@ -3854,6 +3858,7 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder setSint64Value(long value) {
+
         valueByTypeCase_ = 10;
         valueByType_ = value;
         onChanged();
@@ -3895,6 +3900,7 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder setDoubleValue(double value) {
+
         valueByTypeCase_ = 11;
         valueByType_ = value;
         onChanged();
@@ -3936,6 +3942,7 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder setFloatValue(float value) {
+
         valueByTypeCase_ = 12;
         valueByType_ = value;
         onChanged();
@@ -3957,9 +3964,9 @@ public final class TelemetryBis {
       private java.util.List<org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryField> fields_ =
         java.util.Collections.emptyList();
       private void ensureFieldsIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!((bitField0_ & 0x00000800) != 0)) {
           fields_ = new java.util.ArrayList<org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryField>(fields_);
-          bitField0_ |= 0x00000001;
+          bitField0_ |= 0x00000800;
          }
       }
 
@@ -4109,7 +4116,7 @@ public final class TelemetryBis {
       public Builder clearFields() {
         if (fieldsBuilder_ == null) {
           fields_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000800);
           onChanged();
         } else {
           fieldsBuilder_.clear();
@@ -4186,7 +4193,7 @@ public final class TelemetryBis {
           fieldsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryField, org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryField.Builder, org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryFieldOrBuilder>(
                   fields_,
-                  ((bitField0_ & 0x00000001) != 0),
+                  ((bitField0_ & 0x00000800) != 0),
                   getParentForChildren(),
                   isClean());
           fields_ = null;
@@ -4308,11 +4315,6 @@ public final class TelemetryBis {
       return new TelemetryGPBTable();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.internal_static_TelemetryGPBTable_descriptor;
@@ -4327,6 +4329,7 @@ public final class TelemetryBis {
     }
 
     public static final int ROW_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryRowGPB> row_;
     /**
      * <code>repeated .TelemetryRowGPB row = 1;</code>
@@ -4477,11 +4480,13 @@ public final class TelemetryBis {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryGPBTable parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryGPBTable parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4556,6 +4561,7 @@ public final class TelemetryBis {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (rowBuilder_ == null) {
           row_ = java.util.Collections.emptyList();
         } else {
@@ -4589,7 +4595,13 @@ public final class TelemetryBis {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryGPBTable buildPartial() {
         org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryGPBTable result = new org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryGPBTable(this);
-        int from_bitField0_ = bitField0_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryGPBTable result) {
         if (rowBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             row_ = java.util.Collections.unmodifiableList(row_);
@@ -4599,8 +4611,10 @@ public final class TelemetryBis {
         } else {
           result.row_ = rowBuilder_.build();
         }
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryGPBTable result) {
+        int from_bitField0_ = bitField0_;
       }
 
       @java.lang.Override
@@ -5078,11 +5092,6 @@ public final class TelemetryBis {
       return new TelemetryRowGPB();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.internal_static_TelemetryRowGPB_descriptor;
@@ -5097,7 +5106,7 @@ public final class TelemetryBis {
     }
 
     public static final int TIMESTAMP_FIELD_NUMBER = 1;
-    private long timestamp_;
+    private long timestamp_ = 0L;
     /**
      * <code>uint64 timestamp = 1;</code>
      * @return The timestamp.
@@ -5108,7 +5117,7 @@ public final class TelemetryBis {
     }
 
     public static final int KEYS_FIELD_NUMBER = 10;
-    private com.google.protobuf.ByteString keys_;
+    private com.google.protobuf.ByteString keys_ = com.google.protobuf.ByteString.EMPTY;
     /**
      * <code>bytes keys = 10;</code>
      * @return The keys.
@@ -5119,7 +5128,7 @@ public final class TelemetryBis {
     }
 
     public static final int CONTENT_FIELD_NUMBER = 11;
-    private com.google.protobuf.ByteString content_;
+    private com.google.protobuf.ByteString content_ = com.google.protobuf.ByteString.EMPTY;
     /**
      * <code>bytes content = 11;</code>
      * @return The content.
@@ -5261,11 +5270,13 @@ public final class TelemetryBis {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryRowGPB parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryRowGPB parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5340,12 +5351,10 @@ public final class TelemetryBis {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         timestamp_ = 0L;
-
         keys_ = com.google.protobuf.ByteString.EMPTY;
-
         content_ = com.google.protobuf.ByteString.EMPTY;
-
         return this;
       }
 
@@ -5372,11 +5381,22 @@ public final class TelemetryBis {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryRowGPB buildPartial() {
         org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryRowGPB result = new org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryRowGPB(this);
-        result.timestamp_ = timestamp_;
-        result.keys_ = keys_;
-        result.content_ = content_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.TelemetryBis.TelemetryRowGPB result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.timestamp_ = timestamp_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.keys_ = keys_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.content_ = content_;
+        }
       }
 
       @java.lang.Override
@@ -5460,17 +5480,17 @@ public final class TelemetryBis {
                 break;
               case 8: {
                 timestamp_ = input.readUInt64();
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 8
               case 82: {
                 keys_ = input.readBytes();
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 82
               case 90: {
                 content_ = input.readBytes();
-
+                bitField0_ |= 0x00000004;
                 break;
               } // case 90
               default: {
@@ -5488,6 +5508,7 @@ public final class TelemetryBis {
         } // finally
         return this;
       }
+      private int bitField0_;
 
       private long timestamp_ ;
       /**
@@ -5504,8 +5525,9 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder setTimestamp(long value) {
-        
+
         timestamp_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -5514,7 +5536,7 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder clearTimestamp() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         timestamp_ = 0L;
         onChanged();
         return this;
@@ -5535,11 +5557,9 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder setKeys(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         keys_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -5548,7 +5568,7 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder clearKeys() {
-        
+        bitField0_ = (bitField0_ & ~0x00000002);
         keys_ = getDefaultInstance().getKeys();
         onChanged();
         return this;
@@ -5569,11 +5589,9 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder setContent(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         content_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -5582,7 +5600,7 @@ public final class TelemetryBis {
        * @return This builder for chaining.
        */
       public Builder clearContent() {
-        
+        bitField0_ = (bitField0_ & ~0x00000004);
         content_ = getDefaultInstance().getContent();
         onChanged();
         return this;

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2024 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,7 +25,6 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.netmgt.flows.persistence.model;
 
 /**
@@ -43,7 +42,8 @@ private static final long serialVersionUID = 0L;
   private NodeInfo() {
     foreignSource_ = "";
     foreginId_ = "";
-    categories_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    categories_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
   }
 
   @java.lang.Override
@@ -53,11 +53,6 @@ private static final long serialVersionUID = 0L;
     return new NodeInfo();
   }
 
-  @java.lang.Override
-  public final com.google.protobuf.UnknownFieldSet
-  getUnknownFields() {
-    return this.unknownFields;
-  }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
     return org.opennms.netmgt.flows.persistence.model.EnrichedFlowProtos.internal_static_NodeInfo_descriptor;
@@ -72,7 +67,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int FOREIGN_SOURCE_FIELD_NUMBER = 1;
-  private volatile java.lang.Object foreignSource_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object foreignSource_ = "";
   /**
    * <code>string foreign_source = 1;</code>
    * @return The foreignSource.
@@ -110,7 +106,8 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int FOREGIN_ID_FIELD_NUMBER = 2;
-  private volatile java.lang.Object foreginId_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object foreginId_ = "";
   /**
    * <code>string foregin_id = 2;</code>
    * @return The foreginId.
@@ -148,7 +145,7 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int NODE_ID_FIELD_NUMBER = 3;
-  private int nodeId_;
+  private int nodeId_ = 0;
   /**
    * <code>uint32 node_id = 3;</code>
    * @return The nodeId.
@@ -159,7 +156,9 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int CATEGORIES_FIELD_NUMBER = 4;
-  private com.google.protobuf.LazyStringList categories_;
+  @SuppressWarnings("serial")
+  private com.google.protobuf.LazyStringArrayList categories_ =
+      com.google.protobuf.LazyStringArrayList.emptyList();
   /**
    * <code>repeated string categories = 4;</code>
    * @return A list containing the categories.
@@ -207,10 +206,10 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (!getForeignSourceBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(foreignSource_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, foreignSource_);
     }
-    if (!getForeginIdBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(foreginId_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 2, foreginId_);
     }
     if (nodeId_ != 0) {
@@ -228,10 +227,10 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (!getForeignSourceBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(foreignSource_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, foreignSource_);
     }
-    if (!getForeginIdBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(foreginId_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, foreginId_);
     }
     if (nodeId_ != 0) {
@@ -339,11 +338,13 @@ private static final long serialVersionUID = 0L;
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
+
   public static org.opennms.netmgt.flows.persistence.model.NodeInfo parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
+
   public static org.opennms.netmgt.flows.persistence.model.NodeInfo parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -418,14 +419,12 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public Builder clear() {
       super.clear();
+      bitField0_ = 0;
       foreignSource_ = "";
-
       foreginId_ = "";
-
       nodeId_ = 0;
-
-      categories_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      bitField0_ = (bitField0_ & ~0x00000001);
+      categories_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       return this;
     }
 
@@ -452,17 +451,26 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public org.opennms.netmgt.flows.persistence.model.NodeInfo buildPartial() {
       org.opennms.netmgt.flows.persistence.model.NodeInfo result = new org.opennms.netmgt.flows.persistence.model.NodeInfo(this);
-      int from_bitField0_ = bitField0_;
-      result.foreignSource_ = foreignSource_;
-      result.foreginId_ = foreginId_;
-      result.nodeId_ = nodeId_;
-      if (((bitField0_ & 0x00000001) != 0)) {
-        categories_ = categories_.getUnmodifiableView();
-        bitField0_ = (bitField0_ & ~0x00000001);
-      }
-      result.categories_ = categories_;
+      if (bitField0_ != 0) { buildPartial0(result); }
       onBuilt();
       return result;
+    }
+
+    private void buildPartial0(org.opennms.netmgt.flows.persistence.model.NodeInfo result) {
+      int from_bitField0_ = bitField0_;
+      if (((from_bitField0_ & 0x00000001) != 0)) {
+        result.foreignSource_ = foreignSource_;
+      }
+      if (((from_bitField0_ & 0x00000002) != 0)) {
+        result.foreginId_ = foreginId_;
+      }
+      if (((from_bitField0_ & 0x00000004) != 0)) {
+        result.nodeId_ = nodeId_;
+      }
+      if (((from_bitField0_ & 0x00000008) != 0)) {
+        categories_.makeImmutable();
+        result.categories_ = categories_;
+      }
     }
 
     @java.lang.Override
@@ -511,10 +519,12 @@ private static final long serialVersionUID = 0L;
       if (other == org.opennms.netmgt.flows.persistence.model.NodeInfo.getDefaultInstance()) return this;
       if (!other.getForeignSource().isEmpty()) {
         foreignSource_ = other.foreignSource_;
+        bitField0_ |= 0x00000001;
         onChanged();
       }
       if (!other.getForeginId().isEmpty()) {
         foreginId_ = other.foreginId_;
+        bitField0_ |= 0x00000002;
         onChanged();
       }
       if (other.getNodeId() != 0) {
@@ -523,7 +533,7 @@ private static final long serialVersionUID = 0L;
       if (!other.categories_.isEmpty()) {
         if (categories_.isEmpty()) {
           categories_ = other.categories_;
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ |= 0x00000008;
         } else {
           ensureCategoriesIsMutable();
           categories_.addAll(other.categories_);
@@ -558,17 +568,17 @@ private static final long serialVersionUID = 0L;
               break;
             case 10: {
               foreignSource_ = input.readStringRequireUtf8();
-
+              bitField0_ |= 0x00000001;
               break;
             } // case 10
             case 18: {
               foreginId_ = input.readStringRequireUtf8();
-
+              bitField0_ |= 0x00000002;
               break;
             } // case 18
             case 24: {
               nodeId_ = input.readUInt32();
-
+              bitField0_ |= 0x00000004;
               break;
             } // case 24
             case 34: {
@@ -635,11 +645,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setForeignSource(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
+      if (value == null) { throw new NullPointerException(); }
       foreignSource_ = value;
+      bitField0_ |= 0x00000001;
       onChanged();
       return this;
     }
@@ -648,8 +656,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearForeignSource() {
-      
       foreignSource_ = getDefaultInstance().getForeignSource();
+      bitField0_ = (bitField0_ & ~0x00000001);
       onChanged();
       return this;
     }
@@ -660,12 +668,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setForeignSourceBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       foreignSource_ = value;
+      bitField0_ |= 0x00000001;
       onChanged();
       return this;
     }
@@ -711,11 +717,9 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setForeginId(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
+      if (value == null) { throw new NullPointerException(); }
       foreginId_ = value;
+      bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
@@ -724,8 +728,8 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearForeginId() {
-      
       foreginId_ = getDefaultInstance().getForeginId();
+      bitField0_ = (bitField0_ & ~0x00000002);
       onChanged();
       return this;
     }
@@ -736,12 +740,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setForeginIdBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       foreginId_ = value;
+      bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
@@ -761,8 +763,9 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder setNodeId(int value) {
-      
+
       nodeId_ = value;
+      bitField0_ |= 0x00000004;
       onChanged();
       return this;
     }
@@ -771,18 +774,19 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearNodeId() {
-      
+      bitField0_ = (bitField0_ & ~0x00000004);
       nodeId_ = 0;
       onChanged();
       return this;
     }
 
-    private com.google.protobuf.LazyStringList categories_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+    private com.google.protobuf.LazyStringArrayList categories_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     private void ensureCategoriesIsMutable() {
-      if (!((bitField0_ & 0x00000001) != 0)) {
+      if (!categories_.isModifiable()) {
         categories_ = new com.google.protobuf.LazyStringArrayList(categories_);
-        bitField0_ |= 0x00000001;
-       }
+      }
+      bitField0_ |= 0x00000008;
     }
     /**
      * <code>repeated string categories = 4;</code>
@@ -790,7 +794,8 @@ private static final long serialVersionUID = 0L;
      */
     public com.google.protobuf.ProtocolStringList
         getCategoriesList() {
-      return categories_.getUnmodifiableView();
+      categories_.makeImmutable();
+      return categories_;
     }
     /**
      * <code>repeated string categories = 4;</code>
@@ -824,11 +829,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder setCategories(
         int index, java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureCategoriesIsMutable();
+      if (value == null) { throw new NullPointerException(); }
+      ensureCategoriesIsMutable();
       categories_.set(index, value);
+      bitField0_ |= 0x00000008;
       onChanged();
       return this;
     }
@@ -839,11 +843,10 @@ private static final long serialVersionUID = 0L;
      */
     public Builder addCategories(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureCategoriesIsMutable();
+      if (value == null) { throw new NullPointerException(); }
+      ensureCategoriesIsMutable();
       categories_.add(value);
+      bitField0_ |= 0x00000008;
       onChanged();
       return this;
     }
@@ -857,6 +860,7 @@ private static final long serialVersionUID = 0L;
       ensureCategoriesIsMutable();
       com.google.protobuf.AbstractMessageLite.Builder.addAll(
           values, categories_);
+      bitField0_ |= 0x00000008;
       onChanged();
       return this;
     }
@@ -865,8 +869,9 @@ private static final long serialVersionUID = 0L;
      * @return This builder for chaining.
      */
     public Builder clearCategories() {
-      categories_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-      bitField0_ = (bitField0_ & ~0x00000001);
+      categories_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
+      bitField0_ = (bitField0_ & ~0x00000008);;
       onChanged();
       return this;
     }
@@ -877,12 +882,11 @@ private static final long serialVersionUID = 0L;
      */
     public Builder addCategoriesBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       ensureCategoriesIsMutable();
       categories_.add(value);
+      bitField0_ |= 0x00000008;
       onChanged();
       return this;
     }
