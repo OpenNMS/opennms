@@ -188,7 +188,10 @@
     </feature>
     <feature name="owasp-html-sanitizer" version="${owaspHtmlSanitizerVersion}" description="OWASP :: HTML Sanitizer">
         <feature version="${guavaOsgiVersion}">guava</feature>
-        <bundle>wrap:mvn:com.googlecode.owasp-java-html-sanitizer/owasp-java-html-sanitizer/${owaspHtmlSanitizerVersion}$Bundle-SymbolicName=com.googlecode.owasp-java.html-sanitizer&amp;Bundle-Version=${owaspHtmlSanitizerVersion}&amp;Export-Package=org.owasp.html</bundle>
+        <bundle>mvn:com.google.code.findbugs/jsr305/3.0.2</bundle>
+        <bundle>wrap:mvn:com.googlecode.owasp-java-html-sanitizer/java8-shim/${owaspHtmlSanitizerVersion}</bundle>
+        <bundle>wrap:mvn:com.googlecode.owasp-java-html-sanitizer/java10-shim/${owaspHtmlSanitizerVersion}</bundle>
+        <bundle>mvn:com.googlecode.owasp-java-html-sanitizer/owasp-java-html-sanitizer/${owaspHtmlSanitizerVersion}</bundle>
     </feature>
     <feature name="postgresql" version="${postgresqlVersion}" description="PostgreSQL :: JDBC Driver">
         <feature>pax-jdbc-spec</feature>
