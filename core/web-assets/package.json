@@ -64,7 +64,7 @@
         "postcss-loader": "^3.0.0",
         "prettier": "^3.0.0",
         "sass": "^1.49.8",
-        "sass-loader": "^10.2.1",
+        "sass-loader": "^16.0.4",
         "script-loader": "^0.7.2",
         "speed-measure-webpack-plugin": "^1.5.0",
         "string-replace-webpack-plugin": "^0.1.3",
