@@ -1831,22 +1831,15 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
         assertEquals(2, m_categoryAssociationDao.findAll().size());
 
+        importFromResource("classpath:/provisioner-testCategories-ThreeCategories-oneDeleted.xml", Boolean.TRUE.toString());
+
         m_provisionService.updateNodeAttributes(n);
 
-        assertEquals(3, m_categoryAssociationDao.findAll().size());
+        assertEquals(2, m_categoryAssociationDao.findAll().size());
 
         assertTrue(m_categoryAssociationDao.findByNodeId(n.getId()).stream().
-                anyMatch(cat -> cat.getCategory().getName().equals(Objects.requireNonNull(deleteCategory).getName())));
-
-//        assertEquals(3, m_categoryDao.findAll().size());
-
-//        assertTrue(m_categoryDao.findAll().stream()
-//        .anyMatch(cat -> cat.getName().equals(Objects.requireNonNull(deleteCategory).getName())
-//                        && cat.getId() > deleteCategory.getId()));
-
-//        assertTrue(m_categoryAssociationDao.findAll().stream()
-//                .anyMatch(catAss -> catAss.getCategory().getName().equals(Objects.requireNonNull(deleteCategory).getName())
-//                        && catAss.getCategory().getId() > deleteCategory.getId()));
+                noneMatch(cat ->
+                        cat.getCategory().getName().equals(Objects.requireNonNull(deleteCategory).getName())));
     }
 
     @Test(timeout = 300000)
