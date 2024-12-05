@@ -109,6 +109,10 @@ public class LatencyTypeResource extends AbstractResource {
         return ipAddress;
     }
 
+    public String getServiceName() {
+        return serviceName;
+    }
+
     @Override
     public Map<String, String> getTags() {
         return tags;

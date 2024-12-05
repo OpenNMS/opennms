@@ -95,7 +95,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitorAdapto
         String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", svc.getSvcName().toLowerCase());
         String rrdBaseName = ParameterMap.getKeyedString(parameters, "rrd-base-name", dsName);
         String thresholds  = ParameterMap.getKeyedString(parameters, "thresholding-enabled", "false");
-        Boolean snmpInfoInTags = ParameterMap.getKeyedBoolean(parameters, INTERFACE_INFO_IN_TAGS, false);
+        boolean snmpInfoInTags = ParameterMap.getKeyedBoolean(parameters, INTERFACE_INFO_IN_TAGS, false);
 
         if (!entries.containsKey(dsName) && entries.containsKey(PollStatus.PROPERTY_RESPONSE_TIME)) {
             entries.put(dsName, entries.get(PollStatus.PROPERTY_RESPONSE_TIME));
@@ -150,7 +150,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitorAdapto
         }
     }
 
-    private CollectionSet getCollectionSet(MonitoredService service, Map<String, Number> entries, String rrdBaseName, Boolean snmpInfoInTags) {
+    private CollectionSet getCollectionSet(MonitoredService service, Map<String, Number> entries, String rrdBaseName, boolean snmpInfoInTags) {
         // When making calls directly to RrdUtils#createRrd() and RrdUtils#updateRrd(),
         // the behavior was as follows:
         // 1) All samples get written to response/${ipAddr}/${rrdBaseName}.rrd

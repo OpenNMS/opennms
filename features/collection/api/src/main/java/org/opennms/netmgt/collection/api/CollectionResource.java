@@ -24,6 +24,7 @@ package org.opennms.netmgt.collection.api;
 import org.opennms.netmgt.collection.support.DefaultTimeKeeper;
 import org.opennms.netmgt.model.ResourcePath;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -103,12 +104,12 @@ public interface CollectionResource extends ResourceIdentifier, CollectionVisita
 
     // Can be used to add additional tags required by TimeSeries like Prometheus
     default Map<String, String> getTags() {
-        return new HashMap<>();
+        return Collections.emptyMap();
     }
 
     // Can be used to forward service parameters to persistence layer
     default Map<String, String> getServiceParams() {
-        return new HashMap<>();
+        return Collections.emptyMap();
     }
 
 }

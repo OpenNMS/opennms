@@ -82,7 +82,7 @@ public class StatusStoringServiceMonitorAdaptor implements ServiceMonitorAdaptor
 
         final String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", svc.getSvcName().toLowerCase());
         final String rrdBaseName = ParameterMap.getKeyedString(parameters, "rrd-base-name", dsName);
-        Boolean snmpInfoInTags = ParameterMap.getKeyedBoolean(parameters, INTERFACE_INFO_IN_TAGS, false);
+        boolean snmpInfoInTags = ParameterMap.getKeyedBoolean(parameters, INTERFACE_INFO_IN_TAGS, false);
 
         // Build collection agent
         final CollectionAgentDTO agent = new CollectionAgentDTO();

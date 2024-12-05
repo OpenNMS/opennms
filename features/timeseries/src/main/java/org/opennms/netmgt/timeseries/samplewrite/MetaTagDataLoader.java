@@ -35,6 +35,7 @@ import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.FallbackScope;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.netmgt.collection.api.CollectionResource;
@@ -106,9 +107,13 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
                     if (resource instanceof LatencyCollectionResource) {
                         String ipAddress = ((LatencyCollectionResource) resource).getIpAddress();
                         scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), ipAddress));
+                        scopes.add(this.entityScopeProvider.getScopeForService(node.getId(), InetAddressUtils.addr(ipAddress),
+                                ((LatencyCollectionResource) resource).getServiceName()));
                     } else if (resource instanceof LatencyTypeResource) {
                         String ipAddress = ((LatencyTypeResource) resource).getIpAddress();
                         scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), ipAddress));
+                        scopes.add(this.entityScopeProvider.getScopeForService(node.getId(), InetAddressUtils.addr(ipAddress),
+                                ((LatencyTypeResource) resource).getServiceName()));
                     }
                 }
                 // We cannot retrieve service meta-data - resource time resources contain the IP address and service name, but not the node
