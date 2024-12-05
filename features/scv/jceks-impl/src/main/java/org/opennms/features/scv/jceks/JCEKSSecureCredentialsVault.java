@@ -136,6 +136,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
     @Override
     public Credentials getCredentials(String alias) {
         loadCredentials();
+        reMapCredentials();
         synchronized (m_credentialsCache) {
             return m_credentialsCache.get(alias);
         }
@@ -205,8 +206,9 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
     @Override
     public Set<String> getAliases() {
         try {
+            reloadKeyStoreFile();
             return Sets.newHashSet(Collections.list(m_keystore.aliases()));
-        } catch (KeyStoreException e) {
+        } catch (KeyStoreException | CertificateException | IOException | NoSuchAlgorithmException e) {
             throw Throwables.propagate(e);
         }
     }
@@ -230,5 +232,31 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
 
     public static JCEKSSecureCredentialsVault defaultScv() {
         return new JCEKSSecureCredentialsVault(getKeystoreFilename(), getKeystorePassword());
+    }
+
+    private void reMapCredentials(){
+        try {
+            KeyStore.PasswordProtection keyStorePP = new KeyStore.PasswordProtection(m_password);
+            SecretKeyFactory factory = SecretKeyFactory.getInstance("PBE");
+            for (String aliass : getAliases()) {
+                KeyStore.SecretKeyEntry ske = (KeyStore.SecretKeyEntry) m_keystore.getEntry(aliass, keyStorePP);
+                if (ske == null) {
+                    continue;
+                }
+                PBEKeySpec keySpec = (PBEKeySpec) factory.getKeySpec(ske.getSecretKey(), PBEKeySpec.class);
+                m_credentialsCache.put(aliass, fromBase64EncodedByteArray(new String(keySpec.getPassword()).getBytes()));
+            }
+        } catch (KeyStoreException | InvalidKeySpecException | NoSuchAlgorithmException | IOException | ClassNotFoundException | UnrecoverableEntryException e) {
+            throw Throwables.propagate(e);
+        }
+    }
+    private void reloadKeyStoreFile() throws CertificateException, IOException, NoSuchAlgorithmException {
+        if (!m_keystoreFile.isFile()) {
+            m_keystore.load(null, m_password);
+        } else {
+            try (InputStream is = new FileInputStream(m_keystoreFile)) {
+                m_keystore.load(is, m_password);
+            }
+        }
     }
 }
