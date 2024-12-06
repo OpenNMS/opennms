@@ -49,7 +49,7 @@ public class ChooseResourcesPageIT extends OpenNMSSeleniumIT {
 
         for (final String parameter : parameters) {
             getDriver().get(getBaseUrlInternal() + "opennms/graph/results.htm?" + parameter + scriptTag);
-            new WebDriverWait(getDriver(), Duration.ofSeconds(5)).until(pageContainsText("The OpenNMS Group"));
+            new WebDriverWait(getDriver(), Duration.ofSeconds(5)).until(pageContainsText("BlueBirdOps"));
         }
     }
 

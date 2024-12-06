@@ -174,12 +174,6 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
             javaOpts += String.format(" -agentlib:jdwp=transport=dt_socket,server=y,address=*:%d,suspend=n", OPENNMS_DEBUG_PORT);
         }
 
-        // Use a Java binary without any capabilities set (i.e. cap_net_raw for ping) when simulating an OpenShift env.
-        // This helps make sure that the JVM in question is setup correctly
-        if (model.isSimulateRestricedOpenShiftEnvironment()) {
-            this.withEnv("JAVA_HOME", "/usr/lib/jvm/java-nocap");
-        }
-
         withExposedPorts(exposedPorts)
                 .withCreateContainerCmdModifier(createCmd -> {
                     TestContainerUtils.setGlobalMemAndCpuLimits(createCmd);

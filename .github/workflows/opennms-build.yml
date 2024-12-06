@@ -484,7 +484,7 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     container:
-      image: quay.io/bluebird/base-builder:ubuntu.0.1.1.b1
+      image: quay.io/bluebird/base-builder:ubuntu.0.1.4.b6
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -504,7 +504,7 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     container:
-      image: quay.io/bluebird/base-builder:ubuntu.0.1.1.b1
+      image: quay.io/bluebird/base-builder:ubuntu.0.1.4.b6
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -524,7 +524,7 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     container:
-      image: quay.io/bluebird/base-builder:ubuntu.0.1.1.b1
+      image: quay.io/bluebird/base-builder:ubuntu.0.1.4.b6
     steps:
       - uses: actions/download-artifact@v4
         with:

@@ -35,6 +35,8 @@ DEB_PKG_RELEASE       := $(RELEASE_BUILD_NUM)
 DEBEMAIL              ?= cicd@bluebirdlabs.tech
 
 INSTALL_VERSION       := ${VERSION}-0.${RELEASE_MINOR_VERSION}.${RELEASE_MICRO_VERSION}.${RELEASE_COMMIT}
+DEPLOY_BASE_IMAGE     := quay.io/bluebird/deploy-base:1.0.0.b11
+BUILD_DATE            := $(shell date '+%Y%m%d')
 DOCKER_ARCH           := linux/amd64
 OCI_REGISTRY          ?= quay.io
 OCI_REGISTRY_USER     ?= changeme
@@ -223,7 +225,11 @@ endif
 	mkdir -p opennms-container/core/tarball-root && \
 	tar xzf opennms-full-assembly/target/opennms-full-assembly-*-core.tar.gz -C opennms-container/core/tarball-root && \
 	cd opennms-container/core && \
-    docker build -t opennms/horizon:latest .
+    docker build --build-arg DEPLOY_BASE_IMAGE=$(DEPLOY_BASE_IMAGE) \
+		 --build-arg BUILD_DATE=$(BUILD_DATE) \
+		 --build-arg VERSION=$(OPENNMS_VERSION) \
+		 --build-arg REVISION=$(RELEASE_COMMIT) \
+		 -t opennms/horizon:latest .
 
 .PHONY: minion-oci
 minion-oci:
@@ -244,7 +250,11 @@ endif
 		-e 's,@REVISION@,$(RELEASE_COMMIT),' \
 		-e 's,@BRANCH@,$(GIT_BRANCH),' \
 		-e 's,@BUILD_NUMBER@,$(RELEASE_BUILD_NUM),' > minion-config-schema.yml && \
-    docker build -t opennms/minion:latest .
+    docker build --build-arg DEPLOY_BASE_IMAGE=$(DEPLOY_BASE_IMAGE) \
+         --build-arg BUILD_DATE=$(BUILD_DATE) \
+         --build-arg VERSION=$(OPENNMS_VERSION) \
+         --build-arg REVISION=$(RELEASE_COMMIT) \
+         -t opennms/minion:latest .
 
 .PHONY: sentinel-oci
 sentinel-oci:
@@ -261,7 +271,11 @@ endif
 	mkdir -p opennms-container/sentinel/tarball-root && \
 	tar xzf opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz --strip-component 1 -C opennms-container/sentinel/tarball-root
 	cd opennms-container/sentinel && \
-    docker build -t opennms/sentinel:latest .
+    docker build --build-arg DEPLOY_BASE_IMAGE=$(DEPLOY_BASE_IMAGE) \
+         --build-arg BUILD_DATE=$(BUILD_DATE) \
+         --build-arg VERSION=$(OPENNMS_VERSION) \
+         --build-arg REVISION=$(RELEASE_COMMIT) \
+         -t opennms/sentinel:latest .
 
 .PHONY: show-core-oci
 show-core-oci: deps-oci-layers core-oci
