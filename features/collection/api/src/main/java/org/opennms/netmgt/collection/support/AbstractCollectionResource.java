@@ -24,6 +24,7 @@ package org.opennms.netmgt.collection.support;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.google.common.collect.Maps;
 import org.opennms.netmgt.collection.api.AttributeGroup;
 import org.opennms.netmgt.collection.api.AttributeGroupType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -49,6 +50,8 @@ public abstract class AbstractCollectionResource implements CollectionResource {
 
     protected final CollectionAgent m_agent;
     private final Map<AttributeGroupType, AttributeGroup> m_attributeGroups = new LinkedHashMap<AttributeGroupType, AttributeGroup>();
+    private final Map<String, String> m_tags = Maps.newHashMap();
+    private final Map<String, String> m_serviceParams = Maps.newHashMap();
     
     /**
      * <p>Constructor for AbstractCollectionResource.</p>
@@ -151,6 +154,24 @@ public abstract class AbstractCollectionResource implements CollectionResource {
     @Override
     public TimeKeeper getTimeKeeper() {
         return null;
+    }
+
+    @Override
+    public Map<String, String> getTags() {
+        return m_tags;
+    }
+
+    @Override
+    public Map<String, String> getServiceParams() {
+        return m_serviceParams;
+    }
+
+    public void addServiceParam(String name, String value) {
+        m_serviceParams.put(name, value);
+    }
+
+    public void addTag(String name, String value) {
+        m_tags.put(name, value);
     }
 
 }

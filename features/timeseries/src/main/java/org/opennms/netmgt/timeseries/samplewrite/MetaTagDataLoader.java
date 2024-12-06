@@ -35,9 +35,12 @@ import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.FallbackScope;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.LatencyCollectionResource;
+import org.opennms.netmgt.collection.support.builder.LatencyTypeResource;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -49,6 +52,9 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Strings;
 import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Maps;
+
+import static org.opennms.netmgt.collection.api.CollectionResource.INTERFACE_INFO_IN_TAGS;
+
 
 /** Loads meta data from OpenNMS, to be exposed to the TimeseriesStorage. This data is not relevant for the operation of
  * OpenNMS but can be used to enrich the data in the timeseries database to be used externally. */
@@ -83,7 +89,7 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
             // node related scopes
             String nodeCriteria = getNodeCriteriaFromResource(resource);
             Optional<OnmsNode> nodeOptional = getNode(nodeCriteria);
-            if(nodeOptional.isPresent()) {
+            if (nodeOptional.isPresent()) {
                 OnmsNode node = nodeOptional.get();
                 scopes.add(this.entityScopeProvider.getScopeForNode(node.getId()));
                 if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_IF)) {
@@ -93,6 +99,21 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
                         scopes.add(this.entityScopeProvider.getScopeForInterfaceByIfIndex(node.getId(), ifIndex));
                     } catch(NumberFormatException nfe) {
                         // pass
+                    }
+                }
+                if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_LATENCY) &&
+                        resource.getServiceParams().containsKey(INTERFACE_INFO_IN_TAGS) &&
+                        Boolean.parseBoolean(resource.getServiceParams().get(INTERFACE_INFO_IN_TAGS))) {
+                    if (resource instanceof LatencyCollectionResource) {
+                        String ipAddress = ((LatencyCollectionResource) resource).getIpAddress();
+                        scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), ipAddress));
+                        scopes.add(this.entityScopeProvider.getScopeForService(node.getId(), InetAddressUtils.addr(ipAddress),
+                                ((LatencyCollectionResource) resource).getServiceName()));
+                    } else if (resource instanceof LatencyTypeResource) {
+                        String ipAddress = ((LatencyTypeResource) resource).getIpAddress();
+                        scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), ipAddress));
+                        scopes.add(this.entityScopeProvider.getScopeForService(node.getId(), InetAddressUtils.addr(ipAddress),
+                                ((LatencyTypeResource) resource).getServiceName()));
                     }
                 }
                 // We cannot retrieve service meta-data - resource time resources contain the IP address and service name, but not the node
@@ -139,6 +160,9 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
             if (entry.getValue().contains("resource:location") && resource.getTags().get("location") != null) {
                 tags.add(new ImmutableTag(entry.getKey(), resource.getTags().get("location")));
             }
+            if (entry.getValue().contains("resource:node_id") && resource.getTags().get("node_id") != null) {
+                tags.add(new ImmutableTag(entry.getKey(), resource.getTags().get("node_id")));
+            }
         }
     }
 
@@ -169,6 +193,9 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
                     nodeCriteria = resourcePathArray[0];
                 }
             }
+        }
+        if (nodeCriteria == null && !resource.getTags().isEmpty()) {
+            return resource.getTags().getOrDefault("node_id", null);
         }
         return nodeCriteria;
     }
