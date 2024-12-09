@@ -936,6 +936,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         m_foreignSourceRepository = foreignSourceRepository;
     }
 
+    public void setCategoriesInCache(final Map<String, OnmsCategory> categoryCache) {
+        m_categoryCache.set(categoryCache);
+    }
+
     /**
      * <p>getForeignSourceRepository</p>
      *
@@ -1020,6 +1024,11 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                         m_categoryAssociationDao.delete(reqCat);
                         changed = true;
                     }
+                }
+
+                // If some categories were removed or there are new to be added, reset the cache.
+                if (m_categoryCache.get() != null && (changed || !categories.isEmpty())) {
+                      m_categoryCache.set(loadCategoryMap());
                 }
 
                 // the remainder of requisitioned categories get added
