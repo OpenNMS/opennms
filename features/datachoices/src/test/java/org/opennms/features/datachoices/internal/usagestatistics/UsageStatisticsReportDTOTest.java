@@ -122,7 +122,7 @@ public class UsageStatisticsReportDTOTest {
             "\"tssStrategies\":null," +
             "\"users\":0," +
             "\"version\":\"10.5.7\"," +
-            "\"totalPhysicalMemorySize\":null," +
+            "\"usedPhysicalMemorySize\":null," +
             "\"hostName\":null" +
                 "}";
 
