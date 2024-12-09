@@ -31,5 +31,15 @@
       <artifactId>owasp-java-html-sanitizer</artifactId>
       <version>${owaspHtmlSanitizerVersion}</version>
     </dependency>
+    <dependency>
+      <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+      <artifactId>java8-shim</artifactId>
+      <version>${owaspHtmlSanitizerVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.googlecode.owasp-java-html-sanitizer</groupId>
+      <artifactId>java10-shim</artifactId>
+      <version>${owaspHtmlSanitizerVersion}</version>
+    </dependency>
   </dependencies>
 </project>
