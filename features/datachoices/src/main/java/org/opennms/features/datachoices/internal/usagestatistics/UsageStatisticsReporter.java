@@ -84,6 +84,7 @@ import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.slf4j.Logger;
@@ -255,14 +256,23 @@ public class UsageStatisticsReporter implements StateChangeHandler {
                         "The usage report will be submitted with a null system id.", e);
         }
         // Operating System
+
         usageStatisticsReport.setOsName(System.getProperty("os.name"));
         usageStatisticsReport.setOsArch(System.getProperty("os.arch"));
         usageStatisticsReport.setOsVersion(System.getProperty("os.version"));
+
+
         // OpenNMS version and flavor
         usageStatisticsReport.setVersion(sysInfoUtils.getVersion());
         usageStatisticsReport.setPackageName(sysInfoUtils.getPackageName());
         // Object counts
         usageStatisticsReport.setNodes(m_nodeDao.countAll());
+        //
+        if(m_nodeDao.countAll()>0) {
+            OnmsNode node = m_nodeDao.load(1);
+            usageStatisticsReport.setHostName(node.getLabel());
+        }
+
         usageStatisticsReport.setIpInterfaces(m_ipInterfaceDao.countAll());
         usageStatisticsReport.setSnmpInterfaces(m_snmpInterfaceDao.countAll());
         usageStatisticsReport.setSnmpInterfacesWithFlows(m_snmpInterfaceDao.getNumInterfacesWithFlows());
@@ -328,7 +338,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         Object totalPhysicalMemSizeObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE);
         if (totalPhysicalMemSizeObj != null) {
             usageStatisticsReport.setTotalPhysicalMemorySize((long) totalPhysicalMemSizeObj);
+
         }
+        long usedPhysicalMemory = (long)totalPhysicalMemSizeObj - (long)freePhysicalMemSizeObj;
+        usageStatisticsReport.setUsedPhysicalMemorySize(usedPhysicalMemory);
         Object availableProcessorsObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_AVAILABLE_PROCESSORS);
         if (availableProcessorsObj != null) {
             usageStatisticsReport.setAvailableProcessors((int) availableProcessorsObj);
