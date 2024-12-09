@@ -188,10 +188,13 @@
     </feature>
     <feature name="owasp-html-sanitizer" version="${owaspHtmlSanitizerVersion}" description="OWASP :: HTML Sanitizer">
         <feature version="${guavaOsgiVersion}">guava</feature>
-        <bundle>mvn:com.google.code.findbugs/jsr305/3.0.2</bundle>
+        <!--
+        <bundle>mvn:com.google.code.findbugs/jsr305/${findbugsJsr305Version}</bundle>
+        <bundle>mvn:com.google.code.findbugs/annotations/${findbugsAnnotationsVersion}</bundle>
         <bundle>wrap:mvn:com.googlecode.owasp-java-html-sanitizer/java8-shim/${owaspHtmlSanitizerVersion}</bundle>
         <bundle>wrap:mvn:com.googlecode.owasp-java-html-sanitizer/java10-shim/${owaspHtmlSanitizerVersion}</bundle>
-        <bundle>mvn:com.googlecode.owasp-java-html-sanitizer/owasp-java-html-sanitizer/${owaspHtmlSanitizerVersion}</bundle>
+        -->
+        <bundle>wrap:mvn:com.googlecode.owasp-java-html-sanitizer/owasp-java-html-sanitizer/${owaspHtmlSanitizerVersion}$overwrite=merge&amp;Import-Package=javax.annotation;version=!,*</bundle>
     </feature>
     <feature name="postgresql" version="${postgresqlVersion}" description="PostgreSQL :: JDBC Driver">
         <feature>pax-jdbc-spec</feature>
