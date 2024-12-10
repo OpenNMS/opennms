@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2024 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,7 +25,6 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.features.openconfig.proto.gnmi;
 
 public final class GnmiExt {
@@ -230,7 +229,7 @@ public final class GnmiExt {
      */
     org.opennms.features.openconfig.proto.gnmi.GnmiExt.MasterArbitrationOrBuilder getMasterArbitrationOrBuilder();
 
-    public org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension.ExtCase getExtCase();
+    org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension.ExtCase getExtCase();
   }
   /**
    * <pre>
@@ -258,11 +257,6 @@ public final class GnmiExt {
       return new Extension();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.GnmiExt.internal_static_gnmi_ext_Extension_descriptor;
@@ -277,6 +271,7 @@ public final class GnmiExt {
     }
 
     private int extCase_ = 0;
+    @SuppressWarnings("serial")
     private java.lang.Object ext_;
     public enum ExtCase
         implements com.google.protobuf.Internal.EnumLite,
@@ -540,11 +535,13 @@ public final class GnmiExt {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -623,6 +620,7 @@ public final class GnmiExt {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (registeredExtBuilder_ != null) {
           registeredExtBuilder_.clear();
         }
@@ -657,23 +655,27 @@ public final class GnmiExt {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension result = new org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension(this);
-        if (extCase_ == 1) {
-          if (registeredExtBuilder_ == null) {
-            result.ext_ = ext_;
-          } else {
-            result.ext_ = registeredExtBuilder_.build();
-          }
-        }
-        if (extCase_ == 2) {
-          if (masterArbitrationBuilder_ == null) {
-            result.ext_ = ext_;
-          } else {
-            result.ext_ = masterArbitrationBuilder_.build();
-          }
-        }
-        result.extCase_ = extCase_;
+        if (bitField0_ != 0) { buildPartial0(result); }
+        buildPartialOneofs(result);
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension result) {
+        int from_bitField0_ = bitField0_;
+      }
+
+      private void buildPartialOneofs(org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension result) {
+        result.extCase_ = extCase_;
+        result.ext_ = this.ext_;
+        if (extCase_ == 1 &&
+            registeredExtBuilder_ != null) {
+          result.ext_ = registeredExtBuilder_.build();
+        }
+        if (extCase_ == 2 &&
+            masterArbitrationBuilder_ != null) {
+          result.ext_ = masterArbitrationBuilder_.build();
+        }
       }
 
       @java.lang.Override
@@ -803,6 +805,7 @@ public final class GnmiExt {
         return this;
       }
 
+      private int bitField0_;
 
       private com.google.protobuf.SingleFieldBuilderV3<
           org.opennms.features.openconfig.proto.gnmi.GnmiExt.RegisteredExtension, org.opennms.features.openconfig.proto.gnmi.GnmiExt.RegisteredExtension.Builder, org.opennms.features.openconfig.proto.gnmi.GnmiExt.RegisteredExtensionOrBuilder> registeredExtBuilder_;
@@ -898,8 +901,9 @@ public final class GnmiExt {
         } else {
           if (extCase_ == 1) {
             registeredExtBuilder_.mergeFrom(value);
+          } else {
+            registeredExtBuilder_.setMessage(value);
           }
-          registeredExtBuilder_.setMessage(value);
         }
         extCase_ = 1;
         return this;
@@ -977,7 +981,7 @@ public final class GnmiExt {
           ext_ = null;
         }
         extCase_ = 1;
-        onChanged();;
+        onChanged();
         return registeredExtBuilder_;
       }
 
@@ -1075,8 +1079,9 @@ public final class GnmiExt {
         } else {
           if (extCase_ == 2) {
             masterArbitrationBuilder_.mergeFrom(value);
+          } else {
+            masterArbitrationBuilder_.setMessage(value);
           }
-          masterArbitrationBuilder_.setMessage(value);
         }
         extCase_ = 2;
         return this;
@@ -1154,7 +1159,7 @@ public final class GnmiExt {
           ext_ = null;
         }
         extCase_ = 2;
-        onChanged();;
+        onChanged();
         return masterArbitrationBuilder_;
       }
       @java.lang.Override
@@ -1283,11 +1288,6 @@ public final class GnmiExt {
       return new RegisteredExtension();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.GnmiExt.internal_static_gnmi_ext_RegisteredExtension_descriptor;
@@ -1302,7 +1302,7 @@ public final class GnmiExt {
     }
 
     public static final int ID_FIELD_NUMBER = 1;
-    private int id_;
+    private int id_ = 0;
     /**
      * <pre>
      * The unique ID assigned to this extension.
@@ -1323,13 +1323,12 @@ public final class GnmiExt {
      * @return The id.
      */
     @java.lang.Override public org.opennms.features.openconfig.proto.gnmi.GnmiExt.ExtensionID getId() {
-      @SuppressWarnings("deprecation")
-      org.opennms.features.openconfig.proto.gnmi.GnmiExt.ExtensionID result = org.opennms.features.openconfig.proto.gnmi.GnmiExt.ExtensionID.valueOf(id_);
+      org.opennms.features.openconfig.proto.gnmi.GnmiExt.ExtensionID result = org.opennms.features.openconfig.proto.gnmi.GnmiExt.ExtensionID.forNumber(id_);
       return result == null ? org.opennms.features.openconfig.proto.gnmi.GnmiExt.ExtensionID.UNRECOGNIZED : result;
     }
 
     public static final int MSG_FIELD_NUMBER = 2;
-    private com.google.protobuf.ByteString msg_;
+    private com.google.protobuf.ByteString msg_ = com.google.protobuf.ByteString.EMPTY;
     /**
      * <pre>
      * The binary-marshalled protobuf extension payload.
@@ -1462,11 +1461,13 @@ public final class GnmiExt {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.GnmiExt.RegisteredExtension parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.GnmiExt.RegisteredExtension parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1546,10 +1547,9 @@ public final class GnmiExt {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         id_ = 0;
-
         msg_ = com.google.protobuf.ByteString.EMPTY;
-
         return this;
       }
 
@@ -1576,10 +1576,19 @@ public final class GnmiExt {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.GnmiExt.RegisteredExtension buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.GnmiExt.RegisteredExtension result = new org.opennms.features.openconfig.proto.gnmi.GnmiExt.RegisteredExtension(this);
-        result.id_ = id_;
-        result.msg_ = msg_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.GnmiExt.RegisteredExtension result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.id_ = id_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.msg_ = msg_;
+        }
       }
 
       @java.lang.Override
@@ -1660,12 +1669,12 @@ public final class GnmiExt {
                 break;
               case 8: {
                 id_ = input.readEnum();
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 8
               case 18: {
                 msg_ = input.readBytes();
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 18
               default: {
@@ -1683,6 +1692,7 @@ public final class GnmiExt {
         } // finally
         return this;
       }
+      private int bitField0_;
 
       private int id_ = 0;
       /**
@@ -1706,8 +1716,8 @@ public final class GnmiExt {
        * @return This builder for chaining.
        */
       public Builder setIdValue(int value) {
-        
         id_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1721,8 +1731,7 @@ public final class GnmiExt {
        */
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.GnmiExt.ExtensionID getId() {
-        @SuppressWarnings("deprecation")
-        org.opennms.features.openconfig.proto.gnmi.GnmiExt.ExtensionID result = org.opennms.features.openconfig.proto.gnmi.GnmiExt.ExtensionID.valueOf(id_);
+        org.opennms.features.openconfig.proto.gnmi.GnmiExt.ExtensionID result = org.opennms.features.openconfig.proto.gnmi.GnmiExt.ExtensionID.forNumber(id_);
         return result == null ? org.opennms.features.openconfig.proto.gnmi.GnmiExt.ExtensionID.UNRECOGNIZED : result;
       }
       /**
@@ -1738,7 +1747,7 @@ public final class GnmiExt {
         if (value == null) {
           throw new NullPointerException();
         }
-        
+        bitField0_ |= 0x00000001;
         id_ = value.getNumber();
         onChanged();
         return this;
@@ -1752,7 +1761,7 @@ public final class GnmiExt {
        * @return This builder for chaining.
        */
       public Builder clearId() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         id_ = 0;
         onChanged();
         return this;
@@ -1781,11 +1790,9 @@ public final class GnmiExt {
        * @return This builder for chaining.
        */
       public Builder setMsg(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         msg_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -1798,7 +1805,7 @@ public final class GnmiExt {
        * @return This builder for chaining.
        */
       public Builder clearMsg() {
-        
+        bitField0_ = (bitField0_ & ~0x00000002);
         msg_ = getDefaultInstance().getMsg();
         onChanged();
         return this;
@@ -1931,11 +1938,6 @@ public final class GnmiExt {
       return new MasterArbitration();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.GnmiExt.internal_static_gnmi_ext_MasterArbitration_descriptor;
@@ -1949,6 +1951,7 @@ public final class GnmiExt {
               org.opennms.features.openconfig.proto.gnmi.GnmiExt.MasterArbitration.class, org.opennms.features.openconfig.proto.gnmi.GnmiExt.MasterArbitration.Builder.class);
     }
 
+    private int bitField0_;
     public static final int ROLE_FIELD_NUMBER = 1;
     private org.opennms.features.openconfig.proto.gnmi.GnmiExt.Role role_;
     /**
@@ -1957,7 +1960,7 @@ public final class GnmiExt {
      */
     @java.lang.Override
     public boolean hasRole() {
-      return role_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <code>.gnmi_ext.Role role = 1;</code>
@@ -1972,7 +1975,7 @@ public final class GnmiExt {
      */
     @java.lang.Override
     public org.opennms.features.openconfig.proto.gnmi.GnmiExt.RoleOrBuilder getRoleOrBuilder() {
-      return getRole();
+      return role_ == null ? org.opennms.features.openconfig.proto.gnmi.GnmiExt.Role.getDefaultInstance() : role_;
     }
 
     public static final int ELECTION_ID_FIELD_NUMBER = 2;
@@ -1983,7 +1986,7 @@ public final class GnmiExt {
      */
     @java.lang.Override
     public boolean hasElectionId() {
-      return electionId_ != null;
+      return ((bitField0_ & 0x00000002) != 0);
     }
     /**
      * <code>.gnmi_ext.Uint128 election_id = 2;</code>
@@ -1998,7 +2001,7 @@ public final class GnmiExt {
      */
     @java.lang.Override
     public org.opennms.features.openconfig.proto.gnmi.GnmiExt.Uint128OrBuilder getElectionIdOrBuilder() {
-      return getElectionId();
+      return electionId_ == null ? org.opennms.features.openconfig.proto.gnmi.GnmiExt.Uint128.getDefaultInstance() : electionId_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -2015,10 +2018,10 @@ public final class GnmiExt {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (role_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(1, getRole());
       }
-      if (electionId_ != null) {
+      if (((bitField0_ & 0x00000002) != 0)) {
         output.writeMessage(2, getElectionId());
       }
       getUnknownFields().writeTo(output);
@@ -2030,11 +2033,11 @@ public final class GnmiExt {
       if (size != -1) return size;
 
       size = 0;
-      if (role_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, getRole());
       }
-      if (electionId_ != null) {
+      if (((bitField0_ & 0x00000002) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, getElectionId());
       }
@@ -2131,11 +2134,13 @@ public final class GnmiExt {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.GnmiExt.MasterArbitration parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.GnmiExt.MasterArbitration parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2207,27 +2212,33 @@ public final class GnmiExt {
 
       // Construct using org.opennms.features.openconfig.proto.gnmi.GnmiExt.MasterArbitration.newBuilder()
       private Builder() {
-
+        maybeForceBuilderInitialization();
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getRoleFieldBuilder();
+          getElectionIdFieldBuilder();
+        }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (roleBuilder_ == null) {
-          role_ = null;
-        } else {
-          role_ = null;
+        bitField0_ = 0;
+        role_ = null;
+        if (roleBuilder_ != null) {
+          roleBuilder_.dispose();
           roleBuilder_ = null;
         }
-        if (electionIdBuilder_ == null) {
-          electionId_ = null;
-        } else {
-          electionId_ = null;
+        electionId_ = null;
+        if (electionIdBuilder_ != null) {
+          electionIdBuilder_.dispose();
           electionIdBuilder_ = null;
         }
         return this;
@@ -2256,18 +2267,27 @@ public final class GnmiExt {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.GnmiExt.MasterArbitration buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.GnmiExt.MasterArbitration result = new org.opennms.features.openconfig.proto.gnmi.GnmiExt.MasterArbitration(this);
-        if (roleBuilder_ == null) {
-          result.role_ = role_;
-        } else {
-          result.role_ = roleBuilder_.build();
-        }
-        if (electionIdBuilder_ == null) {
-          result.electionId_ = electionId_;
-        } else {
-          result.electionId_ = electionIdBuilder_.build();
-        }
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.GnmiExt.MasterArbitration result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.role_ = roleBuilder_ == null
+              ? role_
+              : roleBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.electionId_ = electionIdBuilder_ == null
+              ? electionId_
+              : electionIdBuilder_.build();
+          to_bitField0_ |= 0x00000002;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -2350,14 +2370,14 @@ public final class GnmiExt {
                 input.readMessage(
                     getRoleFieldBuilder().getBuilder(),
                     extensionRegistry);
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 10
               case 18: {
                 input.readMessage(
                     getElectionIdFieldBuilder().getBuilder(),
                     extensionRegistry);
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 18
               default: {
@@ -2375,6 +2395,7 @@ public final class GnmiExt {
         } // finally
         return this;
       }
+      private int bitField0_;
 
       private org.opennms.features.openconfig.proto.gnmi.GnmiExt.Role role_;
       private com.google.protobuf.SingleFieldBuilderV3<
@@ -2384,7 +2405,7 @@ public final class GnmiExt {
        * @return Whether the role field is set.
        */
       public boolean hasRole() {
-        return roleBuilder_ != null || role_ != null;
+        return ((bitField0_ & 0x00000001) != 0);
       }
       /**
        * <code>.gnmi_ext.Role role = 1;</code>
@@ -2406,11 +2427,11 @@ public final class GnmiExt {
             throw new NullPointerException();
           }
           role_ = value;
-          onChanged();
         } else {
           roleBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -2420,11 +2441,11 @@ public final class GnmiExt {
           org.opennms.features.openconfig.proto.gnmi.GnmiExt.Role.Builder builderForValue) {
         if (roleBuilder_ == null) {
           role_ = builderForValue.build();
-          onChanged();
         } else {
           roleBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -2432,38 +2453,40 @@ public final class GnmiExt {
        */
       public Builder mergeRole(org.opennms.features.openconfig.proto.gnmi.GnmiExt.Role value) {
         if (roleBuilder_ == null) {
-          if (role_ != null) {
-            role_ =
-              org.opennms.features.openconfig.proto.gnmi.GnmiExt.Role.newBuilder(role_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000001) != 0) &&
+            role_ != null &&
+            role_ != org.opennms.features.openconfig.proto.gnmi.GnmiExt.Role.getDefaultInstance()) {
+            getRoleBuilder().mergeFrom(value);
           } else {
             role_ = value;
           }
-          onChanged();
         } else {
           roleBuilder_.mergeFrom(value);
         }
-
+        if (role_ != null) {
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
         return this;
       }
       /**
        * <code>.gnmi_ext.Role role = 1;</code>
        */
       public Builder clearRole() {
-        if (roleBuilder_ == null) {
-          role_ = null;
-          onChanged();
-        } else {
-          role_ = null;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        role_ = null;
+        if (roleBuilder_ != null) {
+          roleBuilder_.dispose();
           roleBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
        * <code>.gnmi_ext.Role role = 1;</code>
        */
       public org.opennms.features.openconfig.proto.gnmi.GnmiExt.Role.Builder getRoleBuilder() {
-        
+        bitField0_ |= 0x00000001;
         onChanged();
         return getRoleFieldBuilder().getBuilder();
       }
@@ -2503,7 +2526,7 @@ public final class GnmiExt {
        * @return Whether the electionId field is set.
        */
       public boolean hasElectionId() {
-        return electionIdBuilder_ != null || electionId_ != null;
+        return ((bitField0_ & 0x00000002) != 0);
       }
       /**
        * <code>.gnmi_ext.Uint128 election_id = 2;</code>
@@ -2525,11 +2548,11 @@ public final class GnmiExt {
             throw new NullPointerException();
           }
           electionId_ = value;
-          onChanged();
         } else {
           electionIdBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
@@ -2539,11 +2562,11 @@ public final class GnmiExt {
           org.opennms.features.openconfig.proto.gnmi.GnmiExt.Uint128.Builder builderForValue) {
         if (electionIdBuilder_ == null) {
           electionId_ = builderForValue.build();
-          onChanged();
         } else {
           electionIdBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
@@ -2551,38 +2574,40 @@ public final class GnmiExt {
        */
       public Builder mergeElectionId(org.opennms.features.openconfig.proto.gnmi.GnmiExt.Uint128 value) {
         if (electionIdBuilder_ == null) {
-          if (electionId_ != null) {
-            electionId_ =
-              org.opennms.features.openconfig.proto.gnmi.GnmiExt.Uint128.newBuilder(electionId_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000002) != 0) &&
+            electionId_ != null &&
+            electionId_ != org.opennms.features.openconfig.proto.gnmi.GnmiExt.Uint128.getDefaultInstance()) {
+            getElectionIdBuilder().mergeFrom(value);
           } else {
             electionId_ = value;
           }
-          onChanged();
         } else {
           electionIdBuilder_.mergeFrom(value);
         }
-
+        if (electionId_ != null) {
+          bitField0_ |= 0x00000002;
+          onChanged();
+        }
         return this;
       }
       /**
        * <code>.gnmi_ext.Uint128 election_id = 2;</code>
        */
       public Builder clearElectionId() {
-        if (electionIdBuilder_ == null) {
-          electionId_ = null;
-          onChanged();
-        } else {
-          electionId_ = null;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        electionId_ = null;
+        if (electionIdBuilder_ != null) {
+          electionIdBuilder_.dispose();
           electionIdBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
        * <code>.gnmi_ext.Uint128 election_id = 2;</code>
        */
       public org.opennms.features.openconfig.proto.gnmi.GnmiExt.Uint128.Builder getElectionIdBuilder() {
-        
+        bitField0_ |= 0x00000002;
         onChanged();
         return getElectionIdFieldBuilder().getBuilder();
       }
@@ -2719,11 +2744,6 @@ public final class GnmiExt {
       return new Uint128();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.GnmiExt.internal_static_gnmi_ext_Uint128_descriptor;
@@ -2738,7 +2758,7 @@ public final class GnmiExt {
     }
 
     public static final int HIGH_FIELD_NUMBER = 1;
-    private long high_;
+    private long high_ = 0L;
     /**
      * <code>uint64 high = 1;</code>
      * @return The high.
@@ -2749,7 +2769,7 @@ public final class GnmiExt {
     }
 
     public static final int LOW_FIELD_NUMBER = 2;
-    private long low_;
+    private long low_ = 0L;
     /**
      * <code>uint64 low = 2;</code>
      * @return The low.
@@ -2881,11 +2901,13 @@ public final class GnmiExt {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.GnmiExt.Uint128 parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.GnmiExt.Uint128 parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2964,10 +2986,9 @@ public final class GnmiExt {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         high_ = 0L;
-
         low_ = 0L;
-
         return this;
       }
 
@@ -2994,10 +3015,19 @@ public final class GnmiExt {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.GnmiExt.Uint128 buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.GnmiExt.Uint128 result = new org.opennms.features.openconfig.proto.gnmi.GnmiExt.Uint128(this);
-        result.high_ = high_;
-        result.low_ = low_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.GnmiExt.Uint128 result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.high_ = high_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.low_ = low_;
+        }
       }
 
       @java.lang.Override
@@ -3078,12 +3108,12 @@ public final class GnmiExt {
                 break;
               case 8: {
                 high_ = input.readUInt64();
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 8
               case 16: {
                 low_ = input.readUInt64();
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 16
               default: {
@@ -3101,6 +3131,7 @@ public final class GnmiExt {
         } // finally
         return this;
       }
+      private int bitField0_;
 
       private long high_ ;
       /**
@@ -3117,8 +3148,9 @@ public final class GnmiExt {
        * @return This builder for chaining.
        */
       public Builder setHigh(long value) {
-        
+
         high_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -3127,7 +3159,7 @@ public final class GnmiExt {
        * @return This builder for chaining.
        */
       public Builder clearHigh() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         high_ = 0L;
         onChanged();
         return this;
@@ -3148,8 +3180,9 @@ public final class GnmiExt {
        * @return This builder for chaining.
        */
       public Builder setLow(long value) {
-        
+
         low_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -3158,7 +3191,7 @@ public final class GnmiExt {
        * @return This builder for chaining.
        */
       public Builder clearLow() {
-        
+        bitField0_ = (bitField0_ & ~0x00000002);
         low_ = 0L;
         onChanged();
         return this;
@@ -3280,11 +3313,6 @@ public final class GnmiExt {
       return new Role();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.GnmiExt.internal_static_gnmi_ext_Role_descriptor;
@@ -3299,7 +3327,8 @@ public final class GnmiExt {
     }
 
     public static final int ID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object id_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object id_ = "";
     /**
      * <pre>
      * More fields can be added if needed, for example, to specify what paths the
@@ -3360,7 +3389,7 @@ public final class GnmiExt {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getIdBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(id_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, id_);
       }
       getUnknownFields().writeTo(output);
@@ -3372,7 +3401,7 @@ public final class GnmiExt {
       if (size != -1) return size;
 
       size = 0;
-      if (!getIdBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(id_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, id_);
       }
       size += getUnknownFields().getSerializedSize();
@@ -3454,11 +3483,13 @@ public final class GnmiExt {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.GnmiExt.Role parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.GnmiExt.Role parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3537,8 +3568,8 @@ public final class GnmiExt {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         id_ = "";
-
         return this;
       }
 
@@ -3565,9 +3596,16 @@ public final class GnmiExt {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.GnmiExt.Role buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.GnmiExt.Role result = new org.opennms.features.openconfig.proto.gnmi.GnmiExt.Role(this);
-        result.id_ = id_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.GnmiExt.Role result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.id_ = id_;
+        }
       }
 
       @java.lang.Override
@@ -3616,6 +3654,7 @@ public final class GnmiExt {
         if (other == org.opennms.features.openconfig.proto.gnmi.GnmiExt.Role.getDefaultInstance()) return this;
         if (!other.getId().isEmpty()) {
           id_ = other.id_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -3646,7 +3685,7 @@ public final class GnmiExt {
                 break;
               case 10: {
                 id_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 10
               default: {
@@ -3664,6 +3703,7 @@ public final class GnmiExt {
         } // finally
         return this;
       }
+      private int bitField0_;
 
       private java.lang.Object id_ = "";
       /**
@@ -3721,11 +3761,9 @@ public final class GnmiExt {
        */
       public Builder setId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         id_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -3739,8 +3777,8 @@ public final class GnmiExt {
        * @return This builder for chaining.
        */
       public Builder clearId() {
-        
         id_ = getDefaultInstance().getId();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -3756,12 +3794,10 @@ public final class GnmiExt {
        */
       public Builder setIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         id_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
+ * Copyright (C) 2024 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
@@ -25,12 +25,11 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.netmgt.telemetry.protocols.netflow.transport;
 
 public interface FlowMessageOrBuilder extends
-    // @@protoc_insertion_point(interface_extends:FlowMessage)
-    com.google.protobuf.MessageOrBuilder {
+        // @@protoc_insertion_point(interface_extends:FlowMessage)
+        com.google.protobuf.MessageOrBuilder {
 
   /**
    * <pre>
@@ -106,7 +105,7 @@ public interface FlowMessageOrBuilder extends
    * @return The bytes for dstAddress.
    */
   com.google.protobuf.ByteString
-      getDstAddressBytes();
+  getDstAddressBytes();
 
   /**
    * <pre>
@@ -126,7 +125,7 @@ public interface FlowMessageOrBuilder extends
    * @return The bytes for dstHostname.
    */
   com.google.protobuf.ByteString
-      getDstHostnameBytes();
+  getDstHostnameBytes();
 
   /**
    * <pre>
@@ -524,7 +523,7 @@ public interface FlowMessageOrBuilder extends
    * @return The bytes for nextHopAddress.
    */
   com.google.protobuf.ByteString
-      getNextHopAddressBytes();
+  getNextHopAddressBytes();
 
   /**
    * <pre>
@@ -544,7 +543,7 @@ public interface FlowMessageOrBuilder extends
    * @return The bytes for nextHopHostname.
    */
   com.google.protobuf.ByteString
-      getNextHopHostnameBytes();
+  getNextHopHostnameBytes();
 
   /**
    * <pre>
@@ -637,7 +636,7 @@ public interface FlowMessageOrBuilder extends
    * @return The bytes for srcAddress.
    */
   com.google.protobuf.ByteString
-      getSrcAddressBytes();
+  getSrcAddressBytes();
 
   /**
    * <pre>
@@ -657,7 +656,7 @@ public interface FlowMessageOrBuilder extends
    * @return The bytes for srcHostname.
    */
   com.google.protobuf.ByteString
-      getSrcHostnameBytes();
+  getSrcHostnameBytes();
 
   /**
    * <pre>
@@ -858,5 +857,5 @@ public interface FlowMessageOrBuilder extends
    * @return The bytes for nodeIdentifier.
    */
   com.google.protobuf.ByteString
-      getNodeIdentifierBytes();
+  getNodeIdentifierBytes();
 }
