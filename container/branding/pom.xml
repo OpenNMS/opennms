@@ -6,7 +6,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.container</artifactId>
-    <version>33.0.11-SNAPSHOT</version>
+    <version>33.1.11-SNAPSHOT</version>
   </parent>
 
     <groupId>org.opennms.container</groupId>
