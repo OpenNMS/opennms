@@ -21,7 +21,10 @@
  */
 package org.opennms.netmgt.collection.support.builder;
 
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.model.ResourcePath;
@@ -98,5 +101,14 @@ public interface Resource {
      * @return possibly a new resource, or this same instance if no resolving was performed
      */
     public Resource resolve();
+
+
+    default Map<String, String> getTags() {
+        return Collections.emptyMap();
+    }
+
+    default Map<String, String> getServiceParams() {
+        return Collections.emptyMap();
+    }
 
 }

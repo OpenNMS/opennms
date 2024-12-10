@@ -50,6 +50,9 @@ import org.opennms.netmgt.threshd.api.ThresholdingSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.opennms.netmgt.collection.api.CollectionResource.INTERFACE_INFO_IN_TAGS;
+
+
 /**
  * <p>LatencyStoringServiceMonitorAdaptor class.</p>
  *
@@ -92,6 +95,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitorAdapto
         String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", svc.getSvcName().toLowerCase());
         String rrdBaseName = ParameterMap.getKeyedString(parameters, "rrd-base-name", dsName);
         String thresholds  = ParameterMap.getKeyedString(parameters, "thresholding-enabled", "false");
+        boolean snmpInfoInTags = ParameterMap.getKeyedBoolean(parameters, INTERFACE_INFO_IN_TAGS, false);
 
         if (!entries.containsKey(dsName) && entries.containsKey(PollStatus.PROPERTY_RESPONSE_TIME)) {
             entries.put(dsName, entries.get(PollStatus.PROPERTY_RESPONSE_TIME));
@@ -103,7 +107,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitorAdapto
             return;
         }
 
-        CollectionSet collectionSet = getCollectionSet(svc, entries, rrdBaseName);
+        CollectionSet collectionSet = getCollectionSet(svc, entries, rrdBaseName, snmpInfoInTags);
         RrdRepository repository = getRrdRepository(rrdPath);
 
         if (thresholds.equalsIgnoreCase("true")) {
@@ -146,7 +150,7 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitorAdapto
         }
     }
 
-    private CollectionSet getCollectionSet(MonitoredService service, Map<String, Number> entries, String rrdBaseName) {
+    private CollectionSet getCollectionSet(MonitoredService service, Map<String, Number> entries, String rrdBaseName, boolean snmpInfoInTags) {
         // When making calls directly to RrdUtils#createRrd() and RrdUtils#updateRrd(),
         // the behavior was as follows:
         // 1) All samples get written to response/${ipAddr}/${rrdBaseName}.rrd
@@ -157,7 +161,11 @@ public class LatencyStoringServiceMonitorAdaptor implements ServiceMonitorAdapto
         Map<String, String> tags = new HashMap<>();
         tags.put("node_label", service.getNodeLabel());
         tags.put("location", service.getNodeLocation());
+        tags.put("node_id", Integer.toString(service.getNodeId()));
         LatencyCollectionResource latencyResource = new LatencyCollectionResource(service.getSvcName(), service.getIpAddr(), service.getNodeLocation(), tags);
+        if (snmpInfoInTags) {
+            latencyResource.addServiceParam(INTERFACE_INFO_IN_TAGS, "true");
+        }
         for (final Entry<String, Number> entry : entries.entrySet()) {
             final String ds = entry.getKey();
             final Number value = entry.getValue() != null ? entry.getValue() : Double.NaN;
