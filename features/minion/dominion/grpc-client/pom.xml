@@ -5,7 +5,7 @@
     <parent>
         <artifactId>dominion</artifactId>
         <groupId>org.opennms.features.minion</groupId>
-        <version>33.1.11</version>
+        <version>33.1.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>dominion-grpc-client</artifactId>
