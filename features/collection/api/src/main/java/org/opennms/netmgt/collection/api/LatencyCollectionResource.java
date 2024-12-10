@@ -43,6 +43,8 @@ public class LatencyCollectionResource implements CollectionResource {
 
     private final Map<String, String> m_tags = Maps.newHashMap();
 
+    private final Map<String, String> m_serviceParams = Maps.newHashMap();
+
     /**
      * <p>Constructor for LatencyCollectionResource.</p>
      *
@@ -210,5 +212,14 @@ public class LatencyCollectionResource implements CollectionResource {
     @Override
     public Map<String, String> getTags() {
         return m_tags;
+    }
+
+    @Override
+    public Map<String, String> getServiceParams() {
+        return m_serviceParams;
+    }
+
+    public void addServiceParam(String name, String value) {
+        m_serviceParams.put(name, value);
     }
 }
