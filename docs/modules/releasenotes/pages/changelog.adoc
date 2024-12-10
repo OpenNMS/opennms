@@ -1,13 +1,13 @@
 [[release-33-changelog]]
 
 = Changelog
-[[releasenotes-changelog-33.1.11]]
+[[releasenotes-changelog-33.1.1]]
 
-== Release 33.1.11
+== Release 33.1.1
 
-Release 33.1.11 contains bug fixes, security updates and new features.
+Release 33.1.1 contains bug fixes, security updates and new features.
 
-The codename for Horizon 33.1.11 is https://wikipedia.org/wiki/$$Calliandra_haematocephala$$[_Powderpuff_].
+The codename for Horizon 33.1.1 is https://wikipedia.org/wiki/$$Calliandra_haematocephala$$[_Powderpuff_].
 
 Note: Minion and OpenNMS must be on the same minor version because of changes introduced in https://issues.opennms.org/browse/NMS-16543[NMS-16543].
 
