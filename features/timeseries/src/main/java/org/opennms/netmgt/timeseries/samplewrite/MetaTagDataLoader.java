@@ -101,22 +101,29 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
                         // pass
                     }
                 }
-                if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_LATENCY) &&
-                        resource.getServiceParams().containsKey(INTERFACE_INFO_IN_TAGS) &&
-                        Boolean.parseBoolean(resource.getServiceParams().get(INTERFACE_INFO_IN_TAGS))) {
-                    if (resource instanceof LatencyCollectionResource) {
-                        String ipAddress = ((LatencyCollectionResource) resource).getIpAddress();
-                        scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), ipAddress));
-                        scopes.add(this.entityScopeProvider.getScopeForService(node.getId(), InetAddressUtils.addr(ipAddress),
-                                ((LatencyCollectionResource) resource).getServiceName()));
-                    } else if (resource instanceof LatencyTypeResource) {
-                        String ipAddress = ((LatencyTypeResource) resource).getIpAddress();
-                        scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), ipAddress));
-                        scopes.add(this.entityScopeProvider.getScopeForService(node.getId(), InetAddressUtils.addr(ipAddress),
-                                ((LatencyTypeResource) resource).getServiceName()));
+
+                try {
+                    if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_LATENCY) &&
+                            resource.getServiceParams().containsKey(INTERFACE_INFO_IN_TAGS) &&
+                            Boolean.parseBoolean(resource.getServiceParams().get(INTERFACE_INFO_IN_TAGS))) {
+                        if (resource instanceof LatencyCollectionResource) {
+                            String ipAddress = ((LatencyCollectionResource) resource).getIpAddress();
+                            scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), ipAddress));
+                            scopes.add(this.entityScopeProvider.getScopeForService(node.getId(), InetAddressUtils.addr(ipAddress),
+                                    ((LatencyCollectionResource) resource).getServiceName()));
+                        } else {
+                            String[] ipAddressAndService = parseInstance(resource.getInstance());
+                            String ipAddress = ipAddressAndService[0];
+                            String serviceName = ipAddressAndService[1];
+                            scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), ipAddress));
+                            scopes.add(this.entityScopeProvider.getScopeForService(node.getId(),
+                                    InetAddressUtils.addr(ipAddress), serviceName));
+                        }
                     }
+                } catch (Exception e) {
+                    LOG.error("Failed to add scope for resource {}", resource, e);
                 }
-                // We cannot retrieve service meta-data - resource time resources contain the IP address and service name, but not the node
+
             }
 
             // create tags for scopes
@@ -198,6 +205,24 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
             return resource.getTags().getOrDefault("node_id", null);
         }
         return nodeCriteria;
+    }
+
+    private String getIpAddressFromInstance(String instance) {
+        if (instance != null && instance.contains("[")) {
+            return instance.substring(0, instance.indexOf("["));
+        }
+        throw new IllegalArgumentException("not able to parse ipAddress from instance");
+    }
+
+    private static String[] parseInstance(String instance) {
+        if (instance == null || !instance.contains("[") || !instance.endsWith("]")) {
+            throw new IllegalArgumentException("Invalid instance format");
+        }
+
+        String ipAddress = instance.substring(0, instance.indexOf("["));
+        String serviceName = instance.substring(instance.indexOf("[") + 1, instance.length() - 1);
+
+        return new String[] {ipAddress, serviceName};
     }
 
     private boolean checkNumeric(String nodeCriteria) {
