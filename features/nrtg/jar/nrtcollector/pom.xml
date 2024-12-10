@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features.nrtg</groupId>
     <artifactId>jar</artifactId>
-    <version>33.1.1-SNAPSHOT</version>
+    <version>33.1.11</version>
   </parent>
   <artifactId>nrtg-collector-standalone</artifactId>
   <name>OpenNMS :: Features :: NRTG :: NRTCollector JAR</name>
