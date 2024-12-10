@@ -61,6 +61,8 @@ public class UsageStatisticsReportDTOTest {
         usageStatisticsReport.setGroups(0);
         usageStatisticsReport.setOnmsStartupTimeSeconds(1000L);
         usageStatisticsReport.setInContainer(false);
+        usageStatisticsReport.setUsedPhysicalMemorySize(0L);
+        usageStatisticsReport.setHostName("localhost");
         String actualJson = usageStatisticsReport.toJson();
         System.err.println(actualJson);
 
@@ -121,8 +123,10 @@ public class UsageStatisticsReportDTOTest {
             "\"totalPhysicalMemorySize\":null," +
             "\"tssStrategies\":null," +
             "\"users\":0," +
-            "\"version\":\"10.5.7\"" +
-        "}";
+            "\"version\":\"10.5.7\"," +
+            "\"usedPhysicalMemorySize\":0," +
+            "\"hostName\":\"localhost\"" +
+                "}";
 
         assertEquals(expectedJson, actualJson);
     }

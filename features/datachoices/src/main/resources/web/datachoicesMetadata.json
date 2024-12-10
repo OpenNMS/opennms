@@ -1,6 +1,12 @@
 {
     "metadata": [
         {
+            "key": "hostName",
+            "name": "Host name",
+            "description": "Host Name",
+            "datatype": "string"
+        },
+        {
             "key": "alarms",
             "name": "Current alarm count",
             "description": "Current number of alarms that exist in the system",
@@ -399,6 +405,12 @@
         {
             "key": "totalPhysicalMemorySize",
             "name": "Total Physical Memory Size",
+            "description": "",
+            "datatype": "number"
+        },
+        {
+            "key": "usedPhysicalMemorySize",
+            "name": "Used Physical Memory Size",
             "description": "",
             "datatype": "number"
         },
