@@ -303,11 +303,13 @@ public final class LspStatsOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.LspStats parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.LspStats parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1610,11 +1612,13 @@ public final class LspStatsOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.LspStatsRecord parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.LspStatsRecord parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)

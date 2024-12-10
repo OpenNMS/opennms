@@ -67,6 +67,7 @@ public final class FirewallOuterClass {
   /**
    * <pre>
    *
+   *
    * Top-level message
    * </pre>
    *
@@ -106,6 +107,7 @@ public final class FirewallOuterClass {
     }
 
     public static final int FIREWALL_STATS_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
     @SuppressWarnings("serial")
     private java.util.List<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.FirewallStats> firewallStats_;
     /**
@@ -263,11 +265,13 @@ public final class FirewallOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.Firewall parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.Firewall parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -348,6 +352,7 @@ public final class FirewallOuterClass {
       public Builder clear() {
         super.clear();
         bitField0_ = 0;
+        bitField0_ = 0;
         if (firewallStatsBuilder_ == null) {
           firewallStats_ = java.util.Collections.emptyList();
         } else {
@@ -381,6 +386,13 @@ public final class FirewallOuterClass {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.Firewall buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.Firewall result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.Firewall(this);
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.Firewall result) {
         buildPartialRepeatedFields(result);
         if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
@@ -994,6 +1006,8 @@ public final class FirewallOuterClass {
     public static final int FILTER_NAME_FIELD_NUMBER = 1;
     @SuppressWarnings("serial")
     private volatile java.lang.Object filterName_ = "";
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object filterName_ = "";
     /**
      * <code>required string filter_name = 1 [(.telemetry_options) = { ... }</code>
      * @return Whether the filterName field is set.
@@ -1042,6 +1056,7 @@ public final class FirewallOuterClass {
 
     public static final int TIMESTAMP_FIELD_NUMBER = 2;
     private long timestamp_ = 0L;
+    private long timestamp_ = 0L;
     /**
      * <pre>
      * The Unix timestamp (seconds since 00:00:00 UTC 1970-01-01) of
@@ -1072,6 +1087,7 @@ public final class FirewallOuterClass {
     }
 
     public static final int MEMORY_USAGE_FIELD_NUMBER = 3;
+    @SuppressWarnings("serial")
     @SuppressWarnings("serial")
     private java.util.List<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.MemoryUsage> memoryUsage_;
     /**
@@ -1114,6 +1130,7 @@ public final class FirewallOuterClass {
 
     public static final int COUNTER_STATS_FIELD_NUMBER = 4;
     @SuppressWarnings("serial")
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.CounterStats> counterStats_;
     /**
      * <code>repeated .CounterStats counter_stats = 4;</code>
@@ -1155,6 +1172,7 @@ public final class FirewallOuterClass {
 
     public static final int POLICER_STATS_FIELD_NUMBER = 5;
     @SuppressWarnings("serial")
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.PolicerStats> policerStats_;
     /**
      * <code>repeated .PolicerStats policer_stats = 5;</code>
@@ -1195,6 +1213,7 @@ public final class FirewallOuterClass {
     }
 
     public static final int HIERARCHICAL_POLICER_STATS_FIELD_NUMBER = 6;
+    @SuppressWarnings("serial")
     @SuppressWarnings("serial")
     private java.util.List<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.HierarchicalPolicerStats> hierarchicalPolicerStats_;
     /**
@@ -1445,11 +1464,13 @@ public final class FirewallOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.FirewallStats parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.FirewallStats parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1494,6 +1515,7 @@ public final class FirewallOuterClass {
     /**
      * <pre>
      *
+     *
      * Firewall filter statistics
      * </pre>
      *
@@ -1529,6 +1551,7 @@ public final class FirewallOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         bitField0_ = 0;
         filterName_ = "";
         timestamp_ = 0L;
@@ -1586,6 +1609,13 @@ public final class FirewallOuterClass {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.FirewallStats buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.FirewallStats result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.FirewallStats(this);
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.FirewallStats result) {
         buildPartialRepeatedFields(result);
         if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
@@ -3398,11 +3428,13 @@ public final class FirewallOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.MemoryUsage parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.MemoryUsage parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4226,11 +4258,13 @@ public final class FirewallOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.CounterStats parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.CounterStats parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5186,11 +5220,13 @@ public final class FirewallOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.PolicerStats parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.PolicerStats parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5736,8 +5772,10 @@ public final class FirewallOuterClass {
         } else {
           extendedPolicerStatsBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000008;
-        onChanged();
+        if (extendedPolicerStats_ != null) {
+          bitField0_ |= 0x00000008;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -6263,11 +6301,13 @@ public final class FirewallOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.ExtendedPolicerStats parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.ExtendedPolicerStats parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -7300,11 +7340,13 @@ public final class FirewallOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.HierarchicalPolicerStats parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.HierarchicalPolicerStats parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)

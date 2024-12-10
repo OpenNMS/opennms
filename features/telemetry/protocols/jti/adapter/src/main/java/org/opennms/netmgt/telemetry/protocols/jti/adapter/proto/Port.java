@@ -258,11 +258,13 @@ public final class Port {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.Port.GPort parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.Port.GPort parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1771,11 +1773,13 @@ public final class Port {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.Port.InterfaceInfos parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.Port.InterfaceInfos parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3232,8 +3236,10 @@ public final class Port {
         } else {
           ingressStatsBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000040;
-        onChanged();
+        if (ingressStats_ != null) {
+          bitField0_ |= 0x00000040;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -3387,8 +3393,10 @@ public final class Port {
         } else {
           egressStatsBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000080;
-        onChanged();
+        if (egressStats_ != null) {
+          bitField0_ |= 0x00000080;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -3542,8 +3550,10 @@ public final class Port {
         } else {
           ingressErrorsBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000100;
-        onChanged();
+        if (ingressErrors_ != null) {
+          bitField0_ |= 0x00000100;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -4281,11 +4291,13 @@ public final class Port {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.Port.InterfaceStats parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.Port.InterfaceStats parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5788,11 +5800,13 @@ public final class Port {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.Port.IngressInterfaceErrors parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.Port.IngressInterfaceErrors parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -7590,11 +7604,13 @@ public final class Port {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.Port.QueueStats parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.Port.QueueStats parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)

@@ -564,11 +564,6 @@ public final class Gnmi {
       return new Notification();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_Notification_descriptor;
@@ -582,8 +577,9 @@ public final class Gnmi {
               org.opennms.features.openconfig.proto.gnmi.Gnmi.Notification.class, org.opennms.features.openconfig.proto.gnmi.Gnmi.Notification.Builder.class);
     }
 
+    private int bitField0_;
     public static final int TIMESTAMP_FIELD_NUMBER = 1;
-    private long timestamp_;
+    private long timestamp_ = 0L;
     /**
      * <pre>
      * Timestamp in nanoseconds since Epoch.
@@ -609,7 +605,7 @@ public final class Gnmi {
      */
     @java.lang.Override
     public boolean hasPrefix() {
-      return prefix_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <pre>
@@ -632,11 +628,12 @@ public final class Gnmi {
      */
     @java.lang.Override
     public org.opennms.features.openconfig.proto.gnmi.Gnmi.PathOrBuilder getPrefixOrBuilder() {
-      return getPrefix();
+      return prefix_ == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.getDefaultInstance() : prefix_;
     }
 
     public static final int ALIAS_FIELD_NUMBER = 3;
-    private volatile java.lang.Object alias_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object alias_ = "";
     /**
      * <pre>
      * An alias for the path specified in the prefix field.
@@ -684,6 +681,7 @@ public final class Gnmi {
     }
 
     public static final int UPDATE_FIELD_NUMBER = 4;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.Update> update_;
     /**
      * <pre>
@@ -744,6 +742,7 @@ public final class Gnmi {
     }
 
     public static final int DELETE_FIELD_NUMBER = 5;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.Path> delete_;
     /**
      * <pre>
@@ -804,7 +803,7 @@ public final class Gnmi {
     }
 
     public static final int ATOMIC_FIELD_NUMBER = 6;
-    private boolean atomic_;
+    private boolean atomic_ = false;
     /**
      * <pre>
      * This notification contains a set of paths that are always updated together
@@ -836,10 +835,10 @@ public final class Gnmi {
       if (timestamp_ != 0L) {
         output.writeInt64(1, timestamp_);
       }
-      if (prefix_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(2, getPrefix());
       }
-      if (!getAliasBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(alias_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, alias_);
       }
       for (int i = 0; i < update_.size(); i++) {
@@ -864,11 +863,11 @@ public final class Gnmi {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(1, timestamp_);
       }
-      if (prefix_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, getPrefix());
       }
-      if (!getAliasBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(alias_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, alias_);
       }
       for (int i = 0; i < update_.size(); i++) {
@@ -993,11 +992,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.Notification parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.Notification parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1072,43 +1073,48 @@ public final class Gnmi {
 
       // Construct using org.opennms.features.openconfig.proto.gnmi.Gnmi.Notification.newBuilder()
       private Builder() {
-
+        maybeForceBuilderInitialization();
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getPrefixFieldBuilder();
+          getUpdateFieldBuilder();
+          getDeleteFieldBuilder();
+        }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         timestamp_ = 0L;
-
-        if (prefixBuilder_ == null) {
-          prefix_ = null;
-        } else {
-          prefix_ = null;
+        prefix_ = null;
+        if (prefixBuilder_ != null) {
+          prefixBuilder_.dispose();
           prefixBuilder_ = null;
         }
         alias_ = "";
-
         if (updateBuilder_ == null) {
           update_ = java.util.Collections.emptyList();
         } else {
           update_ = null;
           updateBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000008);
         if (deleteBuilder_ == null) {
           delete_ = java.util.Collections.emptyList();
         } else {
           delete_ = null;
           deleteBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000010);
         atomic_ = false;
-
         return this;
       }
 
@@ -1135,35 +1141,52 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.Notification buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.Notification result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.Notification(this);
-        int from_bitField0_ = bitField0_;
-        result.timestamp_ = timestamp_;
-        if (prefixBuilder_ == null) {
-          result.prefix_ = prefix_;
-        } else {
-          result.prefix_ = prefixBuilder_.build();
-        }
-        result.alias_ = alias_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.openconfig.proto.gnmi.Gnmi.Notification result) {
         if (updateBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) != 0)) {
+          if (((bitField0_ & 0x00000008) != 0)) {
             update_ = java.util.Collections.unmodifiableList(update_);
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000008);
           }
           result.update_ = update_;
         } else {
           result.update_ = updateBuilder_.build();
         }
         if (deleteBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) != 0)) {
+          if (((bitField0_ & 0x00000010) != 0)) {
             delete_ = java.util.Collections.unmodifiableList(delete_);
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ = (bitField0_ & ~0x00000010);
           }
           result.delete_ = delete_;
         } else {
           result.delete_ = deleteBuilder_.build();
         }
-        result.atomic_ = atomic_;
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.Notification result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.timestamp_ = timestamp_;
+        }
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.prefix_ = prefixBuilder_ == null
+              ? prefix_
+              : prefixBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.alias_ = alias_;
+        }
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          result.atomic_ = atomic_;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -1218,13 +1241,14 @@ public final class Gnmi {
         }
         if (!other.getAlias().isEmpty()) {
           alias_ = other.alias_;
+          bitField0_ |= 0x00000004;
           onChanged();
         }
         if (updateBuilder_ == null) {
           if (!other.update_.isEmpty()) {
             if (update_.isEmpty()) {
               update_ = other.update_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000008);
             } else {
               ensureUpdateIsMutable();
               update_.addAll(other.update_);
@@ -1237,7 +1261,7 @@ public final class Gnmi {
               updateBuilder_.dispose();
               updateBuilder_ = null;
               update_ = other.update_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000008);
               updateBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getUpdateFieldBuilder() : null;
@@ -1250,7 +1274,7 @@ public final class Gnmi {
           if (!other.delete_.isEmpty()) {
             if (delete_.isEmpty()) {
               delete_ = other.delete_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000010);
             } else {
               ensureDeleteIsMutable();
               delete_.addAll(other.delete_);
@@ -1263,7 +1287,7 @@ public final class Gnmi {
               deleteBuilder_.dispose();
               deleteBuilder_ = null;
               delete_ = other.delete_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000010);
               deleteBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getDeleteFieldBuilder() : null;
@@ -1303,19 +1327,19 @@ public final class Gnmi {
                 break;
               case 8: {
                 timestamp_ = input.readInt64();
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 8
               case 18: {
                 input.readMessage(
                     getPrefixFieldBuilder().getBuilder(),
                     extensionRegistry);
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 18
               case 26: {
                 alias_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000004;
                 break;
               } // case 26
               case 34: {
@@ -1346,7 +1370,7 @@ public final class Gnmi {
               } // case 42
               case 48: {
                 atomic_ = input.readBool();
-
+                bitField0_ |= 0x00000020;
                 break;
               } // case 48
               default: {
@@ -1389,8 +1413,9 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setTimestamp(long value) {
-        
+
         timestamp_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1403,7 +1428,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearTimestamp() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         timestamp_ = 0L;
         onChanged();
         return this;
@@ -1421,7 +1446,7 @@ public final class Gnmi {
        * @return Whether the prefix field is set.
        */
       public boolean hasPrefix() {
-        return prefixBuilder_ != null || prefix_ != null;
+        return ((bitField0_ & 0x00000002) != 0);
       }
       /**
        * <pre>
@@ -1451,11 +1476,11 @@ public final class Gnmi {
             throw new NullPointerException();
           }
           prefix_ = value;
-          onChanged();
         } else {
           prefixBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
@@ -1469,11 +1494,11 @@ public final class Gnmi {
           org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.Builder builderForValue) {
         if (prefixBuilder_ == null) {
           prefix_ = builderForValue.build();
-          onChanged();
         } else {
           prefixBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
@@ -1485,17 +1510,20 @@ public final class Gnmi {
        */
       public Builder mergePrefix(org.opennms.features.openconfig.proto.gnmi.Gnmi.Path value) {
         if (prefixBuilder_ == null) {
-          if (prefix_ != null) {
-            prefix_ =
-              org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.newBuilder(prefix_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000002) != 0) &&
+            prefix_ != null &&
+            prefix_ != org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.getDefaultInstance()) {
+            getPrefixBuilder().mergeFrom(value);
           } else {
             prefix_ = value;
           }
-          onChanged();
         } else {
           prefixBuilder_.mergeFrom(value);
         }
-
+        if (prefix_ != null) {
+          bitField0_ |= 0x00000002;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -1506,14 +1534,13 @@ public final class Gnmi {
        * <code>.gnmi.Path prefix = 2;</code>
        */
       public Builder clearPrefix() {
-        if (prefixBuilder_ == null) {
-          prefix_ = null;
-          onChanged();
-        } else {
-          prefix_ = null;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        prefix_ = null;
+        if (prefixBuilder_ != null) {
+          prefixBuilder_.dispose();
           prefixBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
@@ -1524,7 +1551,7 @@ public final class Gnmi {
        * <code>.gnmi.Path prefix = 2;</code>
        */
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.Builder getPrefixBuilder() {
-        
+        bitField0_ |= 0x00000002;
         onChanged();
         return getPrefixFieldBuilder().getBuilder();
       }
@@ -1620,11 +1647,9 @@ public final class Gnmi {
        */
       public Builder setAlias(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         alias_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -1638,8 +1663,8 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearAlias() {
-        
         alias_ = getDefaultInstance().getAlias();
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
@@ -1655,12 +1680,10 @@ public final class Gnmi {
        */
       public Builder setAliasBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         alias_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -1668,9 +1691,9 @@ public final class Gnmi {
       private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.Update> update_ =
         java.util.Collections.emptyList();
       private void ensureUpdateIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!((bitField0_ & 0x00000008) != 0)) {
           update_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.gnmi.Gnmi.Update>(update_);
-          bitField0_ |= 0x00000001;
+          bitField0_ |= 0x00000008;
          }
       }
 
@@ -1864,7 +1887,7 @@ public final class Gnmi {
       public Builder clearUpdate() {
         if (updateBuilder_ == null) {
           update_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000008);
           onChanged();
         } else {
           updateBuilder_.clear();
@@ -1969,7 +1992,7 @@ public final class Gnmi {
           updateBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.gnmi.Gnmi.Update, org.opennms.features.openconfig.proto.gnmi.Gnmi.Update.Builder, org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateOrBuilder>(
                   update_,
-                  ((bitField0_ & 0x00000001) != 0),
+                  ((bitField0_ & 0x00000008) != 0),
                   getParentForChildren(),
                   isClean());
           update_ = null;
@@ -1980,9 +2003,9 @@ public final class Gnmi {
       private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.Path> delete_ =
         java.util.Collections.emptyList();
       private void ensureDeleteIsMutable() {
-        if (!((bitField0_ & 0x00000002) != 0)) {
+        if (!((bitField0_ & 0x00000010) != 0)) {
           delete_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.gnmi.Gnmi.Path>(delete_);
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000010;
          }
       }
 
@@ -2176,7 +2199,7 @@ public final class Gnmi {
       public Builder clearDelete() {
         if (deleteBuilder_ == null) {
           delete_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000010);
           onChanged();
         } else {
           deleteBuilder_.clear();
@@ -2281,7 +2304,7 @@ public final class Gnmi {
           deleteBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.gnmi.Gnmi.Path, org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.Builder, org.opennms.features.openconfig.proto.gnmi.Gnmi.PathOrBuilder>(
                   delete_,
-                  ((bitField0_ & 0x00000002) != 0),
+                  ((bitField0_ & 0x00000010) != 0),
                   getParentForChildren(),
                   isClean());
           delete_ = null;
@@ -2314,8 +2337,9 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setAtomic(boolean value) {
-        
+
         atomic_ = value;
+        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -2329,7 +2353,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearAtomic() {
-        
+        bitField0_ = (bitField0_ & ~0x00000020);
         atomic_ = false;
         onChanged();
         return this;
@@ -2435,6 +2459,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>.gnmi.Value value = 2 [deprecated = true];</code>
+     * @deprecated gnmi.Update.value is deprecated.
+     *     See gnmi.proto;l=97
      * @return Whether the value field is set.
      */
     @java.lang.Deprecated boolean hasValue();
@@ -2444,6 +2470,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>.gnmi.Value value = 2 [deprecated = true];</code>
+     * @deprecated gnmi.Update.value is deprecated.
+     *     See gnmi.proto;l=97
      * @return The value.
      */
     @java.lang.Deprecated org.opennms.features.openconfig.proto.gnmi.Gnmi.Value getValue();
@@ -2521,11 +2549,6 @@ public final class Gnmi {
       return new Update();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_Update_descriptor;
@@ -2539,6 +2562,7 @@ public final class Gnmi {
               org.opennms.features.openconfig.proto.gnmi.Gnmi.Update.class, org.opennms.features.openconfig.proto.gnmi.Gnmi.Update.Builder.class);
     }
 
+    private int bitField0_;
     public static final int PATH_FIELD_NUMBER = 1;
     private org.opennms.features.openconfig.proto.gnmi.Gnmi.Path path_;
     /**
@@ -2551,7 +2575,7 @@ public final class Gnmi {
      */
     @java.lang.Override
     public boolean hasPath() {
-      return path_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <pre>
@@ -2574,7 +2598,7 @@ public final class Gnmi {
      */
     @java.lang.Override
     public org.opennms.features.openconfig.proto.gnmi.Gnmi.PathOrBuilder getPathOrBuilder() {
-      return getPath();
+      return path_ == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.getDefaultInstance() : path_;
     }
 
     public static final int VALUE_FIELD_NUMBER = 2;
@@ -2585,11 +2609,13 @@ public final class Gnmi {
      * </pre>
      *
      * <code>.gnmi.Value value = 2 [deprecated = true];</code>
+     * @deprecated gnmi.Update.value is deprecated.
+     *     See gnmi.proto;l=97
      * @return Whether the value field is set.
      */
     @java.lang.Override
     @java.lang.Deprecated public boolean hasValue() {
-      return value_ != null;
+      return ((bitField0_ & 0x00000002) != 0);
     }
     /**
      * <pre>
@@ -2597,6 +2623,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>.gnmi.Value value = 2 [deprecated = true];</code>
+     * @deprecated gnmi.Update.value is deprecated.
+     *     See gnmi.proto;l=97
      * @return The value.
      */
     @java.lang.Override
@@ -2612,7 +2640,7 @@ public final class Gnmi {
      */
     @java.lang.Override
     @java.lang.Deprecated public org.opennms.features.openconfig.proto.gnmi.Gnmi.ValueOrBuilder getValueOrBuilder() {
-      return getValue();
+      return value_ == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.Value.getDefaultInstance() : value_;
     }
 
     public static final int VAL_FIELD_NUMBER = 3;
@@ -2627,7 +2655,7 @@ public final class Gnmi {
      */
     @java.lang.Override
     public boolean hasVal() {
-      return val_ != null;
+      return ((bitField0_ & 0x00000004) != 0);
     }
     /**
      * <pre>
@@ -2650,11 +2678,11 @@ public final class Gnmi {
      */
     @java.lang.Override
     public org.opennms.features.openconfig.proto.gnmi.Gnmi.TypedValueOrBuilder getValOrBuilder() {
-      return getVal();
+      return val_ == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.TypedValue.getDefaultInstance() : val_;
     }
 
     public static final int DUPLICATES_FIELD_NUMBER = 4;
-    private int duplicates_;
+    private int duplicates_ = 0;
     /**
      * <pre>
      * Number of coalesced duplicates.
@@ -2682,13 +2710,13 @@ public final class Gnmi {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (path_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(1, getPath());
       }
-      if (value_ != null) {
+      if (((bitField0_ & 0x00000002) != 0)) {
         output.writeMessage(2, getValue());
       }
-      if (val_ != null) {
+      if (((bitField0_ & 0x00000004) != 0)) {
         output.writeMessage(3, getVal());
       }
       if (duplicates_ != 0) {
@@ -2703,15 +2731,15 @@ public final class Gnmi {
       if (size != -1) return size;
 
       size = 0;
-      if (path_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, getPath());
       }
-      if (value_ != null) {
+      if (((bitField0_ & 0x00000002) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, getValue());
       }
-      if (val_ != null) {
+      if (((bitField0_ & 0x00000004) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(3, getVal());
       }
@@ -2825,11 +2853,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.Update parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.Update parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2899,37 +2929,42 @@ public final class Gnmi {
 
       // Construct using org.opennms.features.openconfig.proto.gnmi.Gnmi.Update.newBuilder()
       private Builder() {
-
+        maybeForceBuilderInitialization();
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getPathFieldBuilder();
+          getValueFieldBuilder();
+          getValFieldBuilder();
+        }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (pathBuilder_ == null) {
-          path_ = null;
-        } else {
-          path_ = null;
+        bitField0_ = 0;
+        path_ = null;
+        if (pathBuilder_ != null) {
+          pathBuilder_.dispose();
           pathBuilder_ = null;
         }
-        if (valueBuilder_ == null) {
-          value_ = null;
-        } else {
-          value_ = null;
+        value_ = null;
+        if (valueBuilder_ != null) {
+          valueBuilder_.dispose();
           valueBuilder_ = null;
         }
-        if (valBuilder_ == null) {
-          val_ = null;
-        } else {
-          val_ = null;
+        val_ = null;
+        if (valBuilder_ != null) {
+          valBuilder_.dispose();
           valBuilder_ = null;
         }
         duplicates_ = 0;
-
         return this;
       }
 
@@ -2956,24 +2991,36 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.Update buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.Update result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.Update(this);
-        if (pathBuilder_ == null) {
-          result.path_ = path_;
-        } else {
-          result.path_ = pathBuilder_.build();
-        }
-        if (valueBuilder_ == null) {
-          result.value_ = value_;
-        } else {
-          result.value_ = valueBuilder_.build();
-        }
-        if (valBuilder_ == null) {
-          result.val_ = val_;
-        } else {
-          result.val_ = valBuilder_.build();
-        }
-        result.duplicates_ = duplicates_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.Update result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.path_ = pathBuilder_ == null
+              ? path_
+              : pathBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.value_ = valueBuilder_ == null
+              ? value_
+              : valueBuilder_.build();
+          to_bitField0_ |= 0x00000002;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.val_ = valBuilder_ == null
+              ? val_
+              : valBuilder_.build();
+          to_bitField0_ |= 0x00000004;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.duplicates_ = duplicates_;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -3062,26 +3109,26 @@ public final class Gnmi {
                 input.readMessage(
                     getPathFieldBuilder().getBuilder(),
                     extensionRegistry);
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 10
               case 18: {
                 input.readMessage(
                     getValueFieldBuilder().getBuilder(),
                     extensionRegistry);
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 18
               case 26: {
                 input.readMessage(
                     getValFieldBuilder().getBuilder(),
                     extensionRegistry);
-
+                bitField0_ |= 0x00000004;
                 break;
               } // case 26
               case 32: {
                 duplicates_ = input.readUInt32();
-
+                bitField0_ |= 0x00000008;
                 break;
               } // case 32
               default: {
@@ -3099,6 +3146,7 @@ public final class Gnmi {
         } // finally
         return this;
       }
+      private int bitField0_;
 
       private org.opennms.features.openconfig.proto.gnmi.Gnmi.Path path_;
       private com.google.protobuf.SingleFieldBuilderV3<
@@ -3112,7 +3160,7 @@ public final class Gnmi {
        * @return Whether the path field is set.
        */
       public boolean hasPath() {
-        return pathBuilder_ != null || path_ != null;
+        return ((bitField0_ & 0x00000001) != 0);
       }
       /**
        * <pre>
@@ -3142,11 +3190,11 @@ public final class Gnmi {
             throw new NullPointerException();
           }
           path_ = value;
-          onChanged();
         } else {
           pathBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -3160,11 +3208,11 @@ public final class Gnmi {
           org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.Builder builderForValue) {
         if (pathBuilder_ == null) {
           path_ = builderForValue.build();
-          onChanged();
         } else {
           pathBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -3176,17 +3224,20 @@ public final class Gnmi {
        */
       public Builder mergePath(org.opennms.features.openconfig.proto.gnmi.Gnmi.Path value) {
         if (pathBuilder_ == null) {
-          if (path_ != null) {
-            path_ =
-              org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.newBuilder(path_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000001) != 0) &&
+            path_ != null &&
+            path_ != org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.getDefaultInstance()) {
+            getPathBuilder().mergeFrom(value);
           } else {
             path_ = value;
           }
-          onChanged();
         } else {
           pathBuilder_.mergeFrom(value);
         }
-
+        if (path_ != null) {
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -3197,14 +3248,13 @@ public final class Gnmi {
        * <code>.gnmi.Path path = 1;</code>
        */
       public Builder clearPath() {
-        if (pathBuilder_ == null) {
-          path_ = null;
-          onChanged();
-        } else {
-          path_ = null;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        path_ = null;
+        if (pathBuilder_ != null) {
+          pathBuilder_.dispose();
           pathBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
@@ -3215,7 +3265,7 @@ public final class Gnmi {
        * <code>.gnmi.Path path = 1;</code>
        */
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.Builder getPathBuilder() {
-        
+        bitField0_ |= 0x00000001;
         onChanged();
         return getPathFieldBuilder().getBuilder();
       }
@@ -3264,10 +3314,12 @@ public final class Gnmi {
        * </pre>
        *
        * <code>.gnmi.Value value = 2 [deprecated = true];</code>
+       * @deprecated gnmi.Update.value is deprecated.
+       *     See gnmi.proto;l=97
        * @return Whether the value field is set.
        */
       @java.lang.Deprecated public boolean hasValue() {
-        return valueBuilder_ != null || value_ != null;
+        return ((bitField0_ & 0x00000002) != 0);
       }
       /**
        * <pre>
@@ -3275,6 +3327,8 @@ public final class Gnmi {
        * </pre>
        *
        * <code>.gnmi.Value value = 2 [deprecated = true];</code>
+       * @deprecated gnmi.Update.value is deprecated.
+       *     See gnmi.proto;l=97
        * @return The value.
        */
       @java.lang.Deprecated public org.opennms.features.openconfig.proto.gnmi.Gnmi.Value getValue() {
@@ -3297,11 +3351,11 @@ public final class Gnmi {
             throw new NullPointerException();
           }
           value_ = value;
-          onChanged();
         } else {
           valueBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
@@ -3315,11 +3369,11 @@ public final class Gnmi {
           org.opennms.features.openconfig.proto.gnmi.Gnmi.Value.Builder builderForValue) {
         if (valueBuilder_ == null) {
           value_ = builderForValue.build();
-          onChanged();
         } else {
           valueBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
@@ -3331,17 +3385,20 @@ public final class Gnmi {
        */
       @java.lang.Deprecated public Builder mergeValue(org.opennms.features.openconfig.proto.gnmi.Gnmi.Value value) {
         if (valueBuilder_ == null) {
-          if (value_ != null) {
-            value_ =
-              org.opennms.features.openconfig.proto.gnmi.Gnmi.Value.newBuilder(value_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000002) != 0) &&
+            value_ != null &&
+            value_ != org.opennms.features.openconfig.proto.gnmi.Gnmi.Value.getDefaultInstance()) {
+            getValueBuilder().mergeFrom(value);
           } else {
             value_ = value;
           }
-          onChanged();
         } else {
           valueBuilder_.mergeFrom(value);
         }
-
+        if (value_ != null) {
+          bitField0_ |= 0x00000002;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -3352,14 +3409,13 @@ public final class Gnmi {
        * <code>.gnmi.Value value = 2 [deprecated = true];</code>
        */
       @java.lang.Deprecated public Builder clearValue() {
-        if (valueBuilder_ == null) {
-          value_ = null;
-          onChanged();
-        } else {
-          value_ = null;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        value_ = null;
+        if (valueBuilder_ != null) {
+          valueBuilder_.dispose();
           valueBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
@@ -3370,7 +3426,7 @@ public final class Gnmi {
        * <code>.gnmi.Value value = 2 [deprecated = true];</code>
        */
       @java.lang.Deprecated public org.opennms.features.openconfig.proto.gnmi.Gnmi.Value.Builder getValueBuilder() {
-        
+        bitField0_ |= 0x00000002;
         onChanged();
         return getValueFieldBuilder().getBuilder();
       }
@@ -3422,7 +3478,7 @@ public final class Gnmi {
        * @return Whether the val field is set.
        */
       public boolean hasVal() {
-        return valBuilder_ != null || val_ != null;
+        return ((bitField0_ & 0x00000004) != 0);
       }
       /**
        * <pre>
@@ -3452,11 +3508,11 @@ public final class Gnmi {
             throw new NullPointerException();
           }
           val_ = value;
-          onChanged();
         } else {
           valBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000004;
+        onChanged();
         return this;
       }
       /**
@@ -3470,11 +3526,11 @@ public final class Gnmi {
           org.opennms.features.openconfig.proto.gnmi.Gnmi.TypedValue.Builder builderForValue) {
         if (valBuilder_ == null) {
           val_ = builderForValue.build();
-          onChanged();
         } else {
           valBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000004;
+        onChanged();
         return this;
       }
       /**
@@ -3486,17 +3542,20 @@ public final class Gnmi {
        */
       public Builder mergeVal(org.opennms.features.openconfig.proto.gnmi.Gnmi.TypedValue value) {
         if (valBuilder_ == null) {
-          if (val_ != null) {
-            val_ =
-              org.opennms.features.openconfig.proto.gnmi.Gnmi.TypedValue.newBuilder(val_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000004) != 0) &&
+            val_ != null &&
+            val_ != org.opennms.features.openconfig.proto.gnmi.Gnmi.TypedValue.getDefaultInstance()) {
+            getValBuilder().mergeFrom(value);
           } else {
             val_ = value;
           }
-          onChanged();
         } else {
           valBuilder_.mergeFrom(value);
         }
-
+        if (val_ != null) {
+          bitField0_ |= 0x00000004;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -3507,14 +3566,13 @@ public final class Gnmi {
        * <code>.gnmi.TypedValue val = 3;</code>
        */
       public Builder clearVal() {
-        if (valBuilder_ == null) {
-          val_ = null;
-          onChanged();
-        } else {
-          val_ = null;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        val_ = null;
+        if (valBuilder_ != null) {
+          valBuilder_.dispose();
           valBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
@@ -3525,7 +3583,7 @@ public final class Gnmi {
        * <code>.gnmi.TypedValue val = 3;</code>
        */
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.TypedValue.Builder getValBuilder() {
-        
+        bitField0_ |= 0x00000004;
         onChanged();
         return getValFieldBuilder().getBuilder();
       }
@@ -3588,8 +3646,9 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setDuplicates(int value) {
-        
+
         duplicates_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -3602,7 +3661,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearDuplicates() {
-        
+        bitField0_ = (bitField0_ & ~0x00000008);
         duplicates_ = 0;
         onChanged();
         return this;
@@ -3972,7 +4031,7 @@ public final class Gnmi {
      */
     com.google.protobuf.ByteString getProtoBytes();
 
-    public org.opennms.features.openconfig.proto.gnmi.Gnmi.TypedValue.ValueCase getValueCase();
+    org.opennms.features.openconfig.proto.gnmi.Gnmi.TypedValue.ValueCase getValueCase();
   }
   /**
    * <pre>
@@ -4001,11 +4060,6 @@ public final class Gnmi {
       return new TypedValue();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_TypedValue_descriptor;
@@ -4020,6 +4074,7 @@ public final class Gnmi {
     }
 
     private int valueCase_ = 0;
+    @SuppressWarnings("serial")
     private java.lang.Object value_;
     public enum ValueCase
         implements com.google.protobuf.Internal.EnumLite,
@@ -4898,11 +4953,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.TypedValue parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.TypedValue parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4982,6 +5039,7 @@ public final class Gnmi {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (decimalValBuilder_ != null) {
           decimalValBuilder_.clear();
         }
@@ -5019,60 +5077,31 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.TypedValue buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.TypedValue result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.TypedValue(this);
-        if (valueCase_ == 1) {
-          result.value_ = value_;
-        }
-        if (valueCase_ == 2) {
-          result.value_ = value_;
-        }
-        if (valueCase_ == 3) {
-          result.value_ = value_;
-        }
-        if (valueCase_ == 4) {
-          result.value_ = value_;
-        }
-        if (valueCase_ == 5) {
-          result.value_ = value_;
-        }
-        if (valueCase_ == 6) {
-          result.value_ = value_;
-        }
-        if (valueCase_ == 7) {
-          if (decimalValBuilder_ == null) {
-            result.value_ = value_;
-          } else {
-            result.value_ = decimalValBuilder_.build();
-          }
-        }
-        if (valueCase_ == 8) {
-          if (leaflistValBuilder_ == null) {
-            result.value_ = value_;
-          } else {
-            result.value_ = leaflistValBuilder_.build();
-          }
-        }
-        if (valueCase_ == 9) {
-          if (anyValBuilder_ == null) {
-            result.value_ = value_;
-          } else {
-            result.value_ = anyValBuilder_.build();
-          }
-        }
-        if (valueCase_ == 10) {
-          result.value_ = value_;
-        }
-        if (valueCase_ == 11) {
-          result.value_ = value_;
-        }
-        if (valueCase_ == 12) {
-          result.value_ = value_;
-        }
-        if (valueCase_ == 13) {
-          result.value_ = value_;
-        }
-        result.valueCase_ = valueCase_;
+        if (bitField0_ != 0) { buildPartial0(result); }
+        buildPartialOneofs(result);
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.TypedValue result) {
+        int from_bitField0_ = bitField0_;
+      }
+
+      private void buildPartialOneofs(org.opennms.features.openconfig.proto.gnmi.Gnmi.TypedValue result) {
+        result.valueCase_ = valueCase_;
+        result.value_ = this.value_;
+        if (valueCase_ == 7 &&
+            decimalValBuilder_ != null) {
+          result.value_ = decimalValBuilder_.build();
+        }
+        if (valueCase_ == 8 &&
+            leaflistValBuilder_ != null) {
+          result.value_ = leaflistValBuilder_.build();
+        }
+        if (valueCase_ == 9 &&
+            anyValBuilder_ != null) {
+          result.value_ = anyValBuilder_.build();
+        }
       }
 
       @java.lang.Override
@@ -5213,28 +5242,28 @@ public final class Gnmi {
                 break;
               } // case 10
               case 16: {
-                valueCase_ = 2;
                 value_ = input.readInt64();
+                valueCase_ = 2;
                 break;
               } // case 16
               case 24: {
-                valueCase_ = 3;
                 value_ = input.readUInt64();
+                valueCase_ = 3;
                 break;
               } // case 24
               case 32: {
-                valueCase_ = 4;
                 value_ = input.readBool();
+                valueCase_ = 4;
                 break;
               } // case 32
               case 42: {
-                valueCase_ = 5;
                 value_ = input.readBytes();
+                valueCase_ = 5;
                 break;
               } // case 42
               case 53: {
-                valueCase_ = 6;
                 value_ = input.readFloat();
+                valueCase_ = 6;
                 break;
               } // case 53
               case 58: {
@@ -5259,13 +5288,13 @@ public final class Gnmi {
                 break;
               } // case 74
               case 82: {
-                valueCase_ = 10;
                 value_ = input.readBytes();
+                valueCase_ = 10;
                 break;
               } // case 82
               case 90: {
-                valueCase_ = 11;
                 value_ = input.readBytes();
+                valueCase_ = 11;
                 break;
               } // case 90
               case 98: {
@@ -5275,8 +5304,8 @@ public final class Gnmi {
                 break;
               } // case 98
               case 106: {
-                valueCase_ = 13;
                 value_ = input.readBytes();
+                valueCase_ = 13;
                 break;
               } // case 106
               default: {
@@ -5309,6 +5338,7 @@ public final class Gnmi {
         return this;
       }
 
+      private int bitField0_;
 
       /**
        * <pre>
@@ -5386,10 +5416,8 @@ public final class Gnmi {
        */
       public Builder setStringVal(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  valueCase_ = 1;
+        if (value == null) { throw new NullPointerException(); }
+        valueCase_ = 1;
         value_ = value;
         onChanged();
         return this;
@@ -5421,10 +5449,8 @@ public final class Gnmi {
        */
       public Builder setStringValBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         valueCase_ = 1;
         value_ = value;
         onChanged();
@@ -5466,6 +5492,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setIntVal(long value) {
+
         valueCase_ = 2;
         value_ = value;
         onChanged();
@@ -5523,6 +5550,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setUintVal(long value) {
+
         valueCase_ = 3;
         value_ = value;
         onChanged();
@@ -5580,6 +5608,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setBoolVal(boolean value) {
+
         valueCase_ = 4;
         value_ = value;
         onChanged();
@@ -5637,10 +5666,8 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setBytesVal(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  valueCase_ = 5;
+        if (value == null) { throw new NullPointerException(); }
+        valueCase_ = 5;
         value_ = value;
         onChanged();
         return this;
@@ -5697,6 +5724,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setFloatVal(float value) {
+
         valueCase_ = 6;
         value_ = value;
         onChanged();
@@ -5813,8 +5841,9 @@ public final class Gnmi {
         } else {
           if (valueCase_ == 7) {
             decimalValBuilder_.mergeFrom(value);
+          } else {
+            decimalValBuilder_.setMessage(value);
           }
-          decimalValBuilder_.setMessage(value);
         }
         valueCase_ = 7;
         return this;
@@ -5892,7 +5921,7 @@ public final class Gnmi {
           value_ = null;
         }
         valueCase_ = 7;
-        onChanged();;
+        onChanged();
         return decimalValBuilder_;
       }
 
@@ -5990,8 +6019,9 @@ public final class Gnmi {
         } else {
           if (valueCase_ == 8) {
             leaflistValBuilder_.mergeFrom(value);
+          } else {
+            leaflistValBuilder_.setMessage(value);
           }
-          leaflistValBuilder_.setMessage(value);
         }
         valueCase_ = 8;
         return this;
@@ -6069,7 +6099,7 @@ public final class Gnmi {
           value_ = null;
         }
         valueCase_ = 8;
-        onChanged();;
+        onChanged();
         return leaflistValBuilder_;
       }
 
@@ -6167,8 +6197,9 @@ public final class Gnmi {
         } else {
           if (valueCase_ == 9) {
             anyValBuilder_.mergeFrom(value);
+          } else {
+            anyValBuilder_.setMessage(value);
           }
-          anyValBuilder_.setMessage(value);
         }
         valueCase_ = 9;
         return this;
@@ -6246,7 +6277,7 @@ public final class Gnmi {
           value_ = null;
         }
         valueCase_ = 9;
-        onChanged();;
+        onChanged();
         return anyValBuilder_;
       }
 
@@ -6285,10 +6316,8 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setJsonVal(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  valueCase_ = 10;
+        if (value == null) { throw new NullPointerException(); }
+        valueCase_ = 10;
         value_ = value;
         onChanged();
         return this;
@@ -6345,10 +6374,8 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setJsonIetfVal(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  valueCase_ = 11;
+        if (value == null) { throw new NullPointerException(); }
+        valueCase_ = 11;
         value_ = value;
         onChanged();
         return this;
@@ -6446,10 +6473,8 @@ public final class Gnmi {
        */
       public Builder setAsciiVal(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  valueCase_ = 12;
+        if (value == null) { throw new NullPointerException(); }
+        valueCase_ = 12;
         value_ = value;
         onChanged();
         return this;
@@ -6481,10 +6506,8 @@ public final class Gnmi {
        */
       public Builder setAsciiValBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         valueCase_ = 12;
         value_ = value;
         onChanged();
@@ -6535,10 +6558,8 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setProtoBytes(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  valueCase_ = 13;
+        if (value == null) { throw new NullPointerException(); }
+        valueCase_ = 13;
         value_ = value;
         onChanged();
         return this;
@@ -6637,6 +6658,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>repeated string element = 1 [deprecated = true];</code>
+     * @deprecated gnmi.Path.element is deprecated.
+     *     See gnmi.proto;l=138
      * @return A list containing the element.
      */
     @java.lang.Deprecated java.util.List<java.lang.String>
@@ -6648,6 +6671,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>repeated string element = 1 [deprecated = true];</code>
+     * @deprecated gnmi.Path.element is deprecated.
+     *     See gnmi.proto;l=138
      * @return The count of element.
      */
     @java.lang.Deprecated int getElementCount();
@@ -6658,6 +6683,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>repeated string element = 1 [deprecated = true];</code>
+     * @deprecated gnmi.Path.element is deprecated.
+     *     See gnmi.proto;l=138
      * @param index The index of the element to return.
      * @return The element at the given index.
      */
@@ -6669,6 +6696,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>repeated string element = 1 [deprecated = true];</code>
+     * @deprecated gnmi.Path.element is deprecated.
+     *     See gnmi.proto;l=138
      * @param index The index of the value to return.
      * @return The bytes of the element at the given index.
      */
@@ -6779,7 +6808,8 @@ public final class Gnmi {
       super(builder);
     }
     private Path() {
-      element_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      element_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       origin_ = "";
       elem_ = java.util.Collections.emptyList();
       target_ = "";
@@ -6792,11 +6822,6 @@ public final class Gnmi {
       return new Path();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_Path_descriptor;
@@ -6811,7 +6836,9 @@ public final class Gnmi {
     }
 
     public static final int ELEMENT_FIELD_NUMBER = 1;
-    private com.google.protobuf.LazyStringList element_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList element_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <pre>
      * Elements of the path are no longer encoded as a string, but rather within
@@ -6819,6 +6846,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>repeated string element = 1 [deprecated = true];</code>
+     * @deprecated gnmi.Path.element is deprecated.
+     *     See gnmi.proto;l=138
      * @return A list containing the element.
      */
     @java.lang.Deprecated public com.google.protobuf.ProtocolStringList
@@ -6832,6 +6861,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>repeated string element = 1 [deprecated = true];</code>
+     * @deprecated gnmi.Path.element is deprecated.
+     *     See gnmi.proto;l=138
      * @return The count of element.
      */
     @java.lang.Deprecated public int getElementCount() {
@@ -6844,6 +6875,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>repeated string element = 1 [deprecated = true];</code>
+     * @deprecated gnmi.Path.element is deprecated.
+     *     See gnmi.proto;l=138
      * @param index The index of the element to return.
      * @return The element at the given index.
      */
@@ -6857,6 +6890,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>repeated string element = 1 [deprecated = true];</code>
+     * @deprecated gnmi.Path.element is deprecated.
+     *     See gnmi.proto;l=138
      * @param index The index of the value to return.
      * @return The bytes of the element at the given index.
      */
@@ -6866,7 +6901,8 @@ public final class Gnmi {
     }
 
     public static final int ORIGIN_FIELD_NUMBER = 2;
-    private volatile java.lang.Object origin_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object origin_ = "";
     /**
      * <pre>
      * Label to disambiguate path.
@@ -6912,6 +6948,7 @@ public final class Gnmi {
     }
 
     public static final int ELEM_FIELD_NUMBER = 3;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.PathElem> elem_;
     /**
      * <pre>
@@ -6972,7 +7009,8 @@ public final class Gnmi {
     }
 
     public static final int TARGET_FIELD_NUMBER = 4;
-    private volatile java.lang.Object target_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object target_ = "";
     /**
      * <pre>
      * The name of the target
@@ -7034,13 +7072,13 @@ public final class Gnmi {
       for (int i = 0; i < element_.size(); i++) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, element_.getRaw(i));
       }
-      if (!getOriginBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(origin_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, origin_);
       }
       for (int i = 0; i < elem_.size(); i++) {
         output.writeMessage(3, elem_.get(i));
       }
-      if (!getTargetBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(target_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, target_);
       }
       getUnknownFields().writeTo(output);
@@ -7060,14 +7098,14 @@ public final class Gnmi {
         size += dataSize;
         size += 1 * getElementList().size();
       }
-      if (!getOriginBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(origin_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, origin_);
       }
       for (int i = 0; i < elem_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(3, elem_.get(i));
       }
-      if (!getTargetBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(target_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, target_);
       }
       size += getUnknownFields().getSerializedSize();
@@ -7165,11 +7203,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.Path parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.Path parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -7251,19 +7291,18 @@ public final class Gnmi {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        element_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = 0;
+        element_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
         origin_ = "";
-
         if (elemBuilder_ == null) {
           elem_ = java.util.Collections.emptyList();
         } else {
           elem_ = null;
           elemBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         target_ = "";
-
         return this;
       }
 
@@ -7290,25 +7329,36 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.Path buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.Path result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.Path(this);
-        int from_bitField0_ = bitField0_;
-        if (((bitField0_ & 0x00000001) != 0)) {
-          element_ = element_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000001);
-        }
-        result.element_ = element_;
-        result.origin_ = origin_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.openconfig.proto.gnmi.Gnmi.Path result) {
         if (elemBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) != 0)) {
+          if (((bitField0_ & 0x00000004) != 0)) {
             elem_ = java.util.Collections.unmodifiableList(elem_);
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ = (bitField0_ & ~0x00000004);
           }
           result.elem_ = elem_;
         } else {
           result.elem_ = elemBuilder_.build();
         }
-        result.target_ = target_;
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.Path result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          element_.makeImmutable();
+          result.element_ = element_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.origin_ = origin_;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.target_ = target_;
+        }
       }
 
       @java.lang.Override
@@ -7358,7 +7408,7 @@ public final class Gnmi {
         if (!other.element_.isEmpty()) {
           if (element_.isEmpty()) {
             element_ = other.element_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ |= 0x00000001;
           } else {
             ensureElementIsMutable();
             element_.addAll(other.element_);
@@ -7367,13 +7417,14 @@ public final class Gnmi {
         }
         if (!other.getOrigin().isEmpty()) {
           origin_ = other.origin_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         if (elemBuilder_ == null) {
           if (!other.elem_.isEmpty()) {
             if (elem_.isEmpty()) {
               elem_ = other.elem_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000004);
             } else {
               ensureElemIsMutable();
               elem_.addAll(other.elem_);
@@ -7386,7 +7437,7 @@ public final class Gnmi {
               elemBuilder_.dispose();
               elemBuilder_ = null;
               elem_ = other.elem_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000004);
               elemBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getElemFieldBuilder() : null;
@@ -7397,6 +7448,7 @@ public final class Gnmi {
         }
         if (!other.getTarget().isEmpty()) {
           target_ = other.target_;
+          bitField0_ |= 0x00000008;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -7433,7 +7485,7 @@ public final class Gnmi {
               } // case 10
               case 18: {
                 origin_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 18
               case 26: {
@@ -7451,7 +7503,7 @@ public final class Gnmi {
               } // case 26
               case 34: {
                 target_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000008;
                 break;
               } // case 34
               default: {
@@ -7471,12 +7523,13 @@ public final class Gnmi {
       }
       private int bitField0_;
 
-      private com.google.protobuf.LazyStringList element_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList element_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensureElementIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!element_.isModifiable()) {
           element_ = new com.google.protobuf.LazyStringArrayList(element_);
-          bitField0_ |= 0x00000001;
-         }
+        }
+        bitField0_ |= 0x00000001;
       }
       /**
        * <pre>
@@ -7485,11 +7538,14 @@ public final class Gnmi {
        * </pre>
        *
        * <code>repeated string element = 1 [deprecated = true];</code>
+       * @deprecated gnmi.Path.element is deprecated.
+       *     See gnmi.proto;l=138
        * @return A list containing the element.
        */
       @java.lang.Deprecated public com.google.protobuf.ProtocolStringList
           getElementList() {
-        return element_.getUnmodifiableView();
+        element_.makeImmutable();
+        return element_;
       }
       /**
        * <pre>
@@ -7498,6 +7554,8 @@ public final class Gnmi {
        * </pre>
        *
        * <code>repeated string element = 1 [deprecated = true];</code>
+       * @deprecated gnmi.Path.element is deprecated.
+       *     See gnmi.proto;l=138
        * @return The count of element.
        */
       @java.lang.Deprecated public int getElementCount() {
@@ -7510,6 +7568,8 @@ public final class Gnmi {
        * </pre>
        *
        * <code>repeated string element = 1 [deprecated = true];</code>
+       * @deprecated gnmi.Path.element is deprecated.
+       *     See gnmi.proto;l=138
        * @param index The index of the element to return.
        * @return The element at the given index.
        */
@@ -7523,6 +7583,8 @@ public final class Gnmi {
        * </pre>
        *
        * <code>repeated string element = 1 [deprecated = true];</code>
+       * @deprecated gnmi.Path.element is deprecated.
+       *     See gnmi.proto;l=138
        * @param index The index of the value to return.
        * @return The bytes of the element at the given index.
        */
@@ -7537,17 +7599,18 @@ public final class Gnmi {
        * </pre>
        *
        * <code>repeated string element = 1 [deprecated = true];</code>
+       * @deprecated gnmi.Path.element is deprecated.
+       *     See gnmi.proto;l=138
        * @param index The index to set the value at.
        * @param value The element to set.
        * @return This builder for chaining.
        */
       @java.lang.Deprecated public Builder setElement(
           int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureElementIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureElementIsMutable();
         element_.set(index, value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -7558,16 +7621,17 @@ public final class Gnmi {
        * </pre>
        *
        * <code>repeated string element = 1 [deprecated = true];</code>
+       * @deprecated gnmi.Path.element is deprecated.
+       *     See gnmi.proto;l=138
        * @param value The element to add.
        * @return This builder for chaining.
        */
       @java.lang.Deprecated public Builder addElement(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureElementIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureElementIsMutable();
         element_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -7578,6 +7642,8 @@ public final class Gnmi {
        * </pre>
        *
        * <code>repeated string element = 1 [deprecated = true];</code>
+       * @deprecated gnmi.Path.element is deprecated.
+       *     See gnmi.proto;l=138
        * @param values The element to add.
        * @return This builder for chaining.
        */
@@ -7586,6 +7652,7 @@ public final class Gnmi {
         ensureElementIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, element_);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -7596,11 +7663,14 @@ public final class Gnmi {
        * </pre>
        *
        * <code>repeated string element = 1 [deprecated = true];</code>
+       * @deprecated gnmi.Path.element is deprecated.
+       *     See gnmi.proto;l=138
        * @return This builder for chaining.
        */
       @java.lang.Deprecated public Builder clearElement() {
-        element_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        element_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);;
         onChanged();
         return this;
       }
@@ -7611,17 +7681,18 @@ public final class Gnmi {
        * </pre>
        *
        * <code>repeated string element = 1 [deprecated = true];</code>
+       * @deprecated gnmi.Path.element is deprecated.
+       *     See gnmi.proto;l=138
        * @param value The bytes of the element to add.
        * @return This builder for chaining.
        */
       @java.lang.Deprecated public Builder addElementBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ensureElementIsMutable();
         element_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -7679,11 +7750,9 @@ public final class Gnmi {
        */
       public Builder setOrigin(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         origin_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -7696,8 +7765,8 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearOrigin() {
-        
         origin_ = getDefaultInstance().getOrigin();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -7712,12 +7781,10 @@ public final class Gnmi {
        */
       public Builder setOriginBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         origin_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -7725,9 +7792,9 @@ public final class Gnmi {
       private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.PathElem> elem_ =
         java.util.Collections.emptyList();
       private void ensureElemIsMutable() {
-        if (!((bitField0_ & 0x00000002) != 0)) {
+        if (!((bitField0_ & 0x00000004) != 0)) {
           elem_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.gnmi.Gnmi.PathElem>(elem_);
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000004;
          }
       }
 
@@ -7921,7 +7988,7 @@ public final class Gnmi {
       public Builder clearElem() {
         if (elemBuilder_ == null) {
           elem_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000004);
           onChanged();
         } else {
           elemBuilder_.clear();
@@ -8026,7 +8093,7 @@ public final class Gnmi {
           elemBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.gnmi.Gnmi.PathElem, org.opennms.features.openconfig.proto.gnmi.Gnmi.PathElem.Builder, org.opennms.features.openconfig.proto.gnmi.Gnmi.PathElemOrBuilder>(
                   elem_,
-                  ((bitField0_ & 0x00000002) != 0),
+                  ((bitField0_ & 0x00000004) != 0),
                   getParentForChildren(),
                   isClean());
           elem_ = null;
@@ -8087,11 +8154,9 @@ public final class Gnmi {
        */
       public Builder setTarget(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         target_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -8104,8 +8169,8 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearTarget() {
-        
         target_ = getDefaultInstance().getTarget();
+        bitField0_ = (bitField0_ & ~0x00000008);
         onChanged();
         return this;
       }
@@ -8120,12 +8185,10 @@ public final class Gnmi {
        */
       public Builder setTargetBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         target_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -8256,10 +8319,11 @@ public final class Gnmi {
      *
      * <code>map&lt;string, string&gt; key = 2;</code>
      */
-
-    java.lang.String getKeyOrDefault(
+    /* nullable */
+java.lang.String getKeyOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue);
+        /* nullable */
+java.lang.String defaultValue);
     /**
      * <pre>
      * Map of key (attribute) name to value.
@@ -8267,7 +8331,6 @@ public final class Gnmi {
      *
      * <code>map&lt;string, string&gt; key = 2;</code>
      */
-
     java.lang.String getKeyOrThrow(
         java.lang.String key);
   }
@@ -8300,11 +8363,6 @@ public final class Gnmi {
       return new PathElem();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_PathElem_descriptor;
@@ -8312,7 +8370,7 @@ public final class Gnmi {
 
     @SuppressWarnings({"rawtypes"})
     @java.lang.Override
-    protected com.google.protobuf.MapField internalGetMapField(
+    protected com.google.protobuf.MapFieldReflectionAccessor internalGetMapFieldReflection(
         int number) {
       switch (number) {
         case 2:
@@ -8331,7 +8389,8 @@ public final class Gnmi {
     }
 
     public static final int NAME_FIELD_NUMBER = 1;
-    private volatile java.lang.Object name_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object name_ = "";
     /**
      * <pre>
      * The name of the element in the path.
@@ -8388,6 +8447,7 @@ public final class Gnmi {
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "");
     }
+    @SuppressWarnings("serial")
     private com.google.protobuf.MapField<
         java.lang.String, java.lang.String> key_;
     private com.google.protobuf.MapField<java.lang.String, java.lang.String>
@@ -8398,7 +8458,6 @@ public final class Gnmi {
       }
       return key_;
     }
-
     public int getKeyCount() {
       return internalGetKey().getMap().size();
     }
@@ -8409,11 +8468,10 @@ public final class Gnmi {
      *
      * <code>map&lt;string, string&gt; key = 2;</code>
      */
-
     @java.lang.Override
     public boolean containsKey(
         java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
       return internalGetKey().getMap().containsKey(key);
     }
     /**
@@ -8432,7 +8490,6 @@ public final class Gnmi {
      * <code>map&lt;string, string&gt; key = 2;</code>
      */
     @java.lang.Override
-
     public java.util.Map<java.lang.String, java.lang.String> getKeyMap() {
       return internalGetKey().getMap();
     }
@@ -8444,11 +8501,12 @@ public final class Gnmi {
      * <code>map&lt;string, string&gt; key = 2;</code>
      */
     @java.lang.Override
-
-    public java.lang.String getKeyOrDefault(
+    public /* nullable */
+java.lang.String getKeyOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+        /* nullable */
+java.lang.String defaultValue) {
+      if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetKey().getMap();
       return map.containsKey(key) ? map.get(key) : defaultValue;
@@ -8461,10 +8519,9 @@ public final class Gnmi {
      * <code>map&lt;string, string&gt; key = 2;</code>
      */
     @java.lang.Override
-
     public java.lang.String getKeyOrThrow(
         java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetKey().getMap();
       if (!map.containsKey(key)) {
@@ -8487,7 +8544,7 @@ public final class Gnmi {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
       com.google.protobuf.GeneratedMessageV3
@@ -8505,7 +8562,7 @@ public final class Gnmi {
       if (size != -1) return size;
 
       size = 0;
-      if (!getNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
       }
       for (java.util.Map.Entry<java.lang.String, java.lang.String> entry
@@ -8603,11 +8660,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.PathElem parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.PathElem parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -8668,7 +8727,7 @@ public final class Gnmi {
       }
 
       @SuppressWarnings({"rawtypes"})
-      protected com.google.protobuf.MapField internalGetMapField(
+      protected com.google.protobuf.MapFieldReflectionAccessor internalGetMapFieldReflection(
           int number) {
         switch (number) {
           case 2:
@@ -8679,7 +8738,7 @@ public final class Gnmi {
         }
       }
       @SuppressWarnings({"rawtypes"})
-      protected com.google.protobuf.MapField internalGetMutableMapField(
+      protected com.google.protobuf.MapFieldReflectionAccessor internalGetMutableMapFieldReflection(
           int number) {
         switch (number) {
           case 2:
@@ -8710,8 +8769,8 @@ public final class Gnmi {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         name_ = "";
-
         internalGetMutableKey().clear();
         return this;
       }
@@ -8739,12 +8798,20 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.PathElem buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.PathElem result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.PathElem(this);
-        int from_bitField0_ = bitField0_;
-        result.name_ = name_;
-        result.key_ = internalGetKey();
-        result.key_.makeImmutable();
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.PathElem result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.name_ = name_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.key_ = internalGetKey();
+          result.key_.makeImmutable();
+        }
       }
 
       @java.lang.Override
@@ -8793,10 +8860,12 @@ public final class Gnmi {
         if (other == org.opennms.features.openconfig.proto.gnmi.Gnmi.PathElem.getDefaultInstance()) return this;
         if (!other.getName().isEmpty()) {
           name_ = other.name_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         internalGetMutableKey().mergeFrom(
             other.internalGetKey());
+        bitField0_ |= 0x00000002;
         this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
@@ -8825,7 +8894,7 @@ public final class Gnmi {
                 break;
               case 10: {
                 name_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 10
               case 18: {
@@ -8834,6 +8903,7 @@ public final class Gnmi {
                     KeyDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
                 internalGetMutableKey().getMutableMap().put(
                     key__.getKey(), key__.getValue());
+                bitField0_ |= 0x00000002;
                 break;
               } // case 18
               default: {
@@ -8906,11 +8976,9 @@ public final class Gnmi {
        */
       public Builder setName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -8923,8 +8991,8 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearName() {
-        
         name_ = getDefaultInstance().getName();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -8939,12 +9007,10 @@ public final class Gnmi {
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -8952,7 +9018,7 @@ public final class Gnmi {
       private com.google.protobuf.MapField<
           java.lang.String, java.lang.String> key_;
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetKey() {
+          internalGetKey() {
         if (key_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
               KeyDefaultEntryHolder.defaultEntry);
@@ -8960,8 +9026,7 @@ public final class Gnmi {
         return key_;
       }
       private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-      internalGetMutableKey() {
-        onChanged();;
+          internalGetMutableKey() {
         if (key_ == null) {
           key_ = com.google.protobuf.MapField.newMapField(
               KeyDefaultEntryHolder.defaultEntry);
@@ -8969,9 +9034,10 @@ public final class Gnmi {
         if (!key_.isMutable()) {
           key_ = key_.copy();
         }
+        bitField0_ |= 0x00000002;
+        onChanged();
         return key_;
       }
-
       public int getKeyCount() {
         return internalGetKey().getMap().size();
       }
@@ -8982,11 +9048,10 @@ public final class Gnmi {
        *
        * <code>map&lt;string, string&gt; key = 2;</code>
        */
-
       @java.lang.Override
       public boolean containsKey(
           java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (key == null) { throw new NullPointerException("map key"); }
         return internalGetKey().getMap().containsKey(key);
       }
       /**
@@ -9005,7 +9070,6 @@ public final class Gnmi {
        * <code>map&lt;string, string&gt; key = 2;</code>
        */
       @java.lang.Override
-
       public java.util.Map<java.lang.String, java.lang.String> getKeyMap() {
         return internalGetKey().getMap();
       }
@@ -9017,11 +9081,12 @@ public final class Gnmi {
        * <code>map&lt;string, string&gt; key = 2;</code>
        */
       @java.lang.Override
-
-      public java.lang.String getKeyOrDefault(
+      public /* nullable */
+java.lang.String getKeyOrDefault(
           java.lang.String key,
-          java.lang.String defaultValue) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+          /* nullable */
+java.lang.String defaultValue) {
+        if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, java.lang.String> map =
             internalGetKey().getMap();
         return map.containsKey(key) ? map.get(key) : defaultValue;
@@ -9034,10 +9099,9 @@ public final class Gnmi {
        * <code>map&lt;string, string&gt; key = 2;</code>
        */
       @java.lang.Override
-
       public java.lang.String getKeyOrThrow(
           java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (key == null) { throw new NullPointerException("map key"); }
         java.util.Map<java.lang.String, java.lang.String> map =
             internalGetKey().getMap();
         if (!map.containsKey(key)) {
@@ -9045,8 +9109,8 @@ public final class Gnmi {
         }
         return map.get(key);
       }
-
       public Builder clearKey() {
+        bitField0_ = (bitField0_ & ~0x00000002);
         internalGetMutableKey().getMutableMap()
             .clear();
         return this;
@@ -9058,10 +9122,9 @@ public final class Gnmi {
        *
        * <code>map&lt;string, string&gt; key = 2;</code>
        */
-
       public Builder removeKey(
           java.lang.String key) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
+        if (key == null) { throw new NullPointerException("map key"); }
         internalGetMutableKey().getMutableMap()
             .remove(key);
         return this;
@@ -9071,7 +9134,8 @@ public final class Gnmi {
        */
       @java.lang.Deprecated
       public java.util.Map<java.lang.String, java.lang.String>
-      getMutableKey() {
+          getMutableKey() {
+        bitField0_ |= 0x00000002;
         return internalGetMutableKey().getMutableMap();
       }
       /**
@@ -9084,10 +9148,11 @@ public final class Gnmi {
       public Builder putKey(
           java.lang.String key,
           java.lang.String value) {
-        if (key == null) { throw new java.lang.NullPointerException(); }
-        if (value == null) { throw new java.lang.NullPointerException(); }
+        if (key == null) { throw new NullPointerException("map key"); }
+        if (value == null) { throw new NullPointerException("map value"); }
         internalGetMutableKey().getMutableMap()
             .put(key, value);
+        bitField0_ |= 0x00000002;
         return this;
       }
       /**
@@ -9097,11 +9162,11 @@ public final class Gnmi {
        *
        * <code>map&lt;string, string&gt; key = 2;</code>
        */
-
       public Builder putAllKey(
           java.util.Map<java.lang.String, java.lang.String> values) {
         internalGetMutableKey().getMutableMap()
             .putAll(values);
+        bitField0_ |= 0x00000002;
         return this;
       }
       @java.lang.Override
@@ -9231,11 +9296,6 @@ public final class Gnmi {
       return new Value();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_Value_descriptor;
@@ -9250,7 +9310,7 @@ public final class Gnmi {
     }
 
     public static final int VALUE_FIELD_NUMBER = 1;
-    private com.google.protobuf.ByteString value_;
+    private com.google.protobuf.ByteString value_ = com.google.protobuf.ByteString.EMPTY;
     /**
      * <pre>
      * Value of the variable being transmitted.
@@ -9265,7 +9325,7 @@ public final class Gnmi {
     }
 
     public static final int TYPE_FIELD_NUMBER = 2;
-    private int type_;
+    private int type_ = 0;
     /**
      * <pre>
      * Encoding used for the value field.
@@ -9286,8 +9346,7 @@ public final class Gnmi {
      * @return The type.
      */
     @java.lang.Override public org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding getType() {
-      @SuppressWarnings("deprecation")
-      org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding result = org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding.valueOf(type_);
+      org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding result = org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding.forNumber(type_);
       return result == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding.UNRECOGNIZED : result;
     }
 
@@ -9410,11 +9469,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.Value parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.Value parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -9495,10 +9556,9 @@ public final class Gnmi {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         value_ = com.google.protobuf.ByteString.EMPTY;
-
         type_ = 0;
-
         return this;
       }
 
@@ -9525,10 +9585,19 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.Value buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.Value result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.Value(this);
-        result.value_ = value_;
-        result.type_ = type_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.Value result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.value_ = value_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.type_ = type_;
+        }
       }
 
       @java.lang.Override
@@ -9609,12 +9678,12 @@ public final class Gnmi {
                 break;
               case 10: {
                 value_ = input.readBytes();
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 10
               case 16: {
                 type_ = input.readEnum();
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 16
               default: {
@@ -9632,6 +9701,7 @@ public final class Gnmi {
         } // finally
         return this;
       }
+      private int bitField0_;
 
       private com.google.protobuf.ByteString value_ = com.google.protobuf.ByteString.EMPTY;
       /**
@@ -9656,11 +9726,9 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setValue(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         value_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -9673,7 +9741,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearValue() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         value_ = getDefaultInstance().getValue();
         onChanged();
         return this;
@@ -9701,8 +9769,8 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setTypeValue(int value) {
-        
         type_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -9716,8 +9784,7 @@ public final class Gnmi {
        */
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding getType() {
-        @SuppressWarnings("deprecation")
-        org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding result = org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding.valueOf(type_);
+        org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding result = org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding.forNumber(type_);
         return result == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding.UNRECOGNIZED : result;
       }
       /**
@@ -9733,7 +9800,7 @@ public final class Gnmi {
         if (value == null) {
           throw new NullPointerException();
         }
-        
+        bitField0_ |= 0x00000002;
         type_ = value.getNumber();
         onChanged();
         return this;
@@ -9747,7 +9814,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearType() {
-        
+        bitField0_ = (bitField0_ & ~0x00000002);
         type_ = 0;
         onChanged();
         return this;
@@ -9907,11 +9974,6 @@ public final class Gnmi {
       return new Error();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_Error_descriptor;
@@ -9925,8 +9987,9 @@ public final class Gnmi {
               org.opennms.features.openconfig.proto.gnmi.Gnmi.Error.class, org.opennms.features.openconfig.proto.gnmi.Gnmi.Error.Builder.class);
     }
 
+    private int bitField0_;
     public static final int CODE_FIELD_NUMBER = 1;
-    private int code_;
+    private int code_ = 0;
     /**
      * <pre>
      * Canonical gRPC error code.
@@ -9941,7 +10004,8 @@ public final class Gnmi {
     }
 
     public static final int MESSAGE_FIELD_NUMBER = 2;
-    private volatile java.lang.Object message_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object message_ = "";
     /**
      * <pre>
      * Human readable error.
@@ -9998,7 +10062,7 @@ public final class Gnmi {
      */
     @java.lang.Override
     public boolean hasData() {
-      return data_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <pre>
@@ -10021,7 +10085,7 @@ public final class Gnmi {
      */
     @java.lang.Override
     public com.google.protobuf.AnyOrBuilder getDataOrBuilder() {
-      return getData();
+      return data_ == null ? com.google.protobuf.Any.getDefaultInstance() : data_;
     }
 
     private byte memoizedIsInitialized = -1;
@@ -10041,10 +10105,10 @@ public final class Gnmi {
       if (code_ != 0) {
         output.writeUInt32(1, code_);
       }
-      if (!getMessageBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(message_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, message_);
       }
-      if (data_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(3, getData());
       }
       getUnknownFields().writeTo(output);
@@ -10060,10 +10124,10 @@ public final class Gnmi {
         size += com.google.protobuf.CodedOutputStream
           .computeUInt32Size(1, code_);
       }
-      if (!getMessageBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(message_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, message_);
       }
-      if (data_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(3, getData());
       }
@@ -10159,11 +10223,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.Error parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.Error parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -10234,25 +10300,29 @@ public final class Gnmi {
 
       // Construct using org.opennms.features.openconfig.proto.gnmi.Gnmi.Error.newBuilder()
       private Builder() {
-
+        maybeForceBuilderInitialization();
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getDataFieldBuilder();
+        }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         code_ = 0;
-
         message_ = "";
-
-        if (dataBuilder_ == null) {
-          data_ = null;
-        } else {
-          data_ = null;
+        data_ = null;
+        if (dataBuilder_ != null) {
+          dataBuilder_.dispose();
           dataBuilder_ = null;
         }
         return this;
@@ -10281,15 +10351,27 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.Error buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.Error result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.Error(this);
-        result.code_ = code_;
-        result.message_ = message_;
-        if (dataBuilder_ == null) {
-          result.data_ = data_;
-        } else {
-          result.data_ = dataBuilder_.build();
-        }
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.Error result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.code_ = code_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.message_ = message_;
+        }
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.data_ = dataBuilder_ == null
+              ? data_
+              : dataBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -10341,6 +10423,7 @@ public final class Gnmi {
         }
         if (!other.getMessage().isEmpty()) {
           message_ = other.message_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         if (other.hasData()) {
@@ -10374,19 +10457,19 @@ public final class Gnmi {
                 break;
               case 8: {
                 code_ = input.readUInt32();
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 8
               case 18: {
                 message_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 18
               case 26: {
                 input.readMessage(
                     getDataFieldBuilder().getBuilder(),
                     extensionRegistry);
-
+                bitField0_ |= 0x00000004;
                 break;
               } // case 26
               default: {
@@ -10404,6 +10487,7 @@ public final class Gnmi {
         } // finally
         return this;
       }
+      private int bitField0_;
 
       private int code_ ;
       /**
@@ -10428,8 +10512,9 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setCode(int value) {
-        
+
         code_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -10442,7 +10527,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearCode() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         code_ = 0;
         onChanged();
         return this;
@@ -10501,11 +10586,9 @@ public final class Gnmi {
        */
       public Builder setMessage(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         message_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -10518,8 +10601,8 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearMessage() {
-        
         message_ = getDefaultInstance().getMessage();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -10534,12 +10617,10 @@ public final class Gnmi {
        */
       public Builder setMessageBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         message_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -10556,7 +10637,7 @@ public final class Gnmi {
        * @return Whether the data field is set.
        */
       public boolean hasData() {
-        return dataBuilder_ != null || data_ != null;
+        return ((bitField0_ & 0x00000004) != 0);
       }
       /**
        * <pre>
@@ -10586,11 +10667,11 @@ public final class Gnmi {
             throw new NullPointerException();
           }
           data_ = value;
-          onChanged();
         } else {
           dataBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000004;
+        onChanged();
         return this;
       }
       /**
@@ -10604,11 +10685,11 @@ public final class Gnmi {
           com.google.protobuf.Any.Builder builderForValue) {
         if (dataBuilder_ == null) {
           data_ = builderForValue.build();
-          onChanged();
         } else {
           dataBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000004;
+        onChanged();
         return this;
       }
       /**
@@ -10620,17 +10701,20 @@ public final class Gnmi {
        */
       public Builder mergeData(com.google.protobuf.Any value) {
         if (dataBuilder_ == null) {
-          if (data_ != null) {
-            data_ =
-              com.google.protobuf.Any.newBuilder(data_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000004) != 0) &&
+            data_ != null &&
+            data_ != com.google.protobuf.Any.getDefaultInstance()) {
+            getDataBuilder().mergeFrom(value);
           } else {
             data_ = value;
           }
-          onChanged();
         } else {
           dataBuilder_.mergeFrom(value);
         }
-
+        if (data_ != null) {
+          bitField0_ |= 0x00000004;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -10641,14 +10725,13 @@ public final class Gnmi {
        * <code>.google.protobuf.Any data = 3;</code>
        */
       public Builder clearData() {
-        if (dataBuilder_ == null) {
-          data_ = null;
-          onChanged();
-        } else {
-          data_ = null;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        data_ = null;
+        if (dataBuilder_ != null) {
+          dataBuilder_.dispose();
           dataBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
@@ -10659,7 +10742,7 @@ public final class Gnmi {
        * <code>.google.protobuf.Any data = 3;</code>
        */
       public com.google.protobuf.Any.Builder getDataBuilder() {
-        
+        bitField0_ |= 0x00000004;
         onChanged();
         return getDataFieldBuilder().getBuilder();
       }
@@ -10814,11 +10897,6 @@ public final class Gnmi {
       return new Decimal64();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_Decimal64_descriptor;
@@ -10833,7 +10911,7 @@ public final class Gnmi {
     }
 
     public static final int DIGITS_FIELD_NUMBER = 1;
-    private long digits_;
+    private long digits_ = 0L;
     /**
      * <pre>
      * Set of digits.
@@ -10848,7 +10926,7 @@ public final class Gnmi {
     }
 
     public static final int PRECISION_FIELD_NUMBER = 2;
-    private int precision_;
+    private int precision_ = 0;
     /**
      * <pre>
      * Number of digits following the decimal point.
@@ -10983,11 +11061,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.Decimal64 parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.Decimal64 parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -11068,10 +11148,9 @@ public final class Gnmi {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         digits_ = 0L;
-
         precision_ = 0;
-
         return this;
       }
 
@@ -11098,10 +11177,19 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.Decimal64 buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.Decimal64 result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.Decimal64(this);
-        result.digits_ = digits_;
-        result.precision_ = precision_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.Decimal64 result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.digits_ = digits_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.precision_ = precision_;
+        }
       }
 
       @java.lang.Override
@@ -11182,12 +11270,12 @@ public final class Gnmi {
                 break;
               case 8: {
                 digits_ = input.readInt64();
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 8
               case 16: {
                 precision_ = input.readUInt32();
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 16
               default: {
@@ -11205,6 +11293,7 @@ public final class Gnmi {
         } // finally
         return this;
       }
+      private int bitField0_;
 
       private long digits_ ;
       /**
@@ -11229,8 +11318,9 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setDigits(long value) {
-        
+
         digits_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -11243,7 +11333,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearDigits() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         digits_ = 0L;
         onChanged();
         return this;
@@ -11272,8 +11362,9 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setPrecision(int value) {
-        
+
         precision_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -11286,7 +11377,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearPrecision() {
-        
+        bitField0_ = (bitField0_ & ~0x00000002);
         precision_ = 0;
         onChanged();
         return this;
@@ -11440,11 +11531,6 @@ public final class Gnmi {
       return new ScalarArray();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_ScalarArray_descriptor;
@@ -11459,6 +11545,7 @@ public final class Gnmi {
     }
 
     public static final int ELEMENT_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.TypedValue> element_;
     /**
      * <pre>
@@ -11639,11 +11726,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.ScalarArray parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.ScalarArray parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -11722,6 +11811,7 @@ public final class Gnmi {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (elementBuilder_ == null) {
           element_ = java.util.Collections.emptyList();
         } else {
@@ -11755,7 +11845,13 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.ScalarArray buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.ScalarArray result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.ScalarArray(this);
-        int from_bitField0_ = bitField0_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.openconfig.proto.gnmi.Gnmi.ScalarArray result) {
         if (elementBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             element_ = java.util.Collections.unmodifiableList(element_);
@@ -11765,8 +11861,10 @@ public final class Gnmi {
         } else {
           result.element_ = elementBuilder_.build();
         }
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.ScalarArray result) {
+        int from_bitField0_ = bitField0_;
       }
 
       @java.lang.Override
@@ -12440,7 +12538,7 @@ public final class Gnmi {
     org.opennms.features.openconfig.proto.gnmi.GnmiExt.ExtensionOrBuilder getExtensionOrBuilder(
         int index);
 
-    public org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeRequest.RequestCase getRequestCase();
+    org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeRequest.RequestCase getRequestCase();
   }
   /**
    * <pre>
@@ -12474,11 +12572,6 @@ public final class Gnmi {
       return new SubscribeRequest();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_SubscribeRequest_descriptor;
@@ -12493,6 +12586,7 @@ public final class Gnmi {
     }
 
     private int requestCase_ = 0;
+    @SuppressWarnings("serial")
     private java.lang.Object request_;
     public enum RequestCase
         implements com.google.protobuf.Internal.EnumLite,
@@ -12665,6 +12759,7 @@ public final class Gnmi {
     }
 
     public static final int EXTENSION_FIELD_NUMBER = 5;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension> extension_;
     /**
      * <pre>
@@ -12894,11 +12989,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -12982,6 +13079,7 @@ public final class Gnmi {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (subscribeBuilder_ != null) {
           subscribeBuilder_.clear();
         }
@@ -12997,7 +13095,7 @@ public final class Gnmi {
           extension_ = null;
           extensionBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000008);
         requestCase_ = 0;
         request_ = null;
         return this;
@@ -13026,40 +13124,44 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeRequest buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeRequest result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeRequest(this);
-        int from_bitField0_ = bitField0_;
-        if (requestCase_ == 1) {
-          if (subscribeBuilder_ == null) {
-            result.request_ = request_;
-          } else {
-            result.request_ = subscribeBuilder_.build();
-          }
-        }
-        if (requestCase_ == 3) {
-          if (pollBuilder_ == null) {
-            result.request_ = request_;
-          } else {
-            result.request_ = pollBuilder_.build();
-          }
-        }
-        if (requestCase_ == 4) {
-          if (aliasesBuilder_ == null) {
-            result.request_ = request_;
-          } else {
-            result.request_ = aliasesBuilder_.build();
-          }
-        }
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        buildPartialOneofs(result);
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeRequest result) {
         if (extensionBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) != 0)) {
+          if (((bitField0_ & 0x00000008) != 0)) {
             extension_ = java.util.Collections.unmodifiableList(extension_);
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000008);
           }
           result.extension_ = extension_;
         } else {
           result.extension_ = extensionBuilder_.build();
         }
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeRequest result) {
+        int from_bitField0_ = bitField0_;
+      }
+
+      private void buildPartialOneofs(org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeRequest result) {
         result.requestCase_ = requestCase_;
-        onBuilt();
-        return result;
+        result.request_ = this.request_;
+        if (requestCase_ == 1 &&
+            subscribeBuilder_ != null) {
+          result.request_ = subscribeBuilder_.build();
+        }
+        if (requestCase_ == 3 &&
+            pollBuilder_ != null) {
+          result.request_ = pollBuilder_.build();
+        }
+        if (requestCase_ == 4 &&
+            aliasesBuilder_ != null) {
+          result.request_ = aliasesBuilder_.build();
+        }
       }
 
       @java.lang.Override
@@ -13110,7 +13212,7 @@ public final class Gnmi {
           if (!other.extension_.isEmpty()) {
             if (extension_.isEmpty()) {
               extension_ = other.extension_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000008);
             } else {
               ensureExtensionIsMutable();
               extension_.addAll(other.extension_);
@@ -13123,7 +13225,7 @@ public final class Gnmi {
               extensionBuilder_.dispose();
               extensionBuilder_ = null;
               extension_ = other.extension_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000008);
               extensionBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getExtensionFieldBuilder() : null;
@@ -13335,8 +13437,9 @@ public final class Gnmi {
         } else {
           if (requestCase_ == 1) {
             subscribeBuilder_.mergeFrom(value);
+          } else {
+            subscribeBuilder_.setMessage(value);
           }
-          subscribeBuilder_.setMessage(value);
         }
         requestCase_ = 1;
         return this;
@@ -13414,7 +13517,7 @@ public final class Gnmi {
           request_ = null;
         }
         requestCase_ = 1;
-        onChanged();;
+        onChanged();
         return subscribeBuilder_;
       }
 
@@ -13512,8 +13615,9 @@ public final class Gnmi {
         } else {
           if (requestCase_ == 3) {
             pollBuilder_.mergeFrom(value);
+          } else {
+            pollBuilder_.setMessage(value);
           }
-          pollBuilder_.setMessage(value);
         }
         requestCase_ = 3;
         return this;
@@ -13591,7 +13695,7 @@ public final class Gnmi {
           request_ = null;
         }
         requestCase_ = 3;
-        onChanged();;
+        onChanged();
         return pollBuilder_;
       }
 
@@ -13689,8 +13793,9 @@ public final class Gnmi {
         } else {
           if (requestCase_ == 4) {
             aliasesBuilder_.mergeFrom(value);
+          } else {
+            aliasesBuilder_.setMessage(value);
           }
-          aliasesBuilder_.setMessage(value);
         }
         requestCase_ = 4;
         return this;
@@ -13768,16 +13873,16 @@ public final class Gnmi {
           request_ = null;
         }
         requestCase_ = 4;
-        onChanged();;
+        onChanged();
         return aliasesBuilder_;
       }
 
       private java.util.List<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension> extension_ =
         java.util.Collections.emptyList();
       private void ensureExtensionIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!((bitField0_ & 0x00000008) != 0)) {
           extension_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension>(extension_);
-          bitField0_ |= 0x00000001;
+          bitField0_ |= 0x00000008;
          }
       }
 
@@ -13982,7 +14087,7 @@ public final class Gnmi {
       public Builder clearExtension() {
         if (extensionBuilder_ == null) {
           extension_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000008);
           onChanged();
         } else {
           extensionBuilder_.clear();
@@ -14094,7 +14199,7 @@ public final class Gnmi {
           extensionBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension, org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension.Builder, org.opennms.features.openconfig.proto.gnmi.GnmiExt.ExtensionOrBuilder>(
                   extension_,
-                  ((bitField0_ & 0x00000001) != 0),
+                  ((bitField0_ & 0x00000008) != 0),
                   getParentForChildren(),
                   isClean());
           extension_ = null;
@@ -14198,11 +14303,6 @@ public final class Gnmi {
       return new Poll();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_Poll_descriptor;
@@ -14314,11 +14414,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.Poll parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.Poll parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -14637,6 +14739,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>.gnmi.Error error = 4 [deprecated = true];</code>
+     * @deprecated gnmi.SubscribeResponse.error is deprecated.
+     *     See gnmi.proto;l=239
      * @return Whether the error field is set.
      */
     @java.lang.Deprecated boolean hasError();
@@ -14646,6 +14750,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>.gnmi.Error error = 4 [deprecated = true];</code>
+     * @deprecated gnmi.SubscribeResponse.error is deprecated.
+     *     See gnmi.proto;l=239
      * @return The error.
      */
     @java.lang.Deprecated org.opennms.features.openconfig.proto.gnmi.Gnmi.Error getError();
@@ -14707,7 +14813,7 @@ public final class Gnmi {
     org.opennms.features.openconfig.proto.gnmi.GnmiExt.ExtensionOrBuilder getExtensionOrBuilder(
         int index);
 
-    public org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeResponse.ResponseCase getResponseCase();
+    org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeResponse.ResponseCase getResponseCase();
   }
   /**
    * <pre>
@@ -14741,11 +14847,6 @@ public final class Gnmi {
       return new SubscribeResponse();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_SubscribeResponse_descriptor;
@@ -14760,6 +14861,7 @@ public final class Gnmi {
     }
 
     private int responseCase_ = 0;
+    @SuppressWarnings("serial")
     private java.lang.Object response_;
     public enum ResponseCase
         implements com.google.protobuf.Internal.EnumLite,
@@ -14883,6 +14985,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>.gnmi.Error error = 4 [deprecated = true];</code>
+     * @deprecated gnmi.SubscribeResponse.error is deprecated.
+     *     See gnmi.proto;l=239
      * @return Whether the error field is set.
      */
     @java.lang.Override
@@ -14895,6 +14999,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>.gnmi.Error error = 4 [deprecated = true];</code>
+     * @deprecated gnmi.SubscribeResponse.error is deprecated.
+     *     See gnmi.proto;l=239
      * @return The error.
      */
     @java.lang.Override
@@ -14920,6 +15026,7 @@ public final class Gnmi {
     }
 
     public static final int EXTENSION_FIELD_NUMBER = 5;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension> extension_;
     /**
      * <pre>
@@ -15152,11 +15259,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -15240,6 +15349,7 @@ public final class Gnmi {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (updateBuilder_ != null) {
           updateBuilder_.clear();
         }
@@ -15252,7 +15362,7 @@ public final class Gnmi {
           extension_ = null;
           extensionBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000008);
         responseCase_ = 0;
         response_ = null;
         return this;
@@ -15281,36 +15391,40 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeResponse buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeResponse result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeResponse(this);
-        int from_bitField0_ = bitField0_;
-        if (responseCase_ == 1) {
-          if (updateBuilder_ == null) {
-            result.response_ = response_;
-          } else {
-            result.response_ = updateBuilder_.build();
-          }
-        }
-        if (responseCase_ == 3) {
-          result.response_ = response_;
-        }
-        if (responseCase_ == 4) {
-          if (errorBuilder_ == null) {
-            result.response_ = response_;
-          } else {
-            result.response_ = errorBuilder_.build();
-          }
-        }
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        buildPartialOneofs(result);
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeResponse result) {
         if (extensionBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) != 0)) {
+          if (((bitField0_ & 0x00000008) != 0)) {
             extension_ = java.util.Collections.unmodifiableList(extension_);
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000008);
           }
           result.extension_ = extension_;
         } else {
           result.extension_ = extensionBuilder_.build();
         }
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeResponse result) {
+        int from_bitField0_ = bitField0_;
+      }
+
+      private void buildPartialOneofs(org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscribeResponse result) {
         result.responseCase_ = responseCase_;
-        onBuilt();
-        return result;
+        result.response_ = this.response_;
+        if (responseCase_ == 1 &&
+            updateBuilder_ != null) {
+          result.response_ = updateBuilder_.build();
+        }
+        if (responseCase_ == 4 &&
+            errorBuilder_ != null) {
+          result.response_ = errorBuilder_.build();
+        }
       }
 
       @java.lang.Override
@@ -15361,7 +15475,7 @@ public final class Gnmi {
           if (!other.extension_.isEmpty()) {
             if (extension_.isEmpty()) {
               extension_ = other.extension_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000008);
             } else {
               ensureExtensionIsMutable();
               extension_.addAll(other.extension_);
@@ -15374,7 +15488,7 @@ public final class Gnmi {
               extensionBuilder_.dispose();
               extensionBuilder_ = null;
               extension_ = other.extension_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000008);
               extensionBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getExtensionFieldBuilder() : null;
@@ -15434,8 +15548,8 @@ public final class Gnmi {
                 break;
               } // case 10
               case 24: {
-                responseCase_ = 3;
                 response_ = input.readBool();
+                responseCase_ = 3;
                 break;
               } // case 24
               case 34: {
@@ -15584,8 +15698,9 @@ public final class Gnmi {
         } else {
           if (responseCase_ == 1) {
             updateBuilder_.mergeFrom(value);
+          } else {
+            updateBuilder_.setMessage(value);
           }
-          updateBuilder_.setMessage(value);
         }
         responseCase_ = 1;
         return this;
@@ -15663,7 +15778,7 @@ public final class Gnmi {
           response_ = null;
         }
         responseCase_ = 1;
-        onChanged();;
+        onChanged();
         return updateBuilder_;
       }
 
@@ -15705,6 +15820,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setSyncResponse(boolean value) {
+
         responseCase_ = 3;
         response_ = value;
         onChanged();
@@ -15736,6 +15852,8 @@ public final class Gnmi {
        * </pre>
        *
        * <code>.gnmi.Error error = 4 [deprecated = true];</code>
+       * @deprecated gnmi.SubscribeResponse.error is deprecated.
+       *     See gnmi.proto;l=239
        * @return Whether the error field is set.
        */
       @java.lang.Override
@@ -15748,6 +15866,8 @@ public final class Gnmi {
        * </pre>
        *
        * <code>.gnmi.Error error = 4 [deprecated = true];</code>
+       * @deprecated gnmi.SubscribeResponse.error is deprecated.
+       *     See gnmi.proto;l=239
        * @return The error.
        */
       @java.lang.Override
@@ -15822,8 +15942,9 @@ public final class Gnmi {
         } else {
           if (responseCase_ == 4) {
             errorBuilder_.mergeFrom(value);
+          } else {
+            errorBuilder_.setMessage(value);
           }
-          errorBuilder_.setMessage(value);
         }
         responseCase_ = 4;
         return this;
@@ -15901,16 +16022,16 @@ public final class Gnmi {
           response_ = null;
         }
         responseCase_ = 4;
-        onChanged();;
+        onChanged();
         return errorBuilder_;
       }
 
       private java.util.List<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension> extension_ =
         java.util.Collections.emptyList();
       private void ensureExtensionIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!((bitField0_ & 0x00000008) != 0)) {
           extension_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension>(extension_);
-          bitField0_ |= 0x00000001;
+          bitField0_ |= 0x00000008;
          }
       }
 
@@ -16115,7 +16236,7 @@ public final class Gnmi {
       public Builder clearExtension() {
         if (extensionBuilder_ == null) {
           extension_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000008);
           onChanged();
         } else {
           extensionBuilder_.clear();
@@ -16227,7 +16348,7 @@ public final class Gnmi {
           extensionBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension, org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension.Builder, org.opennms.features.openconfig.proto.gnmi.GnmiExt.ExtensionOrBuilder>(
                   extension_,
-                  ((bitField0_ & 0x00000001) != 0),
+                  ((bitField0_ & 0x00000008) != 0),
                   getParentForChildren(),
                   isClean());
           extension_ = null;
@@ -16550,11 +16671,6 @@ public final class Gnmi {
       return new SubscriptionList();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_SubscriptionList_descriptor;
@@ -16713,6 +16829,7 @@ public final class Gnmi {
       // @@protoc_insertion_point(enum_scope:gnmi.SubscriptionList.Mode)
     }
 
+    private int bitField0_;
     public static final int PREFIX_FIELD_NUMBER = 1;
     private org.opennms.features.openconfig.proto.gnmi.Gnmi.Path prefix_;
     /**
@@ -16725,7 +16842,7 @@ public final class Gnmi {
      */
     @java.lang.Override
     public boolean hasPrefix() {
-      return prefix_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <pre>
@@ -16748,10 +16865,11 @@ public final class Gnmi {
      */
     @java.lang.Override
     public org.opennms.features.openconfig.proto.gnmi.Gnmi.PathOrBuilder getPrefixOrBuilder() {
-      return getPrefix();
+      return prefix_ == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.getDefaultInstance() : prefix_;
     }
 
     public static final int SUBSCRIPTION_FIELD_NUMBER = 2;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.Subscription> subscription_;
     /**
      * <pre>
@@ -16812,7 +16930,7 @@ public final class Gnmi {
     }
 
     public static final int USE_ALIASES_FIELD_NUMBER = 3;
-    private boolean useAliases_;
+    private boolean useAliases_ = false;
     /**
      * <pre>
      * Whether target defined aliases are allowed within the subscription.
@@ -16838,7 +16956,7 @@ public final class Gnmi {
      */
     @java.lang.Override
     public boolean hasQos() {
-      return qos_ != null;
+      return ((bitField0_ & 0x00000002) != 0);
     }
     /**
      * <pre>
@@ -16861,11 +16979,11 @@ public final class Gnmi {
      */
     @java.lang.Override
     public org.opennms.features.openconfig.proto.gnmi.Gnmi.QOSMarkingOrBuilder getQosOrBuilder() {
-      return getQos();
+      return qos_ == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.QOSMarking.getDefaultInstance() : qos_;
     }
 
     public static final int MODE_FIELD_NUMBER = 5;
-    private int mode_;
+    private int mode_ = 0;
     /**
      * <code>.gnmi.SubscriptionList.Mode mode = 5;</code>
      * @return The enum numeric value on the wire for mode.
@@ -16878,13 +16996,12 @@ public final class Gnmi {
      * @return The mode.
      */
     @java.lang.Override public org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionList.Mode getMode() {
-      @SuppressWarnings("deprecation")
-      org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionList.Mode result = org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionList.Mode.valueOf(mode_);
+      org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionList.Mode result = org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionList.Mode.forNumber(mode_);
       return result == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionList.Mode.UNRECOGNIZED : result;
     }
 
     public static final int ALLOW_AGGREGATION_FIELD_NUMBER = 6;
-    private boolean allowAggregation_;
+    private boolean allowAggregation_ = false;
     /**
      * <pre>
      * Whether elements of the schema that are marked as eligible for aggregation
@@ -16900,6 +17017,7 @@ public final class Gnmi {
     }
 
     public static final int USE_MODELS_FIELD_NUMBER = 7;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.ModelData> useModels_;
     /**
      * <pre>
@@ -16965,7 +17083,7 @@ public final class Gnmi {
     }
 
     public static final int ENCODING_FIELD_NUMBER = 8;
-    private int encoding_;
+    private int encoding_ = 0;
     /**
      * <pre>
      * The encoding that the target should use within the Notifications generated
@@ -16988,13 +17106,12 @@ public final class Gnmi {
      * @return The encoding.
      */
     @java.lang.Override public org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding getEncoding() {
-      @SuppressWarnings("deprecation")
-      org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding result = org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding.valueOf(encoding_);
+      org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding result = org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding.forNumber(encoding_);
       return result == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding.UNRECOGNIZED : result;
     }
 
     public static final int UPDATES_ONLY_FIELD_NUMBER = 9;
-    private boolean updatesOnly_;
+    private boolean updatesOnly_ = false;
     /**
      * <pre>
      * An optional field to specify that only updates to current state should be
@@ -17026,7 +17143,7 @@ public final class Gnmi {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (prefix_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(1, getPrefix());
       }
       for (int i = 0; i < subscription_.size(); i++) {
@@ -17035,7 +17152,7 @@ public final class Gnmi {
       if (useAliases_ != false) {
         output.writeBool(3, useAliases_);
       }
-      if (qos_ != null) {
+      if (((bitField0_ & 0x00000002) != 0)) {
         output.writeMessage(4, getQos());
       }
       if (mode_ != org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionList.Mode.STREAM.getNumber()) {
@@ -17062,7 +17179,7 @@ public final class Gnmi {
       if (size != -1) return size;
 
       size = 0;
-      if (prefix_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, getPrefix());
       }
@@ -17074,7 +17191,7 @@ public final class Gnmi {
         size += com.google.protobuf.CodedOutputStream
           .computeBoolSize(3, useAliases_);
       }
-      if (qos_ != null) {
+      if (((bitField0_ & 0x00000002) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(4, getQos());
       }
@@ -17224,11 +17341,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionList parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionList parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -17300,21 +17419,30 @@ public final class Gnmi {
 
       // Construct using org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionList.newBuilder()
       private Builder() {
-
+        maybeForceBuilderInitialization();
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getPrefixFieldBuilder();
+          getSubscriptionFieldBuilder();
+          getQosFieldBuilder();
+          getUseModelsFieldBuilder();
+        }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (prefixBuilder_ == null) {
-          prefix_ = null;
-        } else {
-          prefix_ = null;
+        bitField0_ = 0;
+        prefix_ = null;
+        if (prefixBuilder_ != null) {
+          prefixBuilder_.dispose();
           prefixBuilder_ = null;
         }
         if (subscriptionBuilder_ == null) {
@@ -17323,30 +17451,24 @@ public final class Gnmi {
           subscription_ = null;
           subscriptionBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         useAliases_ = false;
-
-        if (qosBuilder_ == null) {
-          qos_ = null;
-        } else {
-          qos_ = null;
+        qos_ = null;
+        if (qosBuilder_ != null) {
+          qosBuilder_.dispose();
           qosBuilder_ = null;
         }
         mode_ = 0;
-
         allowAggregation_ = false;
-
         if (useModelsBuilder_ == null) {
           useModels_ = java.util.Collections.emptyList();
         } else {
           useModels_ = null;
           useModelsBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000040);
         encoding_ = 0;
-
         updatesOnly_ = false;
-
         return this;
       }
 
@@ -17373,42 +17495,64 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionList buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionList result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionList(this);
-        int from_bitField0_ = bitField0_;
-        if (prefixBuilder_ == null) {
-          result.prefix_ = prefix_;
-        } else {
-          result.prefix_ = prefixBuilder_.build();
-        }
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionList result) {
         if (subscriptionBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) != 0)) {
+          if (((bitField0_ & 0x00000002) != 0)) {
             subscription_ = java.util.Collections.unmodifiableList(subscription_);
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000002);
           }
           result.subscription_ = subscription_;
         } else {
           result.subscription_ = subscriptionBuilder_.build();
         }
-        result.useAliases_ = useAliases_;
-        if (qosBuilder_ == null) {
-          result.qos_ = qos_;
-        } else {
-          result.qos_ = qosBuilder_.build();
-        }
-        result.mode_ = mode_;
-        result.allowAggregation_ = allowAggregation_;
         if (useModelsBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) != 0)) {
+          if (((bitField0_ & 0x00000040) != 0)) {
             useModels_ = java.util.Collections.unmodifiableList(useModels_);
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ = (bitField0_ & ~0x00000040);
           }
           result.useModels_ = useModels_;
         } else {
           result.useModels_ = useModelsBuilder_.build();
         }
-        result.encoding_ = encoding_;
-        result.updatesOnly_ = updatesOnly_;
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionList result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.prefix_ = prefixBuilder_ == null
+              ? prefix_
+              : prefixBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.useAliases_ = useAliases_;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.qos_ = qosBuilder_ == null
+              ? qos_
+              : qosBuilder_.build();
+          to_bitField0_ |= 0x00000002;
+        }
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.mode_ = mode_;
+        }
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          result.allowAggregation_ = allowAggregation_;
+        }
+        if (((from_bitField0_ & 0x00000080) != 0)) {
+          result.encoding_ = encoding_;
+        }
+        if (((from_bitField0_ & 0x00000100) != 0)) {
+          result.updatesOnly_ = updatesOnly_;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -17462,7 +17606,7 @@ public final class Gnmi {
           if (!other.subscription_.isEmpty()) {
             if (subscription_.isEmpty()) {
               subscription_ = other.subscription_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000002);
             } else {
               ensureSubscriptionIsMutable();
               subscription_.addAll(other.subscription_);
@@ -17475,7 +17619,7 @@ public final class Gnmi {
               subscriptionBuilder_.dispose();
               subscriptionBuilder_ = null;
               subscription_ = other.subscription_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000002);
               subscriptionBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getSubscriptionFieldBuilder() : null;
@@ -17500,7 +17644,7 @@ public final class Gnmi {
           if (!other.useModels_.isEmpty()) {
             if (useModels_.isEmpty()) {
               useModels_ = other.useModels_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000040);
             } else {
               ensureUseModelsIsMutable();
               useModels_.addAll(other.useModels_);
@@ -17513,7 +17657,7 @@ public final class Gnmi {
               useModelsBuilder_.dispose();
               useModelsBuilder_ = null;
               useModels_ = other.useModels_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000040);
               useModelsBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getUseModelsFieldBuilder() : null;
@@ -17558,7 +17702,7 @@ public final class Gnmi {
                 input.readMessage(
                     getPrefixFieldBuilder().getBuilder(),
                     extensionRegistry);
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 10
               case 18: {
@@ -17576,24 +17720,24 @@ public final class Gnmi {
               } // case 18
               case 24: {
                 useAliases_ = input.readBool();
-
+                bitField0_ |= 0x00000004;
                 break;
               } // case 24
               case 34: {
                 input.readMessage(
                     getQosFieldBuilder().getBuilder(),
                     extensionRegistry);
-
+                bitField0_ |= 0x00000008;
                 break;
               } // case 34
               case 40: {
                 mode_ = input.readEnum();
-
+                bitField0_ |= 0x00000010;
                 break;
               } // case 40
               case 48: {
                 allowAggregation_ = input.readBool();
-
+                bitField0_ |= 0x00000020;
                 break;
               } // case 48
               case 58: {
@@ -17611,12 +17755,12 @@ public final class Gnmi {
               } // case 58
               case 64: {
                 encoding_ = input.readEnum();
-
+                bitField0_ |= 0x00000080;
                 break;
               } // case 64
               case 72: {
                 updatesOnly_ = input.readBool();
-
+                bitField0_ |= 0x00000100;
                 break;
               } // case 72
               default: {
@@ -17648,7 +17792,7 @@ public final class Gnmi {
        * @return Whether the prefix field is set.
        */
       public boolean hasPrefix() {
-        return prefixBuilder_ != null || prefix_ != null;
+        return ((bitField0_ & 0x00000001) != 0);
       }
       /**
        * <pre>
@@ -17678,11 +17822,11 @@ public final class Gnmi {
             throw new NullPointerException();
           }
           prefix_ = value;
-          onChanged();
         } else {
           prefixBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -17696,11 +17840,11 @@ public final class Gnmi {
           org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.Builder builderForValue) {
         if (prefixBuilder_ == null) {
           prefix_ = builderForValue.build();
-          onChanged();
         } else {
           prefixBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -17712,17 +17856,20 @@ public final class Gnmi {
        */
       public Builder mergePrefix(org.opennms.features.openconfig.proto.gnmi.Gnmi.Path value) {
         if (prefixBuilder_ == null) {
-          if (prefix_ != null) {
-            prefix_ =
-              org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.newBuilder(prefix_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000001) != 0) &&
+            prefix_ != null &&
+            prefix_ != org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.getDefaultInstance()) {
+            getPrefixBuilder().mergeFrom(value);
           } else {
             prefix_ = value;
           }
-          onChanged();
         } else {
           prefixBuilder_.mergeFrom(value);
         }
-
+        if (prefix_ != null) {
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -17733,14 +17880,13 @@ public final class Gnmi {
        * <code>.gnmi.Path prefix = 1;</code>
        */
       public Builder clearPrefix() {
-        if (prefixBuilder_ == null) {
-          prefix_ = null;
-          onChanged();
-        } else {
-          prefix_ = null;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        prefix_ = null;
+        if (prefixBuilder_ != null) {
+          prefixBuilder_.dispose();
           prefixBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
@@ -17751,7 +17897,7 @@ public final class Gnmi {
        * <code>.gnmi.Path prefix = 1;</code>
        */
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.Builder getPrefixBuilder() {
-        
+        bitField0_ |= 0x00000001;
         onChanged();
         return getPrefixFieldBuilder().getBuilder();
       }
@@ -17794,9 +17940,9 @@ public final class Gnmi {
       private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.Subscription> subscription_ =
         java.util.Collections.emptyList();
       private void ensureSubscriptionIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           subscription_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.gnmi.Gnmi.Subscription>(subscription_);
-          bitField0_ |= 0x00000001;
+          bitField0_ |= 0x00000002;
          }
       }
 
@@ -17990,7 +18136,7 @@ public final class Gnmi {
       public Builder clearSubscription() {
         if (subscriptionBuilder_ == null) {
           subscription_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000002);
           onChanged();
         } else {
           subscriptionBuilder_.clear();
@@ -18095,7 +18241,7 @@ public final class Gnmi {
           subscriptionBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.gnmi.Gnmi.Subscription, org.opennms.features.openconfig.proto.gnmi.Gnmi.Subscription.Builder, org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionOrBuilder>(
                   subscription_,
-                  ((bitField0_ & 0x00000001) != 0),
+                  ((bitField0_ & 0x00000002) != 0),
                   getParentForChildren(),
                   isClean());
           subscription_ = null;
@@ -18126,8 +18272,9 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setUseAliases(boolean value) {
-        
+
         useAliases_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -18140,7 +18287,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearUseAliases() {
-        
+        bitField0_ = (bitField0_ & ~0x00000004);
         useAliases_ = false;
         onChanged();
         return this;
@@ -18158,7 +18305,7 @@ public final class Gnmi {
        * @return Whether the qos field is set.
        */
       public boolean hasQos() {
-        return qosBuilder_ != null || qos_ != null;
+        return ((bitField0_ & 0x00000008) != 0);
       }
       /**
        * <pre>
@@ -18188,11 +18335,11 @@ public final class Gnmi {
             throw new NullPointerException();
           }
           qos_ = value;
-          onChanged();
         } else {
           qosBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000008;
+        onChanged();
         return this;
       }
       /**
@@ -18206,11 +18353,11 @@ public final class Gnmi {
           org.opennms.features.openconfig.proto.gnmi.Gnmi.QOSMarking.Builder builderForValue) {
         if (qosBuilder_ == null) {
           qos_ = builderForValue.build();
-          onChanged();
         } else {
           qosBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000008;
+        onChanged();
         return this;
       }
       /**
@@ -18222,17 +18369,20 @@ public final class Gnmi {
        */
       public Builder mergeQos(org.opennms.features.openconfig.proto.gnmi.Gnmi.QOSMarking value) {
         if (qosBuilder_ == null) {
-          if (qos_ != null) {
-            qos_ =
-              org.opennms.features.openconfig.proto.gnmi.Gnmi.QOSMarking.newBuilder(qos_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000008) != 0) &&
+            qos_ != null &&
+            qos_ != org.opennms.features.openconfig.proto.gnmi.Gnmi.QOSMarking.getDefaultInstance()) {
+            getQosBuilder().mergeFrom(value);
           } else {
             qos_ = value;
           }
-          onChanged();
         } else {
           qosBuilder_.mergeFrom(value);
         }
-
+        if (qos_ != null) {
+          bitField0_ |= 0x00000008;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -18243,14 +18393,13 @@ public final class Gnmi {
        * <code>.gnmi.QOSMarking qos = 4;</code>
        */
       public Builder clearQos() {
-        if (qosBuilder_ == null) {
-          qos_ = null;
-          onChanged();
-        } else {
-          qos_ = null;
+        bitField0_ = (bitField0_ & ~0x00000008);
+        qos_ = null;
+        if (qosBuilder_ != null) {
+          qosBuilder_.dispose();
           qosBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
@@ -18261,7 +18410,7 @@ public final class Gnmi {
        * <code>.gnmi.QOSMarking qos = 4;</code>
        */
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.QOSMarking.Builder getQosBuilder() {
-        
+        bitField0_ |= 0x00000008;
         onChanged();
         return getQosFieldBuilder().getBuilder();
       }
@@ -18315,8 +18464,8 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setModeValue(int value) {
-        
         mode_ = value;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -18326,8 +18475,7 @@ public final class Gnmi {
        */
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionList.Mode getMode() {
-        @SuppressWarnings("deprecation")
-        org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionList.Mode result = org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionList.Mode.valueOf(mode_);
+        org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionList.Mode result = org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionList.Mode.forNumber(mode_);
         return result == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionList.Mode.UNRECOGNIZED : result;
       }
       /**
@@ -18339,7 +18487,7 @@ public final class Gnmi {
         if (value == null) {
           throw new NullPointerException();
         }
-        
+        bitField0_ |= 0x00000010;
         mode_ = value.getNumber();
         onChanged();
         return this;
@@ -18349,7 +18497,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearMode() {
-        
+        bitField0_ = (bitField0_ & ~0x00000010);
         mode_ = 0;
         onChanged();
         return this;
@@ -18380,8 +18528,9 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setAllowAggregation(boolean value) {
-        
+
         allowAggregation_ = value;
+        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -18395,7 +18544,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearAllowAggregation() {
-        
+        bitField0_ = (bitField0_ & ~0x00000020);
         allowAggregation_ = false;
         onChanged();
         return this;
@@ -18404,9 +18553,9 @@ public final class Gnmi {
       private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.ModelData> useModels_ =
         java.util.Collections.emptyList();
       private void ensureUseModelsIsMutable() {
-        if (!((bitField0_ & 0x00000002) != 0)) {
+        if (!((bitField0_ & 0x00000040) != 0)) {
           useModels_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.gnmi.Gnmi.ModelData>(useModels_);
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000040;
          }
       }
 
@@ -18611,7 +18760,7 @@ public final class Gnmi {
       public Builder clearUseModels() {
         if (useModelsBuilder_ == null) {
           useModels_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000040);
           onChanged();
         } else {
           useModelsBuilder_.clear();
@@ -18723,7 +18872,7 @@ public final class Gnmi {
           useModelsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.gnmi.Gnmi.ModelData, org.opennms.features.openconfig.proto.gnmi.Gnmi.ModelData.Builder, org.opennms.features.openconfig.proto.gnmi.Gnmi.ModelDataOrBuilder>(
                   useModels_,
-                  ((bitField0_ & 0x00000002) != 0),
+                  ((bitField0_ & 0x00000040) != 0),
                   getParentForChildren(),
                   isClean());
           useModels_ = null;
@@ -18755,8 +18904,8 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setEncodingValue(int value) {
-        
         encoding_ = value;
+        bitField0_ |= 0x00000080;
         onChanged();
         return this;
       }
@@ -18771,8 +18920,7 @@ public final class Gnmi {
        */
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding getEncoding() {
-        @SuppressWarnings("deprecation")
-        org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding result = org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding.valueOf(encoding_);
+        org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding result = org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding.forNumber(encoding_);
         return result == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding.UNRECOGNIZED : result;
       }
       /**
@@ -18789,7 +18937,7 @@ public final class Gnmi {
         if (value == null) {
           throw new NullPointerException();
         }
-        
+        bitField0_ |= 0x00000080;
         encoding_ = value.getNumber();
         onChanged();
         return this;
@@ -18804,7 +18952,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearEncoding() {
-        
+        bitField0_ = (bitField0_ & ~0x00000080);
         encoding_ = 0;
         onChanged();
         return this;
@@ -18841,8 +18989,9 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setUpdatesOnly(boolean value) {
-        
+
         updatesOnly_ = value;
+        bitField0_ |= 0x00000100;
         onChanged();
         return this;
       }
@@ -18859,7 +19008,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearUpdatesOnly() {
-        
+        bitField0_ = (bitField0_ & ~0x00000100);
         updatesOnly_ = false;
         onChanged();
         return this;
@@ -19042,11 +19191,6 @@ public final class Gnmi {
       return new Subscription();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_Subscription_descriptor;
@@ -19060,6 +19204,7 @@ public final class Gnmi {
               org.opennms.features.openconfig.proto.gnmi.Gnmi.Subscription.class, org.opennms.features.openconfig.proto.gnmi.Gnmi.Subscription.Builder.class);
     }
 
+    private int bitField0_;
     public static final int PATH_FIELD_NUMBER = 1;
     private org.opennms.features.openconfig.proto.gnmi.Gnmi.Path path_;
     /**
@@ -19072,7 +19217,7 @@ public final class Gnmi {
      */
     @java.lang.Override
     public boolean hasPath() {
-      return path_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <pre>
@@ -19095,11 +19240,11 @@ public final class Gnmi {
      */
     @java.lang.Override
     public org.opennms.features.openconfig.proto.gnmi.Gnmi.PathOrBuilder getPathOrBuilder() {
-      return getPath();
+      return path_ == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.getDefaultInstance() : path_;
     }
 
     public static final int MODE_FIELD_NUMBER = 2;
-    private int mode_;
+    private int mode_ = 0;
     /**
      * <pre>
      * Subscription mode to be used.
@@ -19120,13 +19265,12 @@ public final class Gnmi {
      * @return The mode.
      */
     @java.lang.Override public org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionMode getMode() {
-      @SuppressWarnings("deprecation")
-      org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionMode result = org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionMode.valueOf(mode_);
+      org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionMode result = org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionMode.forNumber(mode_);
       return result == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionMode.UNRECOGNIZED : result;
     }
 
     public static final int SAMPLE_INTERVAL_FIELD_NUMBER = 3;
-    private long sampleInterval_;
+    private long sampleInterval_ = 0L;
     /**
      * <pre>
      * ns between samples in SAMPLE mode.
@@ -19141,7 +19285,7 @@ public final class Gnmi {
     }
 
     public static final int SUPPRESS_REDUNDANT_FIELD_NUMBER = 4;
-    private boolean suppressRedundant_;
+    private boolean suppressRedundant_ = false;
     /**
      * <pre>
      * Indicates whether values that have not changed should be sent in a SAMPLE
@@ -19157,7 +19301,7 @@ public final class Gnmi {
     }
 
     public static final int HEARTBEAT_INTERVAL_FIELD_NUMBER = 5;
-    private long heartbeatInterval_;
+    private long heartbeatInterval_ = 0L;
     /**
      * <pre>
      * Specifies the maximum allowable silent period in nanoseconds when
@@ -19187,7 +19331,7 @@ public final class Gnmi {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (path_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(1, getPath());
       }
       if (mode_ != org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionMode.TARGET_DEFINED.getNumber()) {
@@ -19211,7 +19355,7 @@ public final class Gnmi {
       if (size != -1) return size;
 
       size = 0;
-      if (path_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, getPath());
       }
@@ -19333,11 +19477,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.Subscription parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.Subscription parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -19409,31 +19555,33 @@ public final class Gnmi {
 
       // Construct using org.opennms.features.openconfig.proto.gnmi.Gnmi.Subscription.newBuilder()
       private Builder() {
-
+        maybeForceBuilderInitialization();
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getPathFieldBuilder();
+        }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (pathBuilder_ == null) {
-          path_ = null;
-        } else {
-          path_ = null;
+        bitField0_ = 0;
+        path_ = null;
+        if (pathBuilder_ != null) {
+          pathBuilder_.dispose();
           pathBuilder_ = null;
         }
         mode_ = 0;
-
         sampleInterval_ = 0L;
-
         suppressRedundant_ = false;
-
         heartbeatInterval_ = 0L;
-
         return this;
       }
 
@@ -19460,17 +19608,33 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.Subscription buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.Subscription result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.Subscription(this);
-        if (pathBuilder_ == null) {
-          result.path_ = path_;
-        } else {
-          result.path_ = pathBuilder_.build();
-        }
-        result.mode_ = mode_;
-        result.sampleInterval_ = sampleInterval_;
-        result.suppressRedundant_ = suppressRedundant_;
-        result.heartbeatInterval_ = heartbeatInterval_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.Subscription result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.path_ = pathBuilder_ == null
+              ? path_
+              : pathBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.mode_ = mode_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.sampleInterval_ = sampleInterval_;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.suppressRedundant_ = suppressRedundant_;
+        }
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.heartbeatInterval_ = heartbeatInterval_;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -19562,27 +19726,27 @@ public final class Gnmi {
                 input.readMessage(
                     getPathFieldBuilder().getBuilder(),
                     extensionRegistry);
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 10
               case 16: {
                 mode_ = input.readEnum();
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 16
               case 24: {
                 sampleInterval_ = input.readUInt64();
-
+                bitField0_ |= 0x00000004;
                 break;
               } // case 24
               case 32: {
                 suppressRedundant_ = input.readBool();
-
+                bitField0_ |= 0x00000008;
                 break;
               } // case 32
               case 40: {
                 heartbeatInterval_ = input.readUInt64();
-
+                bitField0_ |= 0x00000010;
                 break;
               } // case 40
               default: {
@@ -19600,6 +19764,7 @@ public final class Gnmi {
         } // finally
         return this;
       }
+      private int bitField0_;
 
       private org.opennms.features.openconfig.proto.gnmi.Gnmi.Path path_;
       private com.google.protobuf.SingleFieldBuilderV3<
@@ -19613,7 +19778,7 @@ public final class Gnmi {
        * @return Whether the path field is set.
        */
       public boolean hasPath() {
-        return pathBuilder_ != null || path_ != null;
+        return ((bitField0_ & 0x00000001) != 0);
       }
       /**
        * <pre>
@@ -19643,11 +19808,11 @@ public final class Gnmi {
             throw new NullPointerException();
           }
           path_ = value;
-          onChanged();
         } else {
           pathBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -19661,11 +19826,11 @@ public final class Gnmi {
           org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.Builder builderForValue) {
         if (pathBuilder_ == null) {
           path_ = builderForValue.build();
-          onChanged();
         } else {
           pathBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -19677,17 +19842,20 @@ public final class Gnmi {
        */
       public Builder mergePath(org.opennms.features.openconfig.proto.gnmi.Gnmi.Path value) {
         if (pathBuilder_ == null) {
-          if (path_ != null) {
-            path_ =
-              org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.newBuilder(path_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000001) != 0) &&
+            path_ != null &&
+            path_ != org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.getDefaultInstance()) {
+            getPathBuilder().mergeFrom(value);
           } else {
             path_ = value;
           }
-          onChanged();
         } else {
           pathBuilder_.mergeFrom(value);
         }
-
+        if (path_ != null) {
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -19698,14 +19866,13 @@ public final class Gnmi {
        * <code>.gnmi.Path path = 1;</code>
        */
       public Builder clearPath() {
-        if (pathBuilder_ == null) {
-          path_ = null;
-          onChanged();
-        } else {
-          path_ = null;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        path_ = null;
+        if (pathBuilder_ != null) {
+          pathBuilder_.dispose();
           pathBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
@@ -19716,7 +19883,7 @@ public final class Gnmi {
        * <code>.gnmi.Path path = 1;</code>
        */
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.Builder getPathBuilder() {
-        
+        bitField0_ |= 0x00000001;
         onChanged();
         return getPathFieldBuilder().getBuilder();
       }
@@ -19778,8 +19945,8 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setModeValue(int value) {
-        
         mode_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -19793,8 +19960,7 @@ public final class Gnmi {
        */
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionMode getMode() {
-        @SuppressWarnings("deprecation")
-        org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionMode result = org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionMode.valueOf(mode_);
+        org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionMode result = org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionMode.forNumber(mode_);
         return result == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.SubscriptionMode.UNRECOGNIZED : result;
       }
       /**
@@ -19810,7 +19976,7 @@ public final class Gnmi {
         if (value == null) {
           throw new NullPointerException();
         }
-        
+        bitField0_ |= 0x00000002;
         mode_ = value.getNumber();
         onChanged();
         return this;
@@ -19824,7 +19990,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearMode() {
-        
+        bitField0_ = (bitField0_ & ~0x00000002);
         mode_ = 0;
         onChanged();
         return this;
@@ -19853,8 +20019,9 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setSampleInterval(long value) {
-        
+
         sampleInterval_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -19867,7 +20034,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearSampleInterval() {
-        
+        bitField0_ = (bitField0_ & ~0x00000004);
         sampleInterval_ = 0L;
         onChanged();
         return this;
@@ -19898,8 +20065,9 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setSuppressRedundant(boolean value) {
-        
+
         suppressRedundant_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -19913,7 +20081,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearSuppressRedundant() {
-        
+        bitField0_ = (bitField0_ & ~0x00000008);
         suppressRedundant_ = false;
         onChanged();
         return this;
@@ -19946,8 +20114,9 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setHeartbeatInterval(long value) {
-        
+
         heartbeatInterval_ = value;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -19962,7 +20131,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearHeartbeatInterval() {
-        
+        bitField0_ = (bitField0_ & ~0x00000010);
         heartbeatInterval_ = 0L;
         onChanged();
         return this;
@@ -20069,11 +20238,6 @@ public final class Gnmi {
       return new QOSMarking();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_QOSMarking_descriptor;
@@ -20088,7 +20252,7 @@ public final class Gnmi {
     }
 
     public static final int MARKING_FIELD_NUMBER = 1;
-    private int marking_;
+    private int marking_ = 0;
     /**
      * <code>uint32 marking = 1;</code>
      * @return The marking.
@@ -20207,11 +20371,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.QOSMarking parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.QOSMarking parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -20292,8 +20458,8 @@ public final class Gnmi {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         marking_ = 0;
-
         return this;
       }
 
@@ -20320,9 +20486,16 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.QOSMarking buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.QOSMarking result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.QOSMarking(this);
-        result.marking_ = marking_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.QOSMarking result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.marking_ = marking_;
+        }
       }
 
       @java.lang.Override
@@ -20400,7 +20573,7 @@ public final class Gnmi {
                 break;
               case 8: {
                 marking_ = input.readUInt32();
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 8
               default: {
@@ -20418,6 +20591,7 @@ public final class Gnmi {
         } // finally
         return this;
       }
+      private int bitField0_;
 
       private int marking_ ;
       /**
@@ -20434,8 +20608,9 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setMarking(int value) {
-        
+
         marking_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -20444,7 +20619,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearMarking() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         marking_ = 0;
         onChanged();
         return this;
@@ -20595,11 +20770,6 @@ public final class Gnmi {
       return new Alias();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_Alias_descriptor;
@@ -20613,6 +20783,7 @@ public final class Gnmi {
               org.opennms.features.openconfig.proto.gnmi.Gnmi.Alias.class, org.opennms.features.openconfig.proto.gnmi.Gnmi.Alias.Builder.class);
     }
 
+    private int bitField0_;
     public static final int PATH_FIELD_NUMBER = 1;
     private org.opennms.features.openconfig.proto.gnmi.Gnmi.Path path_;
     /**
@@ -20625,7 +20796,7 @@ public final class Gnmi {
      */
     @java.lang.Override
     public boolean hasPath() {
-      return path_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <pre>
@@ -20648,11 +20819,12 @@ public final class Gnmi {
      */
     @java.lang.Override
     public org.opennms.features.openconfig.proto.gnmi.Gnmi.PathOrBuilder getPathOrBuilder() {
-      return getPath();
+      return path_ == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.getDefaultInstance() : path_;
     }
 
     public static final int ALIAS_FIELD_NUMBER = 2;
-    private volatile java.lang.Object alias_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object alias_ = "";
     /**
      * <pre>
      * The alias value, a string prefixed by "#".
@@ -20711,10 +20883,10 @@ public final class Gnmi {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (path_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(1, getPath());
       }
-      if (!getAliasBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(alias_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, alias_);
       }
       getUnknownFields().writeTo(output);
@@ -20726,11 +20898,11 @@ public final class Gnmi {
       if (size != -1) return size;
 
       size = 0;
-      if (path_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, getPath());
       }
-      if (!getAliasBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(alias_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, alias_);
       }
       size += getUnknownFields().getSerializedSize();
@@ -20821,11 +20993,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.Alias parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.Alias parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -20897,25 +21071,30 @@ public final class Gnmi {
 
       // Construct using org.opennms.features.openconfig.proto.gnmi.Gnmi.Alias.newBuilder()
       private Builder() {
-
+        maybeForceBuilderInitialization();
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getPathFieldBuilder();
+        }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (pathBuilder_ == null) {
-          path_ = null;
-        } else {
-          path_ = null;
+        bitField0_ = 0;
+        path_ = null;
+        if (pathBuilder_ != null) {
+          pathBuilder_.dispose();
           pathBuilder_ = null;
         }
         alias_ = "";
-
         return this;
       }
 
@@ -20942,14 +21121,24 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.Alias buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.Alias result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.Alias(this);
-        if (pathBuilder_ == null) {
-          result.path_ = path_;
-        } else {
-          result.path_ = pathBuilder_.build();
-        }
-        result.alias_ = alias_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.Alias result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.path_ = pathBuilder_ == null
+              ? path_
+              : pathBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.alias_ = alias_;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -21001,6 +21190,7 @@ public final class Gnmi {
         }
         if (!other.getAlias().isEmpty()) {
           alias_ = other.alias_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -21033,12 +21223,12 @@ public final class Gnmi {
                 input.readMessage(
                     getPathFieldBuilder().getBuilder(),
                     extensionRegistry);
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 10
               case 18: {
                 alias_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 18
               default: {
@@ -21056,6 +21246,7 @@ public final class Gnmi {
         } // finally
         return this;
       }
+      private int bitField0_;
 
       private org.opennms.features.openconfig.proto.gnmi.Gnmi.Path path_;
       private com.google.protobuf.SingleFieldBuilderV3<
@@ -21069,7 +21260,7 @@ public final class Gnmi {
        * @return Whether the path field is set.
        */
       public boolean hasPath() {
-        return pathBuilder_ != null || path_ != null;
+        return ((bitField0_ & 0x00000001) != 0);
       }
       /**
        * <pre>
@@ -21099,11 +21290,11 @@ public final class Gnmi {
             throw new NullPointerException();
           }
           path_ = value;
-          onChanged();
         } else {
           pathBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -21117,11 +21308,11 @@ public final class Gnmi {
           org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.Builder builderForValue) {
         if (pathBuilder_ == null) {
           path_ = builderForValue.build();
-          onChanged();
         } else {
           pathBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -21133,17 +21324,20 @@ public final class Gnmi {
        */
       public Builder mergePath(org.opennms.features.openconfig.proto.gnmi.Gnmi.Path value) {
         if (pathBuilder_ == null) {
-          if (path_ != null) {
-            path_ =
-              org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.newBuilder(path_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000001) != 0) &&
+            path_ != null &&
+            path_ != org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.getDefaultInstance()) {
+            getPathBuilder().mergeFrom(value);
           } else {
             path_ = value;
           }
-          onChanged();
         } else {
           pathBuilder_.mergeFrom(value);
         }
-
+        if (path_ != null) {
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -21154,14 +21348,13 @@ public final class Gnmi {
        * <code>.gnmi.Path path = 1;</code>
        */
       public Builder clearPath() {
-        if (pathBuilder_ == null) {
-          path_ = null;
-          onChanged();
-        } else {
-          path_ = null;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        path_ = null;
+        if (pathBuilder_ != null) {
+          pathBuilder_.dispose();
           pathBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
@@ -21172,7 +21365,7 @@ public final class Gnmi {
        * <code>.gnmi.Path path = 1;</code>
        */
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.Builder getPathBuilder() {
-        
+        bitField0_ |= 0x00000001;
         onChanged();
         return getPathFieldBuilder().getBuilder();
       }
@@ -21265,11 +21458,9 @@ public final class Gnmi {
        */
       public Builder setAlias(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         alias_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -21282,8 +21473,8 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearAlias() {
-        
         alias_ = getDefaultInstance().getAlias();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -21298,12 +21489,10 @@ public final class Gnmi {
        */
       public Builder setAliasBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         alias_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -21448,11 +21637,6 @@ public final class Gnmi {
       return new AliasList();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_AliasList_descriptor;
@@ -21467,6 +21651,7 @@ public final class Gnmi {
     }
 
     public static final int ALIAS_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.Alias> alias_;
     /**
      * <pre>
@@ -21637,11 +21822,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.AliasList parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.AliasList parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -21722,6 +21909,7 @@ public final class Gnmi {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (aliasBuilder_ == null) {
           alias_ = java.util.Collections.emptyList();
         } else {
@@ -21755,7 +21943,13 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.AliasList buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.AliasList result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.AliasList(this);
-        int from_bitField0_ = bitField0_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.openconfig.proto.gnmi.Gnmi.AliasList result) {
         if (aliasBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             alias_ = java.util.Collections.unmodifiableList(alias_);
@@ -21765,8 +21959,10 @@ public final class Gnmi {
         } else {
           result.alias_ = aliasBuilder_.build();
         }
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.AliasList result) {
+        int from_bitField0_ = bitField0_;
       }
 
       @java.lang.Override
@@ -22518,11 +22714,6 @@ public final class Gnmi {
       return new SetRequest();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_SetRequest_descriptor;
@@ -22536,6 +22727,7 @@ public final class Gnmi {
               org.opennms.features.openconfig.proto.gnmi.Gnmi.SetRequest.class, org.opennms.features.openconfig.proto.gnmi.Gnmi.SetRequest.Builder.class);
     }
 
+    private int bitField0_;
     public static final int PREFIX_FIELD_NUMBER = 1;
     private org.opennms.features.openconfig.proto.gnmi.Gnmi.Path prefix_;
     /**
@@ -22548,7 +22740,7 @@ public final class Gnmi {
      */
     @java.lang.Override
     public boolean hasPrefix() {
-      return prefix_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <pre>
@@ -22571,10 +22763,11 @@ public final class Gnmi {
      */
     @java.lang.Override
     public org.opennms.features.openconfig.proto.gnmi.Gnmi.PathOrBuilder getPrefixOrBuilder() {
-      return getPrefix();
+      return prefix_ == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.getDefaultInstance() : prefix_;
     }
 
     public static final int DELETE_FIELD_NUMBER = 2;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.Path> delete_;
     /**
      * <pre>
@@ -22635,6 +22828,7 @@ public final class Gnmi {
     }
 
     public static final int REPLACE_FIELD_NUMBER = 3;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.Update> replace_;
     /**
      * <pre>
@@ -22695,6 +22889,7 @@ public final class Gnmi {
     }
 
     public static final int UPDATE_FIELD_NUMBER = 4;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.Update> update_;
     /**
      * <pre>
@@ -22755,6 +22950,7 @@ public final class Gnmi {
     }
 
     public static final int EXTENSION_FIELD_NUMBER = 5;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension> extension_;
     /**
      * <pre>
@@ -22833,7 +23029,7 @@ public final class Gnmi {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (prefix_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(1, getPrefix());
       }
       for (int i = 0; i < delete_.size(); i++) {
@@ -22857,7 +23053,7 @@ public final class Gnmi {
       if (size != -1) return size;
 
       size = 0;
-      if (prefix_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, getPrefix());
       }
@@ -22985,11 +23181,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.SetRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.SetRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -23063,21 +23261,31 @@ public final class Gnmi {
 
       // Construct using org.opennms.features.openconfig.proto.gnmi.Gnmi.SetRequest.newBuilder()
       private Builder() {
-
+        maybeForceBuilderInitialization();
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getPrefixFieldBuilder();
+          getDeleteFieldBuilder();
+          getReplaceFieldBuilder();
+          getUpdateFieldBuilder();
+          getExtensionFieldBuilder();
+        }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (prefixBuilder_ == null) {
-          prefix_ = null;
-        } else {
-          prefix_ = null;
+        bitField0_ = 0;
+        prefix_ = null;
+        if (prefixBuilder_ != null) {
+          prefixBuilder_.dispose();
           prefixBuilder_ = null;
         }
         if (deleteBuilder_ == null) {
@@ -23086,28 +23294,28 @@ public final class Gnmi {
           delete_ = null;
           deleteBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         if (replaceBuilder_ == null) {
           replace_ = java.util.Collections.emptyList();
         } else {
           replace_ = null;
           replaceBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         if (updateBuilder_ == null) {
           update_ = java.util.Collections.emptyList();
         } else {
           update_ = null;
           updateBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         if (extensionBuilder_ == null) {
           extension_ = java.util.Collections.emptyList();
         } else {
           extension_ = null;
           extensionBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000008);
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
 
@@ -23134,50 +23342,61 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.SetRequest buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.SetRequest result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.SetRequest(this);
-        int from_bitField0_ = bitField0_;
-        if (prefixBuilder_ == null) {
-          result.prefix_ = prefix_;
-        } else {
-          result.prefix_ = prefixBuilder_.build();
-        }
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.openconfig.proto.gnmi.Gnmi.SetRequest result) {
         if (deleteBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) != 0)) {
+          if (((bitField0_ & 0x00000002) != 0)) {
             delete_ = java.util.Collections.unmodifiableList(delete_);
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000002);
           }
           result.delete_ = delete_;
         } else {
           result.delete_ = deleteBuilder_.build();
         }
         if (replaceBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) != 0)) {
+          if (((bitField0_ & 0x00000004) != 0)) {
             replace_ = java.util.Collections.unmodifiableList(replace_);
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ = (bitField0_ & ~0x00000004);
           }
           result.replace_ = replace_;
         } else {
           result.replace_ = replaceBuilder_.build();
         }
         if (updateBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) != 0)) {
+          if (((bitField0_ & 0x00000008) != 0)) {
             update_ = java.util.Collections.unmodifiableList(update_);
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000008);
           }
           result.update_ = update_;
         } else {
           result.update_ = updateBuilder_.build();
         }
         if (extensionBuilder_ == null) {
-          if (((bitField0_ & 0x00000008) != 0)) {
+          if (((bitField0_ & 0x00000010) != 0)) {
             extension_ = java.util.Collections.unmodifiableList(extension_);
-            bitField0_ = (bitField0_ & ~0x00000008);
+            bitField0_ = (bitField0_ & ~0x00000010);
           }
           result.extension_ = extension_;
         } else {
           result.extension_ = extensionBuilder_.build();
         }
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.SetRequest result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.prefix_ = prefixBuilder_ == null
+              ? prefix_
+              : prefixBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -23231,7 +23450,7 @@ public final class Gnmi {
           if (!other.delete_.isEmpty()) {
             if (delete_.isEmpty()) {
               delete_ = other.delete_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000002);
             } else {
               ensureDeleteIsMutable();
               delete_.addAll(other.delete_);
@@ -23244,7 +23463,7 @@ public final class Gnmi {
               deleteBuilder_.dispose();
               deleteBuilder_ = null;
               delete_ = other.delete_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000002);
               deleteBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getDeleteFieldBuilder() : null;
@@ -23257,7 +23476,7 @@ public final class Gnmi {
           if (!other.replace_.isEmpty()) {
             if (replace_.isEmpty()) {
               replace_ = other.replace_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000004);
             } else {
               ensureReplaceIsMutable();
               replace_.addAll(other.replace_);
@@ -23270,7 +23489,7 @@ public final class Gnmi {
               replaceBuilder_.dispose();
               replaceBuilder_ = null;
               replace_ = other.replace_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000004);
               replaceBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getReplaceFieldBuilder() : null;
@@ -23283,7 +23502,7 @@ public final class Gnmi {
           if (!other.update_.isEmpty()) {
             if (update_.isEmpty()) {
               update_ = other.update_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000008);
             } else {
               ensureUpdateIsMutable();
               update_.addAll(other.update_);
@@ -23296,7 +23515,7 @@ public final class Gnmi {
               updateBuilder_.dispose();
               updateBuilder_ = null;
               update_ = other.update_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000008);
               updateBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getUpdateFieldBuilder() : null;
@@ -23309,7 +23528,7 @@ public final class Gnmi {
           if (!other.extension_.isEmpty()) {
             if (extension_.isEmpty()) {
               extension_ = other.extension_;
-              bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000010);
             } else {
               ensureExtensionIsMutable();
               extension_.addAll(other.extension_);
@@ -23322,7 +23541,7 @@ public final class Gnmi {
               extensionBuilder_.dispose();
               extensionBuilder_ = null;
               extension_ = other.extension_;
-              bitField0_ = (bitField0_ & ~0x00000008);
+              bitField0_ = (bitField0_ & ~0x00000010);
               extensionBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getExtensionFieldBuilder() : null;
@@ -23361,7 +23580,7 @@ public final class Gnmi {
                 input.readMessage(
                     getPrefixFieldBuilder().getBuilder(),
                     extensionRegistry);
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 10
               case 18: {
@@ -23445,7 +23664,7 @@ public final class Gnmi {
        * @return Whether the prefix field is set.
        */
       public boolean hasPrefix() {
-        return prefixBuilder_ != null || prefix_ != null;
+        return ((bitField0_ & 0x00000001) != 0);
       }
       /**
        * <pre>
@@ -23475,11 +23694,11 @@ public final class Gnmi {
             throw new NullPointerException();
           }
           prefix_ = value;
-          onChanged();
         } else {
           prefixBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -23493,11 +23712,11 @@ public final class Gnmi {
           org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.Builder builderForValue) {
         if (prefixBuilder_ == null) {
           prefix_ = builderForValue.build();
-          onChanged();
         } else {
           prefixBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -23509,17 +23728,20 @@ public final class Gnmi {
        */
       public Builder mergePrefix(org.opennms.features.openconfig.proto.gnmi.Gnmi.Path value) {
         if (prefixBuilder_ == null) {
-          if (prefix_ != null) {
-            prefix_ =
-              org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.newBuilder(prefix_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000001) != 0) &&
+            prefix_ != null &&
+            prefix_ != org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.getDefaultInstance()) {
+            getPrefixBuilder().mergeFrom(value);
           } else {
             prefix_ = value;
           }
-          onChanged();
         } else {
           prefixBuilder_.mergeFrom(value);
         }
-
+        if (prefix_ != null) {
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -23530,14 +23752,13 @@ public final class Gnmi {
        * <code>.gnmi.Path prefix = 1;</code>
        */
       public Builder clearPrefix() {
-        if (prefixBuilder_ == null) {
-          prefix_ = null;
-          onChanged();
-        } else {
-          prefix_ = null;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        prefix_ = null;
+        if (prefixBuilder_ != null) {
+          prefixBuilder_.dispose();
           prefixBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
@@ -23548,7 +23769,7 @@ public final class Gnmi {
        * <code>.gnmi.Path prefix = 1;</code>
        */
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.Builder getPrefixBuilder() {
-        
+        bitField0_ |= 0x00000001;
         onChanged();
         return getPrefixFieldBuilder().getBuilder();
       }
@@ -23591,9 +23812,9 @@ public final class Gnmi {
       private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.Path> delete_ =
         java.util.Collections.emptyList();
       private void ensureDeleteIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           delete_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.gnmi.Gnmi.Path>(delete_);
-          bitField0_ |= 0x00000001;
+          bitField0_ |= 0x00000002;
          }
       }
 
@@ -23787,7 +24008,7 @@ public final class Gnmi {
       public Builder clearDelete() {
         if (deleteBuilder_ == null) {
           delete_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000002);
           onChanged();
         } else {
           deleteBuilder_.clear();
@@ -23892,7 +24113,7 @@ public final class Gnmi {
           deleteBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.gnmi.Gnmi.Path, org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.Builder, org.opennms.features.openconfig.proto.gnmi.Gnmi.PathOrBuilder>(
                   delete_,
-                  ((bitField0_ & 0x00000001) != 0),
+                  ((bitField0_ & 0x00000002) != 0),
                   getParentForChildren(),
                   isClean());
           delete_ = null;
@@ -23903,9 +24124,9 @@ public final class Gnmi {
       private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.Update> replace_ =
         java.util.Collections.emptyList();
       private void ensureReplaceIsMutable() {
-        if (!((bitField0_ & 0x00000002) != 0)) {
+        if (!((bitField0_ & 0x00000004) != 0)) {
           replace_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.gnmi.Gnmi.Update>(replace_);
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000004;
          }
       }
 
@@ -24099,7 +24320,7 @@ public final class Gnmi {
       public Builder clearReplace() {
         if (replaceBuilder_ == null) {
           replace_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000004);
           onChanged();
         } else {
           replaceBuilder_.clear();
@@ -24204,7 +24425,7 @@ public final class Gnmi {
           replaceBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.gnmi.Gnmi.Update, org.opennms.features.openconfig.proto.gnmi.Gnmi.Update.Builder, org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateOrBuilder>(
                   replace_,
-                  ((bitField0_ & 0x00000002) != 0),
+                  ((bitField0_ & 0x00000004) != 0),
                   getParentForChildren(),
                   isClean());
           replace_ = null;
@@ -24215,9 +24436,9 @@ public final class Gnmi {
       private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.Update> update_ =
         java.util.Collections.emptyList();
       private void ensureUpdateIsMutable() {
-        if (!((bitField0_ & 0x00000004) != 0)) {
+        if (!((bitField0_ & 0x00000008) != 0)) {
           update_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.gnmi.Gnmi.Update>(update_);
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000008;
          }
       }
 
@@ -24411,7 +24632,7 @@ public final class Gnmi {
       public Builder clearUpdate() {
         if (updateBuilder_ == null) {
           update_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000008);
           onChanged();
         } else {
           updateBuilder_.clear();
@@ -24516,7 +24737,7 @@ public final class Gnmi {
           updateBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.gnmi.Gnmi.Update, org.opennms.features.openconfig.proto.gnmi.Gnmi.Update.Builder, org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateOrBuilder>(
                   update_,
-                  ((bitField0_ & 0x00000004) != 0),
+                  ((bitField0_ & 0x00000008) != 0),
                   getParentForChildren(),
                   isClean());
           update_ = null;
@@ -24527,9 +24748,9 @@ public final class Gnmi {
       private java.util.List<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension> extension_ =
         java.util.Collections.emptyList();
       private void ensureExtensionIsMutable() {
-        if (!((bitField0_ & 0x00000008) != 0)) {
+        if (!((bitField0_ & 0x00000010) != 0)) {
           extension_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension>(extension_);
-          bitField0_ |= 0x00000008;
+          bitField0_ |= 0x00000010;
          }
       }
 
@@ -24734,7 +24955,7 @@ public final class Gnmi {
       public Builder clearExtension() {
         if (extensionBuilder_ == null) {
           extension_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000008);
+          bitField0_ = (bitField0_ & ~0x00000010);
           onChanged();
         } else {
           extensionBuilder_.clear();
@@ -24846,7 +25067,7 @@ public final class Gnmi {
           extensionBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension, org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension.Builder, org.opennms.features.openconfig.proto.gnmi.GnmiExt.ExtensionOrBuilder>(
                   extension_,
-                  ((bitField0_ & 0x00000008) != 0),
+                  ((bitField0_ & 0x00000010) != 0),
                   getParentForChildren(),
                   isClean());
           extension_ = null;
@@ -25003,6 +25224,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>.gnmi.Error message = 3 [deprecated = true];</code>
+     * @deprecated gnmi.SetResponse.message is deprecated.
+     *     See gnmi.proto;l=361
      * @return Whether the message field is set.
      */
     @java.lang.Deprecated boolean hasMessage();
@@ -25012,6 +25235,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>.gnmi.Error message = 3 [deprecated = true];</code>
+     * @deprecated gnmi.SetResponse.message is deprecated.
+     *     See gnmi.proto;l=361
      * @return The message.
      */
     @java.lang.Deprecated org.opennms.features.openconfig.proto.gnmi.Gnmi.Error getMessage();
@@ -25117,11 +25342,6 @@ public final class Gnmi {
       return new SetResponse();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_SetResponse_descriptor;
@@ -25135,6 +25355,7 @@ public final class Gnmi {
               org.opennms.features.openconfig.proto.gnmi.Gnmi.SetResponse.class, org.opennms.features.openconfig.proto.gnmi.Gnmi.SetResponse.Builder.class);
     }
 
+    private int bitField0_;
     public static final int PREFIX_FIELD_NUMBER = 1;
     private org.opennms.features.openconfig.proto.gnmi.Gnmi.Path prefix_;
     /**
@@ -25147,7 +25368,7 @@ public final class Gnmi {
      */
     @java.lang.Override
     public boolean hasPrefix() {
-      return prefix_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <pre>
@@ -25170,10 +25391,11 @@ public final class Gnmi {
      */
     @java.lang.Override
     public org.opennms.features.openconfig.proto.gnmi.Gnmi.PathOrBuilder getPrefixOrBuilder() {
-      return getPrefix();
+      return prefix_ == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.getDefaultInstance() : prefix_;
     }
 
     public static final int RESPONSE_FIELD_NUMBER = 2;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult> response_;
     /**
      * <pre>
@@ -25246,11 +25468,13 @@ public final class Gnmi {
      * </pre>
      *
      * <code>.gnmi.Error message = 3 [deprecated = true];</code>
+     * @deprecated gnmi.SetResponse.message is deprecated.
+     *     See gnmi.proto;l=361
      * @return Whether the message field is set.
      */
     @java.lang.Override
     @java.lang.Deprecated public boolean hasMessage() {
-      return message_ != null;
+      return ((bitField0_ & 0x00000002) != 0);
     }
     /**
      * <pre>
@@ -25258,6 +25482,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>.gnmi.Error message = 3 [deprecated = true];</code>
+     * @deprecated gnmi.SetResponse.message is deprecated.
+     *     See gnmi.proto;l=361
      * @return The message.
      */
     @java.lang.Override
@@ -25273,11 +25499,11 @@ public final class Gnmi {
      */
     @java.lang.Override
     @java.lang.Deprecated public org.opennms.features.openconfig.proto.gnmi.Gnmi.ErrorOrBuilder getMessageOrBuilder() {
-      return getMessage();
+      return message_ == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.Error.getDefaultInstance() : message_;
     }
 
     public static final int TIMESTAMP_FIELD_NUMBER = 4;
-    private long timestamp_;
+    private long timestamp_ = 0L;
     /**
      * <pre>
      * Timestamp of transaction (ns since epoch).
@@ -25292,6 +25518,7 @@ public final class Gnmi {
     }
 
     public static final int EXTENSION_FIELD_NUMBER = 5;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension> extension_;
     /**
      * <pre>
@@ -25370,13 +25597,13 @@ public final class Gnmi {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (prefix_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(1, getPrefix());
       }
       for (int i = 0; i < response_.size(); i++) {
         output.writeMessage(2, response_.get(i));
       }
-      if (message_ != null) {
+      if (((bitField0_ & 0x00000002) != 0)) {
         output.writeMessage(3, getMessage());
       }
       if (timestamp_ != 0L) {
@@ -25394,7 +25621,7 @@ public final class Gnmi {
       if (size != -1) return size;
 
       size = 0;
-      if (prefix_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, getPrefix());
       }
@@ -25402,7 +25629,7 @@ public final class Gnmi {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, response_.get(i));
       }
-      if (message_ != null) {
+      if (((bitField0_ & 0x00000002) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(3, getMessage());
       }
@@ -25524,11 +25751,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.SetResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.SetResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -25602,21 +25831,30 @@ public final class Gnmi {
 
       // Construct using org.opennms.features.openconfig.proto.gnmi.Gnmi.SetResponse.newBuilder()
       private Builder() {
-
+        maybeForceBuilderInitialization();
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getPrefixFieldBuilder();
+          getResponseFieldBuilder();
+          getMessageFieldBuilder();
+          getExtensionFieldBuilder();
+        }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (prefixBuilder_ == null) {
-          prefix_ = null;
-        } else {
-          prefix_ = null;
+        bitField0_ = 0;
+        prefix_ = null;
+        if (prefixBuilder_ != null) {
+          prefixBuilder_.dispose();
           prefixBuilder_ = null;
         }
         if (responseBuilder_ == null) {
@@ -25625,22 +25863,20 @@ public final class Gnmi {
           response_ = null;
           responseBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000001);
-        if (messageBuilder_ == null) {
-          message_ = null;
-        } else {
-          message_ = null;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        message_ = null;
+        if (messageBuilder_ != null) {
+          messageBuilder_.dispose();
           messageBuilder_ = null;
         }
         timestamp_ = 0L;
-
         if (extensionBuilder_ == null) {
           extension_ = java.util.Collections.emptyList();
         } else {
           extension_ = null;
           extensionBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
 
@@ -25667,38 +25903,52 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.SetResponse buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.SetResponse result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.SetResponse(this);
-        int from_bitField0_ = bitField0_;
-        if (prefixBuilder_ == null) {
-          result.prefix_ = prefix_;
-        } else {
-          result.prefix_ = prefixBuilder_.build();
-        }
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.openconfig.proto.gnmi.Gnmi.SetResponse result) {
         if (responseBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) != 0)) {
+          if (((bitField0_ & 0x00000002) != 0)) {
             response_ = java.util.Collections.unmodifiableList(response_);
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000002);
           }
           result.response_ = response_;
         } else {
           result.response_ = responseBuilder_.build();
         }
-        if (messageBuilder_ == null) {
-          result.message_ = message_;
-        } else {
-          result.message_ = messageBuilder_.build();
-        }
-        result.timestamp_ = timestamp_;
         if (extensionBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) != 0)) {
+          if (((bitField0_ & 0x00000010) != 0)) {
             extension_ = java.util.Collections.unmodifiableList(extension_);
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ = (bitField0_ & ~0x00000010);
           }
           result.extension_ = extension_;
         } else {
           result.extension_ = extensionBuilder_.build();
         }
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.SetResponse result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.prefix_ = prefixBuilder_ == null
+              ? prefix_
+              : prefixBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.message_ = messageBuilder_ == null
+              ? message_
+              : messageBuilder_.build();
+          to_bitField0_ |= 0x00000002;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.timestamp_ = timestamp_;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -25752,7 +26002,7 @@ public final class Gnmi {
           if (!other.response_.isEmpty()) {
             if (response_.isEmpty()) {
               response_ = other.response_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000002);
             } else {
               ensureResponseIsMutable();
               response_.addAll(other.response_);
@@ -25765,7 +26015,7 @@ public final class Gnmi {
               responseBuilder_.dispose();
               responseBuilder_ = null;
               response_ = other.response_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000002);
               responseBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getResponseFieldBuilder() : null;
@@ -25784,7 +26034,7 @@ public final class Gnmi {
           if (!other.extension_.isEmpty()) {
             if (extension_.isEmpty()) {
               extension_ = other.extension_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000010);
             } else {
               ensureExtensionIsMutable();
               extension_.addAll(other.extension_);
@@ -25797,7 +26047,7 @@ public final class Gnmi {
               extensionBuilder_.dispose();
               extensionBuilder_ = null;
               extension_ = other.extension_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000010);
               extensionBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getExtensionFieldBuilder() : null;
@@ -25836,7 +26086,7 @@ public final class Gnmi {
                 input.readMessage(
                     getPrefixFieldBuilder().getBuilder(),
                     extensionRegistry);
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 10
               case 18: {
@@ -25856,12 +26106,12 @@ public final class Gnmi {
                 input.readMessage(
                     getMessageFieldBuilder().getBuilder(),
                     extensionRegistry);
-
+                bitField0_ |= 0x00000004;
                 break;
               } // case 26
               case 32: {
                 timestamp_ = input.readInt64();
-
+                bitField0_ |= 0x00000008;
                 break;
               } // case 32
               case 42: {
@@ -25906,7 +26156,7 @@ public final class Gnmi {
        * @return Whether the prefix field is set.
        */
       public boolean hasPrefix() {
-        return prefixBuilder_ != null || prefix_ != null;
+        return ((bitField0_ & 0x00000001) != 0);
       }
       /**
        * <pre>
@@ -25936,11 +26186,11 @@ public final class Gnmi {
             throw new NullPointerException();
           }
           prefix_ = value;
-          onChanged();
         } else {
           prefixBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -25954,11 +26204,11 @@ public final class Gnmi {
           org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.Builder builderForValue) {
         if (prefixBuilder_ == null) {
           prefix_ = builderForValue.build();
-          onChanged();
         } else {
           prefixBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -25970,17 +26220,20 @@ public final class Gnmi {
        */
       public Builder mergePrefix(org.opennms.features.openconfig.proto.gnmi.Gnmi.Path value) {
         if (prefixBuilder_ == null) {
-          if (prefix_ != null) {
-            prefix_ =
-              org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.newBuilder(prefix_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000001) != 0) &&
+            prefix_ != null &&
+            prefix_ != org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.getDefaultInstance()) {
+            getPrefixBuilder().mergeFrom(value);
           } else {
             prefix_ = value;
           }
-          onChanged();
         } else {
           prefixBuilder_.mergeFrom(value);
         }
-
+        if (prefix_ != null) {
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -25991,14 +26244,13 @@ public final class Gnmi {
        * <code>.gnmi.Path prefix = 1;</code>
        */
       public Builder clearPrefix() {
-        if (prefixBuilder_ == null) {
-          prefix_ = null;
-          onChanged();
-        } else {
-          prefix_ = null;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        prefix_ = null;
+        if (prefixBuilder_ != null) {
+          prefixBuilder_.dispose();
           prefixBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
@@ -26009,7 +26261,7 @@ public final class Gnmi {
        * <code>.gnmi.Path prefix = 1;</code>
        */
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.Builder getPrefixBuilder() {
-        
+        bitField0_ |= 0x00000001;
         onChanged();
         return getPrefixFieldBuilder().getBuilder();
       }
@@ -26052,9 +26304,9 @@ public final class Gnmi {
       private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult> response_ =
         java.util.Collections.emptyList();
       private void ensureResponseIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           response_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult>(response_);
-          bitField0_ |= 0x00000001;
+          bitField0_ |= 0x00000002;
          }
       }
 
@@ -26259,7 +26511,7 @@ public final class Gnmi {
       public Builder clearResponse() {
         if (responseBuilder_ == null) {
           response_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000002);
           onChanged();
         } else {
           responseBuilder_.clear();
@@ -26371,7 +26623,7 @@ public final class Gnmi {
           responseBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult, org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult.Builder, org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResultOrBuilder>(
                   response_,
-                  ((bitField0_ & 0x00000001) != 0),
+                  ((bitField0_ & 0x00000002) != 0),
                   getParentForChildren(),
                   isClean());
           response_ = null;
@@ -26388,10 +26640,12 @@ public final class Gnmi {
        * </pre>
        *
        * <code>.gnmi.Error message = 3 [deprecated = true];</code>
+       * @deprecated gnmi.SetResponse.message is deprecated.
+       *     See gnmi.proto;l=361
        * @return Whether the message field is set.
        */
       @java.lang.Deprecated public boolean hasMessage() {
-        return messageBuilder_ != null || message_ != null;
+        return ((bitField0_ & 0x00000004) != 0);
       }
       /**
        * <pre>
@@ -26399,6 +26653,8 @@ public final class Gnmi {
        * </pre>
        *
        * <code>.gnmi.Error message = 3 [deprecated = true];</code>
+       * @deprecated gnmi.SetResponse.message is deprecated.
+       *     See gnmi.proto;l=361
        * @return The message.
        */
       @java.lang.Deprecated public org.opennms.features.openconfig.proto.gnmi.Gnmi.Error getMessage() {
@@ -26421,11 +26677,11 @@ public final class Gnmi {
             throw new NullPointerException();
           }
           message_ = value;
-          onChanged();
         } else {
           messageBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000004;
+        onChanged();
         return this;
       }
       /**
@@ -26439,11 +26695,11 @@ public final class Gnmi {
           org.opennms.features.openconfig.proto.gnmi.Gnmi.Error.Builder builderForValue) {
         if (messageBuilder_ == null) {
           message_ = builderForValue.build();
-          onChanged();
         } else {
           messageBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000004;
+        onChanged();
         return this;
       }
       /**
@@ -26455,17 +26711,20 @@ public final class Gnmi {
        */
       @java.lang.Deprecated public Builder mergeMessage(org.opennms.features.openconfig.proto.gnmi.Gnmi.Error value) {
         if (messageBuilder_ == null) {
-          if (message_ != null) {
-            message_ =
-              org.opennms.features.openconfig.proto.gnmi.Gnmi.Error.newBuilder(message_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000004) != 0) &&
+            message_ != null &&
+            message_ != org.opennms.features.openconfig.proto.gnmi.Gnmi.Error.getDefaultInstance()) {
+            getMessageBuilder().mergeFrom(value);
           } else {
             message_ = value;
           }
-          onChanged();
         } else {
           messageBuilder_.mergeFrom(value);
         }
-
+        if (message_ != null) {
+          bitField0_ |= 0x00000004;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -26476,14 +26735,13 @@ public final class Gnmi {
        * <code>.gnmi.Error message = 3 [deprecated = true];</code>
        */
       @java.lang.Deprecated public Builder clearMessage() {
-        if (messageBuilder_ == null) {
-          message_ = null;
-          onChanged();
-        } else {
-          message_ = null;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        message_ = null;
+        if (messageBuilder_ != null) {
+          messageBuilder_.dispose();
           messageBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
@@ -26494,7 +26752,7 @@ public final class Gnmi {
        * <code>.gnmi.Error message = 3 [deprecated = true];</code>
        */
       @java.lang.Deprecated public org.opennms.features.openconfig.proto.gnmi.Gnmi.Error.Builder getMessageBuilder() {
-        
+        bitField0_ |= 0x00000004;
         onChanged();
         return getMessageFieldBuilder().getBuilder();
       }
@@ -26557,8 +26815,9 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setTimestamp(long value) {
-        
+
         timestamp_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -26571,7 +26830,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearTimestamp() {
-        
+        bitField0_ = (bitField0_ & ~0x00000008);
         timestamp_ = 0L;
         onChanged();
         return this;
@@ -26580,9 +26839,9 @@ public final class Gnmi {
       private java.util.List<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension> extension_ =
         java.util.Collections.emptyList();
       private void ensureExtensionIsMutable() {
-        if (!((bitField0_ & 0x00000002) != 0)) {
+        if (!((bitField0_ & 0x00000010) != 0)) {
           extension_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension>(extension_);
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000010;
          }
       }
 
@@ -26787,7 +27046,7 @@ public final class Gnmi {
       public Builder clearExtension() {
         if (extensionBuilder_ == null) {
           extension_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000010);
           onChanged();
         } else {
           extensionBuilder_.clear();
@@ -26899,7 +27158,7 @@ public final class Gnmi {
           extensionBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension, org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension.Builder, org.opennms.features.openconfig.proto.gnmi.GnmiExt.ExtensionOrBuilder>(
                   extension_,
-                  ((bitField0_ & 0x00000002) != 0),
+                  ((bitField0_ & 0x00000010) != 0),
                   getParentForChildren(),
                   isClean());
           extension_ = null;
@@ -26983,6 +27242,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>int64 timestamp = 1 [deprecated = true];</code>
+     * @deprecated gnmi.UpdateResult.timestamp is deprecated.
+     *     See gnmi.proto;l=383
      * @return The timestamp.
      */
     @java.lang.Deprecated long getTimestamp();
@@ -27020,6 +27281,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>.gnmi.Error message = 3 [deprecated = true];</code>
+     * @deprecated gnmi.UpdateResult.message is deprecated.
+     *     See gnmi.proto;l=385
      * @return Whether the message field is set.
      */
     @java.lang.Deprecated boolean hasMessage();
@@ -27029,6 +27292,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>.gnmi.Error message = 3 [deprecated = true];</code>
+     * @deprecated gnmi.UpdateResult.message is deprecated.
+     *     See gnmi.proto;l=385
      * @return The message.
      */
     @java.lang.Deprecated org.opennms.features.openconfig.proto.gnmi.Gnmi.Error getMessage();
@@ -27089,11 +27354,6 @@ public final class Gnmi {
       return new UpdateResult();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_UpdateResult_descriptor;
@@ -27261,8 +27521,9 @@ public final class Gnmi {
       // @@protoc_insertion_point(enum_scope:gnmi.UpdateResult.Operation)
     }
 
+    private int bitField0_;
     public static final int TIMESTAMP_FIELD_NUMBER = 1;
-    private long timestamp_;
+    private long timestamp_ = 0L;
     /**
      * <pre>
      * Deprecated timestamp for the UpdateResult, this field has been
@@ -27272,6 +27533,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>int64 timestamp = 1 [deprecated = true];</code>
+     * @deprecated gnmi.UpdateResult.timestamp is deprecated.
+     *     See gnmi.proto;l=383
      * @return The timestamp.
      */
     @java.lang.Override
@@ -27291,7 +27554,7 @@ public final class Gnmi {
      */
     @java.lang.Override
     public boolean hasPath() {
-      return path_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <pre>
@@ -27314,7 +27577,7 @@ public final class Gnmi {
      */
     @java.lang.Override
     public org.opennms.features.openconfig.proto.gnmi.Gnmi.PathOrBuilder getPathOrBuilder() {
-      return getPath();
+      return path_ == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.getDefaultInstance() : path_;
     }
 
     public static final int MESSAGE_FIELD_NUMBER = 3;
@@ -27325,11 +27588,13 @@ public final class Gnmi {
      * </pre>
      *
      * <code>.gnmi.Error message = 3 [deprecated = true];</code>
+     * @deprecated gnmi.UpdateResult.message is deprecated.
+     *     See gnmi.proto;l=385
      * @return Whether the message field is set.
      */
     @java.lang.Override
     @java.lang.Deprecated public boolean hasMessage() {
-      return message_ != null;
+      return ((bitField0_ & 0x00000002) != 0);
     }
     /**
      * <pre>
@@ -27337,6 +27602,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>.gnmi.Error message = 3 [deprecated = true];</code>
+     * @deprecated gnmi.UpdateResult.message is deprecated.
+     *     See gnmi.proto;l=385
      * @return The message.
      */
     @java.lang.Override
@@ -27352,11 +27619,11 @@ public final class Gnmi {
      */
     @java.lang.Override
     @java.lang.Deprecated public org.opennms.features.openconfig.proto.gnmi.Gnmi.ErrorOrBuilder getMessageOrBuilder() {
-      return getMessage();
+      return message_ == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.Error.getDefaultInstance() : message_;
     }
 
     public static final int OP_FIELD_NUMBER = 4;
-    private int op_;
+    private int op_ = 0;
     /**
      * <pre>
      * Update operation type.
@@ -27377,8 +27644,7 @@ public final class Gnmi {
      * @return The op.
      */
     @java.lang.Override public org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult.Operation getOp() {
-      @SuppressWarnings("deprecation")
-      org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult.Operation result = org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult.Operation.valueOf(op_);
+      org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult.Operation result = org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult.Operation.forNumber(op_);
       return result == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult.Operation.UNRECOGNIZED : result;
     }
 
@@ -27399,10 +27665,10 @@ public final class Gnmi {
       if (timestamp_ != 0L) {
         output.writeInt64(1, timestamp_);
       }
-      if (path_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(2, getPath());
       }
-      if (message_ != null) {
+      if (((bitField0_ & 0x00000002) != 0)) {
         output.writeMessage(3, getMessage());
       }
       if (op_ != org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult.Operation.INVALID.getNumber()) {
@@ -27421,11 +27687,11 @@ public final class Gnmi {
         size += com.google.protobuf.CodedOutputStream
           .computeInt64Size(1, timestamp_);
       }
-      if (path_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, getPath());
       }
-      if (message_ != null) {
+      if (((bitField0_ & 0x00000002) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(3, getMessage());
       }
@@ -27534,11 +27800,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -27608,33 +27876,37 @@ public final class Gnmi {
 
       // Construct using org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult.newBuilder()
       private Builder() {
-
+        maybeForceBuilderInitialization();
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getPathFieldBuilder();
+          getMessageFieldBuilder();
+        }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         timestamp_ = 0L;
-
-        if (pathBuilder_ == null) {
-          path_ = null;
-        } else {
-          path_ = null;
+        path_ = null;
+        if (pathBuilder_ != null) {
+          pathBuilder_.dispose();
           pathBuilder_ = null;
         }
-        if (messageBuilder_ == null) {
-          message_ = null;
-        } else {
-          message_ = null;
+        message_ = null;
+        if (messageBuilder_ != null) {
+          messageBuilder_.dispose();
           messageBuilder_ = null;
         }
         op_ = 0;
-
         return this;
       }
 
@@ -27661,20 +27933,33 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult(this);
-        result.timestamp_ = timestamp_;
-        if (pathBuilder_ == null) {
-          result.path_ = path_;
-        } else {
-          result.path_ = pathBuilder_.build();
-        }
-        if (messageBuilder_ == null) {
-          result.message_ = message_;
-        } else {
-          result.message_ = messageBuilder_.build();
-        }
-        result.op_ = op_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.timestamp_ = timestamp_;
+        }
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.path_ = pathBuilder_ == null
+              ? path_
+              : pathBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.message_ = messageBuilder_ == null
+              ? message_
+              : messageBuilder_.build();
+          to_bitField0_ |= 0x00000002;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.op_ = op_;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -27761,26 +28046,26 @@ public final class Gnmi {
                 break;
               case 8: {
                 timestamp_ = input.readInt64();
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 8
               case 18: {
                 input.readMessage(
                     getPathFieldBuilder().getBuilder(),
                     extensionRegistry);
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 18
               case 26: {
                 input.readMessage(
                     getMessageFieldBuilder().getBuilder(),
                     extensionRegistry);
-
+                bitField0_ |= 0x00000004;
                 break;
               } // case 26
               case 32: {
                 op_ = input.readEnum();
-
+                bitField0_ |= 0x00000008;
                 break;
               } // case 32
               default: {
@@ -27798,6 +28083,7 @@ public final class Gnmi {
         } // finally
         return this;
       }
+      private int bitField0_;
 
       private long timestamp_ ;
       /**
@@ -27809,6 +28095,8 @@ public final class Gnmi {
        * </pre>
        *
        * <code>int64 timestamp = 1 [deprecated = true];</code>
+       * @deprecated gnmi.UpdateResult.timestamp is deprecated.
+       *     See gnmi.proto;l=383
        * @return The timestamp.
        */
       @java.lang.Override
@@ -27824,12 +28112,15 @@ public final class Gnmi {
        * </pre>
        *
        * <code>int64 timestamp = 1 [deprecated = true];</code>
+       * @deprecated gnmi.UpdateResult.timestamp is deprecated.
+       *     See gnmi.proto;l=383
        * @param value The timestamp to set.
        * @return This builder for chaining.
        */
       @java.lang.Deprecated public Builder setTimestamp(long value) {
-        
+
         timestamp_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -27842,10 +28133,12 @@ public final class Gnmi {
        * </pre>
        *
        * <code>int64 timestamp = 1 [deprecated = true];</code>
+       * @deprecated gnmi.UpdateResult.timestamp is deprecated.
+       *     See gnmi.proto;l=383
        * @return This builder for chaining.
        */
       @java.lang.Deprecated public Builder clearTimestamp() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         timestamp_ = 0L;
         onChanged();
         return this;
@@ -27863,7 +28156,7 @@ public final class Gnmi {
        * @return Whether the path field is set.
        */
       public boolean hasPath() {
-        return pathBuilder_ != null || path_ != null;
+        return ((bitField0_ & 0x00000002) != 0);
       }
       /**
        * <pre>
@@ -27893,11 +28186,11 @@ public final class Gnmi {
             throw new NullPointerException();
           }
           path_ = value;
-          onChanged();
         } else {
           pathBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
@@ -27911,11 +28204,11 @@ public final class Gnmi {
           org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.Builder builderForValue) {
         if (pathBuilder_ == null) {
           path_ = builderForValue.build();
-          onChanged();
         } else {
           pathBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
@@ -27927,17 +28220,20 @@ public final class Gnmi {
        */
       public Builder mergePath(org.opennms.features.openconfig.proto.gnmi.Gnmi.Path value) {
         if (pathBuilder_ == null) {
-          if (path_ != null) {
-            path_ =
-              org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.newBuilder(path_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000002) != 0) &&
+            path_ != null &&
+            path_ != org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.getDefaultInstance()) {
+            getPathBuilder().mergeFrom(value);
           } else {
             path_ = value;
           }
-          onChanged();
         } else {
           pathBuilder_.mergeFrom(value);
         }
-
+        if (path_ != null) {
+          bitField0_ |= 0x00000002;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -27948,14 +28244,13 @@ public final class Gnmi {
        * <code>.gnmi.Path path = 2;</code>
        */
       public Builder clearPath() {
-        if (pathBuilder_ == null) {
-          path_ = null;
-          onChanged();
-        } else {
-          path_ = null;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        path_ = null;
+        if (pathBuilder_ != null) {
+          pathBuilder_.dispose();
           pathBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
@@ -27966,7 +28261,7 @@ public final class Gnmi {
        * <code>.gnmi.Path path = 2;</code>
        */
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.Builder getPathBuilder() {
-        
+        bitField0_ |= 0x00000002;
         onChanged();
         return getPathFieldBuilder().getBuilder();
       }
@@ -28015,10 +28310,12 @@ public final class Gnmi {
        * </pre>
        *
        * <code>.gnmi.Error message = 3 [deprecated = true];</code>
+       * @deprecated gnmi.UpdateResult.message is deprecated.
+       *     See gnmi.proto;l=385
        * @return Whether the message field is set.
        */
       @java.lang.Deprecated public boolean hasMessage() {
-        return messageBuilder_ != null || message_ != null;
+        return ((bitField0_ & 0x00000004) != 0);
       }
       /**
        * <pre>
@@ -28026,6 +28323,8 @@ public final class Gnmi {
        * </pre>
        *
        * <code>.gnmi.Error message = 3 [deprecated = true];</code>
+       * @deprecated gnmi.UpdateResult.message is deprecated.
+       *     See gnmi.proto;l=385
        * @return The message.
        */
       @java.lang.Deprecated public org.opennms.features.openconfig.proto.gnmi.Gnmi.Error getMessage() {
@@ -28048,11 +28347,11 @@ public final class Gnmi {
             throw new NullPointerException();
           }
           message_ = value;
-          onChanged();
         } else {
           messageBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000004;
+        onChanged();
         return this;
       }
       /**
@@ -28066,11 +28365,11 @@ public final class Gnmi {
           org.opennms.features.openconfig.proto.gnmi.Gnmi.Error.Builder builderForValue) {
         if (messageBuilder_ == null) {
           message_ = builderForValue.build();
-          onChanged();
         } else {
           messageBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000004;
+        onChanged();
         return this;
       }
       /**
@@ -28082,17 +28381,20 @@ public final class Gnmi {
        */
       @java.lang.Deprecated public Builder mergeMessage(org.opennms.features.openconfig.proto.gnmi.Gnmi.Error value) {
         if (messageBuilder_ == null) {
-          if (message_ != null) {
-            message_ =
-              org.opennms.features.openconfig.proto.gnmi.Gnmi.Error.newBuilder(message_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000004) != 0) &&
+            message_ != null &&
+            message_ != org.opennms.features.openconfig.proto.gnmi.Gnmi.Error.getDefaultInstance()) {
+            getMessageBuilder().mergeFrom(value);
           } else {
             message_ = value;
           }
-          onChanged();
         } else {
           messageBuilder_.mergeFrom(value);
         }
-
+        if (message_ != null) {
+          bitField0_ |= 0x00000004;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -28103,14 +28405,13 @@ public final class Gnmi {
        * <code>.gnmi.Error message = 3 [deprecated = true];</code>
        */
       @java.lang.Deprecated public Builder clearMessage() {
-        if (messageBuilder_ == null) {
-          message_ = null;
-          onChanged();
-        } else {
-          message_ = null;
+        bitField0_ = (bitField0_ & ~0x00000004);
+        message_ = null;
+        if (messageBuilder_ != null) {
+          messageBuilder_.dispose();
           messageBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
@@ -28121,7 +28422,7 @@ public final class Gnmi {
        * <code>.gnmi.Error message = 3 [deprecated = true];</code>
        */
       @java.lang.Deprecated public org.opennms.features.openconfig.proto.gnmi.Gnmi.Error.Builder getMessageBuilder() {
-        
+        bitField0_ |= 0x00000004;
         onChanged();
         return getMessageFieldBuilder().getBuilder();
       }
@@ -28183,8 +28484,8 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setOpValue(int value) {
-        
         op_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -28198,8 +28499,7 @@ public final class Gnmi {
        */
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult.Operation getOp() {
-        @SuppressWarnings("deprecation")
-        org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult.Operation result = org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult.Operation.valueOf(op_);
+        org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult.Operation result = org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult.Operation.forNumber(op_);
         return result == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.UpdateResult.Operation.UNRECOGNIZED : result;
       }
       /**
@@ -28215,7 +28515,7 @@ public final class Gnmi {
         if (value == null) {
           throw new NullPointerException();
         }
-        
+        bitField0_ |= 0x00000008;
         op_ = value.getNumber();
         onChanged();
         return this;
@@ -28229,7 +28529,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearOp() {
-        
+        bitField0_ = (bitField0_ & ~0x00000008);
         op_ = 0;
         onChanged();
         return this;
@@ -28540,11 +28840,6 @@ public final class Gnmi {
       return new GetRequest();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_GetRequest_descriptor;
@@ -28724,6 +29019,7 @@ public final class Gnmi {
       // @@protoc_insertion_point(enum_scope:gnmi.GetRequest.DataType)
     }
 
+    private int bitField0_;
     public static final int PREFIX_FIELD_NUMBER = 1;
     private org.opennms.features.openconfig.proto.gnmi.Gnmi.Path prefix_;
     /**
@@ -28736,7 +29032,7 @@ public final class Gnmi {
      */
     @java.lang.Override
     public boolean hasPrefix() {
-      return prefix_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <pre>
@@ -28759,10 +29055,11 @@ public final class Gnmi {
      */
     @java.lang.Override
     public org.opennms.features.openconfig.proto.gnmi.Gnmi.PathOrBuilder getPrefixOrBuilder() {
-      return getPrefix();
+      return prefix_ == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.getDefaultInstance() : prefix_;
     }
 
     public static final int PATH_FIELD_NUMBER = 2;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.Path> path_;
     /**
      * <pre>
@@ -28823,7 +29120,7 @@ public final class Gnmi {
     }
 
     public static final int TYPE_FIELD_NUMBER = 3;
-    private int type_;
+    private int type_ = 0;
     /**
      * <pre>
      * The type of data being requested.
@@ -28844,13 +29141,12 @@ public final class Gnmi {
      * @return The type.
      */
     @java.lang.Override public org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest.DataType getType() {
-      @SuppressWarnings("deprecation")
-      org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest.DataType result = org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest.DataType.valueOf(type_);
+      org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest.DataType result = org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest.DataType.forNumber(type_);
       return result == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest.DataType.UNRECOGNIZED : result;
     }
 
     public static final int ENCODING_FIELD_NUMBER = 5;
-    private int encoding_;
+    private int encoding_ = 0;
     /**
      * <pre>
      * Encoding to be used.
@@ -28871,12 +29167,12 @@ public final class Gnmi {
      * @return The encoding.
      */
     @java.lang.Override public org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding getEncoding() {
-      @SuppressWarnings("deprecation")
-      org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding result = org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding.valueOf(encoding_);
+      org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding result = org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding.forNumber(encoding_);
       return result == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding.UNRECOGNIZED : result;
     }
 
     public static final int USE_MODELS_FIELD_NUMBER = 6;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.ModelData> useModels_;
     /**
      * <pre>
@@ -28937,6 +29233,7 @@ public final class Gnmi {
     }
 
     public static final int EXTENSION_FIELD_NUMBER = 7;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension> extension_;
     /**
      * <pre>
@@ -29015,7 +29312,7 @@ public final class Gnmi {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (prefix_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(1, getPrefix());
       }
       for (int i = 0; i < path_.size(); i++) {
@@ -29042,7 +29339,7 @@ public final class Gnmi {
       if (size != -1) return size;
 
       size = 0;
-      if (prefix_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, getPrefix());
       }
@@ -29174,11 +29471,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -29251,21 +29550,30 @@ public final class Gnmi {
 
       // Construct using org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest.newBuilder()
       private Builder() {
-
+        maybeForceBuilderInitialization();
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getPrefixFieldBuilder();
+          getPathFieldBuilder();
+          getUseModelsFieldBuilder();
+          getExtensionFieldBuilder();
+        }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (prefixBuilder_ == null) {
-          prefix_ = null;
-        } else {
-          prefix_ = null;
+        bitField0_ = 0;
+        prefix_ = null;
+        if (prefixBuilder_ != null) {
+          prefixBuilder_.dispose();
           prefixBuilder_ = null;
         }
         if (pathBuilder_ == null) {
@@ -29274,25 +29582,23 @@ public final class Gnmi {
           path_ = null;
           pathBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00000002);
         type_ = 0;
-
         encoding_ = 0;
-
         if (useModelsBuilder_ == null) {
           useModels_ = java.util.Collections.emptyList();
         } else {
           useModels_ = null;
           useModelsBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000010);
         if (extensionBuilder_ == null) {
           extension_ = java.util.Collections.emptyList();
         } else {
           extension_ = null;
           extensionBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
 
@@ -29319,43 +29625,58 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest(this);
-        int from_bitField0_ = bitField0_;
-        if (prefixBuilder_ == null) {
-          result.prefix_ = prefix_;
-        } else {
-          result.prefix_ = prefixBuilder_.build();
-        }
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest result) {
         if (pathBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) != 0)) {
+          if (((bitField0_ & 0x00000002) != 0)) {
             path_ = java.util.Collections.unmodifiableList(path_);
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00000002);
           }
           result.path_ = path_;
         } else {
           result.path_ = pathBuilder_.build();
         }
-        result.type_ = type_;
-        result.encoding_ = encoding_;
         if (useModelsBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) != 0)) {
+          if (((bitField0_ & 0x00000010) != 0)) {
             useModels_ = java.util.Collections.unmodifiableList(useModels_);
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ = (bitField0_ & ~0x00000010);
           }
           result.useModels_ = useModels_;
         } else {
           result.useModels_ = useModelsBuilder_.build();
         }
         if (extensionBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) != 0)) {
+          if (((bitField0_ & 0x00000020) != 0)) {
             extension_ = java.util.Collections.unmodifiableList(extension_);
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000020);
           }
           result.extension_ = extension_;
         } else {
           result.extension_ = extensionBuilder_.build();
         }
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.prefix_ = prefixBuilder_ == null
+              ? prefix_
+              : prefixBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.type_ = type_;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.encoding_ = encoding_;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -29409,7 +29730,7 @@ public final class Gnmi {
           if (!other.path_.isEmpty()) {
             if (path_.isEmpty()) {
               path_ = other.path_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000002);
             } else {
               ensurePathIsMutable();
               path_.addAll(other.path_);
@@ -29422,7 +29743,7 @@ public final class Gnmi {
               pathBuilder_.dispose();
               pathBuilder_ = null;
               path_ = other.path_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00000002);
               pathBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getPathFieldBuilder() : null;
@@ -29441,7 +29762,7 @@ public final class Gnmi {
           if (!other.useModels_.isEmpty()) {
             if (useModels_.isEmpty()) {
               useModels_ = other.useModels_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000010);
             } else {
               ensureUseModelsIsMutable();
               useModels_.addAll(other.useModels_);
@@ -29454,7 +29775,7 @@ public final class Gnmi {
               useModelsBuilder_.dispose();
               useModelsBuilder_ = null;
               useModels_ = other.useModels_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000010);
               useModelsBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getUseModelsFieldBuilder() : null;
@@ -29467,7 +29788,7 @@ public final class Gnmi {
           if (!other.extension_.isEmpty()) {
             if (extension_.isEmpty()) {
               extension_ = other.extension_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000020);
             } else {
               ensureExtensionIsMutable();
               extension_.addAll(other.extension_);
@@ -29480,7 +29801,7 @@ public final class Gnmi {
               extensionBuilder_.dispose();
               extensionBuilder_ = null;
               extension_ = other.extension_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000020);
               extensionBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getExtensionFieldBuilder() : null;
@@ -29519,7 +29840,7 @@ public final class Gnmi {
                 input.readMessage(
                     getPrefixFieldBuilder().getBuilder(),
                     extensionRegistry);
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 10
               case 18: {
@@ -29537,12 +29858,12 @@ public final class Gnmi {
               } // case 18
               case 24: {
                 type_ = input.readEnum();
-
+                bitField0_ |= 0x00000004;
                 break;
               } // case 24
               case 40: {
                 encoding_ = input.readEnum();
-
+                bitField0_ |= 0x00000008;
                 break;
               } // case 40
               case 50: {
@@ -29600,7 +29921,7 @@ public final class Gnmi {
        * @return Whether the prefix field is set.
        */
       public boolean hasPrefix() {
-        return prefixBuilder_ != null || prefix_ != null;
+        return ((bitField0_ & 0x00000001) != 0);
       }
       /**
        * <pre>
@@ -29630,11 +29951,11 @@ public final class Gnmi {
             throw new NullPointerException();
           }
           prefix_ = value;
-          onChanged();
         } else {
           prefixBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -29648,11 +29969,11 @@ public final class Gnmi {
           org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.Builder builderForValue) {
         if (prefixBuilder_ == null) {
           prefix_ = builderForValue.build();
-          onChanged();
         } else {
           prefixBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -29664,17 +29985,20 @@ public final class Gnmi {
        */
       public Builder mergePrefix(org.opennms.features.openconfig.proto.gnmi.Gnmi.Path value) {
         if (prefixBuilder_ == null) {
-          if (prefix_ != null) {
-            prefix_ =
-              org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.newBuilder(prefix_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000001) != 0) &&
+            prefix_ != null &&
+            prefix_ != org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.getDefaultInstance()) {
+            getPrefixBuilder().mergeFrom(value);
           } else {
             prefix_ = value;
           }
-          onChanged();
         } else {
           prefixBuilder_.mergeFrom(value);
         }
-
+        if (prefix_ != null) {
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -29685,14 +30009,13 @@ public final class Gnmi {
        * <code>.gnmi.Path prefix = 1;</code>
        */
       public Builder clearPrefix() {
-        if (prefixBuilder_ == null) {
-          prefix_ = null;
-          onChanged();
-        } else {
-          prefix_ = null;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        prefix_ = null;
+        if (prefixBuilder_ != null) {
+          prefixBuilder_.dispose();
           prefixBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
@@ -29703,7 +30026,7 @@ public final class Gnmi {
        * <code>.gnmi.Path prefix = 1;</code>
        */
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.Builder getPrefixBuilder() {
-        
+        bitField0_ |= 0x00000001;
         onChanged();
         return getPrefixFieldBuilder().getBuilder();
       }
@@ -29746,9 +30069,9 @@ public final class Gnmi {
       private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.Path> path_ =
         java.util.Collections.emptyList();
       private void ensurePathIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!((bitField0_ & 0x00000002) != 0)) {
           path_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.gnmi.Gnmi.Path>(path_);
-          bitField0_ |= 0x00000001;
+          bitField0_ |= 0x00000002;
          }
       }
 
@@ -29942,7 +30265,7 @@ public final class Gnmi {
       public Builder clearPath() {
         if (pathBuilder_ == null) {
           path_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00000002);
           onChanged();
         } else {
           pathBuilder_.clear();
@@ -30047,7 +30370,7 @@ public final class Gnmi {
           pathBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.gnmi.Gnmi.Path, org.opennms.features.openconfig.proto.gnmi.Gnmi.Path.Builder, org.opennms.features.openconfig.proto.gnmi.Gnmi.PathOrBuilder>(
                   path_,
-                  ((bitField0_ & 0x00000001) != 0),
+                  ((bitField0_ & 0x00000002) != 0),
                   getParentForChildren(),
                   isClean());
           path_ = null;
@@ -30077,8 +30400,8 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setTypeValue(int value) {
-        
         type_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -30092,8 +30415,7 @@ public final class Gnmi {
        */
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest.DataType getType() {
-        @SuppressWarnings("deprecation")
-        org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest.DataType result = org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest.DataType.valueOf(type_);
+        org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest.DataType result = org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest.DataType.forNumber(type_);
         return result == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.GetRequest.DataType.UNRECOGNIZED : result;
       }
       /**
@@ -30109,7 +30431,7 @@ public final class Gnmi {
         if (value == null) {
           throw new NullPointerException();
         }
-        
+        bitField0_ |= 0x00000004;
         type_ = value.getNumber();
         onChanged();
         return this;
@@ -30123,7 +30445,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearType() {
-        
+        bitField0_ = (bitField0_ & ~0x00000004);
         type_ = 0;
         onChanged();
         return this;
@@ -30151,8 +30473,8 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder setEncodingValue(int value) {
-        
         encoding_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -30166,8 +30488,7 @@ public final class Gnmi {
        */
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding getEncoding() {
-        @SuppressWarnings("deprecation")
-        org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding result = org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding.valueOf(encoding_);
+        org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding result = org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding.forNumber(encoding_);
         return result == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding.UNRECOGNIZED : result;
       }
       /**
@@ -30183,7 +30504,7 @@ public final class Gnmi {
         if (value == null) {
           throw new NullPointerException();
         }
-        
+        bitField0_ |= 0x00000008;
         encoding_ = value.getNumber();
         onChanged();
         return this;
@@ -30197,7 +30518,7 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearEncoding() {
-        
+        bitField0_ = (bitField0_ & ~0x00000008);
         encoding_ = 0;
         onChanged();
         return this;
@@ -30206,9 +30527,9 @@ public final class Gnmi {
       private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.ModelData> useModels_ =
         java.util.Collections.emptyList();
       private void ensureUseModelsIsMutable() {
-        if (!((bitField0_ & 0x00000002) != 0)) {
+        if (!((bitField0_ & 0x00000010) != 0)) {
           useModels_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.gnmi.Gnmi.ModelData>(useModels_);
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000010;
          }
       }
 
@@ -30402,7 +30723,7 @@ public final class Gnmi {
       public Builder clearUseModels() {
         if (useModelsBuilder_ == null) {
           useModels_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000010);
           onChanged();
         } else {
           useModelsBuilder_.clear();
@@ -30507,7 +30828,7 @@ public final class Gnmi {
           useModelsBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.gnmi.Gnmi.ModelData, org.opennms.features.openconfig.proto.gnmi.Gnmi.ModelData.Builder, org.opennms.features.openconfig.proto.gnmi.Gnmi.ModelDataOrBuilder>(
                   useModels_,
-                  ((bitField0_ & 0x00000002) != 0),
+                  ((bitField0_ & 0x00000010) != 0),
                   getParentForChildren(),
                   isClean());
           useModels_ = null;
@@ -30518,9 +30839,9 @@ public final class Gnmi {
       private java.util.List<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension> extension_ =
         java.util.Collections.emptyList();
       private void ensureExtensionIsMutable() {
-        if (!((bitField0_ & 0x00000004) != 0)) {
+        if (!((bitField0_ & 0x00000020) != 0)) {
           extension_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension>(extension_);
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000020;
          }
       }
 
@@ -30725,7 +31046,7 @@ public final class Gnmi {
       public Builder clearExtension() {
         if (extensionBuilder_ == null) {
           extension_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000020);
           onChanged();
         } else {
           extensionBuilder_.clear();
@@ -30837,7 +31158,7 @@ public final class Gnmi {
           extensionBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension, org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension.Builder, org.opennms.features.openconfig.proto.gnmi.GnmiExt.ExtensionOrBuilder>(
                   extension_,
-                  ((bitField0_ & 0x00000004) != 0),
+                  ((bitField0_ & 0x00000020) != 0),
                   getParentForChildren(),
                   isClean());
           extension_ = null;
@@ -30962,6 +31283,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>.gnmi.Error error = 2 [deprecated = true];</code>
+     * @deprecated gnmi.GetResponse.error is deprecated.
+     *     See gnmi.proto;l=422
      * @return Whether the error field is set.
      */
     @java.lang.Deprecated boolean hasError();
@@ -30971,6 +31294,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>.gnmi.Error error = 2 [deprecated = true];</code>
+     * @deprecated gnmi.GetResponse.error is deprecated.
+     *     See gnmi.proto;l=422
      * @return The error.
      */
     @java.lang.Deprecated org.opennms.features.openconfig.proto.gnmi.Gnmi.Error getError();
@@ -31063,11 +31388,6 @@ public final class Gnmi {
       return new GetResponse();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_GetResponse_descriptor;
@@ -31081,7 +31401,9 @@ public final class Gnmi {
               org.opennms.features.openconfig.proto.gnmi.Gnmi.GetResponse.class, org.opennms.features.openconfig.proto.gnmi.Gnmi.GetResponse.Builder.class);
     }
 
+    private int bitField0_;
     public static final int NOTIFICATION_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.Notification> notification_;
     /**
      * <pre>
@@ -31149,11 +31471,13 @@ public final class Gnmi {
      * </pre>
      *
      * <code>.gnmi.Error error = 2 [deprecated = true];</code>
+     * @deprecated gnmi.GetResponse.error is deprecated.
+     *     See gnmi.proto;l=422
      * @return Whether the error field is set.
      */
     @java.lang.Override
     @java.lang.Deprecated public boolean hasError() {
-      return error_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <pre>
@@ -31161,6 +31485,8 @@ public final class Gnmi {
      * </pre>
      *
      * <code>.gnmi.Error error = 2 [deprecated = true];</code>
+     * @deprecated gnmi.GetResponse.error is deprecated.
+     *     See gnmi.proto;l=422
      * @return The error.
      */
     @java.lang.Override
@@ -31176,10 +31502,11 @@ public final class Gnmi {
      */
     @java.lang.Override
     @java.lang.Deprecated public org.opennms.features.openconfig.proto.gnmi.Gnmi.ErrorOrBuilder getErrorOrBuilder() {
-      return getError();
+      return error_ == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.Error.getDefaultInstance() : error_;
     }
 
     public static final int EXTENSION_FIELD_NUMBER = 3;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension> extension_;
     /**
      * <pre>
@@ -31261,7 +31588,7 @@ public final class Gnmi {
       for (int i = 0; i < notification_.size(); i++) {
         output.writeMessage(1, notification_.get(i));
       }
-      if (error_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(2, getError());
       }
       for (int i = 0; i < extension_.size(); i++) {
@@ -31280,7 +31607,7 @@ public final class Gnmi {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, notification_.get(i));
       }
-      if (error_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(2, getError());
       }
@@ -31384,11 +31711,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.GetResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.GetResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -31459,17 +31788,26 @@ public final class Gnmi {
 
       // Construct using org.opennms.features.openconfig.proto.gnmi.Gnmi.GetResponse.newBuilder()
       private Builder() {
-
+        maybeForceBuilderInitialization();
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getNotificationFieldBuilder();
+          getErrorFieldBuilder();
+          getExtensionFieldBuilder();
+        }
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (notificationBuilder_ == null) {
           notification_ = java.util.Collections.emptyList();
         } else {
@@ -31477,10 +31815,9 @@ public final class Gnmi {
           notificationBuilder_.clear();
         }
         bitField0_ = (bitField0_ & ~0x00000001);
-        if (errorBuilder_ == null) {
-          error_ = null;
-        } else {
-          error_ = null;
+        error_ = null;
+        if (errorBuilder_ != null) {
+          errorBuilder_.dispose();
           errorBuilder_ = null;
         }
         if (extensionBuilder_ == null) {
@@ -31489,7 +31826,7 @@ public final class Gnmi {
           extension_ = null;
           extensionBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000002);
+        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -31516,7 +31853,13 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.GetResponse buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.GetResponse result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.GetResponse(this);
-        int from_bitField0_ = bitField0_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.openconfig.proto.gnmi.Gnmi.GetResponse result) {
         if (notificationBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             notification_ = java.util.Collections.unmodifiableList(notification_);
@@ -31526,22 +31869,27 @@ public final class Gnmi {
         } else {
           result.notification_ = notificationBuilder_.build();
         }
-        if (errorBuilder_ == null) {
-          result.error_ = error_;
-        } else {
-          result.error_ = errorBuilder_.build();
-        }
         if (extensionBuilder_ == null) {
-          if (((bitField0_ & 0x00000002) != 0)) {
+          if (((bitField0_ & 0x00000004) != 0)) {
             extension_ = java.util.Collections.unmodifiableList(extension_);
-            bitField0_ = (bitField0_ & ~0x00000002);
+            bitField0_ = (bitField0_ & ~0x00000004);
           }
           result.extension_ = extension_;
         } else {
           result.extension_ = extensionBuilder_.build();
         }
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.GetResponse result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.error_ = errorBuilder_ == null
+              ? error_
+              : errorBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -31621,7 +31969,7 @@ public final class Gnmi {
           if (!other.extension_.isEmpty()) {
             if (extension_.isEmpty()) {
               extension_ = other.extension_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000004);
             } else {
               ensureExtensionIsMutable();
               extension_.addAll(other.extension_);
@@ -31634,7 +31982,7 @@ public final class Gnmi {
               extensionBuilder_.dispose();
               extensionBuilder_ = null;
               extension_ = other.extension_;
-              bitField0_ = (bitField0_ & ~0x00000002);
+              bitField0_ = (bitField0_ & ~0x00000004);
               extensionBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getExtensionFieldBuilder() : null;
@@ -31686,7 +32034,7 @@ public final class Gnmi {
                 input.readMessage(
                     getErrorFieldBuilder().getBuilder(),
                     extensionRegistry);
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 18
               case 26: {
@@ -32040,10 +32388,12 @@ public final class Gnmi {
        * </pre>
        *
        * <code>.gnmi.Error error = 2 [deprecated = true];</code>
+       * @deprecated gnmi.GetResponse.error is deprecated.
+       *     See gnmi.proto;l=422
        * @return Whether the error field is set.
        */
       @java.lang.Deprecated public boolean hasError() {
-        return errorBuilder_ != null || error_ != null;
+        return ((bitField0_ & 0x00000002) != 0);
       }
       /**
        * <pre>
@@ -32051,6 +32401,8 @@ public final class Gnmi {
        * </pre>
        *
        * <code>.gnmi.Error error = 2 [deprecated = true];</code>
+       * @deprecated gnmi.GetResponse.error is deprecated.
+       *     See gnmi.proto;l=422
        * @return The error.
        */
       @java.lang.Deprecated public org.opennms.features.openconfig.proto.gnmi.Gnmi.Error getError() {
@@ -32073,11 +32425,11 @@ public final class Gnmi {
             throw new NullPointerException();
           }
           error_ = value;
-          onChanged();
         } else {
           errorBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
@@ -32091,11 +32443,11 @@ public final class Gnmi {
           org.opennms.features.openconfig.proto.gnmi.Gnmi.Error.Builder builderForValue) {
         if (errorBuilder_ == null) {
           error_ = builderForValue.build();
-          onChanged();
         } else {
           errorBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
@@ -32107,17 +32459,20 @@ public final class Gnmi {
        */
       @java.lang.Deprecated public Builder mergeError(org.opennms.features.openconfig.proto.gnmi.Gnmi.Error value) {
         if (errorBuilder_ == null) {
-          if (error_ != null) {
-            error_ =
-              org.opennms.features.openconfig.proto.gnmi.Gnmi.Error.newBuilder(error_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000002) != 0) &&
+            error_ != null &&
+            error_ != org.opennms.features.openconfig.proto.gnmi.Gnmi.Error.getDefaultInstance()) {
+            getErrorBuilder().mergeFrom(value);
           } else {
             error_ = value;
           }
-          onChanged();
         } else {
           errorBuilder_.mergeFrom(value);
         }
-
+        if (error_ != null) {
+          bitField0_ |= 0x00000002;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -32128,14 +32483,13 @@ public final class Gnmi {
        * <code>.gnmi.Error error = 2 [deprecated = true];</code>
        */
       @java.lang.Deprecated public Builder clearError() {
-        if (errorBuilder_ == null) {
-          error_ = null;
-          onChanged();
-        } else {
-          error_ = null;
+        bitField0_ = (bitField0_ & ~0x00000002);
+        error_ = null;
+        if (errorBuilder_ != null) {
+          errorBuilder_.dispose();
           errorBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
@@ -32146,7 +32500,7 @@ public final class Gnmi {
        * <code>.gnmi.Error error = 2 [deprecated = true];</code>
        */
       @java.lang.Deprecated public org.opennms.features.openconfig.proto.gnmi.Gnmi.Error.Builder getErrorBuilder() {
-        
+        bitField0_ |= 0x00000002;
         onChanged();
         return getErrorFieldBuilder().getBuilder();
       }
@@ -32189,9 +32543,9 @@ public final class Gnmi {
       private java.util.List<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension> extension_ =
         java.util.Collections.emptyList();
       private void ensureExtensionIsMutable() {
-        if (!((bitField0_ & 0x00000002) != 0)) {
+        if (!((bitField0_ & 0x00000004) != 0)) {
           extension_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension>(extension_);
-          bitField0_ |= 0x00000002;
+          bitField0_ |= 0x00000004;
          }
       }
 
@@ -32396,7 +32750,7 @@ public final class Gnmi {
       public Builder clearExtension() {
         if (extensionBuilder_ == null) {
           extension_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000002);
+          bitField0_ = (bitField0_ & ~0x00000004);
           onChanged();
         } else {
           extensionBuilder_.clear();
@@ -32508,7 +32862,7 @@ public final class Gnmi {
           extensionBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension, org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension.Builder, org.opennms.features.openconfig.proto.gnmi.GnmiExt.ExtensionOrBuilder>(
                   extension_,
-                  ((bitField0_ & 0x00000002) != 0),
+                  ((bitField0_ & 0x00000004) != 0),
                   getParentForChildren(),
                   isClean());
           extension_ = null;
@@ -32661,11 +33015,6 @@ public final class Gnmi {
       return new CapabilityRequest();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_CapabilityRequest_descriptor;
@@ -32680,6 +33029,7 @@ public final class Gnmi {
     }
 
     public static final int EXTENSION_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension> extension_;
     /**
      * <pre>
@@ -32855,11 +33205,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -32940,6 +33292,7 @@ public final class Gnmi {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (extensionBuilder_ == null) {
           extension_ = java.util.Collections.emptyList();
         } else {
@@ -32973,7 +33326,13 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityRequest buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityRequest result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityRequest(this);
-        int from_bitField0_ = bitField0_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityRequest result) {
         if (extensionBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             extension_ = java.util.Collections.unmodifiableList(extension_);
@@ -32983,8 +33342,10 @@ public final class Gnmi {
         } else {
           result.extension_ = extensionBuilder_.build();
         }
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityRequest result) {
+        int from_bitField0_ = bitField0_;
       }
 
       @java.lang.Override
@@ -33704,11 +34065,6 @@ public final class Gnmi {
       return new CapabilityResponse();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_CapabilityResponse_descriptor;
@@ -33723,6 +34079,7 @@ public final class Gnmi {
     }
 
     public static final int SUPPORTED_MODELS_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.Gnmi.ModelData> supportedModels_;
     /**
      * <pre>
@@ -33783,14 +34140,14 @@ public final class Gnmi {
     }
 
     public static final int SUPPORTED_ENCODINGS_FIELD_NUMBER = 2;
+    @SuppressWarnings("serial")
     private java.util.List<java.lang.Integer> supportedEncodings_;
     private static final com.google.protobuf.Internal.ListAdapter.Converter<
         java.lang.Integer, org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding> supportedEncodings_converter_ =
             new com.google.protobuf.Internal.ListAdapter.Converter<
                 java.lang.Integer, org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding>() {
               public org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding convert(java.lang.Integer from) {
-                @SuppressWarnings("deprecation")
-                org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding result = org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding.valueOf(from);
+                org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding result = org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding.forNumber(from);
                 return result == null ? org.opennms.features.openconfig.proto.gnmi.Gnmi.Encoding.UNRECOGNIZED : result;
               }
             };
@@ -33861,7 +34218,8 @@ public final class Gnmi {
     private int supportedEncodingsMemoizedSerializedSize;
 
     public static final int GNMI_VERSION_FIELD_NUMBER = 3;
-    private volatile java.lang.Object gNMIVersion_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object gNMIVersion_ = "";
     /**
      * <pre>
      * Supported gNMI version.
@@ -33907,6 +34265,7 @@ public final class Gnmi {
     }
 
     public static final int EXTENSION_FIELD_NUMBER = 4;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension> extension_;
     /**
      * <pre>
@@ -33996,7 +34355,7 @@ public final class Gnmi {
       for (int i = 0; i < supportedEncodings_.size(); i++) {
         output.writeEnumNoTag(supportedEncodings_.get(i));
       }
-      if (!getGNMIVersionBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(gNMIVersion_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, gNMIVersion_);
       }
       for (int i = 0; i < extension_.size(); i++) {
@@ -34027,7 +34386,7 @@ public final class Gnmi {
             .computeUInt32SizeNoTag(dataSize);
         }supportedEncodingsMemoizedSerializedSize = dataSize;
       }
-      if (!getGNMIVersionBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(gNMIVersion_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, gNMIVersion_);
       }
       for (int i = 0; i < extension_.size(); i++) {
@@ -34130,11 +34489,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -34215,6 +34576,7 @@ public final class Gnmi {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (supportedModelsBuilder_ == null) {
           supportedModels_ = java.util.Collections.emptyList();
         } else {
@@ -34225,14 +34587,13 @@ public final class Gnmi {
         supportedEncodings_ = java.util.Collections.emptyList();
         bitField0_ = (bitField0_ & ~0x00000002);
         gNMIVersion_ = "";
-
         if (extensionBuilder_ == null) {
           extension_ = java.util.Collections.emptyList();
         } else {
           extension_ = null;
           extensionBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000004);
+        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -34259,7 +34620,13 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityResponse buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityResponse result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityResponse(this);
-        int from_bitField0_ = bitField0_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityResponse result) {
         if (supportedModelsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             supportedModels_ = java.util.Collections.unmodifiableList(supportedModels_);
@@ -34274,18 +34641,22 @@ public final class Gnmi {
           bitField0_ = (bitField0_ & ~0x00000002);
         }
         result.supportedEncodings_ = supportedEncodings_;
-        result.gNMIVersion_ = gNMIVersion_;
         if (extensionBuilder_ == null) {
-          if (((bitField0_ & 0x00000004) != 0)) {
+          if (((bitField0_ & 0x00000008) != 0)) {
             extension_ = java.util.Collections.unmodifiableList(extension_);
-            bitField0_ = (bitField0_ & ~0x00000004);
+            bitField0_ = (bitField0_ & ~0x00000008);
           }
           result.extension_ = extension_;
         } else {
           result.extension_ = extensionBuilder_.build();
         }
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.CapabilityResponse result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.gNMIVersion_ = gNMIVersion_;
+        }
       }
 
       @java.lang.Override
@@ -34370,13 +34741,14 @@ public final class Gnmi {
         }
         if (!other.getGNMIVersion().isEmpty()) {
           gNMIVersion_ = other.gNMIVersion_;
+          bitField0_ |= 0x00000004;
           onChanged();
         }
         if (extensionBuilder_ == null) {
           if (!other.extension_.isEmpty()) {
             if (extension_.isEmpty()) {
               extension_ = other.extension_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000008);
             } else {
               ensureExtensionIsMutable();
               extension_.addAll(other.extension_);
@@ -34389,7 +34761,7 @@ public final class Gnmi {
               extensionBuilder_.dispose();
               extensionBuilder_ = null;
               extension_ = other.extension_;
-              bitField0_ = (bitField0_ & ~0x00000004);
+              bitField0_ = (bitField0_ & ~0x00000008);
               extensionBuilder_ = 
                 com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
                    getExtensionFieldBuilder() : null;
@@ -34456,7 +34828,7 @@ public final class Gnmi {
               } // case 18
               case 26: {
                 gNMIVersion_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000004;
                 break;
               } // case 26
               case 34: {
@@ -34944,8 +35316,8 @@ public final class Gnmi {
        * </pre>
        *
        * <code>repeated .gnmi.Encoding supported_encodings = 2;</code>
-       * @param index The index of the value to return.
-       * @return The enum numeric value on the wire of supportedEncodings at the given index.
+       * @param index The index to set the value at.
+       * @param value The enum numeric value on the wire for supportedEncodings to set.
        * @return This builder for chaining.
        */
       public Builder setSupportedEncodingsValue(
@@ -35042,11 +35414,9 @@ public final class Gnmi {
        */
       public Builder setGNMIVersion(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         gNMIVersion_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -35059,8 +35429,8 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearGNMIVersion() {
-        
         gNMIVersion_ = getDefaultInstance().getGNMIVersion();
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
@@ -35075,12 +35445,10 @@ public final class Gnmi {
        */
       public Builder setGNMIVersionBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         gNMIVersion_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -35088,9 +35456,9 @@ public final class Gnmi {
       private java.util.List<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension> extension_ =
         java.util.Collections.emptyList();
       private void ensureExtensionIsMutable() {
-        if (!((bitField0_ & 0x00000004) != 0)) {
+        if (!((bitField0_ & 0x00000008) != 0)) {
           extension_ = new java.util.ArrayList<org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension>(extension_);
-          bitField0_ |= 0x00000004;
+          bitField0_ |= 0x00000008;
          }
       }
 
@@ -35295,7 +35663,7 @@ public final class Gnmi {
       public Builder clearExtension() {
         if (extensionBuilder_ == null) {
           extension_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000004);
+          bitField0_ = (bitField0_ & ~0x00000008);
           onChanged();
         } else {
           extensionBuilder_.clear();
@@ -35407,7 +35775,7 @@ public final class Gnmi {
           extensionBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
               org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension, org.opennms.features.openconfig.proto.gnmi.GnmiExt.Extension.Builder, org.opennms.features.openconfig.proto.gnmi.GnmiExt.ExtensionOrBuilder>(
                   extension_,
-                  ((bitField0_ & 0x00000004) != 0),
+                  ((bitField0_ & 0x00000008) != 0),
                   getParentForChildren(),
                   isClean());
           extension_ = null;
@@ -35575,11 +35943,6 @@ public final class Gnmi {
       return new ModelData();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.features.openconfig.proto.gnmi.Gnmi.internal_static_gnmi_ModelData_descriptor;
@@ -35594,7 +35957,8 @@ public final class Gnmi {
     }
 
     public static final int NAME_FIELD_NUMBER = 1;
-    private volatile java.lang.Object name_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object name_ = "";
     /**
      * <pre>
      * Name of the model.
@@ -35640,7 +36004,8 @@ public final class Gnmi {
     }
 
     public static final int ORGANIZATION_FIELD_NUMBER = 2;
-    private volatile java.lang.Object organization_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object organization_ = "";
     /**
      * <pre>
      * Organization publishing the model.
@@ -35686,7 +36051,8 @@ public final class Gnmi {
     }
 
     public static final int VERSION_FIELD_NUMBER = 3;
-    private volatile java.lang.Object version_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object version_ = "";
     /**
      * <pre>
      * Semantic version of the model.
@@ -35745,13 +36111,13 @@ public final class Gnmi {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
-      if (!getOrganizationBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(organization_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, organization_);
       }
-      if (!getVersionBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(version_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, version_);
       }
       getUnknownFields().writeTo(output);
@@ -35763,13 +36129,13 @@ public final class Gnmi {
       if (size != -1) return size;
 
       size = 0;
-      if (!getNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
       }
-      if (!getOrganizationBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(organization_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, organization_);
       }
-      if (!getVersionBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(version_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, version_);
       }
       size += getUnknownFields().getSerializedSize();
@@ -35859,11 +36225,13 @@ public final class Gnmi {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.ModelData parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.openconfig.proto.gnmi.Gnmi.ModelData parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -35946,12 +36314,10 @@ public final class Gnmi {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         name_ = "";
-
         organization_ = "";
-
         version_ = "";
-
         return this;
       }
 
@@ -35978,11 +36344,22 @@ public final class Gnmi {
       @java.lang.Override
       public org.opennms.features.openconfig.proto.gnmi.Gnmi.ModelData buildPartial() {
         org.opennms.features.openconfig.proto.gnmi.Gnmi.ModelData result = new org.opennms.features.openconfig.proto.gnmi.Gnmi.ModelData(this);
-        result.name_ = name_;
-        result.organization_ = organization_;
-        result.version_ = version_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.openconfig.proto.gnmi.Gnmi.ModelData result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.name_ = name_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.organization_ = organization_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.version_ = version_;
+        }
       }
 
       @java.lang.Override
@@ -36031,14 +36408,17 @@ public final class Gnmi {
         if (other == org.opennms.features.openconfig.proto.gnmi.Gnmi.ModelData.getDefaultInstance()) return this;
         if (!other.getName().isEmpty()) {
           name_ = other.name_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (!other.getOrganization().isEmpty()) {
           organization_ = other.organization_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         if (!other.getVersion().isEmpty()) {
           version_ = other.version_;
+          bitField0_ |= 0x00000004;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -36069,17 +36449,17 @@ public final class Gnmi {
                 break;
               case 10: {
                 name_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 10
               case 18: {
                 organization_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 18
               case 26: {
                 version_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000004;
                 break;
               } // case 26
               default: {
@@ -36097,6 +36477,7 @@ public final class Gnmi {
         } // finally
         return this;
       }
+      private int bitField0_;
 
       private java.lang.Object name_ = "";
       /**
@@ -36151,11 +36532,9 @@ public final class Gnmi {
        */
       public Builder setName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -36168,8 +36547,8 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearName() {
-        
         name_ = getDefaultInstance().getName();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -36184,12 +36563,10 @@ public final class Gnmi {
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -36247,11 +36624,9 @@ public final class Gnmi {
        */
       public Builder setOrganization(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         organization_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -36264,8 +36639,8 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearOrganization() {
-        
         organization_ = getDefaultInstance().getOrganization();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -36280,12 +36655,10 @@ public final class Gnmi {
        */
       public Builder setOrganizationBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         organization_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -36343,11 +36716,9 @@ public final class Gnmi {
        */
       public Builder setVersion(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         version_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -36360,8 +36731,8 @@ public final class Gnmi {
        * @return This builder for chaining.
        */
       public Builder clearVersion() {
-        
         version_ = getDefaultInstance().getVersion();
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
@@ -36376,12 +36747,10 @@ public final class Gnmi {
        */
       public Builder setVersionBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         version_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }

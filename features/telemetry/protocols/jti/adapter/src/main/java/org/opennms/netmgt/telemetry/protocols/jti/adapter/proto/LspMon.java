@@ -786,11 +786,13 @@ public final class LspMon {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.key parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.key parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1471,11 +1473,13 @@ public final class LspMon {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_event parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_event parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2107,11 +2111,13 @@ public final class LspMon {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_type_entry parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_type_entry parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2715,11 +2721,13 @@ public final class LspMon {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_ipv4_type parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_ipv4_type parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3638,11 +3646,13 @@ public final class LspMon {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_type_entry parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_type_entry parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4365,11 +4375,13 @@ public final class LspMon {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_ipv4_type parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_ipv4_type parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5382,11 +5394,13 @@ public final class LspMon {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_property parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_property parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5932,8 +5946,10 @@ public final class LspMon {
         } else {
           eroBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000010;
-        onChanged();
+        if (ero_ != null) {
+          bitField0_ |= 0x00000010;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -6051,8 +6067,10 @@ public final class LspMon {
         } else {
           rroBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000020;
-        onChanged();
+        if (rro_ != null) {
+          bitField0_ |= 0x00000020;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -6496,11 +6514,13 @@ public final class LspMon {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_mon parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_mon parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -6821,8 +6841,10 @@ public final class LspMon {
         } else {
           keyFieldBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000001;
-        onChanged();
+        if (keyField_ != null) {
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -6940,8 +6962,10 @@ public final class LspMon {
         } else {
           eventFieldBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000002;
-        onChanged();
+        if (eventField_ != null) {
+          bitField0_ |= 0x00000002;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -7059,8 +7083,10 @@ public final class LspMon {
         } else {
           propertyFieldBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000004;
-        onChanged();
+        if (propertyField_ != null) {
+          bitField0_ |= 0x00000004;
+          onChanged();
+        }
         return this;
       }
       /**

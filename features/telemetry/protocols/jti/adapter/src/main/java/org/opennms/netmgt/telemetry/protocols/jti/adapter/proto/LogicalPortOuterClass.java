@@ -263,11 +263,13 @@ public final class LogicalPortOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.LogicalPort parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.LogicalPort parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1548,11 +1550,13 @@ public final class LogicalPortOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.LogicalInterfaceInfo parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.LogicalInterfaceInfo parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2274,8 +2278,10 @@ public final class LogicalPortOuterClass {
         } else {
           ingressStatsBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000010;
-        onChanged();
+        if (ingressStats_ != null) {
+          bitField0_ |= 0x00000010;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -2291,7 +2297,13 @@ public final class LogicalPortOuterClass {
         if (ingressStatsBuilder_ != null) {
           ingressStatsBuilder_.dispose();
           ingressStatsBuilder_ = null;
+        bitField0_ = (bitField0_ & ~0x00000010);
+        ingressStats_ = null;
+        if (ingressStatsBuilder_ != null) {
+          ingressStatsBuilder_.dispose();
+          ingressStatsBuilder_ = null;
         }
+        onChanged();
         onChanged();
         return this;
       }
@@ -2429,8 +2441,10 @@ public final class LogicalPortOuterClass {
         } else {
           egressStatsBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000020;
-        onChanged();
+        if (egressStats_ != null) {
+          bitField0_ |= 0x00000020;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -2446,7 +2460,13 @@ public final class LogicalPortOuterClass {
         if (egressStatsBuilder_ != null) {
           egressStatsBuilder_.dispose();
           egressStatsBuilder_ = null;
+        bitField0_ = (bitField0_ & ~0x00000020);
+        egressStats_ = null;
+        if (egressStatsBuilder_ != null) {
+          egressStatsBuilder_.dispose();
+          egressStatsBuilder_ = null;
         }
+        onChanged();
         onChanged();
         return this;
       }
@@ -2584,8 +2604,10 @@ public final class LogicalPortOuterClass {
         } else {
           opStateBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000040;
-        onChanged();
+        if (opState_ != null) {
+          bitField0_ |= 0x00000040;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -2601,7 +2623,13 @@ public final class LogicalPortOuterClass {
         if (opStateBuilder_ != null) {
           opStateBuilder_.dispose();
           opStateBuilder_ = null;
+        bitField0_ = (bitField0_ & ~0x00000040);
+        opState_ = null;
+        if (opStateBuilder_ != null) {
+          opStateBuilder_.dispose();
+          opStateBuilder_ = null;
         }
+        onChanged();
         onChanged();
         return this;
       }
@@ -3202,11 +3230,13 @@ public final class LogicalPortOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.IngressInterfaceStats parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.IngressInterfaceStats parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4303,11 +4333,13 @@ public final class LogicalPortOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.EgressInterfaceStats parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.EgressInterfaceStats parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4936,11 +4968,13 @@ public final class LogicalPortOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.OperationalState parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.OperationalState parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5732,11 +5766,13 @@ public final class LogicalPortOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.ForwardingClassAccounting parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LogicalPortOuterClass.ForwardingClassAccounting parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
