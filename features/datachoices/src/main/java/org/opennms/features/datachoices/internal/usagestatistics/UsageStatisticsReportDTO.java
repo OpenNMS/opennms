@@ -63,6 +63,7 @@ public class UsageStatisticsReportDTO {
     private Integer m_availableProcessors;
     private Long m_freePhysicalMemorySize;
     private Long m_totalPhysicalMemorySize;
+    private Long m_usedPhysicalMemorySize;
     private long m_provisiondImportThreadPoolSize;
     private long m_provisiondScanThreadPoolSize;
     private long m_provisiondRescanThreadPoolSize;
@@ -91,6 +92,8 @@ public class UsageStatisticsReportDTO {
     private int outages;
     private int notifications;
     private long m_onmsStartupTimeSeconds;
+
+    private String m_hostName;
 
     private Map<String, Long> m_applianceCounts = Collections.emptyMap();
 
@@ -123,6 +126,15 @@ public class UsageStatisticsReportDTO {
 
     public String getOsName() {
         return m_osName;
+    }
+
+    public String getHostName() { return m_hostName; }
+
+    public void setHostName(String hostName) { this.m_hostName = hostName; }
+
+    public Long getUsedPhysicalMemorySize() { return m_usedPhysicalMemorySize; }
+
+    public void setUsedPhysicalMemorySize(Long usedPhysicalMemorySize) { this.m_usedPhysicalMemorySize = usedPhysicalMemorySize;
     }
 
     public void setOsVersion(String osVersion){
@@ -527,6 +539,7 @@ public class UsageStatisticsReportDTO {
     public void setApplianceCounts(Map<String, Long> applianceCounts) {
         m_applianceCounts = applianceCounts;
     }
+
 
     public String toJson() {
         return toJson(false);
