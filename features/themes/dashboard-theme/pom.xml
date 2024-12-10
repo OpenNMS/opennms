@@ -6,7 +6,7 @@
     <parent>
     <artifactId>themes</artifactId>
     <groupId>org.opennms.features</groupId>
-    <version>33.1.11-SNAPSHOT</version>
+    <version>33.1.1-SNAPSHOT</version>
 	</parent>
 
     <groupId>org.opennms.features.themes</groupId>
