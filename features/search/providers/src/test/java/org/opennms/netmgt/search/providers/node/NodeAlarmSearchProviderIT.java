@@ -57,7 +57,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
-public class NodeAlarmSearchProviderTest {
+public class NodeAlarmSearchProviderIT {
 
     @Autowired
     NodeDao nodeDao;

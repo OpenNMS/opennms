@@ -60,7 +60,7 @@ import static org.junit.Assert.assertEquals;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase = false)
-public class NodeAssetSearchProviderTest {
+public class NodeAssetSearchProviderIT {
 
     @Autowired
     private NodeDao nodeDao;
