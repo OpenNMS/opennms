@@ -1,6 +1,41 @@
 [[release-33-changelog]]
 
 = Changelog
+[[releasenotes-changelog-33.1.11]]
+
+== Release 33.1.11
+
+Release 33.1.11 contains bug fixes, security updates and new features.
+
+The codename for Horizon 33.1.11 is https://wikipedia.org/wiki/$$Calliandra_haematocephala$$[_Powderpuff_].
+
+Note: Minion and OpenNMS must be on the same minor version because of changes introduced in https://issues.opennms.org/browse/NMS-16543[NMS-16543].
+
+=== Bug
+
+* 500 Server Error when sending events from GUI when OpenNMS has large number of Events configured (Issue https://issues.opennms.org/browse/NMS-16485[NMS-16485])
+* Provisioning fails when category has been deleted (Issue https://issues.opennms.org/browse/NMS-16536[NMS-16536])
+* With use-address-from-varbind traps are misassigned (Issue https://issues.opennms.org/browse/NMS-16543[NMS-16543])
+* Update protobuf (Issue https://issues.opennms.org/browse/NMS-16636[NMS-16636])
+* Update fop-core (Issue https://issues.opennms.org/browse/NMS-16961[NMS-16961])
+* Update cxf-core (Issue https://issues.opennms.org/browse/NMS-16962[NMS-16962])
+
+=== Task
+
+* DevOps: Stop including ALEC in containers (Issue https://issues.opennms.org/browse/NMS-16576[NMS-16576])
+
+=== Enhancement
+
+* Enable snmpinterface meta-data to be exposed in the time series integration layer for Pollerd metrics where possible (Issue https://issues.opennms.org/browse/NMS-16946[NMS-16946])
+
+=== New Feature
+
+* PTP implementation: Implement poller to check for desired port state (Issue https://issues.opennms.org/browse/NMS-16956[NMS-16956])
+* PTP implementation: add documentation (Issue https://issues.opennms.org/browse/NMS-16957[NMS-16957])
+
+=== Story
+
+* Include service status Integration API (Issue https://issues.opennms.org/browse/NMS-16972[NMS-16972])
 
 [[releasenotes-changelog-33.0.10]]
 
