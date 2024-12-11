@@ -1,7 +1,7 @@
 ##
 # Makefile to build OpenNMS from source
 ##
-.DEFAULT_GOAL := compile
+.DEFAULT_GOAL := quick-build
 
 SHELL                 := /bin/bash -o nounset -o pipefail -o errexit
 WORKING_DIRECTORY     := $(shell pwd)
@@ -65,6 +65,7 @@ help:
 	@echo "  test-lists:            Generate a list with all JUnit and Integration Test class names for splitting jobs"
 	@echo "  compile:               Compile OpenNMS from source code with runs expensive tasks doing"
 	@echo "  assemble:              Assemble the build artifacts with expensive tasks for a production build"
+	@echo "  quick-build:           Runs a quick compile and quick assemble for development"
 	@echo "  quick-compile:         Quick compile to get fast feedback for development"
 	@echo "  quick-assemble:        Quick assemble to run on a build local system"
 	@echo "  core-deb-pkg:          Build Core Debian packages"
@@ -201,6 +202,9 @@ compile-ui:
 .PHONY: assemble
 assemble: deps-build show-info
 	$(MAVEN_BIN) install $(MAVEN_ARGS) -DskipTests=true -Dbuild.profile=default -Droot.dir=$(WORKING_DIRECTORY) -Dopennms.home=$(OPENNMS_HOME) -Dinstall.version=$(INSTALL_VERSION) -Pbuild-bamboo -Prun-expensive-tasks -Dbuild.skip.tarball=false -Denable.license=true -Dbuild.type=production --file opennms-full-assembly/pom.xml 2>&1 | tee $(ARTIFACTS_DIR)/mvn.assemble.log
+
+.PHONY: quick-build
+quick-build: quick-compile quick-assemble
 
 .PHONY: quick-compile
 quick-compile: maven-structure-graph
@@ -342,7 +346,7 @@ unit-tests: test-lists spinup-postgres
 	$(eval TESTS_PROJECTS ?= $(shell cat ${ARTIFACTS_DIR}/tests/test_modules | paste -s -d, -))
 	# Parallel compiling with -T 1C works, but it doesn't for tests
 	$(MAVEN_BIN) install $(MAVEN_ARGS) -T 1C -DskipTests=true -DskipITs=true -Dbuild.profile=default -Droot.dir=$(WORKING_DIRECTORY) -Dfailsafe.skipAfterFailureCount=1 -P!checkstyle -P!production -Pbuild-bamboo -Dbuild.skip.tarball=true -Dmaven.test.skip.exec=true --fail-fast --also-make --projects "$(TESTS_PROJECTS)" 2>&1 | tee $(ARTIFACTS_DIR)/mvn.tests.compile.log
-	$(MAVEN_BIN) install $(MAVEN_ARGS) -DskipTests=false -DskipITs=true -DskipSurefire=false -DskipFailsafe=true -Dbuild.profile=default -Droot.dir=$(WORKING_DIRECTORY) -Dfailsafe.skipAfterFailureCount=1 -P!checkstyle -P!production -Pbuild-bamboo -Pcoverage -Dbuild.skip.tarball=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false -Dfailsafe.failIfNoSpecifiedTests=false -DrunPingTests=false --fail-fast -Dorg.opennms.core.test-api.dbCreateThreads=1 -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false -Dtest="$(U_TESTS)" --projects "$(TESTS_PROJECTS)" 2>&1 | tee $(ARTIFACTS_DIR)/mvn.u_tests.log
+	if [ $(command -v ionice) ]; then ionice; fi; nice $(MAVEN_BIN) install $(MAVEN_ARGS) -DskipTests=false -DskipITs=true -DskipSurefire=false -DskipFailsafe=true -Dbuild.profile=default -Droot.dir=$(WORKING_DIRECTORY) -Dfailsafe.skipAfterFailureCount=1 -P!checkstyle -P!production -Pbuild-bamboo -Pcoverage -Dbuild.skip.tarball=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false -Dfailsafe.failIfNoSpecifiedTests=false -DrunPingTests=false --fail-fast -Dorg.opennms.core.test-api.dbCreateThreads=1 -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false -Dtest="$(U_TESTS)" --projects "$(TESTS_PROJECTS)" 2>&1 | tee $(ARTIFACTS_DIR)/mvn.u_tests.log
 
 .PHONY: integration-tests
 integration-tests: test-lists spinup-postgres
@@ -350,7 +354,7 @@ integration-tests: test-lists spinup-postgres
 	$(eval TESTS_PROJECTS ?= $(shell cat $(ARTIFACTS_DIR)/tests/test_modules | paste -s -d, -))
 	# Parallel compiling with -T 1C works, but it doesn't for tests
 	$(MAVEN_BIN) install $(MAVEN_ARGS) -T 1C -DskipTests=true -DskipITs=true -Dbuild.profile=default -Droot.dir=$(WORKING_DIRECTORY) -Dfailsafe.skipAfterFailureCount=1 -P!checkstyle -P!production -Pbuild-bamboo -Dbuild.skip.tarball=true -Dmaven.test.skip.exec=true --fail-fast --also-make --projects "$(TESTS_PROJECTS)" 2>&1 | tee $(ARTIFACTS_DIR)/mvn.tests.compile.log
-	$(MAVEN_BIN) install $(MAVEN_ARGS) -DskipTests=false -DskipITs=false -DskipSurefire=true -DskipFailsafe=false -Dbuild.profile=default -Droot.dir=$(WORKING_DIRECTORY) -Dfailsafe.skipAfterFailureCount=1 -P!checkstyle -P!production -Pbuild-bamboo -Pcoverage -Dbuild.skip.tarball=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false -Dfailsafe.failIfNoSpecifiedTests=false -DrunPingTests=false --fail-fast -Dorg.opennms.core.test-api.dbCreateThreads=1 -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false -Dtest="$(U_TESTS)" -Dit.test="$(I_TESTS)" --projects "$(TESTS_PROJECTS)" 2>&1 | tee $(ARTIFACTS_DIR)/mvn.i_tests.log
+	if [ $(command -v ionice) ]; then ionice; fi; nice $(MAVEN_BIN) install $(MAVEN_ARGS) -DskipTests=false -DskipITs=false -DskipSurefire=true -DskipFailsafe=false -Dbuild.profile=default -Droot.dir=$(WORKING_DIRECTORY) -Dfailsafe.skipAfterFailureCount=1 -P!checkstyle -P!production -Pbuild-bamboo -Pcoverage -Dbuild.skip.tarball=true -DfailIfNoTests=false -Dsurefire.failIfNoSpecifiedTests=false -Dfailsafe.failIfNoSpecifiedTests=false -DrunPingTests=false --fail-fast -Dorg.opennms.core.test-api.dbCreateThreads=1 -Dorg.opennms.core.test-api.snmp.useMockSnmpStrategy=false -Dtest="$(U_TESTS)" -Dit.test="$(I_TESTS)" --projects "$(TESTS_PROJECTS)" 2>&1 | tee $(ARTIFACTS_DIR)/mvn.i_tests.log
 
 .PHONY: code-coverage
 code-coverage: deps-sonar
@@ -519,6 +523,8 @@ collect-testresults:
 	find . -type f -regex ".*\/target\/surefire-reports\/.*\.xml" -exec mv -v {} $(ARTIFACTS_DIR)/surefire-reports/ \;
 	find . -type f -regex ".*\/target\/failsafe-reports\/.*\.xml" -exec mv -v {} $(ARTIFACTS_DIR)/failsafe-reports/ \;
 	find . -type d -regex "^\.\/target\/logs" -exec tar czf $(ARTIFACTS_DIR)/logs.tar.gz {} \;
+	find . -type d -regex "^\./smoke-test\/target\/logs" -exec tar czf $(ARTIFACTS_DIR)/smoke-test-logs.tar.gz {} \;
+	find . -type d -regex "^\./smoke-test\/target\/screenshots" -exec tar czf $(ARTIFACTS_DIR)/smoke-test-screenshots.tar.gz {} \;
 	find . -type f -regex "^\.\/target\/structure-graph\.json" -exec mv -v {} $(ARTIFACTS_DIR) \;
 
 .PHONY: spinup-postgres
