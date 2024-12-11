@@ -23,7 +23,7 @@
 ##
 # Use Java base image and setup required RPMs as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.5.0.b276-jre-17"
+ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.5.1.b280-jre-17"
 
 FROM ${BASE_IMAGE} as core-tarball
 
