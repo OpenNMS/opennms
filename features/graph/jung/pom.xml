@@ -3,7 +3,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.graph</artifactId>
-        <version>33.1.1-SNAPSHOT</version>
+        <version>33.1.1</version>
     </parent>
 
     <!-- Feature Definition -->
