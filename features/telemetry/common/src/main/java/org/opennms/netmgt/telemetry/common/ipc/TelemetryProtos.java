@@ -87,11 +87,6 @@ public final class TelemetryProtos {
       return new TelemetryMessage();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.internal_static_TelemetryMessage_descriptor;
@@ -107,7 +102,7 @@ public final class TelemetryProtos {
 
     private int bitField0_;
     public static final int TIMESTAMP_FIELD_NUMBER = 1;
-    private long timestamp_;
+    private long timestamp_ = 0L;
     /**
      * <code>required uint64 timestamp = 1;</code>
      * @return Whether the timestamp field is set.
@@ -126,7 +121,7 @@ public final class TelemetryProtos {
     }
 
     public static final int BYTES_FIELD_NUMBER = 2;
-    private com.google.protobuf.ByteString bytes_;
+    private com.google.protobuf.ByteString bytes_ = com.google.protobuf.ByteString.EMPTY;
     /**
      * <code>required bytes bytes = 2;</code>
      * @return Whether the bytes field is set.
@@ -142,10 +137,6 @@ public final class TelemetryProtos {
     @java.lang.Override
     public com.google.protobuf.ByteString getBytes() {
       return bytes_;
-    }
-
-    public byte[] getByteArray() {
-      return bytes_.toByteArray();
     }
 
     private byte memoizedIsInitialized = -1;
@@ -287,11 +278,13 @@ public final class TelemetryProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -333,6 +326,11 @@ public final class TelemetryProtos {
       Builder builder = new Builder(parent);
       return builder;
     }
+
+    public byte[] getByteArray() {
+      return bytes_.toByteArray();
+    }
+
     /**
      * Protobuf type {@code TelemetryMessage}
      */
@@ -366,10 +364,9 @@ public final class TelemetryProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         timestamp_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000001);
         bytes_ = com.google.protobuf.ByteString.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -396,6 +393,12 @@ public final class TelemetryProtos {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage buildPartial() {
         org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage result = new org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
@@ -403,12 +406,10 @@ public final class TelemetryProtos {
           to_bitField0_ |= 0x00000001;
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.bytes_ = bytes_;
           to_bitField0_ |= 0x00000002;
         }
-        result.bytes_ = bytes_;
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -543,8 +544,8 @@ public final class TelemetryProtos {
        * @return This builder for chaining.
        */
       public Builder setTimestamp(long value) {
-        bitField0_ |= 0x00000001;
         timestamp_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -582,11 +583,9 @@ public final class TelemetryProtos {
        * @return This builder for chaining.
        */
       public Builder setBytes(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+        if (value == null) { throw new NullPointerException(); }
         bytes_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -780,11 +779,6 @@ public final class TelemetryProtos {
       return new TelemetryMessageLog();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.internal_static_TelemetryMessageLog_descriptor;
@@ -800,7 +794,8 @@ public final class TelemetryProtos {
 
     private int bitField0_;
     public static final int LOCATION_FIELD_NUMBER = 1;
-    private volatile java.lang.Object location_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object location_ = "";
     /**
      * <code>required string location = 1;</code>
      * @return Whether the location field is set.
@@ -848,7 +843,8 @@ public final class TelemetryProtos {
     }
 
     public static final int SYSTEM_ID_FIELD_NUMBER = 2;
-    private volatile java.lang.Object systemId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object systemId_ = "";
     /**
      * <code>required string system_id = 2;</code>
      * @return Whether the systemId field is set.
@@ -896,7 +892,8 @@ public final class TelemetryProtos {
     }
 
     public static final int SOURCE_ADDRESS_FIELD_NUMBER = 3;
-    private volatile java.lang.Object sourceAddress_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object sourceAddress_ = "";
     /**
      * <code>optional string source_address = 3;</code>
      * @return Whether the sourceAddress field is set.
@@ -944,7 +941,7 @@ public final class TelemetryProtos {
     }
 
     public static final int SOURCE_PORT_FIELD_NUMBER = 4;
-    private int sourcePort_;
+    private int sourcePort_ = 0;
     /**
      * <code>optional uint32 source_port = 4;</code>
      * @return Whether the sourcePort field is set.
@@ -963,6 +960,7 @@ public final class TelemetryProtos {
     }
 
     public static final int MESSAGE_FIELD_NUMBER = 5;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage> message_;
     /**
      * <code>repeated .TelemetryMessage message = 5;</code>
@@ -971,8 +969,6 @@ public final class TelemetryProtos {
     public java.util.List<org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessage> getMessageList() {
       return message_;
     }
-
-
     /**
      * <code>repeated .TelemetryMessage message = 5;</code>
      */
@@ -1190,11 +1186,13 @@ public final class TelemetryProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageLog parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageLog parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1269,14 +1267,11 @@ public final class TelemetryProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         location_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         systemId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
         sourceAddress_ = "";
-        bitField0_ = (bitField0_ & ~0x00000004);
         sourcePort_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000008);
         if (messageBuilder_ == null) {
           message_ = java.util.Collections.emptyList();
         } else {
@@ -1310,24 +1305,13 @@ public final class TelemetryProtos {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageLog buildPartial() {
         org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageLog result = new org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageLog(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.location_ = location_;
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          to_bitField0_ |= 0x00000002;
-        }
-        result.systemId_ = systemId_;
-        if (((from_bitField0_ & 0x00000004) != 0)) {
-          to_bitField0_ |= 0x00000004;
-        }
-        result.sourceAddress_ = sourceAddress_;
-        if (((from_bitField0_ & 0x00000008) != 0)) {
-          result.sourcePort_ = sourcePort_;
-          to_bitField0_ |= 0x00000008;
-        }
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageLog result) {
         if (messageBuilder_ == null) {
           if (((bitField0_ & 0x00000010) != 0)) {
             message_ = java.util.Collections.unmodifiableList(message_);
@@ -1337,9 +1321,28 @@ public final class TelemetryProtos {
         } else {
           result.message_ = messageBuilder_.build();
         }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageLog result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.location_ = location_;
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.systemId_ = systemId_;
+          to_bitField0_ |= 0x00000002;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.sourceAddress_ = sourceAddress_;
+          to_bitField0_ |= 0x00000004;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.sourcePort_ = sourcePort_;
+          to_bitField0_ |= 0x00000008;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -1387,18 +1390,18 @@ public final class TelemetryProtos {
       public Builder mergeFrom(org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageLog other) {
         if (other == org.opennms.netmgt.telemetry.common.ipc.TelemetryProtos.TelemetryMessageLog.getDefaultInstance()) return this;
         if (other.hasLocation()) {
-          bitField0_ |= 0x00000001;
           location_ = other.location_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.hasSystemId()) {
-          bitField0_ |= 0x00000002;
           systemId_ = other.systemId_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         if (other.hasSourceAddress()) {
-          bitField0_ |= 0x00000004;
           sourceAddress_ = other.sourceAddress_;
+          bitField0_ |= 0x00000004;
           onChanged();
         }
         if (other.hasSourcePort()) {
@@ -1567,11 +1570,9 @@ public final class TelemetryProtos {
        */
       public Builder setLocation(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         location_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1580,8 +1581,8 @@ public final class TelemetryProtos {
        * @return This builder for chaining.
        */
       public Builder clearLocation() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         location_ = getDefaultInstance().getLocation();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -1592,11 +1593,9 @@ public final class TelemetryProtos {
        */
       public Builder setLocationBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         location_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1651,11 +1650,9 @@ public final class TelemetryProtos {
        */
       public Builder setSystemId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+        if (value == null) { throw new NullPointerException(); }
         systemId_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -1664,8 +1661,8 @@ public final class TelemetryProtos {
        * @return This builder for chaining.
        */
       public Builder clearSystemId() {
-        bitField0_ = (bitField0_ & ~0x00000002);
         systemId_ = getDefaultInstance().getSystemId();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -1676,11 +1673,9 @@ public final class TelemetryProtos {
        */
       public Builder setSystemIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+        if (value == null) { throw new NullPointerException(); }
         systemId_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -1735,11 +1730,9 @@ public final class TelemetryProtos {
        */
       public Builder setSourceAddress(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
+        if (value == null) { throw new NullPointerException(); }
         sourceAddress_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -1748,8 +1741,8 @@ public final class TelemetryProtos {
        * @return This builder for chaining.
        */
       public Builder clearSourceAddress() {
-        bitField0_ = (bitField0_ & ~0x00000004);
         sourceAddress_ = getDefaultInstance().getSourceAddress();
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
@@ -1760,11 +1753,9 @@ public final class TelemetryProtos {
        */
       public Builder setSourceAddressBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
+        if (value == null) { throw new NullPointerException(); }
         sourceAddress_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -1792,8 +1783,9 @@ public final class TelemetryProtos {
        * @return This builder for chaining.
        */
       public Builder setSourcePort(int value) {
-        bitField0_ |= 0x00000008;
+
         sourcePort_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }

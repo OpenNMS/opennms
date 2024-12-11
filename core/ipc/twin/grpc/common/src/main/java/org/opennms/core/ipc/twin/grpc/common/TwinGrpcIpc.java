@@ -48,35 +48,27 @@ public final class TwinGrpcIpc {
   private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
-    String[] descriptorData = {
-      "\n\017twin-grpc.proto\032\030proto/twin-message.pr" +
-      "oto\"3\n\014MinionHeader\022\021\n\tsystem_id\030\001 \001(\t\022\020" +
-      "\n\010location\030\002 \001(\t2\205\001\n\016OpenNMSTwinIpc\022;\n\014R" +
-      "pcStreaming\022\021.TwinRequestProto\032\022.TwinRes" +
-      "ponseProto\"\000(\0010\001\0226\n\rSinkStreaming\022\r.Mini" +
-      "onHeader\032\022.TwinResponseProto\"\0000\001B6\n%org." +
-      "opennms.core.ipc.twin.grpc.commonB\013TwinG" +
-      "rpcIpcP\001b\006proto3"
+    java.lang.String[] descriptorData = {
+      "\n\017twin-grpc.proto\032\022twin-message.proto\"3\n" +
+      "\014MinionHeader\022\021\n\tsystem_id\030\001 \001(\t\022\020\n\010loca" +
+      "tion\030\002 \001(\t2\205\001\n\016OpenNMSTwinIpc\022;\n\014RpcStre" +
+      "aming\022\021.TwinRequestProto\032\022.TwinResponseP" +
+      "roto\"\000(\0010\001\0226\n\rSinkStreaming\022\r.MinionHead" +
+      "er\032\022.TwinResponseProto\"\0000\001B6\n%org.opennm" +
+      "s.core.ipc.twin.grpc.commonB\013TwinGrpcIpc" +
+      "P\001b\006proto3"
     };
-    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
-          public com.google.protobuf.ExtensionRegistry assignDescriptors(
-              com.google.protobuf.Descriptors.FileDescriptor root) {
-            descriptor = root;
-            return null;
-          }
-        };
-    com.google.protobuf.Descriptors.FileDescriptor
+    descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
           org.opennms.core.ipc.twin.model.TwinMessageProto.getDescriptor(),
-        }, assigner);
+        });
     internal_static_MinionHeader_descriptor =
       getDescriptor().getMessageTypes().get(0);
     internal_static_MinionHeader_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_MinionHeader_descriptor,
-        new String[] { "SystemId", "Location", });
+        new java.lang.String[] { "SystemId", "Location", });
     org.opennms.core.ipc.twin.model.TwinMessageProto.getDescriptor();
   }
 
