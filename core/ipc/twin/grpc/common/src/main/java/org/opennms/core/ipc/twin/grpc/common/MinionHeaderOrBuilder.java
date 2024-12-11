@@ -30,20 +30,24 @@ public interface MinionHeaderOrBuilder extends
 
   /**
    * <code>string system_id = 1;</code>
+   * @return The systemId.
    */
-  String getSystemId();
+  java.lang.String getSystemId();
   /**
    * <code>string system_id = 1;</code>
+   * @return The bytes for systemId.
    */
   com.google.protobuf.ByteString
       getSystemIdBytes();
 
   /**
    * <code>string location = 2;</code>
+   * @return The location.
    */
-  String getLocation();
+  java.lang.String getLocation();
   /**
    * <code>string location = 2;</code>
+   * @return The bytes for location.
    */
   com.google.protobuf.ByteString
       getLocationBytes();
