@@ -181,7 +181,7 @@ public class SyslogEventForwarderTest {
         Event event = new Event();
         event.setUei("uei.opennms.org/junit/testEvent");
         event.setNodeid(1l);
-        event.setDbid(100);
+        event.setDbid(100L);
         event.setLogmsg(new Logmsg());
         event.getLogmsg().setContent("something is wrong");
         Parm param = new Parm();

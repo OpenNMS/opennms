@@ -192,7 +192,7 @@ public class HibernateEventWriterIT {
         bldr.addParam("test", b64);
 
         Event event = bldr.getEvent();
-        assertEquals(new Integer(0), event.getDbid());
+        assertEquals(new Long(0), event.getDbid());
         m_eventWriter.process(bldr.getLog());
         assertTrue(event.getDbid() > 0);
 
@@ -221,7 +221,7 @@ public class HibernateEventWriterIT {
         bldr.setDescription("abc\u0000def");
 
         Event event = bldr.getEvent();
-        assertEquals(new Integer(0), event.getDbid());
+        assertEquals(new Long(0), event.getDbid());
 
         m_eventWriter.process(bldr.getLog());
         assertTrue(event.getDbid() > 0);
@@ -243,7 +243,7 @@ public class HibernateEventWriterIT {
         bldr.setLogMessage("test");
 
         Event event = bldr.getEvent();
-        assertEquals(new Integer(0), event.getDbid());
+        assertEquals(new Long(0), event.getDbid());
         m_eventWriter.process(bldr.getLog());
         assertTrue(event.getDbid() > 0);
 
@@ -274,7 +274,7 @@ public class HibernateEventWriterIT {
         bldr.setLogMessage("abc\u0000def");
 
         Event event = bldr.getEvent();
-        assertEquals(new Integer(0), event.getDbid());
+        assertEquals(new Long(0), event.getDbid());
         m_eventWriter.process(bldr.getLog());
         assertTrue(event.getDbid() > 0);
 
@@ -369,7 +369,7 @@ public class HibernateEventWriterIT {
         bldr.setService(serviceName);
 
         Event event = bldr.getEvent();
-        assertEquals(new Integer(0), event.getDbid());
+        assertEquals(new Long(0), event.getDbid());
         m_eventWriter.process(bldr.getLog());
         assertTrue(event.getDbid() > 0);
         

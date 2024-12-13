@@ -362,7 +362,7 @@ public class BeanWrapperVisitorTest {
         THIRD
     }
 
-    private OnmsEvent createEvent(final int id, final String uei) {
+    private OnmsEvent createEvent(final long id, final String uei) {
         final OnmsEvent event = new OnmsEvent();
         event.setId(id);
         event.setEventUei(uei);
