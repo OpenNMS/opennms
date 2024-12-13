@@ -234,6 +234,13 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
         return getHibernateTemplate().execute(s -> (BigInteger)s.createSQLQuery( "SELECT COUNT( DISTINCT situation_id ) FROM alarm_situations").uniqueResult()).longValue();
     }
 
+    @Override
+    public int getNumAlarmsPastHours(int hours) {
+        return getHibernateTemplate().execute(s ->
+                (BigInteger)s.createSQLQuery( "SELECT COUNT(*) FROM alarms WHERE firsteventtime >= NOW() - " +
+                        "INTERVAL '" + hours + " hours'").uniqueResult()).intValue();
+    }
+
     public List<OnmsAlarm> getAlarmsForEventParameters(final Map<String, String> eventParameters) {
         final StringBuffer hqlStringBuffer = new StringBuffer("From OnmsAlarm a where ");
         for (int i = 0; i < eventParameters.size(); i++) {
