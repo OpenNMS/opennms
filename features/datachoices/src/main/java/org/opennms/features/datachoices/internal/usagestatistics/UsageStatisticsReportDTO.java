@@ -50,7 +50,9 @@ public class UsageStatisticsReportDTO {
     private long m_snmpInterfacesWithFlows;
     private int m_monitoredServices;
     private int m_events;
+    private int m_eventsPastHours;
     private int m_alarms;
+    private int m_alarmsPastHours;
     private long m_situations;
     private int m_destinationPathCount;
     private Boolean m_notificationEnablementStatus;
@@ -205,6 +207,12 @@ public class UsageStatisticsReportDTO {
         return m_events;
     }
 
+    public void setEventsPastHours(int eventsPastHours) {
+        m_eventsPastHours = eventsPastHours;
+    }
+
+    public int getEventsPastHours() { return m_eventsPastHours; }
+
     public void setAlarms(int alarms) {
         m_alarms = alarms;
     }
@@ -212,6 +220,12 @@ public class UsageStatisticsReportDTO {
     public int getAlarms() {
         return m_alarms;
     }
+
+    public void setAlarmsPastHours(int alarmsPastHours) {
+        m_alarmsPastHours = alarmsPastHours;
+    }
+
+    public int getAlarmsPastHours() { return m_alarmsPastHours; }
 
     public long getSituations() {
         return m_situations;
