@@ -25,23 +25,17 @@ import java.lang.management.ClassLoadingMXBean;
 import java.lang.management.ManagementFactory;
 import java.lang.management.MemoryMXBean;
 import java.lang.management.RuntimeMXBean;
-import java.nio.ByteBuffer;
 import java.util.Map;
 import java.util.TreeMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
-import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
-
-import javax.management.*;
 
 public class JavaReportPlugin extends AbstractSystemReportPlugin {
     private static final Logger LOG = LoggerFactory.getLogger(JavaReportPlugin.class);
-    private static final String JMX_OBJ_OS = "java.lang:type=OperatingSystem";
-    private static final String JMX_ATTR_AVAILABLE_PROCESSORS = "AvailableProcessors";
-    private static final MBeanServer M_BEAN_SERVER = ManagementFactory.getPlatformMBeanServer();
+
     @Override
     public String getName() {
         return "Java";
@@ -67,15 +61,6 @@ public class JavaReportPlugin extends AbstractSystemReportPlugin {
         map.put("Vendor", getResourceFromProperty("java.vendor"));
         map.put("VM Version", getResourceFromProperty("java.vm.version"));
         map.put("VM Name", getResourceFromProperty("java.vm.name"));
-
-        Object availableProcessorsObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_AVAILABLE_PROCESSORS);
-        int number = (int) availableProcessorsObj;
-        ByteBuffer buffer = ByteBuffer.allocate(4);
-        buffer.putInt(number);
-        byte[] data = buffer.array();
-        Resource resource = new ByteArrayResource(data);
-        map.put("System CPU count", resource);
-
 
         MemoryMXBean memoryBean = getBean(ManagementFactory.MEMORY_MXBEAN_NAME, MemoryMXBean.class);
         if (memoryBean == null) {
@@ -125,20 +110,5 @@ public class JavaReportPlugin extends AbstractSystemReportPlugin {
 
         return map;
     }
-    private Object getJmxAttribute(String objectName, String attributeName) {
-        ObjectName objNameActual;
-        try {
-            objNameActual = new ObjectName(objectName);
-        } catch (MalformedObjectNameException e) {
-            LOG.warn("Failed to query from object name " + objectName, e);
-            return null;
-        }
-        try {
-            return M_BEAN_SERVER.getAttribute(objNameActual, attributeName);
-        } catch (InstanceNotFoundException | AttributeNotFoundException
-                 | ReflectionException | MBeanException e) {
-            LOG.warn("Failed to query from attribute name " + attributeName + " on object " + objectName, e);
-            return null;
-        }
-    }
+
 }
