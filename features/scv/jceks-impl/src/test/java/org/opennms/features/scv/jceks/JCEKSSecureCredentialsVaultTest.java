@@ -21,9 +21,13 @@
  */
 package org.opennms.features.scv.jceks;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertFalse;
+import com.google.common.collect.Sets;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.SecureCredentialsVault;
 
 import java.io.File;
 import java.io.IOException;
@@ -37,15 +41,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicLong;
-
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
-import org.opennms.features.scv.api.Credentials;
-import org.opennms.features.scv.api.SecureCredentialsVault;
-
-import com.google.common.collect.Sets;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertFalse;
 
 public class JCEKSSecureCredentialsVaultTest {
 
@@ -141,5 +139,28 @@ public class JCEKSSecureCredentialsVaultTest {
         latch.await();
         assertEquals(numberOfThreads + 1, scv2.getAliases().size());
         assertEquals(credentials1, scv2.getCredentials("http")) ;
+    }
+
+    @Test
+    public void canSetAndGetMultipleCredentialsWithReload()  {
+        File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
+
+        SecureCredentialsVault scv = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "testing123");
+
+        Credentials creds = new Credentials("adm1n", "p@ssw0rd");
+        scv.setCredentials("http", creds);
+
+        assertEquals(Sets.newHashSet("http"), scv.getAliases());
+        assertEquals(creds, scv.getCredentials("http"));
+
+        scv = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "testing123");
+
+        Credentials sshCreds = new Credentials("n0t-adm1n", "an0th3r-p@ssw0rd");
+
+        scv.setCredentials("ssh", sshCreds);
+
+        assertEquals(Sets.newHashSet("http", "ssh"), scv.getAliases());
+        assertEquals(creds, scv.getCredentials("http"));
+        assertEquals(sshCreds, scv.getCredentials("ssh"));
     }
 }
