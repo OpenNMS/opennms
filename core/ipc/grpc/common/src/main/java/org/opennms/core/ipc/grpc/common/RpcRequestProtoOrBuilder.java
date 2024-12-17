@@ -115,14 +115,14 @@ public interface RpcRequestProtoOrBuilder extends
   /**
    * <code>map&lt;string, string&gt; tracing_info = 7;</code>
    */
-
-  java.lang.String getTracingInfoOrDefault(
+  /* nullable */
+java.lang.String getTracingInfoOrDefault(
       java.lang.String key,
-      java.lang.String defaultValue);
+      /* nullable */
+java.lang.String defaultValue);
   /**
    * <code>map&lt;string, string&gt; tracing_info = 7;</code>
    */
-
   java.lang.String getTracingInfoOrThrow(
       java.lang.String key);
 }
