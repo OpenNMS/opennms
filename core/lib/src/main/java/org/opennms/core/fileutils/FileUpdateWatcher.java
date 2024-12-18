@@ -52,9 +52,15 @@ public class FileUpdateWatcher {
     private final AtomicBoolean closed = new AtomicBoolean(false);
 
     public FileUpdateWatcher(String fileName, FileUpdateCallback fileUpdateCb) throws IOException {
+        this(fileName, fileUpdateCb, false);
+    }
+
+    public FileUpdateWatcher(String fileName, FileUpdateCallback fileUpdateCb, boolean skipFileChecking) throws IOException {
         File file = new File(fileName);
-        if (!file.exists() || file.isDirectory()) {
-            throw new IllegalArgumentException(String.format("file %s doesn't exist", fileName));
+        if (!skipFileChecking) {
+            if (!file.exists() || file.isDirectory()) {
+                throw new IllegalArgumentException(String.format("file %s doesn't exist", fileName));
+            }
         }
         this.fileName = fileName;
         Path path = Paths.get(file.getParent());
