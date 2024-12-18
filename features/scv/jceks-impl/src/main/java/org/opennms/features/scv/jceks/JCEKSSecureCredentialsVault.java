@@ -50,6 +50,8 @@ import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 
 import org.apache.commons.codec.binary.Base64;
+import org.opennms.core.fileutils.FileUpdateCallback;
+import org.opennms.core.fileutils.FileUpdateWatcher;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.slf4j.Logger;
@@ -79,6 +81,8 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
 
     public static final String DEFAULT_KEYSTORE_KEY = "QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw";
 
+    public FileUpdateWatcher watcher = null;
+
     public JCEKSSecureCredentialsVault(String keystoreFile, String password) {
         this(keystoreFile, password, new byte[]{0x0, 0xd, 0xd, 0xb, 0xa, 0x1, 0x1});
     }
@@ -95,21 +99,18 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
         m_keystoreFile = new File(keystoreFile);
         try {
             m_keystore = KeyStore.getInstance("JCEKS");
-            if (!m_keystoreFile.isFile()) {
-                LOG.info("No existing keystore found at: {}. Using empty keystore.", m_keystoreFile);
-                m_keystore.load(null, m_password);
-            } else {
-                LOG.info("Loading existing keystore from: {}", m_keystoreFile);
-                try (InputStream is = new FileInputStream(m_keystoreFile)) {
-                    m_keystore.load(is, m_password);
-                }
+            loadKeyStoreFile();
+            if(m_keystoreFile.isFile() && watcher == null){
+                watcher = new FileUpdateWatcher(m_keystoreFile.getAbsolutePath().toString(),this.fileReload());
             }
-        } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
+        } catch (KeyStoreException e) {
             throw Throwables.propagate(e);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
-    private void loadCredentials() {
+    private void loadCredentials() throws IOException {
         synchronized (m_credentialsCache) {
             if (!m_credentialsCache.isEmpty()) {
                 return;
@@ -135,9 +136,13 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
 
     @Override
     public Credentials getCredentials(String alias) {
-        loadCredentials();
-        synchronized (m_credentialsCache) {
-            return m_credentialsCache.get(alias);
+        try {
+            loadCredentials();
+            synchronized (m_credentialsCache) {
+                return m_credentialsCache.get(alias);
+            }
+        } catch (IOException e) {
+            throw new RuntimeException(e);
         }
     }
 
@@ -230,5 +235,30 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault {
 
     public static JCEKSSecureCredentialsVault defaultScv() {
         return new JCEKSSecureCredentialsVault(getKeystoreFilename(), getKeystorePassword());
+    }
+    public void loadKeyStoreFile(){
+        try {
+            if (!m_keystoreFile.isFile()) {
+                LOG.info("No existing keystore found at: {}. Using empty keystore.", m_keystoreFile);
+                m_keystore.load(null, m_password);
+            } else {
+                LOG.info("Loading existing keystore from: {}", m_keystoreFile);
+                try (InputStream is = new FileInputStream(m_keystoreFile)) {
+                    m_keystore.load(is, m_password);
+                }
+            }
+        } catch (IOException | NoSuchAlgorithmException | CertificateException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public  FileUpdateCallback fileReload() {
+        return new FileUpdateCallback() {
+            @Override
+            public void reload() {
+                loadKeyStoreFile();
+            }
+
+        };
     }
 }
