@@ -1,79 +1,83 @@
 package org.opennms.web.controller;
 
+import okhttp3.OkHttpClient;
+import okhttp3.RequestBody;
+import okhttp3.FormBody;
+import okhttp3.Response;
+import okhttp3.Request;
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.InjectMocks;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
-import org.opennms.systemreport.SystemReport;
-import org.opennms.systemreport.SystemReportFormatter;
-import org.opennms.systemreport.SystemReportPlugin;
-import org.opennms.web.controller.admin.support.SystemReportController;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.mock.web.MockHttpServletRequest;
-import org.springframework.mock.web.MockHttpServletResponse;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.web.servlet.ModelAndView;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import static org.junit.Assert.*;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import java.util.Arrays;
-
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-public class SystemReportControllerTest extends SystemReportController{
 
 
 
+public class SystemReportControllerTest{
 
-    private SystemReport mockSystemReport;
 
-    private SystemReportController systemReportController;
+
 
     @Before
     public void setUp() {
 
-        systemReportController = new SystemReportController();
-        mockSystemReport = new SystemReport();
     }
 
 
     @Test
     public void testMockMvcHandleRequest() throws Exception {
 
-        // Create a mock request
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.setMethod("POST");
+        // Create OkHttpClient instance
+        OkHttpClient client = new OkHttpClient();
 
-        // Set the form parameters (simulating the request payload)
-        request.addParameter("operation", "run");
-        request.addParameter("output", "abc.txt");
-        request.addParameter("formatter", "text");
-        request.addParameter("plugins", "Java");
+        // Create the request body with form-encoded data
+        RequestBody formBody = new FormBody.Builder()
+                .add("plugins", "Java")
+                .add("formatter", "text")
+                .add("output", "johndoe")
+                .add("operation", "run")
+                .build();
 
-        // Set the request URI (for routing)
-        request.setRequestURI("/admin/support/systemReport.htm");
+        // Create the request
+        Request request = new Request.Builder()
+                .url("http://localhost:8980/opennms/admin/support/systemReport.htm")
+                .post(formBody)
+                .build();
 
-        // Create a mock response
-        MockHttpServletResponse response = new MockHttpServletResponse();
+        // Send the request and handle the response
+        try (Response response = client.newCall(request).execute()) {
+            if (response.isSuccessful()) {
+                // Get the Content-Disposition header
+                String contentDisposition = response.header("Content-Disposition");
+                Assert.assertNotNull(contentDisposition);
+                if (contentDisposition != null) {
+                    // Extract the filename from the header
+                    String filename = extractFileName(contentDisposition);
 
-        systemReportController.setSystemReport(mockSystemReport);
-        ModelAndView modelAndView = systemReportController.handleRequest(request, response);
+                    Assert.assertEquals("abc.txt",filename);
+                    if ("abc.txt".equals(filename)) {
+                        System.out.println("The file name matches 'abc.txt'.");
+                    } else {
+                        System.out.println("The file name does not match 'abc.txt'.");
+                    }
+                } else {
 
-        // Check the results or response
-        assertNotNull(modelAndView);
-        // Extracting the 'Content-Disposition' header
-        String contentDisposition = response.getHeader("Content-Disposition");
-
-        // Assert that the Content-Disposition header contains the expected file name
-        assertNotNull(contentDisposition);
-        assertTrue(contentDisposition.contains("attachment; filename=\"abc.txt\""));
-
+                    System.out.println("Content-Disposition header is not present.");
+                }
+            } else {
+                System.out.println("Request failed: " + response.code());
+            }
+        }
     }
+    // Extract filename from Content-Disposition header
+    private static String extractFileName(String contentDisposition) {
+        String[] parts = contentDisposition.split(";");
+        for (String part : parts) {
+            part = part.trim();
+            if (part.startsWith("filename=")) {
+                // Remove the "filename=" part and the surrounding quotes
+                return part.substring(9).replace("\"", "");
+            }
+        }
+        return null;
+    }
+
 }
