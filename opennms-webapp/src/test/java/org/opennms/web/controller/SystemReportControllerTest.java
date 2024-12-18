@@ -32,7 +32,7 @@ public class SystemReportControllerTest{
         RequestBody formBody = new FormBody.Builder()
                 .add("plugins", "Java")
                 .add("formatter", "text")
-                .add("output", "johndoe")
+                .add("output", "abc.txt")
                 .add("operation", "run")
                 .build();
 
