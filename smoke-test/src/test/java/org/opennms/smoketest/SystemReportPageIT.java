@@ -26,11 +26,11 @@ public class SystemReportPageIT extends UiPageTest  {
 
 
         WebElement filenameInput = driver.findElement(By.id("filename"));
-        filenameInput.sendKeys("abc.txt");
+        filenameInput.sendKeys("abc@!321.txt");
         WebElement generateButton = driver.findElement(By.xpath("//input[@class='btn btn-secondary' and @value='Generate System Report']"));
         generateButton.click();
         execute(() -> {
-            pageContainsText("abc.txt");
+            pageContainsText("abc321.txt");
             return null;
         });
 
