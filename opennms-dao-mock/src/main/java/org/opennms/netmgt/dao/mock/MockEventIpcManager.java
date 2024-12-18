@@ -447,4 +447,8 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
 
         return false;
     }
+
+    public static void setEventIdStart(long l) {
+        m_eventId.set(l);
+    }
 }

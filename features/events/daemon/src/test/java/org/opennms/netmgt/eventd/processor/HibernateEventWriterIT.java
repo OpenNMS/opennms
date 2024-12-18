@@ -376,4 +376,8 @@ public class HibernateEventWriterIT {
         assertEquals("event count", new Integer(1), jdbcTemplate.queryForObject("select count(*) from events", Integer.class));
         assertEquals("event service ID", new Integer(serviceId), jdbcTemplate.queryForObject("select serviceID from events", Integer.class));
     }
+
+    public HibernateEventWriter getHibernateEventWriter() {
+        return (HibernateEventWriter) m_eventWriter;
+    }
 }
