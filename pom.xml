@@ -1934,7 +1934,7 @@
     <okioGrafanaVersion>1.14.0</okioGrafanaVersion>
     <openid4javaVersion>0.9.6</openid4javaVersion>
     <opennmsApiVersion>2.0.0-SNAPSHOT</opennmsApiVersion>
-    <opennmsApiVersionOsgi>2.0.0-SNAPSHOT</opennmsApiVersionOsgi>
+    <opennmsApiVersionOsgi>2.0.0</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
