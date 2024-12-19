@@ -127,7 +127,7 @@ public final class FormatterView implements View {
         final String outputParameter = request.getParameter("output");
         String fileName = null;
         if (outputParameter != null && !outputParameter.matches("^[\\s]*$")) {
-            fileName = new File(outputParameter).getName().replaceAll("[^[:alnum:]\\.]", "");
+            fileName = new File(outputParameter).getName().replaceAll("[^\\w\\.]", "");
         } else {
             fileName = "opennms-system-report." + m_formatter.getExtension();
         }
