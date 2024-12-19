@@ -28,14 +28,21 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.opennms.core.utils.TimeSeries;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
 import org.springframework.core.io.Resource;
 
+import javax.management.*;
+
 
 public class OSReportPlugin extends AbstractSystemReportPlugin {
     private static final Logger LOG = LoggerFactory.getLogger(OSReportPlugin.class);
+    private static final String JMX_OBJ_OS = "java.lang:type=OperatingSystem";
+    private static final String JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE = "TotalPhysicalMemorySize";
+    private static final String JMX_ATTR_FREE_PHYSICAL_MEMORY_SIZE = "FreePhysicalMemorySize";
+    private static final MBeanServer M_BEAN_SERVER = ManagementFactory.getPlatformMBeanServer();
     private static final Map<String, String> m_oses = new LinkedHashMap<String, String>();
     public OSReportPlugin() {
         if (m_oses.size() == 0) {
@@ -77,6 +84,17 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
         map.put("Architecture", getResourceFromProperty("os.arch"));
         map.put("Version", getResourceFromProperty("os.version"));
         map.put("Distribution", map.get("Name"));
+
+        Object totalPhysicalMemSizeObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE);
+        long val = ((long) totalPhysicalMemSizeObj);
+        map.put("Total Physical Memory Size", getResource(Long.toString(val)));
+
+        Object freePhysicalMemSizeObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_FREE_PHYSICAL_MEMORY_SIZE);
+
+        long val2 = ((long) totalPhysicalMemSizeObj);
+        map.put("Free Physical Memory Size", getResource(Long.toString(val2)));
+        map.put("Time series storage strategy",getResource(TimeSeries.getTimeseriesStrategy().getName()));
+
 
         OperatingSystemMXBean osBean = getBean(ManagementFactory.OPERATING_SYSTEM_MXBEAN_NAME, OperatingSystemMXBean.class);
         if (osBean == null) {
@@ -130,5 +148,21 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
         }
 
         return map;
+    }
+    private Object getJmxAttribute(String objectName, String attributeName) {
+        ObjectName objNameActual;
+        try {
+            objNameActual = new ObjectName(objectName);
+        } catch (MalformedObjectNameException e) {
+            LOG.warn("Failed to query from object name " + objectName, e);
+            return null;
+        }
+        try {
+            return M_BEAN_SERVER.getAttribute(objNameActual, attributeName);
+        } catch (InstanceNotFoundException | AttributeNotFoundException
+                 | ReflectionException | MBeanException e) {
+            LOG.warn("Failed to query from attribute name " + attributeName + " on object " + objectName, e);
+            return null;
+        }
     }
 }

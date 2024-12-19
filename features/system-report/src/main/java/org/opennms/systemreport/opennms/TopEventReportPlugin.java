@@ -45,7 +45,7 @@ public class TopEventReportPlugin extends AbstractSystemReportPlugin implements 
 
     @Override
     public String getName() {
-        return "TopEvent";
+        return "TopN";
     }
 
     @Override
