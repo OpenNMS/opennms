@@ -22,6 +22,7 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.sql.SQLException;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +47,21 @@ public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer> 
         String hql = "delete from OnmsEvent where alarmid = ? and eventid != ?";
         Object[] values = {id, e.getId()};
         return bulkDelete(hql, values);
+    }
+
+    @Override
+    public int countNodesFromPast24Hours() {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR, -24);  // Subtract 24 hours
+        java.util.Date twentyFourHoursAgo = calendar.getTime();
+        getHibernateTemplate().executeWithNativeSession(session -> {
+            Query query = session.createSQLQuery("SELECT COUNT(*) FROM OnmsEvent n WHERE n.eventCreateTime >= :twentyFourHoursAgo");
+            query.setParameter("twentyFourHoursAgo", twentyFourHoursAgo);
+            Long count = (Long) query.uniqueResult();
+            return count != null ? count.intValue() : 0;
+        });
+        return 0;
     }
 
     @Override

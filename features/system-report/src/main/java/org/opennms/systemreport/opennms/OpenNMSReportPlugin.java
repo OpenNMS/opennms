@@ -29,11 +29,7 @@ import java.util.Properties;
 import java.util.TreeMap;
 
 import org.opennms.core.spring.BeanUtils;
-import org.opennms.netmgt.dao.api.AlarmDao;
-import org.opennms.netmgt.dao.api.EventDao;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.dao.api.*;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -68,6 +64,9 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
     
     @Autowired
     public AlarmDao m_alarmDao;
+
+    @Autowired
+    public MonitoringLocationDao monitoringLocationDao;
 
     @Override
     public void afterPropertiesSet() throws Exception {
@@ -104,7 +103,7 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
         }
         
         if (m_nodeDao != null) {
-            map.put("Number of Nodes", getResource(Integer.toString(m_nodeDao.countAll())));
+            map.put("Number of Nodes", getResource(Integer.toString(m_nodeDao.countNodesFromPast24Hours())));
         }
         if (m_ipInterfaceDao != null) {
             map.put("Number of IP Interfaces", getResource(Integer.toString(m_ipInterfaceDao.countAll())));
@@ -113,10 +112,10 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
             map.put("Number of SNMP Interfaces", getResource(Integer.toString(m_snmpInterfaceDao.countAll())));
         }
         if (m_eventDao != null) {
-            map.put("Number of Events", getResource(Integer.toString(m_eventDao.countAll())));
+            map.put("Number of Events", getResource(Integer.toString(m_eventDao.countNodesFromPast24Hours())));
         }
         if (m_alarmDao != null) {
-            map.put("Number of Alarms", getResource(Integer.toString(m_alarmDao.countAll())));
+            map.put("Number of Alarms", getResource(Integer.toString(m_alarmDao.countNodesFromPast24Hours())));
         }
 
         Object availableProcessorsObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_AVAILABLE_PROCESSORS);

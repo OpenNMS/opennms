@@ -34,6 +34,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.Calendar;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -552,6 +553,22 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     @Override
     public List<OnmsNode> findBySysNameOfLldpLinksOfNode(int nodeId) {
         return find("from OnmsNode as n where n.sysName in (select l.lldpRemSysname from LldpLink l where l.node.id = ?)", nodeId);
+    }
+
+
+    @Override
+    public int countNodesFromPast24Hours() {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR, -24);  // Subtract 24 hours
+        java.util.Date twentyFourHoursAgo = calendar.getTime();
+        getHibernateTemplate().executeWithNativeSession(session -> {
+        Query query = session.createSQLQuery("SELECT COUNT(*) FROM OnmsNode n WHERE n.m_createTime >= :twentyFourHoursAgo");
+        query.setParameter("twentyFourHoursAgo", twentyFourHoursAgo);
+        Long count = (Long) query.uniqueResult();
+        return count != null ? count.intValue() : 0;
+        });
+        return 0;
     }
 
     @Override

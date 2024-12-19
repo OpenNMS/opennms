@@ -297,4 +297,6 @@ public interface NodeDao extends LegacyOnmsDao<OnmsNode, Integer> {
      * node. Used to retrieve all OnmsNodes that need to be accessed when finding the lldp links of a node.
      */
     List<OnmsNode> findBySysNameOfLldpLinksOfNode(int nodeId);
+
+    int countNodesFromPast24Hours();
 }

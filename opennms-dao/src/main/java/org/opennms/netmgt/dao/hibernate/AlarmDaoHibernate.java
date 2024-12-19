@@ -29,6 +29,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Calendar;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -232,6 +233,22 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
     @Override
     public long getNumSituations() {
         return getHibernateTemplate().execute(s -> (BigInteger)s.createSQLQuery( "SELECT COUNT( DISTINCT situation_id ) FROM alarm_situations").uniqueResult()).longValue();
+    }
+
+
+    @Override
+    public int countNodesFromPast24Hours() {
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR, -24);  // Subtract 24 hours
+        java.util.Date twentyFourHoursAgo = calendar.getTime();
+        getHibernateTemplate().executeWithNativeSession(session -> {
+            Query query = session.createSQLQuery("SELECT COUNT(*) FROM OnmsAlarm n WHERE n.firstEventTime >= :twentyFourHoursAgo");
+            query.setParameter("twentyFourHoursAgo", twentyFourHoursAgo);
+            Long count = (Long) query.uniqueResult();
+            return count != null ? count.intValue() : 0;
+        });
+        return 0;
     }
 
     public List<OnmsAlarm> getAlarmsForEventParameters(final Map<String, String> eventParameters) {
