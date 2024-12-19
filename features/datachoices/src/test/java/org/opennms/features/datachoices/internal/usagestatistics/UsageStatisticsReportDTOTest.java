@@ -83,6 +83,7 @@ public class UsageStatisticsReportDTOTest {
             "\"eventLogsProcessed\":0," +
             "\"events\":0," +
             "\"eventsPastHours\":0," +
+            "\"flowsPerSecond\":0," +
             "\"freePhysicalMemorySize\":null," +
             "\"groups\":0," +
             "\"inContainer\":false," +

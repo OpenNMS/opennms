@@ -97,11 +97,14 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private static final String JMX_OBJ_OPENNMS_POLLERD = "OpenNMS:Name=Pollerd";
     private static final String JMX_OBJ_OPENNMS_EVENTLOGS_PROCESS = "org.opennms.netmgt.eventd:name=eventlogs.process,type=timers";
     private static final String JMX_OBJ_OPENNMS_FLOWS_PERSISTED = "org.opennms.netmgt.flows:name=flowsPersisted,type=meters";
+    private static final String JMX_OBJ_OPENNMS_FLOWS_PER_SECOND = "org.opennms.netmgt.flows:name=flowsPerSecond,type=meters";
     private static final String JMX_OBJ_OPENNMS_REPO_SAMPLE_INSERTED = "org.opennms.newts:name=repository.samples-inserted,type=meters";
     private static final String JMX_OBJ_OPENNMS_QUEUED = "OpenNMS:Name=Queued";
     private static final String JMX_ATTR_FREE_PHYSICAL_MEMORY_SIZE = "FreePhysicalMemorySize";
     private static final String JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE = "TotalPhysicalMemorySize";
     private static final String JMX_ATTR_AVAILABLE_PROCESSORS = "AvailableProcessors";
+    private static final String JMX_ATTR_SYSTEM_CPU_LOAD = "SystemCpuLoad";
+    private static final String JMX_ATTR_PROCESS_CPU_LOAD = "ProcessCpuLoad";
     private static final String JMX_ATTR_TASKS_COMPLETED = "TasksCompleted";
     private static final String JMX_ATTR_COUNT = "Count";
     private static final String JMX_ATTR_UPDATES_COMPLETED = "UpdatesCompleted";
@@ -335,6 +338,26 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         if (availableProcessorsObj != null) {
             usageStatisticsReport.setAvailableProcessors((int) availableProcessorsObj);
         }
+
+        Object systemCpuLoadObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_SYSTEM_CPU_LOAD);
+        if (availableProcessorsObj != null) {
+            double systemCpuLoad = (double)systemCpuLoadObj;
+            if ( systemCpuLoad >= 0) {
+                systemCpuLoad = systemCpuLoad * 100;
+                usageStatisticsReport.setCpuUtilization(String.format("%.2f%%", systemCpuLoad));
+            }
+
+        } else {
+            Object processCpuLoadObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_PROCESS_CPU_LOAD);
+            if (availableProcessorsObj != null) {
+                double processCpuLoad = (double)systemCpuLoadObj;
+                if ( processCpuLoad >= 0) {
+                    processCpuLoad = processCpuLoad * 100;
+                    usageStatisticsReport.setCpuUtilization(String.format("%.2f%%", processCpuLoad));
+                }
+            }
+        }
+
     }
 
     private void setOpenNmsJmxAttributes(UsageStatisticsReportDTO usageStatisticsReport) {
@@ -349,6 +372,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         Object coreFlowsPersistedObj = getJmxAttribute(JMX_OBJ_OPENNMS_FLOWS_PERSISTED, JMX_ATTR_COUNT);
         if (coreFlowsPersistedObj != null) {
             usageStatisticsReport.setCoreFlowsPersisted((long) coreFlowsPersistedObj);
+        }
+        Object flowsPerSecondObj = getJmxAttribute(JMX_OBJ_OPENNMS_FLOWS_PER_SECOND, JMX_ATTR_COUNT);
+        if (flowsPerSecondObj != null) {
+            usageStatisticsReport.setFlowsPerSecond((long) flowsPerSecondObj);
         }
         Object coreNewtsSamplesInsertedObj = getJmxAttribute(JMX_OBJ_OPENNMS_REPO_SAMPLE_INSERTED, JMX_ATTR_COUNT);
         if (coreNewtsSamplesInsertedObj != null) {

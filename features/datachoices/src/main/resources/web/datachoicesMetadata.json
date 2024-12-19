@@ -31,10 +31,16 @@
             "datatype": "number"
         },
         {
+            "key": "cpuUtilization",
+            "name": "System CPU Utilization",
+            "description": "Current System CPU utilization percentage",
+            "datatype": "string"
+        },
+        {
             "key": "businessEdgeCount",
             "name": "Current business service count",
             "description": "Number of business services defined in the system",
-            "datatype": "number"
+            "datatype": "string"
         },
         {
             "key": "cloudInstanceType",
@@ -64,6 +70,12 @@
             "key": "coreFlowsPersisted",
             "name": "Flows persisted",
             "description": "Number of flow records persisted since the core last started up",
+            "datatype": "number"
+        },
+        {
+            "key": "flowsPerSecond",
+            "name": "Flows per second",
+            "description": "Number of flows per second for the past 24 hours",
             "datatype": "number"
         },
         {

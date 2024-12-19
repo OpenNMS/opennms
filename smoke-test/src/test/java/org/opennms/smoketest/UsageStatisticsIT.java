@@ -129,6 +129,7 @@ public class UsageStatisticsIT {
         assertThat((long) usageReport.get("pollsCompleted"), is(0L));
         assertThat((long) usageReport.get("eventLogsProcessed"), greaterThan(1L));
         assertThat((long) usageReport.get("coreFlowsPersisted"), is(0L));
+        assertThat((long) usageReport.get("flowsPerSecond"), is(0L));
         assertThat((String) usageReport.get("databaseProductVersion"), matchesPattern("^\\d+\\.\\d+$"));
         assertThat((String) usageReport.get("databaseProductName"), is("PostgreSQL"));
         assertThat((long) usageReport.get("monitoredServices"), is(0L));

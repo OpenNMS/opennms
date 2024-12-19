@@ -62,6 +62,7 @@ public class UsageStatisticsReportDTO {
     private long m_minions;
     private String m_installedFeatures;
     private String m_installedOIAPlugins;
+    private String m_cpuUtilization;
     private Integer m_availableProcessors;
     private Long m_freePhysicalMemorySize;
     private Long m_totalPhysicalMemorySize;
@@ -82,6 +83,7 @@ public class UsageStatisticsReportDTO {
     private long m_pollsCompleted;
     private long m_eventLogsProcessed;
     private long m_coreFlowsPersisted;
+    private long m_flowsPerSecond;
     private long m_coreNewtsSamplesInserted;
     private long m_coreQueuedUpdatesCompleted;
     private int m_users;
@@ -271,6 +273,14 @@ public class UsageStatisticsReportDTO {
         return m_installedOIAPlugins;
     }
 
+    public void setCpuUtilization(String cpuUtilization) {
+        this.m_cpuUtilization = cpuUtilization;
+    }
+
+    public String getCpuUtilization() {
+        return m_cpuUtilization;
+    }
+
     public void setInstalledOIAPlugins(String plugins) {
         this.m_installedOIAPlugins = plugins;
     }
@@ -432,6 +442,14 @@ public class UsageStatisticsReportDTO {
 
     public void setCoreFlowsPersisted(long coreFlowsPersisted) {
         this.m_coreFlowsPersisted = coreFlowsPersisted;
+    }
+
+    public long getFlowsPerSecond() {
+        return m_flowsPerSecond;
+    }
+
+    public void setFlowsPerSecond(long flowsPerSecond) {
+        this.m_flowsPerSecond = flowsPerSecond;
     }
 
     public long getCoreNewtsSamplesInserted() {
