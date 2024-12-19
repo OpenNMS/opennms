@@ -23,6 +23,7 @@ package org.opennms.systemreport.opennms;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.management.ManagementFactory;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -40,8 +41,19 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 
+import javax.management.MBeanServer;
+import javax.management.ObjectName;
+import javax.management.MalformedObjectNameException;
+import javax.management.InstanceNotFoundException;
+import javax.management.AttributeNotFoundException;
+import javax.management.ReflectionException;
+import javax.management.MBeanException;
+
 public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(OpenNMSReportPlugin.class);
+    private static final String JMX_OBJ_OS = "java.lang:type=OperatingSystem";
+    private static final String JMX_ATTR_AVAILABLE_PROCESSORS = "AvailableProcessors";
+    private static final MBeanServer M_BEAN_SERVER = ManagementFactory.getPlatformMBeanServer();
     @Autowired
     public NodeDao m_nodeDao;
 
@@ -106,7 +118,30 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
         if (m_alarmDao != null) {
             map.put("Number of Alarms", getResource(Integer.toString(m_alarmDao.countAll())));
         }
+
+        Object availableProcessorsObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_AVAILABLE_PROCESSORS);
+
+        int val = ((int) availableProcessorsObj);
+        map.put("System CPU count", getResource(Integer.toString(val)));
         return map;
     }
 
+
+
+    private Object getJmxAttribute(String objectName, String attributeName) {
+        ObjectName objNameActual;
+        try {
+            objNameActual = new ObjectName(objectName);
+        } catch (MalformedObjectNameException e) {
+            LOG.warn("Failed to query from object name " + objectName, e);
+            return null;
+        }
+        try {
+            return M_BEAN_SERVER.getAttribute(objNameActual, attributeName);
+        } catch (InstanceNotFoundException | AttributeNotFoundException
+                 | ReflectionException | MBeanException e) {
+            LOG.warn("Failed to query from attribute name " + attributeName + " on object " + objectName, e);
+            return null;
+        }
+    }
 }
