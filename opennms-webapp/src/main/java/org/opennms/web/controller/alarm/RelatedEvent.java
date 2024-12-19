@@ -26,14 +26,14 @@ import java.util.Date;
 import org.opennms.netmgt.model.OnmsSeverity;
 
 public class RelatedEvent {
-    final Integer eventId;
+    final Long eventId;
     final Integer alarmId;
     final Date creationTime;
     final OnmsSeverity severity;
     final String uei;
     final String logMessage;
 
-    public RelatedEvent(final Integer eventId, final Integer alarmId, final Date creationTime, final OnmsSeverity severity, final String uei, final String logMessage) {
+    public RelatedEvent(final Long eventId, final Integer alarmId, final Date creationTime, final OnmsSeverity severity, final String uei, final String logMessage) {
         this.eventId = eventId;
         this.alarmId = alarmId;
         this.creationTime = creationTime;
@@ -42,7 +42,7 @@ public class RelatedEvent {
         this.logMessage = logMessage;
     }
 
-    public Integer getEventId() {
+    public Long getEventId() {
         return eventId;
     }
 

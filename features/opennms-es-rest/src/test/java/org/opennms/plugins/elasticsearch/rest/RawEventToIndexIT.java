@@ -83,7 +83,7 @@ public class RawEventToIndexIT extends AbstractEventToIndexITCase {
 			eb.setUuid("00000000-0000-0000-0000-000000000000");		
 
 			Event event = eb.getEvent();
-			event.setDbid(101);
+			event.setDbid(101L);
 
 			LOG.debug("ecreated node lost service event:"+event.toString());
 

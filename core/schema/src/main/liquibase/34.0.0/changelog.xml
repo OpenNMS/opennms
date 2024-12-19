@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd" >
+
+    <changeSet author="cpape" id="34.0.0-drop-views-alter-eventid-to-bigint-and-recreate-views">
+        <dropView viewName="node_alarms"/>
+        <dropView viewName="node_outages"/>
+        <dropView viewName="node_outage_status"/>
+
+        <modifyDataType tableName="outages" columnName="svclosteventid" newDataType="bigint"/>
+        <modifyDataType tableName="outages" columnName="svcregainedeventid" newDataType="bigint"/>
+        <modifyDataType tableName="notifications" columnName="eventid" newDataType="bigint"/>
+        <modifyDataType tableName="event_parameters" columnName="eventid" newDataType="bigint"/>
+        <modifyDataType tableName="alarms" columnName="lasteventid" newDataType="bigint"/>
+        <modifyDataType tableName="events" columnName="eventid" newDataType="bigint"/>
+
+        <!--
+        <sql>
+            ALTER SEQUENCE eventsNxtId RESTART WITH 10000000000
+        </sql>
+        -->
+
+        <createView replaceIfExists="true" viewName="node_outage_status">
+          SELECT
+            node.nodeid,
+            (CASE WHEN severity IS NULL OR severity &lt; 3 THEN 3 ELSE severity END) AS max_outage_severity
+          FROM
+            (
+              SELECT events.nodeid, max(events.eventseverity) AS severity
+              FROM events
+              JOIN outages ON outages.svclosteventid = events.eventid
+              WHERE outages.ifregainedservice IS NULL AND outages.perspective IS NULL
+              GROUP BY events.nodeid
+            ) AS tmp
+          RIGHT JOIN node ON tmp.nodeid = node.nodeid
+        </createView>
+
+        <createView replaceIfExists="true" viewName="node_outages">
+            SELECT
+              outages.outageid,
+              outages.svclosteventid,
+              outages.svcregainedeventid,
+              outages.iflostservice,
+              outages.ifregainedservice,
+              outages.ifserviceid,
+              e.eventuei AS svclosteventuei,
+              e.eventsource,
+              e.alarmid,
+              e.eventseverity,
+              (ifregainedservice NOTNULL) AS resolved,
+              s.servicename,
+              i.serviceid,
+              ipif.ipaddr,
+              COALESCE(outages.ifregainedservice - outages.iflostservice, now() - outages.iflostservice) AS duration,
+              nos.max_outage_severity,
+              nc.*
+            FROM
+              outages
+            JOIN
+              events e
+            ON
+              outages.svclosteventid = e.eventid
+            JOIN
+              ifservices i
+            ON
+              outages.ifserviceid = i.id
+            JOIN
+              service s
+            ON
+              i.serviceid = s.serviceid
+            JOIN
+              ipinterface ipif
+            ON
+              i.ipinterfaceid = ipif.id
+            JOIN
+              node_categories nc
+            ON
+              nc.nodeid = e.nodeid
+            JOIN
+              node_outage_status nos
+            ON
+              nc.nodeid = nos.nodeid
+            WHERE
+              outages.perspective IS NULL
+        </createView>
+
+        <createView replaceIfExists="true" viewName="node_alarms">
+                SELECT
+                n.nodeid,
+                n.nodecreatetime,
+                n.nodeparentid,
+                n.nodetype,
+                n.nodesysoid,
+                n.nodesysname,
+                n.nodesysdescription,
+                n.nodesyslocation,
+                n.nodesyscontact,
+                n.nodelabel,
+                n.nodelabelsource,
+                n.nodenetbiosname,
+                n.nodedomainname,
+                n.operatingsystem,
+                n.lastcapsdpoll,
+                n.foreignsource,
+                n.foreignid,
+                n.location,
+                a.alarmid,
+                a.eventuei,
+                a.ipaddr,
+                a.reductionkey,
+                a.alarmtype,
+                a.counter,
+                a.severity,
+                a.lasteventid,
+                a.firsteventtime,
+                a.lasteventtime,
+                a.firstautomationtime,
+                a.lastautomationtime,
+                a.description,
+                a.logmsg,
+                a.operinstruct,
+                a.tticketid,
+                a.tticketstate,
+                a.suppresseduntil,
+                a.suppresseduser,
+                a.suppressedtime,
+                a.alarmackuser,
+                a.alarmacktime,
+                a.managedobjectinstance,
+                a.managedobjecttype,
+                a.applicationdn,
+                a.ossprimarykey,
+                a.x733alarmtype,
+                a.qosalarmstate,
+                a.clearkey,
+                a.ifindex,
+                a.stickymemo,
+                a.systemid,
+                (a.alarmacktime NOTNULL) AS acknowledged,
+                COALESCE(s_cat.categoryname, 'no category') AS categoryname,
+                s_cat.categorydescription,
+                s.servicename,
+                nas.max_alarm_severity,
+                nas.max_alarm_severity_unack,
+                nas.alarm_count_unack,
+                nas.alarm_count
+                FROM
+                node n
+                JOIN
+                alarms a
+                ON
+                n.nodeid = a.nodeid
+                JOIN
+                node_alarm_status nas
+                ON
+                a.nodeid = nas.nodeid
+                LEFT JOIN
+                service s
+                ON
+                a.serviceid = s.serviceid
+                LEFT JOIN
+                category_node cat
+                ON
+                n.nodeid = cat.nodeid
+                LEFT JOIN
+                categories s_cat
+                ON
+                cat.categoryid = s_cat.categoryid
+        </createView>
+    </changeSet>
+
+</databaseChangeLog>

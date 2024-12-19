@@ -376,7 +376,7 @@ public abstract class SnmpTrapForwarderHelper extends AbstractEventForwarder imp
 
 	private SnmpTrapBuilder buildEventTrap(Event event, SnmpTrapBuilder trap, String severity) {
 		try {
-			 Integer t_dbid = Integer.valueOf(event.getDbid());
+			 Long t_dbid = event.getDbid();
              if (t_dbid.intValue() > 0)
                      snmpTrapHelper.addVarBinding(trap, ".1.3.6.1.4.1.5813.20.1.1.0", "OctetString", "text", t_dbid.toString());
              else

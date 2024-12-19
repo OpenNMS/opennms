@@ -269,4 +269,8 @@ public class EventUtilHibernateIT {
         final String string = eventUtilDaoImpl.expandParms(testString, event);
         assertEquals("This string has a primary interface set to 192.168.1.1 and the interface set to 10.10.10.10.", string);
     }
+
+    protected DatabasePopulator getDatabasePopulator() {
+        return m_populator;
+    }
 }

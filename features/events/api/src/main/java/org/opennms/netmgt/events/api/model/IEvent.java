@@ -41,7 +41,7 @@ public interface IEvent {
     int getAutoactionCount();
     ICorrelation getCorrelation();
     Date getCreationTime();
-    Integer getDbid();
+    Long getDbid();
     String getDescr();
     String getDistPoller();
     IForward getForward(final int index);

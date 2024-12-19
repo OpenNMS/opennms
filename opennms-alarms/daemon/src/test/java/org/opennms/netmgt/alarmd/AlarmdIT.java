@@ -475,7 +475,7 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
         bldr.setLogMessage("This is a test.");
 
         final Event event = bldr.getEvent();
-        event.setDbid(17);
+        event.setDbid(17L);
 
         MockNode node = m_mockNetwork.getNode(1);
         sendNodeDownEvent("%nodeid%", node);

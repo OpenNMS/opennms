@@ -32,7 +32,7 @@ import java.util.Date;
  */
 public class DbPollEvent extends PollEvent {
     
-    private final int m_eventId;
+    private final long m_eventId;
     private final Date m_date;
     
     /**
@@ -54,7 +54,7 @@ public class DbPollEvent extends PollEvent {
      * @return a int.
      */
     @Override
-    public int getEventId() {
+    public long getEventId() {
         return m_eventId;
     }
     
@@ -74,7 +74,7 @@ public class DbPollEvent extends PollEvent {
      * @return a int.
      */
     @Override
-    public int hashCode() { return m_eventId; }
+    public int hashCode() { return Long.valueOf(m_eventId).hashCode(); }
     
     /**
      * <p>equals</p>

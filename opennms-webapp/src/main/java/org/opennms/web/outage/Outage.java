@@ -51,9 +51,9 @@ public class Outage {
 
     protected Date regainedServiceTime;
 
-    protected Integer lostServiceEventId;
+    protected Long lostServiceEventId;
 
-    protected Integer regainedServiceEventId;
+    protected Long regainedServiceEventId;
 
     protected Integer lostServiceNotificationId;
 
@@ -96,7 +96,7 @@ public class Outage {
      * @param suppressTime a {@link java.util.Date} object.
      * @param suppressedBy a {@link java.lang.String} object.
      */
-    protected Outage(int outageId, int nodeId, String nodeLabel, String ipAddress, String hostname, int serviceId, String serviceName, Date lostServiceTime, Date regainedServiceTime, Integer lostServiceEventId, Integer regainedServiceEventId, Integer lostServiceNotificationId, String lostServiceNotificationAcknowledgedBy, Date suppressTime, String suppressedBy) {
+    protected Outage(int outageId, int nodeId, String nodeLabel, String ipAddress, String hostname, int serviceId, String serviceName, Date lostServiceTime, Date regainedServiceTime, Long lostServiceEventId, Long regainedServiceEventId, Integer lostServiceNotificationId, String lostServiceNotificationAcknowledgedBy, Date suppressTime, String suppressedBy) {
         this(outageId, nodeId, nodeLabel, ipAddress, hostname, serviceId, serviceName, lostServiceTime, regainedServiceTime, lostServiceEventId, regainedServiceEventId, lostServiceNotificationId, lostServiceNotificationAcknowledgedBy, suppressTime, suppressedBy, null);
     }
 
@@ -120,7 +120,7 @@ public class Outage {
      * @param suppressedBy a {@link java.lang.String} object.
      * @param building a {@link java.lang.String} object.
      */
-    protected Outage(int outageId, int nodeId, String nodeLabel, String ipAddress, String hostname, int serviceId, String serviceName, Date lostServiceTime, Date regainedServiceTime, Integer lostServiceEventId, Integer regainedServiceEventId, Integer lostServiceNotificationId, String lostServiceNotificationAcknowledgedBy, Date suppressTime, String suppressedBy, String building) {
+    protected Outage(int outageId, int nodeId, String nodeLabel, String ipAddress, String hostname, int serviceId, String serviceName, Date lostServiceTime, Date regainedServiceTime, Long lostServiceEventId, Long regainedServiceEventId, Integer lostServiceNotificationId, String lostServiceNotificationAcknowledgedBy, Date suppressTime, String suppressedBy, String building) {
         this.outageId = outageId;
         this.nodeId = nodeId;
         this.nodeLabel = nodeLabel;
@@ -225,7 +225,7 @@ public class Outage {
      *
      * @return a {@link java.lang.Integer} object.
      */
-    public Integer getLostServiceEventId() {
+    public Long getLostServiceEventId() {
         return lostServiceEventId;
     }
 
@@ -234,7 +234,7 @@ public class Outage {
      *
      * @return a {@link java.lang.Integer} object.
      */
-    public Integer getRegainedServiceEventId() {
+    public Long getRegainedServiceEventId() {
         return regainedServiceEventId;
     }
 

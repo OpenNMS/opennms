@@ -248,14 +248,14 @@ public class ModelMappersTest {
     public void canMapDatabaseEvent() {
         OnmsEvent event = new OnmsEvent();
         event.setEventUei("test.uei");
-        event.setId(1);
+        event.setId(1L);
         String eventName = "test.name";
         String eventValue = "test.value";
         event.setEventParameters(Collections.singletonList(new OnmsEventParameter(null, eventName, eventValue, null)));
 
         DatabaseEvent databaseEvent = ModelMappers.toEvent(event);
         assertThat(databaseEvent.getUei(), equalTo(event.getEventUei()));
-        assertThat(databaseEvent.getId(), equalTo(event.getId()));
+        assertThat(Long.valueOf(databaseEvent.getId()), equalTo(Long.valueOf(event.getId())));
         assertThat(databaseEvent.getParameters(), hasItems(ImmutableEventParameter.newInstance(eventName, eventValue)));
         assertThat(databaseEvent.getParametersByName(eventName),
                 hasItems(ImmutableEventParameter.newInstance(eventName, eventValue)));

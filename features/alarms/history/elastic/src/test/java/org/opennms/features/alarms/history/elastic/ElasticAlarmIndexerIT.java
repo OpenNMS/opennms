@@ -104,7 +104,7 @@ public class ElasticAlarmIndexerIT {
         final long N = QueryProvider.MAX_BUCKETS * 2;
         final long now = PseudoClock.getInstance().getTime();
         final List<OnmsAlarm> alarms = LongStream.range(0, N)
-                .mapToObj(i -> createAlarm((int)i, now))
+                .mapToObj(i -> createAlarm((int)i, i, now))
                 .collect(Collectors.toList());
 
         // Trigger the snapshot
@@ -131,7 +131,7 @@ public class ElasticAlarmIndexerIT {
         elasticAlarmIndexer.postHandleAlarmSnapshot();
     }
 
-    private static OnmsAlarm createAlarm(int id, long firstEventTime) {
+    private static OnmsAlarm createAlarm(int id, long eventid, long firstEventTime) {
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setId(id);
         alarm.setReductionKey("rkey-" + id);
@@ -139,7 +139,7 @@ public class ElasticAlarmIndexerIT {
         alarm.setCounter(1);
 
         OnmsEvent lastEvent = new OnmsEvent();
-        lastEvent.setId(id);
+        lastEvent.setId(eventid);
         lastEvent.setEventTime(new Date(firstEventTime));
         alarm.setLastEvent(lastEvent);
         return alarm;

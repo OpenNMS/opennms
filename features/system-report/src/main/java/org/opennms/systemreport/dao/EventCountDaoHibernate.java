@@ -36,7 +36,7 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.SessionFactoryUtils;
 
-public class EventCountDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer> implements EventCountDao {
+public class EventCountDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Long> implements EventCountDao {
 
     public EventCountDaoHibernate() {
         super(OnmsEvent.class);

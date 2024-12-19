@@ -187,7 +187,7 @@ function void sendInitEvent( DroolsCorrelationEngine engine )
 	engine.sendEvent(bldr.getEvent());
 }
 
-function void sendImpactedServiceEvent( DroolsCorrelationEngine engine, Long nodeid, InetAddress ipAddr, String svcName, int eventId )
+function void sendImpactedServiceEvent( DroolsCorrelationEngine engine, Long nodeid, InetAddress ipAddr, String svcName, long eventId )
 {
 	EventBuilder bldr = new EventBuilder( "impactedService", "Drools" );
 	bldr.setNodeid( nodeid );
@@ -197,7 +197,7 @@ function void sendImpactedServiceEvent( DroolsCorrelationEngine engine, Long nod
 	engine.sendEvent(bldr.getEvent());
 }
 
-function void sendImpactedApplicationEvent( DroolsCorrelationEngine engine, String appName, int eventId )
+function void sendImpactedApplicationEvent( DroolsCorrelationEngine engine, String appName, long eventId )
 {
 	EventBuilder bldr = new EventBuilder( "impactedApplication", "Drools" );
 	bldr.addParam("APP", appName );
