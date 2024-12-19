@@ -405,4 +405,8 @@ public class HibernateEventWriter implements EventWriter {
     public void setTransactionManager(TransactionOperations transactionManager) {
         m_transactionManager = transactionManager;
     }
+
+    public EventDao getEventDao() {
+        return eventDao;
+    }
 }

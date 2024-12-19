@@ -52,7 +52,7 @@ public class DependencyRulesIT extends CorrelationRulesTestCase {
         DroolsCorrelationEngine engine = findEngineByName("dependencyRules");
 
         Event event = createNodeLostServiceEvent( 1, "10.1.1.1", "ICMP" );
-        event.setDbid(17);
+        event.setDbid(17L);
 	engine.correlate(event);
 
         // event + initialized

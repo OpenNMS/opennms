@@ -33,16 +33,16 @@ import org.opennms.web.filter.SQLType;
  * @version $Id: $
  * @since 1.8.1
  */
-public class EventIdListFilter extends InFilter<Integer> {
+public class EventIdListFilter extends InFilter<Long> {
     /** Constant <code>TYPE="eventIdList"</code> */
     public static final String TYPE = "eventIdList";
     
-    private static Integer[] box(int[] values) {
+    private static Long[] box(long[] values) {
         if (values == null) {
             return null;
         }
         
-        Integer[] boxed = new Integer[values.length];
+        Long[] boxed = new Long[values.length];
         for(int i = 0; i < values.length; i++) {
             boxed[i] = values[i];
         }
@@ -55,8 +55,8 @@ public class EventIdListFilter extends InFilter<Integer> {
      *
      * @param eventIds an array of int.
      */
-    public EventIdListFilter(int[] eventIds) {
-        super(TYPE, SQLType.INT, "EVENTID", "id", box(eventIds));
+    public EventIdListFilter(long[] eventIds) {
+        super(TYPE, SQLType.BIGINT, "EVENTID", "id", box(eventIds));
     }
     
     /**
@@ -64,8 +64,8 @@ public class EventIdListFilter extends InFilter<Integer> {
      *
      * @param eventIds a {@link java.util.Collection} object.
      */
-    public EventIdListFilter(Collection<Integer> eventIds) {
-        super(TYPE, SQLType.INT, "EVENTID", "id", eventIds.toArray(new Integer[0]));
+    public EventIdListFilter(Collection<Long> eventIds) {
+        super(TYPE, SQLType.BIGINT, "EVENTID", "id", eventIds.toArray(new Long[0]));
     }
 
     /**
@@ -81,5 +81,4 @@ public class EventIdListFilter extends InFilter<Integer> {
         buf.append(")");
         return buf.toString();
     }
-    
 }

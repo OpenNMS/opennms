@@ -153,7 +153,7 @@ public class ProtoBufMapperTest {
         Event event = new Event();
         event.setUuid(UUID.randomUUID().toString());
         event.setUei("newSuspectEvent");
-        event.setDbid(254);
+        event.setDbid(254L);
         event.setNodeid(1L);
         event.setSource("kafka-producer-test");
         event.setDistPoller("systemId1");

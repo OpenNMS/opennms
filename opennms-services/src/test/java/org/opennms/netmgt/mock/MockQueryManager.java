@@ -118,7 +118,7 @@ public class MockQueryManager implements QueryManager {
     }
 
     @Override
-    public void updateOpenOutageWithEventId(int outageId, int lostEventId) {
+    public void updateOpenOutageWithEventId(int outageId, long lostEventId) {
         // TODO Auto-generated method stub
     }
 
@@ -131,7 +131,7 @@ public class MockQueryManager implements QueryManager {
 
     @Override
     public void updateResolvedOutageWithEventId(int outageId,
-            int regainedEventId) {
+            long regainedEventId) {
         // TODO Auto-generated method stub
     }
 
@@ -147,20 +147,20 @@ public class MockQueryManager implements QueryManager {
 	}
 
 	@Override
-	public void closeOutagesForNode(Date closeDate, int eventId, int nodeId) {
+	public void closeOutagesForNode(Date closeDate, long eventId, int nodeId) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void closeOutagesForInterface(Date closeDate, int eventId,
+	public void closeOutagesForInterface(Date closeDate, long eventId,
 			int nodeId, String ipAddr) {
 		// TODO Auto-generated method stub
 		
 	}
 
 	@Override
-	public void closeOutagesForService(Date closeDate, int eventId, int nodeId,
+	public void closeOutagesForService(Date closeDate, long eventId, int nodeId,
 			String ipAddr, String serviceName) {
 		// TODO Auto-generated method stub
 		

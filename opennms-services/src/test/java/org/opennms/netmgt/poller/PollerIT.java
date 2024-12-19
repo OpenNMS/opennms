@@ -1775,11 +1775,11 @@ public class PollerIT implements TemporaryDatabaseAware<MockDatabase> {
             assertEquals(m_regainedSvcTime, rs.getTimestamp("ifRegainedService"));
         }
 
-        private Integer getRegainedEventId() {
+        private Long getRegainedEventId() {
             if (m_regainedSvcEvent == null) {
                 return null;
             }
-            return Integer.valueOf(m_regainedSvcEvent.getDbid());
+            return m_regainedSvcEvent.getDbid();
         }
     }
 

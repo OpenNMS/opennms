@@ -35,7 +35,7 @@ import org.opennms.netmgt.model.OnmsSeverity;
  */
 public class Event {
     /** Unique identifier for the event, cannot be null */
-    protected int id;
+    protected long id;
 
     /** Universal Event Identifer (UEI) for this event, cannot be null */
     protected String uei;
@@ -357,7 +357,7 @@ public class Event {
      *
      * @return a int.
      */
-    public int getId() {
+    public long getId() {
         return (id);
     }
 

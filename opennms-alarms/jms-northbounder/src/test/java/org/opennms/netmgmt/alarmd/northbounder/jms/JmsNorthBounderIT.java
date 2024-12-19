@@ -298,7 +298,7 @@ public class JmsNorthBounderIT {
         // TX via NBIs
         for (JmsNorthbounder nbi : nbis) {
             OnmsEvent event = new OnmsEvent();
-            event.setId(5);
+            event.setId(5L);
             event.setEventUei("uei.uei.org/uei");
             event.setEventTime(new Date());
             event.setEventHost("eventhost");
@@ -411,7 +411,7 @@ public class JmsNorthBounderIT {
         // TX via NBIs
         for (JmsNorthbounder nbi : nbis) {
             OnmsEvent event = new OnmsEvent();
-            event.setId(5);
+            event.setId(5L);
             event.setEventUei("uei.uei.org/uei");
             event.setEventTime(new Date());
             event.setEventHost("eventhost");
@@ -535,7 +535,7 @@ public class JmsNorthBounderIT {
         // TX via NBIs
         for (JmsNorthbounder nbi : nbis) {
             OnmsEvent event = new OnmsEvent();
-            event.setId(5);
+            event.setId(5L);
             event.setEventUei("uei.uei.org/uei");
             event.setEventTime(new Date());
             event.setEventHost("eventhost");
