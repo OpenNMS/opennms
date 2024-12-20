@@ -74,6 +74,7 @@ public class UsageStatisticsReportDTOTest {
             "\"coreFlowsPersisted\":0," +
             "\"coreNewtsSamplesInserted\":0," +
             "\"coreQueuedUpdatesCompleted\":0," +
+            "\"cpuUtilization\":null," +
             "\"databaseProductName\":null," +
             "\"databaseProductVersion\":null," +
             "\"dcbFailed\":0," +
@@ -90,6 +91,7 @@ public class UsageStatisticsReportDTOTest {
             "\"installedFeatures\":null," +
             "\"installedOIAPlugins\":null," +
             "\"ipInterfaces\":0," +
+            "\"memoryUtilization\":null," +
             "\"minions\":0," +
             "\"monitoredServices\":0," +
             "\"monitoringLocations\":0," +

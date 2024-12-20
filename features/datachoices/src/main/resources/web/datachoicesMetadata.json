@@ -37,6 +37,12 @@
             "datatype": "string"
         },
         {
+            "key": "memoryUtilization",
+            "name": "System Memory Utilization",
+            "description": "Current System Memory utilization percentage",
+            "datatype": "string"
+        },
+        {
             "key": "businessEdgeCount",
             "name": "Current business service count",
             "description": "Number of business services defined in the system",

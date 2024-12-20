@@ -340,16 +340,15 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         }
 
         Object systemCpuLoadObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_SYSTEM_CPU_LOAD);
-        if (availableProcessorsObj != null) {
+        if (systemCpuLoadObj != null) {
             double systemCpuLoad = (double)systemCpuLoadObj;
             if ( systemCpuLoad >= 0) {
                 systemCpuLoad = systemCpuLoad * 100;
                 usageStatisticsReport.setCpuUtilization(String.format("%.2f%%", systemCpuLoad));
             }
-
         } else {
             Object processCpuLoadObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_PROCESS_CPU_LOAD);
-            if (availableProcessorsObj != null) {
+            if (processCpuLoadObj != null) {
                 double processCpuLoad = (double)systemCpuLoadObj;
                 if ( processCpuLoad >= 0) {
                     processCpuLoad = processCpuLoad * 100;
@@ -358,6 +357,20 @@ public class UsageStatisticsReporter implements StateChangeHandler {
             }
         }
 
+        Object totalPhysicalMemorySizeObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE);
+        if (totalPhysicalMemorySizeObj != null) {
+            long totalMemory = (long)totalPhysicalMemorySizeObj;
+            if (totalMemory == 0) {
+                usageStatisticsReport.setMemoryUtilization("0%");
+            } else {
+                Object freePhysicalMemorySizeObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_FREE_PHYSICAL_MEMORY_SIZE);
+                if (freePhysicalMemorySizeObj != null) {
+                    long freeMemory = (long) freePhysicalMemorySizeObj;
+                    double utilizedMemory = ((double) (totalMemory - freeMemory) / totalMemory) * 100;
+                    usageStatisticsReport.setMemoryUtilization(String.format("%.2f%%", utilizedMemory));
+                }
+            }
+        }
     }
 
     private void setOpenNmsJmxAttributes(UsageStatisticsReportDTO usageStatisticsReport) {

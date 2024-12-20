@@ -63,6 +63,7 @@ public class UsageStatisticsReportDTO {
     private String m_installedFeatures;
     private String m_installedOIAPlugins;
     private String m_cpuUtilization;
+    private String m_memoryUtilization;
     private Integer m_availableProcessors;
     private Long m_freePhysicalMemorySize;
     private Long m_totalPhysicalMemorySize;
@@ -279,6 +280,14 @@ public class UsageStatisticsReportDTO {
 
     public String getCpuUtilization() {
         return m_cpuUtilization;
+    }
+
+    public void setMemoryUtilization(String memoryUtilization) {
+        this.m_memoryUtilization = memoryUtilization;
+    }
+
+    public String getMemoryUtilization() {
+        return m_memoryUtilization;
     }
 
     public void setInstalledOIAPlugins(String plugins) {
