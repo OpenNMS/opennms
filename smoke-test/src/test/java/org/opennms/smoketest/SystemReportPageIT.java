@@ -45,7 +45,6 @@ public class SystemReportPageIT extends UiPageTest  {
     @Test
     public void systemReport() throws IOException, InterruptedException {
 
-
         WebElement filenameInput = driver.findElement(By.id("filename"));
         filenameInput.sendKeys("abc@!321.txt");
         WebElement generateButton = driver.findElement(By.xpath("//input[@class='btn btn-secondary' and @value='Generate System Report']"));
