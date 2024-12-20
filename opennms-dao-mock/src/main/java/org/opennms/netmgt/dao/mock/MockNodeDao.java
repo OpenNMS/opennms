@@ -188,6 +188,11 @@ public class MockNodeDao extends AbstractMockDao<OnmsNode, Integer> implements N
     }
 
     @Override
+    public int countNodesFromPast24Hours() {
+        return 0;
+    }
+
+    @Override
     public OnmsNode getHierarchy(final Integer id) {
         return get(id);
     }

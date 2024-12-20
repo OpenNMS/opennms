@@ -35,6 +35,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 import java.util.Calendar;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Query;
@@ -559,16 +560,19 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     @Override
     public int countNodesFromPast24Hours() {
 
+        AtomicReference<Long> count = new AtomicReference<>(0L);
         Calendar calendar = Calendar.getInstance();
         calendar.add(Calendar.HOUR, -24);  // Subtract 24 hours
         java.util.Date twentyFourHoursAgo = calendar.getTime();
+        java.sql.Timestamp timestamp = new java.sql.Timestamp(twentyFourHoursAgo.getTime());
+
         getHibernateTemplate().executeWithNativeSession(session -> {
-        Query query = session.createSQLQuery("SELECT COUNT(*) FROM OnmsNode n WHERE n.m_createTime >= :twentyFourHoursAgo");
-        query.setParameter("twentyFourHoursAgo", twentyFourHoursAgo);
-        Long count = (Long) query.uniqueResult();
-        return count != null ? count.intValue() : 0;
+        Query query = session.createQuery("SELECT COUNT(n.id) FROM OnmsNode n WHERE n.createTime >= :twentyFourHoursAgo");
+        query.setParameter("twentyFourHoursAgo", timestamp);
+        count.set((Long) query.uniqueResult());
+        return count.get() != null ? count.get().intValue() : 0;
         });
-        return 0;
+        return count.get().intValue();
     }
 
     @Override

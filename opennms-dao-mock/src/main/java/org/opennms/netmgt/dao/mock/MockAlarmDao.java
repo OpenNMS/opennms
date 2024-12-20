@@ -82,6 +82,11 @@ public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements
     }
 
     @Override
+    public int countNodesFromPast24Hours() {
+        return 0;
+    }
+
+    @Override
     public OnmsAlarm findByReductionKey(final String reductionKey) {
         for (OnmsAlarm alarm : findAll()) {
             if (alarm.getReductionKey().equals(reductionKey)) {
