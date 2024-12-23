@@ -27,7 +27,6 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Objects;
 
 
@@ -65,11 +64,8 @@ public class SystemReportPageIT extends UiPageTest  {
         public Page open() {
             driver.get(url);
             System.out.println(url);
-            new WebDriverWait(driver, Duration.ofSeconds(10)).until(pageContainsText("Choose which plugins to enable:"));
+            new WebDriverWait(driver, 10).until(pageContainsText("Choose which plugins to enable:"));
             return this;
         }
-
-
-
     }
 }
