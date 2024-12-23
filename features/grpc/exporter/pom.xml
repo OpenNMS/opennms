@@ -45,6 +45,8 @@
                         <arg>-Amapstruct.suppressGeneratorTimestamp=true</arg>
                         <arg>-Amapstruct.suppressGeneratorVersionInfoComment=true</arg>
                         <arg>-Amapstruct.verbose=true</arg>
+                        <arg>-s</arg>
+                        <arg>${project.build.directory}/generated-sources-${maven.build.timestamp}</arg>
                     </compilerArgs>
                 </configuration>
                 <dependencies>
