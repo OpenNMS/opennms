@@ -16,7 +16,7 @@
     <jackson2Version>2.14.2</jackson2Version>
     <jersey.version>2.36</jersey.version>
     <karafVersion>4.3.2</karafVersion>
-    <selenium.version>3.141.59</selenium.version>
+    <selenium.version>4.6.0</selenium.version>
     <testcontainers.version>1.15.3</testcontainers.version>
     <jna.version>5.8.0</jna.version>
     <test.fork.count>0</test.fork.count>
