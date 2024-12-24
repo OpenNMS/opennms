@@ -28,7 +28,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.grpc.exporter.InventoryService;
 
-@Command(scope = "opennms-grpc-exporter", name = "inventory-snapshot", description = "Send an inventory snapshot")
+@Command(scope = "opennms", name = "grpc-exporter-send-inventory-snapshot", description = "Send an inventory snapshot")
 @Service
 public class InventorySnapshot implements Action {
 

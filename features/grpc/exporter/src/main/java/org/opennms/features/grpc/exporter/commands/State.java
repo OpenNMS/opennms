@@ -28,7 +28,7 @@ import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
 import org.opennms.features.grpc.exporter.StateService;
 
-@Command(scope = "opennms-grpc-exporter", name = "state", description = "Send all current service states")
+@Command(scope = "opennms", name = "grpc-exporter-send-state", description = "Send all current  monitor service states")
 @Service
 public class State implements Action {
 
