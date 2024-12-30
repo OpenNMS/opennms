@@ -104,7 +104,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private static final String JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE = "TotalPhysicalMemorySize";
     private static final String JMX_ATTR_AVAILABLE_PROCESSORS = "AvailableProcessors";
     private static final String JMX_ATTR_SYSTEM_CPU_LOAD = "SystemCpuLoad";
-    private static final String JMX_ATTR_PROCESS_CPU_LOAD = "ProcessCpuLoad";
     private static final String JMX_ATTR_TASKS_COMPLETED = "TasksCompleted";
     private static final String JMX_ATTR_COUNT = "Count";
     private static final String JMX_ATTR_UPDATES_COMPLETED = "UpdatesCompleted";
@@ -343,17 +342,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         if (systemCpuLoadObj != null) {
             double systemCpuLoad = (double)systemCpuLoadObj;
             if ( systemCpuLoad >= 0) {
-                systemCpuLoad = systemCpuLoad * 100;
+                systemCpuLoad *= 100;
                 usageStatisticsReport.setCpuUtilization(String.format("%.2f%%", systemCpuLoad));
-            }
-        } else {
-            Object processCpuLoadObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_PROCESS_CPU_LOAD);
-            if (processCpuLoadObj != null) {
-                double processCpuLoad = (double)systemCpuLoadObj;
-                if ( processCpuLoad >= 0) {
-                    processCpuLoad = processCpuLoad * 100;
-                    usageStatisticsReport.setCpuUtilization(String.format("%.2f%%", processCpuLoad));
-                }
             }
         }
 
