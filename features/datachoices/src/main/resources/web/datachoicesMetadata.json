@@ -46,7 +46,7 @@
             "key": "businessEdgeCount",
             "name": "Current business service count",
             "description": "Number of business services defined in the system",
-            "datatype": "string"
+            "datatype": "number"
         },
         {
             "key": "cloudInstanceType",
