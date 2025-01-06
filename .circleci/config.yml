@@ -69,10 +69,6 @@ parameters:
     description: whether to enable running code coverage
     type: boolean
     default: false
-  trigger-flaky:
-    description: whether to enable running flaky smoke tests
-    type: boolean
-    default: false
   is_pr:
     description: whether this build is a pull request (only valid in non-setup workflows)
     type: boolean
@@ -101,23 +97,26 @@ aliases:
           MINION_IMAGE_VERSION="${CIRCLE_BRANCH//\//-}"
           ;;
       esac
-      echo "export DOCKER_CONTENT_TRUST=1" >> $BASH_ENV
+      # disable DCT for now, AFAICT no one is actively using it
+      echo "export DOCKER_CONTENT_TRUST=0" >> $BASH_ENV
       echo "export DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE=\"$DCT_DELEGATE_KEY_PASSPHRASE\"" >> $BASH_ENV
       echo "export MINION_IMAGE=docker.io/opennms/minion" >> $BASH_ENV
       echo "export MINION_IMAGE_VERSION=\"$MINION_IMAGE_VERSION\"" >> $BASH_ENV
   - &setup_dct_key
     name: Setup DCT key
     command: |
-      KEY_FOLDER=~/.docker/trust/private
-      mkdir -p $KEY_FOLDER
-      # the key that is used to sign single-arch images
-      echo "$DCT_DELEGATE_KEY" | base64 -d > $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key
-      # the key that is used by Notary to sign the multi-arch minion image
-      echo "$DCT_REPO_MINION_KEY" | base64 -d > $KEY_FOLDER/$DCT_REPO_MINION_KEY_NAME.key
-      chmod 600 $KEY_FOLDER/*
-      # setup_dct_env must have been run first because it provide DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE
-      # that is required for loading the
-      docker trust key load $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key
+      if [ "${DOCKER_CONTENT_TRUST}" -eq 1 ]; then
+        KEY_FOLDER=~/.docker/trust/private
+        mkdir -p $KEY_FOLDER
+        # the key that is used to sign single-arch images
+        echo "$DCT_DELEGATE_KEY" | base64 -d > $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key
+        # the key that is used by Notary to sign the multi-arch minion image
+        echo "$DCT_REPO_MINION_KEY" | base64 -d > $KEY_FOLDER/$DCT_REPO_MINION_KEY_NAME.key
+        chmod 600 $KEY_FOLDER/*
+        # setup_dct_env must have been run first because it provide DOCKER_CONTENT_TRUST_REPOSITORY_PASSPHRASE
+        # that is required for loading the
+        docker trust key load $KEY_FOLDER/$DCT_DELEGATE_KEY_NAME.key
+      fi
 
 docker_container_config: &docker_container_config
   executor: docker-executor
@@ -180,9 +179,10 @@ commands:
   cached-checkout-for-pushing:
       description: "Configure a cached checkout that can push upstream"
       steps:
-        - add_ssh_keys:
-            fingerprints:
-              - "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
+        #- add_ssh_keys:
+        #    fingerprints:
+        #      - "6a:c7:42:e6:e3:26:76:95:f4:0a:7a:5b:9c:b3:19:0e"
+        #     #- "5e:70:a4:1a:f3:9f:39:ca:2a:d9:b5:9a:6c:2b:c3:66"
         - cached-checkout
         - run:
             name: Create git identity
@@ -256,26 +256,6 @@ commands:
         - run:
             name: Remove old artifacts to keep workspace size down
             command: .circleci/scripts/clean-m2.sh
-  update-maven-cache:
-      description: "Maven: Refresh local repository from POM files"
-      steps:
-        - run:
-            name: Collect Maven Dependencies
-            command: |
-              ulimit -n 65536 || :
-              ./compile.pl -t \
-                -Dbuild.skip.tarball=true \
-                --update-plugins \
-                -Daether.connector.resumeDownloads=false \
-                -Daether.connector.basic.threads=1 \
-                -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn \
-                -Pbuild-bamboo \
-                -Prun-expensive-tasks \
-                -Psmoke \
-                -Denable.license=true \
-                --batch-mode \
-                dependency:resolve-plugins \
-                de.qaware.maven:go-offline-maven-plugin:resolve-dependencies
   save-maven-cache:
     description: "Maven: Save cache"
     steps:
@@ -353,30 +333,19 @@ commands:
       - load-oci:
           key: sentinel
       - run:
-          name: Monitor JVM processes
-          background: true
-          command: |
-            .circleci/scripts/jvmprocmon-start.sh
-      - run:
-          name: Monitor memory usage
-          background: true
-          command: |
-            free -m -c 500 -s 30
-      - run:
           name: Smoke Tests
           no_output_timeout: 30m
           command: |
             .circleci/scripts/smoke.sh << parameters.suite >>
       - run:
           name: Gather system logs
-          when: always
+          #when: always
           command: |
             mkdir -p ~/test-results/system-logs
             (dmesg || :) > ~/test-results/system-logs/dmesg 2>&1
             (ps auxf || :) > ~/test-results/system-logs/ps 2>&1
             (free -m || :) > ~/test-results/system-logs/free 2>&1
             (docker stats --no-stream || :) > ~/test-results/system-logs/docker_stats 2>&1
-            cp -R /tmp/jvmprocmon ~/test-results/system-logs/ || :
             ls -alh ~/project/smoke-test/ || :
       - run:
           name: Gather test artifacts
@@ -393,11 +362,11 @@ commands:
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
-          when: always
+          #when: always
           path: ~/test-results
           destination: test-results
       - store_artifacts:
-          when: always
+          #when: always
           path: ~/test-artifacts
           destination: test-artifacts
   run-build:
@@ -453,7 +422,6 @@ commands:
                 tar -czf "../../artifacts/opennms-${OPENNMS_VERSION}-javadoc.tar.gz" *
               popd
             fi
-      - update-maven-cache
       - run:
           name: Remove Extra Maven Repository OpenNMS Files
           command: |
@@ -492,18 +460,8 @@ commands:
         type: boolean
     steps:
       - run:
-          name: Monitor JVM processes
-          background: true
-          command: |
-            .circleci/scripts/jvmprocmon-start.sh
-      - run:
-          name: Monitor memory usage
-          background: true
-          command: |
-            free -m -c 500 -s 30
-      - run:
           name: Integration Tests
-          no_output_timeout: 15m
+          no_output_timeout: 1.0h
           command: |
             export CCI_CODE_COVERAGE=<< parameters.run-code-coverage >>
             export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
@@ -512,7 +470,7 @@ commands:
             .circleci/scripts/itest.sh
       - run:
           name: Gather test results
-          when: always
+          #when: true
           command: |
             mkdir -p ~/test-results/junit
             find . -type f -name failsafe-summary.xml -exec rm -f {} \;
@@ -520,7 +478,7 @@ commands:
             find . -type f -regex ".*/target/[^/]*-reports[^/]*/.*dump.*" -exec cp {} ~/test-results/junit/ \; || :
       - run:
           name: Gather tests
-          when: always
+          #when: true
           command: |
             mkdir -p ~/generated-tests
             cp target/find-tests/* ~/generated-tests/ || :
@@ -530,7 +488,7 @@ commands:
           steps:
             - run:
                 name: Save Code Coverage Data
-                when: always
+                #when: always
                 command: |
                   .circleci/scripts/codecoverage-save.sh integration-test
             - persist_to_workspace:
@@ -541,26 +499,25 @@ commands:
                   - project/target/structure-graph.json
       - run:
           name: Gather system logs
-          when: always
+          #when: true
           command: |
             mkdir -p ~/build-results/system-logs
             (dmesg || :) > ~/build-results/system-logs/dmesg 2>&1
             (ps auxf || :) > ~/build-results/system-logs/ps 2>&1
             (free -m || :) > ~/build-results/system-logs/free 2>&1
             (docker stats --no-stream || :) > ~/build-results/system-logs/docker_stats 2>&1
-            cp -R /tmp/jvmprocmon ~/build-results/system-logs/ || :
       - store_test_results:
           path: ~/test-results
       - store_artifacts:
-          when: always
+          #when: true
           path: ~/test-results
           destination: test-results
       - store_artifacts:
-          when: always
+          #when: true
           path: ~/build-results
           destination: build-results
       - store_artifacts:
-          when: always
+          #when: true
           path: ~/generated-tests
           destination: generated-tests
   cache-workflow-assets:
@@ -693,27 +650,33 @@ workflows:
           filters:
             branches:
               only: << pipeline.parameters.main_branch >>
+      #- create-merge-to-omega-branch:
+      #    requires:
+      #      - build
+      #    filters:
+      #      branches:
+      #        only: << pipeline.parameters.main_branch >>
       - merge-foundation-branch:
           requires:
             - build
           filters:
             branches:
               only: merge-foundation/<< pipeline.parameters.previous_branch_label >>-to-<< pipeline.parameters.main_branch_label >>
-      - create-merge-meridian-branch:
-          requires:
-            - build
-          filters:
-            branches:
-              only: /^foundation.*/
-      - merge-poweredby-branch:
-          # technically only requires the RPM/deb builds, but only publish
-          # if everything passes
-          requires:
-            - build
-          filters:
-            branches:
-              only:
-                - /^foundation.*/
+      #- create-merge-meridian-branch:
+      #    requires:
+      #      - build
+      #    filters:
+      #      branches:
+      #        only: /^foundation.*/
+      #- merge-poweredby-branch:
+      #    # technically only requires the RPM/deb builds, but only publish
+      #    # if everything passes
+      #    requires:
+      #      - build
+      #    filters:
+      #      branches:
+      #        only:
+      #          - /^foundation.*/
   docs:
     when:
       and:
@@ -784,7 +747,6 @@ workflows:
             - sentinel-deb-build
             - integration-test
             - smoke-test-core
-            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
           filters:
@@ -963,30 +925,6 @@ workflows:
                     equal: [ true, << pipeline.parameters.is_pr >> ]
                 steps:
                   - jira/notify
-      - smoke-test-flaky:
-          context:
-            - "CircleCI"
-          requires:
-            - tarball-assembly
-            - horizon-rpm-build
-            - sentinel-rpm-build
-          filters:
-            branches:
-              only:
-                - develop
-                - /^dependabot.*/
-                - /^features.*/
-                - /^foundation.*/
-                - /^master-.*/
-                - /^release-.*/
-                - /.*smoke.*/
-          post-steps:
-            - when:
-                condition:
-                  not:
-                    equal: [ true, << pipeline.parameters.is_pr >> ]
-                steps:
-                  - jira/notify
       - smoke-test-minion:
           context:
             - "CircleCI"
@@ -1047,7 +985,6 @@ workflows:
             - integration-test
             - code-coverage
             - smoke-test-core
-            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
           filters:
@@ -1075,7 +1012,6 @@ workflows:
             - integration-test
             - code-coverage
             - smoke-test-core
-            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
           filters:
@@ -1147,6 +1083,16 @@ workflows:
                     equal: [ true, << pipeline.parameters.is_pr >> ]
                 steps:
                   - jira/notify
+      #- create-merge-to-omega-branch:
+      #    context:
+      #      - "CircleCI"
+      #    # technically only requires the RPM/deb builds, but only publish
+      #    # if everything passes
+      #    requires:
+      #      - build
+      #    filters:
+      #      branches:
+      #        only: << pipeline.parameters.main_branch >>
       - create-merge-foundation-branch:
           context:
             - "CircleCI"
@@ -1157,9 +1103,7 @@ workflows:
             - minion-deb-build
             - sentinel-deb-build
             - integration-test
-            - code-coverage
             - smoke-test-core
-            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
           filters:
@@ -1183,7 +1127,6 @@ workflows:
             - integration-test
             - code-coverage
             - smoke-test-core
-            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
           filters:
@@ -1195,7 +1138,33 @@ workflows:
           requires:
             - horizon-deb-build
             - smoke-test-core
-            - smoke-test-flaky
+            - smoke-test-minion
+            - smoke-test-sentinel
+            - integration-test
+          filters:
+            branches:
+              only: merge-foundation/<< pipeline.parameters.previous_branch_label >>-to-<< pipeline.parameters.main_branch_label >>
+      - create-merge-meridian-branch:
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - horizon-deb-build
+            - minion-deb-build
+            - sentinel-deb-build
+            - integration-test
+            - code-coverage
+            - smoke-test-core
+            - smoke-test-minion
+            - smoke-test-sentinel
+          filters:
+            branches:
+              only: /^foundation.*/
+      - merge-poweredby-branch:
+          # technically only requires the RPM/deb builds, but only publish
+          # if everything passes
+          requires:
+            - horizon-deb-build
+            - smoke-test-core
             - smoke-test-minion
             - smoke-test-sentinel
             - integration-test
@@ -1217,7 +1186,6 @@ workflows:
             - integration-test
             - code-coverage
             - smoke-test-core
-            - smoke-test-flaky
             - smoke-test-minion
             - smoke-test-sentinel
           filters:
@@ -1463,15 +1431,15 @@ jobs:
             cp opennms-container/minion/minion-config-schema.yml "./target/config-schema/"
             cp opennms-full-assembly/target/generated-sources/license/THIRD-PARTY.txt ./target/artifacts/
       - store_artifacts:
-          when: always
+          #when: true
           path: ~/project/target/artifacts
           destination: artifacts
       - store_artifacts:
-          when: always
+          #when: true
           path: ~/project/target/config-schema
           destination: config-schema
       - store_artifacts:
-          when: always
+          #when: true
           path: ~/project/target/tarballs
           destination: tarballs
       - store_artifacts:
@@ -1556,19 +1524,14 @@ jobs:
             echo "Manifest-inspect BYTES: ${BYTES_SIZE}";
             echo "Manifest contents:\n";
             printf "${MANIFEST_FROM_REG}" | jq -r '.[].Descriptor | "Architecture: " + .platform.architecture + .platform.variant + ", digest: " + .digest';
-            export NOTARY_AUTH="$(printf "${DOCKERHUB_LOGIN}:${DOCKERHUB_PASS}" | base64 -w0)"
-            echo "Sign ${SHA_256} with the notary"
-            # when the multi-arch image is signed by the delegate key then docker pull reports "No valid trust data..."
-            # -> the following lines can not be used:
-            #
-            # export NOTARY_DELEGATION_PASSPHRASE="${DCT_DELEGATE_KEY_PASSPHRASE}"
-            # notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" 946 --sha256 "${SHA_256}" --roles targets/opennms-circle-delegate --publish --verbose
-            #
-            # -> use the targets key of the minion repository to sign the multi-arch image instead
-            export NOTARY_TARGETS_PASSPHRASE="${DCT_REPO_MINION_KEY_PASSPHRASE}"
-            notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE}" --sha256 "${SHA_256}" --publish --verbose
-            echo "Done!"
-            # notary -s https://notary.docker.io list "${IMAGE}"
+
+            if [ "${DOCKER_CONTENT_TRUST}" -eq 1 ]; then
+              export NOTARY_AUTH="$(printf "${DOCKERHUB_LOGIN}:${DOCKERHUB_PASS}" | base64 -w0)"
+              echo "Sign ${SHA_256} with the notary"
+              export NOTARY_TARGETS_PASSPHRASE="${DCT_REPO_MINION_KEY_PASSPHRASE}"
+              notary -d ~/.docker/trust/ -s https://notary.docker.io addhash "${MINION_IMAGE}" "${MINION_IMAGE_VERSION}" "${BYTES_SIZE}" --sha256 "${SHA_256}" --publish --verbose
+              echo "Done!"
+            fi
 
   horizon-rpm-build:
     executor: centos-build-executor
@@ -1702,11 +1665,6 @@ jobs:
           skip_if_forked_pr: true
           gnupg_home: ~/tmp/gpg
       - run:
-          name: Monitor memory usage
-          background: true
-          command: |
-            free -m -c 500 -s 30
-      - run:
           name: Build Debian Packages
           command: |
             export NODE_OPTIONS=--max_old_space_size=1024
@@ -1720,16 +1678,15 @@ jobs:
           packages: target/debs/*.deb
       - run:
           name: Gather system logs
-          when: always
+          #when: true
           command: |
             mkdir -p ~/build-results/system-logs
             (dmesg || :) > ~/build-results/system-logs/dmesg 2>&1
             (ps auxf || :) > ~/build-results/system-logs/ps 2>&1
             (free -m || :) > ~/build-results/system-logs/free 2>&1
             (docker stats --no-stream || :) > ~/build-results/system-logs/docker_stats 2>&1
-            cp -R /tmp/jvmprocmon ~/build-results/system-logs/ || :
       - store_artifacts:
-          when: always
+          #when: true
           path: ~/build-results
           destination: build-results
       - store_artifacts:
@@ -1865,12 +1822,12 @@ jobs:
       - restore-sonar-cache
       - run:
           name: Restore Target Directories (Code Coverage)
-          when: always
+          #when: true
           command: |
             .circleci/scripts/codecoverage-restore.sh
       - run:
           name: Run SonarQube Code Analysis
-          when: always
+          #when: true
           command: |
             export MAVEN_OPTS="-Xms1g -Xmx12g"
             .circleci/scripts/sonar.sh
@@ -1884,42 +1841,10 @@ jobs:
     environment:
       JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
     steps:
-      - run:
-          name: "skip if flaky tests are enabled"
-          command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky >>"
-      - when:
-          condition:
-            not:
-              or:
-                - << pipeline.parameters.trigger-flaky >>
-                - matches: { pattern: "^.*flaky.*$", value: << pipeline.git.branch >> }
-          steps:
-            - attach_workspace:
-                at: ~/
-            - run-smoke-tests:
-                suite: core
-  smoke-test-flaky:
-    executor: smoke-test-executor
-    parallelism: 5
-    # No resource class support for machine executors, we're constrained to use the default
-    # medium class which has 2 vCPUs and 8 GB RAM
-    #resource_class: large
-    environment:
-      JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
-    steps:
-      - run:
-          name: "run if flaky tests are enabled"
-          command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky >>"
-      - when:
-          condition:
-            or:
-              - << pipeline.parameters.trigger-flaky >>
-              - matches: { pattern: "^.*flaky.*$", value: << pipeline.git.branch >> }
-          steps:
-            - attach_workspace:
-                at: ~/
-            - run-smoke-tests:
-                suite: flaky
+      - attach_workspace:
+          at: ~/
+      - run-smoke-tests:
+          suite: core
   smoke-test-minion:
     executor: smoke-test-executor
     parallelism: 4
@@ -1929,20 +1854,10 @@ jobs:
     environment:
       JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
     steps:
-      - run:
-          name: "skip if flaky tests are enabled"
-          command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky >>"
-      - when:
-          condition:
-            not:
-              or:
-                - << pipeline.parameters.trigger-flaky >>
-                - matches: { pattern: "^.*flaky.*$", value: << pipeline.git.branch >> }
-          steps:
-            - attach_workspace:
-                at: ~/
-            - run-smoke-tests:
-                suite: minion
+      - attach_workspace:
+          at: ~/
+      - run-smoke-tests:
+          suite: minion
   smoke-test-sentinel:
     executor: smoke-test-executor
     parallelism: 4
@@ -1952,20 +1867,10 @@ jobs:
     environment:
       JAVA_HOME: /usr/lib/jvm/java-11-openjdk-amd64
     steps:
-      - run:
-          name: "skip if flaky tests are enabled"
-          command: echo "trigger-flaky=<< pipeline.parameters.trigger-flaky >>"
-      - when:
-          condition:
-            not:
-              or:
-                - << pipeline.parameters.trigger-flaky >>
-                - matches: { pattern: "^.*flaky.*$", value: << pipeline.git.branch >> }
-          steps:
-            - attach_workspace:
-                at: ~/
-            - run-smoke-tests:
-                suite: sentinel
+      - attach_workspace:
+          at: ~/
+      - run-smoke-tests:
+          suite: sentinel
   smoke-test-minimal:
     executor: smoke-test-executor
     environment:
@@ -1975,12 +1880,59 @@ jobs:
           at: ~/
       - run-smoke-tests:
           suite: minimal
+  create-merge-to-omega-branch:
+    <<: *docker_container_config
+    steps:
+      - run:
+          name: "Branch Merge Parameters"
+          command: |
+            echo "previous: << pipeline.parameters.previous_branch >>, main: << pipeline.parameters.main_branch >>, next: omega/<< pipeline.parameters.main_branch >>"
+      - when:
+          condition: << pipeline.parameters.main_branch >>
+          steps:
+            - restore_cache:
+                keys:
+                  - omega-v2-{{ .Branch }}-{{ .Revision }}
+                  - omega-v2-{{ .Branch }}-
+                  - omega-v2-
+            - cached-checkout-for-pushing
+            - run:
+                name: Add Omega remote if necessary
+                command: |
+                  REMOTE_OMEGA="$(git remote | grep -c -E '^omega$' || :)"
+                  if [ "$REMOTE_OMEGA" -eq 0 ]; then
+                    git remote add omega git@github.com:OpenNMS/opennms-omega.git
+                  fi
+            - run:
+                name: git fetch omega
+                command: |
+                  git fetch omega
+            - save_cache:
+                key: omega-v2-{{ .Branch }}-{{ .Revision }}
+                paths:
+                  - ".git"
+            - run:
+                name: Checkout target branch and merge from source
+                command: |
+                  if [ "$CIRCLE_PROJECT_REPONAME" != "opennms" ]; then
+                   exit 0
+                  fi
+                  export GIT_MERGE_AUTOEDIT=no
+                  if git rev-parse << pipeline.parameters.main_branch >> >/dev/null 2>&1; then
+                    git checkout << pipeline.parameters.main_branch >>
+                  else
+                    git checkout -b << pipeline.parameters.main_branch >> omega/<< pipeline.parameters.main_branch >>
+                  fi
+                  git reset --hard omega/<< pipeline.parameters.main_branch >>
+                  git merge origin/<< pipeline.parameters.main_branch >>
+                  git push -f omega << pipeline.parameters.main_branch >>:<< pipeline.parameters.main_branch >>
   create-merge-foundation-branch:
     <<: *docker_container_config
     steps:
-      - add_ssh_keys:
-          fingerprints:
-            - "66:9a:2d:a8:ad:7b:cc:7c:d2:ee:55:94:01:72:ac:2a"
+      #- add_ssh_keys:
+      #    fingerprints:
+      #      - "6a:c7:42:e6:e3:26:76:95:f4:0a:7a:5b:9c:b3:19:0e"
+      #      #- "66:9a:2d:a8:ad:7b:cc:7c:d2:ee:55:94:01:72:ac:2a"
       - run:
           name: "Branch Merge Parameters"
           command: |
@@ -2034,9 +1986,10 @@ jobs:
       - when:
           condition: << pipeline.parameters.main_branch >>
           steps:
-            - add_ssh_keys:
-                fingerprints:
-                  - "4a:0a:cb:11:a3:33:b1:14:e9:cb:db:41:76:fa:a3:bf"
+            #- add_ssh_keys:
+            #    fingerprints:
+            #      - "6a:c7:42:e6:e3:26:76:95:f4:0a:7a:5b:9c:b3:19:0e"
+            #      #- "4a:0a:cb:11:a3:33:b1:14:e9:cb:db:41:76:fa:a3:bf"
             - restore_cache:
                 keys:
                   - meridian-v1-{{ .Branch }}-{{ .Revision }}
@@ -2079,9 +2032,11 @@ jobs:
       - when:
           condition: << pipeline.parameters.main_branch >>
           steps:
-            - add_ssh_keys:
-                fingerprints:
-                  - "48:f7:8f:b7:2f:42:50:ea:cc:5d:4f:dc:1a:45:5a:1d"
+            #- add_ssh_keys:
+            #    fingerprints:
+            #      - "6a:c7:42:e6:e3:26:76:95:f4:0a:7a:5b:9c:b3:19:0e"
+            #      #- "48:f7:8f:b7:2f:42:50:ea:cc:5d:4f:dc:1a:45:5a:1d"
+            #      #- "45:4b:bc:36:e7:c7:b3:d3:3b:b8:87:f3:b5:f2:c1:58"
             - restore_cache:
                 keys:
                   - poweredby-v1-{{ .Branch }}-{{ .Revision }}

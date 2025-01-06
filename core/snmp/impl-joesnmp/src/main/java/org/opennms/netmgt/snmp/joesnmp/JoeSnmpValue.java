@@ -293,7 +293,7 @@ class JoeSnmpValue extends AbstractSnmpValue {
             return true;
         
         if (getType() == SnmpValue.SNMP_OCTET_STRING) {
-            return allBytesPlainAscii(getBytes());
+            return allBytesDisplayable(getBytes());
         }
         
         return false;

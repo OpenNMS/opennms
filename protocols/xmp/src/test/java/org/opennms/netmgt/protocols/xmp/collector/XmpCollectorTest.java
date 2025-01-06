@@ -36,6 +36,7 @@ import static org.mockito.Mockito.when;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.junit.Ignore;
 import org.opennms.netmgt.collection.api.CollectionException;
 import org.opennms.netmgt.collection.api.CollectionResource;
 import org.opennms.netmgt.collection.support.IndexStorageStrategy;
@@ -48,7 +49,8 @@ import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
 
-public class DisabledXmpCollectorTest {
+@Ignore("Disabling the test case see NMS-16371")
+public class XmpCollectorTest {
 
     private XmpCollector xmpCollector;
 

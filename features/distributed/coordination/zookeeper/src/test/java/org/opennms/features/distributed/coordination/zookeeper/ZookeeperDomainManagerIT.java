@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2018-2024 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
+ * Copyright (C) 2018-2025 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2025 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -30,7 +30,9 @@ package org.opennms.features.distributed.coordination.zookeeper;
 
 import static com.jayway.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.fail;
+
 
 import java.net.ServerSocket;
 import java.util.ArrayList;
@@ -82,7 +84,14 @@ public class ZookeeperDomainManagerIT {
 
     @After
     public void cleanup() throws Exception {
+        if (manager != null) {
+            manager.deregister(id);
+        }
         testServer.stop();
+        testServer.close();
+        if (manager != null) {
+            assertFalse(manager.isAnythingRegistered());
+        }
     }
 
     /**
@@ -176,6 +185,7 @@ public class ZookeeperDomainManagerIT {
             standbyFutures.get(futureIndex.get()).get(10, TimeUnit.SECONDS);
             futureIndex.incrementAndGet();
         }
+        assertEquals(numFlaps, futureIndex.get());
     }
     
     private void register() {

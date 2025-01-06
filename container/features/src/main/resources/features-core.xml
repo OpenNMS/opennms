@@ -22,21 +22,31 @@
         <bundle dependency="true">mvn:com.datastax.cassandra/cassandra-driver-core/${cassandraVersion}</bundle>
     </feature>
 
-    <feature name="guava" version="${guavaOsgiVersion}" description="Google :: Guava">
+    <feature name="guava-dependencies" version="${project.version}" description="Google :: Guava Common Dependencies">
         <feature prerequisite="true">wrap</feature>
-        <bundle start-level="30" dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
-        <bundle start-level="30" dependency="true">wrap:mvn:org.codehaus.mojo/animal-sniffer-annotations/1.14</bundle>
-        <bundle start-level="30" dependency="true">wrap:mvn:com.google.errorprone/error_prone_annotations/2.10.0</bundle>
-        <bundle start-level="30" dependency="true">wrap:mvn:org.checkerframework/checker-qual/2.0.0</bundle>
-        <bundle start-level="30" dependency="true">wrap:mvn:com.google.j2objc/j2objc-annotations/1.1</bundle>
+        <bundle start-level="30" dependency="true">wrap:mvn:org.codehaus.mojo/animal-sniffer-annotations/1.14$Bundle-SymbolicName=org.codehaus.mojo.animal-sniffer-annotations&amp;Bundle-Version=1.14</bundle>
+        <bundle start-level="30" dependency="true">wrap:mvn:com.google.errorprone/error_prone_annotations/2.10.0$Bundle-SymbolicName=com.google.errorprone.error-prone-annotations&amp;Bundle-Version=2.10.0</bundle>
+        <bundle start-level="30" dependency="true">wrap:mvn:com.google.guava/failureaccess/1.0.1$Bundle-SymbolicName=com.google.guava.failureaccess&amp;Bundle-Version=1.0.1</bundle>
+        <bundle start-level="30" dependency="true">wrap:mvn:org.checkerframework/checker-qual/2.0.0$Bundle-SymbolicName=org.checkerframework.checker-qual&amp;Bundle-Version=2.0.0</bundle>
+        <bundle start-level="30" dependency="true">wrap:mvn:com.google.j2objc/j2objc-annotations/1.1$Bundle-SymbolicName=com.google.j2objc.j2objc-annotations&amp;Bundle-Version=1.1</bundle>
     </feature>
- 
+
+    <feature name="guava" version="${guavaOsgiVersion}" description="Google :: Guava">
+        <feature prerequisite="true">guava-dependencies</feature>
+        <bundle start-level="30" dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
+    </feature>
+
     <feature name="guava17" version="17.0" description="Google :: Guava">
         <bundle>mvn:com.google.guava/guava/17.0</bundle>
     </feature>
  
     <feature name="guava21" version="21.0" description="Google :: Guava">
         <bundle>mvn:com.google.guava/guava/21.0</bundle>
+    </feature>
+
+    <feature name="guava32" version="32.1" description="Google :: Guava">
+        <feature prerequisite="true">guava-dependencies</feature>
+        <bundle>mvn:com.google.guava/guava/32.1.3-jre</bundle>
     </feature>
 
     <feature name="jackson-core" version="${jackson2Version}" description="Jackson 2 :: Base">
@@ -143,12 +153,11 @@
     </feature>
 
     <feature name="zookeeper-dependencies" version="${zookeeperVersion}" description="ZooKeeper Dependencies">
-        <feature prerequisite="true">wrap</feature>
+        <!-- needed by curator-recipes -->
+        <feature prerequisite="true">guava32</feature>
         <feature version="[${jackson2Version},3)">jackson-core</feature>
         <bundle>wrap:mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}$Bundle-SymbolicName=org.apache.zookeeper.zookeeper&amp;Bundle-Version=${zookeeperVersion}&amp;Export-Package=org.apache.zookeeper*;version="${zookeeperVersion}"</bundle>
         <bundle>wrap:mvn:org.apache.zookeeper/zookeeper-jute/${zookeeperVersion}$Bundle-SymbolicName=org.apache.zookeeper.zookeeper.jute&amp;Bundle-Version=${zookeeperVersion}&amp;Export-Package=org.apache.*;version="${zookeeperVersion}"</bundle>
-        <!-- needed by curator-recipes -->
-        <bundle>mvn:com.google.guava/guava/16.0.1</bundle>
         <bundle>mvn:org.apache.curator/curator-client/${curatorVersion}</bundle>
         <bundle>mvn:org.apache.curator/curator-framework/${curatorVersion}</bundle>
         <bundle>mvn:org.apache.curator/curator-recipes/${curatorVersion}</bundle>

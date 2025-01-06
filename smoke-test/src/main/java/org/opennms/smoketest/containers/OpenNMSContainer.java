@@ -150,7 +150,7 @@ public class OpenNMSContainer extends GenericContainer implements KarafContainer
                 .mapToInt(Map.Entry::getValue)
                 .toArray();
 
-        String javaOpts = "-Xms2048m -Xmx2048m -Djava.security.egd=file:/dev/./urandom -javaagent:/opt/opennms/agent/jacoco-agent.jar=output=none,jmx=true,excludes=org.drools.*";
+        String javaOpts = "-Xms4g -Xmx4g -Djava.security.egd=file:/dev/./urandom -javaagent:/opt/opennms/agent/jacoco-agent.jar=output=none,jmx=true,excludes=org.drools.*";
         if (profile.isJvmDebuggingEnabled()) {
             javaOpts += String.format("-agentlib:jdwp=transport=dt_socket,server=y,address=*:%d,suspend=n", OPENNMS_DEBUG_PORT);
         }
