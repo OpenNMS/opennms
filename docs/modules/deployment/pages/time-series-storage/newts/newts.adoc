@@ -9,13 +9,13 @@ This section describes how to configure your {page-component-title} instance to 
 
 Follow these steps to set up Newts on your {page-component-title} instance:
 
-. Create a configuration file with the time series storage settings
+.Create a configuration file with the time series storage settings
 [source, console]
 ----
 sudo vi etc/opennms.properties.d/timeseries.properties
 ----
 
-. Configure Newts as the time series strategy
+.Configure Newts as the time series strategy
 [source, properties]
 ----
 # Configure storage strategy
@@ -38,7 +38,7 @@ org.opennms.newts.config.driver_settings_file=/opt/opennms/etc/cassandra-driver.
 <4> Shard metrics every 7 days.
 <5> The path to your driver configuration file
 
-. Create a configuration file with the time series storage settings
+.Create a configuration file with the time series storage settings
 [source, console]
 ----
 sudo vi etc/cassandra-driver.conf
@@ -77,12 +77,12 @@ org.opennms.newts.query.heartbeat=450000 <2>
 <2> The communication interval for the Newts service, in milliseconds.
 Should be set to 1.5 times the `maximum` value of the collection interval configured for any collectable or pollable service, in milliseconds (in this case, 450 seconds).
 
-. Initialize the Newts schema in Cassandra:
+.Initialize the Newts schema in Cassandra:
 +
 [source, console]
 bin/newts init
 
-. Connect to Cassandra using the CQL shell:
+.Connect to Cassandra using the CQL shell:
 +
 [source, console]
 ----
@@ -94,7 +94,7 @@ cd ${CASSANDRA_HOME}/bin
 
 After you have set the time series database to Newts and configured its settings, you must verify your setup and restart {page-component-title}:
 
-. Verify keyspace initialization:
+.Verify keyspace initialization:
 +
 [source, console]
 ----
@@ -103,7 +103,7 @@ describe table terms;
 describe table samples;
 ----
 
-. Restart {page-component-title} to apply your changes and verify your configuration:
+.Restart {page-component-title} to apply your changes and verify your configuration:
 +
 [source, console]
 systemctl restart opennms
