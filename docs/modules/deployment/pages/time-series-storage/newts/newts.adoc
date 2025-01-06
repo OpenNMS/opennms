@@ -15,26 +15,49 @@ sudo vi etc/opennms.properties.d/timeseries.properties
 org.opennms.rrd.storeByForeignSource=true<1>
 org.opennms.timeseries.strategy=newts<2>
 
-# Configure Newts time series storage connection
-org.opennms.newts.config.hostname=cassandra-ip1,cassandra-ip2<3>
-org.opennms.newts.config.keyspace=newts<4>
-org.opennms.newts.config.port=9042<5>
-
 # One year in seconds
-org.opennms.newts.config.ttl=31540000<6>
+org.opennms.newts.config.ttl=31540000<3>
 
 # Seven days in seconds
-org.opennms.newts.config.resource_shard=604800<7>
+org.opennms.newts.config.resource_shard=604800<4>
+
+# Configure Newts time series storage connection
+org.opennms.newts.config.driver_settings_file=/opt/opennms/etc/cassandra-driver.conf<5>
 ----
 
 <1> Associate time series data by the foreign ID instead of the database-generated Node-ID.
 <2> Set time series strategy to use `newts`.
-<3> Host or IP addresses of the Cassandra cluster nodes.
-Can be a comma-separated list.
-<4> Name of the keyspace which is initialized and used.
-<5> Port to connect to Cassandra.
-<6> Retention rate for the time series data.
-<7> Shard metrics every 7 days.
+<3> Retention rate for the time series data.
+<4> Shard metrics every 7 days.
+<5> The path to your driver configuration file
+
+.Create a configuration file with the time series storage settings
+[source, console]
+----
+sudo vi etc/cassandra-driver.conf
+----
+
+.Configure the Cassandra driver settings
+[source, properties]
+----
+datastax-java-driver {
+  basic.contact-points = [ "example-node1:9042", "example-node2:9042" ]<1>
+  session-keyspace = "newts"<2>
+  basic.load-balancing-policy {
+    local-datacenter = datacenter1<3>
+  }
+  advanced.auth-provider {
+    class = PlainTextAuthProvider <4>
+    username = cassandra
+    password = cassandra
+  }
+}
+----
+
+<1>	`Hostname:port` or `IP address:port` of one or more Cassandra cluster nodes.
+<2> Name of the keyspace which is initialized and used.
+<3> The local datacenter as defined by your Cassandra configuration
+<4> The authentication provider to use with the supplied credentials
 
 .Initialize the Newts schema in Cassandra
 [source, console]
