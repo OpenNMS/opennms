@@ -59,6 +59,17 @@ datastax-java-driver {
 <3> The local datacenter as defined by your Cassandra configuration
 <4> The authentication provider to use with the supplied credentials
 
+. (Optional) If your {page-component-title} data collection or polling intervals have been modified, set the query minimum and heartbeat rates:
++
+[source, properties]
+----
+org.opennms.newts.query.minimum_step=30000 <1>
+org.opennms.newts.query.heartbeat=45000 <2>
+----
+<1> The shortest collection interval configured for any collectable or pollable service, in milliseconds (in this case, 30 seconds).
+<2> The communication interval for the Newts service, in milliseconds.
+Should be set to 1.5 times the `maximum` value of the collection interval configured for any collectable or pollable service, in milliseconds (in this case, 45 seconds).
+
 .Initialize the Newts schema in Cassandra
 [source, console]
 ----
