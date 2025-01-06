@@ -47,6 +47,9 @@ public class ServletRequestHandler implements RequestHandler {
 
     @Override
     public boolean canHandle(String requestedPath) {
+        if(requestedPath != null && !requestedPath.isEmpty() && requestedPath.contains(".gz")) {
+            return false;
+        }
         return servletInfo.canHandle(requestedPath);
     }
 }
