@@ -77,22 +77,27 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
     private final int m_iterationCount;
     private final int m_keyLength;
     private final HashMap<String, Credentials> m_credentialsCache = new HashMap<>();
-    private FileUpdateWatcher fileUpdateWatcher;
-    private final AtomicBoolean m_fileUpdatedByOthers = new AtomicBoolean(false);
+    private FileUpdateWatcher m_fileUpdateWatcher;
+    private final AtomicBoolean m_fileUpdated = new AtomicBoolean(false);
+    private long m_lastModified = System.currentTimeMillis();
 
     public static final String KEYSTORE_KEY_PROPERTY = "org.opennms.features.scv.jceks.key";
 
     public static final String DEFAULT_KEYSTORE_KEY = "QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw";
 
+    public JCEKSSecureCredentialsVault(String keystoreFile, String password, boolean useWatcher)  {
+        this(keystoreFile, password, useWatcher, new byte[]{0x0, 0xd, 0xd, 0xb, 0xa, 0x1, 0x1});
+    }
+
     public JCEKSSecureCredentialsVault(String keystoreFile, String password)  {
-        this(keystoreFile, password, new byte[]{0x0, 0xd, 0xd, 0xb, 0xa, 0x1, 0x1});
+        this(keystoreFile, password, false, new byte[]{0x0, 0xd, 0xd, 0xb, 0xa, 0x1, 0x1});
     }
 
-    public JCEKSSecureCredentialsVault(String keystoreFile, String password, byte[] salt) {
-        this(keystoreFile, password, salt, 16, 4096);
+    public JCEKSSecureCredentialsVault(String keystoreFile, String password, boolean useWatcher, byte[] salt) {
+        this(keystoreFile, password, useWatcher, salt, 16, 4096);
     }
 
-    public JCEKSSecureCredentialsVault(String keystoreFile, String password, byte[] salt, int iterationCount, int keyLength) {
+    public JCEKSSecureCredentialsVault(String keystoreFile, String password, boolean useWatcher, byte[] salt, int iterationCount, int keyLength) {
         m_password = Objects.requireNonNull(password).toCharArray();
         m_salt = Objects.requireNonNull(salt);
         m_iterationCount = iterationCount;
@@ -109,16 +114,20 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
                     m_keystore.load(is, m_password);
                 }
             }
-            createFileUpdateWatcher();
+            // Enable watcher to load changes to keystore file that happens outside OpenNMS
+            if (useWatcher) {
+                createFileUpdateWatcher();
+            }
+
         } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
             throw Throwables.propagate(e);
         }
     }
 
     private void createFileUpdateWatcher() {
-        if (fileUpdateWatcher == null) {
+        if (m_fileUpdateWatcher == null) {
             try {
-                fileUpdateWatcher = new FileUpdateWatcher(m_keystoreFile.getAbsolutePath(), this, true);
+                m_fileUpdateWatcher = new FileUpdateWatcher(m_keystoreFile.getAbsolutePath(), this, true);
             } catch (IOException e) {
                 LOG.warn("Failed to create file update watcher", e);
             }
@@ -127,11 +136,11 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
 
     private void loadCredentials() {
         synchronized (m_credentialsCache) {
-            if (!m_credentialsCache.isEmpty() && !m_fileUpdatedByOthers.get()) {
+            if (!m_credentialsCache.isEmpty() && !m_fileUpdated.get()) {
                 return;
             }
-            if (m_fileUpdatedByOthers.get()) {
-                m_fileUpdatedByOthers.set(false);
+            if (m_fileUpdated.get()) {
+                m_fileUpdated.set(false);
                 m_credentialsCache.clear();
             }
             try {
@@ -172,8 +181,8 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
 
             KeyStore.PasswordProtection keyStorePP = new KeyStore.PasswordProtection(m_password);
             m_keystore.setEntry(alias, new KeyStore.SecretKeyEntry(generatedSecret), keyStorePP);
-            writeKeystoreToDisk();
             synchronized (m_credentialsCache) {
+                writeKeystoreToDisk();
                 m_credentialsCache.put(alias, credentials);
             }
         } catch (KeyStoreException | InvalidKeySpecException | NoSuchAlgorithmException | IOException e) {
@@ -187,18 +196,25 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
             synchronized (m_credentialsCache) {
                 m_keystore.deleteEntry(alias);
                 m_credentialsCache.remove(alias);
+                writeKeystoreToDisk();
             }
 
-            writeKeystoreToDisk();
 
         } catch (final KeyStoreException e) {
             throw Throwables.propagate(e);
         }
     }
 
+    public void destroy() {
+        if (m_fileUpdateWatcher != null) {
+            m_fileUpdateWatcher.destroy();
+        }
+    }
+
     private void writeKeystoreToDisk() {
         try (OutputStream os = new FileOutputStream(m_keystoreFile)) {
             m_keystore.store(os, m_password);
+            m_lastModified = m_keystoreFile.lastModified();
         } catch (IOException | KeyStoreException | NoSuchAlgorithmException | CertificateException e) {
             throw Throwables.propagate(e);
         }
@@ -254,16 +270,18 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
 
     @Override
     public void reload() {
-        // TODO: Need to optimize this for not reloading multiple times and
-        //  not reload when it is invoked within the same process
         synchronized (m_credentialsCache) {
+            // If the keystore file got updated by us, no need to reload
+            if (m_keystoreFile.lastModified() == m_lastModified) {
+                return;
+            }
             // Reload the keystore file when file gets updated.
             try (InputStream is = new FileInputStream(m_keystoreFile)) {
                 m_keystore.load(is, m_password);
             } catch (NoSuchAlgorithmException | CertificateException | IOException e) {
-                throw Throwables.propagate(e);
+                LOG.error("Exception while loading keystore file {}", m_keystoreFile, e);
             }
-            m_fileUpdatedByOthers.set(true);
+            m_fileUpdated.set(true);
         }
     }
 
