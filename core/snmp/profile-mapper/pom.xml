@@ -5,7 +5,7 @@
   <parent>
     <artifactId>org.opennms.core.snmp</artifactId>
     <groupId>org.opennms.core</groupId>
-    <version>33.1.2-SNAPSHOT</version>
+    <version>33.1.2</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
