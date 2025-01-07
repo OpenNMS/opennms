@@ -27,16 +27,22 @@ import java.lang.management.OperatingSystemMXBean;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
-
+import java.util.stream.Collectors;
+import org.opennms.core.resource.Vault;
+import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 
 
 public class OSReportPlugin extends AbstractSystemReportPlugin {
     private static final Logger LOG = LoggerFactory.getLogger(OSReportPlugin.class);
     private static final Map<String, String> m_oses = new LinkedHashMap<String, String>();
+    @Autowired
+    public IpInterfaceDao m_ipInterfaceDao;
+
     public OSReportPlugin() {
         if (m_oses.size() == 0) {
             m_oses.put("/etc/SUSE-release", "SuSE");
@@ -128,6 +134,13 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
         if (map.containsKey("Distribution Description")) {
             map.put("Description", map.remove("Distribution Description"));
         }
+
+        String hostName=m_ipInterfaceDao.findAll().stream().map(s->s.getIpHostName()).distinct().collect(Collectors.joining(","));
+        String ipAddress=m_ipInterfaceDao.findAll().stream().map(s->s.getIpAddress().getHostAddress()).distinct().collect(Collectors.joining(","));
+
+        map.put("Host Name",getResource(hostName));
+        map.put("Ip Address",getResource(ipAddress));
+        map.put("HTTP(S) ports",getResource(Vault.getProperty("org.opennms.netmgt.jetty.port")));
 
         return map;
     }

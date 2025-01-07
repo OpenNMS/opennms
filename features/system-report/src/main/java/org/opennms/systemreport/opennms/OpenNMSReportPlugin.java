@@ -23,10 +23,11 @@ package org.opennms.systemreport.opennms;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
-
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
@@ -79,7 +80,9 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
 
     @Override
     public Map<String, Resource> getEntries() {
+
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
+        map.put("OpenNMS Home",getResourceFromProperty("opennms.home"));
         final InputStream is = this.getClass().getResourceAsStream("/version.properties");
         if (is != null) {
             Properties p = new Properties();
@@ -106,7 +109,35 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
         if (m_alarmDao != null) {
             map.put("Number of Alarms", getResource(Integer.toString(m_alarmDao.countAll())));
         }
+
+        RuntimeMXBean runtimeBean = getBean(ManagementFactory.RUNTIME_MXBEAN_NAME, RuntimeMXBean.class);
+        if (runtimeBean == null) {
+            LOG.info("falling back to local VM RuntimeMXBean");
+            runtimeBean = ManagementFactory.getRuntimeMXBean();
+        }
+        addGetters(runtimeBean, map);
+
+        map.put("OpenNMS Up Time",getResource( getOnmsUptimeAsString(runtimeBean) ));
+
+
         return map;
+    }
+
+    private String getOnmsUptimeAsString(RuntimeMXBean runtimeBean){
+
+        long startTimeMillis = runtimeBean.getStartTime();
+
+        // Get the current time (in milliseconds since epoch)
+        long currentTimeMillis = System.currentTimeMillis();
+
+        // Calculate uptime
+        long uptimeMillis = currentTimeMillis - startTimeMillis;
+
+        long hours = uptimeMillis / (1000 * 60 * 60);
+        long minutes = (uptimeMillis % (1000 * 60 * 60)) / (1000 * 60);
+        long seconds = (uptimeMillis % (1000 * 60)) / 1000;
+
+        return String.format("%d hours, %d minutes, %d seconds", hours, minutes, seconds);
     }
 
 }
