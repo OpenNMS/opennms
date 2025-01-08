@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>33.1.1</version>
+    <version>33.1.2</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -191,5 +191,7 @@
     <module>usageanalytics</module>
     
     <module>inmemory-timeseries-plugin</module>
+    
+    <module>grpc</module>
   </modules>
 </project>
