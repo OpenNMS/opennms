@@ -27,8 +27,10 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.netmgt.dao.mock.MockIpInterfaceDao;
 import org.opennms.systemreport.SystemReportPlugin;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.test.util.ReflectionTestUtils;
 
 public class SystemReportPluginIT {
     private SystemReportPlugin m_javaReportPlugin = new JavaReportPlugin();
@@ -47,10 +49,14 @@ public class SystemReportPluginIT {
 
     @Test
     public void testOSPlugin() {
+        ReflectionTestUtils.setField(m_osReportPlugin,"m_ipInterfaceDao",new MockIpInterfaceDao());
         final Map<String, org.springframework.core.io.Resource> entries = m_osReportPlugin.getEntries();
         assertTrue(entries.containsKey("Architecture"));
         assertTrue(entries.containsKey("Name"));
         assertTrue(entries.containsKey("Distribution"));
+        assertTrue(entries.containsKey("Host Name"));
+        assertTrue(entries.containsKey("Ip Address"));
+        assertTrue(entries.containsKey("HTTP(S) ports"));
     }
     
     private String getResourceText(final org.springframework.core.io.Resource r) {
