@@ -56,6 +56,11 @@ public class OpenNMSAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
         // check for admin/admin
         boolean defaultAdminLogin = isDefaultAdminLogin(request.getParameter("j_username"), request.getParameter("j_password"));
 
+        String ipAddress = getClientIpAddress(request);
+        String userName = request.getParameter("j_username");
+
+        CsvLogger.logToCsv(userName, ipAddress);
+
         if (defaultAdminLogin) {
             handleDefaultAdminLogin(request, response);
         } else {
@@ -78,6 +83,14 @@ public class OpenNMSAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
                 }
             }
         }
+    }
+
+    private String getClientIpAddress(HttpServletRequest request) {
+        String ipAddress = request.getRemoteAddr();
+        if (ipAddress != null && ipAddress.contains(",")) {
+            ipAddress = ipAddress.split(",")[0].trim();
+        }
+        return ipAddress;
     }
 
     /**
