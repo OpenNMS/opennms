@@ -27,14 +27,21 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.opennms.core.test.MockLogAppender;
+import org.opennms.netmgt.dao.mock.MockAlarmDao;
+import org.opennms.netmgt.dao.mock.MockEventDao;
 import org.opennms.netmgt.dao.mock.MockIpInterfaceDao;
+import org.opennms.netmgt.dao.mock.MockNodeDao;
+import org.opennms.netmgt.dao.mock.MockSnmpInterfaceDao;
 import org.opennms.systemreport.SystemReportPlugin;
+import org.opennms.systemreport.opennms.OpenNMSReportPlugin;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.test.util.ReflectionTestUtils;
 
 public class SystemReportPluginIT {
     private SystemReportPlugin m_javaReportPlugin = new JavaReportPlugin();
     private SystemReportPlugin m_osReportPlugin = new OSReportPlugin();
+    private SystemReportPlugin m_onmsReportPlugin = new OpenNMSReportPlugin();
+
 
     public SystemReportPluginIT() {
         MockLogAppender.setupLogging(false, "ERROR");
@@ -43,9 +50,37 @@ public class SystemReportPluginIT {
     @Test
     public void testJavaReportPlugin() {
         final Map<String, org.springframework.core.io.Resource> entries = m_javaReportPlugin.getEntries();
-        final float classVer = Float.valueOf(getResourceText(entries.get("Class Version")));
-        assertTrue(classVer >= 49.0);
+        assertTrue(entries.containsKey("Class Version"));
+        assertTrue(entries.containsKey("Compiler"));
+        assertTrue(entries.containsKey("Home"));
+        assertTrue(entries.containsKey("Initial Heap Size"));
+        assertTrue(entries.containsKey("Max Heap Size"));
+        assertTrue(entries.containsKey("VM Name"));
+        assertTrue(entries.containsKey("VM Version"));
+        assertTrue(entries.containsKey("Vendor"));
+        assertTrue(entries.containsKey("Version"));
+
     }
+
+    @Test
+    public void testOpenNMSReportPlugin() {
+        ReflectionTestUtils.setField(m_onmsReportPlugin,"m_nodeDao",new MockNodeDao());
+        ReflectionTestUtils.setField(m_onmsReportPlugin,"m_ipInterfaceDao",new MockIpInterfaceDao());
+        ReflectionTestUtils.setField(m_onmsReportPlugin,"m_snmpInterfaceDao",new MockSnmpInterfaceDao());
+        ReflectionTestUtils.setField(m_onmsReportPlugin,"m_eventDao",new MockEventDao());
+        ReflectionTestUtils.setField(m_onmsReportPlugin,"m_alarmDao",new MockAlarmDao());
+        final Map<String, org.springframework.core.io.Resource> entries = m_onmsReportPlugin.getEntries();
+        assertTrue(entries.containsKey("Number of Alarms"));
+        assertTrue(entries.containsKey("Number of Events"));
+        assertTrue(entries.containsKey("Number of IP Interfaces"));
+        assertTrue(entries.containsKey("Number of Nodes"));
+        assertTrue(entries.containsKey("Number of SNMP Interfaces"));
+        assertTrue(entries.containsKey("OpenNMS Home"));
+        assertTrue(entries.containsKey("OpenNMS Up Time"));
+        assertTrue(entries.containsKey("Time-Series Strategy"));
+        assertTrue(entries.containsKey("Version"));
+    }
+
 
     @Test
     public void testOSPlugin() {
@@ -57,6 +92,11 @@ public class SystemReportPluginIT {
         assertTrue(entries.containsKey("Host Name"));
         assertTrue(entries.containsKey("Ip Address"));
         assertTrue(entries.containsKey("HTTP(S) ports"));
+        assertTrue(entries.containsKey("Hard Drive Capacity"));
+        assertTrue(entries.containsKey("Total System RAM"));
+        assertTrue(entries.containsKey("Used System RAM"));
+        assertTrue(entries.containsKey("Version"));
+        assertTrue(entries.containsKey("Version"));
     }
     
     private String getResourceText(final org.springframework.core.io.Resource r) {

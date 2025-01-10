@@ -28,7 +28,10 @@ import java.lang.management.RuntimeMXBean;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
+import org.opennms.core.resource.Vault;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.SystemInfoUtils;
+import org.opennms.core.utils.TimeSeries;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -80,20 +83,10 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
 
     @Override
     public Map<String, Resource> getEntries() {
-
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
         map.put("OpenNMS Home",getResourceFromProperty("opennms.home"));
-        final InputStream is = this.getClass().getResourceAsStream("/version.properties");
-        if (is != null) {
-            Properties p = new Properties();
-            try {
-                p.load(is);
-                map.put("Version", getResource(p.getProperty("version.display")));
-            } catch (final IOException e) {
-                LOG.warn("Unable to load from version.properties", e);
-            }
-        }
-        
+        map.put("Version", getResource(Vault.getProperty("version.display")));
+
         if (m_nodeDao != null) {
             map.put("Number of Nodes", getResource(Integer.toString(m_nodeDao.countAll())));
         }
@@ -118,7 +111,7 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
         addGetters(runtimeBean, map);
 
         map.put("OpenNMS Up Time",getResource( getOnmsUptimeAsString(runtimeBean) ));
-
+        map.put("Time-Series Strategy",getResource(TimeSeries.getTimeseriesStrategy().getName()));
 
         return map;
     }

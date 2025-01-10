@@ -28,18 +28,31 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
+import org.opennms.netmgt.model.OnmsIpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
-
+import javax.management.AttributeNotFoundException;
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanException;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
 
 public class OSReportPlugin extends AbstractSystemReportPlugin {
     private static final Logger LOG = LoggerFactory.getLogger(OSReportPlugin.class);
     private static final Map<String, String> m_oses = new LinkedHashMap<String, String>();
+    private static final MBeanServer M_BEAN_SERVER = ManagementFactory.getPlatformMBeanServer();
+    private static final String JMX_OBJ_OS = "java.lang:type=OperatingSystem";
+    private static final String JMX_ATTR_AVAILABLE_PROCESSORS = "AvailableProcessors";
+    private static final String JMX_ATTR_FREE_PHYSICAL_MEMORY_SIZE = "FreePhysicalMemorySize";
+    private static final String JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE = "TotalPhysicalMemorySize";
     @Autowired
     public IpInterfaceDao m_ipInterfaceDao;
 
@@ -135,13 +148,71 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
             map.put("Description", map.remove("Distribution Description"));
         }
 
-        String hostName=m_ipInterfaceDao.findAll().stream().map(s->s.getIpHostName()).distinct().collect(Collectors.joining(","));
-        String ipAddress=m_ipInterfaceDao.findAll().stream().map(s->s.getIpAddress().getHostAddress()).distinct().collect(Collectors.joining(","));
+        String hostName = m_ipInterfaceDao.findAll().stream().map(OnmsIpInterface::getIpHostName).distinct().collect(Collectors.joining(","));
+        String ipAddress = m_ipInterfaceDao.findAll().stream().map(s->s.getIpAddress().getHostAddress()).distinct().collect(Collectors.joining(","));
 
         map.put("Host Name",getResource(hostName));
         map.put("Ip Address",getResource(ipAddress));
         map.put("HTTP(S) ports",getResource(Vault.getProperty("org.opennms.netmgt.jetty.port")));
 
+        Object availableProcessorsObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_AVAILABLE_PROCESSORS);
+        if (availableProcessorsObj != null) {
+            map.put("System CPU count",getResource(String.valueOf((int) availableProcessorsObj)));
+
+        }
+
+        long totalPhysicalMemSize= 0L;
+        Object totalPhysicalMemSizeObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE);
+        if (totalPhysicalMemSizeObj != null) {
+            totalPhysicalMemSize = (long) totalPhysicalMemSizeObj;
+
+        }
+
+        long freePhysicalMemSize = 0L;
+        Object freePhysicalMemSizeObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_FREE_PHYSICAL_MEMORY_SIZE);
+        if (freePhysicalMemSizeObj != null) {
+            freePhysicalMemSize = (long) freePhysicalMemSizeObj;
+        }
+
+        map.put("Total System RAM",getResource(String.valueOf(totalPhysicalMemSize)));
+        map.put("Used System RAM",getResource(String.valueOf((totalPhysicalMemSize-freePhysicalMemSize))));
+        map.put("Hard Drive Capacity",getResource(getHardDriveCapacity()));
+
+
         return map;
     }
+
+    private Object getJmxAttribute(String objectName, String attributeName) {
+        ObjectName objNameActual;
+        try {
+            objNameActual = new ObjectName(objectName);
+        } catch (MalformedObjectNameException e) {
+            LOG.warn("Failed to query from object name " + objectName, e);
+            return null;
+        }
+        try {
+            return M_BEAN_SERVER.getAttribute(objNameActual, attributeName);
+        } catch (InstanceNotFoundException | AttributeNotFoundException
+                 | ReflectionException | MBeanException e) {
+            LOG.warn("Failed to query from attribute name " + attributeName + " on object " + objectName, e);
+            return null;
+        }
+    }
+
+
+    private String getHardDriveCapacity(){
+        /*Unix command for retrieving the hard disk capacity here command will only return headers and total of hard disk capacity values*/
+        String[] command = {"bash", "-c", "df -h --total | grep -E 'Filesystem|total'"};
+        /* disCapComdOutput is Output of Disk Capcity Comand */
+        String disCapComdOutput = slurpCommand(command);
+
+        String[] hdStats = disCapComdOutput.trim().split("\n"); // Splitting the lines in hdStats Array of Strings
+        String [] headers = hdStats[0].split("\\s+"); // at zero index there are headers
+        String [] values = hdStats[1].split("\\s+"); // at 1 index there are values for disk capacity
+
+        return IntStream.range(1, headers.length-1)  // Stream over the indices of headers array and skipping the ist and last header as well as values.
+                .mapToObj(i -> headers[i] + ": " + values[i])  // Format each header-value pair
+                .collect(Collectors.joining(", "));
+    }
+
 }

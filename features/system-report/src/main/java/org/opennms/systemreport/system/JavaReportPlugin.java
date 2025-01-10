@@ -68,6 +68,8 @@ public class JavaReportPlugin extends AbstractSystemReportPlugin {
             memoryBean = ManagementFactory.getMemoryMXBean();
         }
 
+        map.put("Initial Heap Size", getResource(String.format("%d",memoryBean.getHeapMemoryUsage().getInit())));
+        map.put("Max Heap Size", getResource(String.format("%d",memoryBean.getHeapMemoryUsage().getMax())));
         addGetters(memoryBean, map);
 
         RuntimeMXBean runtimeBean = getBean(ManagementFactory.RUNTIME_MXBEAN_NAME, RuntimeMXBean.class);
@@ -110,5 +112,4 @@ public class JavaReportPlugin extends AbstractSystemReportPlugin {
 
         return map;
     }
-
 }
