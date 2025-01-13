@@ -2060,4 +2060,12 @@
         <bundle>mvn:org.opennms.features/org.opennms.features.newts/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-grpc-exporter" description="OpenNMS :: Grpc :: Exporter" version="${project.version}">
+        <feature version="${opennmsApiVersion}" dependency="true">opennms-integration-api</feature>
+        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>mvn:org.mapstruct/mapstruct/${mapstructVersion}</bundle>
+        <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.grpc/org.opennms.features.grpc.exporter/${project.version}</bundle>
+    </feature>
+
 </features>
