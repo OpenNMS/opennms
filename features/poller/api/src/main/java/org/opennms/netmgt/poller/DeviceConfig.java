@@ -45,7 +45,6 @@ public class DeviceConfig {
     private String filename;
 
     @XmlAttribute(name="scriptOutput")
-    @XmlJavaTypeAdapter(EscapeSequenceAdapter.class)
     private String scriptOutput;
 
     public DeviceConfig(String scriptOutput) {
