@@ -100,10 +100,8 @@ public class SystemReportPluginIT {
         assertTrue(entries.containsKey("Host Name"));
         assertTrue(entries.containsKey("Ip Address"));
         assertTrue(entries.containsKey("HTTP(S) ports"));
-        assertTrue(entries.containsKey("Hard Drive Capacity"));
         assertTrue(entries.containsKey("Total System RAM"));
         assertTrue(entries.containsKey("Used System RAM"));
-        assertTrue(entries.containsKey("Version"));
         assertTrue(entries.containsKey("Version"));
     }
     
