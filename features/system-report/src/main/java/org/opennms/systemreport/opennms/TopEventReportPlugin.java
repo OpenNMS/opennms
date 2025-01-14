@@ -59,6 +59,9 @@ public class TopEventReportPlugin extends AbstractSystemReportPlugin implements 
     }
 
     @Override
+    public boolean isVisible() { return true; }
+
+    @Override
     public Map<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
 

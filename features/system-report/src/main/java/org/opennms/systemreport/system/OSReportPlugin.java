@@ -28,7 +28,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
-import java.util.stream.IntStream;
 import org.opennms.core.resource.Vault;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -83,6 +82,9 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
     public String getDescription() {
         return "Kernel, OS, and Distribution";
     }
+
+    @Override
+    public boolean isVisible() { return true; }
 
     @Override
     public int getPriority() {
@@ -176,8 +178,6 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
 
         map.put("Total System RAM",getResource(String.valueOf(totalPhysicalMemSize)));
         map.put("Used System RAM",getResource(String.valueOf((totalPhysicalMemSize-freePhysicalMemSize))));
-        map.put("Hard Drive Capacity",getResource(getHardDriveCapacity()));
-
 
         return map;
     }
@@ -200,19 +200,5 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
     }
 
 
-    private String getHardDriveCapacity(){
-        /*Unix command for retrieving the hard disk capacity here command will only return headers and total of hard disk capacity values*/
-        String[] command = {"bash", "-c", "df -h --total | grep -E 'Filesystem|total'"};
-        /* disCapComdOutput is Output of Disk Capcity Comand */
-        String disCapComdOutput = slurpCommand(command);
-
-        String[] hdStats = disCapComdOutput.trim().split("\n"); // Splitting the lines in hdStats Array of Strings
-        String [] headers = hdStats[0].split("\\s+"); // at zero index there are headers
-        String [] values = hdStats[1].split("\\s+"); // at 1 index there are values for disk capacity
-
-        return IntStream.range(1, headers.length-1)  // Stream over the indices of headers array and skipping the ist and last header as well as values.
-                .mapToObj(i -> headers[i] + ": " + values[i])  // Format each header-value pair
-                .collect(Collectors.joining(", "));
-    }
 
 }

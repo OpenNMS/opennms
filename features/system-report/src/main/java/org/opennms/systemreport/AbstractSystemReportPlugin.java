@@ -88,6 +88,9 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
         return false;
     }
 
+    @Override
+    public boolean isVisible() { return false; }
+
     protected ResourceLocator getResourceLocator() {
         return m_resourceLocator;
     }

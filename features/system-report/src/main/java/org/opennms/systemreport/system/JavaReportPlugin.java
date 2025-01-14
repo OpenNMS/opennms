@@ -52,6 +52,9 @@ public class JavaReportPlugin extends AbstractSystemReportPlugin {
     }
 
     @Override
+    public boolean isVisible() { return true; }
+
+    @Override
     public Map<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
         map.put("Class Version", getResourceFromProperty("java.class.version"));
@@ -87,28 +90,6 @@ public class JavaReportPlugin extends AbstractSystemReportPlugin {
         }
 
         addGetters(classBean, map);
-
-        /* this stuff is really not giving us anything useful
-        List<GarbageCollectorMXBean> beans = getBeans(ManagementFactory.GARBAGE_COLLECTOR_MXBEAN_DOMAIN_TYPE, GarbageCollectorMXBean.class);
-        if (beans == null || beans.size() == 0) {
-            LOG.info("falling back to local VM MemoryMXBean");
-            beans = ManagementFactory.getGarbageCollectorMXBeans();
-        }
-
-        LOG.trace("beans = {}", beans);
-        int collectorNum = 1;
-        for (final GarbageCollectorMXBean bean : beans) {
-            final Map<String,Resource> temp = new TreeMap<String,Resource>();
-            addGetters(bean, map);
-
-            final StringBuilder sb = new StringBuilder();
-            for (final String s : temp.keySet()) {
-                sb.append(s).append(": ").append(temp.get(s)).append("\n");
-            }
-            if (sb.length() > 0) sb.deleteCharAt(sb.length());
-            map.put("Garbage Collector " + collectorNum, getResource(sb.toString()));
-        }
-        */
 
         return map;
     }

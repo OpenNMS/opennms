@@ -41,7 +41,7 @@ public class SystemReportPluginIT {
     private SystemReportPlugin m_javaReportPlugin = new JavaReportPlugin();
     private SystemReportPlugin m_osReportPlugin = new OSReportPlugin();
     private SystemReportPlugin m_onmsReportPlugin = new OpenNMSReportPlugin();
-
+    private SystemReportPlugin m_hardDriveReportPlugin=new HardDriveReportPlugin();
 
     public SystemReportPluginIT() {
         MockLogAppender.setupLogging(false, "ERROR");
@@ -61,6 +61,14 @@ public class SystemReportPluginIT {
         assertTrue(entries.containsKey("Version"));
 
     }
+
+    @Test
+    public void testHardDriveReportPlugin() {
+        final Map<String, org.springframework.core.io.Resource> entries = m_hardDriveReportPlugin.getEntries();
+        assertTrue(entries.containsKey("Hard Drive Capacity"));
+        assertTrue(entries.containsKey("Hard Drive Performance"));
+    }
+
 
     @Test
     public void testOpenNMSReportPlugin() {

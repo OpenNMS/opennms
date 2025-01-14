@@ -76,6 +76,10 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
         return "OpenNMS core information, version, and basic configuration";
     }
 
+
+    @Override
+    public boolean isVisible() { return true; }
+
     @Override
     public int getPriority() {
         return 3;

@@ -22,6 +22,11 @@
 	<bean name="osReportPlugin" class="org.opennms.systemreport.system.OSReportPlugin" />
 	<onmsgi:service id="osReportPluginService" ref="osReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
 
+	<!-- Hard Drive Capacity and Performance Details -->
+	<bean name="hardDriveReportPlugin" class="org.opennms.systemreport.system.HardDriveReportPlugin" />
+	<onmsgi:service id="hardDriveReportPluginService" ref="hardDriveReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
+
+
 	<!-- OpenNMS information -->
 	<bean name="opennmsReportPlugin" class="org.opennms.systemreport.opennms.OpenNMSReportPlugin" />
 	<onmsgi:service id="opennmsReportPluginService" ref="opennmsReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
