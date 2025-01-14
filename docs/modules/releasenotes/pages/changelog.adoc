@@ -1,6 +1,23 @@
 [[release-33-changelog]]
 
 = Changelog
+[[releasenotes-changelog-33.1.2]]
+
+== Release 33.1.2
+
+Release 33.1.2 contains a bug fix and a new feature.
+
+The codename for Horizon 33.1.2 is https://wikipedia.org/wiki/$$Cotinus$$[_Smoketree_].
+
+=== Bug
+
+* Update apache-commons-io (Issue https://issues.opennms.org/browse/NMS-16638[NMS-16638])
+* File name field in System Reports is not working (Issue https://issues.opennms.org/browse/NMS-16983[NMS-16983])
+
+=== Story
+
+* Move grpc exporter to OpenNMS repository (Issue https://issues.opennms.org/browse/NMS-16991[NMS-16991])
+
 [[releasenotes-changelog-33.1.1]]
 
 == Release 33.1.1
