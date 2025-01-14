@@ -13,6 +13,12 @@
             "datatype": "number"
         },
         {
+            "key": "loginsPast60Days",
+            "name": "CSV output of Login events for the past 60 days",
+            "description": "CSV output containing the date, username login events for the past 60 days",
+            "datatype": "file|csv"
+        },
+        {
             "key": "applianceCounts",
             "name": "applianceCounts",
             "description": "",
@@ -46,7 +52,7 @@
             "key": "businessEdgeCount",
             "name": "Current business service count",
             "description": "Number of business services defined in the system",
-            "datatype": "number"
+            "datatype": "string"
         },
         {
             "key": "cloudInstanceType",
