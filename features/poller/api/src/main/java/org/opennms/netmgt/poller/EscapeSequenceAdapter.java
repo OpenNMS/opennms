@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2023 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
+ * Copyright (C) 2025 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2025 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -28,7 +28,6 @@
 
 package org.opennms.netmgt.poller;
 
-import org.eclipse.persistence.exceptions.XMLMarshalException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -47,12 +46,8 @@ public class EscapeSequenceAdapter extends XmlAdapter<String, String> {
             v = v.replace("&#xd;", "\r")
                     .replace("&#xa;", "\n");
         }
-        try {
             return v;
-        } catch (XMLMarshalException e) {
-            LOG.warn("Unable to unmarshal escape sequences value '{}' to a script output.  Returning null instead.", v);
-            return null;
-        }
+
     }
 
     @Override
@@ -61,11 +56,7 @@ public class EscapeSequenceAdapter extends XmlAdapter<String, String> {
             v = v.replace("\r", "&#xd;")
                     .replace("\n", "&#xa;");
         }
-        try {
             return v;
-        } catch (XMLMarshalException e) {
-            LOG.warn("Unable to marshal escape sequences value '{}' to a script output.  Returning null instead.", v);
-            return null;
-        }
+
     }
 }
