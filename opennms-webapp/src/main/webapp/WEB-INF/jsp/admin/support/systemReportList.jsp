@@ -58,8 +58,6 @@ function toggle(box, field)
 }
 
 function toggleGroup(activeGroup) {
-  console.log(activeGroup, 'Active group selected');
-
   // Select group elements
   const group1Checkboxes = document.querySelectorAll("#group1 input[type='checkbox']");
   const group2Radios = document.querySelectorAll("#group2 input[type='radio']");
