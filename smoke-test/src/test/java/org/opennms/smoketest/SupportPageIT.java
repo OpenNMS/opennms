@@ -68,7 +68,7 @@ public class SupportPageIT extends OpenNMSSeleniumIT {
         final WebElement topReportRadio = driver.findElement(By.cssSelector("input[type=radio][name=plugins][value=Top]"));
 
         assertThat(textFileReportRadio.isSelected(), is(true));
-        assertThat(logFilesRadio.isSelected(), is(false))
+        assertThat(logFilesRadio.isSelected(), is(false));
         assertThat(javaReportCheckbox.isSelected(), is(true));
         assertThat(threadsReportRadio.isSelected(), is(false));
         assertThat(topReportRadio.isSelected(), is(false));
