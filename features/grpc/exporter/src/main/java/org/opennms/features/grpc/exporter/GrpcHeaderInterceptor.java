@@ -42,14 +42,16 @@ public class GrpcHeaderInterceptor implements ClientInterceptor {
     @Override
     public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(
             MethodDescriptor<ReqT, RespT> method, CallOptions callOptions, Channel next) {
-        return new HeaderAttachingClientCall<>(next.newCall(method, callOptions));
+        return new HeaderAttachingClientCall<>(next.newCall(method, callOptions), metadata);
     }
 
-    private final class HeaderAttachingClientCall<ReqT, RespT>
+    private final static class HeaderAttachingClientCall<ReqT, RespT>
             extends ForwardingClientCall.SimpleForwardingClientCall<ReqT, RespT> {
 
-        HeaderAttachingClientCall(ClientCall<ReqT, RespT> call) {
+        private final Metadata metadata;
+        HeaderAttachingClientCall(ClientCall<ReqT, RespT> call, Metadata metadataToAttach) {
             super(call);
+            this.metadata = metadataToAttach;
         }
 
         @Override

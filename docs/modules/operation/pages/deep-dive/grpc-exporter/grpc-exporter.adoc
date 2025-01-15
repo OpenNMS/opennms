@@ -17,7 +17,7 @@ admin@opennms()> config:property-set host bsm.onmshs.local:1443 <1>
 admin@opennms()> config:property-set tenant.id opennms-prime <2>
 admin@opennms()> config:property-set tls.cert.path /opt/opennms/etc/tls.cert <3>
 admin@opennms()> config:property-set tls.enabled false <4>
-admin@opennms()> config:property-set snapshot.interval 3600 false <5>
+admin@opennms()> config:property-set snapshot.interval 3600 <5>
 admin@opennms()> config:update
 ----
 
