@@ -239,6 +239,9 @@ public final class ThresholdEntity implements Cloneable {
         // This reference contains the function that will be used by each evaluator to retrieve the status
         AtomicReference<EvaluateFunction> evaluateFunctionRef = new AtomicReference<>(null);
 
+        // compute scope here, see NMS-16966
+        final Scope scope = getScopeForResource(resource);
+
         // Depending on the type of threshold, we want to evaluate it differently
         // Threshold Values like value, rearm, trigger and expression are interpolated and cached in state so that
         // subsequent evaluations don't need to do any interpolation.
@@ -250,7 +253,6 @@ public final class ThresholdEntity implements Cloneable {
                 ThresholdValuesSupplier thresholdValuesSupplier = new ThresholdValuesSupplier() {
                     @Override
                     public ThresholdEvaluatorState.ThresholdValues get() {
-                        Scope scope = getScopeForResource(resource);
                         ThresholdEvaluatorState.ThresholdValues thresholdValues = thresholdConfigWrapper.interpolateThresholdValues(scope);
                         thresholdValues.setDsValue(computedValue);
                         return thresholdValues;
@@ -272,8 +274,6 @@ public final class ThresholdEntity implements Cloneable {
                     // also retrieve the interpolated expression so we can persist it in our state going forward
                     @Override
                     public ExpressionConfigWrapper.ExpressionThresholdValues get() throws ThresholdExpressionException {
-
-                        Scope scope = getScopeForResource(resource);
                         return expressionConfigWrapper
                                 .interpolateAndEvaluate(values, scope);
                     }
@@ -311,22 +311,26 @@ public final class ThresholdEntity implements Cloneable {
         return events;
     }
 
-    public Scope getScopeForResource(CollectionResourceWrapper resource) {
+    public static Scope getScopeForResource(EntityScopeProvider entityScopeProvider, CollectionResourceWrapper resource) {
         // Default to empty scopes and then attempt to populate each of node, interface, and service
         // scopes below
         Scope[] scopes = new Scope[]{EmptyScope.EMPTY, EmptyScope.EMPTY, EmptyScope.EMPTY};
 
         if (resource != null) {
-            scopes[0] = m_entityScopeProvider.getScopeForNode(resource.getNodeId());
+            scopes[0] = entityScopeProvider.getScopeForNode(resource.getNodeId());
             String interfaceIp = resource.getHostAddress();
             if (interfaceIp != null) {
-                scopes[1] = m_entityScopeProvider.getScopeForInterface(resource.getNodeId(),
+                scopes[1] = entityScopeProvider.getScopeForInterface(resource.getNodeId(),
                         interfaceIp);
-                scopes[2] = m_entityScopeProvider.getScopeForService(resource.getNodeId(),
+                scopes[2] = entityScopeProvider.getScopeForService(resource.getNodeId(),
                         InetAddresses.forString(interfaceIp), resource.getServiceName());
             }
         }
         return new FallbackScope(scopes);
+    }
+
+    public Scope getScopeForResource(CollectionResourceWrapper resource) {
+        return getScopeForResource(m_entityScopeProvider, resource);
     }
 
     /**

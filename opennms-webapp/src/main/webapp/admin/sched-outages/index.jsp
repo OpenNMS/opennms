@@ -25,6 +25,7 @@
 	import="
 	java.util.*,
 	org.opennms.core.spring.BeanUtils,
+	org.opennms.core.utils.WebSecurityUtils,
 	org.opennms.netmgt.config.*,
 	org.opennms.netmgt.config.dao.outages.api.WriteablePollOutagesDao,
 	org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao,
@@ -184,7 +185,7 @@
 		    List<org.opennms.netmgt.config.poller.outages.Node> nodeList = pollOutagesDao.getNodeIds(outageName);
 						for (int j = 0; j < nodeList.size(); j++) {
 							OnmsNode elementNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeList.get(j).getId());
-		%> <li><%=elementNode == null || elementNode.getType() == NodeType.DELETED ? "Node: Node ID " + nodeList.get(j).getId() + " Not Found" : "Node: " + elementNode.getLabel()%></li>
+		%> <li><%=elementNode == null || elementNode.getType() == NodeType.DELETED ? "Node: Node ID " + nodeList.get(j).getId() + " Not Found" : "Node: " + WebSecurityUtils.sanitizeString(elementNode.getLabel())%></li>
 		<%
 		    }
 						List<org.opennms.netmgt.config.poller.outages.Interface> interfaceList = pollOutagesDao.getInterfaces(outageName);
