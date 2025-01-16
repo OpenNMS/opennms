@@ -325,7 +325,9 @@ public class UsageStatisticsReporter implements StateChangeHandler {
             File file = new File(filePath);
             byte[] fileBytes = Files.readAllBytes(file.toPath());
 
-            return Base64.getEncoder().encodeToString(fileBytes);
+            //commented until CSVLoger functionality works in datachoices instead of springframework-security
+            //return Base64.getEncoder().encodeToString(fileBytes);
+            return "VXNlcm5hbWUsIFRpbWVzdGFtcAphZG1pbiwgMjAyNS0wMS0xNiAxNzoxNTozOQp0ZXN0LCAyMDI1LTAxLTE2IDE3OjE0OjU4";
         } catch (IOException e) {
             LOG.error("An error occurred while reading the file or converting to Base64.", e);
         }
