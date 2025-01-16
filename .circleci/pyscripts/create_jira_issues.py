@@ -54,7 +54,6 @@ def parse_filtered_vulnerabilities(file_path):
 logging.basicConfig(level=logging.INFO)
 
 def issue_exists(vulnerability_id):
-    """Check if a Jira issue already exists for a vulnerability based on its ID."""
     url = f"{JIRA_URL}/rest/api/2/search?jql=summary~'{vulnerability_id}' AND project='{PROJECT_KEY}'"
     try:
         response = requests.get(url, auth=(JIRA_USER, JIRA_API_TOKEN))
@@ -65,7 +64,6 @@ def issue_exists(vulnerability_id):
     return response.json().get('total', 0) > 0
 
 def create_issue(pkg_name, vulnerabilities):
-    """Create a single Jira issue for a package with multiple vulnerabilities."""
 
     vuln_details = []
     for vulnerability in vulnerabilities:
@@ -90,7 +88,7 @@ def create_issue(pkg_name, vulnerabilities):
             "project": {
                 "key": PROJECT_KEY
             },
-            "summary": f"Trivy Bug: Library {pkg_name} - Multiple Vulnerabilities",
+            "summary": f"Trivy Bug: Library {pkg_name}",
             "description": (
                 f"**Package Name:** {pkg_name}\n\n"
                 f"**List of CVEs:**\n"
@@ -129,10 +127,10 @@ def main():
     for vulnerability in vulnerabilities:
         grouped_vulnerabilities[vulnerability['PkgName']].append(vulnerability)
     
-    # For each package, check if an issue exists, and if not, create it
+
     for pkg_name, vuln_list in grouped_vulnerabilities.items():
-        if vuln_list:  # Only process non-empty lists
-            if not issue_exists(pkg_name):  # Check if an issue for this package already exists
+        if vuln_list:
+            if not issue_exists(pkg_name): 
                 create_issue(pkg_name, vuln_list)
             else:
                 print(f"Issue for library {pkg_name} already exists.")
