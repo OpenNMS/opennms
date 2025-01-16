@@ -245,9 +245,7 @@
     <property name="configResource" value="file:${opennms.home}/etc/javamail-configuration.xml"/>
   </bean>
   
-  <bean id="jdbcDataCollectionConfigDao" class="org.opennms.netmgt.dao.jaxb.JdbcDataCollectionConfigDaoJaxb">
-    <property name="configResource" value="file:${opennms.home}/etc/jdbc-datacollection-config.xml"/>
-  </bean>
+  <bean id="jdbcDataCollectionConfigDao" class="org.opennms.netmgt.dao.jaxb.JdbcDataCollectionConfigDaoJaxb"/>
 
   <bean id="jmxConfigDao" class="org.opennms.netmgt.dao.jmx.JmxConfigDaoJaxb">
     <property name="configResource" value="file:${opennms.home}/etc/jmx-config.xml"/>

@@ -86,11 +86,6 @@ public final class MdtDialout {
       return new MdtDialoutArgs();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.internal_static_mdt_dialout_MdtDialoutArgs_descriptor;
@@ -105,7 +100,7 @@ public final class MdtDialout {
     }
 
     public static final int REQID_FIELD_NUMBER = 1;
-    private long reqId_;
+    private long reqId_ = 0L;
     /**
      * <code>int64 ReqId = 1;</code>
      * @return The reqId.
@@ -116,7 +111,7 @@ public final class MdtDialout {
     }
 
     public static final int DATA_FIELD_NUMBER = 2;
-    private com.google.protobuf.ByteString data_;
+    private com.google.protobuf.ByteString data_ = com.google.protobuf.ByteString.EMPTY;
     /**
      * <code>bytes data = 2;</code>
      * @return The data.
@@ -127,7 +122,8 @@ public final class MdtDialout {
     }
 
     public static final int ERRORS_FIELD_NUMBER = 3;
-    private volatile java.lang.Object errors_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object errors_ = "";
     /**
      * <code>string errors = 3;</code>
      * @return The errors.
@@ -184,7 +180,7 @@ public final class MdtDialout {
       if (!data_.isEmpty()) {
         output.writeBytes(2, data_);
       }
-      if (!getErrorsBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(errors_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, errors_);
       }
       getUnknownFields().writeTo(output);
@@ -204,7 +200,7 @@ public final class MdtDialout {
         size += com.google.protobuf.CodedOutputStream
           .computeBytesSize(2, data_);
       }
-      if (!getErrorsBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(errors_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, errors_);
       }
       size += getUnknownFields().getSerializedSize();
@@ -295,11 +291,13 @@ public final class MdtDialout {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -374,12 +372,10 @@ public final class MdtDialout {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         reqId_ = 0L;
-
         data_ = com.google.protobuf.ByteString.EMPTY;
-
         errors_ = "";
-
         return this;
       }
 
@@ -406,11 +402,22 @@ public final class MdtDialout {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs buildPartial() {
         org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs result = new org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs(this);
-        result.reqId_ = reqId_;
-        result.data_ = data_;
-        result.errors_ = errors_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.nxos.adapter.proto.MdtDialout.MdtDialoutArgs result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.reqId_ = reqId_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.data_ = data_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.errors_ = errors_;
+        }
       }
 
       @java.lang.Override
@@ -465,6 +472,7 @@ public final class MdtDialout {
         }
         if (!other.getErrors().isEmpty()) {
           errors_ = other.errors_;
+          bitField0_ |= 0x00000004;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -495,17 +503,17 @@ public final class MdtDialout {
                 break;
               case 8: {
                 reqId_ = input.readInt64();
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 8
               case 18: {
                 data_ = input.readBytes();
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 18
               case 26: {
                 errors_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000004;
                 break;
               } // case 26
               default: {
@@ -523,6 +531,7 @@ public final class MdtDialout {
         } // finally
         return this;
       }
+      private int bitField0_;
 
       private long reqId_ ;
       /**
@@ -539,8 +548,9 @@ public final class MdtDialout {
        * @return This builder for chaining.
        */
       public Builder setReqId(long value) {
-        
+
         reqId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -549,7 +559,7 @@ public final class MdtDialout {
        * @return This builder for chaining.
        */
       public Builder clearReqId() {
-        
+        bitField0_ = (bitField0_ & ~0x00000001);
         reqId_ = 0L;
         onChanged();
         return this;
@@ -570,11 +580,9 @@ public final class MdtDialout {
        * @return This builder for chaining.
        */
       public Builder setData(com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         data_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -583,7 +591,7 @@ public final class MdtDialout {
        * @return This builder for chaining.
        */
       public Builder clearData() {
-        
+        bitField0_ = (bitField0_ & ~0x00000002);
         data_ = getDefaultInstance().getData();
         onChanged();
         return this;
@@ -630,11 +638,9 @@ public final class MdtDialout {
        */
       public Builder setErrors(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+        if (value == null) { throw new NullPointerException(); }
         errors_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -643,8 +649,8 @@ public final class MdtDialout {
        * @return This builder for chaining.
        */
       public Builder clearErrors() {
-        
         errors_ = getDefaultInstance().getErrors();
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
@@ -655,12 +661,10 @@ public final class MdtDialout {
        */
       public Builder setErrorsBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         errors_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }

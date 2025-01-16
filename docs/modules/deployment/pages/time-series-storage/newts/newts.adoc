@@ -9,65 +9,80 @@ This section describes how to configure your {page-component-title} instance to 
 
 Follow these steps to set up Newts on your {page-component-title} instance:
 
-. Create a configuration file with your time series database settings:
-+
+.Create a configuration file with the time series storage settings
 [source, console]
+----
 sudo vi etc/opennms.properties.d/timeseries.properties
+----
 
-. Configure the storage strategy:
-+
+.Configure Newts as the time series strategy
 [source, properties]
 ----
-org.opennms.rrd.storeByForeignSource=true <1>
-org.opennms.timeseries.strategy=newts <2>
-----
-<1> Associate time series data using the foreign source and ID instead of the database-generated node ID.
-<2> Set time series strategy to use Newts.
-If you are enabling the xref:time-series-storage/timeseries/time-series-storage.adoc#ga-dual-write-newts[dual write plugin] on an existing {page-component-title} installation and you want to keep historical metrics, make sure that the written data has expired before you set `org.opennms.timeseries.strategy` to `newts`.
+# Configure storage strategy
+org.opennms.rrd.storeByForeignSource=true<1>
+org.opennms.timeseries.strategy=newts<2>
 
-. Configure the Newts time series storage connection:
-+
-[source, properties]
-----
-org.opennms.newts.config.hostname=cassandra-ip1,cassandra-ip2 <1>
-org.opennms.newts.config.keyspace=newts <2>
-org.opennms.newts.config.port=9042 <3>
-----
-<1> Host or IP addresses of the Cassandra cluster nodes.
-Can be a comma-separated list.
-<2> Name of the keyspace which is initialized and used.
-<3> Port to connect to Cassandra.
-
-. Set the retention rate and shard rate:
-+
-[source, properties]
-----
 # One year in seconds
-org.opennms.newts.config.ttl=31540000 <1>
+org.opennms.newts.config.ttl=31540000<3>
 
 # Seven days in seconds
-org.opennms.newts.config.resource_shard=604800 <2>
-----
-<1> Retention rate for the time series data.
-<2> Shard metrics every 7 days.
+org.opennms.newts.config.resource_shard=604800<4>
 
-. (Optional) If your {page-component-title} data collection or polling intervals have been modified, set the query minimum and heartbeat rates:
+# Configure Newts time series storage connection
+org.opennms.newts.config.driver_settings_file=/opt/opennms/etc/cassandra-driver.conf<5>
+----
+
+<1> Associate time series data by the foreign ID instead of the database-generated Node-ID.
+<2> Set time series strategy to use `newts`.
+<3> Retention rate for the time series data.
+<4> Shard metrics every 7 days.
+<5> The path to your driver configuration file
+
+.Create a configuration file with the time series storage settings
+[source, console]
+----
+sudo vi etc/cassandra-driver.conf
+----
+
+. Configure the Cassandra driver settings
+[source, properties]
+----
+datastax-java-driver {
+  basic.contact-points = [ "example-node1:9042", "example-node2:9042" ]<1>
+  session-keyspace = "newts"<2>
+  basic.load-balancing-policy {
+    local-datacenter = datacenter1<3>
+  }
+  advanced.auth-provider {
+    class = PlainTextAuthProvider <4>
+    username = cassandra
+    password = cassandra
+  }
+}
+----
+
+<1> `Hostname:port` or `IP address:port` of one or more Cassandra cluster nodes.
+<2> Name of the keyspace which is initialized and used.
+<3> The local datacenter as defined by your Cassandra configuration
+<4> The authentication provider to use with the supplied credentials
+
+.(Optional) If your {page-component-title} data collection or polling intervals have been modified, set the query minimum and heartbeat rates:
 +
 [source, properties]
 ----
 org.opennms.newts.query.minimum_step=30000 <1>
-org.opennms.newts.query.heartbeat=45000 <2>
+org.opennms.newts.query.heartbeat=450000 <2>
 ----
 <1> The shortest collection interval configured for any collectable or pollable service, in milliseconds (in this case, 30 seconds).
 <2> The communication interval for the Newts service, in milliseconds.
-Should be set to 1.5 times the `maximum` value of the collection interval configured for any collectable or pollable service, in milliseconds (in this case, 45 seconds).
+Should be set to 1.5 times the `maximum` value of the collection interval configured for any collectable or pollable service, in milliseconds (in this case, 450 seconds).
 
-. Initialize the Newts schema in Cassandra:
+.Initialize the Newts schema in Cassandra:
 +
 [source, console]
 bin/newts init
 
-. Connect to Cassandra using the CQL shell:
+.Connect to Cassandra using the CQL shell:
 +
 [source, console]
 ----
@@ -79,7 +94,7 @@ cd ${CASSANDRA_HOME}/bin
 
 After you have set the time series database to Newts and configured its settings, you must verify your setup and restart {page-component-title}:
 
-. Verify keyspace initialization:
+.Verify keyspace initialization:
 +
 [source, console]
 ----
@@ -88,7 +103,7 @@ describe table terms;
 describe table samples;
 ----
 
-. Restart {page-component-title} to apply your changes and verify your configuration:
+.Restart {page-component-title} to apply your changes and verify your configuration:
 +
 [source, console]
 systemctl restart opennms

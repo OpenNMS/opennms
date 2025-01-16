@@ -86,7 +86,6 @@
     </feature>
     <feature name="dnsjava" version="${serviceMixDnsjavaVersion}" description="dnsjava">
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.dnsjava/${serviceMixDnsjavaVersion}</bundle>
-        <bundle dependency="true">mvn:dnsjava/dnsjava/${dnsjavaVersion}</bundle>
     </feature>
     <feature name="fop" version="${fopVersion}" description="Apache :: XML Graphics :: FOP">
         <bundle dependency="true">wrap:mvn:org.apache.xmlgraphics/fop/${fopVersion}$Bundle-SymbolicName=org.apache.xmlgraphics.fop&amp;Bundle-Version=${fopVersion}</bundle>
@@ -2059,6 +2058,14 @@
 
         <bundle>mvn:org.opennms.features.collection/org.opennms.features.collection.persistence.osgi/${project.version}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.newts/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-grpc-exporter" description="OpenNMS :: Grpc :: Exporter" version="${project.version}">
+        <feature version="${opennmsApiVersion}" dependency="true">opennms-integration-api</feature>
+        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>mvn:org.mapstruct/mapstruct/${mapstructVersion}</bundle>
+        <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.grpc/org.opennms.features.grpc.exporter/${project.version}</bundle>
     </feature>
 
 </features>

@@ -77,6 +77,7 @@
 ** xref:service-assurance/monitors/PercMonitor.adoc[]
 ** xref:service-assurance/monitors/Pop3Monitor.adoc[]
 ** xref:service-assurance/monitors/PrTableMonitor.adoc[]
+** xref:service-assurance/monitors/PtpMonitor.adoc[]
 ** xref:service-assurance/monitors/RadiusAuthMonitor.adoc[]
 ** xref:service-assurance/monitors/SmbMonitor.adoc[]
 ** xref:service-assurance/monitors/SmtpMonitor.adoc[]

@@ -58,13 +58,16 @@ class EventCreator {
         LOG.debug("{} trap - trapInterface: {}", trapDTO.getVersion(), trapDTO.getAgentAddress());
 
         // Set event data
+        final InetAddress sourceTrapAddress = Optional.ofNullable(trapDTO.getTrapAddress())
+                .orElse(trapAddress);
+
         final EventBuilder eventBuilder = new EventBuilder(null, "trapd");
         eventBuilder.setTime(new Date(trapDTO.getCreationTime()));
         eventBuilder.setCommunity(trapDTO.getCommunity());
         eventBuilder.setSnmpTimeStamp(trapDTO.getTimestamp());
         eventBuilder.setSnmpVersion(trapDTO.getVersion());
-        eventBuilder.setSnmpHost(str(trapAddress));
-        eventBuilder.setInterface(trapAddress);
+        eventBuilder.setSnmpHost(str(sourceTrapAddress));
+        eventBuilder.setInterface(sourceTrapAddress);
         eventBuilder.setHost(InetAddressUtils.toIpAddrString(trapDTO.getAgentAddress()));
 
         // Handle trap identity
@@ -88,7 +91,7 @@ class EventCreator {
         }
 
         // Resolve Node id and set, if known by OpenNMS
-        resolveNodeId(location, trapAddress)
+        resolveNodeId(location, sourceTrapAddress )
                 .ifPresent(eventBuilder::setNodeid);
 
         // If there was no systemId in the trap message, assume that

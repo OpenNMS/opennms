@@ -213,6 +213,12 @@
          <parameter key="rrd-base-name" value="pop3" />
          <parameter key="ds-name" value="pop3" />
       </service>
+      <service name="PTP" interval="300000" user-defined="false" status="on">
+         <pattern><![CDATA[^PTP-.*$]]></pattern>
+         <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+         <parameter key="clock-port" value="${requisition:ptp:clockPort|default}" />
+         <parameter key="port-state" value="${requisition:ptp:portState|default}" />
+      </service>
       <service name="NRPE" interval="300000" user-defined="false" status="on">
          <parameter key="retry" value="${requisition:poller-retry|requisition:retry|detector:retry|3}" />
          <parameter key="timeout" value="${requisition:poller-timeout|requisition:timeout|detector:timeout|3000}" />
@@ -415,5 +421,6 @@
    <monitor service="MS-RDP" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
    <monitor service="ActiveMQ" class-name="org.opennms.netmgt.poller.monitors.ActiveMQMonitor" />
    <monitor service="DeviceConfig" class-name="org.opennms.features.deviceconfig.monitors.DeviceConfigMonitor" />
+   <monitor service="PTP" class-name="org.opennms.netmgt.poller.monitors.PtpMonitor" />
    <monitor service="MinaSSH" class-name="org.opennms.netmgt.poller.monitors.MinaSshMonitor" />
 </poller-configuration>

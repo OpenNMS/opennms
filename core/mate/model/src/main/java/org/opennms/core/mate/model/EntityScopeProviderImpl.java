@@ -248,13 +248,14 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
             if (ipInterface == null) {
                 return EmptyScope.EMPTY;
             }
-
-            return new FallbackScope(transform(Scope.ScopeName.INTERFACE, ipInterface.getMetaData()),
-                    mapIpInterfaceKeys(ipInterface)
-                            .map(INTERFACE, "if-alias", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfAlias))
-                            .map(INTERFACE, "if-description", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfDescr))
-                            .map(INTERFACE, "phy-addr", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getPhysAddr)),
-                                     new SecureCredentialsVaultScope(this.scv)
+            return new FallbackScope(
+                transform(Scope.ScopeName.INTERFACE, ipInterface.getMetaData()),
+                mapIpInterfaceKeys(ipInterface)
+                    .map(INTERFACE, "if-alias", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfAlias))
+                    .map(INTERFACE, "if-description", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfDescr))
+                    .map(INTERFACE, "if-name", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfName))
+                    .map(INTERFACE, "phy-addr", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getPhysAddr)),
+                new SecureCredentialsVaultScope(this.scv)
             );
         });
     }
@@ -285,6 +286,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
             scopes.add(new ObjectScope<>(Scope.ScopeName.INTERFACE, snmpInterface)
                     .map(INTERFACE, "if-alias", (i) -> Optional.ofNullable(i.getIfAlias()))
                     .map(INTERFACE, "if-description", (i) -> Optional.ofNullable(i.getIfDescr()))
+                    .map(INTERFACE, "if-name", (i) -> Optional.ofNullable(i.getIfName())) 
                     .map(INTERFACE, "phy-addr", (i) -> Optional.ofNullable(i.getPhysAddr())));
 
             // IP interface facts w/ meta-data extracted from IP interface

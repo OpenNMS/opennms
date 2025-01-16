@@ -108,6 +108,9 @@ The following keys are available under this context:
 | interface:if-description
 | The SNMP interface description
 
+| interface:if-name
+| The SNMP interface name, i.e. ifName
+
 | interface:phy-addr
 | The interface's physical address
 |===

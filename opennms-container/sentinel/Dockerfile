@@ -23,7 +23,7 @@
 ##
 # Use Java base image and setup required RPMs as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.4.0.b269-jre-17"
+ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.5.2.b283-jre-17"
 
 FROM ${BASE_IMAGE} as sentinel-tarball
 
@@ -54,13 +54,6 @@ SHELL ["/bin/bash", "-c"]
 RUN microdnf -y install ${REQUIRED_RPMS} && \
     rm -rf /var/cache/yum
 
-##
-# Download plugins
-##
-FROM ${BASE_IMAGE} as sentinel-plugins
-
-COPY plugins.sh /tmp/plugins.sh 
-RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
 
 ##
 # Install and setup OpenNMS Sentinel
@@ -70,8 +63,6 @@ FROM sentinel-base
 # If you copy from /usr/share/sentinel to /usr/share/sentinel the permissions are not preserved
 # We would have 755 for sentinel:root instead of 775 and prevents writing lock files in /usr/share/sentinel
 COPY --chown=10001:0 --from=sentinel-tarball /opt/usr-share /usr/share
-
-COPY --chown=10001:0 --from=sentinel-plugins /opt/usr-plugins /usr/share/opennms/deploy
 
 SHELL ["/bin/bash", "-c"]
 

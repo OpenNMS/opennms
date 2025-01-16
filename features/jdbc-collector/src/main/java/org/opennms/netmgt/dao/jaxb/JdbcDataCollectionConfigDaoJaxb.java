@@ -21,42 +21,53 @@
  */
 package org.opennms.netmgt.dao.jaxb;
 
-import org.opennms.core.xml.AbstractJaxbConfigDao;
+import org.opennms.core.xml.AbstractMergingJaxbConfigDao;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollection;
 import org.opennms.netmgt.config.jdbc.JdbcDataCollectionConfig;
 import org.opennms.netmgt.dao.JdbcDataCollectionConfigDao;
 
-public class JdbcDataCollectionConfigDaoJaxb extends AbstractJaxbConfigDao<JdbcDataCollectionConfig, JdbcDataCollectionConfig> implements JdbcDataCollectionConfigDao {
+import java.nio.file.Paths;
+
+public class JdbcDataCollectionConfigDaoJaxb extends AbstractMergingJaxbConfigDao<JdbcDataCollectionConfig, JdbcDataCollectionConfig> implements JdbcDataCollectionConfigDao {
 
     public JdbcDataCollectionConfigDaoJaxb() {
-        super(JdbcDataCollectionConfig.class, "JDBC Data Collection Configuration");
+        super(JdbcDataCollectionConfig.class, "JDBC Data Collection Configuration",
+                Paths.get("etc", "jdbc-datacollection-config.xml"),
+                Paths.get("etc", "jdbc-datacollection.d"));
     }
 
     @Override
     public JdbcDataCollection getDataCollectionByName(String name) {
-        JdbcDataCollectionConfig jdcc = getContainer().getObject();
+        JdbcDataCollectionConfig jdcc = getObject();
         for (JdbcDataCollection dataCol : jdcc.getJdbcDataCollections()) {
             if(dataCol.getName().equals(name)) {
                 return dataCol;
             }
         }
-
         return null;
     }
 
     @Override
+    public JdbcDataCollectionConfig mergeConfigs(JdbcDataCollectionConfig source, JdbcDataCollectionConfig target) {
+        if (target == null) {
+            target = new JdbcDataCollectionConfig();
+        }
+        return target.merge(source);
+    }
+
+    @Override
     public JdbcDataCollection getDataCollectionByIndex(int idx) {
-        JdbcDataCollectionConfig jdcc = getContainer().getObject();
+        JdbcDataCollectionConfig jdcc = getObject();
         return jdcc.getJdbcDataCollections().get(idx);
     }
 
     @Override
     public JdbcDataCollectionConfig getConfig() {
-        return getContainer().getObject();
+        return getObject();
     }
 
     @Override
-    protected JdbcDataCollectionConfig translateConfig(JdbcDataCollectionConfig jaxbConfig) {
+    public JdbcDataCollectionConfig translateConfig(JdbcDataCollectionConfig jaxbConfig) {
         return jaxbConfig;
     }
 

@@ -140,6 +140,7 @@ public class EntityScopeProviderIT {
         assertThat(scope.get(new ContextKey("interface", "if-index")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE, "1"))));
         assertThat(scope.get(new ContextKey("interface", "if-alias")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE, "Initial ifAlias value"))));
         assertThat(scope.get(new ContextKey("interface", "if-description")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE, "ATM0"))));
+        assertThat(scope.get(new ContextKey("interface", "if-name")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE, "atm0"))));
         assertThat(scope.get(new ContextKey("interface", "phy-addr")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE, "34E45604BB69"))));
     }
 

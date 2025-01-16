@@ -30,6 +30,7 @@
     <module>../features/bsm/rest/api</module>
     <module>../features/bsm/service/api</module>
     <module>../features/collection/api</module>
+    <module>../features/collection/client-rpc</module>
     <module>../features/collection/test-api</module>
     <module>../features/collection/thresholding/api</module>
     <module>../features/config/dao/api</module>

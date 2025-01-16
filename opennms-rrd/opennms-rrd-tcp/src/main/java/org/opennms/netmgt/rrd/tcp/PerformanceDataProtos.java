@@ -142,7 +142,8 @@ public final class PerformanceDataProtos {
       path_ = "";
       owner_ = "";
       dblValue_ = emptyDoubleList();
-      strValue_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      strValue_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
     }
 
     @java.lang.Override
@@ -152,11 +153,6 @@ public final class PerformanceDataProtos {
       return new PerformanceDataReading();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.internal_static_PerformanceDataReading_descriptor;
@@ -172,7 +168,8 @@ public final class PerformanceDataProtos {
 
     private int bitField0_;
     public static final int PATH_FIELD_NUMBER = 1;
-    private volatile java.lang.Object path_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object path_ = "";
     /**
      * <code>required string path = 1;</code>
      * @return Whether the path field is set.
@@ -220,7 +217,8 @@ public final class PerformanceDataProtos {
     }
 
     public static final int OWNER_FIELD_NUMBER = 2;
-    private volatile java.lang.Object owner_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object owner_ = "";
     /**
      * <code>required string owner = 2;</code>
      * @return Whether the owner field is set.
@@ -268,7 +266,7 @@ public final class PerformanceDataProtos {
     }
 
     public static final int TIMESTAMP_FIELD_NUMBER = 3;
-    private long timestamp_;
+    private long timestamp_ = 0L;
     /**
      * <code>required uint64 timestamp = 3;</code>
      * @return Whether the timestamp field is set.
@@ -287,7 +285,9 @@ public final class PerformanceDataProtos {
     }
 
     public static final int DBLVALUE_FIELD_NUMBER = 4;
-    private com.google.protobuf.Internal.DoubleList dblValue_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.Internal.DoubleList dblValue_ =
+        emptyDoubleList();
     /**
      * <code>repeated double dblValue = 4;</code>
      * @return A list containing the dblValue.
@@ -314,7 +314,9 @@ public final class PerformanceDataProtos {
     }
 
     public static final int STRVALUE_FIELD_NUMBER = 5;
-    private com.google.protobuf.LazyStringList strValue_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList strValue_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <code>repeated string strValue = 5;</code>
      * @return A list containing the strValue.
@@ -537,11 +539,13 @@ public final class PerformanceDataProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -616,16 +620,13 @@ public final class PerformanceDataProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         path_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         owner_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
         timestamp_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000004);
         dblValue_ = emptyDoubleList();
-        bitField0_ = (bitField0_ & ~0x00000008);
-        strValue_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000010);
+        strValue_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
         return this;
       }
 
@@ -652,33 +653,35 @@ public final class PerformanceDataProtos {
       @java.lang.Override
       public org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading buildPartial() {
         org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading result = new org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.path_ = path_;
           to_bitField0_ |= 0x00000001;
         }
-        result.path_ = path_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.owner_ = owner_;
           to_bitField0_ |= 0x00000002;
         }
-        result.owner_ = owner_;
         if (((from_bitField0_ & 0x00000004) != 0)) {
           result.timestamp_ = timestamp_;
           to_bitField0_ |= 0x00000004;
         }
-        if (((bitField0_ & 0x00000008) != 0)) {
+        if (((from_bitField0_ & 0x00000008) != 0)) {
           dblValue_.makeImmutable();
-          bitField0_ = (bitField0_ & ~0x00000008);
+          result.dblValue_ = dblValue_;
         }
-        result.dblValue_ = dblValue_;
-        if (((bitField0_ & 0x00000010) != 0)) {
-          strValue_ = strValue_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000010);
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          strValue_.makeImmutable();
+          result.strValue_ = strValue_;
         }
-        result.strValue_ = strValue_;
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -726,13 +729,13 @@ public final class PerformanceDataProtos {
       public Builder mergeFrom(org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading other) {
         if (other == org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading.getDefaultInstance()) return this;
         if (other.hasPath()) {
-          bitField0_ |= 0x00000001;
           path_ = other.path_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.hasOwner()) {
-          bitField0_ |= 0x00000002;
           owner_ = other.owner_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         if (other.hasTimestamp()) {
@@ -741,7 +744,8 @@ public final class PerformanceDataProtos {
         if (!other.dblValue_.isEmpty()) {
           if (dblValue_.isEmpty()) {
             dblValue_ = other.dblValue_;
-            bitField0_ = (bitField0_ & ~0x00000008);
+            dblValue_.makeImmutable();
+            bitField0_ |= 0x00000008;
           } else {
             ensureDblValueIsMutable();
             dblValue_.addAll(other.dblValue_);
@@ -751,7 +755,7 @@ public final class PerformanceDataProtos {
         if (!other.strValue_.isEmpty()) {
           if (strValue_.isEmpty()) {
             strValue_ = other.strValue_;
-            bitField0_ = (bitField0_ & ~0x00000010);
+            bitField0_ |= 0x00000010;
           } else {
             ensureStrValueIsMutable();
             strValue_.addAll(other.strValue_);
@@ -817,7 +821,8 @@ public final class PerformanceDataProtos {
               case 34: {
                 int length = input.readRawVarint32();
                 int limit = input.pushLimit(length);
-                ensureDblValueIsMutable();
+                int alloc = length > 4096 ? 4096 : length;
+                ensureDblValueIsMutable(alloc / 8);
                 while (input.getBytesUntilLimit() > 0) {
                   dblValue_.addDouble(input.readDouble());
                 }
@@ -897,11 +902,9 @@ public final class PerformanceDataProtos {
        */
       public Builder setPath(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         path_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -910,8 +913,8 @@ public final class PerformanceDataProtos {
        * @return This builder for chaining.
        */
       public Builder clearPath() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         path_ = getDefaultInstance().getPath();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -922,11 +925,9 @@ public final class PerformanceDataProtos {
        */
       public Builder setPathBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         path_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -981,11 +982,9 @@ public final class PerformanceDataProtos {
        */
       public Builder setOwner(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+        if (value == null) { throw new NullPointerException(); }
         owner_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -994,8 +993,8 @@ public final class PerformanceDataProtos {
        * @return This builder for chaining.
        */
       public Builder clearOwner() {
-        bitField0_ = (bitField0_ & ~0x00000002);
         owner_ = getDefaultInstance().getOwner();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -1006,11 +1005,9 @@ public final class PerformanceDataProtos {
        */
       public Builder setOwnerBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+        if (value == null) { throw new NullPointerException(); }
         owner_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -1038,8 +1035,9 @@ public final class PerformanceDataProtos {
        * @return This builder for chaining.
        */
       public Builder setTimestamp(long value) {
-        bitField0_ |= 0x00000004;
+
         timestamp_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -1056,10 +1054,16 @@ public final class PerformanceDataProtos {
 
       private com.google.protobuf.Internal.DoubleList dblValue_ = emptyDoubleList();
       private void ensureDblValueIsMutable() {
-        if (!((bitField0_ & 0x00000008) != 0)) {
-          dblValue_ = mutableCopy(dblValue_);
-          bitField0_ |= 0x00000008;
-         }
+        if (!dblValue_.isModifiable()) {
+          dblValue_ = makeMutableCopy(dblValue_);
+        }
+        bitField0_ |= 0x00000008;
+      }
+      private void ensureDblValueIsMutable(int capacity) {
+        if (!dblValue_.isModifiable()) {
+          dblValue_ = makeMutableCopy(dblValue_, capacity);
+        }
+        bitField0_ |= 0x00000008;
       }
       /**
        * <code>repeated double dblValue = 4;</code>
@@ -1067,8 +1071,8 @@ public final class PerformanceDataProtos {
        */
       public java.util.List<java.lang.Double>
           getDblValueList() {
-        return ((bitField0_ & 0x00000008) != 0) ?
-                 java.util.Collections.unmodifiableList(dblValue_) : dblValue_;
+        dblValue_.makeImmutable();
+        return dblValue_;
       }
       /**
        * <code>repeated double dblValue = 4;</code>
@@ -1093,8 +1097,10 @@ public final class PerformanceDataProtos {
        */
       public Builder setDblValue(
           int index, double value) {
+
         ensureDblValueIsMutable();
         dblValue_.setDouble(index, value);
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -1104,8 +1110,10 @@ public final class PerformanceDataProtos {
        * @return This builder for chaining.
        */
       public Builder addDblValue(double value) {
+
         ensureDblValueIsMutable();
         dblValue_.addDouble(value);
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -1119,6 +1127,7 @@ public final class PerformanceDataProtos {
         ensureDblValueIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, dblValue_);
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -1133,12 +1142,13 @@ public final class PerformanceDataProtos {
         return this;
       }
 
-      private com.google.protobuf.LazyStringList strValue_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList strValue_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensureStrValueIsMutable() {
-        if (!((bitField0_ & 0x00000010) != 0)) {
+        if (!strValue_.isModifiable()) {
           strValue_ = new com.google.protobuf.LazyStringArrayList(strValue_);
-          bitField0_ |= 0x00000010;
-         }
+        }
+        bitField0_ |= 0x00000010;
       }
       /**
        * <code>repeated string strValue = 5;</code>
@@ -1146,7 +1156,8 @@ public final class PerformanceDataProtos {
        */
       public com.google.protobuf.ProtocolStringList
           getStrValueList() {
-        return strValue_.getUnmodifiableView();
+        strValue_.makeImmutable();
+        return strValue_;
       }
       /**
        * <code>repeated string strValue = 5;</code>
@@ -1180,11 +1191,10 @@ public final class PerformanceDataProtos {
        */
       public Builder setStrValue(
           int index, java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureStrValueIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureStrValueIsMutable();
         strValue_.set(index, value);
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -1195,11 +1205,10 @@ public final class PerformanceDataProtos {
        */
       public Builder addStrValue(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureStrValueIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureStrValueIsMutable();
         strValue_.add(value);
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -1213,6 +1222,7 @@ public final class PerformanceDataProtos {
         ensureStrValueIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, strValue_);
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -1221,8 +1231,9 @@ public final class PerformanceDataProtos {
        * @return This builder for chaining.
        */
       public Builder clearStrValue() {
-        strValue_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000010);
+        strValue_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000010);;
         onChanged();
         return this;
       }
@@ -1233,11 +1244,10 @@ public final class PerformanceDataProtos {
        */
       public Builder addStrValueBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureStrValueIsMutable();
+        if (value == null) { throw new NullPointerException(); }
+        ensureStrValueIsMutable();
         strValue_.add(value);
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -1356,11 +1366,6 @@ public final class PerformanceDataProtos {
       return new PerformanceDataReadings();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.internal_static_PerformanceDataReadings_descriptor;
@@ -1375,6 +1380,7 @@ public final class PerformanceDataProtos {
     }
 
     public static final int MESSAGE_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReading> message_;
     /**
      * <code>repeated .PerformanceDataReading message = 1;</code>
@@ -1531,11 +1537,13 @@ public final class PerformanceDataProtos {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1610,6 +1618,7 @@ public final class PerformanceDataProtos {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (messageBuilder_ == null) {
           message_ = java.util.Collections.emptyList();
         } else {
@@ -1643,7 +1652,13 @@ public final class PerformanceDataProtos {
       @java.lang.Override
       public org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings buildPartial() {
         org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings result = new org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings(this);
-        int from_bitField0_ = bitField0_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings result) {
         if (messageBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             message_ = java.util.Collections.unmodifiableList(message_);
@@ -1653,8 +1668,10 @@ public final class PerformanceDataProtos {
         } else {
           result.message_ = messageBuilder_.build();
         }
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings result) {
+        int from_bitField0_ = bitField0_;
       }
 
       @java.lang.Override

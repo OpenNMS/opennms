@@ -481,10 +481,7 @@ public class DNSServer {
             if (response.findRRset(name, rrset.getType(), s)) return;
         }
         if ((flags & FLAG_SIGONLY) == 0) {
-            @SuppressWarnings("unchecked")
-            final Iterator<Record> it = rrset.rrs().iterator();
-            while (it.hasNext()) {
-                final Record r = it.next();
+            for (final Record r : rrset.rrs()) {
                 if (r.getName().isWild() && !name.isWild()) {
                     response.addRecord(r.withName(name), section);
                 } else {
@@ -493,10 +490,7 @@ public class DNSServer {
             }
         }
         if ((flags & (FLAG_SIGONLY | FLAG_DNSSECOK)) != 0) {
-            @SuppressWarnings("unchecked")
-            final Iterator<RRSIGRecord> it = rrset.sigs().iterator();
-            while (it.hasNext()) {
-                final Record r = it.next();
+            for (final Record r : rrset.sigs()) {
                 if (r.getName().isWild() && !name.isWild()) {
                     response.addRecord(r.withName(name), section);
                 } else {
@@ -519,10 +513,7 @@ public class DNSServer {
         final SetResponse sr = cache.lookupRecords(name, Type.NS, Credibility.HINT);
         if (!sr.isDelegation()) return;
         final RRset nsRecords = sr.getNS();
-        @SuppressWarnings("unchecked")
-        final Iterator<Record> it = nsRecords.rrs().iterator();
-        while (it.hasNext()) {
-            final Record r = it.next();
+        for (final Record r : nsRecords.rrs()) {
             response.addRecord(r, Section.AUTHORITY);
         }
     }
@@ -535,8 +526,7 @@ public class DNSServer {
 
     private void addAdditional2(final Message response, final int section, final int flags) {
         final Record[] records = response.getSectionArray(section);
-        for (int i = 0; i < records.length; i++) {
-            final Record r = records[i];
+        for (final Record r : records) {
             final Name glueName = r.getAdditionalName();
             if (glueName != null) addGlue(response, glueName, flags);
         }
@@ -606,8 +596,9 @@ public class DNSServer {
             rcode = addAnswer(response, newname, type, dclass, iterations + 1, flags);
         } else if (sr.isSuccessful()) {
             final List<RRset> rrsets = sr.answers();
-            for (int i = 0; i < rrsets.size(); i++)
-                addRRset(name, response, rrsets.get(i), Section.ANSWER, flags);
+            for (final RRset rrset : rrsets) {
+                addRRset(name, response, rrset, Section.ANSWER, flags);
+            }
             if (zone != null) {
                 addNS(response, zone, flags);
                 if (iterations == 0)
@@ -624,7 +615,6 @@ public class DNSServer {
         if (zone == null) {
             return errorMessage(query, Rcode.REFUSED);
         }
-        @SuppressWarnings("unchecked")
         final Iterator<RRset> it = zone.AXFR();
         try {
             final DataOutputStream dataOut = new DataOutputStream(s.getOutputStream());

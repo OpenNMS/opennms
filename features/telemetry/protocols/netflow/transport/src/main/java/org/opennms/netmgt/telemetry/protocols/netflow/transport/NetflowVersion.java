@@ -28,7 +28,7 @@ package org.opennms.netmgt.telemetry.protocols.netflow.transport;
  * Protobuf enum {@code NetflowVersion}
  */
 public enum NetflowVersion
-    implements com.google.protobuf.ProtocolMessageEnum {
+        implements com.google.protobuf.ProtocolMessageEnum {
   /**
    * <code>V5 = 0;</code>
    */
@@ -61,7 +61,7 @@ public enum NetflowVersion
   public final int getNumber() {
     if (this == UNRECOGNIZED) {
       throw new java.lang.IllegalArgumentException(
-          "Can't get the number of an unknown enum value.");
+              "Can't get the number of an unknown enum value.");
     }
     return value;
   }
@@ -90,41 +90,41 @@ public enum NetflowVersion
   }
 
   public static com.google.protobuf.Internal.EnumLiteMap<NetflowVersion>
-      internalGetValueMap() {
+  internalGetValueMap() {
     return internalValueMap;
   }
   private static final com.google.protobuf.Internal.EnumLiteMap<
-      NetflowVersion> internalValueMap =
-        new com.google.protobuf.Internal.EnumLiteMap<NetflowVersion>() {
-          public NetflowVersion findValueByNumber(int number) {
-            return NetflowVersion.forNumber(number);
-          }
-        };
+          NetflowVersion> internalValueMap =
+          new com.google.protobuf.Internal.EnumLiteMap<NetflowVersion>() {
+            public NetflowVersion findValueByNumber(int number) {
+              return NetflowVersion.forNumber(number);
+            }
+          };
 
   public final com.google.protobuf.Descriptors.EnumValueDescriptor
-      getValueDescriptor() {
+  getValueDescriptor() {
     if (this == UNRECOGNIZED) {
       throw new java.lang.IllegalStateException(
-          "Can't get the descriptor of an unrecognized enum value.");
+              "Can't get the descriptor of an unrecognized enum value.");
     }
     return getDescriptor().getValues().get(ordinal());
   }
   public final com.google.protobuf.Descriptors.EnumDescriptor
-      getDescriptorForType() {
+  getDescriptorForType() {
     return getDescriptor();
   }
   public static final com.google.protobuf.Descriptors.EnumDescriptor
-      getDescriptor() {
+  getDescriptor() {
     return org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowProtos.getDescriptor().getEnumTypes().get(2);
   }
 
   private static final NetflowVersion[] VALUES = values();
 
   public static NetflowVersion valueOf(
-      com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+          com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
     if (desc.getType() != getDescriptor()) {
       throw new java.lang.IllegalArgumentException(
-        "EnumValueDescriptor is not for this type.");
+              "EnumValueDescriptor is not for this type.");
     }
     if (desc.getIndex() == -1) {
       return UNRECOGNIZED;

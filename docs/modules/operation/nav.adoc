@@ -198,6 +198,8 @@
 *** xref:deep-dive/kafka-producer/configure-kafka.adoc[]
 *** xref:deep-dive/kafka-producer/shell-commands.adoc[]
 
+** xref:deep-dive/grpc-exporter/grpc-exporter.adoc[]
+
 ** xref:deep-dive/alarm-correlation/situation-feedback.adoc[]
 ** xref:deep-dive/meta-data.adoc[]
 ** xref:deep-dive/search.adoc[]

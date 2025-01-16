@@ -22,8 +22,11 @@
 package org.opennms.netmgt.provision.service.dns;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -45,6 +48,8 @@ import org.xbill.DNS.Record;
 import org.xbill.DNS.Type;
 import org.xbill.DNS.ZoneTransferException;
 import org.xbill.DNS.ZoneTransferIn;
+import org.xbill.DNS.ZoneTransferIn.Delta;
+import org.xbill.DNS.ZoneTransferIn.ZoneTransferHandler;
 
 import com.google.common.base.Strings;
 
@@ -70,26 +75,54 @@ public class DnsRequisitionProvider extends AbstractRequisitionProvider<DnsRequi
     @Override
     public Requisition getRequisitionFor(DnsRequisitionRequest request) {
         ZoneTransferIn xfer = null;
-        List<Record> records = null;
+        final Set<Record> records = new LinkedHashSet<>();
+
+        final var handler = new ZoneTransferHandler() {
+            @Override
+            public void startAXFR() throws ZoneTransferException {
+            }
+
+            @Override
+            public void startIXFR() throws ZoneTransferException {
+            }
+
+            @Override
+            public void startIXFRDeletes(Record soa) throws ZoneTransferException {
+            }
+
+            @Override
+            public void startIXFRAdds(Record soa) throws ZoneTransferException {
+            }
+
+            @Override
+            public void handleRecord(final Record r) throws ZoneTransferException {
+                records.add(r);
+            }
+        };
 
         LOG.debug("connecting to host {}:{}", request.getHost(), request.getPort());
         try {
+            /*
+             * TODO: if we're doing IXFR, we get "delta" responses that includes deletes,
+             * we should support removing those nodes from the req.
+             */
             try {
                 xfer = ZoneTransferIn.newIXFR(new Name(request.getZone()), request.getSerial(),
                         request.getFallback(), request.getHost(), request.getPort(), null);
-                records = getRecords(xfer);
+                xfer.run(handler);
             } catch (ZoneTransferException e) {
                 // Fallback to AXFR
                 String message = "IXFR not supported trying AXFR: " + e;
                 LOG.warn(message, e);
                 xfer = ZoneTransferIn.newAXFR(new Name(request.getZone()), request.getHost(), null);
-                records = getRecords(xfer);
+                xfer.run(handler);
             }
         } catch (IOException | ZoneTransferException e) {
             throw new RuntimeException(e);
         }
 
-        if (records.size() > 0) {
+        LOG.debug("records={}", records);
+        if (!records.isEmpty()) {
             // for now, set the foreign source to the specified dns zone
             final Requisition r = new Requisition(request.getForeignSource());
             for (Record rec : records) {
@@ -101,13 +134,7 @@ public class DnsRequisitionProvider extends AbstractRequisitionProvider<DnsRequi
         }
         return null;
     }
-
-    @SuppressWarnings("unchecked")
-    private static List<Record> getRecords(ZoneTransferIn xfer) throws IOException, ZoneTransferException {
-        xfer.run();
-        return xfer.getAXFR();
-    }
-
+    
     /**
      * Determines if the record is an A record and if the canonical name matches
      * the expression supplied in the URL, if one was supplied.
@@ -119,8 +146,9 @@ public class DnsRequisitionProvider extends AbstractRequisitionProvider<DnsRequi
         LOG.info("matchingRecord: checking rec: {} to see if it should be imported...", rec);
 
         boolean matches = false;
-        if ("A".equals(Type.string(rec.getType())) || "AAAA".equals(Type.string(rec.getType()))) {
-            LOG.debug("matchingRecord: record is an {} record, continuing...", Type.string(rec.getType()));
+        final var stringType = Type.string(rec.getType());
+        if ("A".equals(stringType) || "AAAA".equals(stringType)) {
+            LOG.debug("matchingRecord: record is an {} record, continuing...", stringType);
 
             final String expression = request.getExpression();
             if (expression != null) {
@@ -134,8 +162,10 @@ public class DnsRequisitionProvider extends AbstractRequisitionProvider<DnsRequi
                     matches = true;
                 } else {
                     // include the IP address and try again
-                    LOG.debug("matchingRecord: attempting to match record: [{} {}] with expression: [{}]",
-                            rec.getName(), rec.rdataToString(), expression);
+                    if (LOG.isDebugEnabled()) {
+                        LOG.debug("matchingRecord: attempting to match record: [{} {}] with expression: [{}]",
+                                rec.getName(), rec.rdataToString(), expression);
+                    }
                     m = p.matcher(rec.getName().toString() + " " + rec.rdataToString());
                     if (m.matches()) {
                         matches = true;
@@ -143,8 +173,7 @@ public class DnsRequisitionProvider extends AbstractRequisitionProvider<DnsRequi
                 }
                 LOG.debug("matchingRecord: record matches expression: {}", matches);
             } else {
-                LOG.debug("matchingRecord: no expression for this zone, returning valid match for this {} record...",
-                        Type.string(rec.getType()));
+                LOG.debug("matchingRecord: no expression for this zone, returning valid match for this {} record...", stringType);
                 matches = true;
             }
         }

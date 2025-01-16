@@ -232,7 +232,6 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "ifttt-config.xml", IfTttConfig.class, true, null);
         addFile(Source.CONFIG, "jasper-reports.xml", LocalJasperReports.class, false, null);
         addFile(Source.CONFIG, "javamail-configuration.xml", JavamailConfiguration.class, false, null);
-        addFile(Source.CONFIG, "jdbc-datacollection-config.xml", JdbcDataCollectionConfig.class, true, null);
         addFile(Source.CONFIG, "jms-northbounder-configuration.xml", JmsNorthbounderConfig.class, true, null);
         addFile(Source.CONFIG, "jmx-config.xml", JmxConfig.class, true, null);
         addFile(Source.CONFIG, "jmx-datacollection-config.xml", JmxDatacollectionConfig.class, true, null);
@@ -348,6 +347,14 @@ public class WillItUnmarshalIT {
                     file.getPath(),
                     PrometheusDatacollectionConfig.class,
                     false, null);
+        }
+
+        // Add all jdbc-datacollection configuration files
+        addFile(Source.CONFIG, "jdbc-datacollection-config.xml", JdbcDataCollectionConfig.class, false, null);
+        for (final File file : FileUtils.listFiles(new File(getDaemonEtcDirectory(), "jdbc-datacollection.d"),
+                                                   new String[] { "xml" },
+                                                   true)) {
+            addFile(Source.ABSOLUTE, file.getPath(), JdbcDataCollectionConfig.class, false, null);
         }
 
         // Add all resource-types configuration files

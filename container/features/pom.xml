@@ -307,6 +307,8 @@
                           <feature>opennms-poller-monitors-core</feature>
                           <feature>opennms-telemetry-daemon</feature>
                           <feature>opennms-timeseries-api</feature>
+                          <feature>opennms-timeseries-api</feature>
+                          <feature>opennms-grpc-exporter</feature>
                           <feature>vaadin</feature>
 
                           <!-- minion features -->
@@ -809,6 +811,12 @@
     <dependency>
       <groupId>org.opennms.features.kafka</groupId>
       <artifactId>org.opennms.features.kafka.consumer</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.grpc</groupId>
+      <artifactId>org.opennms.features.grpc.exporter</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>

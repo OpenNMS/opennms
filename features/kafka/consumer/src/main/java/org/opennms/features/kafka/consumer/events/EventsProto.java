@@ -27,13 +27,13 @@ package org.opennms.features.kafka.consumer.events;
 public final class EventsProto {
   private EventsProto() {}
   public static void registerAllExtensions(
-      com.google.protobuf.ExtensionRegistryLite registry) {
+          com.google.protobuf.ExtensionRegistryLite registry) {
   }
 
   public static void registerAllExtensions(
-      com.google.protobuf.ExtensionRegistry registry) {
+          com.google.protobuf.ExtensionRegistry registry) {
     registerAllExtensions(
-        (com.google.protobuf.ExtensionRegistryLite) registry);
+            (com.google.protobuf.ExtensionRegistryLite) registry);
   }
   /**
    * <pre>
@@ -44,7 +44,7 @@ public final class EventsProto {
    * Protobuf enum {@code Severity}
    */
   public enum Severity
-      implements com.google.protobuf.ProtocolMessageEnum {
+          implements com.google.protobuf.ProtocolMessageEnum {
     /**
      * <code>INDETERMINATE = 0;</code>
      */
@@ -109,7 +109,7 @@ public final class EventsProto {
     public final int getNumber() {
       if (this == UNRECOGNIZED) {
         throw new java.lang.IllegalArgumentException(
-            "Can't get the number of an unknown enum value.");
+                "Can't get the number of an unknown enum value.");
       }
       return value;
     }
@@ -142,41 +142,41 @@ public final class EventsProto {
     }
 
     public static com.google.protobuf.Internal.EnumLiteMap<Severity>
-        internalGetValueMap() {
+    internalGetValueMap() {
       return internalValueMap;
     }
     private static final com.google.protobuf.Internal.EnumLiteMap<
-        Severity> internalValueMap =
-          new com.google.protobuf.Internal.EnumLiteMap<Severity>() {
-            public Severity findValueByNumber(int number) {
-              return Severity.forNumber(number);
-            }
-          };
+            Severity> internalValueMap =
+            new com.google.protobuf.Internal.EnumLiteMap<Severity>() {
+              public Severity findValueByNumber(int number) {
+                return Severity.forNumber(number);
+              }
+            };
 
     public final com.google.protobuf.Descriptors.EnumValueDescriptor
-        getValueDescriptor() {
+    getValueDescriptor() {
       if (this == UNRECOGNIZED) {
         throw new java.lang.IllegalStateException(
-            "Can't get the descriptor of an unrecognized enum value.");
+                "Can't get the descriptor of an unrecognized enum value.");
       }
       return getDescriptor().getValues().get(ordinal());
     }
     public final com.google.protobuf.Descriptors.EnumDescriptor
-        getDescriptorForType() {
+    getDescriptorForType() {
       return getDescriptor();
     }
     public static final com.google.protobuf.Descriptors.EnumDescriptor
-        getDescriptor() {
+    getDescriptor() {
       return org.opennms.features.kafka.consumer.events.EventsProto.getDescriptor().getEnumTypes().get(0);
     }
 
     private static final Severity[] VALUES = values();
 
     public static Severity valueOf(
-        com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
+            com.google.protobuf.Descriptors.EnumValueDescriptor desc) {
       if (desc.getType() != getDescriptor()) {
         throw new java.lang.IllegalArgumentException(
-          "EnumValueDescriptor is not for this type.");
+                "EnumValueDescriptor is not for this type.");
       }
       if (desc.getIndex() == -1) {
         return UNRECOGNIZED;
@@ -194,8 +194,8 @@ public final class EventsProto {
   }
 
   public interface EventParameterOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:EventParameter)
-      com.google.protobuf.MessageOrBuilder {
+          // @@protoc_insertion_point(interface_extends:EventParameter)
+          com.google.protobuf.MessageOrBuilder {
 
     /**
      * <code>string name = 1;</code>
@@ -207,7 +207,7 @@ public final class EventsProto {
      * @return The bytes for name.
      */
     com.google.protobuf.ByteString
-        getNameBytes();
+    getNameBytes();
 
     /**
      * <code>string value = 2;</code>
@@ -219,16 +219,16 @@ public final class EventsProto {
      * @return The bytes for value.
      */
     com.google.protobuf.ByteString
-        getValueBytes();
+    getValueBytes();
   }
   /**
    * Protobuf type {@code EventParameter}
    */
   public static final class EventParameter extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:EventParameter)
-      EventParameterOrBuilder {
-  private static final long serialVersionUID = 0L;
+          com.google.protobuf.GeneratedMessageV3 implements
+          // @@protoc_insertion_point(message_implements:EventParameter)
+          EventParameterOrBuilder {
+    private static final long serialVersionUID = 0L;
     // Use EventParameter.newBuilder() to construct.
     private EventParameter(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
@@ -241,30 +241,26 @@ public final class EventsProto {
     @java.lang.Override
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(
-        UnusedPrivateParameter unused) {
+            UnusedPrivateParameter unused) {
       return new EventParameter();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
+    getDescriptor() {
       return org.opennms.features.kafka.consumer.events.EventsProto.internal_static_EventParameter_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
+    internalGetFieldAccessorTable() {
       return org.opennms.features.kafka.consumer.events.EventsProto.internal_static_EventParameter_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.class, org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.Builder.class);
+              .ensureFieldAccessorsInitialized(
+                      org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.class, org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.Builder.class);
     }
 
     public static final int NAME_FIELD_NUMBER = 1;
-    private volatile java.lang.Object name_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object name_ = "";
     /**
      * <code>string name = 1;</code>
      * @return The name.
@@ -275,8 +271,8 @@ public final class EventsProto {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
+        com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         name_ = s;
         return s;
@@ -288,12 +284,12 @@ public final class EventsProto {
      */
     @java.lang.Override
     public com.google.protobuf.ByteString
-        getNameBytes() {
+    getNameBytes() {
       java.lang.Object ref = name_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
+        com.google.protobuf.ByteString b =
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         name_ = b;
         return b;
       } else {
@@ -302,7 +298,8 @@ public final class EventsProto {
     }
 
     public static final int VALUE_FIELD_NUMBER = 2;
-    private volatile java.lang.Object value_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object value_ = "";
     /**
      * <code>string value = 2;</code>
      * @return The value.
@@ -313,8 +310,8 @@ public final class EventsProto {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
+        com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         value_ = s;
         return s;
@@ -326,12 +323,12 @@ public final class EventsProto {
      */
     @java.lang.Override
     public com.google.protobuf.ByteString
-        getValueBytes() {
+    getValueBytes() {
       java.lang.Object ref = value_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
+        com.google.protobuf.ByteString b =
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         value_ = b;
         return b;
       } else {
@@ -352,11 +349,11 @@ public final class EventsProto {
 
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (!getNameBytes().isEmpty()) {
+            throws java.io.IOException {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, name_);
       }
-      if (!getValueBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(value_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, value_);
       }
       getUnknownFields().writeTo(output);
@@ -368,10 +365,10 @@ public final class EventsProto {
       if (size != -1) return size;
 
       size = 0;
-      if (!getNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(name_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, name_);
       }
-      if (!getValueBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(value_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, value_);
       }
       size += getUnknownFields().getSerializedSize();
@@ -382,7 +379,7 @@ public final class EventsProto {
     @java.lang.Override
     public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
-       return true;
+        return true;
       }
       if (!(obj instanceof org.opennms.features.kafka.consumer.events.EventsProto.EventParameter)) {
         return super.equals(obj);
@@ -390,9 +387,9 @@ public final class EventsProto {
       org.opennms.features.kafka.consumer.events.EventsProto.EventParameter other = (org.opennms.features.kafka.consumer.events.EventsProto.EventParameter) obj;
 
       if (!getName()
-          .equals(other.getName())) return false;
+              .equals(other.getName())) return false;
       if (!getValue()
-          .equals(other.getValue())) return false;
+              .equals(other.getValue())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -414,73 +411,75 @@ public final class EventsProto {
     }
 
     public static org.opennms.features.kafka.consumer.events.EventsProto.EventParameter parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            java.nio.ByteBuffer data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
     public static org.opennms.features.kafka.consumer.events.EventsProto.EventParameter parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            java.nio.ByteBuffer data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.opennms.features.kafka.consumer.events.EventsProto.EventParameter parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
     public static org.opennms.features.kafka.consumer.events.EventsProto.EventParameter parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.opennms.features.kafka.consumer.events.EventsProto.EventParameter parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
     public static org.opennms.features.kafka.consumer.events.EventsProto.EventParameter parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            byte[] data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.opennms.features.kafka.consumer.events.EventsProto.EventParameter parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
+            throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
+              .parseWithIOException(PARSER, input);
     }
     public static org.opennms.features.kafka.consumer.events.EventsProto.EventParameter parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
+              .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.kafka.consumer.events.EventsProto.EventParameter parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
+            throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
+              .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.kafka.consumer.events.EventsProto.EventParameter parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+              .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static org.opennms.features.kafka.consumer.events.EventsProto.EventParameter parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
+              .parseWithIOException(PARSER, input);
     }
     public static org.opennms.features.kafka.consumer.events.EventsProto.EventParameter parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
+              .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
     @java.lang.Override
@@ -494,12 +493,12 @@ public final class EventsProto {
     @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
+              ? new Builder() : new Builder().mergeFrom(this);
     }
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -507,20 +506,20 @@ public final class EventsProto {
      * Protobuf type {@code EventParameter}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:EventParameter)
-        org.opennms.features.kafka.consumer.events.EventsProto.EventParameterOrBuilder {
+            com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+            // @@protoc_insertion_point(builder_implements:EventParameter)
+            org.opennms.features.kafka.consumer.events.EventsProto.EventParameterOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
+      getDescriptor() {
         return org.opennms.features.kafka.consumer.events.EventsProto.internal_static_EventParameter_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
+      internalGetFieldAccessorTable() {
         return org.opennms.features.kafka.consumer.events.EventsProto.internal_static_EventParameter_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.class, org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.Builder.class);
+                .ensureFieldAccessorsInitialized(
+                        org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.class, org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.Builder.class);
       }
 
       // Construct using org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.newBuilder()
@@ -529,23 +528,22 @@ public final class EventsProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+              com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
 
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         name_ = "";
-
         value_ = "";
-
         return this;
       }
 
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
+      getDescriptorForType() {
         return org.opennms.features.kafka.consumer.events.EventsProto.internal_static_EventParameter_descriptor;
       }
 
@@ -566,10 +564,19 @@ public final class EventsProto {
       @java.lang.Override
       public org.opennms.features.kafka.consumer.events.EventsProto.EventParameter buildPartial() {
         org.opennms.features.kafka.consumer.events.EventsProto.EventParameter result = new org.opennms.features.kafka.consumer.events.EventsProto.EventParameter(this);
-        result.name_ = name_;
-        result.value_ = value_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
+      }
+
+      private void buildPartial0(org.opennms.features.kafka.consumer.events.EventsProto.EventParameter result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.name_ = name_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.value_ = value_;
+        }
       }
 
       @java.lang.Override
@@ -578,30 +585,30 @@ public final class EventsProto {
       }
       @java.lang.Override
       public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
         return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
+              com.google.protobuf.Descriptors.FieldDescriptor field) {
         return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+              com.google.protobuf.Descriptors.OneofDescriptor oneof) {
         return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              int index, java.lang.Object value) {
         return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
         return super.addRepeatedField(field, value);
       }
       @java.lang.Override
@@ -618,10 +625,12 @@ public final class EventsProto {
         if (other == org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.getDefaultInstance()) return this;
         if (!other.getName().isEmpty()) {
           name_ = other.name_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (!other.getValue().isEmpty()) {
           value_ = other.value_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -636,9 +645,9 @@ public final class EventsProto {
 
       @java.lang.Override
       public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws java.io.IOException {
         if (extensionRegistry == null) {
           throw new java.lang.NullPointerException();
         }
@@ -652,12 +661,12 @@ public final class EventsProto {
                 break;
               case 10: {
                 name_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 10
               case 18: {
                 value_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 18
               default: {
@@ -675,6 +684,7 @@ public final class EventsProto {
         } // finally
         return this;
       }
+      private int bitField0_;
 
       private java.lang.Object name_ = "";
       /**
@@ -685,7 +695,7 @@ public final class EventsProto {
         java.lang.Object ref = name_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
+                  (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           name_ = s;
           return s;
@@ -698,12 +708,12 @@ public final class EventsProto {
        * @return The bytes for name.
        */
       public com.google.protobuf.ByteString
-          getNameBytes() {
+      getNameBytes() {
         java.lang.Object ref = name_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
+          com.google.protobuf.ByteString b =
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           name_ = b;
           return b;
         } else {
@@ -716,12 +726,10 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setName(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+              java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -730,8 +738,8 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder clearName() {
-        
         name_ = getDefaultInstance().getName();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -741,13 +749,11 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setNameBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+              com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -761,7 +767,7 @@ public final class EventsProto {
         java.lang.Object ref = value_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
+                  (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           value_ = s;
           return s;
@@ -774,12 +780,12 @@ public final class EventsProto {
        * @return The bytes for value.
        */
       public com.google.protobuf.ByteString
-          getValueBytes() {
+      getValueBytes() {
         java.lang.Object ref = value_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
+          com.google.protobuf.ByteString b =
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           value_ = b;
           return b;
         } else {
@@ -792,12 +798,10 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setValue(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+              java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
         value_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -806,8 +810,8 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder clearValue() {
-        
         value_ = getDefaultInstance().getValue();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -817,25 +821,23 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setValueBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+              com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         value_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
       @java.lang.Override
       public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
       public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
@@ -854,12 +856,12 @@ public final class EventsProto {
     }
 
     private static final com.google.protobuf.Parser<EventParameter>
-        PARSER = new com.google.protobuf.AbstractParser<EventParameter>() {
+            PARSER = new com.google.protobuf.AbstractParser<EventParameter>() {
       @java.lang.Override
       public EventParameter parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
         Builder builder = newBuilder();
         try {
           builder.mergeFrom(input, extensionRegistry);
@@ -869,7 +871,7 @@ public final class EventsProto {
           throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
         } catch (java.io.IOException e) {
           throw new com.google.protobuf.InvalidProtocolBufferException(e)
-              .setUnfinishedMessage(builder.buildPartial());
+                  .setUnfinishedMessage(builder.buildPartial());
         }
         return builder.buildPartial();
       }
@@ -892,8 +894,8 @@ public final class EventsProto {
   }
 
   public interface EventOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:Event)
-      com.google.protobuf.MessageOrBuilder {
+          // @@protoc_insertion_point(interface_extends:Event)
+          com.google.protobuf.MessageOrBuilder {
 
     /**
      * <pre>
@@ -913,7 +915,7 @@ public final class EventsProto {
      * @return The bytes for uei.
      */
     com.google.protobuf.ByteString
-        getUeiBytes();
+    getUeiBytes();
 
     /**
      * <pre>
@@ -933,7 +935,7 @@ public final class EventsProto {
      * @return The bytes for source.
      */
     com.google.protobuf.ByteString
-        getSourceBytes();
+    getSourceBytes();
 
     /**
      * <pre>
@@ -964,7 +966,7 @@ public final class EventsProto {
      * @return The bytes for host.
      */
     com.google.protobuf.ByteString
-        getHostBytes();
+    getHostBytes();
 
     /**
      * <code>uint32 node_id = 5;</code>
@@ -982,7 +984,7 @@ public final class EventsProto {
      * @return The bytes for ipAddress.
      */
     com.google.protobuf.ByteString
-        getIpAddressBytes();
+    getIpAddressBytes();
 
     /**
      * <code>string service_name = 7;</code>
@@ -994,7 +996,7 @@ public final class EventsProto {
      * @return The bytes for serviceName.
      */
     com.google.protobuf.ByteString
-        getServiceNameBytes();
+    getServiceNameBytes();
 
     /**
      * <code>uint32 if_index = 8;</code>
@@ -1012,7 +1014,7 @@ public final class EventsProto {
      * @return The bytes for description.
      */
     com.google.protobuf.ByteString
-        getDescriptionBytes();
+    getDescriptionBytes();
 
     /**
      * <code>string dist_poller = 10;</code>
@@ -1024,7 +1026,7 @@ public final class EventsProto {
      * @return The bytes for distPoller.
      */
     com.google.protobuf.ByteString
-        getDistPollerBytes();
+    getDistPollerBytes();
 
     /**
      * <code>string log_dest = 11;</code>
@@ -1036,7 +1038,7 @@ public final class EventsProto {
      * @return The bytes for logDest.
      */
     com.google.protobuf.ByteString
-        getLogDestBytes();
+    getLogDestBytes();
 
     /**
      * <code>string log_content = 12;</code>
@@ -1048,13 +1050,13 @@ public final class EventsProto {
      * @return The bytes for logContent.
      */
     com.google.protobuf.ByteString
-        getLogContentBytes();
+    getLogContentBytes();
 
     /**
      * <code>repeated .EventParameter parameter = 13;</code>
      */
-    java.util.List<org.opennms.features.kafka.consumer.events.EventsProto.EventParameter> 
-        getParameterList();
+    java.util.List<org.opennms.features.kafka.consumer.events.EventsProto.EventParameter>
+    getParameterList();
     /**
      * <code>repeated .EventParameter parameter = 13;</code>
      */
@@ -1066,22 +1068,22 @@ public final class EventsProto {
     /**
      * <code>repeated .EventParameter parameter = 13;</code>
      */
-    java.util.List<? extends org.opennms.features.kafka.consumer.events.EventsProto.EventParameterOrBuilder> 
-        getParameterOrBuilderList();
+    java.util.List<? extends org.opennms.features.kafka.consumer.events.EventsProto.EventParameterOrBuilder>
+    getParameterOrBuilderList();
     /**
      * <code>repeated .EventParameter parameter = 13;</code>
      */
     org.opennms.features.kafka.consumer.events.EventsProto.EventParameterOrBuilder getParameterOrBuilder(
-        int index);
+            int index);
   }
   /**
    * Protobuf type {@code Event}
    */
   public static final class Event extends
-      com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:Event)
-      EventOrBuilder {
-  private static final long serialVersionUID = 0L;
+          com.google.protobuf.GeneratedMessageV3 implements
+          // @@protoc_insertion_point(message_implements:Event)
+          EventOrBuilder {
+    private static final long serialVersionUID = 0L;
     // Use Event.newBuilder() to construct.
     private Event(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
@@ -1103,30 +1105,26 @@ public final class EventsProto {
     @java.lang.Override
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(
-        UnusedPrivateParameter unused) {
+            UnusedPrivateParameter unused) {
       return new Event();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
-        getDescriptor() {
+    getDescriptor() {
       return org.opennms.features.kafka.consumer.events.EventsProto.internal_static_Event_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-        internalGetFieldAccessorTable() {
+    internalGetFieldAccessorTable() {
       return org.opennms.features.kafka.consumer.events.EventsProto.internal_static_Event_fieldAccessorTable
-          .ensureFieldAccessorsInitialized(
-              org.opennms.features.kafka.consumer.events.EventsProto.Event.class, org.opennms.features.kafka.consumer.events.EventsProto.Event.Builder.class);
+              .ensureFieldAccessorsInitialized(
+                      org.opennms.features.kafka.consumer.events.EventsProto.Event.class, org.opennms.features.kafka.consumer.events.EventsProto.Event.Builder.class);
     }
 
     public static final int UEI_FIELD_NUMBER = 1;
-    private volatile java.lang.Object uei_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object uei_ = "";
     /**
      * <pre>
      * required field
@@ -1141,8 +1139,8 @@ public final class EventsProto {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
+        com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         uei_ = s;
         return s;
@@ -1158,12 +1156,12 @@ public final class EventsProto {
      */
     @java.lang.Override
     public com.google.protobuf.ByteString
-        getUeiBytes() {
+    getUeiBytes() {
       java.lang.Object ref = uei_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
+        com.google.protobuf.ByteString b =
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         uei_ = b;
         return b;
       } else {
@@ -1172,7 +1170,8 @@ public final class EventsProto {
     }
 
     public static final int SOURCE_FIELD_NUMBER = 2;
-    private volatile java.lang.Object source_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object source_ = "";
     /**
      * <pre>
      * required field
@@ -1187,8 +1186,8 @@ public final class EventsProto {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
+        com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         source_ = s;
         return s;
@@ -1204,12 +1203,12 @@ public final class EventsProto {
      */
     @java.lang.Override
     public com.google.protobuf.ByteString
-        getSourceBytes() {
+    getSourceBytes() {
       java.lang.Object ref = source_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
+        com.google.protobuf.ByteString b =
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         source_ = b;
         return b;
       } else {
@@ -1218,7 +1217,7 @@ public final class EventsProto {
     }
 
     public static final int SEVERITY_FIELD_NUMBER = 3;
-    private int severity_;
+    private int severity_ = 0;
     /**
      * <pre>
      * required field
@@ -1239,13 +1238,13 @@ public final class EventsProto {
      * @return The severity.
      */
     @java.lang.Override public org.opennms.features.kafka.consumer.events.EventsProto.Severity getSeverity() {
-      @SuppressWarnings("deprecation")
-      org.opennms.features.kafka.consumer.events.EventsProto.Severity result = org.opennms.features.kafka.consumer.events.EventsProto.Severity.valueOf(severity_);
+      org.opennms.features.kafka.consumer.events.EventsProto.Severity result = org.opennms.features.kafka.consumer.events.EventsProto.Severity.forNumber(severity_);
       return result == null ? org.opennms.features.kafka.consumer.events.EventsProto.Severity.UNRECOGNIZED : result;
     }
 
     public static final int HOST_FIELD_NUMBER = 4;
-    private volatile java.lang.Object host_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object host_ = "";
     /**
      * <code>string host = 4;</code>
      * @return The host.
@@ -1256,8 +1255,8 @@ public final class EventsProto {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
+        com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         host_ = s;
         return s;
@@ -1269,12 +1268,12 @@ public final class EventsProto {
      */
     @java.lang.Override
     public com.google.protobuf.ByteString
-        getHostBytes() {
+    getHostBytes() {
       java.lang.Object ref = host_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
+        com.google.protobuf.ByteString b =
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         host_ = b;
         return b;
       } else {
@@ -1283,7 +1282,7 @@ public final class EventsProto {
     }
 
     public static final int NODE_ID_FIELD_NUMBER = 5;
-    private int nodeId_;
+    private int nodeId_ = 0;
     /**
      * <code>uint32 node_id = 5;</code>
      * @return The nodeId.
@@ -1294,7 +1293,8 @@ public final class EventsProto {
     }
 
     public static final int IP_ADDRESS_FIELD_NUMBER = 6;
-    private volatile java.lang.Object ipAddress_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object ipAddress_ = "";
     /**
      * <code>string ip_address = 6;</code>
      * @return The ipAddress.
@@ -1305,8 +1305,8 @@ public final class EventsProto {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
+        com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         ipAddress_ = s;
         return s;
@@ -1318,12 +1318,12 @@ public final class EventsProto {
      */
     @java.lang.Override
     public com.google.protobuf.ByteString
-        getIpAddressBytes() {
+    getIpAddressBytes() {
       java.lang.Object ref = ipAddress_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
+        com.google.protobuf.ByteString b =
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         ipAddress_ = b;
         return b;
       } else {
@@ -1332,7 +1332,8 @@ public final class EventsProto {
     }
 
     public static final int SERVICE_NAME_FIELD_NUMBER = 7;
-    private volatile java.lang.Object serviceName_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object serviceName_ = "";
     /**
      * <code>string service_name = 7;</code>
      * @return The serviceName.
@@ -1343,8 +1344,8 @@ public final class EventsProto {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
+        com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         serviceName_ = s;
         return s;
@@ -1356,12 +1357,12 @@ public final class EventsProto {
      */
     @java.lang.Override
     public com.google.protobuf.ByteString
-        getServiceNameBytes() {
+    getServiceNameBytes() {
       java.lang.Object ref = serviceName_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
+        com.google.protobuf.ByteString b =
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         serviceName_ = b;
         return b;
       } else {
@@ -1370,7 +1371,7 @@ public final class EventsProto {
     }
 
     public static final int IF_INDEX_FIELD_NUMBER = 8;
-    private int ifIndex_;
+    private int ifIndex_ = 0;
     /**
      * <code>uint32 if_index = 8;</code>
      * @return The ifIndex.
@@ -1381,7 +1382,8 @@ public final class EventsProto {
     }
 
     public static final int DESCRIPTION_FIELD_NUMBER = 9;
-    private volatile java.lang.Object description_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object description_ = "";
     /**
      * <code>string description = 9;</code>
      * @return The description.
@@ -1392,8 +1394,8 @@ public final class EventsProto {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
+        com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         description_ = s;
         return s;
@@ -1405,12 +1407,12 @@ public final class EventsProto {
      */
     @java.lang.Override
     public com.google.protobuf.ByteString
-        getDescriptionBytes() {
+    getDescriptionBytes() {
       java.lang.Object ref = description_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
+        com.google.protobuf.ByteString b =
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         description_ = b;
         return b;
       } else {
@@ -1419,7 +1421,8 @@ public final class EventsProto {
     }
 
     public static final int DIST_POLLER_FIELD_NUMBER = 10;
-    private volatile java.lang.Object distPoller_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object distPoller_ = "";
     /**
      * <code>string dist_poller = 10;</code>
      * @return The distPoller.
@@ -1430,8 +1433,8 @@ public final class EventsProto {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
+        com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         distPoller_ = s;
         return s;
@@ -1443,12 +1446,12 @@ public final class EventsProto {
      */
     @java.lang.Override
     public com.google.protobuf.ByteString
-        getDistPollerBytes() {
+    getDistPollerBytes() {
       java.lang.Object ref = distPoller_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
+        com.google.protobuf.ByteString b =
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         distPoller_ = b;
         return b;
       } else {
@@ -1457,7 +1460,8 @@ public final class EventsProto {
     }
 
     public static final int LOG_DEST_FIELD_NUMBER = 11;
-    private volatile java.lang.Object logDest_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object logDest_ = "";
     /**
      * <code>string log_dest = 11;</code>
      * @return The logDest.
@@ -1468,8 +1472,8 @@ public final class EventsProto {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
+        com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         logDest_ = s;
         return s;
@@ -1481,12 +1485,12 @@ public final class EventsProto {
      */
     @java.lang.Override
     public com.google.protobuf.ByteString
-        getLogDestBytes() {
+    getLogDestBytes() {
       java.lang.Object ref = logDest_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
+        com.google.protobuf.ByteString b =
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         logDest_ = b;
         return b;
       } else {
@@ -1495,7 +1499,8 @@ public final class EventsProto {
     }
 
     public static final int LOG_CONTENT_FIELD_NUMBER = 12;
-    private volatile java.lang.Object logContent_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object logContent_ = "";
     /**
      * <code>string log_content = 12;</code>
      * @return The logContent.
@@ -1506,8 +1511,8 @@ public final class EventsProto {
       if (ref instanceof java.lang.String) {
         return (java.lang.String) ref;
       } else {
-        com.google.protobuf.ByteString bs = 
-            (com.google.protobuf.ByteString) ref;
+        com.google.protobuf.ByteString bs =
+                (com.google.protobuf.ByteString) ref;
         java.lang.String s = bs.toStringUtf8();
         logContent_ = s;
         return s;
@@ -1519,12 +1524,12 @@ public final class EventsProto {
      */
     @java.lang.Override
     public com.google.protobuf.ByteString
-        getLogContentBytes() {
+    getLogContentBytes() {
       java.lang.Object ref = logContent_;
       if (ref instanceof java.lang.String) {
-        com.google.protobuf.ByteString b = 
-            com.google.protobuf.ByteString.copyFromUtf8(
-                (java.lang.String) ref);
+        com.google.protobuf.ByteString b =
+                com.google.protobuf.ByteString.copyFromUtf8(
+                        (java.lang.String) ref);
         logContent_ = b;
         return b;
       } else {
@@ -1533,6 +1538,7 @@ public final class EventsProto {
     }
 
     public static final int PARAMETER_FIELD_NUMBER = 13;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.features.kafka.consumer.events.EventsProto.EventParameter> parameter_;
     /**
      * <code>repeated .EventParameter parameter = 13;</code>
@@ -1545,8 +1551,8 @@ public final class EventsProto {
      * <code>repeated .EventParameter parameter = 13;</code>
      */
     @java.lang.Override
-    public java.util.List<? extends org.opennms.features.kafka.consumer.events.EventsProto.EventParameterOrBuilder> 
-        getParameterOrBuilderList() {
+    public java.util.List<? extends org.opennms.features.kafka.consumer.events.EventsProto.EventParameterOrBuilder>
+    getParameterOrBuilderList() {
       return parameter_;
     }
     /**
@@ -1568,7 +1574,7 @@ public final class EventsProto {
      */
     @java.lang.Override
     public org.opennms.features.kafka.consumer.events.EventsProto.EventParameterOrBuilder getParameterOrBuilder(
-        int index) {
+            int index) {
       return parameter_.get(index);
     }
 
@@ -1585,41 +1591,41 @@ public final class EventsProto {
 
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
-                        throws java.io.IOException {
-      if (!getUeiBytes().isEmpty()) {
+            throws java.io.IOException {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(uei_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, uei_);
       }
-      if (!getSourceBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(source_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, source_);
       }
       if (severity_ != org.opennms.features.kafka.consumer.events.EventsProto.Severity.INDETERMINATE.getNumber()) {
         output.writeEnum(3, severity_);
       }
-      if (!getHostBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(host_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, host_);
       }
       if (nodeId_ != 0) {
         output.writeUInt32(5, nodeId_);
       }
-      if (!getIpAddressBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(ipAddress_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 6, ipAddress_);
       }
-      if (!getServiceNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(serviceName_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 7, serviceName_);
       }
       if (ifIndex_ != 0) {
         output.writeUInt32(8, ifIndex_);
       }
-      if (!getDescriptionBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(description_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 9, description_);
       }
-      if (!getDistPollerBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(distPoller_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 10, distPoller_);
       }
-      if (!getLogDestBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(logDest_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 11, logDest_);
       }
-      if (!getLogContentBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(logContent_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 12, logContent_);
       }
       for (int i = 0; i < parameter_.size(); i++) {
@@ -1634,48 +1640,48 @@ public final class EventsProto {
       if (size != -1) return size;
 
       size = 0;
-      if (!getUeiBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(uei_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, uei_);
       }
-      if (!getSourceBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(source_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, source_);
       }
       if (severity_ != org.opennms.features.kafka.consumer.events.EventsProto.Severity.INDETERMINATE.getNumber()) {
         size += com.google.protobuf.CodedOutputStream
-          .computeEnumSize(3, severity_);
+                .computeEnumSize(3, severity_);
       }
-      if (!getHostBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(host_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, host_);
       }
       if (nodeId_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(5, nodeId_);
+                .computeUInt32Size(5, nodeId_);
       }
-      if (!getIpAddressBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(ipAddress_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(6, ipAddress_);
       }
-      if (!getServiceNameBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(serviceName_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(7, serviceName_);
       }
       if (ifIndex_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeUInt32Size(8, ifIndex_);
+                .computeUInt32Size(8, ifIndex_);
       }
-      if (!getDescriptionBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(description_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(9, description_);
       }
-      if (!getDistPollerBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(distPoller_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(10, distPoller_);
       }
-      if (!getLogDestBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(logDest_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(11, logDest_);
       }
-      if (!getLogContentBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(logContent_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(12, logContent_);
       }
       for (int i = 0; i < parameter_.size(); i++) {
         size += com.google.protobuf.CodedOutputStream
-          .computeMessageSize(13, parameter_.get(i));
+                .computeMessageSize(13, parameter_.get(i));
       }
       size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
@@ -1685,7 +1691,7 @@ public final class EventsProto {
     @java.lang.Override
     public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
-       return true;
+        return true;
       }
       if (!(obj instanceof org.opennms.features.kafka.consumer.events.EventsProto.Event)) {
         return super.equals(obj);
@@ -1693,30 +1699,30 @@ public final class EventsProto {
       org.opennms.features.kafka.consumer.events.EventsProto.Event other = (org.opennms.features.kafka.consumer.events.EventsProto.Event) obj;
 
       if (!getUei()
-          .equals(other.getUei())) return false;
+              .equals(other.getUei())) return false;
       if (!getSource()
-          .equals(other.getSource())) return false;
+              .equals(other.getSource())) return false;
       if (severity_ != other.severity_) return false;
       if (!getHost()
-          .equals(other.getHost())) return false;
+              .equals(other.getHost())) return false;
       if (getNodeId()
-          != other.getNodeId()) return false;
+              != other.getNodeId()) return false;
       if (!getIpAddress()
-          .equals(other.getIpAddress())) return false;
+              .equals(other.getIpAddress())) return false;
       if (!getServiceName()
-          .equals(other.getServiceName())) return false;
+              .equals(other.getServiceName())) return false;
       if (getIfIndex()
-          != other.getIfIndex()) return false;
+              != other.getIfIndex()) return false;
       if (!getDescription()
-          .equals(other.getDescription())) return false;
+              .equals(other.getDescription())) return false;
       if (!getDistPoller()
-          .equals(other.getDistPoller())) return false;
+              .equals(other.getDistPoller())) return false;
       if (!getLogDest()
-          .equals(other.getLogDest())) return false;
+              .equals(other.getLogDest())) return false;
       if (!getLogContent()
-          .equals(other.getLogContent())) return false;
+              .equals(other.getLogContent())) return false;
       if (!getParameterList()
-          .equals(other.getParameterList())) return false;
+              .equals(other.getParameterList())) return false;
       if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
@@ -1762,73 +1768,75 @@ public final class EventsProto {
     }
 
     public static org.opennms.features.kafka.consumer.events.EventsProto.Event parseFrom(
-        java.nio.ByteBuffer data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            java.nio.ByteBuffer data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
     public static org.opennms.features.kafka.consumer.events.EventsProto.Event parseFrom(
-        java.nio.ByteBuffer data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            java.nio.ByteBuffer data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.opennms.features.kafka.consumer.events.EventsProto.Event parseFrom(
-        com.google.protobuf.ByteString data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            com.google.protobuf.ByteString data)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
     public static org.opennms.features.kafka.consumer.events.EventsProto.Event parseFrom(
-        com.google.protobuf.ByteString data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            com.google.protobuf.ByteString data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.opennms.features.kafka.consumer.events.EventsProto.Event parseFrom(byte[] data)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
     public static org.opennms.features.kafka.consumer.events.EventsProto.Event parseFrom(
-        byte[] data,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
+            byte[] data,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
     public static org.opennms.features.kafka.consumer.events.EventsProto.Event parseFrom(java.io.InputStream input)
-        throws java.io.IOException {
+            throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
+              .parseWithIOException(PARSER, input);
     }
     public static org.opennms.features.kafka.consumer.events.EventsProto.Event parseFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
+              .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.features.kafka.consumer.events.EventsProto.Event parseDelimitedFrom(java.io.InputStream input)
-        throws java.io.IOException {
+            throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input);
+              .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.features.kafka.consumer.events.EventsProto.Event parseDelimitedFrom(
-        java.io.InputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
+            java.io.InputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
-          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+              .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
     public static org.opennms.features.kafka.consumer.events.EventsProto.Event parseFrom(
-        com.google.protobuf.CodedInputStream input)
-        throws java.io.IOException {
+            com.google.protobuf.CodedInputStream input)
+            throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input);
+              .parseWithIOException(PARSER, input);
     }
     public static org.opennms.features.kafka.consumer.events.EventsProto.Event parseFrom(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws java.io.IOException {
+            com.google.protobuf.CodedInputStream input,
+            com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+            throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
-          .parseWithIOException(PARSER, input, extensionRegistry);
+              .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
     @java.lang.Override
@@ -1842,12 +1850,12 @@ public final class EventsProto {
     @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
-          ? new Builder() : new Builder().mergeFrom(this);
+              ? new Builder() : new Builder().mergeFrom(this);
     }
 
     @java.lang.Override
     protected Builder newBuilderForType(
-        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+            com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
       return builder;
     }
@@ -1855,20 +1863,20 @@ public final class EventsProto {
      * Protobuf type {@code Event}
      */
     public static final class Builder extends
-        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:Event)
-        org.opennms.features.kafka.consumer.events.EventsProto.EventOrBuilder {
+            com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+            // @@protoc_insertion_point(builder_implements:Event)
+            org.opennms.features.kafka.consumer.events.EventsProto.EventOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
-          getDescriptor() {
+      getDescriptor() {
         return org.opennms.features.kafka.consumer.events.EventsProto.internal_static_Event_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-          internalGetFieldAccessorTable() {
+      internalGetFieldAccessorTable() {
         return org.opennms.features.kafka.consumer.events.EventsProto.internal_static_Event_fieldAccessorTable
-            .ensureFieldAccessorsInitialized(
-                org.opennms.features.kafka.consumer.events.EventsProto.Event.class, org.opennms.features.kafka.consumer.events.EventsProto.Event.Builder.class);
+                .ensureFieldAccessorsInitialized(
+                        org.opennms.features.kafka.consumer.events.EventsProto.Event.class, org.opennms.features.kafka.consumer.events.EventsProto.Event.Builder.class);
       }
 
       // Construct using org.opennms.features.kafka.consumer.events.EventsProto.Event.newBuilder()
@@ -1877,50 +1885,39 @@ public final class EventsProto {
       }
 
       private Builder(
-          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+              com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
 
       }
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         uei_ = "";
-
         source_ = "";
-
         severity_ = 0;
-
         host_ = "";
-
         nodeId_ = 0;
-
         ipAddress_ = "";
-
         serviceName_ = "";
-
         ifIndex_ = 0;
-
         description_ = "";
-
         distPoller_ = "";
-
         logDest_ = "";
-
         logContent_ = "";
-
         if (parameterBuilder_ == null) {
           parameter_ = java.util.Collections.emptyList();
         } else {
           parameter_ = null;
           parameterBuilder_.clear();
         }
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = (bitField0_ & ~0x00001000);
         return this;
       }
 
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
-          getDescriptorForType() {
+      getDescriptorForType() {
         return org.opennms.features.kafka.consumer.events.EventsProto.internal_static_Event_descriptor;
       }
 
@@ -1941,30 +1938,62 @@ public final class EventsProto {
       @java.lang.Override
       public org.opennms.features.kafka.consumer.events.EventsProto.Event buildPartial() {
         org.opennms.features.kafka.consumer.events.EventsProto.Event result = new org.opennms.features.kafka.consumer.events.EventsProto.Event(this);
-        int from_bitField0_ = bitField0_;
-        result.uei_ = uei_;
-        result.source_ = source_;
-        result.severity_ = severity_;
-        result.host_ = host_;
-        result.nodeId_ = nodeId_;
-        result.ipAddress_ = ipAddress_;
-        result.serviceName_ = serviceName_;
-        result.ifIndex_ = ifIndex_;
-        result.description_ = description_;
-        result.distPoller_ = distPoller_;
-        result.logDest_ = logDest_;
-        result.logContent_ = logContent_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.features.kafka.consumer.events.EventsProto.Event result) {
         if (parameterBuilder_ == null) {
-          if (((bitField0_ & 0x00000001) != 0)) {
+          if (((bitField0_ & 0x00001000) != 0)) {
             parameter_ = java.util.Collections.unmodifiableList(parameter_);
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ = (bitField0_ & ~0x00001000);
           }
           result.parameter_ = parameter_;
         } else {
           result.parameter_ = parameterBuilder_.build();
         }
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.features.kafka.consumer.events.EventsProto.Event result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.uei_ = uei_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.source_ = source_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.severity_ = severity_;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.host_ = host_;
+        }
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.nodeId_ = nodeId_;
+        }
+        if (((from_bitField0_ & 0x00000020) != 0)) {
+          result.ipAddress_ = ipAddress_;
+        }
+        if (((from_bitField0_ & 0x00000040) != 0)) {
+          result.serviceName_ = serviceName_;
+        }
+        if (((from_bitField0_ & 0x00000080) != 0)) {
+          result.ifIndex_ = ifIndex_;
+        }
+        if (((from_bitField0_ & 0x00000100) != 0)) {
+          result.description_ = description_;
+        }
+        if (((from_bitField0_ & 0x00000200) != 0)) {
+          result.distPoller_ = distPoller_;
+        }
+        if (((from_bitField0_ & 0x00000400) != 0)) {
+          result.logDest_ = logDest_;
+        }
+        if (((from_bitField0_ & 0x00000800) != 0)) {
+          result.logContent_ = logContent_;
+        }
       }
 
       @java.lang.Override
@@ -1973,30 +2002,30 @@ public final class EventsProto {
       }
       @java.lang.Override
       public Builder setField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
         return super.setField(field, value);
       }
       @java.lang.Override
       public Builder clearField(
-          com.google.protobuf.Descriptors.FieldDescriptor field) {
+              com.google.protobuf.Descriptors.FieldDescriptor field) {
         return super.clearField(field);
       }
       @java.lang.Override
       public Builder clearOneof(
-          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+              com.google.protobuf.Descriptors.OneofDescriptor oneof) {
         return super.clearOneof(oneof);
       }
       @java.lang.Override
       public Builder setRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, java.lang.Object value) {
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              int index, java.lang.Object value) {
         return super.setRepeatedField(field, index, value);
       }
       @java.lang.Override
       public Builder addRepeatedField(
-          com.google.protobuf.Descriptors.FieldDescriptor field,
-          java.lang.Object value) {
+              com.google.protobuf.Descriptors.FieldDescriptor field,
+              java.lang.Object value) {
         return super.addRepeatedField(field, value);
       }
       @java.lang.Override
@@ -2013,10 +2042,12 @@ public final class EventsProto {
         if (other == org.opennms.features.kafka.consumer.events.EventsProto.Event.getDefaultInstance()) return this;
         if (!other.getUei().isEmpty()) {
           uei_ = other.uei_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (!other.getSource().isEmpty()) {
           source_ = other.source_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         if (other.severity_ != 0) {
@@ -2024,6 +2055,7 @@ public final class EventsProto {
         }
         if (!other.getHost().isEmpty()) {
           host_ = other.host_;
+          bitField0_ |= 0x00000008;
           onChanged();
         }
         if (other.getNodeId() != 0) {
@@ -2031,10 +2063,12 @@ public final class EventsProto {
         }
         if (!other.getIpAddress().isEmpty()) {
           ipAddress_ = other.ipAddress_;
+          bitField0_ |= 0x00000020;
           onChanged();
         }
         if (!other.getServiceName().isEmpty()) {
           serviceName_ = other.serviceName_;
+          bitField0_ |= 0x00000040;
           onChanged();
         }
         if (other.getIfIndex() != 0) {
@@ -2042,25 +2076,29 @@ public final class EventsProto {
         }
         if (!other.getDescription().isEmpty()) {
           description_ = other.description_;
+          bitField0_ |= 0x00000100;
           onChanged();
         }
         if (!other.getDistPoller().isEmpty()) {
           distPoller_ = other.distPoller_;
+          bitField0_ |= 0x00000200;
           onChanged();
         }
         if (!other.getLogDest().isEmpty()) {
           logDest_ = other.logDest_;
+          bitField0_ |= 0x00000400;
           onChanged();
         }
         if (!other.getLogContent().isEmpty()) {
           logContent_ = other.logContent_;
+          bitField0_ |= 0x00000800;
           onChanged();
         }
         if (parameterBuilder_ == null) {
           if (!other.parameter_.isEmpty()) {
             if (parameter_.isEmpty()) {
               parameter_ = other.parameter_;
-              bitField0_ = (bitField0_ & ~0x00000001);
+              bitField0_ = (bitField0_ & ~0x00001000);
             } else {
               ensureParameterIsMutable();
               parameter_.addAll(other.parameter_);
@@ -2073,10 +2111,10 @@ public final class EventsProto {
               parameterBuilder_.dispose();
               parameterBuilder_ = null;
               parameter_ = other.parameter_;
-              bitField0_ = (bitField0_ & ~0x00000001);
-              parameterBuilder_ = 
-                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
-                   getParameterFieldBuilder() : null;
+              bitField0_ = (bitField0_ & ~0x00001000);
+              parameterBuilder_ =
+                      com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                              getParameterFieldBuilder() : null;
             } else {
               parameterBuilder_.addAllMessages(other.parameter_);
             }
@@ -2094,9 +2132,9 @@ public final class EventsProto {
 
       @java.lang.Override
       public Builder mergeFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws java.io.IOException {
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws java.io.IOException {
         if (extensionRegistry == null) {
           throw new java.lang.NullPointerException();
         }
@@ -2110,69 +2148,69 @@ public final class EventsProto {
                 break;
               case 10: {
                 uei_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000001;
                 break;
               } // case 10
               case 18: {
                 source_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000002;
                 break;
               } // case 18
               case 24: {
                 severity_ = input.readEnum();
-
+                bitField0_ |= 0x00000004;
                 break;
               } // case 24
               case 34: {
                 host_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000008;
                 break;
               } // case 34
               case 40: {
                 nodeId_ = input.readUInt32();
-
+                bitField0_ |= 0x00000010;
                 break;
               } // case 40
               case 50: {
                 ipAddress_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000020;
                 break;
               } // case 50
               case 58: {
                 serviceName_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000040;
                 break;
               } // case 58
               case 64: {
                 ifIndex_ = input.readUInt32();
-
+                bitField0_ |= 0x00000080;
                 break;
               } // case 64
               case 74: {
                 description_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000100;
                 break;
               } // case 74
               case 82: {
                 distPoller_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000200;
                 break;
               } // case 82
               case 90: {
                 logDest_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000400;
                 break;
               } // case 90
               case 98: {
                 logContent_ = input.readStringRequireUtf8();
-
+                bitField0_ |= 0x00000800;
                 break;
               } // case 98
               case 106: {
                 org.opennms.features.kafka.consumer.events.EventsProto.EventParameter m =
-                    input.readMessage(
-                        org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.parser(),
-                        extensionRegistry);
+                        input.readMessage(
+                                org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.parser(),
+                                extensionRegistry);
                 if (parameterBuilder_ == null) {
                   ensureParameterIsMutable();
                   parameter_.add(m);
@@ -2211,7 +2249,7 @@ public final class EventsProto {
         java.lang.Object ref = uei_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
+                  (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           uei_ = s;
           return s;
@@ -2228,12 +2266,12 @@ public final class EventsProto {
        * @return The bytes for uei.
        */
       public com.google.protobuf.ByteString
-          getUeiBytes() {
+      getUeiBytes() {
         java.lang.Object ref = uei_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
+          com.google.protobuf.ByteString b =
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           uei_ = b;
           return b;
         } else {
@@ -2250,12 +2288,10 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setUei(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+              java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
         uei_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2268,8 +2304,8 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder clearUei() {
-        
         uei_ = getDefaultInstance().getUei();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -2283,13 +2319,11 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setUeiBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+              com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         uei_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2307,7 +2341,7 @@ public final class EventsProto {
         java.lang.Object ref = source_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
+                  (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           source_ = s;
           return s;
@@ -2324,12 +2358,12 @@ public final class EventsProto {
        * @return The bytes for source.
        */
       public com.google.protobuf.ByteString
-          getSourceBytes() {
+      getSourceBytes() {
         java.lang.Object ref = source_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
+          com.google.protobuf.ByteString b =
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           source_ = b;
           return b;
         } else {
@@ -2346,12 +2380,10 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setSource(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+              java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
         source_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2364,8 +2396,8 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder clearSource() {
-        
         source_ = getDefaultInstance().getSource();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -2379,13 +2411,11 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setSourceBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+              com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         source_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2412,8 +2442,8 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setSeverityValue(int value) {
-        
         severity_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -2427,8 +2457,7 @@ public final class EventsProto {
        */
       @java.lang.Override
       public org.opennms.features.kafka.consumer.events.EventsProto.Severity getSeverity() {
-        @SuppressWarnings("deprecation")
-        org.opennms.features.kafka.consumer.events.EventsProto.Severity result = org.opennms.features.kafka.consumer.events.EventsProto.Severity.valueOf(severity_);
+        org.opennms.features.kafka.consumer.events.EventsProto.Severity result = org.opennms.features.kafka.consumer.events.EventsProto.Severity.forNumber(severity_);
         return result == null ? org.opennms.features.kafka.consumer.events.EventsProto.Severity.UNRECOGNIZED : result;
       }
       /**
@@ -2444,7 +2473,7 @@ public final class EventsProto {
         if (value == null) {
           throw new NullPointerException();
         }
-        
+        bitField0_ |= 0x00000004;
         severity_ = value.getNumber();
         onChanged();
         return this;
@@ -2458,7 +2487,7 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder clearSeverity() {
-        
+        bitField0_ = (bitField0_ & ~0x00000004);
         severity_ = 0;
         onChanged();
         return this;
@@ -2473,7 +2502,7 @@ public final class EventsProto {
         java.lang.Object ref = host_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
+                  (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           host_ = s;
           return s;
@@ -2486,12 +2515,12 @@ public final class EventsProto {
        * @return The bytes for host.
        */
       public com.google.protobuf.ByteString
-          getHostBytes() {
+      getHostBytes() {
         java.lang.Object ref = host_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
+          com.google.protobuf.ByteString b =
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           host_ = b;
           return b;
         } else {
@@ -2504,12 +2533,10 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setHost(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+              java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
         host_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -2518,8 +2545,8 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder clearHost() {
-        
         host_ = getDefaultInstance().getHost();
+        bitField0_ = (bitField0_ & ~0x00000008);
         onChanged();
         return this;
       }
@@ -2529,13 +2556,11 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setHostBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+              com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         host_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -2555,8 +2580,9 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setNodeId(int value) {
-        
+
         nodeId_ = value;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -2565,7 +2591,7 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder clearNodeId() {
-        
+        bitField0_ = (bitField0_ & ~0x00000010);
         nodeId_ = 0;
         onChanged();
         return this;
@@ -2580,7 +2606,7 @@ public final class EventsProto {
         java.lang.Object ref = ipAddress_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
+                  (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           ipAddress_ = s;
           return s;
@@ -2593,12 +2619,12 @@ public final class EventsProto {
        * @return The bytes for ipAddress.
        */
       public com.google.protobuf.ByteString
-          getIpAddressBytes() {
+      getIpAddressBytes() {
         java.lang.Object ref = ipAddress_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
+          com.google.protobuf.ByteString b =
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           ipAddress_ = b;
           return b;
         } else {
@@ -2611,12 +2637,10 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setIpAddress(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+              java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
         ipAddress_ = value;
+        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -2625,8 +2649,8 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder clearIpAddress() {
-        
         ipAddress_ = getDefaultInstance().getIpAddress();
+        bitField0_ = (bitField0_ & ~0x00000020);
         onChanged();
         return this;
       }
@@ -2636,13 +2660,11 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setIpAddressBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+              com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ipAddress_ = value;
+        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -2656,7 +2678,7 @@ public final class EventsProto {
         java.lang.Object ref = serviceName_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
+                  (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           serviceName_ = s;
           return s;
@@ -2669,12 +2691,12 @@ public final class EventsProto {
        * @return The bytes for serviceName.
        */
       public com.google.protobuf.ByteString
-          getServiceNameBytes() {
+      getServiceNameBytes() {
         java.lang.Object ref = serviceName_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
+          com.google.protobuf.ByteString b =
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           serviceName_ = b;
           return b;
         } else {
@@ -2687,12 +2709,10 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setServiceName(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+              java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
         serviceName_ = value;
+        bitField0_ |= 0x00000040;
         onChanged();
         return this;
       }
@@ -2701,8 +2721,8 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder clearServiceName() {
-        
         serviceName_ = getDefaultInstance().getServiceName();
+        bitField0_ = (bitField0_ & ~0x00000040);
         onChanged();
         return this;
       }
@@ -2712,13 +2732,11 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setServiceNameBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+              com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         serviceName_ = value;
+        bitField0_ |= 0x00000040;
         onChanged();
         return this;
       }
@@ -2738,8 +2756,9 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setIfIndex(int value) {
-        
+
         ifIndex_ = value;
+        bitField0_ |= 0x00000080;
         onChanged();
         return this;
       }
@@ -2748,7 +2767,7 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder clearIfIndex() {
-        
+        bitField0_ = (bitField0_ & ~0x00000080);
         ifIndex_ = 0;
         onChanged();
         return this;
@@ -2763,7 +2782,7 @@ public final class EventsProto {
         java.lang.Object ref = description_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
+                  (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           description_ = s;
           return s;
@@ -2776,12 +2795,12 @@ public final class EventsProto {
        * @return The bytes for description.
        */
       public com.google.protobuf.ByteString
-          getDescriptionBytes() {
+      getDescriptionBytes() {
         java.lang.Object ref = description_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
+          com.google.protobuf.ByteString b =
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           description_ = b;
           return b;
         } else {
@@ -2794,12 +2813,10 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setDescription(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+              java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
         description_ = value;
+        bitField0_ |= 0x00000100;
         onChanged();
         return this;
       }
@@ -2808,8 +2825,8 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder clearDescription() {
-        
         description_ = getDefaultInstance().getDescription();
+        bitField0_ = (bitField0_ & ~0x00000100);
         onChanged();
         return this;
       }
@@ -2819,13 +2836,11 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setDescriptionBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+              com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         description_ = value;
+        bitField0_ |= 0x00000100;
         onChanged();
         return this;
       }
@@ -2839,7 +2854,7 @@ public final class EventsProto {
         java.lang.Object ref = distPoller_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
+                  (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           distPoller_ = s;
           return s;
@@ -2852,12 +2867,12 @@ public final class EventsProto {
        * @return The bytes for distPoller.
        */
       public com.google.protobuf.ByteString
-          getDistPollerBytes() {
+      getDistPollerBytes() {
         java.lang.Object ref = distPoller_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
+          com.google.protobuf.ByteString b =
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           distPoller_ = b;
           return b;
         } else {
@@ -2870,12 +2885,10 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setDistPoller(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+              java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
         distPoller_ = value;
+        bitField0_ |= 0x00000200;
         onChanged();
         return this;
       }
@@ -2884,8 +2897,8 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder clearDistPoller() {
-        
         distPoller_ = getDefaultInstance().getDistPoller();
+        bitField0_ = (bitField0_ & ~0x00000200);
         onChanged();
         return this;
       }
@@ -2895,13 +2908,11 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setDistPollerBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+              com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         distPoller_ = value;
+        bitField0_ |= 0x00000200;
         onChanged();
         return this;
       }
@@ -2915,7 +2926,7 @@ public final class EventsProto {
         java.lang.Object ref = logDest_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
+                  (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           logDest_ = s;
           return s;
@@ -2928,12 +2939,12 @@ public final class EventsProto {
        * @return The bytes for logDest.
        */
       public com.google.protobuf.ByteString
-          getLogDestBytes() {
+      getLogDestBytes() {
         java.lang.Object ref = logDest_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
+          com.google.protobuf.ByteString b =
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           logDest_ = b;
           return b;
         } else {
@@ -2946,12 +2957,10 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setLogDest(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+              java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
         logDest_ = value;
+        bitField0_ |= 0x00000400;
         onChanged();
         return this;
       }
@@ -2960,8 +2969,8 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder clearLogDest() {
-        
         logDest_ = getDefaultInstance().getLogDest();
+        bitField0_ = (bitField0_ & ~0x00000400);
         onChanged();
         return this;
       }
@@ -2971,13 +2980,11 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setLogDestBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+              com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         logDest_ = value;
+        bitField0_ |= 0x00000400;
         onChanged();
         return this;
       }
@@ -2991,7 +2998,7 @@ public final class EventsProto {
         java.lang.Object ref = logContent_;
         if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
-              (com.google.protobuf.ByteString) ref;
+                  (com.google.protobuf.ByteString) ref;
           java.lang.String s = bs.toStringUtf8();
           logContent_ = s;
           return s;
@@ -3004,12 +3011,12 @@ public final class EventsProto {
        * @return The bytes for logContent.
        */
       public com.google.protobuf.ByteString
-          getLogContentBytes() {
+      getLogContentBytes() {
         java.lang.Object ref = logContent_;
         if (ref instanceof String) {
-          com.google.protobuf.ByteString b = 
-              com.google.protobuf.ByteString.copyFromUtf8(
-                  (java.lang.String) ref);
+          com.google.protobuf.ByteString b =
+                  com.google.protobuf.ByteString.copyFromUtf8(
+                          (java.lang.String) ref);
           logContent_ = b;
           return b;
         } else {
@@ -3022,12 +3029,10 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setLogContent(
-          java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+              java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
         logContent_ = value;
+        bitField0_ |= 0x00000800;
         onChanged();
         return this;
       }
@@ -3036,8 +3041,8 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder clearLogContent() {
-        
         logContent_ = getDefaultInstance().getLogContent();
+        bitField0_ = (bitField0_ & ~0x00000800);
         onChanged();
         return this;
       }
@@ -3047,28 +3052,26 @@ public final class EventsProto {
        * @return This builder for chaining.
        */
       public Builder setLogContentBytes(
-          com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+              com.google.protobuf.ByteString value) {
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         logContent_ = value;
+        bitField0_ |= 0x00000800;
         onChanged();
         return this;
       }
 
       private java.util.List<org.opennms.features.kafka.consumer.events.EventsProto.EventParameter> parameter_ =
-        java.util.Collections.emptyList();
+              java.util.Collections.emptyList();
       private void ensureParameterIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!((bitField0_ & 0x00001000) != 0)) {
           parameter_ = new java.util.ArrayList<org.opennms.features.kafka.consumer.events.EventsProto.EventParameter>(parameter_);
-          bitField0_ |= 0x00000001;
-         }
+          bitField0_ |= 0x00001000;
+        }
       }
 
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          org.opennms.features.kafka.consumer.events.EventsProto.EventParameter, org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.Builder, org.opennms.features.kafka.consumer.events.EventsProto.EventParameterOrBuilder> parameterBuilder_;
+              org.opennms.features.kafka.consumer.events.EventsProto.EventParameter, org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.Builder, org.opennms.features.kafka.consumer.events.EventsProto.EventParameterOrBuilder> parameterBuilder_;
 
       /**
        * <code>repeated .EventParameter parameter = 13;</code>
@@ -3104,7 +3107,7 @@ public final class EventsProto {
        * <code>repeated .EventParameter parameter = 13;</code>
        */
       public Builder setParameter(
-          int index, org.opennms.features.kafka.consumer.events.EventsProto.EventParameter value) {
+              int index, org.opennms.features.kafka.consumer.events.EventsProto.EventParameter value) {
         if (parameterBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -3121,7 +3124,7 @@ public final class EventsProto {
        * <code>repeated .EventParameter parameter = 13;</code>
        */
       public Builder setParameter(
-          int index, org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.Builder builderForValue) {
+              int index, org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.Builder builderForValue) {
         if (parameterBuilder_ == null) {
           ensureParameterIsMutable();
           parameter_.set(index, builderForValue.build());
@@ -3151,7 +3154,7 @@ public final class EventsProto {
        * <code>repeated .EventParameter parameter = 13;</code>
        */
       public Builder addParameter(
-          int index, org.opennms.features.kafka.consumer.events.EventsProto.EventParameter value) {
+              int index, org.opennms.features.kafka.consumer.events.EventsProto.EventParameter value) {
         if (parameterBuilder_ == null) {
           if (value == null) {
             throw new NullPointerException();
@@ -3168,7 +3171,7 @@ public final class EventsProto {
        * <code>repeated .EventParameter parameter = 13;</code>
        */
       public Builder addParameter(
-          org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.Builder builderForValue) {
+              org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.Builder builderForValue) {
         if (parameterBuilder_ == null) {
           ensureParameterIsMutable();
           parameter_.add(builderForValue.build());
@@ -3182,7 +3185,7 @@ public final class EventsProto {
        * <code>repeated .EventParameter parameter = 13;</code>
        */
       public Builder addParameter(
-          int index, org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.Builder builderForValue) {
+              int index, org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.Builder builderForValue) {
         if (parameterBuilder_ == null) {
           ensureParameterIsMutable();
           parameter_.add(index, builderForValue.build());
@@ -3196,11 +3199,11 @@ public final class EventsProto {
        * <code>repeated .EventParameter parameter = 13;</code>
        */
       public Builder addAllParameter(
-          java.lang.Iterable<? extends org.opennms.features.kafka.consumer.events.EventsProto.EventParameter> values) {
+              java.lang.Iterable<? extends org.opennms.features.kafka.consumer.events.EventsProto.EventParameter> values) {
         if (parameterBuilder_ == null) {
           ensureParameterIsMutable();
           com.google.protobuf.AbstractMessageLite.Builder.addAll(
-              values, parameter_);
+                  values, parameter_);
           onChanged();
         } else {
           parameterBuilder_.addAllMessages(values);
@@ -3213,7 +3216,7 @@ public final class EventsProto {
       public Builder clearParameter() {
         if (parameterBuilder_ == null) {
           parameter_ = java.util.Collections.emptyList();
-          bitField0_ = (bitField0_ & ~0x00000001);
+          bitField0_ = (bitField0_ & ~0x00001000);
           onChanged();
         } else {
           parameterBuilder_.clear();
@@ -3237,14 +3240,14 @@ public final class EventsProto {
        * <code>repeated .EventParameter parameter = 13;</code>
        */
       public org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.Builder getParameterBuilder(
-          int index) {
+              int index) {
         return getParameterFieldBuilder().getBuilder(index);
       }
       /**
        * <code>repeated .EventParameter parameter = 13;</code>
        */
       public org.opennms.features.kafka.consumer.events.EventsProto.EventParameterOrBuilder getParameterOrBuilder(
-          int index) {
+              int index) {
         if (parameterBuilder_ == null) {
           return parameter_.get(index);  } else {
           return parameterBuilder_.getMessageOrBuilder(index);
@@ -3253,8 +3256,8 @@ public final class EventsProto {
       /**
        * <code>repeated .EventParameter parameter = 13;</code>
        */
-      public java.util.List<? extends org.opennms.features.kafka.consumer.events.EventsProto.EventParameterOrBuilder> 
-           getParameterOrBuilderList() {
+      public java.util.List<? extends org.opennms.features.kafka.consumer.events.EventsProto.EventParameterOrBuilder>
+      getParameterOrBuilderList() {
         if (parameterBuilder_ != null) {
           return parameterBuilder_.getMessageOrBuilderList();
         } else {
@@ -3266,31 +3269,31 @@ public final class EventsProto {
        */
       public org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.Builder addParameterBuilder() {
         return getParameterFieldBuilder().addBuilder(
-            org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.getDefaultInstance());
+                org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.getDefaultInstance());
       }
       /**
        * <code>repeated .EventParameter parameter = 13;</code>
        */
       public org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.Builder addParameterBuilder(
-          int index) {
+              int index) {
         return getParameterFieldBuilder().addBuilder(
-            index, org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.getDefaultInstance());
+                index, org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.getDefaultInstance());
       }
       /**
        * <code>repeated .EventParameter parameter = 13;</code>
        */
-      public java.util.List<org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.Builder> 
-           getParameterBuilderList() {
+      public java.util.List<org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.Builder>
+      getParameterBuilderList() {
         return getParameterFieldBuilder().getBuilderList();
       }
       private com.google.protobuf.RepeatedFieldBuilderV3<
-          org.opennms.features.kafka.consumer.events.EventsProto.EventParameter, org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.Builder, org.opennms.features.kafka.consumer.events.EventsProto.EventParameterOrBuilder> 
-          getParameterFieldBuilder() {
+              org.opennms.features.kafka.consumer.events.EventsProto.EventParameter, org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.Builder, org.opennms.features.kafka.consumer.events.EventsProto.EventParameterOrBuilder>
+      getParameterFieldBuilder() {
         if (parameterBuilder_ == null) {
           parameterBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
-              org.opennms.features.kafka.consumer.events.EventsProto.EventParameter, org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.Builder, org.opennms.features.kafka.consumer.events.EventsProto.EventParameterOrBuilder>(
+                  org.opennms.features.kafka.consumer.events.EventsProto.EventParameter, org.opennms.features.kafka.consumer.events.EventsProto.EventParameter.Builder, org.opennms.features.kafka.consumer.events.EventsProto.EventParameterOrBuilder>(
                   parameter_,
-                  ((bitField0_ & 0x00000001) != 0),
+                  ((bitField0_ & 0x00001000) != 0),
                   getParentForChildren(),
                   isClean());
           parameter_ = null;
@@ -3299,13 +3302,13 @@ public final class EventsProto {
       }
       @java.lang.Override
       public final Builder setUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
       @java.lang.Override
       public final Builder mergeUnknownFields(
-          final com.google.protobuf.UnknownFieldSet unknownFields) {
+              final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
       }
 
@@ -3324,12 +3327,12 @@ public final class EventsProto {
     }
 
     private static final com.google.protobuf.Parser<Event>
-        PARSER = new com.google.protobuf.AbstractParser<Event>() {
+            PARSER = new com.google.protobuf.AbstractParser<Event>() {
       @java.lang.Override
       public Event parsePartialFrom(
-          com.google.protobuf.CodedInputStream input,
-          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-          throws com.google.protobuf.InvalidProtocolBufferException {
+              com.google.protobuf.CodedInputStream input,
+              com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+              throws com.google.protobuf.InvalidProtocolBufferException {
         Builder builder = newBuilder();
         try {
           builder.mergeFrom(input, extensionRegistry);
@@ -3339,7 +3342,7 @@ public final class EventsProto {
           throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
         } catch (java.io.IOException e) {
           throw new com.google.protobuf.InvalidProtocolBufferException(e)
-              .setUnfinishedMessage(builder.buildPartial());
+                  .setUnfinishedMessage(builder.buildPartial());
         }
         return builder.buildPartial();
       }
@@ -3362,55 +3365,55 @@ public final class EventsProto {
   }
 
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_EventParameter_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_EventParameter_fieldAccessorTable;
+          internal_static_EventParameter_descriptor;
+  private static final
+  com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internal_static_EventParameter_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_Event_descriptor;
-  private static final 
-    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_Event_fieldAccessorTable;
+          internal_static_Event_descriptor;
+  private static final
+  com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internal_static_Event_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
-      getDescriptor() {
+  getDescriptor() {
     return descriptor;
   }
   private static  com.google.protobuf.Descriptors.FileDescriptor
-      descriptor;
+          descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\033kafka-consumer-events.proto\"-\n\016EventPa" +
-      "rameter\022\014\n\004name\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"\221\002\n" +
-      "\005Event\022\013\n\003uei\030\001 \001(\t\022\016\n\006source\030\002 \001(\t\022\033\n\010s" +
-      "everity\030\003 \001(\0162\t.Severity\022\014\n\004host\030\004 \001(\t\022\017" +
-      "\n\007node_id\030\005 \001(\r\022\022\n\nip_address\030\006 \001(\t\022\024\n\014s" +
-      "ervice_name\030\007 \001(\t\022\020\n\010if_index\030\010 \001(\r\022\023\n\013d" +
-      "escription\030\t \001(\t\022\023\n\013dist_poller\030\n \001(\t\022\020\n" +
-      "\010log_dest\030\013 \001(\t\022\023\n\013log_content\030\014 \001(\t\022\"\n\t" +
-      "parameter\030\r \003(\0132\017.EventParameter*g\n\010Seve" +
-      "rity\022\021\n\rINDETERMINATE\020\000\022\013\n\007CLEARED\020\001\022\n\n\006" +
-      "NORMAL\020\002\022\013\n\007WARNING\020\003\022\t\n\005MINOR\020\004\022\t\n\005MAJO" +
-      "R\020\005\022\014\n\010CRITICAL\020\006B9\n*org.opennms.feature" +
-      "s.kafka.consumer.eventsB\013EventsProtob\006pr" +
-      "oto3"
+            "\n\033kafka-consumer-events.proto\"-\n\016EventPa" +
+                    "rameter\022\014\n\004name\030\001 \001(\t\022\r\n\005value\030\002 \001(\t\"\221\002\n" +
+                    "\005Event\022\013\n\003uei\030\001 \001(\t\022\016\n\006source\030\002 \001(\t\022\033\n\010s" +
+                    "everity\030\003 \001(\0162\t.Severity\022\014\n\004host\030\004 \001(\t\022\017" +
+                    "\n\007node_id\030\005 \001(\r\022\022\n\nip_address\030\006 \001(\t\022\024\n\014s" +
+                    "ervice_name\030\007 \001(\t\022\020\n\010if_index\030\010 \001(\r\022\023\n\013d" +
+                    "escription\030\t \001(\t\022\023\n\013dist_poller\030\n \001(\t\022\020\n" +
+                    "\010log_dest\030\013 \001(\t\022\023\n\013log_content\030\014 \001(\t\022\"\n\t" +
+                    "parameter\030\r \003(\0132\017.EventParameter*g\n\010Seve" +
+                    "rity\022\021\n\rINDETERMINATE\020\000\022\013\n\007CLEARED\020\001\022\n\n\006" +
+                    "NORMAL\020\002\022\013\n\007WARNING\020\003\022\t\n\005MINOR\020\004\022\t\n\005MAJO" +
+                    "R\020\005\022\014\n\010CRITICAL\020\006B9\n*org.opennms.feature" +
+                    "s.kafka.consumer.eventsB\013EventsProtob\006pr" +
+                    "oto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
-      .internalBuildGeneratedFileFrom(descriptorData,
-        new com.google.protobuf.Descriptors.FileDescriptor[] {
-        });
+            .internalBuildGeneratedFileFrom(descriptorData,
+                    new com.google.protobuf.Descriptors.FileDescriptor[] {
+                    });
     internal_static_EventParameter_descriptor =
-      getDescriptor().getMessageTypes().get(0);
+            getDescriptor().getMessageTypes().get(0);
     internal_static_EventParameter_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_EventParameter_descriptor,
-        new java.lang.String[] { "Name", "Value", });
+            com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_EventParameter_descriptor,
+            new java.lang.String[] { "Name", "Value", });
     internal_static_Event_descriptor =
-      getDescriptor().getMessageTypes().get(1);
+            getDescriptor().getMessageTypes().get(1);
     internal_static_Event_fieldAccessorTable = new
-      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_Event_descriptor,
-        new java.lang.String[] { "Uei", "Source", "Severity", "Host", "NodeId", "IpAddress", "ServiceName", "IfIndex", "Description", "DistPoller", "LogDest", "LogContent", "Parameter", });
+            com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+            internal_static_Event_descriptor,
+            new java.lang.String[] { "Uei", "Source", "Severity", "Host", "NodeId", "IpAddress", "ServiceName", "IfIndex", "Description", "DistPoller", "LogDest", "LogContent", "Parameter", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

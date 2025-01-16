@@ -101,6 +101,7 @@ public class TrapLogDTO implements Message {
         this.messages = messages;
     }
 
+
     @Override
     public int hashCode() {
         return Objects.hash(systemId, location, trapAddress, messages);

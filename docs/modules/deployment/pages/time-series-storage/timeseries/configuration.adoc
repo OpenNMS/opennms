@@ -200,3 +200,26 @@ Latency resource seems to be missing node label and location, you can expose the
 
 * `org.opennms.timeseries.tin.metatags.tag.nodeLabel=${resource:node_label}`
 * `org.opennms.timeseries.tin.metatags.tag.nodeLocation=${resource:location}`
+
+=== Expose Interface/Service data for Latency resource
+
+To expose additional tags derived from the interface and SNMP interface on a latency resource, enable this functionality by configuring the poller as follows:
+
+1.Update the Poller Configuration:
+
+Add the following service property to the poller configuration:
+
+[source,xml]
+----
+<service name="ICMP" interval="300000" user-defined="false" status="on">
+    <parameter key="interface-info-in-tags" value="true"/>
+</service>
+----
+
+2.Add Custom tags:
+
+Define custom tags in the system properties to extract specific metadata from the interface. Below are examples of commonly used tags:
+
+* `org.opennms.timeseries.tin.metatags.tag.ipAddress=${interface:address}`
+* `org.opennms.timeseries.tin.metatags.tag.ifIndex=${interface:if-index}`
+* `org.opennms.timeseries.tin.metatags.tag.service_name=${service:name}`
