@@ -55,6 +55,9 @@ commands:
       - store_artifacts:
           path: /tmp/filtered_vulnerabilities.json
           destination: filtered_vulnerabilities.json
+      # - store_artifacts:
+      #     path: /tmp/report.txt
+      #     destination: report.txt
       - run:
           name: Run Python script to analyze trivy report
           command: |
@@ -62,6 +65,7 @@ commands:
       - store_artifacts:
           path: report.txt
           destination: report.txt
+          
       - store_artifacts:
           path: report.csv
           destination: report.csv
@@ -71,7 +75,8 @@ commands:
             python3 .circleci/pyscripts/analyze_trivy_report.py /tmp/filtered_vulnerabilities.json
       - store_artifacts:
           path: filtered_vulnerabilities.txt
-          destination: filtered_vulnerabilities.txt  
+          destination: filtered_vulnerabilities.txt
+          
       - store_artifacts:
           path: filtered_vulnerabilities.csv
           destination: filtered_vulnerabilities.csv
