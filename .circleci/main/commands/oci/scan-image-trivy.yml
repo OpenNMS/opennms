@@ -47,25 +47,29 @@ commands:
             docker image load -i ~/project/opennms-container/*/images/*.oci
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"
-            /tmp/bin/trivy image --severity HIGH,CRITICAL --vuln-type os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 60m --format json -o /tmp/report.json --no-progress opennms/${TAG}
+            /tmp/bin/trivy image --severity HIGH,CRITICAL --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/filtered_vulnerabilities.json --no-progress opennms/${TAG}
+            /tmp/bin/trivy image --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/report.json --no-progress opennms/${TAG}
       - store_artifacts:
           path: /tmp/report.json
           destination: report.json
       - store_artifacts:
-          path: /tmp/report.txt
-          destination: report.txt
+          path: /tmp/filtered_vulnerabilities.json
+          destination: filtered_vulnerabilities.json
       - run:
           name: Run Python script to analyze trivy report
           command: |
-            python3 .circleci/pyscripts/analyze_trivy_report.py
-
+            python3 .circleci/pyscripts/analyze_trivy_report.py /tmp/report.json
+      - store_artifacts:
+          path: report.txt
+          destination: report.txt
+          
+      - store_artifacts:
+          path: report.csv
+          destination: report.csv
       - run:
-          name: Create Jira issues
+          name: Run Python script to analyze trivy report for Critical and High vulnerabilities
           command: |
-            JIRA_USER="${JIRA_USER}" \
-            JIRA_API_TOKEN="${JIRA_API_TOKEN}" \
-            JIRA_URL="${JIRA_URL}" \
-            python3 .circleci/pyscripts/create_jira_issues.py
+            python3 .circleci/pyscripts/analyze_trivy_report.py /tmp/filtered_vulnerabilities.json
       - store_artifacts:
           path: filtered_vulnerabilities.txt
           destination: filtered_vulnerabilities.txt
@@ -80,7 +84,7 @@ commands:
             pip3 install requests
 
       - run:
-          name: Run Python script to create Jira Issues
+          name: Create Jira Issues
           command: |
             JIRA_USER="${JIRA_USER}" \
             JIRA_API_TOKEN="${JIRA_API_TOKEN}" \

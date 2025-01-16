@@ -1,7 +1,14 @@
 import json
+import argparse
+import os
+
+# Set up command-line argument parsing
+parser = argparse.ArgumentParser(description='Process Trivy JSON report.')
+parser.add_argument('json_file', type=str, help='Path to the JSON report file (e.g., /tmp/report.json)')
+args = parser.parse_args()
 
 # Load the Trivy output
-with open('/tmp/report.json') as f:
+with open(args.json_file) as f:
     data = json.load(f)
 
 # List to store filtered vulnerabilities
@@ -47,16 +54,19 @@ for result in data.get('Results', []):
                     'Title': vulnerability.get('Title', 'N/A')
                 })
 
+# Get the base name for the output files
+base_name = os.path.splitext(os.path.basename(args.json_file))[0]
+
 # Save to a text file
-with open('filtered_vulnerabilities.txt', 'w') as outfile:
-    header = " VulnerabilityID     | Severity | Status   | Installed Version                   | Fixed Version                        | Class         | Target                              | PkgName                                     | PkgPath                             | Title"
+with open(f'{base_name}.txt', 'w') as outfile:
+    header = " VulnerabilityID     | Severity | Status               | Installed Version                   | Fixed Version                        | Class         | Target                              | PkgName                                     | PkgPath                             | Title"
     outfile.write(header + '\n')
     outfile.write("-" * len(header) + '\n')
     for v in filtered_vulnerabilities:
-        outfile.write(f"{v['VulnerabilityID']: <20} | {v['Severity']: <8} | {v['Status']: <8} | {v['InstalledVersion']: <35} | {v['FixedVersion']: <36} | {v['Class']: <13} | {v['Target']: <35} | {v['PkgName']: <43} | {v['PkgPath']: <109} | {v['Title']}\n")
+        outfile.write(f"{v['VulnerabilityID']: <20} | {v['Severity']: <8} | {v['Status']: <20} | {v['InstalledVersion']: <35} | {v['FixedVersion']: <36} | {v['Class']: <13} | {v['Target']: <35} | {v['PkgName']: <43} | {v['PkgPath']: <109} | {v['Title']}\n")
 
 # Save to a CSV file
-with open('filtered_vulnerabilities.csv', 'w') as outfile:
+with open(f'{base_name}.csv', 'w') as outfile:
     header = [
         'VulnerabilityID',
         'Severity',
@@ -89,5 +99,4 @@ with open('filtered_vulnerabilities.csv', 'w') as outfile:
         ]
         outfile.write(','.join(line) + '\n')
 
-print("Output saved to 'filtered_vulnerabilities.txt' and 'filtered_vulnerabilities.csv'")
-
+print(f"Output saved to '{base_name}.txt' and '{base_name}.csv'")

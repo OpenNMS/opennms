@@ -2,6 +2,8 @@ import requests
 import os
 import re
 import json
+import logging
+from collections import defaultdict
 
 PROJECT_KEY = "NMS"
 JIRA_USER = os.getenv("JIRA_USER")
@@ -20,8 +22,15 @@ PRIORITY_MAP = {
 def parse_filtered_vulnerabilities(file_path):
     vulnerabilities = []
 
-    with open(file_path, 'r') as file:
-        lines = file.readlines()[2:]
+    try:
+        with open(file_path, 'r') as file:
+            lines = file.readlines()[2:]  # Skip header lines
+    except FileNotFoundError:
+        print(f"File {file_path} not found.")
+        return vulnerabilities
+    except Exception as e:
+        print(f"Error reading file {file_path}: {e}")
+        return vulnerabilities
 
     for line in lines:
         if line.strip():
@@ -42,34 +51,50 @@ def parse_filtered_vulnerabilities(file_path):
 
     return vulnerabilities
 
+logging.basicConfig(level=logging.INFO)
+
 def issue_exists(vulnerability_id):
+    """Check if a Jira issue already exists for a vulnerability based on its ID."""
     url = f"{JIRA_URL}/rest/api/2/search?jql=summary~'{vulnerability_id}' AND project='{PROJECT_KEY}'"
-    response = requests.get(url, auth=(JIRA_USER, JIRA_API_TOKEN))
-    if response.status_code != 200:
-        print(f"Error fetching issues: {response.status_code} - {response.text}")
+    try:
+        response = requests.get(url, auth=(JIRA_USER, JIRA_API_TOKEN))
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error fetching issues for {vulnerability_id}: {e}")
         return False
     return response.json().get('total', 0) > 0
 
-def create_issue(vulnerability):
-    priority_name = PRIORITY_MAP.get(vulnerability['Severity'], "Trivial")  # Default to "Trivial"
+def create_issue(pkg_name, vulnerabilities):
+    """Create a single Jira issue for a package with multiple vulnerabilities."""
+    # Aggregate the CVE details
+    vuln_details = []
+    for vulnerability in vulnerabilities:
+        vuln_details.append(f"**Vulnerability ID:** {vulnerability['VulnerabilityID']}\n"
+                            f"**Severity:** {vulnerability['Severity']}\n"
+                            f"**Status:** {vulnerability['Status']}\n"
+                            f"**Installed Version:** {vulnerability['InstalledVersion']}\n"
+                            f"**Fixed Version:** {vulnerability['FixedVersion']}\n"
+                            f"**Class:** {vulnerability['Class']}\n"
+                            f"**Target:** {vulnerability['Target']}\n"
+                            f"**Package Path:** {vulnerability['PkgPath']}\n"
+                            f"**Title:** {vulnerability['Title']}\n\n")
+
+    vulnerability_summary = "\n".join(vuln_details)
     
+    # Get the priority based on severity
+    priority_name = PRIORITY_MAP.get(vulnerabilities[0]['Severity'], "Trivial")  # Default to "Trivial"
+    
+    # Create the Jira issue payload
     issue_payload = {
         "fields": {
             "project": {
                 "key": PROJECT_KEY
             },
-            "summary": f"Trivy Bug: (Vuln ID: {vulnerability['VulnerabilityID']}): {vulnerability['Title']}",
+            "summary": f"Trivy Bug: Library {pkg_name} - Multiple Vulnerabilities",
             "description": (
-                f"**Vulnerability ID:** {vulnerability['VulnerabilityID']}\n"
-                f"**Severity:** {vulnerability['Severity']}\n"
-                f"**Status:** {vulnerability['Status']}\n"
-                f"**Installed Version:** {vulnerability['InstalledVersion']}\n"
-                f"**Fixed Version:** {vulnerability['FixedVersion']}\n"
-                f"**Class:** {vulnerability['Class']}\n"
-                f"**Target:** {vulnerability['Target']}\n"
-                f"**Package Name:** {vulnerability['PkgName']}\n"
-                f"**Package Path:** {vulnerability['PkgPath']}\n"
-                f"**Title:** {vulnerability['Title']}"
+                f"**Package Name:** {pkg_name}\n\n"
+                f"**List of CVEs:**\n"
+                f"{vulnerability_summary}"
             ),
             "issuetype": {
                 "name": "Bug"
@@ -79,27 +104,38 @@ def create_issue(vulnerability):
             }
         }
     }
-    
-    print(f"Posting to URL: {JIRA_URL}/rest/api/2/issue")
-    print(f"Payload: {json.dumps(issue_payload, indent=2)}")
-    
-    response = requests.post(f"{JIRA_URL}/rest/api/2/issue", auth=(JIRA_USER, JIRA_API_TOKEN), 
-                             headers={"Content-Type": "application/json"}, 
-                             data=json.dumps(issue_payload))
-    
-    if response.status_code == 201:
-        print(f"Created issue: {response.json().get('key')}")
-    else:
-        print(f"Failed to create issue: {response.status_code} - {response.text}")
+
+    try:
+        print(f"Posting to URL: {JIRA_URL}/rest/api/2/issue")
+        response = requests.post(f"{JIRA_URL}/rest/api/2/issue", auth=(JIRA_USER, JIRA_API_TOKEN), 
+                                 headers={"Content-Type": "application/json"}, 
+                                 data=json.dumps(issue_payload))
+        response.raise_for_status()
+        print(f"Created issue for library {pkg_name}: {response.json().get('key')}")
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to create issue for {pkg_name}: {e}")
 
 def main():
+    # Parse vulnerabilities from the filtered file
     vulnerabilities = parse_filtered_vulnerabilities('filtered_vulnerabilities.txt')
     
+    if not vulnerabilities:
+        print("No vulnerabilities to process.")
+        return
+    
+    # Group vulnerabilities by package name (PkgName)
+    grouped_vulnerabilities = defaultdict(list)
+    
     for vulnerability in vulnerabilities:
-        if not issue_exists(vulnerability['VulnerabilityID']):
-            create_issue(vulnerability)
-        else:
-            print(f"Issue for vulnerability {vulnerability['VulnerabilityID']} already exists.")
+        grouped_vulnerabilities[vulnerability['PkgName']].append(vulnerability)
+    
+    # For each package, check if an issue exists, and if not, create it
+    for pkg_name, vuln_list in grouped_vulnerabilities.items():
+        if vuln_list:  # Only process non-empty lists
+            if not issue_exists(pkg_name):  # Check if an issue for this package already exists
+                create_issue(pkg_name, vuln_list)
+            else:
+                print(f"Issue for library {pkg_name} already exists.")
 
 if __name__ == "__main__":
     main()
