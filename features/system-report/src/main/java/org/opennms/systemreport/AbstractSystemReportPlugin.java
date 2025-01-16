@@ -147,11 +147,7 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
             isr = new InputStreamReader(is);
             br = new BufferedReader(isr);
             String line=null;
-            while ((line = br.readLine()) != null) { //br.ready() not working as desired so code modified.
-                /*
-                lines commented due to desired results are not shown using this code.
-                final String line = br.readLine();
-                if (line == null) break;*/
+            while ((line = br.readLine()) != null) {
                 sb.append(line);
                 if (br.ready()) sb.append("\n");
             }
