@@ -76,10 +76,6 @@ commands:
           path: filtered_vulnerabilities.csv
           destination: filtered_vulnerabilities.csv
       - run:
-          name: Install python dependencies
-          command: |
-            pip3 install requests
-      - run:
           name: Create Jira Issues
           command: |
             JIRA_USER="${JIRA_USER}" \
