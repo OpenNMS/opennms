@@ -23,6 +23,7 @@
 package org.opennms.features.grpc.exporter;
 
 import com.google.protobuf.Empty;
+import io.grpc.ClientInterceptor;
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
@@ -49,7 +50,6 @@ public class GrpcExporterClient {
     public static final String FOREIGN_TYPE = "OpenNMS";
 
     private final String host;
-    private final Integer port;
     private final String tlsCertPath;
 
     private final boolean tlsEnabled;
@@ -63,27 +63,23 @@ public class GrpcExporterClient {
     private final AtomicBoolean reconnecting = new AtomicBoolean(false);
     private final AtomicBoolean stopped = new AtomicBoolean(false);
     private Callback inventoryCallback;
+    private final ClientInterceptor clientInterceptor;
 
     public GrpcExporterClient(final String host,
-                              final Integer port,
                               final String tlsCertPath,
-                              final boolean tlsEnabled) {
+                              final boolean tlsEnabled,
+                              final ClientInterceptor clientInterceptor) {
         this.host = Objects.requireNonNull(host);
-        this.port = Objects.requireNonNull(port);
         this.tlsCertPath = tlsCertPath;
         this.tlsEnabled = tlsEnabled;
+        this.clientInterceptor = clientInterceptor;
         this.scheduler = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("grpc-exporter-connect"));
     }
 
     public void start() throws SSLException {
-        final NettyChannelBuilder channelBuilder;
-        if (this.port > 0) {
-            channelBuilder = NettyChannelBuilder.forAddress(this.host, this.port)
+        final NettyChannelBuilder channelBuilder = NettyChannelBuilder.forTarget(this.host)
+                    .intercept(clientInterceptor)
                     .keepAliveWithoutCalls(true);
-        } else {
-            channelBuilder = NettyChannelBuilder.forTarget(this.host)
-                    .keepAliveWithoutCalls(true);
-        }
 
         if (tlsEnabled && tlsCertPath != null && !tlsCertPath.isBlank()) {
             channel = channelBuilder.useTransportSecurity()
@@ -104,7 +100,7 @@ public class GrpcExporterClient {
 
         this.monitoredServiceSyncStub = ServiceSyncGrpc.newStub(this.channel);
         connectStreams();
-        LOG.info("GrpcExporterClient started connection to {}:{}", this.host, this.port);
+        LOG.info("GrpcExporterClient started connection to {}", this.host);
     }
 
     public void stop() {
