@@ -258,6 +258,9 @@ public class ThresholdingSetImpl implements ThresholdingSet {
             LOG.debug("applyThresholds: Ignoring resource {} because required attributes map is empty.", resourceWrapper);
             return eventsList;
         }
+        // compute scope here, see NMS-16966
+        final var scope = ThresholdEntity.getScopeForResource(m_entityScopeProvider, resourceWrapper);
+
         LOG.debug("applyThresholds: Applying thresholds on {} using {} attributes.", resourceWrapper, attributesMap.size());
         Date date = new Date();
         synchronized(m_thresholdGroups) {
@@ -284,8 +287,6 @@ public class ThresholdingSetImpl implements ThresholdingSet {
                                 }
                                 if(!valueMissing || relaxed) {
                                     LOG.info("applyThresholds: All attributes found for {}, evaluating", resourceWrapper);
-
-                                    final var scope = thresholdEntity.getScopeForResource(resourceWrapper);
 
                                     resourceWrapper.setDsLabel(Interpolator.interpolate(thresholdEntity.getDatasourceLabel(), scope).output);
                                     try {
@@ -314,6 +315,9 @@ public class ThresholdingSetImpl implements ThresholdingSet {
             return false;
         }
 
+        // compute scope here, see NMS-16966
+        final var scope = ThresholdEntity.getScopeForResource(m_entityScopeProvider, resource);
+
         // Find the filters for threshold definition for selected group/dataSource
         final List<ResourceFilter> filters = thresholdEntity.getThresholdConfig().getBasethresholddef().getResourceFilters();
         if (filters.size() == 0) return true;
@@ -325,8 +329,6 @@ public class ThresholdingSetImpl implements ThresholdingSet {
         for (ResourceFilter f : filters) {
             LOG.debug("passedThresholdFilters: filter #{}: field={}, regex='{}'", count, f.getField(), f.getContent().orElse(null));
             count++;
-
-            final var scope = thresholdEntity.getScopeForResource(resource);
 
             // Read Resource Attribute and apply filter rules if attribute is not null
             String attr = resource.getFieldValue(Interpolator.interpolate(f.getField(), scope).output);
