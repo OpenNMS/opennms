@@ -1,89 +1,133 @@
-commands:
-  scan-image-trivy:
-    parameters:
-      architecture:
-        type: string
-      container_name:
-        type: string
-      container_dir:
-        type: string
-      tarball_match:
-        type: string
-      tarball_path:
-        type: string
-    steps:
-      - setup_remote_docker:
-          docker_layer_caching: false
-      - cached-checkout
-      - download-download-artifacts
-      - run:
-          name: download tarball dependency to << parameters.tarball_path >>
-          command: download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.tarball_match >>" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/<< parameters.tarball_path >>"
-      - run:
-          name: build << parameters.container_name >>=<< parameters.architecture >> container image
-          command: |
-            # set up multi-arch
-            docker container prune -f
-            docker run --rm --privileged tonistiigi/binfmt:latest --install "<< parameters.architecture >>"
+import requests
+import os
+import re
+import json
+import logging
+import time
+from collections import defaultdict
 
-            # export DOCKER_CONTENT_TRUST=1
-            cd opennms-container/<< parameters.container_dir >>
-            export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
-            export TAG="<< parameters.container_name >>-${ARCH}"
-            make DOCKER_ARCH="<< parameters.architecture >>" \
-                 DOCKER_OCI="images/${TAG}.oci" \
-                 DOCKER_TAG="opennms/${TAG}" \
-                 BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
-                 BUILD_URL="${CIRCLE_BUILD_URL}" \
-                 BUILD_BRANCH="${CIRCLE_BRANCH}" \
-                 oci
-      - run:
-          name: Install trivy
-          command: |
-            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /tmp/bin
-      - run:
-          name: Scan the local image with trivy
-          command: |
-            docker image load -i ~/project/opennms-container/*/images/*.oci
-            export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
-            export TAG="<< parameters.container_name >>-${ARCH}"
-            /tmp/bin/trivy image --severity HIGH,CRITICAL --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/filtered_vulnerabilities.json --no-progress opennms/${TAG}
-            /tmp/bin/trivy image --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/report.json --no-progress opennms/${TAG}
-      - store_artifacts:
-          path: /tmp/report.json
-          destination: report.json
-      - store_artifacts:
-          path: /tmp/filtered_vulnerabilities.json
-          destination: filtered_vulnerabilities.json
-      # - store_artifacts:
-      #     path: /tmp/report.txt
-      #     destination: report.txt
-      - run:
-          name: Run Python script to analyze trivy report
-          command: |
-            python3 .circleci/pyscripts/analyze_trivy_report.py /tmp/report.json
-      - store_artifacts:
-          path: report.txt
-          destination: report.txt
-          
-      - store_artifacts:
-          path: report.csv
-          destination: report.csv
-      - run:
-          name: Run Python script to analyze trivy report for Critical and High vulnerabilities
-          command: |
-            python3 .circleci/pyscripts/analyze_trivy_report.py /tmp/filtered_vulnerabilities.json
-      - store_artifacts:
-          path: filtered_vulnerabilities.txt
-          destination: filtered_vulnerabilities.txt
-          
-      - store_artifacts:
-          path: filtered_vulnerabilities.csv
-          destination: filtered_vulnerabilities.csv
-      - run:
-          name: Run Python script to create Jira Issues
-          command: |
-            JIRA_USER="${JIRA_USER}" \
-            JIRA_API_TOKEN="${JIRA_API_TOKEN}" \
-            JIRA_URL="${JIRA_URL}" \
-            python3 .circleci/pyscripts/create_jira_issues.py
+PROJECT_KEY = "NMS"
+JIRA_USER = os.getenv("JIRA_USER")
+JIRA_API_TOKEN = os.getenv("JIRA_API_TOKEN")
+JIRA_URL = os.getenv("JIRA_URL")
+
+# Priority mapping based on severity
+PRIORITY_MAP = {
+    "CRITICAL": "Critical",
+    "HIGH": "High",
+    "MEDIUM": "Medium",
+    "LOW": "Low",
+    "Trivial": "Trivial"
+}
+
+def parse_filtered_vulnerabilities(file_path):
+    vulnerabilities = []
+
+    try:
+        with open(file_path, 'r') as file:
+            lines = file.readlines()[2:]
+    except FileNotFoundError:
+        print(f"File {file_path} not found.")
+        return vulnerabilities
+    except Exception as e:
+        print(f"Error reading file {file_path}: {e}")
+        return vulnerabilities
+
+    for line in lines:
+        if line.strip():
+            fields = re.split(r'\s*\|\s*', line.strip())
+            if len(fields) >= 10:
+                vulnerabilities.append({
+                    'VulnerabilityID': fields[0].strip(),
+                    'Severity': fields[1].strip(),
+                    'Status': fields[2].strip(),
+                    'InstalledVersion': fields[3].strip(),
+                    'FixedVersion': fields[4].strip(),
+                    'Class': fields[5].strip(),
+                    'Target': fields[6].strip(),
+                    'PkgName': fields[7].strip(),
+                    'PkgPath': fields[8].strip(),
+                    'Title': fields[9].strip()
+                })
+
+    return vulnerabilities
+
+logging.basicConfig(level=logging.INFO)
+
+def issue_exists(vulnerability_id):
+    url = f"{JIRA_URL}/rest/api/2/search?jql=summary~'{vulnerability_id}' AND project='{PROJECT_KEY}'"
+    try:
+        response = requests.get(url, auth=(JIRA_USER, JIRA_API_TOKEN))
+        response.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error fetching issues for {vulnerability_id}: {e}")
+        return False
+    return response.json().get('total', 0) > 0
+
+def create_issue_for_package(package_name, vulnerabilities):
+
+    severity_levels = set([v['Severity'] for v in vulnerabilities])
+    vulnerabilities_list = "\n".join([f"- {v['VulnerabilityID']} ({v['Title']})" for v in vulnerabilities])
+
+
+    priority_name = "Trivial" 
+    if "CRITICAL" in severity_levels:
+        priority_name = "Critical"
+    elif "HIGH" in severity_levels:
+        priority_name = "High"
+    elif "MEDIUM" in severity_levels:
+        priority_name = "Medium"
+    elif "LOW" in severity_levels:
+        priority_name = "Low"
+
+
+    issue_payload = {
+        "fields": {
+            "project": {
+                "key": PROJECT_KEY
+            },
+            "summary": f"Vulnerabilities in {package_name}: Multiple CVEs",
+            "description": (
+                f"**Package Name:** {package_name}\n"
+                f"**Severity Levels:** {', '.join(severity_levels)}\n"
+                f"**Vulnerabilities:**\n"
+                f"{vulnerabilities_list}"  
+            ),
+            "issuetype": {
+                "name": "Bug"
+            },
+            "priority": {
+                "name": priority_name
+            }
+        }
+    }
+
+    try:
+        print(f"Posting to URL: {JIRA_URL}/rest/api/2/issue")
+        response = requests.post(f"{JIRA_URL}/rest/api/2/issue", auth=(JIRA_USER, JIRA_API_TOKEN),
+                                 headers={"Content-Type": "application/json"},
+                                 data=json.dumps(issue_payload))
+        response.raise_for_status()
+        print(f"Created issue: {response.json().get('key')}")
+    except requests.exceptions.RequestException as e:
+        print(f"Failed to create issue: {e}")
+
+def main():
+    vulnerabilities = parse_filtered_vulnerabilities('filtered_vulnerabilities.txt')
+    
+    if not vulnerabilities:
+        print("No vulnerabilities to process.")
+        return
+
+    grouped_vulnerabilities = defaultdict(list)
+    for vuln in vulnerabilities:
+        grouped_vulnerabilities[vuln['PkgName']].append(vuln)
+
+    for package_name, package_vulnerabilities in grouped_vulnerabilities.items():
+        if not issue_exists(package_name):
+            create_issue_for_package(package_name, package_vulnerabilities)
+        else:
+            print(f"Issue for package {package_name} already exists.")
+
+if __name__ == "__main__":
+    main()
