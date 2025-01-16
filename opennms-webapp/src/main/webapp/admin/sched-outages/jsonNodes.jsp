@@ -30,7 +30,7 @@
 --%>
 
 <%@page language="java"
-        contentType="text/html"
+        contentType="application/json"
         session="true"
         import="java.util.*, java.util.regex.*,
         org.opennms.web.element.*,
