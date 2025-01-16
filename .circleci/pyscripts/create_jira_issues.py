@@ -24,7 +24,7 @@ def parse_filtered_vulnerabilities(file_path):
 
     try:
         with open(file_path, 'r') as file:
-            lines = file.readlines()[2:]  # Skip header lines
+            lines = file.readlines()[2:]
     except FileNotFoundError:
         print(f"File {file_path} not found.")
         return vulnerabilities
@@ -66,7 +66,7 @@ def issue_exists(vulnerability_id):
 
 def create_issue(pkg_name, vulnerabilities):
     """Create a single Jira issue for a package with multiple vulnerabilities."""
-    # Aggregate the CVE details
+
     vuln_details = []
     for vulnerability in vulnerabilities:
         vuln_details.append(f"**Vulnerability ID:** {vulnerability['VulnerabilityID']}\n"
@@ -100,7 +100,7 @@ def create_issue(pkg_name, vulnerabilities):
                 "name": "Bug"
             },
             "priority": {
-                "name": priority_name  # Use mapped priority
+                "name": priority_name
             }
         }
     }
