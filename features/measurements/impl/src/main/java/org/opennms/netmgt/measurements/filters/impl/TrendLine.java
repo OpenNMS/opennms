@@ -21,24 +21,12 @@
  */
 package org.opennms.netmgt.measurements.filters.impl;
 
-import java.util.Date;
-import java.util.Map;
-
+import com.google.common.base.Preconditions;
+import com.google.common.collect.RowSortedTable;
 import org.apache.commons.math3.analysis.polynomials.PolynomialFunction;
 import org.apache.commons.math3.fitting.PolynomialCurveFitter;
 import org.apache.commons.math3.fitting.WeightedObservedPoints;
-import org.apache.commons.math3.fitting.leastsquares.EvaluationRmsChecker;
-import org.apache.commons.math3.fitting.leastsquares.GaussNewtonOptimizer;
-import org.apache.commons.math3.fitting.leastsquares.LeastSquaresBuilder;
-import org.apache.commons.math3.fitting.leastsquares.LeastSquaresOptimizer;
-import org.apache.commons.math3.fitting.leastsquares.LeastSquaresProblem;
-import org.apache.commons.math3.fitting.leastsquares.LevenbergMarquardtOptimizer;
-import org.apache.commons.math3.linear.ArrayRealVector;
-import org.apache.commons.math3.linear.RealVector;
 import org.opennms.netmgt.integrations.R.RScriptException;
-import org.opennms.netmgt.integrations.R.RScriptExecutor;
-import org.opennms.netmgt.integrations.R.RScriptInput;
-import org.opennms.netmgt.integrations.R.RScriptOutput;
 import org.opennms.netmgt.measurements.api.Filter;
 import org.opennms.netmgt.measurements.api.FilterInfo;
 import org.opennms.netmgt.measurements.api.FilterParam;
@@ -46,10 +34,7 @@ import org.opennms.netmgt.measurements.filters.impl.Utils.TableLimits;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.base.Preconditions;
-import com.google.common.collect.ImmutableTable;
-import com.google.common.collect.Maps;
-import com.google.common.collect.RowSortedTable;
+import java.util.Date;
 
 /**
  * Fits a trend line to the samples in a column.
@@ -83,11 +68,13 @@ public class TrendLine implements Filter {
 
     @Override
     public void filter(RowSortedTable<Long, String, Double> table) throws RScriptException {
+        LOG.debug("filter: values\n{}", table.rowMap().values());
         Preconditions.checkArgument(table.containsColumn(TIMESTAMP_COLUMN_NAME), String.format("Data source must have a '%s' column.", Filter.TIMESTAMP_COLUMN_NAME));
 
         // Determine the index of the first and last non-NaN values
         // Assume the values between these are contiguous
         TableLimits limits = Utils.getRowsWithValues(table, m_inputColumn);
+        LOG.info("filter: limits: {}, {}", limits.firstRowWithValues, limits.lastRowWithValues);
 
         // Make sure we have some samples
         long numSampleRows = limits.lastRowWithValues - limits.firstRowWithValues;
@@ -98,14 +85,20 @@ public class TrendLine implements Filter {
 
         // Gather the values [(x,y),...]
         final WeightedObservedPoints obs = new WeightedObservedPoints();
-        for (long i = limits.firstRowWithValues; i < limits.lastRowWithValues; i++) {
-            obs.add(table.get(i, TIMESTAMP_COLUMN_NAME), table.get(i, m_inputColumn));
+        for (long i = limits.firstRowWithValues; i <= limits.lastRowWithValues; i++) {
+            Double value = table.get(i,m_inputColumn);
+            Double ts = table.get(i, TIMESTAMP_COLUMN_NAME);
+            if (ts != null && !Double.isNaN(ts) && value != null && !Double.isNaN(value)) {
+                obs.add(ts,value);
+            }
         }
+        LOG.info("filter: WeightedObservedPoints: {}", obs.toList().size());
 
         // Fit the polynomial
         final PolynomialCurveFitter fitter = PolynomialCurveFitter.create(m_polynomialOrder);
         final double[] coeff = fitter.fit(obs.toList());
         PolynomialFunction polynomialFunction = new PolynomialFunction(coeff);
+        LOG.info("filter: polynomialFunction: {}", polynomialFunction);
 
         // Determine the step size
         Date lastTimestamp = new Date(table.get(limits.lastRowWithValues, TIMESTAMP_COLUMN_NAME).longValue());
@@ -116,6 +109,9 @@ public class TrendLine implements Filter {
         numStepsAhead = Math.max(1, numStepsAhead);
 
         // Calculate the value of the polynomial for all the samples and the requested number of steps ahead
+        LOG.info("filter:  limits.firstRowWithValues:{}",  limits.firstRowWithValues);
+        LOG.info("filter:  limits.lastRowWithValues:{}",  limits.lastRowWithValues);
+        LOG.info("filter:  numStepsAhead:{}", numStepsAhead);
         for (long i = limits.firstRowWithValues; i <= (limits.lastRowWithValues + numStepsAhead); i++) {
             if (i >= limits.lastRowWithValues) {
                 table.put(i, TIMESTAMP_COLUMN_NAME, (double)new Date(lastTimestamp.getTime() + stepInMs * (i-limits.lastRowWithValues)).getTime());
@@ -124,5 +120,7 @@ public class TrendLine implements Filter {
             // Compute the value
             table.put(i, m_outputColumn, polynomialFunction.value(timestamp));
         }
+        LOG.debug("filter: values:\n{}", table.rowMap().values());
+
     }
 }
