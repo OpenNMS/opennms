@@ -10,11 +10,11 @@
     <cm:property-placeholder id="grpcExporterProperties" persistent-id="org.opennms.features.grpc.exporter"
                              update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="host" value="bsm.onmshs.local"/>
-            <cm:property name="port" value="1443"/>
+            <cm:property name="host" value="bsm.onmshs.local:1443"/>
             <cm:property name="snapshot.interval" value="3600"/>
             <cm:property name="tls.enabled" value="true"/>
             <cm:property name="tls.cert.path" value=""/>
+            <cm:property name="tenant.id" value="opennms-prime"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -24,9 +24,13 @@
 
     <bean id="grpcExporterClient" class="org.opennms.features.grpc.exporter.GrpcExporterClient" init-method="start" destroy-method="stop">
         <argument value="${host}"/>
-        <argument value="${port}"/>
         <argument value="${tls.cert.path}"/>
         <argument value="${tls.enabled}"/>
+        <argument ref="grpcClientInterceptor"/>
+    </bean>
+
+    <bean id="grpcClientInterceptor" class="org.opennms.features.grpc.exporter.GrpcHeaderInterceptor">
+        <argument value="${tenant.id}"/>
     </bean>
 
     <bean id="inventoryService" class="org.opennms.features.grpc.exporter.InventoryService" init-method="start" destroy-method="stop" >
