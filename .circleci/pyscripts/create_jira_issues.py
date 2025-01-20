@@ -19,7 +19,8 @@ PRIORITY_MAP = {
     "Trivial": "Trivial"
 }
 
-SECURITY_LEVEL = "TOG (migrated)"  
+# Security level for Trivy issues
+SECURITY_LEVEL = "TOG (migrated)"
 
 def parse_filtered_vulnerabilities(file_path):
     vulnerabilities = []
@@ -153,7 +154,7 @@ def create_issue_for_package(package_name, vulnerabilities):
             "priority": {
                 "name": priority_name
             },
-            "customfield_10000": SECURITY_LEVEL  # will replace with actual customfieldID
+            "security": SECURITY_LEVEL
         }
     }
 
@@ -178,7 +179,7 @@ def create_issues(vulnerabilities):
         packages[pkg_name].append(vulnerability)
 
     for package_name, package_vulnerabilities in packages.items():
-        # Check if an issue exists for the current package
+
         existing_issue = issue_exists_for_package(package_name)
 
         if existing_issue:
@@ -187,7 +188,7 @@ def create_issues(vulnerabilities):
 
             for vuln in package_vulnerabilities:
                 new_cve = vuln
-                # Check CVE is already listed in the issue
+
                 issue_url = f"{JIRA_URL}/rest/api/2/issue/{issue_key}"
                 try:
                     response = requests.get(issue_url, auth=(JIRA_USER, JIRA_API_TOKEN))
@@ -202,7 +203,6 @@ def create_issues(vulnerabilities):
                     logging.error(f"Error fetching issue details for {issue_key}: {e}")
 
         else:
-            # If no existing issue, create a new issue for the package
             print(f"Issue for package {package_name} does not exist. Creating issue.")
             create_issue_for_package(package_name, package_vulnerabilities)
 
