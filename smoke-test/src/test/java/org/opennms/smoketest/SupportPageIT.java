@@ -61,12 +61,30 @@ public class SupportPageIT extends OpenNMSSeleniumIT {
     public void testSystemReport() {
         driver.findElement(By.linkText("Generate System Report")).click();
 
-        // checkboxes are selected by default
-        final WebElement allCheckbox = driver.findElement(By.cssSelector("input[type=checkbox][name=all]"));
-        assertThat(driver.findElement(By.cssSelector("input[type=checkbox][name=plugins][value=Java]")).isSelected(), is(true));
+        final WebElement textFileReportRadio = driver.findElement(By.id("radio1"));
+        final WebElement logFilesRadio = driver.findElement(By.id("radio2"));
+        final WebElement javaReportCheckbox = driver.findElement(By.cssSelector("input[type=checkbox][name=plugins][value=Java]"));
+        final WebElement threadsReportRadio = driver.findElement(By.cssSelector("input[type=radio][name=plugins][value=Threads]"));
+        final WebElement topReportRadio = driver.findElement(By.cssSelector("input[type=radio][name=plugins][value=Top]"));
 
-        // deselect the "all" checkbox
-        allCheckbox.click();
-        assertThat(driver.findElement(By.cssSelector("input[type=checkbox][name=plugins][value=Java]")).isSelected(), is(false));
+        assertThat(textFileReportRadio.isSelected(), is(true));
+        assertThat(logFilesRadio.isSelected(), is(false));
+        assertThat(javaReportCheckbox.isSelected(), is(true));
+        assertThat(threadsReportRadio.isSelected(), is(false));
+        assertThat(topReportRadio.isSelected(), is(false));
+
+        javaReportCheckbox.click();
+        assertThat(javaReportCheckbox.isSelected(), is(false));
+
+        logFilesRadio.click();
+        assertThat(textFileReportRadio.isSelected(), is(false));
+        assertThat(logFilesRadio.isSelected(), is(true));
+        assertThat(javaReportCheckbox.isSelected(), is(false));
+        assertThat(threadsReportRadio.isSelected(), is(true));
+        assertThat(topReportRadio.isSelected(), is(false));
+
+        topReportRadio.click();
+        assertThat(threadsReportRadio.isSelected(), is(false));
+        assertThat(topReportRadio.isSelected(), is(true));
     }
 }
