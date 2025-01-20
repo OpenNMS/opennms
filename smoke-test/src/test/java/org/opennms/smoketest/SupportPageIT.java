@@ -64,14 +64,14 @@ public class SupportPageIT extends OpenNMSSeleniumIT {
         final WebElement textFileReportRadio = driver.findElement(By.id("radio1"));
         final WebElement logFilesRadio = driver.findElement(By.id("radio2"));
         final WebElement javaReportCheckbox = driver.findElement(By.cssSelector("input[type=checkbox][name=plugins][value=Java]"));
-        final WebElement threadsReportRadio = driver.findElement(By.cssSelector("input[type=radio][name=plugins][value=Threads]"));
-        final WebElement topReportRadio = driver.findElement(By.cssSelector("input[type=radio][name=plugins][value=Top]"));
+        final WebElement configurationReportRadio = driver.findElement(By.cssSelector("input[type=radio][name=plugins][value=Configuration]"));
+        final WebElement logsReportRadio = driver.findElement(By.cssSelector("input[type=radio][name=plugins][value=Logs]"));
 
         assertThat(textFileReportRadio.isSelected(), is(true));
         assertThat(logFilesRadio.isSelected(), is(false));
         assertThat(javaReportCheckbox.isSelected(), is(true));
-        assertThat(threadsReportRadio.isSelected(), is(false));
-        assertThat(topReportRadio.isSelected(), is(false));
+        assertThat(configurationReportRadio.isSelected(), is(false));
+        assertThat(logsReportRadio.isSelected(), is(false));
 
         javaReportCheckbox.click();
         assertThat(javaReportCheckbox.isSelected(), is(false));
@@ -80,11 +80,12 @@ public class SupportPageIT extends OpenNMSSeleniumIT {
         assertThat(textFileReportRadio.isSelected(), is(false));
         assertThat(logFilesRadio.isSelected(), is(true));
         assertThat(javaReportCheckbox.isSelected(), is(false));
-        assertThat(threadsReportRadio.isSelected(), is(true));
-        assertThat(topReportRadio.isSelected(), is(false));
+        assertThat(configurationReportRadio.isSelected(), is(true));
+        assertThat(logsReportRadio.isSelected(), is(false));
 
-        topReportRadio.click();
-        assertThat(threadsReportRadio.isSelected(), is(false));
-        assertThat(topReportRadio.isSelected(), is(true));
+        logsReportRadio.click();
+        assertThat(configurationReportRadio.isSelected(), is(false));
+        assertThat(logsReportRadio.isSelected(), is(true));
     }
+
 }

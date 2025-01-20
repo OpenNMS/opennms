@@ -104,7 +104,7 @@ function toggleGroup(activeGroup) {
       <div class="mr-5">
         <!-- First Radio Group -->
         <input type="radio" id="radio1" name="group" onclick="toggleGroup(1)" checked />
-        <label for="radio1" class="font-weight-bold">Text File Report</label>
+        <label for="radio1" class="font-weight-bold">System Reports</label>
         <div id="group1" class="ml-3">
           <c:forEach items="${report.plugins}" var="plugin" varStatus="status">
             <c:if test="${plugin.fullOutputOnly == false}">
@@ -119,7 +119,7 @@ function toggleGroup(activeGroup) {
       <div>
         <!-- Second Radio Group -->
         <input type="radio" id="radio2" name="group" onclick="toggleGroup(2)" />
-        <label for="radio2" class="font-weight-bold">Log Files</label>
+        <label for="radio2" class="font-weight-bold">Configs / Logs</label>
         <div id="group2" class="ml-3">
           <c:forEach items="${report.plugins}" var="plugin" varStatus="status">
             <c:if test="${plugin.fullOutputOnly == true}">
