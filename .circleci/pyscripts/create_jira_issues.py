@@ -19,6 +19,8 @@ PRIORITY_MAP = {
     "Trivial": "Trivial"
 }
 
+SECURITY_LEVEL = "TOG (migrated)"  
+
 def parse_filtered_vulnerabilities(file_path):
     vulnerabilities = []
 
@@ -138,7 +140,6 @@ def create_issue_for_package(package_name, vulnerabilities):
             f"{vulnerabilities_list}"
         )
 
-    # Prepare the issue payload for Jira
     issue_payload = {
         "fields": {
             "project": {
@@ -151,7 +152,8 @@ def create_issue_for_package(package_name, vulnerabilities):
             },
             "priority": {
                 "name": priority_name
-            }
+            },
+            "customfield_10000": SECURITY_LEVEL  # will replace with actual customfieldID
         }
     }
 
@@ -166,10 +168,7 @@ def create_issue_for_package(package_name, vulnerabilities):
         print(f"Failed to create issue: {e}")
 
 def create_issues(vulnerabilities):
-    """
-    Groups vulnerabilities by package, checks if an issue exists for each package,
-    and creates issues or updates the existing issues with new CVEs.
-    """
+
     packages = {}
 
     for vulnerability in vulnerabilities:
