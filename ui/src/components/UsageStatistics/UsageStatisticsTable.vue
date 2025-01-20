@@ -258,16 +258,38 @@ const showFullValue = (item: StatisticsItem) => {
 }
 
 const downloadFile = (item: StatisticsItem) => {
-  const blob = new Blob([statistics.value[item.key] || ''])
+  // Decode the Base64 string into a byte array
+  const byteCharacters = atob(statistics.value[item.key])
+  const byteNumbers = new Array(byteCharacters.length).fill(null).map((_, i) => byteCharacters.charCodeAt(i))
+  const byteArray = new Uint8Array(byteNumbers)
+
   const fileType = metadata.value.metadata.find((meta) => meta.key === item.key)?.datatype.split('|').pop()?.toLowerCase()
+  const fileName = `Login events Past 60 days.${fileType}`
+  const contentType = fileType === 'csv' ? 'text/csv' : 'application/octet-stream'
+
+  // Create a Blob object for the CSV
+  const blob = new Blob([byteArray], { type: contentType})
+
+  // Create a temporary link element
   const link = document.createElement('a')
-  const url = URL.createObjectURL(blob)
-  link.setAttribute('href', url)
-  link.setAttribute('download', `Login events Past 60 days.${fileType}`)
-  link.style.visibility = 'hidden'
-  document.body.appendChild(link)
+  link.href = URL.createObjectURL(blob)
+  link.download = fileName
+
+  // Trigger the download
   link.click()
-  document.body.removeChild(link)
+
+  // Clean up
+  URL.revokeObjectURL(link.href)
+  // const blob = new Blob([statistics.value[item.key] || ''])
+  // const fileType = metadata.value.metadata.find((meta) => meta.key === item.key)?.datatype.split('|').pop()?.toLowerCase()
+  // const link = document.createElement('a')
+  // const url = URL.createObjectURL(blob)
+  // link.setAttribute('href', url)
+  // link.setAttribute('download', `Login events Past 60 days.${fileType}`)
+  // link.style.visibility = 'hidden'
+  // document.body.appendChild(link)
+  // link.click()
+  // document.body.removeChild(link)
 }
 
 onMounted(() => {
