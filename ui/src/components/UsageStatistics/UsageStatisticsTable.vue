@@ -52,6 +52,9 @@
             <td v-if="row.isLink">
               <a href="#" @click.prevent="() => showFullValue(row)">See full value</a>
             </td>
+            <td v-else-if="row.isFile">
+              <a href="#" @click.prevent="() => downloadFile(row)">Download CSV File</a>
+            </td>
             <td v-else-if="shouldClipValue(row)">
               {{ getClippedValue(row) }}
               <a href="#" @click.prevent="() => showFullValue(row)">See full value</a>
@@ -80,16 +83,16 @@
 </template>
 
 <script setup lang="ts">
-import { FeatherSortHeader, SORT } from '@featherds/table'
 import { isNumber, isString } from '@/lib/utils'
 import { useUsageStatisticsStore } from '@/stores/usageStatisticsStore'
 import { FeatherSortObject } from '@/types'
-import UsageStatisticsModal from './UsageStatisticsModal.vue'
 import {
   UsageStatisticsData,
   UsageStatisticsMetadata,
   UsageStatisticsMetadataItem
 } from '@/types/usageStatistics'
+import { FeatherSortHeader, SORT } from '@featherds/table'
+import UsageStatisticsModal from './UsageStatisticsModal.vue'
 
 interface StatisticsItem {
   // this is just for sorting
@@ -98,6 +101,7 @@ interface StatisticsItem {
   name: string
   description: string
   isLink: boolean
+  isFile: boolean
   latestValue: string
 }
 
@@ -145,13 +149,14 @@ const filteredData = computed<StatisticsItem[]>(() => {
       const statsValue = statistics.value[key]
       const metaItem = metadataMap.value.get(key)
 
-      const { isLink, latestValue } = getLatestValue(statsValue, metaItem)
+      const { isLink, isFile, latestValue } = getLatestValue(statsValue, metaItem)
 
       const statsItem = {
         key,
         name: metaItem?.name || '',
         description: metaItem?.description || '',
         isLink,
+        isFile,
         latestValue
       } as StatisticsItem
 
@@ -186,6 +191,7 @@ const filteredData = computed<StatisticsItem[]>(() => {
 const getLatestValue = (statsValue: any, metaItem: UsageStatisticsMetadataItem | undefined) => {
   let latestValue = ''
   let isLink = false
+  let isFile = false
   const datatype = metaItem?.datatype || ''
 
   // use hints from metadata if possible
@@ -198,6 +204,8 @@ const getLatestValue = (statsValue: any, metaItem: UsageStatisticsMetadataItem |
       latestValue = new Intl.NumberFormat().format(statsValue as number)
     } else if (datatype === 'object') {
       isLink = true
+    } else if (datatype.startsWith('file')) {
+      isFile = true
     }
   } else {
     // fallback if metadata entry not found
@@ -212,6 +220,7 @@ const getLatestValue = (statsValue: any, metaItem: UsageStatisticsMetadataItem |
 
   return {
     isLink,
+    isFile,
     latestValue
   }
 }
@@ -246,6 +255,32 @@ const showFullValue = (item: StatisticsItem) => {
   showValueModalSubtitle.value = item.name || item.key || ''
   showValueModalContent.value = json
   showValueModalVisible.value = true
+}
+
+const downloadFile = (item: StatisticsItem) => {
+  // Decode the Base64 string into a byte array
+  const byteCharacters = atob(statistics.value[item.key])
+  const byteNumbers = new Array(byteCharacters.length).fill(null).map((_, i) => byteCharacters.charCodeAt(i))
+  const byteArray = new Uint8Array(byteNumbers)
+
+  const fileType = metadata.value.metadata.find((meta) => meta.key === item.key)?.datatype.split('|').pop()?.toLowerCase()
+  const fileName = `Login events Past 60 days.${fileType}`
+  const contentType = fileType === 'csv' ? 'text/csv' : 'application/octet-stream'
+
+  // Create a Blob object for the CSV
+  const blob = new Blob([byteArray], { type: contentType})
+
+  // Create a temporary link element
+  const link = document.createElement('a')
+  link.href = URL.createObjectURL(blob)
+  link.download = fileName
+
+  // Trigger the download
+  link.click()
+
+  // Clean up
+  URL.revokeObjectURL(link.href)
+  document.body.removeChild(link)
 }
 
 onMounted(() => {
