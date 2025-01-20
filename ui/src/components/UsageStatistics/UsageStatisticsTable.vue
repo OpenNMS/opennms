@@ -280,16 +280,7 @@ const downloadFile = (item: StatisticsItem) => {
 
   // Clean up
   URL.revokeObjectURL(link.href)
-  // const blob = new Blob([statistics.value[item.key] || ''])
-  // const fileType = metadata.value.metadata.find((meta) => meta.key === item.key)?.datatype.split('|').pop()?.toLowerCase()
-  // const link = document.createElement('a')
-  // const url = URL.createObjectURL(blob)
-  // link.setAttribute('href', url)
-  // link.setAttribute('download', `Login events Past 60 days.${fileType}`)
-  // link.style.visibility = 'hidden'
-  // document.body.appendChild(link)
-  // link.click()
-  // document.body.removeChild(link)
+  document.body.removeChild(link)
 }
 
 onMounted(() => {
