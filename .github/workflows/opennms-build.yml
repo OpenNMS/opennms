@@ -428,7 +428,6 @@ jobs:
         - self-hosted
         - Linux
         - X64
-        - 32g-ram
     steps:
       - uses: actions/checkout@v4
       - name: Build and assemble with container images
