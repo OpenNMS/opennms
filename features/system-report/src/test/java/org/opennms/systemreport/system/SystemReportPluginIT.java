@@ -83,7 +83,7 @@ public class SystemReportPluginIT {
         assertTrue(entries.containsKey("Number of IP Interfaces"));
         assertTrue(entries.containsKey("Number of Nodes"));
         assertTrue(entries.containsKey("Number of SNMP Interfaces"));
-        assertTrue(entries.containsKey("OpenNMS Home"));
+        assertTrue(entries.containsKey("OpenNMS Home Dir"));
         assertTrue(entries.containsKey("OpenNMS Up Time"));
         assertTrue(entries.containsKey("Time-Series Strategy"));
         assertTrue(entries.containsKey("Version"));
@@ -97,8 +97,6 @@ public class SystemReportPluginIT {
         assertTrue(entries.containsKey("Architecture"));
         assertTrue(entries.containsKey("Name"));
         assertTrue(entries.containsKey("Distribution"));
-        assertTrue(entries.containsKey("Host Name"));
-        assertTrue(entries.containsKey("Ip Address"));
         assertTrue(entries.containsKey("HTTP(S) ports"));
         assertTrue(entries.containsKey("Total System RAM"));
         assertTrue(entries.containsKey("Used System RAM"));

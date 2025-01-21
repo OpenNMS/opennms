@@ -25,6 +25,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.management.ManagementFactory;
 import java.lang.management.RuntimeMXBean;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
@@ -88,7 +89,7 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
     @Override
     public Map<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
-        map.put("OpenNMS Home",getResourceFromProperty("opennms.home"));
+        map.put("OpenNMS Home Dir",getResourceFromProperty("opennms.home"));
         map.put("Version", getResource(Vault.getProperty("version.display")));
 
         if (m_nodeDao != null) {
@@ -130,9 +131,12 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
         // Calculate uptime
         long uptimeMillis = currentTimeMillis - startTimeMillis;
 
-        long hours = uptimeMillis / (1000 * 60 * 60);
-        long minutes = (uptimeMillis % (1000 * 60 * 60)) / (1000 * 60);
-        long seconds = (uptimeMillis % (1000 * 60)) / 1000;
+        Duration uptimeDuration = Duration.ofMillis(uptimeMillis);
+
+        // Get hours, minutes, and seconds
+        long hours = uptimeDuration.toHours();
+        long minutes = uptimeDuration.toMinutes() % 60; // Get remaining minutes after hours
+        long seconds = uptimeDuration.getSeconds() % 60; // Get remaining seconds after minutes
 
         return String.format("%d hours, %d minutes, %d seconds", hours, minutes, seconds);
     }

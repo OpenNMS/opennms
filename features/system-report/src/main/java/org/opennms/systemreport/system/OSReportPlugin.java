@@ -150,11 +150,6 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
             map.put("Description", map.remove("Distribution Description"));
         }
 
-        String hostName = m_ipInterfaceDao.findAll().stream().map(OnmsIpInterface::getIpHostName).distinct().collect(Collectors.joining(","));
-        String ipAddress = m_ipInterfaceDao.findAll().stream().map(s->s.getIpAddress().getHostAddress()).distinct().collect(Collectors.joining(","));
-
-        map.put("Host Name",getResource(hostName));
-        map.put("Ip Address",getResource(ipAddress));
         map.put("HTTP(S) ports",getResource(Vault.getProperty("org.opennms.netmgt.jetty.port")));
 
         Object availableProcessorsObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_AVAILABLE_PROCESSORS);
