@@ -7,15 +7,15 @@
             "datatype": "number"
         },
         {
-            "key": "alarmsPastHours",
-            "name": "Number of new alarms past 24",
-            "description": "Number of new alarms generated in the past 24 hours",
+            "key": "alarmsLastHours",
+            "name": "Number of new alarms last 24 hours",
+            "description": "Number of new alarms generated in the last 24 hours",
             "datatype": "number"
         },
         {
-            "key": "loginsPast60Days",
-            "name": "CSV output of Login events for the past 60 days",
-            "description": "CSV output containing the date, username login events for the past 60 days",
+            "key": "loginsLast60Days",
+            "name": "CSV output of Login events for the last 60 days",
+            "description": "CSV output containing the date, username login events for the last 60 days",
             "datatype": "file|csv"
         },
         {
@@ -52,7 +52,7 @@
             "key": "businessEdgeCount",
             "name": "Current business service count",
             "description": "Number of business services defined in the system",
-            "datatype": "string"
+            "datatype": "number"
         },
         {
             "key": "cloudInstanceType",
@@ -87,7 +87,7 @@
         {
             "key": "flowsPerSecond",
             "name": "Flows per second",
-            "description": "Number of flows per second for the past 24 hours",
+            "description": "Number of flows per second for the last 24 hours",
             "datatype": "number"
         },
         {
@@ -169,9 +169,9 @@
             "datatype": "number"
         },
         {
-            "key": "eventsPastHours",
-            "name": "Number of new events past 24",
-            "description": "Number of new events generated in the past 24 hours",
+            "key": "eventsLastHours",
+            "name": "Number of new events last 24 hours",
+            "description": "Number of new events generated in the last 24 hours",
             "datatype": "number"
         },
         {

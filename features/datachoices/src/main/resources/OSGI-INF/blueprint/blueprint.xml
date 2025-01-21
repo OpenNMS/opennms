@@ -38,7 +38,14 @@
     <reference id="applicationDao" interface="org.opennms.netmgt.dao.api.ApplicationDao" availability="mandatory"/>
     <reference id="outageDao" interface="org.opennms.netmgt.dao.api.OutageDao" availability="mandatory"/>
     <reference id="notificationDao" interface="org.opennms.netmgt.dao.api.NotificationDao" availability="mandatory"/>
-    
+    <reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService" />
+
+    <bean id="loginEventListener" class="org.opennms.features.datachoices.internal.usagestatistics.SuccessLoginEventListener"
+          init-method="init" destroy-method="destroy">
+        <argument ref="eventSubscriptionService"/>
+        <argument ref="stateManager"/>
+    </bean>
+
     <bean id="serviceConfigurationFactory" class="org.opennms.netmgt.config.ServiceConfigFactory" />
 
     <bean id="destinationPathFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">

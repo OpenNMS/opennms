@@ -50,10 +50,10 @@ public class UsageStatisticsReportDTO {
     private long m_snmpInterfacesWithFlows;
     private int m_monitoredServices;
     private int m_events;
-    private int m_eventsPastHours;
+    private int m_eventsLastHours;
     private int m_alarms;
-    private int m_alarmsPastHours;
-    private String m_loginsPast60Days;
+    private int m_alarmsLastHours;
+    private String m_loginsLast60Days;
     private long m_situations;
     private int m_destinationPathCount;
     private Boolean m_notificationEnablementStatus;
@@ -211,11 +211,11 @@ public class UsageStatisticsReportDTO {
         return m_events;
     }
 
-    public void setEventsPastHours(int eventsPastHours) {
-        m_eventsPastHours = eventsPastHours;
+    public void setEventsLastHours(int eventsLastHours) {
+        m_eventsLastHours = eventsLastHours;
     }
 
-    public int getEventsPastHours() { return m_eventsPastHours; }
+    public int getEventsLastHours() { return m_eventsLastHours; }
 
     public void setAlarms(int alarms) {
         m_alarms = alarms;
@@ -225,17 +225,17 @@ public class UsageStatisticsReportDTO {
         return m_alarms;
     }
 
-    public void setAlarmsPastHours(int alarmsPastHours) {
-        m_alarmsPastHours = alarmsPastHours;
+    public void setAlarmsLastHours(int alarmsLastHours) {
+        m_alarmsLastHours = alarmsLastHours;
     }
 
-    public int getAlarmsPastHours() { return m_alarmsPastHours; }
+    public int getAlarmsLastHours() { return m_alarmsLastHours; }
 
-    public void setLoginsPast60Days(String loginsPast60Days) {
-        m_loginsPast60Days = loginsPast60Days;
+    public void setLoginsLast60Days(String loginsLast60Days) {
+        m_loginsLast60Days = loginsLast60Days;
     }
 
-    public String getLoginsPast60Days() {return m_loginsPast60Days;}
+    public String getLoginsLast60Days() {return m_loginsLast60Days;}
 
     public long getSituations() {
         return m_situations;

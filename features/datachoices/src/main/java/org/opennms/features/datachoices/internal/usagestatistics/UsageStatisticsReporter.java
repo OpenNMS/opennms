@@ -272,9 +272,9 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setSnmpInterfacesWithFlows(m_snmpInterfaceDao.getNumInterfacesWithFlows());
         usageStatisticsReport.setMonitoredServices(m_monitoredServiceDao.countAll());
         usageStatisticsReport.setEvents(m_eventDao.countAll());
-        usageStatisticsReport.setEventsPastHours(m_eventDao.getNumEventsPastHours(24));
+        usageStatisticsReport.setEventsLastHours(m_eventDao.getNumEventsPastHours(24));
         usageStatisticsReport.setAlarms(m_alarmDao.countAll());
-        usageStatisticsReport.setAlarmsPastHours(m_alarmDao.getNumAlarmsPastHours(24));
+        usageStatisticsReport.setAlarmsLastHours(m_alarmDao.getNumAlarmsPastHours(24));
         usageStatisticsReport.setSituations(m_alarmDao.getNumSituations());
         usageStatisticsReport.setMonitoringLocations(m_monitoringLocationDao.countAll());
         usageStatisticsReport.setMinions(m_monitoringSystemDao.getNumMonitoringSystems(OnmsMonitoringSystem.TYPE_MINION));
@@ -284,10 +284,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         
         // Node statistics
         usageStatisticsReport.setNodesBySysOid(m_nodeDao.getNumberOfNodesBySysOid());
-        //ouput login events as CSV
-        //commented until CSVLoger functionality works in datachoices instead of springframework-security
-        //usageStatisticsReport.setLoginsPast60Days(getCSVFileAsBase64());
-        usageStatisticsReport.setLoginsPast60Days("VXNlcm5hbWUsIFRpbWVzdGFtcAphZG1pbiwgMjAyNS0wMS0xNiAxNzoxNTozOQp0ZXN0LCAyMDI1LTAxLTE2IDE3OjE0OjU4");
+        //output login events as CSV
+        usageStatisticsReport.setLoginsLast60Days(getCSVFileAsBase64());
         // Karaf features
         usageStatisticsReport.setInstalledFeatures(getInstalledFeatures());
         usageStatisticsReport.setInstalledOIAPlugins(getInstalledOIAPluginsByDependencyTree());
