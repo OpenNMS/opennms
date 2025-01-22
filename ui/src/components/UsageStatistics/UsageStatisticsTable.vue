@@ -80,6 +80,12 @@
       </div>
     </template>
   </UsageStatisticsModal>
+  <FeatherSnackbar v-model="errorSnackbar" :center="true" :error="true">
+    No event found to download a csv.
+    <template v-slot:button>
+      <FeatherButton @click="errorSnackbar = false" text>dismiss</FeatherButton>
+    </template>
+  </FeatherSnackbar>
 </template>
 
 <script setup lang="ts">
@@ -108,6 +114,7 @@ interface StatisticsItem {
 const STRING_CLIP_LENGTH = 100
 
 const usageStatisticsStore = useUsageStatisticsStore()
+const errorSnackbar = ref(false)
 
 const sortStates: Record<string, SORT> = reactive({
   name: SORT.NONE,
@@ -195,26 +202,28 @@ const getLatestValue = (statsValue: any, metaItem: UsageStatisticsMetadataItem |
   const datatype = metaItem?.datatype || ''
 
   // use hints from metadata if possible
-  if (datatype) {
-    if (datatype === 'string') {
-      latestValue = (statsValue as string) || '--'
-    } else if (datatype === 'boolean') {
-      latestValue = statsValue && statsValue === true ? 'Yes' : 'No'
-    } else if (datatype === 'number') {
-      latestValue = new Intl.NumberFormat().format(statsValue as number)
-    } else if (datatype === 'object') {
-      isLink = true
-    } else if (datatype.startsWith('file')) {
-      isFile = true
-    }
+  if (metaItem?.key === 'loginsLast60Days') {
+    isFile = true
   } else {
-    // fallback if metadata entry not found
-    if (isString(statsValue)) {
-      latestValue = (statsValue as string) || '--'
-    } else if (isNumber(statsValue)) {
-      latestValue = new Intl.NumberFormat().format(statsValue as number)
+    if (datatype) {
+      if (datatype === 'string') {
+        latestValue = (statsValue as string) || '--'
+      } else if (datatype === 'boolean') {
+        latestValue = statsValue && statsValue === true ? 'Yes' : 'No'
+      } else if (datatype === 'number') {
+        latestValue = new Intl.NumberFormat().format(statsValue as number)
+      } else if (datatype === 'object') {
+        isLink = true
+      }
     } else {
-      isLink = true
+      // fallback if metadata entry not found
+      if (isString(statsValue)) {
+        latestValue = (statsValue as string) || '--'
+      } else if (isNumber(statsValue)) {
+        latestValue = new Intl.NumberFormat().format(statsValue as number)
+      } else {
+        isLink = true
+      }
     }
   }
 
@@ -258,17 +267,20 @@ const showFullValue = (item: StatisticsItem) => {
 }
 
 const downloadFile = (item: StatisticsItem) => {
+  if (!statistics.value[item.key] || statistics.value[item.key].trim() === '') {
+    console.error('No event found to download a csv.');
+    errorSnackbar.value = true
+    return;
+  }
   // Decode the Base64 string into a byte array
   const byteCharacters = atob(statistics.value[item.key])
   const byteNumbers = new Array(byteCharacters.length).fill(null).map((_, i) => byteCharacters.charCodeAt(i))
   const byteArray = new Uint8Array(byteNumbers)
 
-  const fileType = metadata.value.metadata.find((meta) => meta.key === item.key)?.datatype.split('|').pop()?.toLowerCase()
-  const fileName = `Login events Past 60 days.${fileType}`
-  const contentType = fileType === 'csv' ? 'text/csv' : 'application/octet-stream'
+  const fileName = 'Login events Past 60 days.csv'
 
   // Create a Blob object for the CSV
-  const blob = new Blob([byteArray], { type: contentType})
+  const blob = new Blob([byteArray], { type: 'text/csv'})
 
   // Create a temporary link element
   const link = document.createElement('a')
