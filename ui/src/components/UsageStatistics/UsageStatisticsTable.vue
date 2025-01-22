@@ -268,9 +268,9 @@ const showFullValue = (item: StatisticsItem) => {
 
 const downloadFile = (item: StatisticsItem) => {
   if (!statistics.value[item.key] || statistics.value[item.key].trim() === '') {
-    console.error('No event found to download a csv.');
+    console.error('No event found to download a csv.')
     errorSnackbar.value = true
-    return;
+    return
   }
   // Decode the Base64 string into a byte array
   const byteCharacters = atob(statistics.value[item.key])
