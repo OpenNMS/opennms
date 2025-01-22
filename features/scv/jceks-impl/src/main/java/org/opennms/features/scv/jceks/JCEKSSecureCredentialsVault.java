@@ -264,6 +264,10 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
         return System.getProperty(KEYSTORE_KEY_PROPERTY, DEFAULT_KEYSTORE_KEY);
     }
 
+    /*
+       This instantiates scv indirectly, not from spring/karaf container.
+       Should be mostly used for read-only access, short-lived and instantiate for each access.
+     */
     public static JCEKSSecureCredentialsVault defaultScv() {
         return new JCEKSSecureCredentialsVault(getKeystoreFilename(), getKeystorePassword());
     }
