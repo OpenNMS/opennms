@@ -66,7 +66,7 @@ public class UsageStatisticsReportDTOTest {
 
         String expectedJson = "{" +
             "\"alarms\":0," +
-            "\"alarmsPastHours\":0," +
+            "\"alarmsLastHours\":0," +
             "\"applianceCounts\":{}," +
             "\"applications\":0," +
             "\"availableProcessors\":null," +
@@ -83,7 +83,7 @@ public class UsageStatisticsReportDTOTest {
             "\"destinationPathCount\":-1," +
             "\"eventLogsProcessed\":0," +
             "\"events\":0," +
-            "\"eventsPastHours\":0," +
+            "\"eventsLastHours\":0," +
             "\"flowsPerSecond\":0," +
             "\"freePhysicalMemorySize\":null," +
             "\"groups\":0," +
@@ -91,7 +91,7 @@ public class UsageStatisticsReportDTOTest {
             "\"installedFeatures\":null," +
             "\"installedOIAPlugins\":null," +
             "\"ipInterfaces\":0," +
-            "\"loginsPast60Days\":null," +
+            "\"loginsLast60Days\":null," +
             "\"memoryUtilization\":null," +
             "\"minions\":0," +
             "\"monitoredServices\":0," +
