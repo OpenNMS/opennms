@@ -58,7 +58,6 @@ public class JavaReportPlugin extends AbstractSystemReportPlugin {
     public Map<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
         map.put("Class Version", getResourceFromProperty("java.class.version"));
-        map.put("Compiler", getResourceFromProperty("java.compiler"));
         map.put("Home", getResourceFromProperty("java.home"));
         map.put("Version", getResourceFromProperty("java.version"));
         map.put("Vendor", getResourceFromProperty("java.vendor"));

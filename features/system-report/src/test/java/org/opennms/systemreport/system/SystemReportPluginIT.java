@@ -51,7 +51,6 @@ public class SystemReportPluginIT {
     public void testJavaReportPlugin() {
         final Map<String, org.springframework.core.io.Resource> entries = m_javaReportPlugin.getEntries();
         assertTrue(entries.containsKey("Class Version"));
-        assertTrue(entries.containsKey("Compiler"));
         assertTrue(entries.containsKey("Home"));
         assertTrue(entries.containsKey("Initial Heap Size"));
         assertTrue(entries.containsKey("Max Heap Size"));
