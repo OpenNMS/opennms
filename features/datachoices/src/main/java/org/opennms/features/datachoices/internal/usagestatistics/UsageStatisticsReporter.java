@@ -330,7 +330,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         } catch (IOException e) {
             LOG.error("An error occurred while reading the file or converting to Base64.", e);
         }
-        return null;
+        return "";
     }
 
     private boolean isContainerized() {
