@@ -21,9 +21,11 @@
  */
 package org.opennms.features.scv.jceks;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertFalse;
+import static org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault.KEYSTORE_KEY_PROPERTY;
 
 import java.io.File;
 import java.io.IOException;
@@ -36,8 +38,10 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -141,5 +145,30 @@ public class JCEKSSecureCredentialsVaultTest {
         latch.await();
         assertEquals(numberOfThreads + 1, scv2.getAliases().size());
         assertEquals(credentials1, scv2.getCredentials("http")) ;
+    }
+
+    @Test
+    public void testScvAccessFromDifferentInstances() throws IOException {
+        File keystoreFile = new File(tempFolder.newFolder("etc"), "scv.jce");
+        System.setProperty(KEYSTORE_KEY_PROPERTY, "testing123");
+        System.setProperty("opennms.home", tempFolder.getRoot().getAbsolutePath());
+
+        // Load scv indirectly through default system properties ( which is what scvcli does)
+        final SecureCredentialsVault scv = JCEKSSecureCredentialsVault.defaultScv();
+        final Map<String, String> attributes = Map.of("key1", "value1", "key2", "value2");
+        final Credentials credentials1 = new Credentials("adm1n", "p@ssw0rd", attributes);
+        scv.setCredentials("http", credentials1);
+
+        //Add a new vault by directly loading keystore file ( as Opennms UI does), this is using watcher.
+        final SecureCredentialsVault scv2 = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "testing123", true);
+        assertEquals(credentials1, scv2.getCredentials("http"));
+
+        // Update credentials from default scv ( assuming scvcli updates credentials)
+        final Credentials credentials2 = new Credentials("adm2n", "p@ssw0rd2", attributes);
+        scv.setCredentials("http", credentials2);
+
+        // watcher is asynchronous, so wait for few secs to validate loading of valid credentials
+        await().atMost(5, TimeUnit.SECONDS)
+                .until(() -> scv2.getCredentials("http"), Matchers.is(credentials2));
     }
 }
