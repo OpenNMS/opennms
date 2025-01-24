@@ -19,12 +19,14 @@
     <cm:property-placeholder id="scvProperties" persistent-id="org.opennms.features.scv" placeholder-prefix="[[" placeholder-suffix="]]" update-strategy="reload">
         <cm:default-properties>
             <cm:property name="key" value="QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw"/>
+            <cm:property name="enable.watcher" value="true"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
-    <bean id="jceksSecureCredentialsVault" class="org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault">
+    <bean id="jceksSecureCredentialsVault" class="org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault" destroy-method="destroy">
         <argument value="$[karaf.etc]$[file.separator]scv.jce"/>
         <argument value="[[key]]"/>
+        <argument value="[[enable.watcher]]" type="boolean"/>
     </bean>
 
     <service ref="jceksSecureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault">

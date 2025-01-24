@@ -32,4 +32,5 @@ public interface SecureCredentialsVault {
     void setCredentials(String alias, Credentials credentials);
 
     void deleteCredentials(String alias);
+
 }
