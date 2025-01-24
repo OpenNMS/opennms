@@ -24,6 +24,7 @@
             <Import-Package>
               <!-- Declare the Attach API as an optional dependency -->
               com.sun.tools.attach;resolution:=optional,
+              org.opennms.core.network,
               *
             </Import-Package>
           </instructions>
