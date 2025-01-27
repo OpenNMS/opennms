@@ -26,36 +26,37 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.netmgt.snmp.proxy.common;
+package org.opennms.netmgt.poller;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import org.opennms.netmgt.snmp.SnmpAgentConfig;
-import org.opennms.netmgt.snmp.SnmpObjId;
-import org.opennms.netmgt.snmp.SnmpResult;
-import org.opennms.netmgt.snmp.SnmpValue;
+import javax.xml.bind.annotation.adapters.XmlAdapter;
 
-public class SNMPSetBuilder extends AbstractSNMPRequestBuilder<SnmpValue> {
+public class EscapeSequenceAdapter extends XmlAdapter<String, String> {
+    private static final Logger LOG = LoggerFactory.getLogger(EscapeSequenceAdapter.class);
 
-    public SNMPSetBuilder(LocationAwareSnmpClientRpcImpl client, SnmpAgentConfig agent, List<SnmpObjId> oids, List<SnmpValue> values) {
-        super(client, agent, Collections.emptyList(), Collections.emptyList(), buildGetRequests(oids, values));
-    }
+    public EscapeSequenceAdapter() {
 
-    private static List<SnmpSetRequestDTO> buildGetRequests(List<SnmpObjId> oids, List<SnmpValue> values) {
-        final SnmpSetRequestDTO setRequest = new SnmpSetRequestDTO();
-        setRequest.setOids(oids);
-        setRequest.setValues(values);
-        return Collections.singletonList(setRequest);
     }
 
     @Override
-    protected SnmpValue processResponse(SnmpMultiResponseDTO response) {
-        return response.getResponses().stream()
-                .flatMap(res -> res.getResults().stream())
-                .findFirst()
-                .map(SnmpResult::getValue)
-                .orElse(null);
+    public String unmarshal(String v) throws Exception {
+        if (v != null) {
+            v = v.replace("&#xd;", "\r")
+                    .replace("&#xa;", "\n");
+        }
+            return v;
+
+    }
+
+    @Override
+    public String marshal(String v) throws Exception {
+        if (v != null) {
+            v = v.replace("\r", "&#xd;")
+                    .replace("\n", "&#xa;");
+        }
+            return v;
+
     }
 }
