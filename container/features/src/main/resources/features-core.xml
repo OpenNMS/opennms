@@ -347,11 +347,21 @@ org.jolokia.authMode=jaas
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.shell/${project.version}</bundle>
     </feature>
 
+    <feature name="owasp-encoder" version="${owaspEncoderVersion}" description="OWASP :: Encoder">
+        <bundle>wrap:mvn:org.owasp.encoder/encoder/${owaspEncoderVersion}$Bundle-SymbolicName=org.owasp.encoder&amp;Bundle-Version=${owaspEncoderVersion}&amp;Export-Package=org.owasp.encoder</bundle>
+    </feature>
+    <feature name="owasp-html-sanitizer" version="${owaspHtmlSanitizerVersion}" description="OWASP :: HTML Sanitizer">
+        <feature version="${guavaOsgiVersion}">guava</feature>
+        <bundle>wrap:mvn:com.googlecode.owasp-java-html-sanitizer/owasp-java-html-sanitizer/${owaspHtmlSanitizerVersion}$Bundle-SymbolicName=com.googlecode.owasp-java.html-sanitizer&amp;Bundle-Version=${owaspHtmlSanitizerVersion}&amp;Export-Package=org.owasp.html</bundle>
+    </feature>
+
     <feature name="scv-jceks-impl" version="${project.version}" description="Secure Credentials Vault JCEKS Impl">
         <feature>commons-codec</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature>scv-api</feature>
-        <bundle>mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
+        <feature>owasp-encoder</feature>
+        <feature>owasp-html-sanitizer</feature>
+        <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.jceks-impl/${project.version}</bundle>
     </feature>

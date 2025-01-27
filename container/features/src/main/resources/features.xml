@@ -187,13 +187,6 @@
     <feature name="json-simple" version="1.1.1" description="json-simple">
         <bundle>wrap:mvn:com.googlecode.json-simple/json-simple/1.1.1$Bundle-SymbolicName=com.googlecode.json-simple&amp;Bundle-Version=1.1.1</bundle>
     </feature>
-    <feature name="owasp-encoder" version="${owaspEncoderVersion}" description="OWASP :: Encoder">
-        <bundle>wrap:mvn:org.owasp.encoder/encoder/${owaspEncoderVersion}$Bundle-SymbolicName=org.owasp.encoder&amp;Bundle-Version=${owaspEncoderVersion}&amp;Export-Package=org.owasp.encoder</bundle>
-    </feature>
-    <feature name="owasp-html-sanitizer" version="${owaspHtmlSanitizerVersion}" description="OWASP :: HTML Sanitizer">
-        <feature version="${guavaOsgiVersion}">guava</feature>
-        <bundle>wrap:mvn:com.googlecode.owasp-java-html-sanitizer/owasp-java-html-sanitizer/${owaspHtmlSanitizerVersion}$Bundle-SymbolicName=com.googlecode.owasp-java.html-sanitizer&amp;Bundle-Version=${owaspHtmlSanitizerVersion}&amp;Export-Package=org.owasp.html</bundle>
-    </feature>
     <feature name="postgresql" version="${postgresqlVersion}" description="PostgreSQL :: JDBC Driver">
         <feature>pax-jdbc-spec</feature>
         <bundle dependency="true">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimoVersion}</bundle>
