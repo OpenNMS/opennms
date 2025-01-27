@@ -5,7 +5,8 @@
             <file>custom.properties</file>
             <operation>put</operation>
             <key>org.osgi.framework.system.packages.extra</key>
-            <value>sun.nio.ch, sun.misc, sun.net.dns, sun.reflect, sun.security.ssl, sun.security.x509</value>
+            <value>sun.nio.ch, sun.misc, sun.net.dns, sun.reflect, sun.security.ssl, sun.security.x509,
+                org.opennms.core.network;version=34.0.0.SNAPSHOT</value>
         </edit>
 
         <!-- see container/shared/src/main/filtered-resources/etc/startup.properties for details -->
