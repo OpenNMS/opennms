@@ -117,6 +117,16 @@ public abstract class WebSecurityUtils {
         return clean;
     }
 
+	public static long[] safeParseLong(String[] dirty) throws NumberFormatException {
+		final long[] clean = new long[dirty.length];
+		String cleanString;
+		for (int i = 0; i < dirty.length; i++) {
+			cleanString = ILLEGAL_IN_INTEGER.matcher(dirty[i]).replaceAll("");
+			clean[i] = Long.parseLong(cleanString);
+		}
+		return clean;
+	}
+
 	/**
 	 * <p>safeParseInt</p>
 	 *

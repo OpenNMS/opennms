@@ -19,29 +19,30 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.web.event.filter;
+package org.opennms.web.filter;
 
-import org.opennms.web.filter.EqualsFilter;
-import org.opennms.web.filter.SQLType;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
-/**
- * <p>EventIdFilter class.</p>
- *
- * @author ranger
- * @version $Id: $
- * @since 1.8.1
- */
-public class EventIdFilter extends EqualsFilter<Long> {
-    /** Constant <code>TYPE="eventId"</code> */
-    public static final String TYPE = "eventId";
-    
-    /**
-     * <p>Constructor for EventIdFilter.</p>
-     *
-     * @param eventId a int.
-     */
-    public EventIdFilter(long eventId){
-        super(TYPE, SQLType.BIGINT, "EVENTID", "id", eventId);
+public class BigIntSqlType implements SQLType<Long> {
+
+    @Override
+    public String formatValue(Long value) {
+        return value.toString();
     }
-    
+
+    @Override
+    public String getValueAsString(Long value) {
+        return String.valueOf(value);
+    }
+
+    @Override
+    public void bindParam(PreparedStatement ps, int parameterIndex, Long value) throws SQLException {
+        ps.setLong(parameterIndex, value);
+    }
+
+    @Override
+    public Long[] createArray(Long value1, Long value2) {
+        return new Long[] { value1, value2 };
+    }
 }

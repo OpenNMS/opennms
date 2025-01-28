@@ -25,7 +25,7 @@ import java.util.Set;
 
 import org.opennms.netmgt.model.OnmsEvent;
 
-public interface EventCountDao extends OnmsDao<OnmsEvent, Integer> {
+public interface EventCountDao extends OnmsDao<OnmsEvent, Long> {
     
     Set<CountedObject<String>> getUeiCounts(final Integer limit);
 

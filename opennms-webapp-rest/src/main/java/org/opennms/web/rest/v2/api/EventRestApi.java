@@ -70,7 +70,7 @@ public interface EventRestApi {
             @ApiResponse(responseCode = "204", description = "No events found",
                     content = @Content)
     })
-    Response get(@Context final UriInfo uriInfo, @PathParam("id") final Integer id) ;
+    Response get(@Context final UriInfo uriInfo, @PathParam("id") final Long id) ;
 
     @GET
     @Path("count")

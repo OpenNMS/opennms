@@ -83,7 +83,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	@Column(name="eventId", nullable=false)
 	@SequenceGenerator(name="eventSequence", sequenceName="eventsNxtId")
 	@GeneratedValue(generator="eventSequence")
-	private Integer eventId;
+	private Long eventId;
 
 	/** persistent field */
 	@Column(name="eventUei", length=256, nullable=false)
@@ -252,7 +252,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
      * @return a {@link java.lang.Integer} object.
      */
 	@XmlAttribute(name="id")
-	public Integer getId() {
+	public Long getId() {
 		return eventId;
 	}
 
@@ -261,7 +261,7 @@ public class OnmsEvent extends OnmsEntity implements Serializable {
 	 *
 	 * @param eventid a {@link java.lang.Integer} object.
 	 */
-	public void setId(Integer eventid) {
+	public void setId(Long eventid) {
 		eventId = eventid;
 	}
 
