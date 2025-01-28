@@ -30,6 +30,14 @@
         <exclude>**/commons-io/commons-io/2.8.0/*</exclude>
         <exclude>**/commons-io/commons-io/2.13.0</exclude>
         <exclude>**/commons-io/commons-io/2.13.0/*</exclude>
+        <exclude>**/jackson-databind/2.13.5</exclude>
+        <exclude>**/jackson-databind/2.13.5/*</exclude>
+        <exclude>**/jackson-databind/2.9.10.8</exclude>
+        <exclude>**/jackson-databind/2.9.10.8/*</exclude>
+        <exclude>**/jackson-databind/2.9.8</exclude>
+        <exclude>**/jackson-databind/2.9.8/*</exclude>
+        <exclude>**/jackson-databind/2.16.2</exclude>
+        <exclude>**/jackson-databind/2.16.2/*</exclude>
       </excludes>
     </fileSet>
   </fileSets>

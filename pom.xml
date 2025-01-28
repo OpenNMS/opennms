@@ -1823,7 +1823,7 @@
     <httpasyncclientVersion>4.1.5</httpasyncclientVersion>
     <ipaddressVersion>5.4.0</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
-    <jackson2Version>2.16.2</jackson2Version>
+    <jackson2Version>2.17.2</jackson2Version>
     <jmsApiVersion>2.0.1</jmsApiVersion>
     <snakeyamlVersion>2.2</snakeyamlVersion>
     <spiflyVersion>1.3.6</spiflyVersion>
@@ -1932,7 +1932,7 @@
     <osgiEnterpriseVersion>7.0.0</osgiEnterpriseVersion>
     <owaspEncoderVersion>1.2.3</owaspEncoderVersion>
     <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
-    <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
+    <osgiJaxRsVersion>1.2.0.ONMS</osgiJaxRsVersion>
     <osMavenPluginVersion>1.7.1</osMavenPluginVersion>
     <opencsvVersion>2.3</opencsvVersion>
     <opentracingVersion>0.32.0</opentracingVersion>
