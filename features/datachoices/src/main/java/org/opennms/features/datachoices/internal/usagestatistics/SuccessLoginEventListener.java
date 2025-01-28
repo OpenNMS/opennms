@@ -32,7 +32,7 @@ public class SuccessLoginEventListener implements EventListener {
                 if (Boolean.TRUE.equals(m_stateManager.isEnabled())) {
                     String username = event.getParm("user").getValue().getContent();
                     if (!username.equals("rtc")) {
-                        CsvLogger.logToCsv(username);
+                        CsvLogger.logToCsv(username, event.getTime());
                     }
                 }
             } catch (IOException e) {

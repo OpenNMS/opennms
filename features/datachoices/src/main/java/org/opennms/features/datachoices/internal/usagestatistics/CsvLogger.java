@@ -10,8 +10,10 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class CsvLogger {
@@ -23,7 +25,7 @@ public class CsvLogger {
     private static final String[] HEADER = {"Username", "Timestamp"};
     private static final DateTimeFormatter TIMESTAMP_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public static void logToCsv(String username) {
+    public static void logToCsv(String username, Date loginTime) {
         try {
             File csvFile = new File(OPEN_NMS_CSV_FILE_PATH);
 
@@ -40,7 +42,9 @@ public class CsvLogger {
 
             // Append the new log entry to the CSV file
             try (FileWriter writer = new FileWriter(csvFile, true)) {
-                String timestamp = LocalDateTime.now().format(TIMESTAMP_FORMATTER);
+                String timestamp = TIMESTAMP_FORMATTER.format(loginTime.toInstant()
+                        .atZone(ZoneId.systemDefault())
+                        .toLocalDateTime());
                 String logEntry = String.join(",", username, timestamp);
                 writer.append(logEntry).append("\n");
             }
