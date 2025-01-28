@@ -56,7 +56,7 @@ public interface WebEventRepository {
      * @param eventId a int.
      * @return a {@link org.opennms.web.event.Event} object.
      */
-    public abstract Event getEvent(int eventId);
+    public abstract Event getEvent(long eventId);
     
     /**
      * <p>getMatchingEvents</p>
