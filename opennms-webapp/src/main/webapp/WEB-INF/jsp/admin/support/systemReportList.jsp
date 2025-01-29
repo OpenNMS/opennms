@@ -35,7 +35,7 @@
 <jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script type="text/javascript">
-// <!-- Begin
+<!-- Begin
 function checkAll(field)
 {
 for (i = 0; i < field.length; i++)
@@ -56,81 +56,20 @@ function toggle(box, field)
 		uncheckAll(field);
 	}
 }
-
-function toggleGroup(activeGroup) {
-  // Select group elements
-  const group1Checkboxes = document.querySelectorAll("#group1 input[type='checkbox']");
-  const group2Radios = document.querySelectorAll("#group2 input[type='radio']");
-
-  if (activeGroup === 1) {
-    // Enable and check all checkboxes, disable and uncheck all radios
-    group1Checkboxes.forEach(checkbox => {
-      checkbox.disabled = false;
-      checkbox.checked = true;
-    });
-    group2Radios.forEach(radio => {
-      radio.disabled = true;
-      radio.checked = false;
-    });
-  } else if (activeGroup === 2) {
-    // Disable and uncheck all checkboxes, enable radios, and check the first one
-    group1Checkboxes.forEach(checkbox => {
-      checkbox.disabled = true;
-      checkbox.checked = false;
-    });
-    group2Radios.forEach(radio => {
-      radio.disabled = false;
-    });
-    if (group2Radios.length > 0) {
-      group2Radios[0].checked = true;
-    }
-  }
-}
-
 //  End -->
 </script>
-
 
 <form role="form" name="report" class="form" action="admin/support/systemReport.htm" method="post" class="normal">
 
 <div class="card">
   <div class="card-header">
-    <span>Plugins</span>
+    <span>Plugins &nbsp;&nbsp;&nbsp; <input type="checkbox" name="all" onclick="toggle(document.report.all, document.report.plugins)" checked /> All</span>
   </div>
   <div class="card-body">
     <p>Choose which plugins to enable:</p>
-    <div class="d-flex ml-2">
-      <!-- Radio Group -->
-      <div class="mr-5">
-        <!-- First Radio Group -->
-        <input type="radio" id="radio1" name="group" onclick="toggleGroup(1)" checked />
-        <label for="radio1" class="font-weight-bold">System Reports</label>
-        <div id="group1" class="ml-3">
-          <c:forEach items="${report.plugins}" var="plugin" varStatus="status">
-            <c:if test="${plugin.fullOutputOnly == false}">
-              <input type="checkbox" id="checkbox_${status.index}" name="plugins" value="${plugin.name}" checked />
-              <label for="checkbox_${status.index}"><c:out value="${plugin.name}" />: <c:out value="${plugin.description}" /></label>
-              <br />
-            </c:if>
-          </c:forEach>
-        </div>
-      </div>
-
-      <div>
-        <!-- Second Radio Group -->
-        <input type="radio" id="radio2" name="group" onclick="toggleGroup(2)" />
-        <label for="radio2" class="font-weight-bold">Configs / Logs</label>
-        <div id="group2" class="ml-3">
-          <c:forEach items="${report.plugins}" var="plugin" varStatus="status">
-            <c:if test="${plugin.fullOutputOnly == true}">
-              <input type="radio" id="checkbox_${status.index}" name="plugins" value="${plugin.name}" disabled />
-              <label for="checkbox_${status.index}"><c:out value="${plugin.name}" />: <c:out value="${plugin.description}" /></label>
-              <br />
-            </c:if>
-          </c:forEach>
-        </div>
-      </div>
-    </div>
+    <c:forEach items="${report.plugins}" var="plugin">
+     <input type="checkbox" name="plugins" value="${plugin.name}" checked /> <c:out value="${plugin.name}" />: <c:out value="${plugin.description}" /> <br />
+    </c:forEach>
   </div>
 </div> <!-- panel -->
 
