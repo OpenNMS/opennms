@@ -19,18 +19,30 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.features.scv.api;
+package org.opennms.web.filter;
 
-import java.util.Set;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
-public interface SecureCredentialsVault {
+public class BigIntSqlType implements SQLType<Long> {
 
-    Set<String> getAliases();
+    @Override
+    public String formatValue(Long value) {
+        return value.toString();
+    }
 
-    Credentials getCredentials(String alias);
+    @Override
+    public String getValueAsString(Long value) {
+        return String.valueOf(value);
+    }
 
-    void setCredentials(String alias, Credentials credentials);
+    @Override
+    public void bindParam(PreparedStatement ps, int parameterIndex, Long value) throws SQLException {
+        ps.setLong(parameterIndex, value);
+    }
 
-    void deleteCredentials(String alias);
-
+    @Override
+    public Long[] createArray(Long value1, Long value2) {
+        return new Long[] { value1, value2 };
+    }
 }

@@ -100,7 +100,7 @@ public class ElasticAlarmHistoryRepositoryIT {
 
     @Test
     public void canGetAlarmAtTimestamp() {
-        OnmsAlarm a1 = createAlarm(1, 1L);
+        OnmsAlarm a1 = createAlarm(1, 1L, 1L);
 
         // An alarm that doesn't exist should return null
         assertThat(repo.getAlarmWithDbIdAt(a1.getId(), 0).orElse(null), nullValue());
@@ -124,7 +124,7 @@ public class ElasticAlarmHistoryRepositoryIT {
         PseudoClock.getInstance().advanceTime(1, TimeUnit.MILLISECONDS);
 
         // Update the alarm
-        updateAlarmWithEvent(a1, 2L);
+        updateAlarmWithEvent(a1, a1.getId(), 2L);
         indexer.handleNewOrUpdatedAlarm(a1);
 
         await().until(() -> repo.getAlarmWithDbIdAt(a1.getId(), 2).get().getCounter(), equalTo(2));
@@ -143,7 +143,7 @@ public class ElasticAlarmHistoryRepositoryIT {
 
     @Test
     public void canGetStatesForAlarmWithDbId() {
-        OnmsAlarm a1 = createAlarm(1, 1L);
+        OnmsAlarm a1 = createAlarm(1, 1L, 1L);
 
         // An alarm that doesn't exist should return an empty list
         assertThat(repo.getStatesForAlarmWithDbId(a1.getId()), empty());
@@ -163,7 +163,7 @@ public class ElasticAlarmHistoryRepositoryIT {
         PseudoClock.getInstance().advanceTime(1, TimeUnit.MILLISECONDS);
 
         // Update the alarm
-        updateAlarmWithEvent(a1, 2L);
+        updateAlarmWithEvent(a1, a1.getId(), 2L);
         indexer.handleNewOrUpdatedAlarm(a1);
 
         // Two state changes
@@ -193,7 +193,7 @@ public class ElasticAlarmHistoryRepositoryIT {
         PseudoClock.getInstance().advanceTime(1, TimeUnit.MILLISECONDS);
 
         // Index some alarm
-        OnmsAlarm a1 = createAlarm(1, 1L);
+        OnmsAlarm a1 = createAlarm(1, 1L, 1L);
         indexer.handleNewOrUpdatedAlarm(a1);
 
         // One alarm active
@@ -204,7 +204,7 @@ public class ElasticAlarmHistoryRepositoryIT {
         PseudoClock.getInstance().advanceTime(1, TimeUnit.MILLISECONDS);
 
         // Index another alarm
-        OnmsAlarm a2 = createAlarm(2, 2L);
+        OnmsAlarm a2 = createAlarm(2, 2L, 2L);
         indexer.handleNewOrUpdatedAlarm(a2);
 
         // Two alarms active
@@ -239,7 +239,7 @@ public class ElasticAlarmHistoryRepositoryIT {
 
         // Index a1
 
-        OnmsAlarm a1 = createAlarm(1, 1L);
+        OnmsAlarm a1 = createAlarm(1, 1L, 1L);
         indexer.handleNewOrUpdatedAlarm(a1);
 
         // t=2
@@ -250,7 +250,7 @@ public class ElasticAlarmHistoryRepositoryIT {
 
         // Index a2
 
-        OnmsAlarm a2 = createAlarm(2, 2L);
+        OnmsAlarm a2 = createAlarm(2, 2L, 2L);
         indexer.handleNewOrUpdatedAlarm(a2);
 
         // Wait until we have two results
@@ -267,7 +267,7 @@ public class ElasticAlarmHistoryRepositoryIT {
         assertThat(a2State.getDeletedTime(), nullValue());
     }
 
-    private static OnmsAlarm createAlarm(int id, long firstEventTime) {
+    private static OnmsAlarm createAlarm(int id, long eventid, long firstEventTime) {
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setId(id);
         alarm.setReductionKey("rkey-" + id);
@@ -275,15 +275,15 @@ public class ElasticAlarmHistoryRepositoryIT {
         alarm.setCounter(1);
 
         OnmsEvent lastEvent = new OnmsEvent();
-        lastEvent.setId(id);
+        lastEvent.setId(eventid);
         lastEvent.setEventTime(new Date(firstEventTime));
         alarm.setLastEvent(lastEvent);
         return alarm;
     }
 
-    private static void updateAlarmWithEvent(OnmsAlarm a, long lastEventTime) {
+    private static void updateAlarmWithEvent(OnmsAlarm a, long eventid, long lastEventTime) {
         OnmsEvent lastEvent = new OnmsEvent();
-        lastEvent.setId(a.getId());
+        lastEvent.setId(eventid);
         lastEvent.setEventTime(new Date(lastEventTime));
         a.setLastEvent(lastEvent);
         a.setCounter(a.getCounter() + 1);

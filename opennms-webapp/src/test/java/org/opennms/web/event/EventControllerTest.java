@@ -164,7 +164,7 @@ public class EventControllerTest  {
     private List<OnmsEvent> getOnmsEvents(){
         List<OnmsEvent> onmsEventList = new ArrayList<>();
         OnmsEvent event4 = new OnmsEvent();
-        event4.setId(1);
+        event4.setId(1L);
         event4.setEventCreateTime(new Date());
         event4.setEventDescr("test");
         event4.setEventHost("localhost");
@@ -194,7 +194,7 @@ public class EventControllerTest  {
         onmsEventList.add(event4);
 
         OnmsEvent event5 = new OnmsEvent();
-        event5.setId(1);
+        event5.setId(1L);
         event5.setEventCreateTime(new Date());
         event5.setEventDescr("test2");
         event5.setEventHost("localhost");

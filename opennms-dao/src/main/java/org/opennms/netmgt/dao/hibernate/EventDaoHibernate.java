@@ -35,7 +35,7 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
-public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer> implements EventDao {
+public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Long> implements EventDao {
 
 	public EventDaoHibernate() {
 		super(OnmsEvent.class);

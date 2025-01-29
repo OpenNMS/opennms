@@ -32,6 +32,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 
 import javax.sql.DataSource;
 
@@ -59,7 +60,7 @@ import org.springframework.dao.DataAccessException;
 public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpcManager, EventIpcBroadcaster {
     private static final Logger LOG = LoggerFactory.getLogger(MockEventIpcManager.class);
 
-    private static final AtomicInteger m_eventId = new AtomicInteger();
+    private static final AtomicLong m_eventId = new AtomicLong();
 
     static class ListenerKeeper {
     	final EventListener m_listener;
@@ -445,5 +446,9 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         }
 
         return false;
+    }
+
+    public static void setEventIdStart(long l) {
+        m_eventId.set(l);
     }
 }
