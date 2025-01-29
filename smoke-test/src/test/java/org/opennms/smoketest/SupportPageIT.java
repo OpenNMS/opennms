@@ -61,31 +61,12 @@ public class SupportPageIT extends OpenNMSSeleniumIT {
     public void testSystemReport() {
         driver.findElement(By.linkText("Generate System Report")).click();
 
-        final WebElement textFileReportRadio = driver.findElement(By.id("radio1"));
-        final WebElement logFilesRadio = driver.findElement(By.id("radio2"));
-        final WebElement javaReportCheckbox = driver.findElement(By.cssSelector("input[type=checkbox][name=plugins][value=Java]"));
-        final WebElement configurationReportRadio = driver.findElement(By.cssSelector("input[type=radio][name=plugins][value=Configuration]"));
-        final WebElement logsReportRadio = driver.findElement(By.cssSelector("input[type=radio][name=plugins][value=Logs]"));
+        // checkboxes are selected by default
+        final WebElement allCheckbox = driver.findElement(By.cssSelector("input[type=checkbox][name=all]"));
+        assertThat(driver.findElement(By.cssSelector("input[type=checkbox][name=plugins][value=Java]")).isSelected(), is(true));
 
-        assertThat(textFileReportRadio.isSelected(), is(true));
-        assertThat(logFilesRadio.isSelected(), is(false));
-        assertThat(javaReportCheckbox.isSelected(), is(true));
-        assertThat(configurationReportRadio.isSelected(), is(false));
-        assertThat(logsReportRadio.isSelected(), is(false));
-
-        javaReportCheckbox.click();
-        assertThat(javaReportCheckbox.isSelected(), is(false));
-
-        logFilesRadio.click();
-        assertThat(textFileReportRadio.isSelected(), is(false));
-        assertThat(logFilesRadio.isSelected(), is(true));
-        assertThat(javaReportCheckbox.isSelected(), is(false));
-        assertThat(configurationReportRadio.isSelected(), is(true));
-        assertThat(logsReportRadio.isSelected(), is(false));
-
-        logsReportRadio.click();
-        assertThat(configurationReportRadio.isSelected(), is(false));
-        assertThat(logsReportRadio.isSelected(), is(true));
+        // deselect the "all" checkbox
+        allCheckbox.click();
+        assertThat(driver.findElement(By.cssSelector("input[type=checkbox][name=plugins][value=Java]")).isSelected(), is(false));
     }
-
 }
