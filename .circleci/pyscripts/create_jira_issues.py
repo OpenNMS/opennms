@@ -57,9 +57,7 @@ def parse_filtered_vulnerabilities(file_path):
 logging.basicConfig(level=logging.INFO)
 
 def issue_exists_for_package(package_name):
-    """
-    Checks if a Jira issue already exists for a package.
-    """
+
     url = f"{JIRA_URL}/rest/api/2/search?jql=summary~'{package_name}' AND project='{PROJECT_KEY}'"
     try:
         response = requests.get(url, auth=(JIRA_USER, JIRA_API_TOKEN))
@@ -71,9 +69,7 @@ def issue_exists_for_package(package_name):
     return issues[0] if issues else None
 
 def add_cve_to_existing_issue(issue_key, new_cve):
-    """
-    Adds the new CVE to the existing Jira issue.
-    """
+
     issue_url = f"{JIRA_URL}/rest/api/2/issue/{issue_key}"
     
     try:
@@ -81,6 +77,7 @@ def add_cve_to_existing_issue(issue_key, new_cve):
         response.raise_for_status()
         issue_data = response.json()
         current_description = issue_data["fields"]["description"]
+        current_labels = issue_data["fields"]["labels"]
     except requests.exceptions.RequestException as e:
         logging.error(f"Error fetching issue details for {issue_key}: {e}")
         return
@@ -89,9 +86,13 @@ def add_cve_to_existing_issue(issue_key, new_cve):
     if new_cve_text not in current_description:
         updated_description = current_description + "\n" + new_cve_text
 
+        if "trivy" not in current_labels:
+            current_labels.append("trivy")
+
         update_payload = {
             "fields": {
-                "description": updated_description
+                "description": updated_description,
+                "labels": current_labels
             }
         }
 
@@ -105,10 +106,7 @@ def add_cve_to_existing_issue(issue_key, new_cve):
             logging.error(f"Failed to update issue {issue_key}: {e}")
 
 def create_issue_for_package(package_name, vulnerabilities):
-    """
-    Creates a single Jira issue for a package and its vulnerabilities, 
-    with support for multiple CVEs.
-    """
+
     severity_levels = set([v['Severity'] for v in vulnerabilities])
     vulnerabilities_list = "\n".join([f"- {v['VulnerabilityID']} ({v['Title']})" for v in vulnerabilities])
 
@@ -154,7 +152,8 @@ def create_issue_for_package(package_name, vulnerabilities):
             "priority": {
                 "name": priority_name
             },
-            "security": SECURITY_LEVEL
+            "security": SECURITY_LEVEL,
+            "labels": ["trivy"]
         }
     }
 
