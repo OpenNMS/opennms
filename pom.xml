@@ -1223,7 +1223,7 @@
                  <version>[3.5,)</version>
                </requireMavenVersion>
                <requireJavaVersion>
-                 <version>[11,18)</version>
+                 <version>[17,18)</version>
                </requireJavaVersion>
              </rules>
            </configuration>
@@ -1373,8 +1373,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven.compiler.plugin.version}</version>
         <configuration>
-          <source>11</source>
-          <target>11</target>
+          <source>17</source>
+          <target>17</target>
           <encoding>UTF-8</encoding>
           <optimize>true</optimize>
         </configuration>
@@ -1933,8 +1933,8 @@
     <okhttp3Version>3.10.0</okhttp3Version>
     <okioGrafanaVersion>1.14.0</okioGrafanaVersion>
     <openid4javaVersion>0.9.6</openid4javaVersion>
-    <opennmsApiVersion>1.6.1</opennmsApiVersion>
-    <opennmsApiVersionOsgi>1.6.1</opennmsApiVersionOsgi>
+    <opennmsApiVersion>2.0.0-SNAPSHOT</opennmsApiVersion>
+    <opennmsApiVersionOsgi>2.0.0.SNAPSHOT</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>

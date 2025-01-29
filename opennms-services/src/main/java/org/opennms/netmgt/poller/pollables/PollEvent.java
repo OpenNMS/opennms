@@ -58,7 +58,7 @@ public abstract class PollEvent {
      *
      * @return a int.
      */
-    public abstract int getEventId();
+    public abstract long getEventId();
 
     /**
      * <p>getDate</p>

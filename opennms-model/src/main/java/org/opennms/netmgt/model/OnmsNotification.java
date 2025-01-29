@@ -401,7 +401,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
 
     @Transient
     @XmlElement(name="eventId", required=true)
-    public Integer getEventId() {
+    public Long getEventId() {
         return m_event == null ? null : m_event.getId();
     }
 

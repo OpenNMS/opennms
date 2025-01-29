@@ -40,6 +40,7 @@ import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
+import org.opennms.netmgt.dao.hibernate.EventDaoHibernate;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventIpcManager;
 import org.opennms.netmgt.mock.MockEventUtil;
@@ -53,7 +54,10 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.support.TransactionCallback;
 
 /**
  * Crank up a real eventd instance, send it some events, and verify that the records 
@@ -100,6 +104,7 @@ public class EventdIT implements InitializingBean {
     @Before
     public void setUp() {
         MockLogAppender.setupLogging();
+        ((EventDaoHibernate)m_databasePopulator.getEventDao()).getHibernateTemplate().getSessionFactory().openSession().createSQLQuery("ALTER SEQUENCE eventsNxtId RESTART WITH 10000000000").executeUpdate();
         m_databasePopulator.populateDatabase();
         m_eventd.onStart();
     }
@@ -243,5 +248,9 @@ public class EventdIT implements InitializingBean {
         e.setLogMessage("testing");
 
         m_eventdIpcMgr.sendNow(e.getEvent());
+    }
+
+    protected DatabasePopulator getDatabasePopulator() {
+        return m_databasePopulator;
     }
 }

@@ -42,6 +42,7 @@ public interface SQLType<T> {
     public static final SQLType<Date> DATE = new DateSqlType();
     public static final SQLType<OnmsSeverity> SEVERITY = new OnmsSeveritySqlType();
     public static final SQLType<Boolean> BOOLEAN = new BooleanSqlType();
+    public static final SQLType<Long> BIGINT = new BigIntSqlType();
 
     /**
      * <p>getValueAsString</p>

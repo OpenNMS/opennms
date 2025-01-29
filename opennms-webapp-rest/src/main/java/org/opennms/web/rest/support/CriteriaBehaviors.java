@@ -278,7 +278,7 @@ public abstract class CriteriaBehaviors {
         EVENT_BEHAVIORS.put("eventSuppressedCount", new CriteriaBehavior<Integer>(INT_CONVERTER));
         EVENT_BEHAVIORS.put("eventTime", new CriteriaBehavior<Date>(DATE_CONVERTER));
         EVENT_BEHAVIORS.put("eventTTicketState", new CriteriaBehavior<Integer>(INT_CONVERTER));
-        EVENT_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
+        EVENT_BEHAVIORS.put("id", new CriteriaBehavior<Long>(LONG_CONVERTER));
         EVENT_BEHAVIORS.put("ifIndex", new CriteriaBehavior<Integer>(INT_CONVERTER));
         EVENT_BEHAVIORS.put("ipAddr", new CriteriaBehavior<InetAddress>(INET_ADDRESS_CONVERTER));
 

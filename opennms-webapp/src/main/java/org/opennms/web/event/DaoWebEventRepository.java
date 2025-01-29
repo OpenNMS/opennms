@@ -302,7 +302,7 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
     /** {@inheritDoc} */
     @Transactional
     @Override
-    public Event getEvent(int eventId) {
+    public Event getEvent(long eventId) {
         return mapOnmsEventToEvent(m_eventDao.get(eventId));
     }
     

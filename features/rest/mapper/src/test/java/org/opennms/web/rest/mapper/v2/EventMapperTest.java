@@ -61,7 +61,7 @@ public class EventMapperTest {
         eventConfDao.addEvent(eventConf);
 
         OnmsEvent event = new OnmsEvent();
-        event.setId(1);
+        event.setId(1L);
         event.setEventUei("some-uei");
         event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
 

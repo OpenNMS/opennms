@@ -111,7 +111,7 @@
 
           <th class="col-2">Regained&nbsp;Service&nbsp;Event</th>
           <td class="col-2">
-            <% Integer regainedEventId = outage.getRegainedServiceEventId(); %>
+            <% Long regainedEventId = outage.getRegainedServiceEventId(); %>
             <% if(regainedEventId != null && regainedEventId > 0) { %>
               <a href="event/detail.jsp?id=<%=regainedEventId%>">
                 <%=regainedEventId%>
