@@ -91,7 +91,6 @@ public class UsageStatisticsReportDTOTest {
             "\"installedFeatures\":null," +
             "\"installedOIAPlugins\":null," +
             "\"ipInterfaces\":0," +
-            "\"loginsLast60Days\":null," +
             "\"memoryUtilization\":null," +
             "\"minions\":0," +
             "\"monitoredServices\":0," +

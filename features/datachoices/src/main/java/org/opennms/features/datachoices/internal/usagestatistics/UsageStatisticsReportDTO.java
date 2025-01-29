@@ -53,7 +53,6 @@ public class UsageStatisticsReportDTO {
     private int m_eventsLastHours;
     private int m_alarms;
     private int m_alarmsLastHours;
-    private String m_loginsLast60Days;
     private long m_situations;
     private int m_destinationPathCount;
     private Boolean m_notificationEnablementStatus;
@@ -230,12 +229,6 @@ public class UsageStatisticsReportDTO {
     }
 
     public int getAlarmsLastHours() { return m_alarmsLastHours; }
-
-    public void setLoginsLast60Days(String loginsLast60Days) {
-        m_loginsLast60Days = loginsLast60Days;
-    }
-
-    public String getLoginsLast60Days() {return m_loginsLast60Days;}
 
     public long getSituations() {
         return m_situations;

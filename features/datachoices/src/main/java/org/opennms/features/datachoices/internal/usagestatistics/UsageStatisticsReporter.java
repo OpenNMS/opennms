@@ -25,12 +25,10 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -284,8 +282,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         
         // Node statistics
         usageStatisticsReport.setNodesBySysOid(m_nodeDao.getNumberOfNodesBySysOid());
-        //output login events as CSV
-        usageStatisticsReport.setLoginsLast60Days(getCSVFileAsBase64());
         // Karaf features
         usageStatisticsReport.setInstalledFeatures(getInstalledFeatures());
         usageStatisticsReport.setInstalledOIAPlugins(getInstalledOIAPluginsByDependencyTree());
@@ -315,22 +311,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         setDatasourceInfo(usageStatisticsReport);
 
         return usageStatisticsReport;
-    }
-
-    private String getCSVFileAsBase64() {
-
-        String filePath = CsvLogger.OPEN_NMS_CSV_FILE_PATH;
-
-        try {
-            File file = new File(filePath);
-            byte[] fileBytes = Files.readAllBytes(file.toPath());
-
-            return Base64.getEncoder().encodeToString(fileBytes);
-
-        } catch (IOException e) {
-            LOG.error("An error occurred while reading the file or converting to Base64.", e);
-        }
-        return "";
     }
 
     private boolean isContainerized() {

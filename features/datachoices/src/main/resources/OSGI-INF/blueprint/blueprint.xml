@@ -43,7 +43,6 @@
     <bean id="loginEventListener" class="org.opennms.features.datachoices.internal.usagestatistics.SuccessLoginEventListener"
           init-method="init" destroy-method="destroy">
         <argument ref="eventSubscriptionService"/>
-        <argument ref="stateManager"/>
     </bean>
 
     <bean id="serviceConfigurationFactory" class="org.opennms.netmgt.config.ServiceConfigFactory" />
