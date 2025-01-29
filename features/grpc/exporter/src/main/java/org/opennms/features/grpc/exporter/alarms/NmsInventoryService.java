@@ -20,52 +20,58 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter;
+package org.opennms.features.grpc.exporter.alarms;
 
-import org.opennms.features.grpc.exporter.common.MonitoredServiceWithMetadata;
-import org.opennms.features.grpc.exporter.mapper.MonitoredServiceMapper;
+import org.opennms.core.utils.SystemInfoUtils;
+import org.opennms.features.grpc.exporter.NamedThreadFactory;
+import org.opennms.features.grpc.exporter.mapper.NmsInventoryMapper;
 import org.opennms.integration.api.v1.dao.NodeDao;
+import org.opennms.integration.api.v1.model.IpInterface;
+import org.opennms.integration.api.v1.model.MetaData;
+import org.opennms.integration.api.v1.model.MonitoredService;
+import org.opennms.integration.api.v1.model.Node;
+import org.opennms.integration.api.v1.model.SnmpInterface;
 import org.opennms.integration.api.v1.runtime.RuntimeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class InventoryService {
-    private static final Logger LOG = LoggerFactory.getLogger(InventoryService.class);
+public class NmsInventoryService {
+    private static final Logger LOG = LoggerFactory.getLogger(NmsInventoryService.class);
 
     private final NodeDao nodeDao;
 
     private final RuntimeInfo runtimeInfo;
 
-    private final GrpcExporterClient client;
+    private final AlarmInventoryGrpcClient client;
 
     private final Duration snapshotInterval;
 
     private final ScheduledExecutorService scheduler;
 
-    public InventoryService(final NodeDao nodeDao,
-                         final RuntimeInfo runtimeInfo,
-                         final GrpcExporterClient client,
-                         final Duration snapshotInterval) {
+    public NmsInventoryService(final NodeDao nodeDao,
+                               final RuntimeInfo runtimeInfo,
+                               final AlarmInventoryGrpcClient client,
+                               final Duration snapshotInterval) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.runtimeInfo = Objects.requireNonNull(runtimeInfo);
         this.client = Objects.requireNonNull(client);
         this.snapshotInterval = Objects.requireNonNull(snapshotInterval);
         this.scheduler = Executors.newSingleThreadScheduledExecutor(
-                new NamedThreadFactory("inventory-service-snapshot-sender"));
+                new NamedThreadFactory("nms-inventory-service-snapshot-sender"));
     }
 
-    public InventoryService(final NodeDao nodeDao,
-                         final RuntimeInfo runtimeInfo,
-                         final GrpcExporterClient client,
-                         final long snapshotInterval) {
+    public NmsInventoryService(final NodeDao nodeDao,
+                               final RuntimeInfo runtimeInfo,
+                               final AlarmInventoryGrpcClient client,
+                               final long snapshotInterval) {
         this(nodeDao, runtimeInfo, client, Duration.ofSeconds(snapshotInterval));
     }
 
@@ -77,27 +83,21 @@ public class InventoryService {
                 TimeUnit.SECONDS);
         // Set this callback to send snapshot for initial server connect and reconnects
         this.client.setInventoryCallback(this::sendSnapshot);
+
     }
 
     public void stop() {
         this.scheduler.shutdown();
     }
 
-    public void sendAddService(final MonitoredServiceWithMetadata service) {
-        final var inventory = MonitoredServiceMapper.INSTANCE.toInventoryUpdates(List.of(service), this.runtimeInfo, false);
-        this.client.sendMonitoredServicesInventoryUpdate(inventory);
+    public void sendAddNmsInventory(Node node) {
+        final var inventory = NmsInventoryMapper.INSTANCE.toInventoryUpdates(List.of(node), this.runtimeInfo, SystemInfoUtils.getInstanceId(), true);
+        this.client.sendNmsInventoryUpdate(inventory);
     }
 
     public void sendSnapshot() {
-        final var services = this.nodeDao.getNodes().stream()
-                .flatMap(node -> node.getIpInterfaces().stream()
-                        .flatMap(iface -> iface.getMonitoredServices().stream()
-                                .map(service -> new MonitoredServiceWithMetadata(node, iface, service))))
-                .collect(Collectors.toList());
-
-        LOG.debug("Send snapshot: services={}", services.size());
-
-        final var inventory = MonitoredServiceMapper.INSTANCE.toInventoryUpdates(services, this.runtimeInfo, true);
-        this.client.sendMonitoredServicesInventoryUpdate(inventory);
+        final var nodes = this.nodeDao.getNodes().stream().collect(Collectors.toList());
+        final var inventory = NmsInventoryMapper.INSTANCE.toInventoryUpdates(nodes, this.runtimeInfo, SystemInfoUtils.getInstanceId(), true);
+        this.client.sendNmsInventoryUpdate(inventory);
     }
 }

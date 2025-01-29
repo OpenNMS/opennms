@@ -28,7 +28,7 @@ import org.mapstruct.Mapping;
 import org.mapstruct.Named;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
-import org.opennms.features.grpc.exporter.GrpcExporterClient;
+import org.opennms.features.grpc.exporter.bsm.BsmGrpcClient;
 import org.opennms.features.grpc.exporter.common.MonitoredServiceWithMetadata;
 import org.opennms.integration.api.v1.runtime.RuntimeInfo;
 import org.opennms.plugin.grpc.proto.services.InventoryUpdateList;
@@ -80,7 +80,7 @@ public interface MonitoredServiceMapper {
     @Mapping(target = "tags", source = "service.node.categories")
     ServiceComponent toInventoryUpdate(final MonitoredServiceWithMetadata service);
 
-    @Mapping(target = "foreignType", constant = GrpcExporterClient.FOREIGN_TYPE)
+    @Mapping(target = "foreignType", constant = BsmGrpcClient.FOREIGN_TYPE)
     @Mapping(target = "foreignSource", source = "runtimeInfo.systemId")
     @Mapping(target = "services", source = "services")
     @Mapping(target = "snapshot", source = "snapshot")
@@ -90,7 +90,7 @@ public interface MonitoredServiceMapper {
     @Mapping(target = "healthy", source = "service.monitoredService.status")
     StateUpdate toStateUpdate(final MonitoredServiceWithMetadata service);
 
-    @Mapping(target = "foreignType", constant = GrpcExporterClient.FOREIGN_TYPE)
+    @Mapping(target = "foreignType", constant = BsmGrpcClient.FOREIGN_TYPE)
     @Mapping(target = "foreignSource", source = "runtimeInfo.systemId")
     @Mapping(target = "updates", source = "updates")
     StateUpdateList toStateUpdates(final List<MonitoredServiceWithMetadata> updates, final RuntimeInfo runtimeInfo);

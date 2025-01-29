@@ -24,10 +24,10 @@ syntax = "proto3";
 
 import "google/protobuf/empty.proto";
 
-package org.opennms.plugin.grpc.proto.nms.inventory;
+package org.opennms.plugin.grpc.proto.services;
 
 option java_multiple_files = true;
-option java_package = "org.opennms.plugin.grpc.proto.nms.inventory";
+option java_package = "org.opennms.plugin.grpc.proto.services";
 
 message NodeCriteria {
   uint64 id = 1;
@@ -46,7 +46,6 @@ enum Severity {
   MAJOR = 5;
   CRITICAL = 6;
 }
-
 
 message IpInterface {
   uint64 id = 1;
@@ -101,9 +100,9 @@ message Alarm {
     CLEAR = 1;
     PROBLEM_WITHOUT_CLEAR = 2;
   }
-  Type type = 7;
+  uint32 type = 7;
   uint64 count = 8;
-  Severity severity = 9;
+  uint32 severity = 9;
   uint64 first_event_time = 10;
   string description = 11;
   string log_message = 12;
@@ -119,23 +118,21 @@ message Alarm {
   uint64 last_update_time = 25;
 }
 
-message InventoryUpdateList {
-  string foreign_type = 1;
-  string foreign_source = 2;
-
-  bool snapshot = 3;
-  repeated Node nodes = 4;
+message NmsInventoryUpdateList {
+  string instance_id = 2;
+  string instance_name = 3;
+  bool snapshot = 4;
+  repeated Node nodes = 5;
 }
 
 message AlarmUpdateList {
-  string foreign_type = 1;
-  string foreign_source = 2;
-
-  bool snapshot = 3;
-  repeated Alarm alarms = 4;
+  string instance_id = 2;
+  string instance_name = 3;
+  bool snapshot = 4;
+  repeated Alarm alarms = 5;
 }
 
-service NmsInventorySync {
-  rpc InventoryUpdate(stream InventoryUpdateList) returns (stream google.protobuf.Empty) {}
+service NmsInventoryServiceSync {
+  rpc InventoryUpdate(stream NmsInventoryUpdateList) returns (stream google.protobuf.Empty) {}
   rpc AlarmUpdate(stream AlarmUpdateList) returns (stream google.protobuf.Empty) {}
 }

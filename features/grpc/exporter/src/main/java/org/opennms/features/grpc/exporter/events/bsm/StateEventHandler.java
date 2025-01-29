@@ -20,18 +20,17 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.events;
+package org.opennms.features.grpc.exporter.events.bsm;
 
-import org.opennms.features.grpc.exporter.StateService;
+import org.opennms.features.grpc.exporter.bsm.StateService;
 import org.opennms.features.grpc.exporter.common.MonitoredServiceWithMetadata;
+import org.opennms.features.grpc.exporter.events.EventConstants;
 import org.opennms.integration.api.v1.dao.NodeDao;
 import org.opennms.integration.api.v1.events.EventListener;
 import org.opennms.integration.api.v1.events.EventSubscriptionService;
 import org.opennms.integration.api.v1.model.InMemoryEvent;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -40,9 +39,7 @@ public class StateEventHandler implements EventListener {
     private static final Logger LOG = LoggerFactory.getLogger(StateEventHandler.class);
 
     private final EventSubscriptionService eventSubscriptionService;
-
     private final NodeDao nodeDao;
-
     private final StateService stateService;
 
     public StateEventHandler(final EventSubscriptionService eventSubscriptionService,

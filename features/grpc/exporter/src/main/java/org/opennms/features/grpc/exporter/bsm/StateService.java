@@ -20,7 +20,7 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter;
+package org.opennms.features.grpc.exporter.bsm;
 
 import org.opennms.features.grpc.exporter.common.MonitoredServiceWithMetadata;
 import org.opennms.features.grpc.exporter.mapper.MonitoredServiceMapper;
@@ -35,16 +35,13 @@ import java.util.stream.Collectors;
 
 public class StateService {
     private static final Logger LOG = LoggerFactory.getLogger(StateService.class);
-
     private final NodeDao nodeDao;
-
     private final RuntimeInfo runtimeInfo;
-
-    private final GrpcExporterClient client;
+    private final BsmGrpcClient client;
 
     public StateService(final NodeDao nodeDao,
                         final RuntimeInfo runtimeInfo,
-                        final GrpcExporterClient client) {
+                        final BsmGrpcClient client) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.runtimeInfo = Objects.requireNonNull(runtimeInfo);
         this.client = Objects.requireNonNull(client);
