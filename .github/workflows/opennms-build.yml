@@ -63,7 +63,7 @@ jobs:
     if: "!contains(github.event.commits[0].message, '[skip deps-freshness]')"
     runs-on: ubuntu-latest
     container:
-      image: quay.io/bluebird/java-builder:0.1.3.jdk-17.b3
+      image: quay.io/bluebird/java-builder:ubuntu.0.1.5.jdk-17.b21
     steps:
       - uses: actions/checkout@v4
       - name: Add workspace to git safe.directory
@@ -468,7 +468,7 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     container:
-      image: quay.io/bluebird/base-builder:ubuntu.0.1.5.b8
+      image: quay.io/bluebird/base-builder:ubuntu.0.1.7.b18
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -488,7 +488,7 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     container:
-      image: quay.io/bluebird/base-builder:ubuntu.0.1.5.b8
+      image: quay.io/bluebird/base-builder:ubuntu.0.1.7.b18
     steps:
       - uses: actions/download-artifact@v4
         with:
@@ -508,7 +508,7 @@ jobs:
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     container:
-      image: quay.io/bluebird/base-builder:ubuntu.0.1.5.b8
+      image: quay.io/bluebird/base-builder:ubuntu.0.1.7.b18
     steps:
       - uses: actions/download-artifact@v4
         with:
