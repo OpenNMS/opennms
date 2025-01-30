@@ -302,7 +302,7 @@ jobs:
   integration-tests:
     if: "!contains(github.event.commits[0].message, '[skip integration-tests]')"
     needs:
-      - quick-build
+      - unit-tests
     runs-on:
       group: Default
       labels:
@@ -342,7 +342,6 @@ jobs:
     if: "!contains(github.event.commits[0].message, '[skip e2e-tests-core]')"
     needs:
       - unit-tests
-      - integration-tests
     runs-on:
       group: Default
       labels:
@@ -383,7 +382,6 @@ jobs:
     if: "!contains(github.event.commits[0].message, '[skip e2e-tests-minion]')"
     needs:
       - unit-tests
-      - integration-tests
     runs-on:
       group: Default
       labels:
@@ -424,7 +422,6 @@ jobs:
     if: "!contains(github.event.commits[0].message, '[skip e2e-tests-sentinel]')"
     needs:
       - unit-tests
-      - integration-tests
     runs-on:
       group: Default
       labels:
