@@ -27,14 +27,10 @@ import java.lang.management.OperatingSystemMXBean;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.stream.Collectors;
 import org.opennms.core.resource.Vault;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.model.OnmsIpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 import javax.management.AttributeNotFoundException;
 import javax.management.InstanceNotFoundException;
@@ -52,8 +48,6 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
     private static final String JMX_ATTR_AVAILABLE_PROCESSORS = "AvailableProcessors";
     private static final String JMX_ATTR_FREE_PHYSICAL_MEMORY_SIZE = "FreePhysicalMemorySize";
     private static final String JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE = "TotalPhysicalMemorySize";
-    @Autowired
-    public IpInterfaceDao m_ipInterfaceDao;
 
     public OSReportPlugin() {
         if (m_oses.size() == 0) {

@@ -91,7 +91,6 @@ public class SystemReportPluginIT {
 
     @Test
     public void testOSPlugin() {
-        ReflectionTestUtils.setField(m_osReportPlugin,"m_ipInterfaceDao",new MockIpInterfaceDao());
         final Map<String, org.springframework.core.io.Resource> entries = m_osReportPlugin.getEntries();
         assertTrue(entries.containsKey("Architecture"));
         assertTrue(entries.containsKey("Name"));
