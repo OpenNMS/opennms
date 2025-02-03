@@ -1373,8 +1373,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven.compiler.plugin.version}</version>
         <configuration>
-          <source>11</source>
-          <target>11</target>
+          <source>17</source>
+          <target>17</target>
           <encoding>UTF-8</encoding>
           <optimize>true</optimize>
         </configuration>
