@@ -276,7 +276,7 @@
                 <configuration>
                     <finalName>${project.artifactId}</finalName>
                     <archiveZip>false</archiveZip>
-                    <javase>17</javase>
+                    <javase>11</javase>
                     <featuresProcessing>${project.build.directory}/internal/features-processing.xml</featuresProcessing>
                     <propertyFileEdits>${project.build.directory}/internal/assembly-property-edits.xml</propertyFileEdits>
                     <generateConsistencyReport>${project.build.directory}/consistency-report</generateConsistencyReport>
