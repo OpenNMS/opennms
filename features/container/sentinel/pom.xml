@@ -392,7 +392,7 @@
                         <feature>sentinel-thresholding-service</feature>
                         <feature>sentinel-api-layer</feature>
                         <feature>sentinel-timeseries-api</feature>
-                        <!--feature>sentinel-plugin-sample</feature-->
+                        <feature>sentinel-plugin-sample</feature>
 
                         <!-- Other features -->
                         <feature>cassandra-driver/${cassandraVersion}</feature>
