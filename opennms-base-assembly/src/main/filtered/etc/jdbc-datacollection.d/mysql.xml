@@ -1,4 +1,19 @@
 <jdbc-datacollection-config xmlns="http://xmlns.opennms.org/xsd/config/jdbc-datacollection" rrdRepository="${install.share.dir}/rrd/snmp/">
+
+  <!--
+   An example Collectd service configuration for this datacollection:
+
+   <service name="MySQL-JDBC" interval="300000" user-defined="false" status="on">
+      <parameter key="collection" value="MySQL-Global-Stats"/>
+      <parameter key="thresholding-enabled" value="true"/>
+      <parameter key="driver" value="com.mysql.jdbc.Driver"/>
+      <parameter key="user" value="${scv:mysql:username}"/>
+      <parameter key="password" value="${scv:mysql:password}"/>
+      <parameter key="url" value="jdbc:mysql://OPENNMS_JDBC_HOSTNAME:3306/test"/>
+   </service>
+   NOTE: The OPENNMS_JDBC_HOSTNAME token is replaced with the IP or resolved hostname of the assigned interface.
+   -->
+
    <jdbc-collection name="MySQL-Global-Stats">
       <rrd step="300">
          <rra>RRA:AVERAGE:0.5:1:2016</rra>
