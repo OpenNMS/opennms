@@ -82,6 +82,9 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
     }
 
     @Override
+    public boolean isVisible() { return true; }
+
+    @Override
     public void begin() {
         super.begin();
         try {

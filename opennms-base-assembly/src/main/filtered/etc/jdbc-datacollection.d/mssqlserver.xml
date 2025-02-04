@@ -1,0 +1,71 @@
+<jdbc-datacollection-config xmlns="http://xmlns.opennms.org/xsd/config/jdbc-datacollection" rrdRepository="${install.share.dir}/rrd/snmp/">
+   <jdbc-collection name="SQLServer-JDBC">
+      
+      <!--
+      An example Collectd service configuration for this datacollection:
+   
+      <service name="SQLServer-JDBC" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="SQLServer-JDBC"/>
+         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="driver" value="com.microsoft.sqlserver.jdbc.SQLServerDriver"/>
+         <parameter key="user" value="${scv:sqlserver:username}"/>
+         <parameter key="password" value="${scv:sqlserver:password}"/>
+         <parameter key="url" value="jdbc:sqlserver://OPENNMS_JDBC_HOSTNAME:1433"/>
+      </service>
+      NOTE: The OPENNMS_JDBC_HOSTNAME token is replaced with the IP or resolved hostname of the assigned interface.
+      -->
+      <rrd step="300">
+         <rra>RRA:AVERAGE:0.5:1:2016</rra>
+         <rra>RRA:AVERAGE:0.5:12:1488</rra>
+         <rra>RRA:AVERAGE:0.5:288:366</rra>
+         <rra>RRA:MAX:0.5:288:366</rra>
+         <rra>RRA:MIN:0.5:288:366</rra>
+      </rrd>
+      <queries>
+      <query name="msSQLDriveSpace" ifType="ignore" resourceType="msSQLspace" instance-column="logical_volume_name">
+          <statement>
+              <queryString>
+                SELECT st.logical_volume_name,volume_mount_point, total_bytes/1024/1024/1024 as TotalSizeGB, available_bytes/1024/1024/1024 as AvailableGB FROM sys.master_files AS f CROSS APPLY sys.dm_os_volume_stats(f.database_id, f.file_id) st GROUP BY st.logical_volume_name,volume_mount_point, total_bytes, available_bytes
+              </queryString>
+          </statement>
+          <columns>
+              <column name="logical_volume_name" data-source-name="logical_volume_name" alias="lvolname" type="string"/>
+              <column name="volume_mount_point" data-source-name="volume_mount_point" alias="mntpoint" type="string"/>
+              <column name="TotalSizeGB" data-source-name="TotalSizeGB" alias="sizeGB" type="gauge"/>
+              <column name="AvailableGB" data-source-name="AvailableGB" alias="availGB" type="gauge"/>
+          </columns>
+      </query>
+      <query name="msSQLdbsize" ifType="ignore" resourceType="msSQLstats" instance-column="name">
+          <statement>
+              <queryString>
+                select d.name, (CONVERT(BIGINT, m.size) * 8) / 1024 sizeMB from sys.master_files m join sys.databases d on d.database_id = m.database_id and m.type = 0
+              </queryString>
+          </statement>
+          <columns>
+              <column name="name" data-source-name="name" alias="name" type="string"/>
+              <column name="sizeMB" data-source-name="sizeMB" alias="sizeMB" type="gauge"/>
+          </columns>
+      </query>
+      <query name="msSQLstats" ifType="ignore" resourceType="msSQLvfsstats" instance-column="name">
+          <statement>
+              <queryString>
+                SELECT DB_NAME(vfs.DbId) DatabaseName, mf.name, mf.physical_name, (vfs.BytesRead / 1024 ) KBRead, (vfs.BytesWritten / 1024 ) KBWritten, vfs.IoStallMS, vfs.IoStallReadMS, vfs.IoStallWriteMS, vfs.NumberReads, vfs.NumberWrites, (CONVERT(BIGINT, Size)*8)/1024 Size_MB FROM ::fn_virtualfilestats(NULL,NULL) vfs INNER JOIN sys.master_files mf ON mf.database_id = vfs.DbId AND mf.FILE_ID = vfs.FileId
+              </queryString>
+          </statement>
+          <columns>
+              <column name="DatabaseName" data-source-name="DatabaseName" alias="DBname" type="string"/>
+              <column name="name" data-source-name="name" alias="name" type="string"/>
+              <column name="physical_name" data-source-name="physical_name" alias="physName" type="string"/>
+              <column name="KBRead" data-source-name="KBRead" alias="KBRead" type="counter"/>
+              <column name="KBWritten" data-source-name="KBWritten" alias="KBWritten" type="counter"/>
+              <column name="IoStallMS" data-source-name="IoStallMS" alias="IoStallMS" type="counter"/>
+              <column name="IoStallReadMS" data-source-name="IoStallReadMS" alias="IoStallReadMS" type="counter"/>
+              <column name="IoStallWriteMS" data-source-name="IoStallWriteMS" alias="IoStallWriteMS" type="counter"/>
+              <column name="NumberReads" data-source-name="NumberReads" alias="NumberReads" type="counter"/>
+              <column name="NumberWrites" data-source-name="NumberWrites" alias="NumberWrites" type="counter"/>
+              <column name="Size_MB" data-source-name="Size_MB" alias="Size_MB" type="gauge"/>
+          </columns>
+      </query>
+      </queries>
+   </jdbc-collection>
+</jdbc-datacollection-config>
