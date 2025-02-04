@@ -52,6 +52,9 @@ public class LogReportPlugin extends AbstractSystemReportPlugin {
     }
 
     @Override
+    public boolean isVisible() { return true; }
+
+    @Override
     public boolean getOutputsFiles() {
         return true;
     }
