@@ -57,4 +57,6 @@ public interface SystemReportPlugin extends Comparable<SystemReportPlugin> {
     public boolean getFullOutputOnly();
 
     public boolean getOutputsFiles();
+
+    public boolean isVisible();
 }

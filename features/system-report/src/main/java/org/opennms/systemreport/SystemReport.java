@@ -35,6 +35,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -230,14 +231,14 @@ public class SystemReport {
         initializeSpring();
         final List<SystemReportPlugin> plugins = new ArrayList<SystemReportPlugin>(m_serviceRegistry.findProviders(SystemReportPlugin.class));
         Collections.sort(plugins);
-        return plugins;
+        return plugins.stream().filter(SystemReportPlugin::isVisible).collect(Collectors.toList());
     }
 
     public List<SystemReportFormatter> getFormatters() {
         initializeSpring();
         final List<SystemReportFormatter> formatters = new ArrayList<SystemReportFormatter>(m_serviceRegistry.findProviders(SystemReportFormatter.class));
         Collections.sort(formatters);
-        return formatters;
+        return formatters.stream().filter(SystemReportFormatter::isVisible).collect(Collectors.toList());
     }
 
     private void initializeSpring() {

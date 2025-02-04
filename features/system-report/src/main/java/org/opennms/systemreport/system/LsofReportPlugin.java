@@ -54,6 +54,8 @@ public class LsofReportPlugin extends AbstractSystemReportPlugin {
     }
 
     @Override
+    public boolean isVisible() { return true; }
+    @Override
     public Map<String, Resource> getEntries() {
         final Map<String,Resource> map = new TreeMap<String,Resource>();
         String lsofOutput = null;
