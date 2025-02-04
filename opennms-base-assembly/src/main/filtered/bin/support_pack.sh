@@ -1,5 +1,13 @@
 #!/usr/bin/env bash
 
+# This file exists in three places in the source tree, namely:
+#
+#   (core) opennms-base-assembly/src/main/filtered/bin/support_pack.sh
+#   (minion) opennms-assemblies/minion/src/main/filtered/bin/support_pack.sh
+#   (sentinel) opennms-assemblies/sentinel/src/main/filtered/bin/support_pack.sh
+#
+# If it is updated, it should be updated in all three locations.
+
 DOJAVA="true"
 DOOS="true"
 DOPACKAGE="true"
