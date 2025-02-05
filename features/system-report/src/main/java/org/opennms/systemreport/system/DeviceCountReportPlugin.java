@@ -23,8 +23,6 @@ package org.opennms.systemreport.system;
 
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 
@@ -32,11 +30,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 public class DeviceCountReportPlugin extends AbstractSystemReportPlugin {
-    private static final Logger LOG = LoggerFactory.getLogger(DeviceCountReportPlugin.class);
-
 
     @Autowired
-    NodeDao m_nodeDao;
+    private NodeDao m_nodeDao;
 
     @Override
     public String getName() {
@@ -54,16 +50,18 @@ public class DeviceCountReportPlugin extends AbstractSystemReportPlugin {
     }
 
     @Override
-    public boolean isVisible() { return true; }
+    public boolean isVisible() {
+        return true;
+    }
 
     @Override
     public Map<String, Resource> getEntries() {
-        final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
+        final TreeMap<String, Resource> map = new TreeMap<>();
 
         Map<String, Long> nodeCountMap = m_nodeDao.getNumberOfNodesBySysOid();
 
-        nodeCountMap.forEach((K,V)->{
-            map.put(K,getResource(String.valueOf(V)));
+        nodeCountMap.forEach((Key, Value) -> {
+            map.put(Key, getResource(String.valueOf(Value)));
         });
 
         return map;

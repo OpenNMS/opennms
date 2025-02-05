@@ -26,16 +26,13 @@
 	<bean name="hardDriveReportPlugin" class="org.opennms.systemreport.system.HardDriveReportPlugin" />
 	<onmsgi:service id="hardDriveReportPluginService" ref="hardDriveReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
 
-
 	<!-- OpenNMS information -->
 	<bean name="opennmsReportPlugin" class="org.opennms.systemreport.opennms.OpenNMSReportPlugin" />
 	<onmsgi:service id="opennmsReportPluginService" ref="opennmsReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
 
-
 	<!-- Device count information -->
 	<bean name="deviceCountReportPlugin" class="org.opennms.systemreport.system.DeviceCountReportPlugin" />
 	<onmsgi:service id="deviceCountReportPluginService" ref="deviceCountReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
-
 
 	<!-- Thread Dump -->
 	<bean name="threadReportPlugin" class="org.opennms.systemreport.system.ThreadReportPlugin" />
