@@ -31,6 +31,12 @@
 	<bean name="opennmsReportPlugin" class="org.opennms.systemreport.opennms.OpenNMSReportPlugin" />
 	<onmsgi:service id="opennmsReportPluginService" ref="opennmsReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
 
+
+	<!-- Device count information -->
+	<bean name="deviceCountReportPlugin" class="org.opennms.systemreport.system.DeviceCountReportPlugin" />
+	<onmsgi:service id="deviceCountReportPluginService" ref="deviceCountReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
+
+
 	<!-- Thread Dump -->
 	<bean name="threadReportPlugin" class="org.opennms.systemreport.system.ThreadReportPlugin" />
 	<onmsgi:service id="threadReportPluginService" ref="threadReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
