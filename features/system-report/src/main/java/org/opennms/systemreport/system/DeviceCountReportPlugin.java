@@ -60,8 +60,8 @@ public class DeviceCountReportPlugin extends AbstractSystemReportPlugin {
 
         Map<String, Long> nodeCountMap = m_nodeDao.getNumberOfNodesBySysOid();
 
-        nodeCountMap.forEach((Key, Value) -> {
-            map.put(Key, getResource(String.valueOf(Value)));
+        nodeCountMap.forEach((key, value) -> {
+            map.put(key, getResource(String.valueOf(value)));
         });
 
         return map;
