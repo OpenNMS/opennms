@@ -276,7 +276,7 @@
                 <configuration>
                     <finalName>${project.artifactId}</finalName>
                     <archiveZip>false</archiveZip>
-                    <javase>11</javase>
+                    <javase>17</javase>
                     <featuresProcessing>${project.build.directory}/internal/features-processing.xml</featuresProcessing>
                     <propertyFileEdits>${project.build.directory}/internal/assembly-property-edits.xml</propertyFileEdits>
                     <generateConsistencyReport>${project.build.directory}/consistency-report</generateConsistencyReport>
@@ -466,6 +466,14 @@
         </dependency>
 
         <!-- OpenNMS dependencies for unpacking/assembling -->
+        <dependency>
+          <groupId>org.opennms.integration.api.sample</groupId>
+          <artifactId>sample-project</artifactId>
+          <version>${opennmsApiVersion}</version>
+          <type>xml</type>
+          <classifier>blueprint-sentinel</classifier>
+        </dependency>
+
         <dependency>
             <groupId>org.opennms.core</groupId>
             <artifactId>org.opennms.core.cli</artifactId>

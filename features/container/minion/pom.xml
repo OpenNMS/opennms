@@ -85,6 +85,13 @@
 
     <dependencies>
         <dependency>
+          <groupId>org.opennms.integration.api.sample</groupId>
+          <artifactId>sample-project</artifactId>
+          <version>${opennmsApiVersion}</version>
+          <type>xml</type>
+          <classifier>blueprint-minion</classifier>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.container</groupId>
             <artifactId>org.opennms.container.shared</artifactId>
             <version>${project.version}</version>
