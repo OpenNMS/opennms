@@ -84,13 +84,25 @@
     </build>
 
     <dependencies>
-        <!--dependency>
+        <dependency>
+          <groupId>org.opennms.dependencies</groupId>
+          <artifactId>jaxb-dependencies</artifactId>
+          <version>${project.version}</version>
+          <type>pom</type>
+        </dependency>
+        <dependency>
           <groupId>org.opennms.integration.api.sample</groupId>
           <artifactId>sample-project</artifactId>
           <version>${opennmsApiVersion}</version>
           <type>xml</type>
           <classifier>blueprint-minion</classifier>
-        </dependency-->
+          <exclusions>
+           <exclusion>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+           </exclusion>
+          </exclusions>
+        </dependency>
         <dependency>
             <groupId>org.opennms.container</groupId>
             <artifactId>org.opennms.container.shared</artifactId>
