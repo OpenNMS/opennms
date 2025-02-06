@@ -29,19 +29,19 @@ import org.springframework.core.io.Resource;
 import java.util.Map;
 import java.util.TreeMap;
 
-public class DeviceCountReportPlugin extends AbstractSystemReportPlugin {
+public class NodeCountReportPlugin extends AbstractSystemReportPlugin {
 
     @Autowired
     private NodeDao m_nodeDao;
 
     @Override
     public String getName() {
-        return "Device Count";
+        return "Node Count";
     }
 
     @Override
     public String getDescription() {
-        return "Information of Device Count Per SysoID";
+        return "Information of Node Count Per SysoID";
     }
 
     @Override
