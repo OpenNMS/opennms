@@ -89,4 +89,7 @@ public interface SystemReportFormatter extends Comparable<SystemReportFormatter>
      */
     public boolean canStdout();
 
+
+    public boolean isVisible();
+
 }

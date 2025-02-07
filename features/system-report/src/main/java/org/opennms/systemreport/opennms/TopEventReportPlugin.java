@@ -45,7 +45,7 @@ public class TopEventReportPlugin extends AbstractSystemReportPlugin implements 
 
     @Override
     public String getName() {
-        return "TopEvent";
+        return "TopNEvents";
     }
 
     @Override
@@ -57,6 +57,9 @@ public class TopEventReportPlugin extends AbstractSystemReportPlugin implements 
     public int getPriority() {
         return 4;
     }
+
+    @Override
+    public boolean isVisible() { return true; }
 
     @Override
     public Map<String, Resource> getEntries() {

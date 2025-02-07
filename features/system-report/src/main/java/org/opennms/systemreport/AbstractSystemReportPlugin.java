@@ -88,6 +88,9 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
         return false;
     }
 
+    @Override
+    public boolean isVisible() { return false; }
+
     protected ResourceLocator getResourceLocator() {
         return m_resourceLocator;
     }
@@ -143,9 +146,8 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
             is = p.getInputStream();
             isr = new InputStreamReader(is);
             br = new BufferedReader(isr);
-            while (br.ready()) {
-                final String line = br.readLine();
-                if (line == null) break;
+            String line=null;
+            while ((line = br.readLine()) != null) {
                 sb.append(line);
                 if (br.ready()) sb.append("\n");
             }

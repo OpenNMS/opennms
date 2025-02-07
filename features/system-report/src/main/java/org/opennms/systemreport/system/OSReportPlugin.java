@@ -27,16 +27,28 @@ import java.lang.management.OperatingSystemMXBean;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
-
+import org.opennms.core.resource.Vault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
 import org.springframework.core.io.Resource;
-
+import javax.management.AttributeNotFoundException;
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanException;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
 
 public class OSReportPlugin extends AbstractSystemReportPlugin {
     private static final Logger LOG = LoggerFactory.getLogger(OSReportPlugin.class);
     private static final Map<String, String> m_oses = new LinkedHashMap<String, String>();
+    private static final MBeanServer M_BEAN_SERVER = ManagementFactory.getPlatformMBeanServer();
+    private static final String JMX_OBJ_OS = "java.lang:type=OperatingSystem";
+    private static final String JMX_ATTR_AVAILABLE_PROCESSORS = "AvailableProcessors";
+    private static final String JMX_ATTR_FREE_PHYSICAL_MEMORY_SIZE = "FreePhysicalMemorySize";
+    private static final String JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE = "TotalPhysicalMemorySize";
+
     public OSReportPlugin() {
         if (m_oses.size() == 0) {
             m_oses.put("/etc/SUSE-release", "SuSE");
@@ -64,6 +76,9 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
     public String getDescription() {
         return "Kernel, OS, and Distribution";
     }
+
+    @Override
+    public boolean isVisible() { return true; }
 
     @Override
     public int getPriority() {
@@ -129,6 +144,50 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
             map.put("Description", map.remove("Distribution Description"));
         }
 
+        map.put("HTTP(S) ports",getResource(Vault.getProperty("org.opennms.netmgt.jetty.port")));
+
+        Object availableProcessorsObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_AVAILABLE_PROCESSORS);
+        if (availableProcessorsObj != null) {
+            map.put("System CPU count",getResource(String.valueOf((int) availableProcessorsObj)));
+
+        }
+
+        long totalPhysicalMemSize= 0L;
+        Object totalPhysicalMemSizeObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE);
+        if (totalPhysicalMemSizeObj != null) {
+            totalPhysicalMemSize = (long) totalPhysicalMemSizeObj;
+
+        }
+
+        long freePhysicalMemSize = 0L;
+        Object freePhysicalMemSizeObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_FREE_PHYSICAL_MEMORY_SIZE);
+        if (freePhysicalMemSizeObj != null) {
+            freePhysicalMemSize = (long) freePhysicalMemSizeObj;
+        }
+
+        map.put("Total System RAM",getResource(String.valueOf(totalPhysicalMemSize)));
+        map.put("Used System RAM",getResource(String.valueOf((totalPhysicalMemSize-freePhysicalMemSize))));
+
         return map;
     }
+
+    private Object getJmxAttribute(String objectName, String attributeName) {
+        ObjectName objNameActual;
+        try {
+            objNameActual = new ObjectName(objectName);
+        } catch (MalformedObjectNameException e) {
+            LOG.warn("Failed to query from object name " + objectName, e);
+            return null;
+        }
+        try {
+            return M_BEAN_SERVER.getAttribute(objNameActual, attributeName);
+        } catch (InstanceNotFoundException | AttributeNotFoundException
+                 | ReflectionException | MBeanException e) {
+            LOG.warn("Failed to query from attribute name " + attributeName + " on object " + objectName, e);
+            return null;
+        }
+    }
+
+
+
 }

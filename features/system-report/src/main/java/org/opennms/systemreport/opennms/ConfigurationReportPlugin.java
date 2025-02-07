@@ -51,6 +51,9 @@ public class ConfigurationReportPlugin extends AbstractSystemReportPlugin {
     }
 
     @Override
+    public boolean isVisible() { return true; }
+
+    @Override
     public boolean getFullOutputOnly() {
         return true;
     }
