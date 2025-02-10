@@ -24,10 +24,12 @@ package org.opennms.features.grpc.exporter.events.alarms;
 
 import org.opennms.features.grpc.exporter.alarms.NmsInventoryService;
 import org.opennms.features.grpc.exporter.events.EventConstants;
-import org.opennms.integration.api.v1.dao.NodeDao;
+//import org.opennms.integration.api.v1.dao.NodeDao;
 import org.opennms.integration.api.v1.events.EventListener;
 import org.opennms.integration.api.v1.events.EventSubscriptionService;
 import org.opennms.integration.api.v1.model.InMemoryEvent;
+import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.model.OnmsNode;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.List;
@@ -90,16 +92,17 @@ public class NmsInventoryEventHandler implements EventListener {
                     return;
                 }
 
-                final var node = this.nodeDao.getNodeById(event.getNodeId());
+                final var node = this.nodeDao.get(event.getNodeId());
                 if (node == null) {
                     return;
                 }
-
                 this.inventoryService.sendAddNmsInventory(node);
+
                 break;
 
             case EventConstants.SERVICE_DELETED_EVENT_UEI:
-                // For now, there is not much we can do here.
+                this.inventoryService.sendSnapshot();
+                break;
 
             default:
                 this.inventoryService.sendSnapshot();

@@ -18,6 +18,11 @@
         </cm:default-properties>
     </cm:property-placeholder>
 
+    <reference id="onmsNodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="optional"/>
+    <reference id="onmsIpInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="optional"/>
+    <reference id="onmsSnmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="optional"/>
+    <reference id="onmsMonitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" availability="optional"/>
+
     <reference id="nodeDao" interface="org.opennms.integration.api.v1.dao.NodeDao" availability="optional"/>
     <reference id="eventSubscriptionService" interface="org.opennms.integration.api.v1.events.EventSubscriptionService" availability="optional"/>
     <reference id="runtimeInfo" interface="org.opennms.integration.api.v1.runtime.RuntimeInfo" availability="optional"/>
@@ -83,7 +88,10 @@
     </service>
 
     <bean id="nmsInventoryService" class="org.opennms.features.grpc.exporter.alarms.NmsInventoryService" init-method="start" destroy-method="stop" >
-        <argument ref="nodeDao"/>
+        <argument ref="onmsNodeDao"/>
+        <argument ref="onmsIpInterfaceDao"/>
+        <argument ref="onmsSnmpInterfaceDao"/>
+        <argument ref="onmsMonitoredServiceDao"/>
         <argument ref="runtimeInfo"/>
         <argument ref="alarmInvoiceGrpcClient"/>
         <argument value="${snapshot.interval}" />
@@ -92,7 +100,7 @@
 
     <bean id="nmsInventoryEventHandler" class="org.opennms.features.grpc.exporter.events.alarms.NmsInventoryEventHandler" init-method="start" destroy-method="stop">
         <argument ref="eventSubscriptionService"/>
-        <argument ref="nodeDao"/>
+        <argument ref="onmsNodeDao"/>
         <argument ref="nmsInventoryService" />
     </bean>
 

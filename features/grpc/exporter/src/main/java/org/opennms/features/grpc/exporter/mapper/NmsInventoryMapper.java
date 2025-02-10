@@ -23,64 +23,73 @@
 package org.opennms.features.grpc.exporter.mapper;
 
 import org.mapstruct.CollectionMappingStrategy;
+import org.mapstruct.IterableMapping;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.NullValueCheckStrategy;
+import org.mapstruct.NullValueMappingStrategy;
+import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
-import org.opennms.integration.api.v1.model.IpInterface;
 import org.opennms.integration.api.v1.runtime.RuntimeInfo;
-import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-import java.util.stream.Collectors;
 import org.opennms.plugin.grpc.proto.services.NmsInventoryUpdateList;
 import org.opennms.plugin.grpc.proto.services.Node;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Mapper(collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED,
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS
         )
 public interface NmsInventoryMapper {
+    static final Logger LOG = LoggerFactory.getLogger(NmsInventoryMapper.class);
+
     NmsInventoryMapper INSTANCE = Mappers.getMapper(NmsInventoryMapper.class);
 
-    default Node toInventoryUpdate(org.opennms.integration.api.v1.model.Node node){
+    @IterableMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
+    @Mapping(target = "location", source = "node.location.locationName", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT)
+    @Mapping(target = "createTime", expression = "java(mapDate(node.getCreateTime()))")
+    @Mapping(target = "snmpInterface", source = "snmpInterfaces", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT)
+    @Mapping(target = "ipInterface", source = "ipInterfaces", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT)
+    Node toInventoryUpdate(org.opennms.netmgt.model.OnmsNode node);
 
-        Node.Builder nodeBuilder = Node.newBuilder()
-                .setForeignId(node.getForeignId())
-                .setForeignSource(node.getForeignSource())
-                .setLabel(node.getLabel())
-                .setLocation(node.getLocation())
-                .setId(node.getId());
+    @IterableMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
+    org.opennms.plugin.grpc.proto.services.SnmpInterface mapSnmpInterface(org.opennms.netmgt.model.OnmsSnmpInterface onmsSnmpInterface );
 
-        List<org.opennms.plugin.grpc.proto.services.IpInterface> ipInterfaceList = node.getIpInterfaces().stream()
-                .map(ipInterface -> org.opennms.plugin.grpc.proto.services.IpInterface.newBuilder()
-                        .setIpAddress(ipInterface.getIpAddress().getHostAddress())
-                        .build())
-                .collect(Collectors.toList());
-        nodeBuilder.addAllIpInterface(ipInterfaceList);
+    @Mapping(target = "primaryType", expression = "java(mapPrimaryType(onmsIpInterface))")
+    @Mapping(target = "ifIndex", ignore = true)//for no session error, due to lazy loading
+    @Mapping(target = "service", source = "monitoredServices")
+    org.opennms.plugin.grpc.proto.services.IpInterface mapIpInterface(org.opennms.netmgt.model.OnmsIpInterface onmsIpInterface);
 
-        List<org.opennms.plugin.grpc.proto.services.SnmpInterface> snmpInterfaceList = node.getSnmpInterfaces().stream()
-                .map(snmpInterface -> org.opennms.plugin.grpc.proto.services.SnmpInterface.newBuilder()
-                        .setIfIndex(snmpInterface.getIfIndex())
-                        .setIfDescr(snmpInterface.getIfDescr())
-                        .setIfName(snmpInterface.getIfName())
-                        .build())
-                .collect(Collectors.toList());
-        nodeBuilder.addAllSnmpInterface(snmpInterfaceList);
-
-        return nodeBuilder.build();
+    default String mapMonitoredService(org.opennms.netmgt.model.OnmsMonitoredService onmsMonitoredService){
+        return onmsMonitoredService.getServiceName();
     }
 
+    default long mapDate(Date date)
+    {
+        return date != null ? date.getTime() : 0;
+    }
+
+    default String mapIpAddress(java.net.InetAddress inetAddress) {
+        return inetAddress != null ? inetAddress.getHostAddress() : null;
+    }
+
+    default String mapPrimaryType(org.opennms.netmgt.model.OnmsIpInterface onmsIpInterface) {
+        return onmsIpInterface.getIsSnmpPrimary() != null ? onmsIpInterface.getIsSnmpPrimary().getCode() : null;
+    }
+
+    @IterableMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
     @Mapping(target = "instanceId", source = "runtimeInfo.systemId")
     @Mapping(target = "instanceName", source = "instanceName" )
     @Mapping(target = "nodes", source = "inventoryUpdates")
-    NmsInventoryUpdateList toInventoryUpdates(final List<org.opennms.integration.api.v1.model.Node> inventoryUpdates, final RuntimeInfo runtimeInfo, final String instanceName, final boolean snapshot);
-    default NmsInventoryUpdateList toInventoryUpdatesList(final List<org.opennms.integration.api.v1.model.Node> inventoryUpdates, final RuntimeInfo runtimeInfo, final String instanceName, final boolean snapshot) {
+    @Mapping(target = "snapshot", source = "isSnapshot")
+    NmsInventoryUpdateList toInventoryUpdates(final List<org.opennms.netmgt.model.OnmsNode> inventoryUpdates,
+                                              final RuntimeInfo runtimeInfo, final String instanceName, final boolean isSnapshot);
+
+    default NmsInventoryUpdateList toInventoryUpdatesList(final List<org.opennms.netmgt.model.OnmsNode> inventoryUpdates,
+                                                          final RuntimeInfo runtimeInfo, final String instanceName, final boolean snapshot) {
         NmsInventoryUpdateList.Builder builder = toInventoryUpdates(inventoryUpdates, runtimeInfo, instanceName,snapshot).toBuilder();
         return builder.build();
-    }
-
-    default List<org.opennms.plugin.grpc.proto.services.IpInterface> mapIpInterfaces(List<IpInterface> listIpInterface) {
-        List<org.opennms.plugin.grpc.proto.services.IpInterface> list = new ArrayList<>();
-        return list;
     }
 
 }

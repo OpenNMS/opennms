@@ -51,12 +51,7 @@ message IpInterface {
   uint64 id = 1;
   string ip_address = 2;
   uint32 if_index = 3;
-  enum PrimaryType {
-    PRIMARY = 0;
-    SECONDARY = 1;
-    NOT_ELIGIBLE = 2;
-  }
-  PrimaryType primary_type = 4;
+  string primary_type = 4;
   repeated string service = 5;
 }
 

@@ -34,7 +34,6 @@ import org.opennms.plugin.grpc.proto.services.ServiceSyncGrpc;
 import org.opennms.plugin.grpc.proto.services.StateUpdateList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.net.ssl.SSLException;
 import java.util.Objects;
 import java.util.concurrent.Executors;
