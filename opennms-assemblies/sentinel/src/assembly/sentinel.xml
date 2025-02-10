@@ -15,6 +15,7 @@
       <includes>
         <include>debian/rules</include>
         <include>bin/scvcli</include>
+        <include>bin/support_pack.sh</include>
       </includes>
       <fileMode>0755</fileMode>
     </fileSet>

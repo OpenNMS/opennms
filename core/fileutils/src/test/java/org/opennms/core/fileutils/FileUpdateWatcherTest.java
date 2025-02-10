@@ -21,7 +21,6 @@
  */
 package org.opennms.core.fileutils;
 
-import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
 
 import java.io.BufferedWriter;
@@ -30,6 +29,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.awaitility.Awaitility;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -75,7 +75,7 @@ public class FileUpdateWatcherTest {
         BufferedWriter writer = new BufferedWriter(new FileWriter(testFile));
         writer.write(hello);
         writer.close();
-        await().atMost(5, SECONDS).pollDelay(0, SECONDS).pollInterval(2, SECONDS)
+        Awaitility.await().atMost(5, SECONDS).pollDelay(0, SECONDS).pollInterval(2, SECONDS)
         .untilTrue(reloadCalled);
         fileWatcher.destroy();
     }
