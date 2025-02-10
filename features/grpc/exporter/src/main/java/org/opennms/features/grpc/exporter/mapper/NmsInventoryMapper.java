@@ -54,6 +54,7 @@ public interface NmsInventoryMapper {
     Node toInventoryUpdate(org.opennms.netmgt.model.OnmsNode node);
 
     @IterableMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
+    @Mapping(target = "ifPhysAddress", source = "physAddr")
     org.opennms.plugin.grpc.proto.services.SnmpInterface mapSnmpInterface(org.opennms.netmgt.model.OnmsSnmpInterface onmsSnmpInterface );
 
     @Mapping(target = "primaryType", expression = "java(mapPrimaryType(onmsIpInterface))")
