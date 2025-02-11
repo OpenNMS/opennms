@@ -58,7 +58,6 @@ public interface NmsInventoryMapper {
     org.opennms.plugin.grpc.proto.services.SnmpInterface mapSnmpInterface(org.opennms.netmgt.model.OnmsSnmpInterface onmsSnmpInterface );
 
     @Mapping(target = "primaryType", expression = "java(mapPrimaryType(onmsIpInterface))")
-    @Mapping(target = "ifIndex", ignore = true)//for no session error, due to lazy loading
     @Mapping(target = "service", source = "monitoredServices")
     org.opennms.plugin.grpc.proto.services.IpInterface mapIpInterface(org.opennms.netmgt.model.OnmsIpInterface onmsIpInterface);
 

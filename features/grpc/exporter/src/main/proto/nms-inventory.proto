@@ -50,9 +50,8 @@ enum Severity {
 message IpInterface {
   uint64 id = 1;
   string ip_address = 2;
-  uint32 if_index = 3;
-  string primary_type = 4;
-  repeated string service = 5;
+  string primary_type = 3;
+  repeated string service = 4;
 }
 
 message SnmpInterface {
@@ -79,8 +78,9 @@ message Node {
   string sys_contact = 8;
   string sys_description = 9;
   string sys_object_id = 10;
-  repeated IpInterface ip_interface = 11;
-  repeated SnmpInterface snmp_interface = 12;
+  string sys_name = 11;
+  repeated IpInterface ip_interface = 12;
+  repeated SnmpInterface snmp_interface = 13;
 }
 
 message Alarm {
