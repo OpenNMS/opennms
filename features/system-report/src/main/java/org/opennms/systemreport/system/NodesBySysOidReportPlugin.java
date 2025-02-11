@@ -26,23 +26,19 @@ import org.opennms.systemreport.AbstractSystemReportPlugin;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.io.Resource;
 
+import java.util.HashMap;
 import java.util.Map;
-import java.util.TreeMap;
 
-public class NodeCountReportPlugin extends AbstractSystemReportPlugin {
+public class NodesBySysOidReportPlugin extends AbstractSystemReportPlugin {
 
     @Autowired
     private NodeDao m_nodeDao;
 
     @Override
-    public String getName() {
-        return "Node Count";
-    }
+    public String getName() { return "Nodes By SysOid"; }
 
     @Override
-    public String getDescription() {
-        return "Information of Node Count Per SysoID";
-    }
+    public String getDescription() { return "Node Count Per SysoID"; }
 
     @Override
     public int getPriority() {
@@ -56,13 +52,10 @@ public class NodeCountReportPlugin extends AbstractSystemReportPlugin {
 
     @Override
     public Map<String, Resource> getEntries() {
-        final TreeMap<String, Resource> map = new TreeMap<>();
 
+        final Map<String, Resource> map = new HashMap<>();
         Map<String, Long> nodeCountMap = m_nodeDao.getNumberOfNodesBySysOid();
-
-        nodeCountMap.forEach((key, value) -> {
-            map.put(key, getResource(String.valueOf(value)));
-        });
+        nodeCountMap.forEach((key, value) -> map.put(key, getResource(String.valueOf(value))));
 
         return map;
     }

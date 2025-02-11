@@ -31,8 +31,8 @@
 	<onmsgi:service id="opennmsReportPluginService" ref="opennmsReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
 
 	<!-- Node count information -->
-	<bean name="nodeCountReportPlugin" class="org.opennms.systemreport.system.NodeCountReportPlugin" />
-	<onmsgi:service id="nodeCountReportPluginService" ref="nodeCountReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
+	<bean name="nodesBySysOidReportPlugin" class="org.opennms.systemreport.system.NodesBySysOidReportPlugin" />
+	<onmsgi:service id="nodesBySysOidReportPluginService" ref="nodesBySysOidReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
 
 	<!-- Thread Dump -->
 	<bean name="threadReportPlugin" class="org.opennms.systemreport.system.ThreadReportPlugin" />
