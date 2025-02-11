@@ -56,19 +56,19 @@ def parse_filtered_vulnerabilities(file_path):
 
 logging.basicConfig(level=logging.INFO)
 
-def issue_exists_for_vulnerability(vulnerability_id, package_name):
-    jql = f'project="{PROJECT_KEY}" AND summary ~ "{package_name}" AND description ~ "{vulnerability_id}"'
+def issue_exists_for_package(package_name):
+    jql = f'project="{PROJECT_KEY}" AND summary ~ "{package_name}"'
     url = f"{JIRA_URL}/rest/api/2/search?jql={jql}"
     try:
         response = requests.get(url, auth=(JIRA_USER, JIRA_API_TOKEN))
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
-        logging.error(f"Error fetching issues for {package_name} and {vulnerability_id}: {e}")
+        logging.error(f"Error fetching issues for {package_name}: {e}")
         return None
     issues = response.json().get('issues', [])
     return issues[0] if issues else None
 
-def add_cve_to_existing_issue(issue_key, new_cve):
+def add_cves_to_existing_issue(issue_key, vulnerabilities):
     issue_url = f"{JIRA_URL}/rest/api/2/issue/{issue_key}"
     
     try:
@@ -81,28 +81,33 @@ def add_cve_to_existing_issue(issue_key, new_cve):
         logging.error(f"Error fetching issue details for {issue_key}: {e}")
         return
 
-    new_cve_text = f"- {new_cve['VulnerabilityID']} ({new_cve['Title']})"
-    if new_cve_text not in current_description:
-        updated_description = current_description + "\n" + new_cve_text
+    new_cves_text = "\n".join([f"- {v['VulnerabilityID']} ({v['Title']})" for v in vulnerabilities])
+    new_cve_ids = [v['VulnerabilityID'] for v in vulnerabilities]
 
-        if "trivy" not in current_labels:
-            current_labels.append("trivy")
+    if any(cve in current_description for cve in new_cve_ids):
+        print(f"Some CVEs are already listed in issue {issue_key}. Skipping update for those.")
+        return
 
-        update_payload = {
-            "fields": {
-                "description": updated_description,
-                "labels": current_labels
-            }
+    updated_description = current_description + "\n" + new_cves_text
+
+    if "trivy" not in current_labels:
+        current_labels.append("trivy")
+
+    update_payload = {
+        "fields": {
+            "description": updated_description,
+            "labels": current_labels
         }
+    }
 
-        try:
-            response = requests.put(issue_url, auth=(JIRA_USER, JIRA_API_TOKEN),
-                                    headers={"Content-Type": "application/json"},
-                                    data=json.dumps(update_payload))
-            response.raise_for_status()
-            print(f"Updated issue {issue_key} with new CVE: {new_cve['VulnerabilityID']}")
-        except requests.exceptions.RequestException as e:
-            logging.error(f"Failed to update issue {issue_key}: {e}")
+    try:
+        response = requests.put(issue_url, auth=(JIRA_USER, JIRA_API_TOKEN),
+                                headers={"Content-Type": "application/json"},
+                                data=json.dumps(update_payload))
+        response.raise_for_status()
+        print(f"Updated issue {issue_key} with new CVEs")
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Failed to update issue {issue_key}: {e}")
 
 def create_issue_for_package(package_name, vulnerabilities):
     severity_levels = set([v['Severity'] for v in vulnerabilities])
@@ -119,23 +124,13 @@ def create_issue_for_package(package_name, vulnerabilities):
     elif "LOW" in severity_levels:
         priority_name = "Low"
 
-    if len(vulnerabilities) == 1:
-        summary = f"Trivy Bug: Vulnerability in {package_name}: {vulnerabilities[0]['VulnerabilityID']}"
-        description = (
-            f"**Package Name:** {package_name}\n"
-            f"**Severity:** {vulnerabilities[0]['Severity']}\n"
-            f"**Vulnerability ID:** {vulnerabilities[0]['VulnerabilityID']}\n"
-            f"**Title:** {vulnerabilities[0]['Title']}\n"
-            f"**Description:** {vulnerabilities[0]['Title']}\n"
-        )
-    else:
-        summary = f"Trivy Bug: Vulnerabilities in {package_name}: Multiple CVEs"
-        description = (
-            f"**Package Name:** {package_name}\n"
-            f"**Severity Levels:** {', '.join(severity_levels)}\n"
-            f"**Vulnerabilities:**\n"
-            f"{vulnerabilities_list}"
-        )
+    summary = f"Trivy Bug: Vulnerabilities in {package_name}: Multiple CVEs"
+    description = (
+        f"**Package Name:** {package_name}\n"
+        f"**Severity Levels:** {', '.join(severity_levels)}\n"
+        f"**Vulnerabilities:**\n"
+        f"{vulnerabilities_list}"
+    )
 
     issue_payload = {
         "fields": {
@@ -177,16 +172,15 @@ def create_issues(vulnerabilities):
         packages[pkg_name].append(vulnerability)
 
     for package_name, package_vulnerabilities in packages.items():
-        for vulnerability in package_vulnerabilities:
-            existing_issue = issue_exists_for_vulnerability(vulnerability['VulnerabilityID'], package_name)
+        existing_issue = issue_exists_for_package(package_name)
 
-            if existing_issue:
-                issue_key = existing_issue["key"]
-                print(f"Issue for {package_name} with CVE {vulnerability['VulnerabilityID']} exists: {issue_key}")
-                add_cve_to_existing_issue(issue_key, vulnerability)
-            else:
-                print(f"Issue for {package_name} with CVE {vulnerability['VulnerabilityID']} does not exist. Creating issue.")
-                create_issue_for_package(package_name, [vulnerability])
+        if existing_issue:
+            issue_key = existing_issue["key"]
+            print(f"Issue for package {package_name} already exists: {issue_key}")
+            add_cves_to_existing_issue(issue_key, package_vulnerabilities)
+        else:
+            print(f"No issue for package {package_name} exists. Creating a new issue.")
+            create_issue_for_package(package_name, package_vulnerabilities)
 
 def main():
     vulnerabilities = parse_filtered_vulnerabilities('filtered_vulnerabilities.txt')
