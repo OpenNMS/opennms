@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.endpoints.grafana</groupId>
     <artifactId>org.opennms.features.endpoints.grafana.persistence</artifactId>
-    <version>33.1.3-SNAPSHOT</version>
+    <version>33.1.3</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.endpoints.grafana.persistence</groupId>
