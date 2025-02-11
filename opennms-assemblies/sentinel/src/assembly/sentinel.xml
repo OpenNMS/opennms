@@ -20,6 +20,7 @@
         <include>bin/ensure-user-ping.sh</include>
         <include>bin/fix-permissions</include>
         <include>bin/update-package-permissions</include>
+        <include>bin/support_pack.sh</include>
       </includes>
       <fileMode>0755</fileMode>
     </fileSet>
