@@ -111,7 +111,7 @@ def create_issue_for_package(package_name, vulnerabilities):
     vulnerabilities_list = "\n".join([f"- {v['VulnerabilityID']} ({v['Title']})" for v in vulnerabilities])
 
     # Prioritize the highest severity
-    priority_name = "Trivial"  # Default priority
+    priority_name = "Trivial"
     if "CRITICAL" in severity_levels:
         priority_name = "Critical"
     elif "HIGH" in severity_levels:
