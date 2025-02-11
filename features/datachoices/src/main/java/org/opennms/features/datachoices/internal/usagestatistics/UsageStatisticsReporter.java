@@ -97,7 +97,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private static final String JMX_OBJ_OPENNMS_POLLERD = "OpenNMS:Name=Pollerd";
     private static final String JMX_OBJ_OPENNMS_EVENTLOGS_PROCESS = "org.opennms.netmgt.eventd:name=eventlogs.process,type=timers";
     private static final String JMX_OBJ_OPENNMS_FLOWS_PERSISTED = "org.opennms.netmgt.flows:name=flowsPersisted,type=meters";
-    private static final String JMX_OBJ_OPENNMS_FLOWS_PER_SECOND = "org.opennms.netmgt.flows:name=flowsPerSecond,type=meters";
     private static final String JMX_OBJ_OPENNMS_REPO_SAMPLE_INSERTED = "org.opennms.newts:name=repository.samples-inserted,type=meters";
     private static final String JMX_OBJ_OPENNMS_QUEUED = "OpenNMS:Name=Queued";
     private static final String JMX_ATTR_FREE_PHYSICAL_MEMORY_SIZE = "FreePhysicalMemorySize";
@@ -270,9 +269,9 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setSnmpInterfacesWithFlows(m_snmpInterfaceDao.getNumInterfacesWithFlows());
         usageStatisticsReport.setMonitoredServices(m_monitoredServiceDao.countAll());
         usageStatisticsReport.setEvents(m_eventDao.countAll());
-        usageStatisticsReport.setEventsLastHours(m_eventDao.getNumEventsPastHours(24));
+        usageStatisticsReport.setEventsLastHours(m_eventDao.getNumEventsLastHours(24));
         usageStatisticsReport.setAlarms(m_alarmDao.countAll());
-        usageStatisticsReport.setAlarmsLastHours(m_alarmDao.getNumAlarmsPastHours(24));
+        usageStatisticsReport.setAlarmsLastHours(m_alarmDao.getNumAlarmsLastHours(24));
         usageStatisticsReport.setSituations(m_alarmDao.getNumSituations());
         usageStatisticsReport.setMonitoringLocations(m_monitoringLocationDao.countAll());
         usageStatisticsReport.setMinions(m_monitoringSystemDao.getNumMonitoringSystems(OnmsMonitoringSystem.TYPE_MINION));
@@ -375,10 +374,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         Object coreFlowsPersistedObj = getJmxAttribute(JMX_OBJ_OPENNMS_FLOWS_PERSISTED, JMX_ATTR_COUNT);
         if (coreFlowsPersistedObj != null) {
             usageStatisticsReport.setCoreFlowsPersisted((long) coreFlowsPersistedObj);
-        }
-        Object flowsPerSecondObj = getJmxAttribute(JMX_OBJ_OPENNMS_FLOWS_PER_SECOND, JMX_ATTR_COUNT);
-        if (flowsPerSecondObj != null) {
-            usageStatisticsReport.setFlowsPerSecond((long) flowsPerSecondObj);
         }
         Object coreNewtsSamplesInsertedObj = getJmxAttribute(JMX_OBJ_OPENNMS_REPO_SAMPLE_INSERTED, JMX_ATTR_COUNT);
         if (coreNewtsSamplesInsertedObj != null) {

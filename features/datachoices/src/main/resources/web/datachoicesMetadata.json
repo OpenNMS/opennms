@@ -79,12 +79,6 @@
             "datatype": "number"
         },
         {
-            "key": "flowsPerSecond",
-            "name": "Flows per second",
-            "description": "Number of flows per second for the last 24 hours",
-            "datatype": "number"
-        },
-        {
             "key": "coreNewtsSamplesInserted",
             "name": "Core Newts Samples Inserted",
             "description": "",

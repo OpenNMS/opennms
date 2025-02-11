@@ -84,7 +84,6 @@ public class UsageStatisticsReportDTO {
     private long m_pollsCompleted;
     private long m_eventLogsProcessed;
     private long m_coreFlowsPersisted;
-    private long m_flowsPerSecond;
     private long m_coreNewtsSamplesInserted;
     private long m_coreQueuedUpdatesCompleted;
     private int m_users;
@@ -451,14 +450,6 @@ public class UsageStatisticsReportDTO {
 
     public void setCoreFlowsPersisted(long coreFlowsPersisted) {
         this.m_coreFlowsPersisted = coreFlowsPersisted;
-    }
-
-    public long getFlowsPerSecond() {
-        return m_flowsPerSecond;
-    }
-
-    public void setFlowsPerSecond(long flowsPerSecond) {
-        this.m_flowsPerSecond = flowsPerSecond;
     }
 
     public long getCoreNewtsSamplesInserted() {
