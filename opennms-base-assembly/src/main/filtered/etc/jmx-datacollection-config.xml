@@ -1,19 +1,4 @@
 <jmx-datacollection-config xmlns="http://xmlns.opennms.org/xsd/config/jmx-datacollection" rrdRepository="${install.share.dir}/rrd/snmp/">
-   <jmx-collection name="flow-metrics">
-      <rrd step="60"> <!-- Data collection every minute -->
-         <rra>RRA:AVERAGE:0.5:1:1440</rra> <!-- 1-minute intervals for 24 hours -->
-         <rra>RRA:AVERAGE:0.5:5:2016</rra> <!-- 5-minute intervals for ~7 days -->
-         <rra>RRA:AVERAGE:0.5:60:720</rra> <!-- 1-hour intervals for 30 days -->
-      </rrd>
-      <mbeans>
-         <mbean name="org.opennms.netmgt.flows.flowsPerSecond" objectname="org.opennms.netmgt.flows:name=flowsPerSecond,type=meters">
-            <attrib name="Count" alias="FlowCount" type="counter"/>
-            <attrib name="OneMinuteRate" alias="FlowsPerSec1m" type="gauge"/>
-            <attrib name="FiveMinuteRate" alias="FlowsPerSec5m" type="gauge"/>
-            <attrib name="MeanRate" alias="FlowsPerSec24h" type="gauge"/>
-         </mbean>
-      </mbeans>
-   </jmx-collection>
    <jmx-collection name="jsr160">
       <rrd step="300">
          <rra>RRA:AVERAGE:0.5:1:2016</rra>
