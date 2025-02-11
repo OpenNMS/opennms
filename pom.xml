@@ -1941,7 +1941,7 @@
     <osgiEnterpriseVersion>7.0.0</osgiEnterpriseVersion>
     <osgiServiceJdbcVersion>1.0.1</osgiServiceJdbcVersion>
     <owaspEncoderVersion>1.2.3</owaspEncoderVersion>
-    <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
+    <owaspHtmlSanitizerVersion>20211018.2</owaspHtmlSanitizerVersion>
     <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
     <osMavenPluginVersion>1.7.1</osMavenPluginVersion>
     <opencsvVersion>2.3</opencsvVersion>
