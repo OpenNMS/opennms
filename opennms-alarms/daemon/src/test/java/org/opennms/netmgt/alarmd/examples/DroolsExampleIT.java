@@ -31,6 +31,8 @@ import java.nio.file.Paths;
 import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
+import org.hibernate.SessionFactory;
+import org.hibernate.classic.Session;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
@@ -91,6 +93,11 @@ public abstract class DroolsExampleIT {
         alarmService.setAlarmEntityNotifier(alarmEntityNotifier);
         dac.setAlarmService(alarmService);
         dac.setAcknowledgmentDao(acknowledgmentDao);
+
+        Session session = mock(Session.class);
+        SessionFactory sessionFactory = mock(SessionFactory.class);
+        when(sessionFactory.getCurrentSession()).thenReturn(session);
+        dac.setSessionFactory(sessionFactory);
 
         dac.start();
         dac.waitForInitialSeedToBeSubmitted();

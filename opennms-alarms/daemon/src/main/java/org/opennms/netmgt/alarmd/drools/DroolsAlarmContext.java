@@ -42,6 +42,7 @@ import java.util.stream.Collectors;
 
 import org.hibernate.Hibernate;
 import org.hibernate.ObjectNotFoundException;
+import org.hibernate.SessionFactory;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
 import org.opennms.core.sysprops.SystemProperties;
@@ -106,6 +107,9 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 
     @Autowired
     private AlarmDao alarmDao;
+
+    @Autowired
+    private SessionFactory sessionFactory;
 
     private final AlarmCallbackStateTracker stateTracker = new AlarmCallbackStateTracker();
 
@@ -456,6 +460,8 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
             Hibernate.initialize(alarm.getNode().getCategories());
             // Allow rules to use metadata of the associated node
             Hibernate.initialize(alarm.getNode().getMetaData());
+            // see NMS-16966
+            sessionFactory.getCurrentSession().setReadOnly(alarm.getNode(), true);
         }
     }
 
@@ -588,5 +594,9 @@ public class DroolsAlarmContext extends ManagedDroolsContext implements AlarmLif
 
     public void setAlarmDao(AlarmDao alarmDao) {
         this.alarmDao = alarmDao;
+    }
+
+    public void setSessionFactory(final SessionFactory sessionFactory) {
+        this.sessionFactory = sessionFactory;
     }
 }
