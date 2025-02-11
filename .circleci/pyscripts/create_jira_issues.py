@@ -20,7 +20,7 @@ PRIORITY_MAP = {
 }
 
 # Security level for Trivy issues
-SECURITY_LEVEL = "TOG (migrated)"
+SECURITY_LEVEL = "TOG (migrated)"  # The security level has been defined correctly here
 
 def parse_filtered_vulnerabilities(file_path):
     vulnerabilities = []
@@ -57,7 +57,6 @@ def parse_filtered_vulnerabilities(file_path):
 logging.basicConfig(level=logging.INFO)
 
 def issue_exists_for_package(package_name):
-
     url = f"{JIRA_URL}/rest/api/2/search?jql=summary~'{package_name}' AND project='{PROJECT_KEY}'"
     try:
         response = requests.get(url, auth=(JIRA_USER, JIRA_API_TOKEN))
@@ -69,7 +68,6 @@ def issue_exists_for_package(package_name):
     return issues[0] if issues else None
 
 def add_cve_to_existing_issue(issue_key, new_cve):
-
     issue_url = f"{JIRA_URL}/rest/api/2/issue/{issue_key}"
     
     try:
@@ -106,7 +104,6 @@ def add_cve_to_existing_issue(issue_key, new_cve):
             logging.error(f"Failed to update issue {issue_key}: {e}")
 
 def create_issue_for_package(package_name, vulnerabilities):
-
     severity_levels = set([v['Severity'] for v in vulnerabilities])
     vulnerabilities_list = "\n".join([f"- {v['VulnerabilityID']} ({v['Title']})" for v in vulnerabilities])
 
@@ -152,7 +149,9 @@ def create_issue_for_package(package_name, vulnerabilities):
             "priority": {
                 "name": priority_name
             },
-            "security": SECURITY_LEVEL,
+            "security": {
+                "name": SECURITY_LEVEL  # Apply security level here
+            },
             "labels": ["trivy"]
         }
     }
@@ -168,7 +167,6 @@ def create_issue_for_package(package_name, vulnerabilities):
         print(f"Failed to create issue: {e}")
 
 def create_issues(vulnerabilities):
-
     packages = {}
 
     for vulnerability in vulnerabilities:
@@ -178,7 +176,6 @@ def create_issues(vulnerabilities):
         packages[pkg_name].append(vulnerability)
 
     for package_name, package_vulnerabilities in packages.items():
-
         existing_issue = issue_exists_for_package(package_name)
 
         if existing_issue:
@@ -200,7 +197,6 @@ def create_issues(vulnerabilities):
                         add_cve_to_existing_issue(issue_key, new_cve)
                 except requests.exceptions.RequestException as e:
                     logging.error(f"Error fetching issue details for {issue_key}: {e}")
-
         else:
             print(f"Issue for package {package_name} does not exist. Creating issue.")
             create_issue_for_package(package_name, package_vulnerabilities)
