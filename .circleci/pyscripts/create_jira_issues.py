@@ -56,15 +56,19 @@ def parse_filtered_vulnerabilities(file_path):
 
 logging.basicConfig(level=logging.INFO)
 
-def issue_exists_for_package(package_name):
-    jql = f'project="{PROJECT_KEY}" AND summary ~ "{package_name}"'
+def issue_exists_for_vulnerability(vulnerability_id, package_name):
+    # Adjusted JQL to match both package name and vulnerability ID in the description
+    jql = f'project="{PROJECT_KEY}" AND summary ~ "{package_name}" AND description ~ "{vulnerability_id}"'
+    print(f"JQL Query: {jql}")  # Debugging line to print the JQL
     url = f"{JIRA_URL}/rest/api/2/search?jql={jql}"
+    
     try:
         response = requests.get(url, auth=(JIRA_USER, JIRA_API_TOKEN))
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
-        logging.error(f"Error fetching issues for {package_name}: {e}")
+        logging.error(f"Error fetching issues for {package_name} and {vulnerability_id}: {e}")
         return None
+    
     issues = response.json().get('issues', [])
     return issues[0] if issues else None
 
@@ -84,6 +88,7 @@ def add_cves_to_existing_issue(issue_key, vulnerabilities):
     new_cves_text = "\n".join([f"- {v['VulnerabilityID']} ({v['Title']})" for v in vulnerabilities])
     new_cve_ids = [v['VulnerabilityID'] for v in vulnerabilities]
 
+    # Check if any of the CVEs are already listed in the current description
     if any(cve in current_description for cve in new_cve_ids):
         print(f"Some CVEs are already listed in issue {issue_key}. Skipping update for those.")
         return
@@ -172,15 +177,16 @@ def create_issues(vulnerabilities):
         packages[pkg_name].append(vulnerability)
 
     for package_name, package_vulnerabilities in packages.items():
-        existing_issue = issue_exists_for_package(package_name)
+        for vulnerability in package_vulnerabilities:
+            existing_issue = issue_exists_for_vulnerability(vulnerability['VulnerabilityID'], package_name)
 
-        if existing_issue:
-            issue_key = existing_issue["key"]
-            print(f"Issue for package {package_name} already exists: {issue_key}")
-            add_cves_to_existing_issue(issue_key, package_vulnerabilities)
-        else:
-            print(f"No issue for package {package_name} exists. Creating a new issue.")
-            create_issue_for_package(package_name, package_vulnerabilities)
+            if existing_issue:
+                issue_key = existing_issue["key"]
+                print(f"Issue for {package_name} with CVE {vulnerability['VulnerabilityID']} exists: {issue_key}")
+                add_cves_to_existing_issue(issue_key, package_vulnerabilities)
+            else:
+                print(f"Issue for {package_name} with CVE {vulnerability['VulnerabilityID']} does not exist. Creating issue.")
+                create_issue_for_package(package_name, [vulnerability])
 
 def main():
     vulnerabilities = parse_filtered_vulnerabilities('filtered_vulnerabilities.txt')
