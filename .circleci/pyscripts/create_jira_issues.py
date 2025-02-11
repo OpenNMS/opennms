@@ -119,7 +119,7 @@ def create_issue_for_package(package_name, vulnerabilities):
         priority_name = "Low"
 
     if len(vulnerabilities) == 1:
-        summary = f"Vulnerability in {package_name}: {vulnerabilities[0]['VulnerabilityID']}"
+        summary = f"Trivy Bug: Vulnerability in {package_name}: {vulnerabilities[0]['VulnerabilityID']}"
         description = (
             f"**Package Name:** {package_name}\n"
             f"**Severity:** {vulnerabilities[0]['Severity']}\n"
@@ -128,7 +128,7 @@ def create_issue_for_package(package_name, vulnerabilities):
             f"**Description:** {vulnerabilities[0]['Title']}\n"
         )
     else:
-        summary = f"Vulnerabilities in {package_name}: Multiple CVEs"
+        summary = f"Trivy Bug: Vulnerabilities in {package_name}: Multiple CVEs"
         description = (
             f"**Package Name:** {package_name}\n"
             f"**Severity Levels:** {', '.join(severity_levels)}\n"
