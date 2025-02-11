@@ -1,6 +1,33 @@
 [[release-33-changelog]]
 
 = Changelog
+[[releasenotes-changelog-33.1.3]]
+
+== Release 33.1.3
+
+Release 33.1.3 contains a couple of bug fixes and few enhancements.
+
+The codename for Horizon 33.1.3 is https://wikipedia.org/wiki/$$Dombeya_wallichii$$[_Pinkball_].
+
+=== Bug
+
+* DeviceConfig via Minion fails if sshScript output contains control characters (Issue https://issues.opennms.org/browse/NMS-15717[NMS-15717])
+* User tries to create an Alarm filter favorite, but the filter doesn't save the arguments of the filter (Issue https://issues.opennms.org/browse/NMS-16573[NMS-16573])
+* Update Node label component (Issue https://issues.opennms.org/browse/NMS-16585[NMS-16585])
+* Update owasp-java-html-sanitizer Library (Issue https://issues.opennms.org/browse/NMS-16637[NMS-16637])
+* Update com.google.code.gson-gson Library (Issue https://issues.opennms.org/browse/NMS-16706[NMS-16706])
+* Bug between Web UI and SCVCLI Command (Issue https://issues.opennms.org/browse/NMS-16943[NMS-16943])
+* Performance regression introduced in NMS-15647 (Issue https://issues.opennms.org/browse/NMS-16966[NMS-16966])
+* Update org.apache.mina Library (Issue https://issues.opennms.org/browse/NMS-17040[NMS-17040])
+
+=== Story
+
+* Configure tenant id for gRPC Exporter (Issue https://issues.opennms.org/browse/NMS-17003[NMS-17003])
+
+=== Enhancement
+
+* Move file utils to new library (Issue https://issues.opennms.org/browse/NMS-17074[NMS-17074])
+
 [[releasenotes-changelog-33.1.2]]
 
 == Release 33.1.2
