@@ -363,6 +363,7 @@ org.jolokia.authMode=jaas
         <feature>commons-codec</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature>scv-api</feature>
+        <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.fileutils/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.jceks-impl/${project.version}</bundle>
     </feature>
 

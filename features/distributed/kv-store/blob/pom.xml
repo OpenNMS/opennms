@@ -5,7 +5,7 @@
     <parent>
         <artifactId>org.opennms.features.distributed.kv-store</artifactId>
         <groupId>org.opennms.features.distributed</groupId>
-        <version>33.1.2</version>
+        <version>33.1.3</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.opennms.features.distributed.kv-store.blob</artifactId>

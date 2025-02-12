@@ -50,6 +50,8 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.hibernate.classic.Session;
+import org.hibernate.SessionFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -126,6 +128,11 @@ public class DroolsAlarmContextIT {
         alarmService.setAlarmEntityNotifier(alarmEntityNotifier);
         dac.setAlarmService(alarmService);
         dac.setAcknowledgmentDao(acknowledgmentDao);
+
+        Session session = mock(Session.class);
+        SessionFactory sessionFactory = mock(SessionFactory.class);
+        when(sessionFactory.getCurrentSession()).thenReturn(session);
+        dac.setSessionFactory(sessionFactory);
 
         dac.start();
 
