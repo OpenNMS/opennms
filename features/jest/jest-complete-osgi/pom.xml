@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.jest</artifactId>
-    <version>33.1.3</version>
+    <version>33.1.4-SNAPSHOT</version>
   </parent>
 
   <!-- Feature Definition -->
