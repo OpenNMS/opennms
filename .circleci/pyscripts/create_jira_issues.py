@@ -63,10 +63,10 @@ def parse_filtered_vulnerabilities(file_path):
 
 def issue_exists_for_vulnerability(vulnerability_id, package_name):
 
-    # Construct JQL query to search for issues with the given package name and CVE ID
-    jql = f'project="{PROJECT_KEY}" AND summary ~ "{package_name}" AND description ~ "\\"{vulnerability_id}\\""'
-    jql = urllib.parse.quote(jql)
-    logging.info(f"JQL Query: {jql}")
+    # Construct JQL query to search for issues with the given package name
+    jql = f'project="{PROJECT_KEY}" AND summary ~ "{package_name}"'
+    jql = urllib.parse.quote(jql)  # URL-encode the JQL query
+    logging.info(f"JQL Query: {jql}")  # Debugging line to print the JQL
 
     url = f"{JIRA_URL}/rest/api/2/search?jql={jql}"
 
@@ -74,11 +74,32 @@ def issue_exists_for_vulnerability(vulnerability_id, package_name):
         response = requests.get(url, auth=(JIRA_USER, JIRA_API_TOKEN))
         response.raise_for_status()
     except requests.exceptions.RequestException as e:
-        logging.error(f"Error fetching issues for {package_name} and {vulnerability_id}: {e}")
+        logging.error(f"Error fetching issues for {package_name}: {e}")
         return None
 
     issues = response.json().get('issues', [])
-    return issues[0] if issues else None
+
+    # Check each issue's description for the CVE ID
+    for issue in issues:
+        issue_key = issue["key"]
+        issue_url = f"{JIRA_URL}/rest/api/2/issue/{issue_key}"
+
+        try:
+            # Fetch the issue details
+            issue_response = requests.get(issue_url, auth=(JIRA_USER, JIRA_API_TOKEN))
+            issue_response.raise_for_status()
+            issue_data = issue_response.json()
+            description = issue_data["fields"]["description"]
+
+            # Check if the CVE ID is in the description (flexible matching)
+            if vulnerability_id in description:
+                logging.info(f"Issue {issue_key} contains CVE {vulnerability_id}.")
+                return issue
+        except requests.exceptions.RequestException as e:
+            logging.error(f"Error fetching issue details for {issue_key}: {e}")
+            continue
+
+    return None
 
 
 def add_cves_to_existing_issue(issue_key, vulnerabilities):
@@ -207,6 +228,7 @@ def create_issue_for_package(package_name, vulnerabilities):
 
 
 def create_issues(vulnerabilities):
+
     # Group vulnerabilities by package name
     packages = {}
     for vulnerability in vulnerabilities:
@@ -229,6 +251,7 @@ def create_issues(vulnerabilities):
 
 
 def main():
+ 
     vulnerabilities = parse_filtered_vulnerabilities('filtered_vulnerabilities.txt')
 
     if not vulnerabilities:
