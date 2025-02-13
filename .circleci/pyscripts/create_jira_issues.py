@@ -63,7 +63,8 @@ def parse_filtered_vulnerabilities(file_path):
 
 def issue_exists_for_vulnerability(vulnerability_id, package_name):
 
-    jql = f'project="{PROJECT_KEY}" AND summary ~ "{package_name}" AND description ~ "{vulnerability_id}"'
+    # Construct JQL query to search for issues with the given package name and CVE ID
+    jql = f'project="{PROJECT_KEY}" AND summary ~ "{package_name}" AND description ~ "\\"{vulnerability_id}\\""'
     jql = urllib.parse.quote(jql)
     logging.info(f"JQL Query: {jql}")
 
@@ -99,15 +100,19 @@ def add_cves_to_existing_issue(issue_key, vulnerabilities):
     new_cves_text = "\n".join([format_vulnerability_details(v) for v in vulnerabilities])
     new_cve_ids = [v['VulnerabilityID'] for v in vulnerabilities]
 
+    # Check if any of the new CVEs are already in the description
     if any(cve in current_description for cve in new_cve_ids):
         logging.info(f"Some CVEs are already listed in issue {issue_key}. Skipping update for those.")
         return
 
+    # Update the description with new CVEs
     updated_description = current_description + "\n" + new_cves_text
 
+    # Add the "trivy" label if it doesn't exist
     if "trivy" not in current_labels:
         current_labels.append("trivy")
-        
+
+    # Prepare the update payload
     update_payload = {
         "fields": {
             "description": updated_description,
@@ -127,9 +132,7 @@ def add_cves_to_existing_issue(issue_key, vulnerabilities):
 
 
 def format_vulnerability_details(vulnerability):
-    """
-    Format vulnerability details into a readable string.
-    """
+
     return (
         f"*Vulnerability ID:* {vulnerability['VulnerabilityID']}\n"
         f"*Severity:* {vulnerability['Severity']}\n"
@@ -144,6 +147,7 @@ def format_vulnerability_details(vulnerability):
 
 
 def create_issue_for_package(package_name, vulnerabilities):
+
     # Determine the highest severity level
     severity_levels = set([v['Severity'] for v in vulnerabilities])
     priority_name = "Trivial"
@@ -203,6 +207,7 @@ def create_issue_for_package(package_name, vulnerabilities):
 
 
 def create_issues(vulnerabilities):
+    # Group vulnerabilities by package name
     packages = {}
     for vulnerability in vulnerabilities:
         pkg_name = vulnerability['PkgName']
@@ -210,6 +215,7 @@ def create_issues(vulnerabilities):
             packages[pkg_name] = []
         packages[pkg_name].append(vulnerability)
 
+    # Process each package
     for package_name, package_vulnerabilities in packages.items():
         existing_issue = issue_exists_for_vulnerability(package_vulnerabilities[0]['VulnerabilityID'], package_name)
 
