@@ -269,9 +269,11 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setSnmpInterfacesWithFlows(m_snmpInterfaceDao.getNumInterfacesWithFlows());
         usageStatisticsReport.setMonitoredServices(m_monitoredServiceDao.countAll());
         usageStatisticsReport.setEvents(m_eventDao.countAll());
-        usageStatisticsReport.setEventsLastHours(m_eventDao.getNumEventsLastHours(24));
+        usageStatisticsReport.setEventsLastHours(m_eventDao.getNumEventsLastHours(
+                Integer.parseInt(System.getProperty("opennms.usage.stats.events.generated.last.hours", "24"))));
         usageStatisticsReport.setAlarms(m_alarmDao.countAll());
-        usageStatisticsReport.setAlarmsLastHours(m_alarmDao.getNumAlarmsLastHours(24));
+        usageStatisticsReport.setAlarmsLastHours(m_alarmDao.getNumAlarmsLastHours(
+                Integer.parseInt(System.getProperty("opennms.usage.stats.alarms.generated.last.hours", "24"))));
         usageStatisticsReport.setSituations(m_alarmDao.getNumSituations());
         usageStatisticsReport.setMonitoringLocations(m_monitoringLocationDao.countAll());
         usageStatisticsReport.setMinions(m_monitoringSystemDao.getNumMonitoringSystems(OnmsMonitoringSystem.TYPE_MINION));

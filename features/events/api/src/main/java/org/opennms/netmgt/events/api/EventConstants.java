@@ -247,11 +247,6 @@ public abstract class EventConstants {
     public static final String NODE_DELETED_EVENT_UEI = "uei.opennms.org/nodes/nodeDeleted";
 
     /**
-     * login success UEI
-     */
-    public static final String AUTHENTICATION_SUCCESS_UEI = "uei.opennms.org/internal/authentication/successfulLogin";
-
-    /**
      * The low threshold exceeded event UEI.
      */
     public static final String LOW_THRESHOLD_EVENT_UEI = "uei.opennms.org/threshold/lowThresholdExceeded";
