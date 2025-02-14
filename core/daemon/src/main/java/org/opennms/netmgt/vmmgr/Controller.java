@@ -22,7 +22,11 @@
 package org.opennms.netmgt.vmmgr;
 
 import java.io.IOException;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
+import java.nio.file.Paths;
+import java.util.Map;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
@@ -35,6 +39,10 @@ import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
 import org.opennms.core.logging.Logging;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
+import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -87,6 +95,8 @@ public class Controller {
 
     private String m_pid = null;
 
+    static SecureCredentialsVault secureCredentialsVault;
+
     /**
      * <p>main</p>
      *
@@ -137,6 +147,8 @@ public class Controller {
             System.exit(1);
         }
 
+        interpolateSystemProperties();
+
         String command = argv[argv.length - 1];
 
         if ("start".equals(command)) {
@@ -155,6 +167,31 @@ public class Controller {
             System.err.println("Invalid command \"" + command + "\".");
             System.err.println("Use \"-h\" option for help.");
             System.exit(1);
+        }
+    }
+
+    static void interpolateSystemProperties() {
+        if (secureCredentialsVault == null) {
+            try {
+                final Class clazz = Class.forName("org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault");
+                final Constructor constructor = clazz.getConstructor(String.class, String.class);
+                final String keyStoreKeyProperty = (String) clazz.getField("KEYSTORE_KEY_PROPERTY").get(null);
+                final String defaultKeyStoreKey = (String) clazz.getField("DEFAULT_KEYSTORE_KEY").get(null);
+                secureCredentialsVault = (SecureCredentialsVault) constructor.newInstance(
+                        Paths.get(System.getProperty("opennms.home"), "etc", "scv.jce").toString(),
+                        System.getProperty(keyStoreKeyProperty, defaultKeyStoreKey)
+                );
+            } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException |
+                     InvocationTargetException | NoSuchFieldException e) {
+                LOG.warn("Error instantiating JCEKSSecureCredentialsVault: {}", e.getMessage());
+                return;
+            }
+        }
+
+        final Scope scope = new SecureCredentialsVaultScope(secureCredentialsVault);
+
+        for(final Map.Entry<Object, Object> entry : System.getProperties().entrySet()) {
+            System.setProperty(entry.getKey().toString(), Interpolator.interpolate(entry.getValue().toString(), scope).output);
         }
     }
 
@@ -425,5 +462,9 @@ public class Controller {
 
     public void setRmiHandshakeTimeout(int httpRequestReadTimeout) {
         System.setProperty("sun.rmi.transport.tcp.handshakeTimeout", String.valueOf(httpRequestReadTimeout));
+    }
+
+    static void setSecureCredentialsVault(SecureCredentialsVault secureCredentialsVault) {
+        Controller.secureCredentialsVault = secureCredentialsVault;
     }
 }
