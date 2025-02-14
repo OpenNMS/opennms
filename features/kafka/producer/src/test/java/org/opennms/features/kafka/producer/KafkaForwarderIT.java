@@ -116,7 +116,9 @@ import static org.mockito.Mockito.when;
  * @author jwhite
  */
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = { "classpath:/META-INF/opennms/applicationContext-soa.xml",
+@ContextConfiguration(locations = {
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
         "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
@@ -124,6 +126,7 @@ import static org.mockito.Mockito.when;
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
         "classpath:/META-INF/opennms/applicationContext-alarmd.xml",
+        "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/applicationContext-test-kafka-producer.xml" })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext = false, tempDbClass = MockDatabase.class, reuseDatabase = false)
