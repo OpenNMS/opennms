@@ -91,6 +91,9 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
     @Override
     public boolean isVisible() { return false; }
 
+    @Override
+    public String defaultFormat() { return ".txt";}
+
     protected ResourceLocator getResourceLocator() {
         return m_resourceLocator;
     }
