@@ -42,9 +42,16 @@ public class SystemReportPluginIT {
     private SystemReportPlugin m_osReportPlugin = new OSReportPlugin();
     private SystemReportPlugin m_onmsReportPlugin = new OpenNMSReportPlugin();
     private SystemReportPlugin m_hardDriveReportPlugin=new HardDriveReportPlugin();
+    private SystemReportPlugin n_userLoginsReportPlugin = new UserLoginsReportPlugin();
 
     public SystemReportPluginIT() {
         MockLogAppender.setupLogging(false, "ERROR");
+    }
+
+    public void testUserLoginReportPlugin(){
+        final Map<String, org.springframework.core.io.Resource> entries = m_javaReportPlugin.getEntries();
+        assertTrue(entries.containsKey("csvHeaders"));
+        assertTrue(entries.containsKey("csvData"));
     }
 
     @Test

@@ -102,7 +102,7 @@
 
 	<onmsgi:list id="configFileSanitizerList" interface="org.opennms.systemreport.sanitizer.ConfigFileSanitizer" />
 
-	<bean name="loginEventListener" class="org.opennms.systemreport.event.UserLoginEventListener"
+	<bean name="userLoginEventListener" class="org.opennms.systemreport.event.UserLoginEventListener"
 		  init-method="init" destroy-method="destroy">
 	</bean>
 
