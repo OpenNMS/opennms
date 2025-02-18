@@ -22,7 +22,6 @@
 package org.opennms.systemreport.system;
 
 import static org.junit.Assert.assertTrue;
-
 import java.util.Map;
 
 import org.junit.Test;
@@ -48,8 +47,11 @@ public class SystemReportPluginIT {
         MockLogAppender.setupLogging(false, "ERROR");
     }
 
+    @Test
     public void testUserLoginReportPlugin(){
-        final Map<String, org.springframework.core.io.Resource> entries = m_javaReportPlugin.getEntries();
+        String projectHome = System.getProperty("user.dir");
+        System.setProperty("opennms.home",projectHome+"/src/test/resources/");
+        final Map<String, org.springframework.core.io.Resource> entries = n_userLoginsReportPlugin.getEntries();
         assertTrue(entries.containsKey("csvHeaders"));
         assertTrue(entries.containsKey("csvData"));
     }

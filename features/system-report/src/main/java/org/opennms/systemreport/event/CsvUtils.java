@@ -5,28 +5,41 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.CSVRecord;
 
-import org.jline.utils.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.StreamUtils;
 
-import java.io.*;
+
+import java.io.ByteArrayOutputStream;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Reader;
+import java.io.Writer;
+import java.io.OutputStreamWriter;
+import java.io.FileOutputStream;
+import java.io.File;
+import java.io.OutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.FileInputStream;
+import java.io.BufferedWriter;
 import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.*;
+import java.util.Date;
 
 public class CsvUtils {
     private static final Logger LOG = LoggerFactory.getLogger(CsvUtils.class);
     private static final String OPENNMS_HOME = System.getProperty("opennms.home");
-    public static final String USER_LOGINS_CSV_FILE_PATH = OPENNMS_HOME +"/etc/user_logins.csv";
+    public static final String USER_LOGINS_CSV_FILE_PATH = String.join("", OPENNMS_HOME, "/etc/user_logins.csv");
     private static final String  USER_NAME_CSV_HEADERS = "User Name";
     private static final String  LOGIN_TIME_CSV_HEADERS = "Login Time";
-    private static final String  USER_LOGINS_CSV_HEADERS = USER_NAME_CSV_HEADERS+","+LOGIN_TIME_CSV_HEADERS;
+    private static final String  USER_LOGINS_CSV_HEADERS = String.join(",", USER_NAME_CSV_HEADERS, LOGIN_TIME_CSV_HEADERS);
     private static final Integer USER_LOGIN_THRESHOLD_DAYS= 60;
     private static final DateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
@@ -111,20 +124,20 @@ public class CsvUtils {
 
         try {
 
-            String data = username+","+DATE_FORMAT.format(loginTime);
+            String data = String.join(",",username,DATE_FORMAT.format(loginTime));
             Resource csvHeaders = new ByteArrayResource(USER_LOGINS_CSV_HEADERS.getBytes());
             Resource csvData = new ByteArrayResource(data.getBytes());
             writeDataToFile(csvHeaders, csvData, USER_LOGINS_CSV_FILE_PATH);
             removeOldRecordsFromCsv();
 
-        } catch (Exception e) {
+        } catch (IOException | ParseException e ) {
             LOG.error(e.getMessage(),e);
         }
 
 
     }
 
-    public static void removeOldRecordsFromCsv() throws IOException {
+    public static void removeOldRecordsFromCsv() throws IOException, ParseException {
 
         File csvFile = new File(USER_LOGINS_CSV_FILE_PATH);
         if (!csvFile.exists() || csvFile.length() == 0) {
@@ -148,11 +161,8 @@ public class CsvUtils {
                 }
                 csvPrinter.flush();
             }
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
 
-        Log.info("Records older than 60 days have been removed.");
     }
 
     private static boolean isOlderThanThreshold(Date recordTime, Integer thresholdDays) {
