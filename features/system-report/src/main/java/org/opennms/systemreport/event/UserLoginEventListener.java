@@ -8,7 +8,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 
 public class UserLoginEventListener implements EventListener {
 
-    @Autowired
     private EventSubscriptionService eventSubscriptionService;
 
     @Override
@@ -34,4 +33,14 @@ public class UserLoginEventListener implements EventListener {
     public void destroy() {
         eventSubscriptionService.removeEventListener(this);
     }
+
+
+    public EventSubscriptionService getEventSubscriptionService() {
+        return eventSubscriptionService;
+    }
+
+    public void setEventSubscriptionService(EventSubscriptionService eventSubscriptionService) {
+        this.eventSubscriptionService = eventSubscriptionService;
+    }
+
 }
