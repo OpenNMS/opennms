@@ -47,7 +47,6 @@ public class EdDSAActivator  {
         logger.info("EdDSAActivator starting...");
         Security.removeProvider("EdDSA");
         Security.insertProviderAt(new EdDSASecurityProvider(), 1);
-        logger.info("EdDSA provider inserted at priority 1.");
         SecurityUtils.registerSecurityProvider(new EdDSASecurityProviderRegistrar());
     }
 
