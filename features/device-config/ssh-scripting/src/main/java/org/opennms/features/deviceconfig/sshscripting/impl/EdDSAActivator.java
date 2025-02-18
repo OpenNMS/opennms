@@ -45,17 +45,10 @@ public class EdDSAActivator  {
     public void start() throws Exception {
         System.setProperty("org.apache.sshd.eddsaSupport", "true");
         logger.info("EdDSAActivator starting...");
-        logger.error("EdDSAActivator starting...");
-        logger.debug("EdDSAActivator starting...");
-        // Insert the provider
         Security.removeProvider("EdDSA");
         Security.insertProviderAt(new EdDSASecurityProvider(), 1);
         logger.info("EdDSA provider inserted at priority 1.");
         SecurityUtils.registerSecurityProvider(new EdDSASecurityProviderRegistrar());
-        // Optionally, print out all registered providers for verification:
-        for (var provider : Security.getProviders()) {
-            logger.info(provider.getName() + " - " + provider.getInfo());
-        }
     }
 
 }
