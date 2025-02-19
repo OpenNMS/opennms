@@ -7,7 +7,7 @@
     "smoke": false,
     "rpms": false,
     "debs": false,
-    "oci": true,
+    "oci": false,
     "build-publish": false,
-    "experimental": false
+    "experimental": true
 }

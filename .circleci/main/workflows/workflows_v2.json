@@ -107,7 +107,7 @@
         },
         "experimental": {
             "extends": [
-                "empty"
+                "oci-minion"
             ]
         }
     },
