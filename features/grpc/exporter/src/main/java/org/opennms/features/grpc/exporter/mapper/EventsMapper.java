@@ -57,6 +57,7 @@ public interface EventsMapper {
     @Mapping(target = "ipAddress", source = "interfaceAddress.hostAddress")
     @Mapping(target = "snmpInfo", source = "snmp")
     @Mapping(target = "parameter", source = "parmCollection")
+    @Mapping(target = "nodeId", source = "nodeid")
     org.opennms.plugin.grpc.proto.services.Event mapEvent (IEvent event);
 
     org.opennms.plugin.grpc.proto.services.SnmpInfo mapSnmpInfo(ISnmp snmp);
