@@ -10,12 +10,10 @@
     <cm:property-placeholder id="grpcExporterProperties" persistent-id="org.opennms.features.grpc.exporter"
                              update-strategy="reload">
         <cm:default-properties>
-<!--            <cm:property name="host" value="bsm.onmshs.local:1443"/>-->
-            <cm:property name="host" value="bsm.onmshs.local:15068"/>
-<!--            <cm:property name="host" value="nms-inventory.onmshs.local:1443"/>-->
+            <cm:property name="host" value="bsm.onmshs.local:1443"/>
             <cm:property name="snapshot.interval" value="3600"/>
-            <cm:property name="tls.enabled" value="false"/>
-            <cm:property name="tls.cert.path" value="/tmp/CA.cert"/>
+            <cm:property name="tls.enabled" value="true"/>
+            <cm:property name="tls.cert.path" value=""/>
             <cm:property name="tenant.id" value="opennms-prime"/>
         </cm:default-properties>
     </cm:property-placeholder>
