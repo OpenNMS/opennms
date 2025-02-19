@@ -86,7 +86,7 @@ public class TrendLine implements Filter {
         // Gather the values [(x,y),...]
         final WeightedObservedPoints obs = new WeightedObservedPoints();
         for (long i = limits.firstRowWithValues; i <= limits.lastRowWithValues; i++) {
-            Double value = table.get(i,m_inputColumn);
+            Double value = table.get(i, m_inputColumn);
             Double ts = table.get(i, TIMESTAMP_COLUMN_NAME);
             if (ts != null && !Double.isNaN(ts) && value != null && !Double.isNaN(value)) {
                 obs.add(ts,value);
