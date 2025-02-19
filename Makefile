@@ -193,7 +193,7 @@ test-lists: maven-structure-graph
 
 .PHONY: compile
 compile: maven-structure-graph
-	$(MAVEN_BIN) install $(MAVEN_ARGS) -DskipTests=true -Dbuild.profile=default -Droot.dir=$(WORKING_DIRECTORY) -Dbuild.skip.tarball=false -Prun-expensive-tasks -Psmoke -Dbuild.type=production 2>&1 | tee $(ARTIFACTS_DIR)/mvn.compile.log
+	$(MAVEN_BIN) install $(MAVEN_ARGS) -DskipTests=true -Dbuild.profile=default -Droot.dir=$(WORKING_DIRECTORY) -Dbuild.skip.tarball=false -Prun-expensive-tasks -Psmoke -Dbuild.type=production -Dbuild.sbom=true 2>&1 | tee $(ARTIFACTS_DIR)/mvn.compile.log
 
 .PHONY: compile-ui
 compile-ui:
