@@ -22,6 +22,7 @@
 
 package org.opennms.features.grpc.exporter;
 
+import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.features.grpc.exporter.common.MonitoredServiceWithMetadata;
 import org.opennms.features.grpc.exporter.mapper.MonitoredServiceMapper;
 import org.opennms.integration.api.v1.dao.NodeDao;
@@ -30,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
@@ -49,6 +51,9 @@ public class InventoryService {
     private final Duration snapshotInterval;
 
     private final ScheduledExecutorService scheduler;
+
+    private final ScheduledExecutorService heartBeatScheduler =
+            Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("heartbeat-update"));
 
     public InventoryService(final NodeDao nodeDao,
                          final RuntimeInfo runtimeInfo,
@@ -75,6 +80,7 @@ public class InventoryService {
                 this.snapshotInterval.getSeconds(),
                 this.snapshotInterval.getSeconds(),
                 TimeUnit.SECONDS);
+        this.heartBeatScheduler.scheduleAtFixedRate(this::sendHeartBeatUpdate, 60, 60, TimeUnit.SECONDS);
         // Set this callback to send snapshot for initial server connect and reconnects
         this.client.setInventoryCallback(this::sendSnapshot);
     }
@@ -99,5 +105,16 @@ public class InventoryService {
 
         final var inventory = MonitoredServiceMapper.INSTANCE.toInventoryUpdates(services, this.runtimeInfo, true);
         this.client.sendMonitoredServicesInventoryUpdate(inventory);
+    }
+
+    public void sendHeartBeatUpdate() {
+        this.client.sendHeartBeatUpdate(org.opennms.plugin.grpc.proto.services.HeartBeat.newBuilder()
+                .setMonitoringInstance(org.opennms.plugin.grpc.proto.services.MonitoringInstance.newBuilder()
+                        .setInstanceId(runtimeInfo.getSystemId())
+                        .setInstanceName(SystemInfoUtils.getInstanceId())
+                        .setInstanceType("OpenNMS").build())
+                        .setTimestamp(Instant.now().toEpochMilli())
+                        .setMessage("HeartBeat Update from OpenNMS")
+                .build());
     }
 }

@@ -32,6 +32,7 @@ import io.grpc.stub.StreamObserver;
 import org.opennms.plugin.grpc.proto.services.InventoryUpdateList;
 import org.opennms.plugin.grpc.proto.services.ServiceSyncGrpc;
 import org.opennms.plugin.grpc.proto.services.StateUpdateList;
+import org.opennms.plugin.grpc.proto.services.HeartBeat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -59,6 +60,7 @@ public class GrpcExporterClient {
 
     private StreamObserver<InventoryUpdateList> inventoryUpdateStream;
     private StreamObserver<StateUpdateList> stateUpdateStream;
+    private StreamObserver<HeartBeat> heartBeatStream;
     private ScheduledExecutorService scheduler;
     private final AtomicBoolean reconnecting = new AtomicBoolean(false);
     private final AtomicBoolean stopped = new AtomicBoolean(false);
@@ -125,6 +127,8 @@ public class GrpcExporterClient {
                         this.monitoredServiceSyncStub.inventoryUpdate(new LoggingAckReceiver("monitored_service_inventory_update", this));
                 this.stateUpdateStream =
                         this.monitoredServiceSyncStub.stateUpdate(new LoggingAckReceiver("monitored_service_state_update", this));
+                this.heartBeatStream =
+                        this.monitoredServiceSyncStub.heartBeatUpdate(new LoggingAckReceiver("heartbeat_update", this));
                 this.scheduler.shutdown();
                 this.scheduler = null;
                 LOG.info("Streams initialized successfully.");
@@ -175,6 +179,14 @@ public class GrpcExporterClient {
             LOG.info("Sent an monitored service state update with {} services", stateUpdates.getUpdatesCount());
         } else {
             LOG.warn("Unable to send monitored service status update since channel is not ready yet");
+        }
+    }
+
+    public void sendHeartBeatUpdate(HeartBeat heartBeat) {
+        if (heartBeatStream != null) {
+            this.heartBeatStream.onNext(heartBeat);
+        } else {
+            LOG.warn("Unable to send heartbeat status update since channel is not ready yet");
         }
     }
 
