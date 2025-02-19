@@ -31,7 +31,7 @@
 
     <service ref="sshScriptingService" interface="org.opennms.features.deviceconfig.sshscripting.SshScriptingService"/>
     <bean id="edDSAActivator"
-          class="org.opennms.features.deviceconfig.sshscripting.impl.EdDSAActivator"
+          class="org.opennms.features.deviceconfig.sshscripting.impl.CustomEddsaProvider"
           init-method="start"
     />
 </blueprint>

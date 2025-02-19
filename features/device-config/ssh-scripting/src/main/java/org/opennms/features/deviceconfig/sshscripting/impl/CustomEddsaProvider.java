@@ -39,12 +39,11 @@ import java.security.Security;
 /**
  * Custom BundleActivator for EdDSA.
  */
-public class EdDSAActivator  {
-    private static final Logger logger = LoggerFactory.getLogger(EdDSAActivator.class);
+public class CustomEddsaProvider {
+    private static final Logger LOG = LoggerFactory.getLogger(CustomEddsaProvider.class);
 
     public void start() throws Exception {
-        System.setProperty("org.apache.sshd.eddsaSupport", "true");
-        logger.info("EdDSAActivator starting...");
+        LOG.info("EdDSAActivator starting...");
         Security.removeProvider("EdDSA");
         Security.insertProviderAt(new EdDSASecurityProvider(), 1);
         SecurityUtils.registerSecurityProvider(new EdDSASecurityProviderRegistrar());
