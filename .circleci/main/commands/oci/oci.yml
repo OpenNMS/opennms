@@ -65,7 +65,7 @@ commands:
           command: |
             # set up multi-arch
             docker container prune -f
-            docker run --rm --privileged tonistiigi/binfmt:latest --install "<< parameters.architecture >>"
+            docker run --rm --privileged tonistiigi/binfmt:qemu-v9.2.0-46 --install "<< parameters.architecture >>"
 
             cd opennms-container/<< parameters.container_dir >>
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
