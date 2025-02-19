@@ -121,6 +121,5 @@ public class TrendLine implements Filter {
             table.put(i, m_outputColumn, polynomialFunction.value(timestamp));
         }
         LOG.debug("filter: values:\n{}", table.rowMap().values());
-
     }
 }
