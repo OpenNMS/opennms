@@ -19,11 +19,7 @@
                 "tarball-assembly-only",
                 "horizon-image-single-arch-linux-amd64",
                 "minion-image-single-arch-linux-amd64",
-                "sentinel-image-single-arch-linux-amd64",
-                "integration-test",
-                "smoke-test-core",
-                "smoke-test-minion",
-                "smoke-test-sentinel"
+                "sentinel-image-single-arch-linux-amd64"
             ]
         },
         "rpms": {
