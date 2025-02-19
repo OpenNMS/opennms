@@ -34,6 +34,7 @@ import org.opennms.plugin.grpc.proto.services.NmsInventoryServiceSyncGrpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.plugin.grpc.proto.services.NmsInventoryUpdateList;
+import org.opennms.plugin.grpc.proto.services.EventUpdateList;
 import javax.net.ssl.SSLException;
 import java.util.Objects;
 import java.util.concurrent.Executors;
@@ -47,10 +48,10 @@ public class AlarmInventoryGrpcClient extends GrpcExporter {
     private final String threadName = "alarm-inventory-grpc-connect";
     private final AtomicBoolean reconnecting = new AtomicBoolean(false);
     private ScheduledExecutorService scheduler;
-
     private NmsInventoryServiceSyncGrpc.NmsInventoryServiceSyncStub nmsSyncStub;
     private StreamObserver<AlarmUpdateList> alarmsUpdateStream;
     private StreamObserver<NmsInventoryUpdateList> nmsInventoryUpdateStream;
+    private StreamObserver<EventUpdateList> eventUpdateStream;
 
     private Callback inventoryCallback;
 
@@ -81,6 +82,8 @@ public class AlarmInventoryGrpcClient extends GrpcExporter {
                         this.nmsSyncStub.alarmUpdate(new LoggingAckReceiver("nms_alarm_update", this));
                 this.nmsInventoryUpdateStream =
                         this.nmsSyncStub.inventoryUpdate(new LoggingAckReceiver("nms_inventory_update", this));
+                this.eventUpdateStream =
+                        this.nmsSyncStub.eventUpdate(new LoggingAckReceiver("events_update", this));
 
                 this.scheduler.shutdown();
                 this.scheduler = null;
@@ -136,6 +139,15 @@ public class AlarmInventoryGrpcClient extends GrpcExporter {
             this.nmsInventoryUpdateStream.onNext(updates);
         } else {
             LOG.warn("Client-Unable to send Inventory-Updates since channel is not ready yet .. {} ", super.getHost());
+        }
+    }
+
+    public void sendEventUpdate(final EventUpdateList updates) {
+        if (this.eventUpdateStream != null) {
+            this.eventUpdateStream.onNext(updates);
+            LOG.info("Client-Sent an Event-Update with {} count", updates.getEventCount());
+        } else {
+            LOG.warn("Client-Unable to send Event-Updates since channel is not ready yet .. {} ", super.getHost());
         }
     }
 

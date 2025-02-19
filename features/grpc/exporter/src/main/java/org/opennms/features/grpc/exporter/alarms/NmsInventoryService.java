@@ -48,19 +48,12 @@ public class NmsInventoryService {
     private static final Logger LOG = LoggerFactory.getLogger(NmsInventoryService.class);
 
     private final NodeDao nodeDao;
-
     private final IpInterfaceDao ipInterfaceDao;
-
     private final SnmpInterfaceDao snmpInterfaceDao;
-
     private final MonitoredServiceDao onmsMonitoredServiceDao;
-
     private final RuntimeInfo runtimeInfo;
-
     private final AlarmInventoryGrpcClient client;
-
     private final Duration snapshotInterval;
-
     private final ScheduledExecutorService scheduler;
 
     public NmsInventoryService(final NodeDao nodeDao,

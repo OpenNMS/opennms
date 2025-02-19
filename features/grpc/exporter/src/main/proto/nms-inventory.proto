@@ -113,6 +113,38 @@ message Alarm {
   uint64 last_update_time = 25;
 }
 
+message EventParameter {
+  string name = 1;
+  string value = 2;
+  string type = 3;
+}
+
+message SnmpInfo {
+  string id = 1;
+  string version = 2;
+  uint32 specific = 3;
+  uint32 generic = 4;
+  string community = 5;
+  string trap_oid = 6;
+}
+
+message Event {
+  uint64 id = 1;
+  string uei = 2;
+  uint64 time = 3;
+  string source = 4;
+  repeated EventParameter parameter = 5;
+  uint64 create_time = 6;
+  string description = 7;
+  string log_message = 8;
+  Severity severity = 9;
+  string ip_address = 10;
+  string dist_poller = 11;
+  SnmpInfo snmpInfo = 12;
+  uint64 node_id = 13;
+  string label = 14;
+}
+
 message NmsInventoryUpdateList {
   string instance_id = 2;
   string instance_name = 3;
@@ -127,7 +159,15 @@ message AlarmUpdateList {
   repeated Alarm alarms = 5;
 }
 
+message EventUpdateList {
+  string instance_id = 2;
+  string instance_name = 3;
+  bool snapshot = 4;
+  repeated Event event = 5;
+}
+
 service NmsInventoryServiceSync {
   rpc InventoryUpdate(stream NmsInventoryUpdateList) returns (stream google.protobuf.Empty) {}
   rpc AlarmUpdate(stream AlarmUpdateList) returns (stream google.protobuf.Empty) {}
+  rpc EventUpdate(stream EventUpdateList) returns (stream google.protobuf.Empty) {}
 }

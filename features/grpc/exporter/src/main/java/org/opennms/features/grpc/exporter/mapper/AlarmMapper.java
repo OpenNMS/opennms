@@ -39,7 +39,6 @@ import org.opennms.plugin.grpc.proto.services.Severity;
 import java.util.Date;
 import java.util.List;
 
-
 @Mapper(collectionMappingStrategy = CollectionMappingStrategy.ADDER_PREFERRED,
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS
         )

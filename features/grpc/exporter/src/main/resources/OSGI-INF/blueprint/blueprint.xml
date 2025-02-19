@@ -10,10 +10,12 @@
     <cm:property-placeholder id="grpcExporterProperties" persistent-id="org.opennms.features.grpc.exporter"
                              update-strategy="reload">
         <cm:default-properties>
-            <cm:property name="host" value="bsm.onmshs.local:1443"/>
+<!--            <cm:property name="host" value="bsm.onmshs.local:1443"/>-->
+            <cm:property name="host" value="bsm.onmshs.local:15068"/>
+<!--            <cm:property name="host" value="nms-inventory.onmshs.local:1443"/>-->
             <cm:property name="snapshot.interval" value="3600"/>
-            <cm:property name="tls.enabled" value="true"/>
-            <cm:property name="tls.cert.path" value=""/>
+            <cm:property name="tls.enabled" value="false"/>
+            <cm:property name="tls.cert.path" value="/tmp/CA.cert"/>
             <cm:property name="tenant.id" value="opennms-prime"/>
         </cm:default-properties>
     </cm:property-placeholder>
@@ -25,7 +27,12 @@
 
     <reference id="nodeDao" interface="org.opennms.integration.api.v1.dao.NodeDao" availability="optional"/>
     <reference id="eventSubscriptionService" interface="org.opennms.integration.api.v1.events.EventSubscriptionService" availability="optional"/>
+    <reference id="netmgtEventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService" availability="optional"/>
     <reference id="runtimeInfo" interface="org.opennms.integration.api.v1.runtime.RuntimeInfo" availability="optional"/>
+
+    <bean id="grpcClientInterceptor" class="org.opennms.features.grpc.exporter.GrpcHeaderInterceptor">
+        <argument value="${tenant.id}"/>
+    </bean>
 
     <bean id="bsmGrpcClient" class="org.opennms.features.grpc.exporter.bsm.BsmGrpcClient" init-method="start" destroy-method="stop">
         <argument value="${host}"/>
@@ -34,8 +41,11 @@
         <argument ref="grpcClientInterceptor"/>
     </bean>
 
-    <bean id="grpcClientInterceptor" class="org.opennms.features.grpc.exporter.GrpcHeaderInterceptor">
-        <argument value="${tenant.id}"/>
+    <bean id="alarmInvoiceGrpcClient" class="org.opennms.features.grpc.exporter.alarms.AlarmInventoryGrpcClient" init-method="start" destroy-method="stop">
+        <argument value="${host}"/>
+        <argument value="${tls.cert.path}"/>
+        <argument value="${tls.enabled}"/>
+        <argument ref="grpcClientInterceptor"/>
     </bean>
 
     <bean id="inventoryService" class="org.opennms.features.grpc.exporter.bsm.InventoryService" init-method="start" destroy-method="stop" >
@@ -65,13 +75,6 @@
         <argument ref="stateService" />
     </bean>
 
-
-    <bean id="alarmInvoiceGrpcClient" class="org.opennms.features.grpc.exporter.alarms.AlarmInventoryGrpcClient" init-method="start" destroy-method="stop">
-        <argument value="${host}"/>
-        <argument value="${tls.cert.path}"/>
-        <argument value="${tls.enabled}"/>
-        <argument ref="grpcClientInterceptor"/>
-    </bean>
     <bean id="alarmService" class="org.opennms.features.grpc.exporter.alarms.AlarmService" >
         <argument ref="runtimeInfo"/>
         <argument ref="alarmInvoiceGrpcClient"/>
@@ -103,5 +106,22 @@
         <argument ref="onmsNodeDao"/>
         <argument ref="nmsInventoryService" />
     </bean>
+
+
+    <bean id="eventsService" class="org.opennms.features.grpc.exporter.alarms.EventService" >
+        <argument ref="runtimeInfo"/>
+        <argument ref="alarmInvoiceGrpcClient"/>
+    </bean>
+    <service ref="eventsService" interface="org.opennms.features.grpc.exporter.alarms.EventService" />
+
+    <bean id="eventsEventHandler" class="org.opennms.features.grpc.exporter.events.alarms.EventsEventHandler" init-method="start" destroy-method="stop">
+        <argument ref="netmgtEventSubscriptionService"/>
+        <argument ref="eventsService" />
+    </bean>
+    <service ref="eventsEventHandler" interface="org.opennms.netmgt.events.api.EventListener">
+        <service-properties>
+            <entry key="registration.export" value="true"/>
+        </service-properties>
+    </service>
 
 </blueprint>

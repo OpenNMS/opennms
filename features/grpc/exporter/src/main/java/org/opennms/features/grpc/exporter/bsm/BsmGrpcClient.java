@@ -46,10 +46,7 @@ public class BsmGrpcClient extends GrpcExporter {
     private static final Logger LOG = LoggerFactory.getLogger(BsmGrpcClient.class);
 
     public static final String FOREIGN_TYPE = "OpenNMS";
-
-
     private ServiceSyncGrpc.ServiceSyncStub monitoredServiceSyncStub;
-
     private StreamObserver<InventoryUpdateList> inventoryUpdateStream;
     private StreamObserver<StateUpdateList> stateUpdateStream;
     private ScheduledExecutorService scheduler;
