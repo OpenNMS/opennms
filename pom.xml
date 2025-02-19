@@ -1092,8 +1092,8 @@
         <version>4.3</version>
         <configuration>
           <properties>
-            <owner>The OpenNMS Group, Inc.</owner>
-            <email>license@opennms.com</email>
+            <owner>BluebirdOps.</owner>
+            <email>maintainer@bluebirdlabs.tech</email>
           </properties>
           <licenseSets>
             <licenseSet>
