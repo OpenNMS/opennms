@@ -345,6 +345,9 @@
             "variations": [
                 "linux/arm64",
                 "linux/arm/v7"
+            ],
+            "requires": [
+                "minion-image-single-arch-linux-amd64"
             ]
         },
         "horizon-image-single-arch": {
@@ -355,6 +358,9 @@
             "variations": [
                 "linux/arm64",
                 "linux/arm/v7"
+            ],
+            "requires": [
+                "horizon-image-single-arch-linux-amd64"
             ]
         },
         "sentinel-image-single-arch": {
@@ -365,6 +371,9 @@
             "variations": [
                 "linux/arm64",
                 "linux/arm/v7"
+            ],
+            "requires": [
+                "sentinel-image-single-arch-linux-amd64"
             ]
         },
         "create-merge-foundation-branch": {
