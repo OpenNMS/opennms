@@ -8,8 +8,8 @@
         },
         {
             "key": "alarmsLastHours",
-            "name": "Number of new alarms last $CONFIGUREDHOURS hours",
-            "description": "Number of new alarms generated in the last $CONFIGUREDHOURS hours",
+            "name": "Number of new alarms last 24 hours",
+            "description": "Number of new alarms generated in the last 24 hours",
             "datatype": "number"
         },
         {
@@ -158,8 +158,8 @@
         },
         {
             "key": "eventsLastHours",
-            "name": "Number of new events last $CONFIGUREDHOURS hours",
-            "description": "Number of new events generated in the last $CONFIGUREDHOURS hours",
+            "name": "Number of new events last 24 hours",
+            "description": "Number of new events generated in the last 24 hours",
             "datatype": "number"
         },
         {

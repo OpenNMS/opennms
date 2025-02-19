@@ -151,27 +151,9 @@ public class DataChoiceRestServiceImpl implements DataChoiceRestService {
         } catch (Exception e) {
             return getExceptionResponse("Error getting Usage Statistics metadata.", e);
         }
-        updateMetadataConfiguredFields(dto);
+
         return Response.ok(dto).build();
     }
-
-    private void updateMetadataConfiguredFields(UsageStatisticsMetadataDTO dto) {
-        String eventsHours = System.getProperty("opennms.usage.stats.events.generated.last.hours", "24");
-        String alarmsHours = System.getProperty("opennms.usage.stats.alarms.generated.last.hours", "24");
-        String placeholder = "$CONFIGUREDHOURS";
-        dto.getMetadata().stream()
-                .filter(item -> "eventsLastHours".equals(item.key) || "alarmsLastHours".equals(item.key))
-                .forEach(item -> {
-                    if ("eventsLastHours".equals(item.key)) {
-                        item.name = item.name.replace(placeholder, eventsHours);
-                        item.description = item.description.replace(placeholder, eventsHours);
-                    } else if ("alarmsLastHours".equals(item.key)) {
-                        item.name = item.name.replace(placeholder, alarmsHours);
-                        item.description = item.description.replace(placeholder, alarmsHours);
-                    }
-                });
-    }
-
 
     @Override
     public Response submitProductUpdateEnrollmentData(HttpServletRequest request, ProductUpdateEnrollmentFormData data) throws ServletException, IOException {

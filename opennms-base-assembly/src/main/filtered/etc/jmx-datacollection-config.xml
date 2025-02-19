@@ -8,9 +8,6 @@
          <rra>RRA:MIN:0.5:288:366</rra>
       </rrd>
       <mbeans>
-         <mbean name="CPU Metrics" objectname="java.lang:type=OperatingSystem">
-            <attrib name="SystemCpuLoad" alias="CpuLoad" type="gauge"/>
-         </mbean>
          <mbean name="OpenNMS Queued" objectname="OpenNMS:Name=Queued">
             <attrib name="CreatesCompleted" alias="ONMSQueCreates" type="counter"/>
             <attrib name="DequeuedItems" alias="ONMSQueItemDeque" type="counter"/>
