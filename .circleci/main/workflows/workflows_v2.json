@@ -19,7 +19,11 @@
                 "tarball-assembly-only",
                 "horizon-image-single-arch-linux-amd64",
                 "minion-image-single-arch-linux-amd64",
-                "sentinel-image-single-arch-linux-amd64"
+                "sentinel-image-single-arch-linux-amd64",
+                "integration-test",
+                "smoke-test-core",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
             ]
         },
         "rpms": {
@@ -103,7 +107,7 @@
         },
         "experimental": {
             "extends": [
-                "oci-minion"
+                "empty"
             ]
         }
     },
@@ -343,7 +347,9 @@
                 "linux/arm/v7"
             ],
             "requires": [
-                "minion-image-single-arch-linux-amd64"
+                "smoke-test-core",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
             ]
         },
         "horizon-image-single-arch": {
@@ -356,7 +362,9 @@
                 "linux/arm/v7"
             ],
             "requires": [
-                "horizon-image-single-arch-linux-amd64"
+                "smoke-test-core",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
             ]
         },
         "sentinel-image-single-arch": {
@@ -369,7 +377,9 @@
                 "linux/arm/v7"
             ],
             "requires": [
-                "sentinel-image-single-arch-linux-amd64"
+                "smoke-test-core",
+                "smoke-test-minion",
+                "smoke-test-sentinel"
             ]
         },
         "create-merge-foundation-branch": {
