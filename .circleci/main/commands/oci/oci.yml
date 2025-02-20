@@ -68,7 +68,7 @@ commands:
             docker container prune -f
             docker run --rm --privileged tonistiigi/binfmt:latest --install "<< parameters.architecture >>"
 
-            if "<< parameters.architecture >>" == "linux/arm64"; then
+            if [[ "<< parameters.architecture >>" == "linux/arm64" ]]; then
             cat /proc/sys/fs/binfmt_misc/qemu-aarch64
             fi
 
