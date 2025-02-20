@@ -67,10 +67,7 @@ commands:
             sudo apt install -y qemu-user-static
             docker container prune -f
             docker run --rm --privileged tonistiigi/binfmt:latest --install "<< parameters.architecture >>"
-
-            if [[ "<< parameters.architecture >>" == "linux/arm64" ]]; then
-            cat /proc/sys/fs/binfmt_misc/qemu-aarch64
-            fi
+            docker run --rm --privileged multiarch/qemu-user-static --reset -p yes -c yes
 
             cd opennms-container/<< parameters.container_dir >>
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
