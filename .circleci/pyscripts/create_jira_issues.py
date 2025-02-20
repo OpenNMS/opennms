@@ -5,7 +5,6 @@ import logging
 import re
 import urllib.parse
 
-# Configuration
 PROJECT_KEY = "NMS"
 JIRA_USER = os.getenv("JIRA_USER")
 JIRA_API_TOKEN = os.getenv("JIRA_API_TOKEN")
@@ -63,8 +62,7 @@ def parse_filtered_vulnerabilities(file_path):
 
 def issue_exists_for_vulnerability(vulnerability_id, package_name):
 
-    # Construct JQL query to search for issues with the given package name
-    jql = f'project="{PROJECT_KEY}" AND summary ~ "{package_name}"'
+    jql = f'project="{PROJECT_KEY}" AND summary ~ "{package_name}" AND resolution not in ("Won\'t Fix", "Not a Bug")'
     jql = urllib.parse.quote(jql)  # URL-encode the JQL query
     logging.info(f"JQL Query: {jql}")  # Debugging line to print the JQL
 
@@ -91,7 +89,6 @@ def issue_exists_for_vulnerability(vulnerability_id, package_name):
             issue_data = issue_response.json()
             description = issue_data["fields"]["description"]
 
-            # Check if the CVE ID is in the description (flexible matching)
             if vulnerability_id in description:
                 logging.info(f"Issue {issue_key} contains CVE {vulnerability_id}.")
                 return issue
@@ -251,7 +248,6 @@ def create_issues(vulnerabilities):
 
 
 def main():
- 
     vulnerabilities = parse_filtered_vulnerabilities('filtered_vulnerabilities.txt')
 
     if not vulnerabilities:
