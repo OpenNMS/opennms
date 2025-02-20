@@ -23,7 +23,7 @@ PRIORITY_MAP = {
 # Security level for Trivy issues
 SECURITY_LEVEL = "TOG (migrated)"
 
-# Set up logging
+
 logging.basicConfig(level=logging.INFO)
 
 
@@ -32,7 +32,7 @@ def parse_filtered_vulnerabilities(file_path):
 
     try:
         with open(file_path, 'r') as file:
-            lines = file.readlines()[2:]  # Skip the first two lines (header and separator)
+            lines = file.readlines()[2:]  
     except FileNotFoundError:
         logging.error(f"File {file_path} not found.")
         return vulnerabilities
@@ -62,9 +62,9 @@ def parse_filtered_vulnerabilities(file_path):
 
 def issue_exists_for_vulnerability(vulnerability_id, package_name):
     jql = f'project="{PROJECT_KEY}" AND summary ~ "{package_name}" AND resolution not in ("Won\'t Fix", "Not a Bug")'
-    jql = urllib.parse.quote(jql) 
-    decoded_jql = urllib.parse.unquote(jql) 
-    logging.info(f"JQL Query: {decoded_jql}") 
+    jql = urllib.parse.quote(jql)
+    decoded_jql = urllib.parse.unquote(jql)
+    logging.info(f"JQL Query: {decoded_jql}")
 
     url = f"{JIRA_URL}/rest/api/2/search?jql={jql}"
 
@@ -77,7 +77,7 @@ def issue_exists_for_vulnerability(vulnerability_id, package_name):
 
     issues = response.json().get('issues', [])
 
-    # Check if any issue already exists for this vulnerability ID
+
     for issue in issues:
         issue_key = issue["key"]
         issue_url = f"{JIRA_URL}/rest/api/2/issue/{issue_key}"
@@ -87,6 +87,7 @@ def issue_exists_for_vulnerability(vulnerability_id, package_name):
             issue_response.raise_for_status()
             issue_data = issue_response.json()
             description = issue_data["fields"]["description"]
+
 
             if vulnerability_id in description:
                 logging.info(f"Issue {issue_key} contains CVE {vulnerability_id}.")
@@ -102,7 +103,7 @@ def add_cves_to_existing_issue(issue_key, vulnerabilities):
     issue_url = f"{JIRA_URL}/rest/api/2/issue/{issue_key}"
 
     try:
-        # Fetch the existing issue details
+
         response = requests.get(issue_url, auth=(JIRA_USER, JIRA_API_TOKEN))
         response.raise_for_status()
         issue_data = response.json()
@@ -116,6 +117,7 @@ def add_cves_to_existing_issue(issue_key, vulnerabilities):
     new_cves_text = "\n".join([format_vulnerability_details(v) for v in vulnerabilities])
     new_cve_ids = [v['VulnerabilityID'] for v in vulnerabilities]
 
+
     if any(cve in current_description for cve in new_cve_ids):
         logging.info(f"Some CVEs are already listed in issue {issue_key}. Skipping update for those.")
         return
@@ -125,7 +127,6 @@ def add_cves_to_existing_issue(issue_key, vulnerabilities):
     if "trivy" not in current_labels:
         current_labels.append("trivy")
 
-    # Prepare the update payload
     update_payload = {
         "fields": {
             "description": updated_description,
@@ -134,7 +135,7 @@ def add_cves_to_existing_issue(issue_key, vulnerabilities):
     }
 
     try:
-        # Update the issue
+
         response = requests.put(issue_url, auth=(JIRA_USER, JIRA_API_TOKEN),
                                headers={"Content-Type": "application/json"},
                                data=json.dumps(update_payload))
@@ -159,7 +160,6 @@ def format_vulnerability_details(vulnerability):
 
 
 def create_issue_for_package(package_name, vulnerabilities):
-    # Determine the highest severity level
     severity_levels = set([v['Severity'] for v in vulnerabilities])
     priority_name = "Trivial"
     if "CRITICAL" in severity_levels:
@@ -171,7 +171,6 @@ def create_issue_for_package(package_name, vulnerabilities):
     elif "LOW" in severity_levels:
         priority_name = "Low"
 
-    # Format the summary and description
     if len(vulnerabilities) > 1:
         summary = f"Trivy Bug: Vulnerabilities in {package_name}: Multiple CVEs"
     else:
