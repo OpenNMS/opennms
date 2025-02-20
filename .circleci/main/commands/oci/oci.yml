@@ -64,6 +64,7 @@ commands:
           name: build << parameters.container_name >>=<< parameters.architecture >> container image
           command: |
             # set up multi-arch
+            apt install -y qemu-user-static
             docker container prune -f
             docker run --rm --privileged tonistiigi/binfmt:latest --install "<< parameters.architecture >>"
             cat /proc/sys/fs/binfmt_misc/qemu-aarch64
