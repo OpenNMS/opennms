@@ -36,17 +36,15 @@ import org.slf4j.LoggerFactory;
 
 import java.security.Security;
 
-/**
- * Custom BundleActivator for EdDSA.
- */
+
 public class CustomEddsaProvider {
     private static final Logger LOG = LoggerFactory.getLogger(CustomEddsaProvider.class);
 
     public void start() throws Exception {
-        LOG.info("EdDSAActivator starting...");
         Security.removeProvider("EdDSA");
         Security.insertProviderAt(new EdDSASecurityProvider(), 1);
         SecurityUtils.registerSecurityProvider(new EdDSASecurityProviderRegistrar());
+        LOG.info(" Added custom eddsa provider");
     }
 
 }
