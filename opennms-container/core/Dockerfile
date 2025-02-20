@@ -3,7 +3,7 @@
 ##
 ARG BASE_IMAGE="opennms/deploy-base:ubuntu-3.4.0.b268-jre-11"
 
-FROM ${BASE_IMAGE} as core-tarball
+FROM ${BASE_IMAGE} AS core-tarball
 
 ADD --chown=10001:0 ./tarball-root/ /opt/usr-share/opennms/
 RUN chmod -R g-w /opt/usr-share/opennms && \
@@ -25,13 +25,13 @@ RUN chmod -R g-w /opt/usr-share/opennms && \
 ##
 # Download plugins
 ##
-FROM ${BASE_IMAGE} as core-plugins
+FROM ${BASE_IMAGE} AS core-plugins
 
 COPY plugins.sh /tmp/plugins.sh 
 RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
 
 
-FROM ${BASE_IMAGE} as core-base
+FROM ${BASE_IMAGE} AS core-base
 
 ARG REQUIRED_DEBS="rrdtool jrrd2 r-base-core rsync libxml-twig-perl libwww-perl jq diffutils hostname sudo"
 
