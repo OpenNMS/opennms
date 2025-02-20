@@ -38,6 +38,7 @@ import javax.management.remote.JMXConnector;
 import javax.management.remote.JMXConnectorFactory;
 import javax.management.remote.JMXServiceURL;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.opennms.core.logging.Logging;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
@@ -464,6 +465,7 @@ public class Controller {
         System.setProperty("sun.rmi.transport.tcp.handshakeTimeout", String.valueOf(httpRequestReadTimeout));
     }
 
+    @VisibleForTesting
     static void setSecureCredentialsVault(SecureCredentialsVault secureCredentialsVault) {
         Controller.secureCredentialsVault = secureCredentialsVault;
     }

@@ -21,12 +21,15 @@
  */
 package org.opennms.netmgt.vmmgr;
 
-import org.junit.*;
-import org.junit.rules.TemporaryFolder;
-import org.opennms.core.test.MockLogAppender;
-
 import com.sun.tools.attach.VirtualMachine;
 import com.sun.tools.attach.VirtualMachineDescriptor;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
+import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 
