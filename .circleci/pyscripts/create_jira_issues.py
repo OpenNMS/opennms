@@ -5,7 +5,7 @@ import logging
 import re
 import urllib.parse
 
-# Configuration
+
 PROJECT_KEY = "NMS"
 JIRA_USER = os.getenv("JIRA_USER")
 JIRA_API_TOKEN = os.getenv("JIRA_API_TOKEN")
@@ -61,11 +61,10 @@ def parse_filtered_vulnerabilities(file_path):
 
 
 def issue_exists_for_vulnerability(vulnerability_id, package_name):
-
     jql = f'project="{PROJECT_KEY}" AND summary ~ "{package_name}" AND resolution not in ("Won\'t Fix", "Not a Bug")'
-    jql = urllib.parse.quote(jql)  # URL-encode the JQL query
-    decoded_jql = urllib.parse.unquote(jql)  # Decode the JQL for readability
-    logging.info(f"JQL Query: {decoded_jql}")  # Print decoded JQL
+    jql = urllib.parse.quote(jql) 
+    decoded_jql = urllib.parse.unquote(jql) 
+    logging.info(f"JQL Query: {decoded_jql}") 
 
     url = f"{JIRA_URL}/rest/api/2/search?jql={jql}"
 
@@ -78,13 +77,12 @@ def issue_exists_for_vulnerability(vulnerability_id, package_name):
 
     issues = response.json().get('issues', [])
 
-
+    # Check if any issue already exists for this vulnerability ID
     for issue in issues:
         issue_key = issue["key"]
         issue_url = f"{JIRA_URL}/rest/api/2/issue/{issue_key}"
 
         try:
-
             issue_response = requests.get(issue_url, auth=(JIRA_USER, JIRA_API_TOKEN))
             issue_response.raise_for_status()
             issue_data = issue_response.json()
