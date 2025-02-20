@@ -64,10 +64,13 @@ commands:
           name: build << parameters.container_name >>=<< parameters.architecture >> container image
           command: |
             # set up multi-arch
-            apt install -y qemu-user-static
+            sudo apt install -y qemu-user-static
             docker container prune -f
             docker run --rm --privileged tonistiigi/binfmt:latest --install "<< parameters.architecture >>"
+
+            if "<< parameters.architecture >>" == "linux/arm64"; then
             cat /proc/sys/fs/binfmt_misc/qemu-aarch64
+            fi
 
             cd opennms-container/<< parameters.container_dir >>
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
