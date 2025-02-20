@@ -5,6 +5,7 @@ import logging
 import re
 import urllib.parse
 
+# Configuration
 PROJECT_KEY = "NMS"
 JIRA_USER = os.getenv("JIRA_USER")
 JIRA_API_TOKEN = os.getenv("JIRA_API_TOKEN")
@@ -27,7 +28,6 @@ logging.basicConfig(level=logging.INFO)
 
 
 def parse_filtered_vulnerabilities(file_path):
-
     vulnerabilities = []
 
     try:
@@ -64,7 +64,8 @@ def issue_exists_for_vulnerability(vulnerability_id, package_name):
 
     jql = f'project="{PROJECT_KEY}" AND summary ~ "{package_name}" AND resolution not in ("Won\'t Fix", "Not a Bug")'
     jql = urllib.parse.quote(jql)  # URL-encode the JQL query
-    logging.info(f"JQL Query: {jql}")  # Debugging line to print the JQL
+    decoded_jql = urllib.parse.unquote(jql)  # Decode the JQL for readability
+    logging.info(f"JQL Query: {decoded_jql}")  # Print decoded JQL
 
     url = f"{JIRA_URL}/rest/api/2/search?jql={jql}"
 
@@ -77,13 +78,13 @@ def issue_exists_for_vulnerability(vulnerability_id, package_name):
 
     issues = response.json().get('issues', [])
 
-    # Check each issue's description for the CVE ID
+
     for issue in issues:
         issue_key = issue["key"]
         issue_url = f"{JIRA_URL}/rest/api/2/issue/{issue_key}"
 
         try:
-            # Fetch the issue details
+
             issue_response = requests.get(issue_url, auth=(JIRA_USER, JIRA_API_TOKEN))
             issue_response.raise_for_status()
             issue_data = issue_response.json()
@@ -100,7 +101,6 @@ def issue_exists_for_vulnerability(vulnerability_id, package_name):
 
 
 def add_cves_to_existing_issue(issue_key, vulnerabilities):
-
     issue_url = f"{JIRA_URL}/rest/api/2/issue/{issue_key}"
 
     try:
@@ -114,19 +114,16 @@ def add_cves_to_existing_issue(issue_key, vulnerabilities):
         logging.error(f"Error fetching issue details for {issue_key}: {e}")
         return
 
-    # Format new CVEs to be added
+
     new_cves_text = "\n".join([format_vulnerability_details(v) for v in vulnerabilities])
     new_cve_ids = [v['VulnerabilityID'] for v in vulnerabilities]
 
-    # Check if any of the new CVEs are already in the description
     if any(cve in current_description for cve in new_cve_ids):
         logging.info(f"Some CVEs are already listed in issue {issue_key}. Skipping update for those.")
         return
 
-    # Update the description with new CVEs
     updated_description = current_description + "\n" + new_cves_text
 
-    # Add the "trivy" label if it doesn't exist
     if "trivy" not in current_labels:
         current_labels.append("trivy")
 
@@ -150,7 +147,6 @@ def add_cves_to_existing_issue(issue_key, vulnerabilities):
 
 
 def format_vulnerability_details(vulnerability):
-
     return (
         f"*Vulnerability ID:* {vulnerability['VulnerabilityID']}\n"
         f"*Severity:* {vulnerability['Severity']}\n"
@@ -165,7 +161,6 @@ def format_vulnerability_details(vulnerability):
 
 
 def create_issue_for_package(package_name, vulnerabilities):
-
     # Determine the highest severity level
     severity_levels = set([v['Severity'] for v in vulnerabilities])
     priority_name = "Trivial"
@@ -225,7 +220,6 @@ def create_issue_for_package(package_name, vulnerabilities):
 
 
 def create_issues(vulnerabilities):
-
     # Group vulnerabilities by package name
     packages = {}
     for vulnerability in vulnerabilities:
