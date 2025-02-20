@@ -47,6 +47,7 @@ import java.io.InputStreamReader;
 import java.io.FileInputStream;
 import java.io.BufferedWriter;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Paths;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -57,8 +58,8 @@ import java.util.Date;
 public class CsvUtils {
     private static final Logger LOG = LoggerFactory.getLogger(CsvUtils.class);
     private static final String OPENNMS_HOME = System.getProperty("opennms.home");
-    public static final String USER_LOGINS_CSV_FILE_PATH = String.join("", OPENNMS_HOME, "/etc/user_logins.csv");
-    private static final String  USER_NAME_CSV_HEADERS = "User Name";
+    public static final String USER_LOGINS_CSV_FILE_PATH = Paths.get(OPENNMS_HOME, "etc", "user_logins.csv").toString();
+    private static final String  USER_NAME_CSV_HEADERS = "UserName";
     private static final String  LOGIN_TIME_CSV_HEADERS = "Login Time";
     private static final String  USER_LOGINS_CSV_HEADERS = String.join(",", USER_NAME_CSV_HEADERS, LOGIN_TIME_CSV_HEADERS);
     private static final Integer USER_LOGIN_THRESHOLD_DAYS= 60;
@@ -113,7 +114,7 @@ public class CsvUtils {
         }
     }
 
-    public static void writeDataToStream(Resource csvHeaders, Resource csvData, OutputStream outputStream,boolean writeHeaders) throws IOException {
+    public static void writeDataToStream(Resource csvHeaders, Resource csvData, OutputStream outputStream, boolean writeHeaders) throws IOException {
 
         CSVFormat csvFormat = CSVFormat.DEFAULT;
         String[] headers = null;
@@ -125,7 +126,7 @@ public class CsvUtils {
             }
         }
 
-        //Writer and CSVPrinter are outside the try that prevents to close stream.
+        //Placing Writer and CSVPrinter outside the try block prevents the stream from being closed automatically.
         Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream, StandardCharsets.UTF_8));
         CSVPrinter csvPrinter = new CSVPrinter(writer, csvFormat);
         try (
@@ -141,11 +142,11 @@ public class CsvUtils {
         }
     }
 
-    public static void logUserDataToCsv(String username, Date loginTime) {
+    public static void logUserDataToCsv(String userName, Date loginTime) {
 
         try {
 
-            String data = String.join(",",username,DATE_FORMAT.format(loginTime));
+            String data = String.join(",",userName,DATE_FORMAT.format(loginTime));
             Resource csvHeaders = new ByteArrayResource(USER_LOGINS_CSV_HEADERS.getBytes());
             Resource csvData = new ByteArrayResource(data.getBytes());
             writeDataToFile(csvHeaders, csvData, USER_LOGINS_CSV_FILE_PATH);

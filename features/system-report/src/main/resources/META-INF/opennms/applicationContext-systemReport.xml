@@ -104,7 +104,7 @@
 
 	<onmsgi:reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
 
-	<bean id="userLoginEventListener" name="userLoginEventListener" class="org.opennms.systemreport.event.UserLoginEventListener" init-method="init" destroy-method="destroy">
+	<bean id="userLoginEventListener" class="org.opennms.systemreport.event.UserLoginEventListener" init-method="init" destroy-method="destroy">
 		<property name="eventSubscriptionService" ref="eventSubscriptionService" />
 	</bean>
 
