@@ -130,7 +130,6 @@ def add_cves_to_existing_issue(issue_key, vulnerabilities):
     }
 
     try:
-        # Update the issue
         response = requests.put(issue_url, auth=(JIRA_USER, JIRA_API_TOKEN),
                                headers={"Content-Type": "application/json"},
                                data=json.dumps(update_payload))
