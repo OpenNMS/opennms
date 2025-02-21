@@ -50,6 +50,7 @@
               org.apache.activemq.security;resolution:=optional,
               org.opennms.features.activemq.broker.api;resolution:=optional,
               org.opennms.features.activemq.broker.impl;resolution:=optional,
+              org.opennms.features.scv.jceks;resolution:=optional,
               *
             </Import-Package>
             <Export-Package>org.opennms.netmgt.daemon.*;org.opennms.netmgt.vmmgr.*;version="${project.version}"</Export-Package>
