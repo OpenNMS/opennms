@@ -93,7 +93,7 @@ public class TrapListener implements TrapNotificationListener {
             getMessageDispatcher().send(new TrapInformationWrapper(trapInformation))
                     .whenComplete((t,ex) -> {
                         if (ex != null) {
-                            LOG.error("An error occured while forwarding trap {} for further processing. The trap will be dropped.", trapInformation, ex);
+                            LOG.error("An error occurred while forwarding trap {} for further processing. The trap will be dropped.", trapInformation, ex);
                             // This trap will never reach the sink consumer
                             TrapSinkConsumer.trapdInstrumentation.incErrorCount();
                         }
@@ -207,7 +207,7 @@ public class TrapListener implements TrapNotificationListener {
                 m_registeredForTraps = false;
                 LOG.debug("stop: SNMP trap session closed.");
             } else {
-                LOG.debug("stop: not attemping to closing SNMP trap session--it was never opened or already closed.");
+                LOG.debug("stop: not attempting to closing SNMP trap session--it was never opened or already closed.");
             }
         } catch (final IOException e) {
             LOG.warn("stop: exception occurred closing session", e);
@@ -273,13 +273,13 @@ public class TrapListener implements TrapNotificationListener {
 
     protected boolean hasConfigurationChanged(TrapdConfig newConfig) {
         if (newConfig.getSnmpTrapPort() != m_config.getSnmpTrapPort()) {
-            LOG.info("SNMP trap port has been updated from trapd-confguration.xml.");
+            LOG.info("SNMP trap port has been updated from trapd-configuration.xml.");
             return true;
         } else if (
                 newConfig.getSnmpTrapAddress() != null
                         && !newConfig.getSnmpTrapAddress().equalsIgnoreCase("*")
                         && !newConfig.getSnmpTrapAddress().equalsIgnoreCase(m_config.getSnmpTrapAddress())) {
-            LOG.info("SNMP trap address has been updated from trapd-confguration.xml.");
+            LOG.info("SNMP trap address has been updated from trapd-configuration.xml.");
             return true;
         } else {
             return hasSnmpV3UsersChanged(newConfig);
