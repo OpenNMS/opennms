@@ -77,7 +77,6 @@ public class Telemetryd implements SpringServiceDaemon, TelemetryManager {
     @Autowired
     private MessageDispatcherFactory messageDispatcherFactory;
 
-
     @Autowired
     private MessageConsumerManager messageConsumerManager;
 
