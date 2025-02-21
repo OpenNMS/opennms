@@ -59,6 +59,27 @@ def parse_filtered_vulnerabilities(file_path):
 
 
 def issue_exists_for_vulnerability(package_name, vulnerability_ids):
+    # First query to log issues with 'Not a Bug' or 'Won't Fix' resolution
+    jql_log = f'project="{PROJECT_KEY}" AND summary ~ "{package_name}" AND resolution in ("Not a Bug", "Won\'t Fix")'
+    jql_log = urllib.parse.quote(jql_log)
+    decoded_jql_log = urllib.parse.unquote(jql_log)
+    logging.info(f"Logging Query: {decoded_jql_log}")
+
+    url_log = f"{JIRA_URL}/rest/api/2/search?jql={jql_log}"
+
+    try:
+        response_log = requests.get(url_log, auth=(JIRA_USER, JIRA_API_TOKEN))
+        response_log.raise_for_status()
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error fetching issues with 'Not a Bug' or 'Won\'t Fix' resolution for {package_name}: {e}")
+    else:
+        issues_log = response_log.json().get('issues', [])
+        for issue in issues_log:
+            issue_key = issue["key"]
+            resolution = issue["fields"].get("resolution", {}).get("name", "None")
+            logging.info(f"Issue {issue_key} has a '{resolution}' resolution.")
+
+    # Main query to process vulnerabilities, excluding issues with "Won't Fix" or "Not a Bug"
     jql = f'project="{PROJECT_KEY}" AND summary ~ "{package_name}" AND resolution not in ("Won\'t Fix", "Not a Bug")'
     jql = urllib.parse.quote(jql)
     decoded_jql = urllib.parse.unquote(jql)
@@ -75,7 +96,6 @@ def issue_exists_for_vulnerability(package_name, vulnerability_ids):
 
     issues = response.json().get('issues', [])
 
-    # Now log the issues with "Not a Bug" resolution separately
     for issue in issues:
         issue_key = issue["key"]
         issue_url = f"{JIRA_URL}/rest/api/2/issue/{issue_key}"
@@ -84,12 +104,6 @@ def issue_exists_for_vulnerability(package_name, vulnerability_ids):
             issue_response = requests.get(issue_url, auth=(JIRA_USER, JIRA_API_TOKEN))
             issue_response.raise_for_status()
             issue_data = issue_response.json()
-            resolution = issue_data["fields"].get("resolution", {}).get("name", "None")
-            
-            # Check if the resolution is "Not a Bug"
-            if resolution == "Not a Bug":
-                logging.info(f"Issue {issue_key} has a 'Not a Bug' resolution.")
-
             description = issue_data["fields"]["description"]
             if any(vuln_id in description for vuln_id in vulnerability_ids):
                 logging.info(f"Issue {issue_key} contains one or more CVEs from {vulnerability_ids}.")
