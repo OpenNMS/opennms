@@ -75,6 +75,7 @@ def issue_exists_for_vulnerability(package_name, vulnerability_ids):
 
     issues = response.json().get('issues', [])
 
+    # Now log the issues with "Not a Bug" resolution separately
     for issue in issues:
         issue_key = issue["key"]
         issue_url = f"{JIRA_URL}/rest/api/2/issue/{issue_key}"
@@ -83,8 +84,13 @@ def issue_exists_for_vulnerability(package_name, vulnerability_ids):
             issue_response = requests.get(issue_url, auth=(JIRA_USER, JIRA_API_TOKEN))
             issue_response.raise_for_status()
             issue_data = issue_response.json()
-            description = issue_data["fields"]["description"]
+            resolution = issue_data["fields"].get("resolution", {}).get("name", "None")
+            
+            # Check if the resolution is "Not a Bug"
+            if resolution == "Not a Bug":
+                logging.info(f"Issue {issue_key} has a 'Not a Bug' resolution.")
 
+            description = issue_data["fields"]["description"]
             if any(vuln_id in description for vuln_id in vulnerability_ids):
                 logging.info(f"Issue {issue_key} contains one or more CVEs from {vulnerability_ids}.")
                 return issue
