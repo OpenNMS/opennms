@@ -223,6 +223,10 @@ configure() {
     export JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=$CACERTS -Djavax.net.ssl.trustStorePassword=changeit"
     while read certid; do
       [[ $certid =~ ^#.* ]] && continue
+      # check if CA cert already exists and remove so re-adding doesn't error
+      if keytool -list -alias "$certid" -keystore "$CACERTS" -storepass changeit; then
+        keytool -delete -alias "$certid" -keystore "$CACERTS" -storepass changeit
+      fi
       keytool -importcert -file "/opt/minion/server-certs/$certid" -alias "$certid" -keystore "$CACERTS" -storepass changeit -noprompt
     done < "$MINION_SERVER_CERTS_CFG"
   fi
