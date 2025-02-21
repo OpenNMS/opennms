@@ -114,7 +114,6 @@ def issue_exists_for_vulnerability(package_name, vulnerability_ids):
 
     return None
 
-
 def add_cves_to_existing_issue(issue_key, vulnerabilities):
     issue_url = f"{JIRA_URL}/rest/api/2/issue/{issue_key}"
 
