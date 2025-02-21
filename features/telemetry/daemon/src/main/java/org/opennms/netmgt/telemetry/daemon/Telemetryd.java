@@ -73,6 +73,7 @@ public class Telemetryd implements SpringServiceDaemon, TelemetryManager {
 
     @Autowired
     private TelemetrydConfigDao telemetrydConfigDao;
+
     @Autowired
     private MessageDispatcherFactory messageDispatcherFactory;
 
