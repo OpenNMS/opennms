@@ -28,4 +28,10 @@
       <artifactId>jackson-xc</artifactId>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <id>atlassian-3rdparty</id>
+      <url>https://packages.atlassian.com/maven-3rdparty/</url>
+    </repository>
+  </repositories>
 </project>

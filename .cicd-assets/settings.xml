@@ -1,23 +1,9 @@
 <settings>
     <mirrors>
         <mirror>
-            <id>mirror-jaspersoft-third-party</id>
-            <url>https://maven.bluebirdlabs.tech/repository/thirdparty</url>
-            <mirrorOf>jaspersoft-third-party</mirrorOf>
-        </mirror>
-        <mirror>
-            <id>mirror-opennms-snapshots</id>
-            <url>https://maven.bluebirdlabs.tech/repository/bluebird-snapshots/</url>
-            <mirrorOf>opennms-snapshots</mirrorOf>
-        </mirror>
-        <mirror>
-            <id>mirror-codelibs</id>
-            <url>https://maven.codelibs.org/</url>
-            <mirrorOf>codelibs</mirrorOf>
-        </mirror>
-        <mirror>
-            <id>mirror-opennms-everything</id>
-            <url>https://maven.bluebirdlabs.tech/repository/everything/</url>
+            <id>mvn1.cdn.eu-central-1</id>
+            <name>Maven Cache in EU Central [mvn1]</name>
+            <url>https://mvn1.cdn.eu-central-1.bluebirdlabs.tech/upstream</url>
             <mirrorOf>*</mirrorOf>
         </mirror>
     </mirrors>

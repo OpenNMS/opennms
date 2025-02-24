@@ -1280,26 +1280,27 @@
       <classifier>runtime</classifier>
     </dependency>
   </dependencies>
-
-  <repositories>
-    <repository>
-      <id>jasperreports</id>
-      <name>OpenNMS Mega-Repository (jasperreports override)</name>
-      <url>https://maven.opennms.org/repository/everything/</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
-  
   <pluginRepositories>
     <pluginRepository>
-      <id>jaspersoft-third-party</id>
-      <name>OpenNMS Mega-Repository</name>
-      <url>https://maven.opennms.org/repository/everything/</url>
+      <id>opennms-repo</id>
+      <url>https://archive.opennms.com/repo-maven/maven2/</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>jasper-3rdparty-ce</id>
+      <url>https://jaspersoft.jfrog.io/artifactory/third-party-ce-artifacts/</url>
+      <releases>
+        <enabled>true</enabled>
+        <updatePolicy>never</updatePolicy>
+      </releases>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
     </pluginRepository>
   </pluginRepositories>
+  <repositories>
+    <repository>
+      <id>opennms-repo</id>
+      <url>https://archive.opennms.com/repo-maven/maven2/</url>
+    </repository>
+  </repositories>
 </project>

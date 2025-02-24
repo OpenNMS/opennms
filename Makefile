@@ -75,7 +75,7 @@ help:
 	@echo "Container Images:"
 	@echo "  core-oci:              Build container image for Horizon Core, tag: opennms/horizon:latest"
 	@echo "  minion-oci:            Build container image for Minion, tag opennms/minion:latest"
-	@echo "  sentinel-oci:          Build container image for Sentiel, tag opennms/sentinel:latest"
+	@echo "  sentinel-oci:          Build container image for Sentinel, tag opennms/sentinel:latest"
 	@echo "  show-core-oci:         Analyze the OCI image using dive, tag opennms/horizon:latest"
 	@echo "  show-minion-oci:       Analyze the OCI image using dive, tag opennms/minion:latest"
 	@echo "  show-sentinel-oci:     Analyze the OCI image using dive, tag opennms/sentinel:latest"
@@ -182,7 +182,7 @@ validate: deps-build show-info
 
 .PHONY: maven-structure-graph
 maven-structure-graph: deps-build show-info
-	${MAVEN_BIN} org.opennms.maven.plugins:structure-maven-plugin:1.0:structure $(MAVEN_ARGS) -Dbuild.profile=default -Droot.dir=$(WORKING_DIRECTORY) -s .cicd-assets/structure-settings.xml --fail-at-end -Prun-expensive-tasks -Pbuild-bamboo
+	$(MAVEN_BIN) org.opennms.maven.plugins:structure-maven-plugin:1.0:structure $(MAVEN_ARGS) -Dbuild.profile=default -Droot.dir=$(WORKING_DIRECTORY) -s .cicd-assets/structure-settings.xml --fail-at-end -Prun-expensive-tasks -Pbuild-bamboo
 
 .PHONY: test-lists
 test-lists: maven-structure-graph
@@ -413,7 +413,7 @@ core-deb-pkg: deps-deb-packages
 	@sed -i='' "s/OPA_VERSION/$(OPA_VERSION)/g" debian/control
 	@echo "- adding auto-generated changelog entry"
 	export DEBEMAIL="$(DEBEMAIL)"; dch -b -v "$(OPENNMS_VERSION)-$(DEB_PKG_RELEASE)" "$(EXTRA_INFO)$(EXTRA_INFO2)"
-	export OPENNMS_SETTINGS_XML="../$(MAVEN_SETTINGS_XML)"; dpkg-buildpackage -us -uc -Zgzip
+	export OPENNMS_SETTINGS_XML="$(WORKING_DIRECTORY)/$(MAVEN_SETTINGS_XML)"; dpkg-buildpackage -us -uc -Zgzip
 	mkdir -p $(ARTIFACTS_DIR)/debian/core
 	mv ../*.deb ../*.dsc ../*.tar.gz ../*.buildinfo ../*.changes $(ARTIFACTS_DIR)/debian/core
 

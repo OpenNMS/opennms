@@ -154,4 +154,13 @@
             <version>5.0.0</version>
         </dependency>
     </dependencies>
+    <repositories>
+        <repository>
+            <id>atlassian</id>
+            <url>https://maven.artifacts.atlassian.com/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+    </repositories>
 </project>

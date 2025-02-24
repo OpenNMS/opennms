@@ -7,25 +7,9 @@
       </activation>
       <repositories>
         <repository>
-          <id>opennms-repo</id>
-          <name>OpenNMS Mega-Repository</name>
-          <url>https://maven.opennms.org/repository/everything/</url>
-          <releases>
-            <enabled>true</enabled>
-            <updatePolicy>never</updatePolicy>
-          </releases>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-        </repository>
-        <repository>
-          <id>central</id>
+          <id>maven-central</id>
           <name>Maven Central</name>
-          <url>https://repo1.maven.org/maven2/</url>
-          <releases>
-            <enabled>true</enabled>
-            <updatePolicy>never</updatePolicy>
-          </releases>
+          <url>https://repo.maven.apache.org/maven2/</url>
           <snapshots>
             <enabled>false</enabled>
           </snapshots>
@@ -33,25 +17,9 @@
       </repositories>
       <pluginRepositories>
         <pluginRepository>
-          <id>opennms-repo</id>
-          <name>OpenNMS Mega-Repository</name>
-          <url>https://maven.opennms.org/repository/everything/</url>
-          <releases>
-            <enabled>true</enabled>
-            <updatePolicy>never</updatePolicy>
-          </releases>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-          <id>central</id>
+          <id>maven-central</id>
           <name>Maven Central</name>
-          <url>https://repo1.maven.org/maven2/</url>
-          <releases>
-            <enabled>true</enabled>
-            <updatePolicy>never</updatePolicy>
-          </releases>
+          <url>https://repo.maven.apache.org/maven2/</url>
           <snapshots>
             <enabled>false</enabled>
           </snapshots>
