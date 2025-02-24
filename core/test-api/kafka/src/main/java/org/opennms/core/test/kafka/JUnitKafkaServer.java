@@ -31,7 +31,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.ServerSocket;
 import java.net.UnknownHostException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
@@ -39,6 +38,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.curator.test.TestingServer;
+import org.apache.kafka.admin.BrokerMetadata;
 import org.apache.kafka.common.utils.SystemTime;
 import org.junit.After;
 import org.junit.rules.ExternalResource;
@@ -46,12 +46,10 @@ import org.junit.rules.TemporaryFolder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import kafka.admin.BrokerMetadata;
 import kafka.server.KafkaConfig;
 import kafka.server.KafkaServer;
 import scala.Option;
 import scala.collection.JavaConverters;
-import scala.collection.mutable.Buffer;
 
 /**
  * This class starts up an embedded Kafka server for use in integration

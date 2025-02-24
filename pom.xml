@@ -1798,7 +1798,7 @@
     <elasticsearchDriftPluginVersion>2.0.5</elasticsearchDriftPluginVersion>
     <elasticsearchTargetVersion>7.17.9</elasticsearchTargetVersion>
     <errorProneAnnotationsVersion>2.25.0</errorProneAnnotationsVersion>
-    <esapiVersion>2.3.0.0</esapiVersion>
+    <esapiVersion>2.4.0.0</esapiVersion>
     <felixBridgeVersion>4.1.6</felixBridgeVersion>
     <felixProxyVersion>3.0.6</felixProxyVersion>
     <fopVersion>2.10</fopVersion>
@@ -1906,7 +1906,7 @@
     <paxWebVersion>7.3.29</paxWebVersion>
     <slingJohnzonVersion>1.2.16</slingJohnzonVersion>
     <!-- END: versions must match versions provided by embedded Karaf -->
-    <kafkaBundleVersion>3.5.1_1</kafkaBundleVersion>
+    <kafkaBundleVersion>3.6.2_1</kafkaBundleVersion>
     <kafkaVersion>3.6.2</kafkaVersion>
     <kotlinVersion>1.9.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
