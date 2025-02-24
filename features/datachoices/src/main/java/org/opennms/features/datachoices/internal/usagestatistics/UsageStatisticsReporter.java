@@ -345,17 +345,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         //populating current system cpu utilization
         SystemInfo systemInfo = new SystemInfo();
         CentralProcessor processor = systemInfo.getHardware().getProcessor();
-        // Capture initial CPU tick snapshot
-        long[] prevTicks = processor.getSystemCpuLoadTicks();
 
-        // Wait for a short time to measure CPU load difference
-        try {
-            Thread.sleep(1000); // 1-second delay
-        } catch (InterruptedException e) {
-            LOG.warn("Exception in Thread.sleep(1000)", e);
-        }
-        // Measure CPU load between two snapshots
-        double cpuLoad = processor.getSystemCpuLoadBetweenTicks(prevTicks) * 100;
+        double cpuLoad =  processor.getSystemCpuLoad(1000) * 100;
         usageStatisticsReport.setCpuUtilization(String.format("%.2f%%", cpuLoad));
 
         Object totalPhysicalMemorySizeObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE);
