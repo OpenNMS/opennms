@@ -26,48 +26,25 @@ import org.opennms.features.grpc.exporter.alarms.EventService;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
 import  org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
-import org.opennms.features.grpc.exporter.events.EventConstants;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import java.util.List;
+
 import java.util.Objects;
 
-public class EventsEventHandler implements EventListener {
-    private static final Logger LOG = LoggerFactory.getLogger(EventsEventHandler.class);
+public class EventsExporter implements EventListener {
+    private static final Logger LOG = LoggerFactory.getLogger(EventsExporter.class);
 
     private final EventSubscriptionService eventSubscriptionService;
     private final EventService eventService;
 
-    public EventsEventHandler(final EventSubscriptionService eventSubscriptionService,
-                              final EventService eventService) {
+    public EventsExporter(final EventSubscriptionService eventSubscriptionService,
+                          final EventService eventService) {
         this.eventSubscriptionService = Objects.requireNonNull(eventSubscriptionService);
         this.eventService = Objects.requireNonNull(eventService);
     }
 
     public void start() {
-
-        this.eventSubscriptionService.addEventListener(this, List.of(
-            EventConstants.SERVICE_RESPONSIVE_EVENT_UEI,
-            EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI,
-            EventConstants.SERVICE_UNMANAGED_EVENT_UEI,
-
-            EventConstants.NODE_REGAINED_SERVICE_EVENT_UEI,
-            EventConstants.NODE_LOST_SERVICE_EVENT_UEI,
-
-            EventConstants.INTERFACE_UP_EVENT_UEI,
-            EventConstants.INTERFACE_DOWN_EVENT_UEI,
-
-            EventConstants.NODE_UP_EVENT_UEI,
-            EventConstants.NODE_DOWN_EVENT_UEI,
-
-            //Inventory events:
-            EventConstants.NODE_GAINED_SERVICE_EVENT_UEI,
-            EventConstants.SERVICE_DELETED_EVENT_UEI,
-            EventConstants.INTERFACE_DELETED_EVENT_UEI,
-            EventConstants.INTERFACE_REPARENTED_EVENT_UEI,
-            EventConstants.NODE_DELETED_EVENT_UEI
-
-        ));
+        this.eventSubscriptionService.addEventListener(this);
     }
 
     public void stop() {
@@ -76,12 +53,12 @@ public class EventsEventHandler implements EventListener {
 
     @Override
     public String getName() {
-        return EventsEventHandler.class.getName();
+        return EventsExporter.class.getName();
     }
 
     @Override
     public void onEvent(IEvent event) {
-        LOG.info("received event: {}", event);
+        LOG.info("received new event: {}", event);
         if (event.getNodeid() == null) {
             return;
         }

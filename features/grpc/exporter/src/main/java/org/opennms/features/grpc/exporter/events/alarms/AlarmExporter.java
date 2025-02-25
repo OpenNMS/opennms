@@ -29,12 +29,12 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Objects;
 
-public class AlarmEventHandler implements AlarmLifecycleListener {
-    private static final Logger LOG = LoggerFactory.getLogger(AlarmEventHandler.class);
+public class AlarmExporter implements AlarmLifecycleListener {
+    private static final Logger LOG = LoggerFactory.getLogger(AlarmExporter.class);
 
     private final AlarmService alarmService;
 
-    public AlarmEventHandler(final AlarmService alarmService) {
+    public AlarmExporter(final AlarmService alarmService) {
         this.alarmService = Objects.requireNonNull(alarmService);
     }
 

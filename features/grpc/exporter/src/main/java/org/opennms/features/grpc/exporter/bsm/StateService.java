@@ -28,7 +28,6 @@ import org.opennms.integration.api.v1.dao.NodeDao;
 import org.opennms.integration.api.v1.runtime.RuntimeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;

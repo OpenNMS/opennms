@@ -26,9 +26,9 @@ import org.opennms.features.grpc.exporter.bsm.InventoryService;
 import org.opennms.features.grpc.exporter.common.MonitoredServiceWithMetadata;
 import org.opennms.features.grpc.exporter.events.EventConstants;
 import org.opennms.integration.api.v1.dao.NodeDao;
-import org.opennms.integration.api.v1.events.EventListener;
-import org.opennms.integration.api.v1.events.EventSubscriptionService;
-import org.opennms.integration.api.v1.model.InMemoryEvent;
+import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.EventSubscriptionService;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.List;
@@ -76,26 +76,21 @@ public class InventoryEventHandler implements EventListener {
     }
 
     @Override
-    public int getNumThreads() {
-        return 1;
-    }
-
-    @Override
-    public void onEvent(final InMemoryEvent event) {
-        LOG.debug("Got event: {}", event);
+    public void onEvent(final IEvent event) {
+        LOG.debug("Got inventory-event: {}", event);
 
         switch (event.getUei()) {
             case EventConstants.NODE_GAINED_SERVICE_EVENT_UEI:
-                if (event.getNodeId() == null || event.getInterface() == null || event.getService() == null) {
+                if (event.getNodeid() == null || event.getInterface() == null || event.getService() == null) {
                     return;
                 }
 
-                final var node = this.nodeDao.getNodeById(event.getNodeId());
+                final var node = this.nodeDao.getNodeById(event.getNodeid().intValue());
                 if (node == null) {
                     return;
                 }
 
-                final var iface = node.getInterfaceByIp(event.getInterface()).orElse(null);
+                final var iface = node.getInterfaceByIp(event.getInterfaceAddress()).orElse(null);
                 if (iface == null) {
                     return;
                 }

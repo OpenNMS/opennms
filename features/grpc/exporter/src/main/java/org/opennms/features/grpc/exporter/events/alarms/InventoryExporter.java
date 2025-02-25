@@ -22,31 +22,26 @@
 
 package org.opennms.features.grpc.exporter.events.alarms;
 
-import org.opennms.features.grpc.exporter.alarms.NmsInventoryService;
 import org.opennms.features.grpc.exporter.events.EventConstants;
-//import org.opennms.integration.api.v1.dao.NodeDao;
-import org.opennms.integration.api.v1.events.EventListener;
-import org.opennms.integration.api.v1.events.EventSubscriptionService;
-import org.opennms.integration.api.v1.model.InMemoryEvent;
+import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Objects;
 
-public class NmsInventoryEventHandler implements EventListener {
-    private static final Logger LOG = LoggerFactory.getLogger(NmsInventoryEventHandler.class);
+public class InventoryExporter implements EventListener {
+    private static final Logger LOG = LoggerFactory.getLogger(InventoryExporter.class);
 
     private final EventSubscriptionService eventSubscriptionService;
-
     private final NodeDao nodeDao;
+    private final org.opennms.features.grpc.exporter.alarms.InventoryExporter inventoryService;
 
-    private final NmsInventoryService inventoryService;
-
-    public NmsInventoryEventHandler(final EventSubscriptionService eventSubscriptionService,
-                                    final NodeDao nodeDao,
-                                    final NmsInventoryService inventoryService) {
+    public InventoryExporter(final EventSubscriptionService eventSubscriptionService,
+                             final NodeDao nodeDao,
+                             final org.opennms.features.grpc.exporter.alarms.InventoryExporter inventoryService) {
         this.eventSubscriptionService = Objects.requireNonNull(eventSubscriptionService);
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.inventoryService = Objects.requireNonNull(inventoryService);
@@ -74,25 +69,20 @@ public class NmsInventoryEventHandler implements EventListener {
 
     @Override
     public String getName() {
-        return NmsInventoryEventHandler.class.getName();
+        return InventoryExporter.class.getName();
     }
 
     @Override
-    public int getNumThreads() {
-        return 1;
-    }
-
-    @Override
-    public void onEvent(final InMemoryEvent event) {
+    public void onEvent(final IEvent event) {
         LOG.debug("Got NmsInventory event: {}", event);
 
         switch (event.getUei()) {
             case EventConstants.NODE_GAINED_SERVICE_EVENT_UEI:
-                if (event.getNodeId() == null || event.getInterface() == null || event.getService() == null) {
+                if (event.getNodeid() == null || event.getInterface() == null || event.getService() == null) {
                     return;
                 }
 
-                final var node = this.nodeDao.get(event.getNodeId());
+                final var node = this.nodeDao.get(event.getNodeid().intValue());
                 if (node == null) {
                     return;
                 }

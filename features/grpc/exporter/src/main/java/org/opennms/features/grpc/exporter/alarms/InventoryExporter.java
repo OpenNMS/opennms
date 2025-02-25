@@ -44,8 +44,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class NmsInventoryService {
-    private static final Logger LOG = LoggerFactory.getLogger(NmsInventoryService.class);
+public class InventoryExporter {
+    private static final Logger LOG = LoggerFactory.getLogger(InventoryExporter.class);
 
     private final NodeDao nodeDao;
     private final IpInterfaceDao ipInterfaceDao;
@@ -56,13 +56,13 @@ public class NmsInventoryService {
     private final Duration snapshotInterval;
     private final ScheduledExecutorService scheduler;
 
-    public NmsInventoryService(final NodeDao nodeDao,
-                               final IpInterfaceDao ipInterfaceDao,
-                               final SnmpInterfaceDao snmpInterfaceDao,
-                               final MonitoredServiceDao onmsMonitoredServiceDao,
-                               final RuntimeInfo runtimeInfo,
-                               final AlarmInventoryGrpcClient client,
-                               final Duration snapshotInterval) {
+    public InventoryExporter(final NodeDao nodeDao,
+                             final IpInterfaceDao ipInterfaceDao,
+                             final SnmpInterfaceDao snmpInterfaceDao,
+                             final MonitoredServiceDao onmsMonitoredServiceDao,
+                             final RuntimeInfo runtimeInfo,
+                             final AlarmInventoryGrpcClient client,
+                             final Duration snapshotInterval) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.ipInterfaceDao = ipInterfaceDao;
         this.snmpInterfaceDao = snmpInterfaceDao;
@@ -74,13 +74,13 @@ public class NmsInventoryService {
                 new NamedThreadFactory("nms-inventory-service-snapshot-sender"));
     }
 
-    public NmsInventoryService(final NodeDao nodeDao,
-                               final IpInterfaceDao ipInterfaceDao,
-                               final SnmpInterfaceDao snmpInterfaceDao,
-                               final MonitoredServiceDao onmsMonitoredServiceDao,
-                               final RuntimeInfo runtimeInfo,
-                               final AlarmInventoryGrpcClient client,
-                               final long snapshotInterval) {
+    public InventoryExporter(final NodeDao nodeDao,
+                             final IpInterfaceDao ipInterfaceDao,
+                             final SnmpInterfaceDao snmpInterfaceDao,
+                             final MonitoredServiceDao onmsMonitoredServiceDao,
+                             final RuntimeInfo runtimeInfo,
+                             final AlarmInventoryGrpcClient client,
+                             final long snapshotInterval) {
         this(nodeDao, ipInterfaceDao, snmpInterfaceDao, onmsMonitoredServiceDao, runtimeInfo, client, Duration.ofSeconds(snapshotInterval));
     }
 

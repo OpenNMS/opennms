@@ -123,7 +123,7 @@
         <dependency>
             <groupId>org.opennms</groupId>
             <artifactId>opennms-alarm-api</artifactId>
-            <version>33.0.3-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.integration.api</groupId>
