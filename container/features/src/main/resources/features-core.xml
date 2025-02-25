@@ -12,10 +12,6 @@
          Karaf side.
     -->
 
-    <feature name="oshi-core" version="${oshi.core.version}">
-        <bundle dependency="true">mvn:com.github.oshi/oshi-core/${oshi.core.version}</bundle>
-    </feature>
-
     <feature name="asm" version="${asmVersion}" description="ASM Java Bytecode Manipulation Framework">
         <bundle>mvn:org.ow2.asm/asm/${asmVersion}</bundle>
         <bundle>mvn:org.ow2.asm/asm-analysis/${asmVersion}</bundle>
