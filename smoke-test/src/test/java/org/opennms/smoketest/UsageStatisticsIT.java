@@ -137,9 +137,9 @@ public class UsageStatisticsIT {
         assertThat((long) usageReport.get("snmpInterfaces"), is(0L));
         assertThat((long) usageReport.get("nodes"), is(7L));
         assertThat((long) usageReport.get("events"), greaterThan(1L));
-        assertThat((long) usageReport.get("eventsPastHours"), greaterThanOrEqualTo(0L));
+        assertThat((long) usageReport.get("eventsLastHours"), greaterThanOrEqualTo(0L));
         assertThat((long) usageReport.get("alarms"), is(0L));
-        assertThat((long) usageReport.get("alarmsPastHours"), greaterThanOrEqualTo(0L));
+        assertThat((long) usageReport.get("alarmsLastHours"), greaterThanOrEqualTo(0L));
         assertThat((long) usageReport.get("minions"), is(0L));
 
         final Map<String, Integer> appliances = (Map<String, Integer>)usageReport.get("applianceCounts");
