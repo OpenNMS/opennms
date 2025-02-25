@@ -3,7 +3,7 @@
 ##
 ARG BASE_IMAGE="opennms/deploy-base:ubuntu-3.4.0.b268-jre-11"
 
-FROM ${BASE_IMAGE} as sentinel-tarball
+FROM ${BASE_IMAGE} AS sentinel-tarball
 
 ADD --chown=10001:0 ./tarball-root/ /opt/usr-share/sentinel/
 RUN chmod -R g-w /opt/usr-share/sentinel && \
@@ -20,7 +20,7 @@ RUN chmod -R g-w /opt/usr-share/sentinel && \
         /opt/usr-share/sentinel/repositories \
         -type d -print0 | xargs -0 chmod 2775
 
-FROM ${BASE_IMAGE} as sentinel-base
+FROM ${BASE_IMAGE} AS sentinel-base
 
 ARG REQUIRED_DEBS="hostname wget gettext openssh-client uuid-runtime rsync"
 
@@ -51,7 +51,7 @@ RUN grep security /etc/apt/sources.list > /etc/apt/security.sources.list && \
 ##
 # Download plugins
 ##
-FROM ${BASE_IMAGE} as sentinel-plugins
+FROM ${BASE_IMAGE} AS sentinel-plugins
 
 COPY plugins.sh /tmp/plugins.sh 
 RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
