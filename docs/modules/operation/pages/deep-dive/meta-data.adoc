@@ -267,6 +267,7 @@ The following {page-component-title} components allow the use of the Metadata DS
 * <<deep-dive/thresholds/thresholding.adoc#ga-threshold-metadata, Expression-Based Thresholds>>.
 * <<deep-dive/notifications/introduction.adoc#ga-notifications, Notifications>>.
 * <<deep-dive/alarms/alarm-handling.adoc#ga-advanced-alarm-handling, Alarmd Drools rules>>.
+* <<deep-dive/admin/configuration/system-properties.adoc#system-properties, System Properties>>.
 
 Furthermore, some {page-component-title} configuration files allow the use of Metadata DSL to access the global scope `scv` in order to reference credentials in the Secure Credentials Vault:
 
