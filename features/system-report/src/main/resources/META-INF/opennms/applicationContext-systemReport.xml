@@ -26,6 +26,10 @@
 	<bean name="hardDriveReportPlugin" class="org.opennms.systemreport.system.HardDriveReportPlugin" />
 	<onmsgi:service id="hardDriveReportPluginService" ref="hardDriveReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
 
+	<!-- User Logins Details -->
+	<bean name="userLoginsReportPlugin" class="org.opennms.systemreport.system.UserLoginsReportPlugin" />
+	<onmsgi:service id="userLoginsReportPluginService" ref="userLoginsReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
+
 	<!-- OpenNMS information -->
 	<bean name="opennmsReportPlugin" class="org.opennms.systemreport.opennms.OpenNMSReportPlugin" />
 	<onmsgi:service id="opennmsReportPluginService" ref="opennmsReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
@@ -97,5 +101,11 @@
 	<onmsgi:service id="usersPropertiesFileSanitizerService" ref="usersPropertiesFileSanitizer" interface="org.opennms.systemreport.sanitizer.ConfigFileSanitizer" />
 
 	<onmsgi:list id="configFileSanitizerList" interface="org.opennms.systemreport.sanitizer.ConfigFileSanitizer" />
+
+	<onmsgi:reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
+
+	<bean id="userLoginEventListener" class="org.opennms.systemreport.event.UserLoginEventListener" init-method="init" destroy-method="destroy">
+		<property name="eventSubscriptionService" ref="eventSubscriptionService" />
+	</bean>
 
 </beans>

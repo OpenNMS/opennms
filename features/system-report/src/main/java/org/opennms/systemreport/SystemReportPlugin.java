@@ -59,4 +59,6 @@ public interface SystemReportPlugin extends Comparable<SystemReportPlugin> {
     public boolean getOutputsFiles();
 
     public boolean isVisible();
+
+    public String defaultFormat();
 }

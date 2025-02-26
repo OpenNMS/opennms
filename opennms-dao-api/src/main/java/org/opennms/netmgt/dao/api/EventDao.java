@@ -44,4 +44,5 @@ public interface EventDao extends LegacyOnmsDao<OnmsEvent, Long> {
 
     List<OnmsEvent> getEventsForEventParameters(final Map<String, String> eventParameters);
 
+    int getNumEventsLastHours(int hours );
 }

@@ -22,7 +22,6 @@
 package org.opennms.systemreport.system;
 
 import static org.junit.Assert.assertTrue;
-
 import java.util.Map;
 
 import org.junit.Test;
@@ -42,9 +41,19 @@ public class SystemReportPluginIT {
     private SystemReportPlugin m_osReportPlugin = new OSReportPlugin();
     private SystemReportPlugin m_onmsReportPlugin = new OpenNMSReportPlugin();
     private SystemReportPlugin m_hardDriveReportPlugin=new HardDriveReportPlugin();
+    private SystemReportPlugin n_userLoginsReportPlugin = new UserLoginsReportPlugin();
 
     public SystemReportPluginIT() {
         MockLogAppender.setupLogging(false, "ERROR");
+    }
+
+    @Test
+    public void testUserLoginReportPlugin(){
+        String projectHome = System.getProperty("user.dir");
+        System.setProperty("opennms.home",projectHome+"/src/test/resources/");
+        final Map<String, org.springframework.core.io.Resource> entries = n_userLoginsReportPlugin.getEntries();
+        assertTrue(entries.containsKey("csvHeaders"));
+        assertTrue(entries.containsKey("csvData"));
     }
 
     @Test

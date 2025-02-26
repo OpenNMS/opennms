@@ -99,4 +99,9 @@ public class MockEventDao extends AbstractMockDao<OnmsEvent, Long> implements Ev
 
         return stream.distinct().collect(Collectors.toList());
     }
+
+    @Override
+    public int getNumEventsLastHours(int hours) {
+        return 0;
+    }
 }
