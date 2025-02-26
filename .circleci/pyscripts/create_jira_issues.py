@@ -24,6 +24,35 @@ SECURITY_LEVEL = "TOG (migrated)"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
+# Blocklist of package names or vulnerability IDs to ignore
+BLOCKLIST = {
+    "libxml2", 
+    "openssl",
+    "golang.org/x/net",
+    "org.liquibase:liquibase-core",
+    "org.apache.cxf:cxf-core",
+    "net.minidev:json-smart",
+    "io.netty:netty-handler",
+    "python-unversioned-command",
+    "openssl-libs",
+    "org.apache.camel:camel-core",
+    "CVE-2022-41721",
+    "CVE-2022-41723",
+    "CVE-2022-0839",
+    "CVE-2025-23184",
+    "CVE-2019-0188",
+    "CVE-2024-57699",
+    "CVE-2025-24970",
+    "CVE-2023-6597",
+    "CVE-2024-12797",
+    "CVE-2024-12797",
+    "CVE-2024-56171",
+    "CVE-2023-39325",
+    "CVE-2024-45338",
+    "CVE-2024-2961", 
+    "CVE-2020-11971",
+}
+
 processed_packages = set()
 processed_issues = set()
 
@@ -64,7 +93,7 @@ def parse_filtered_vulnerabilities(file_path):
 def issue_exists_for_package_and_cves(package_name, vulnerability_ids):
     cve_query = " OR ".join([f'description ~ "{vuln_id}"' for vuln_id in vulnerability_ids])
     jql = (
-        f'project="{PROJECT_KEY}" AND summary ~ "{package_name}" '
+        f'project="{PROJECT_KEY}" AND summary ~ "\\"{package_name}\\"" '
         f'AND ({cve_query}) '
         f'AND resolution NOT IN ("Won\'t Fix", "Not a Bug")'
     )
@@ -101,7 +130,6 @@ def add_cves_to_existing_issue(issue_key, vulnerabilities):
         logging.info(f"Some CVEs are already listed in issue {issue_key}. Skipping update for those.")
         return
 
-    # Update the issue description and labels
     updated_description = current_description + "\n" + new_cves_text
     if "trivy" not in current_labels:
         current_labels.append("trivy")
@@ -149,7 +177,6 @@ def create_issue_for_package(package_name, vulnerabilities):
     elif "LOW" in severity_levels:
         priority_name = "Low"
 
-    # Format the issue summary and description
     summary = f"Trivy Bug: Vulnerabilities in {package_name}"
     vulnerabilities_list = "\n".join([format_vulnerability_details(v) for v in vulnerabilities])
     description = (
@@ -158,7 +185,6 @@ def create_issue_for_package(package_name, vulnerabilities):
         f"{vulnerabilities_list}"
     )
 
-    # Prepare the issue payload
     issue_payload = {
         "fields": {
             "project": {
@@ -202,6 +228,10 @@ def create_issues(vulnerabilities):
     for package_name, package_vulnerabilities in packages.items():
         if package_name in processed_packages:
             logging.info(f"Package {package_name} already processed. Skipping.")
+            continue
+
+        if package_name in BLOCKLIST or any(v['VulnerabilityID'] in BLOCKLIST for v in package_vulnerabilities):
+            logging.info(f"Package {package_name} or its vulnerabilities are in the blocklist. Skipping.")
             continue
 
         vulnerability_ids = [v['VulnerabilityID'] for v in package_vulnerabilities]
