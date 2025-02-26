@@ -10,6 +10,7 @@ JIRA_USER = os.getenv("JIRA_USER")
 JIRA_API_TOKEN = os.getenv("JIRA_API_TOKEN")
 JIRA_URL = os.getenv("JIRA_URL")
 
+# Priority mapping for Trivy severity levels
 PRIORITY_MAP = {
     "CRITICAL": "Critical",
     "HIGH": "High",
@@ -18,19 +19,16 @@ PRIORITY_MAP = {
     "Trivial": "Trivial"
 }
 
-
+# Security level for Trivy issues
 SECURITY_LEVEL = "TOG (migrated)"
 
-
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-
 
 processed_packages = set()
 processed_issues = set()
 
 
 def parse_filtered_vulnerabilities(file_path):
-
     vulnerabilities = []
 
     try:
@@ -63,11 +61,11 @@ def parse_filtered_vulnerabilities(file_path):
     return vulnerabilities
 
 
-def issue_exists_for_vulnerability(package_name, vulnerability_id):
-
+def issue_exists_for_package_and_cves(package_name, vulnerability_ids):
+    cve_query = " OR ".join([f'description ~ "{vuln_id}"' for vuln_id in vulnerability_ids])
     jql = (
         f'project="{PROJECT_KEY}" AND summary ~ "{package_name}" '
-        f'AND description ~ "{vulnerability_id}" '
+        f'AND ({cve_query}) '
         f'AND resolution NOT IN ("Won\'t Fix", "Not a Bug")'
     )
     jql = urllib.parse.quote(jql)
@@ -79,12 +77,11 @@ def issue_exists_for_vulnerability(package_name, vulnerability_id):
         issues = response.json().get('issues', [])
         return issues[0] if issues else None
     except requests.exceptions.RequestException as e:
-        logging.error(f"Error fetching issues for {package_name} and {vulnerability_id}: {e}")
+        logging.error(f"Error fetching issues for {package_name} and CVEs: {e}")
         return None
 
 
 def add_cves_to_existing_issue(issue_key, vulnerabilities):
-
     issue_url = f"{JIRA_URL}/rest/api/2/issue/{issue_key}"
 
     try:
@@ -104,6 +101,7 @@ def add_cves_to_existing_issue(issue_key, vulnerabilities):
         logging.info(f"Some CVEs are already listed in issue {issue_key}. Skipping update for those.")
         return
 
+    # Update the issue description and labels
     updated_description = current_description + "\n" + new_cves_text
     if "trivy" not in current_labels:
         current_labels.append("trivy")
@@ -126,7 +124,6 @@ def add_cves_to_existing_issue(issue_key, vulnerabilities):
 
 
 def format_vulnerability_details(vulnerability):
-
     return (
         f"*Vulnerability ID:* {vulnerability['VulnerabilityID']}\n"
         f"*Severity:* {vulnerability['Severity']}\n"
@@ -141,7 +138,6 @@ def format_vulnerability_details(vulnerability):
 
 
 def create_issue_for_package(package_name, vulnerabilities):
-
     severity_levels = set([v['Severity'] for v in vulnerabilities])
     priority_name = "Trivial"
     if "CRITICAL" in severity_levels:
@@ -153,6 +149,7 @@ def create_issue_for_package(package_name, vulnerabilities):
     elif "LOW" in severity_levels:
         priority_name = "Low"
 
+    # Format the issue summary and description
     summary = f"Trivy Bug: Vulnerabilities in {package_name}"
     vulnerabilities_list = "\n".join([format_vulnerability_details(v) for v in vulnerabilities])
     description = (
@@ -195,7 +192,6 @@ def create_issue_for_package(package_name, vulnerabilities):
 
 
 def create_issues(vulnerabilities):
-
     packages = {}
     for vulnerability in vulnerabilities:
         pkg_name = vulnerability['PkgName']
@@ -209,7 +205,7 @@ def create_issues(vulnerabilities):
             continue
 
         vulnerability_ids = [v['VulnerabilityID'] for v in package_vulnerabilities]
-        existing_issue = issue_exists_for_vulnerability(package_name, vulnerability_ids[0])
+        existing_issue = issue_exists_for_package_and_cves(package_name, vulnerability_ids)
 
         if existing_issue:
             issue_key = existing_issue["key"]
@@ -228,7 +224,6 @@ def create_issues(vulnerabilities):
 
 
 def main():
-
     vulnerabilities = parse_filtered_vulnerabilities('filtered_vulnerabilities.txt')
 
     if not vulnerabilities:
