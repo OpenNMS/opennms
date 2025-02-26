@@ -23,6 +23,8 @@ SECURITY_LEVEL = "TOG (migrated)"
 
 logging.basicConfig(level=logging.INFO)
 
+processed_issues = set()
+
 def parse_filtered_vulnerabilities(file_path):
     vulnerabilities = []
 
@@ -56,7 +58,7 @@ def parse_filtered_vulnerabilities(file_path):
     return vulnerabilities
 
 def issue_exists_for_vulnerability(package_name, vulnerability_id):
-    jql = f'project="{PROJECT_KEY}" AND summary ~ "{package_name}" AND description ~ "{vulnerability_id}" AND resolution not in ("Won\'t Fix", "Not a Bug") AND status not in ("Closed", "Resolved")'
+    jql = f'project="{PROJECT_KEY}" AND summary ~ "{package_name}" AND description ~ "{vulnerability_id}" AND resolution not in ("Won\'t Fix", "Not a Bug")'
     jql = urllib.parse.quote(jql)
     decoded_jql = urllib.parse.unquote(jql)
     logging.info(f"JQL Query: {decoded_jql}")
@@ -88,7 +90,6 @@ def add_cves_to_existing_issue(issue_key, vulnerabilities):
 
     new_cves_text = "\n".join([format_vulnerability_details(v) for v in vulnerabilities])
     new_cve_ids = [v['VulnerabilityID'] for v in vulnerabilities]
-
 
     if any(cve in current_description for cve in new_cve_ids):
         logging.info(f"Some CVEs are already listed in issue {issue_key}. Skipping update for those.")
@@ -174,7 +175,9 @@ def create_issue_for_package(package_name, vulnerabilities):
                                  headers={"Content-Type": "application/json"},
                                  data=json.dumps(issue_payload))
         response.raise_for_status()
-        logging.info(f"Created issue: {response.json().get('key')}")
+        created_issue_key = response.json().get('key')
+        processed_issues.add(created_issue_key)  # Mark this issue as processed
+        logging.info(f"Created issue: {created_issue_key}")
     except requests.exceptions.RequestException as e:
         logging.error(f"Failed to create issue: {e}")
 
@@ -187,13 +190,19 @@ def create_issues(vulnerabilities):
         packages[pkg_name].append(vulnerability)
 
     for package_name, package_vulnerabilities in packages.items():
+
         vulnerability_ids = [v['VulnerabilityID'] for v in package_vulnerabilities]
         existing_issue = issue_exists_for_vulnerability(package_name, vulnerability_ids[0])
 
         if existing_issue:
             issue_key = existing_issue["key"]
             logging.info(f"Issue for {package_name} exists: {issue_key}")
-            add_cves_to_existing_issue(issue_key, package_vulnerabilities)
+
+            if issue_key not in processed_issues:
+                add_cves_to_existing_issue(issue_key, package_vulnerabilities)
+                processed_issues.add(issue_key)  # Mark the issue as processed
+            else:
+                logging.info(f"Issue {issue_key} already processed. Skipping.")
         else:
             logging.info(f"Issue for {package_name} does not exist. Creating issue.")
             create_issue_for_package(package_name, package_vulnerabilities)
