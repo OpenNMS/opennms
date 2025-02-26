@@ -38,7 +38,7 @@
     <reference id="applicationDao" interface="org.opennms.netmgt.dao.api.ApplicationDao" availability="mandatory"/>
     <reference id="outageDao" interface="org.opennms.netmgt.dao.api.OutageDao" availability="mandatory"/>
     <reference id="notificationDao" interface="org.opennms.netmgt.dao.api.NotificationDao" availability="mandatory"/>
-    
+
     <bean id="serviceConfigurationFactory" class="org.opennms.netmgt.config.ServiceConfigFactory" />
 
     <bean id="destinationPathFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
