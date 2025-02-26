@@ -13,6 +13,9 @@
     <version>${jungVersion}</version>
     <description>shaded osgi bundle containing complete jung implementation</description>
     <packaging>bundle</packaging>
+    <properties>
+        <guavaJungVersion>19.0</guavaJungVersion>
+    </properties>
     <build>
         <plugins>
             <plugin>
@@ -70,6 +73,11 @@
             <groupId>net.sf.jung</groupId>
             <artifactId>jung-graph-impl</artifactId>
             <version>${jungVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guavaJungVersion}</version>
         </dependency>
     </dependencies>
 </project>
