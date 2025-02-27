@@ -20,9 +20,10 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.events.alarms;
+package org.opennms.features.grpc.exporter.events.nmsinventory;
 
 import org.opennms.features.grpc.exporter.events.EventConstants;
+import org.opennms.features.grpc.exporter.nmsinventory.InventoryService;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -37,11 +38,11 @@ public class InventoryExporter implements EventListener {
 
     private final EventSubscriptionService eventSubscriptionService;
     private final NodeDao nodeDao;
-    private final org.opennms.features.grpc.exporter.alarms.InventoryExporter inventoryService;
+    private final InventoryService inventoryService;
 
     public InventoryExporter(final EventSubscriptionService eventSubscriptionService,
                              final NodeDao nodeDao,
-                             final org.opennms.features.grpc.exporter.alarms.InventoryExporter inventoryService) {
+                             final InventoryService inventoryService) {
         this.eventSubscriptionService = Objects.requireNonNull(eventSubscriptionService);
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.inventoryService = Objects.requireNonNull(inventoryService);

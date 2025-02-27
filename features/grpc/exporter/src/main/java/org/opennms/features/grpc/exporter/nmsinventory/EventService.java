@@ -20,40 +20,34 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.alarms;
+package org.opennms.features.grpc.exporter.nmsinventory;
 
 import org.opennms.core.utils.SystemInfoUtils;
-import org.opennms.features.grpc.exporter.mapper.AlarmMapper;
+import org.opennms.features.grpc.exporter.mapper.EventsMapper;
 import org.opennms.integration.api.v1.runtime.RuntimeInfo;
-import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Objects;
 
-public class AlarmService {
-    private static final Logger LOG = LoggerFactory.getLogger(AlarmService.class);
+public class EventService {
+    private static final Logger LOG = LoggerFactory.getLogger(EventService.class);
 
     private final RuntimeInfo runtimeInfo;
 
-    private final AlarmInventoryGrpcClient client;
+    private final NmsInventoryGrpcClient client;
 
-    public AlarmService(
+    public EventService(
                         final RuntimeInfo runtimeInfo,
-                        final AlarmInventoryGrpcClient client
+                        final NmsInventoryGrpcClient client
     ) {
         this.runtimeInfo = Objects.requireNonNull(runtimeInfo);
         this.client = Objects.requireNonNull(client);
     }
 
-    public void sendAlarmsSnapshot(final List<org.opennms.netmgt.model.OnmsAlarm> alarms) {
-        final var alarmUpdates = AlarmMapper.INSTANCE.toAlarmUpdatesList(alarms, this.runtimeInfo, SystemInfoUtils.getInstanceId(),true);
-        this.client.sendAlarmUpdate(alarmUpdates);
-        LOG.info("Sent snapshot for {} alarms.", alarms.stream().count());
-    }
-
-    public void sendAddUpdateAlarms(final List<OnmsAlarm> onmsAlarms) {
-        final var alarms = AlarmMapper.INSTANCE.toAlarmUpdatesList(onmsAlarms, this.runtimeInfo, SystemInfoUtils.getInstanceId(), false);
-        this.client.sendAlarmUpdate(alarms);
+    public void sendEventUpdate(final IEvent event) {
+            final var events = EventsMapper.INSTANCE.toEventUpdateList(List.of(event), this.runtimeInfo, SystemInfoUtils.getInstanceId(), false);
+            this.client.sendEventUpdate(events);
     }
 }

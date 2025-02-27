@@ -20,7 +20,7 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.alarms;
+package org.opennms.features.grpc.exporter.nmsinventory;
 
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.features.grpc.exporter.NamedThreadFactory;
@@ -44,25 +44,25 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class InventoryExporter {
-    private static final Logger LOG = LoggerFactory.getLogger(InventoryExporter.class);
+public class InventoryService {
+    private static final Logger LOG = LoggerFactory.getLogger(InventoryService.class);
 
     private final NodeDao nodeDao;
     private final IpInterfaceDao ipInterfaceDao;
     private final SnmpInterfaceDao snmpInterfaceDao;
     private final MonitoredServiceDao onmsMonitoredServiceDao;
     private final RuntimeInfo runtimeInfo;
-    private final AlarmInventoryGrpcClient client;
+    private final NmsInventoryGrpcClient client;
     private final Duration snapshotInterval;
     private final ScheduledExecutorService scheduler;
 
-    public InventoryExporter(final NodeDao nodeDao,
-                             final IpInterfaceDao ipInterfaceDao,
-                             final SnmpInterfaceDao snmpInterfaceDao,
-                             final MonitoredServiceDao onmsMonitoredServiceDao,
-                             final RuntimeInfo runtimeInfo,
-                             final AlarmInventoryGrpcClient client,
-                             final Duration snapshotInterval) {
+    public InventoryService(final NodeDao nodeDao,
+                            final IpInterfaceDao ipInterfaceDao,
+                            final SnmpInterfaceDao snmpInterfaceDao,
+                            final MonitoredServiceDao onmsMonitoredServiceDao,
+                            final RuntimeInfo runtimeInfo,
+                            final NmsInventoryGrpcClient client,
+                            final Duration snapshotInterval) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.ipInterfaceDao = ipInterfaceDao;
         this.snmpInterfaceDao = snmpInterfaceDao;
@@ -74,13 +74,13 @@ public class InventoryExporter {
                 new NamedThreadFactory("nms-inventory-service-snapshot-sender"));
     }
 
-    public InventoryExporter(final NodeDao nodeDao,
-                             final IpInterfaceDao ipInterfaceDao,
-                             final SnmpInterfaceDao snmpInterfaceDao,
-                             final MonitoredServiceDao onmsMonitoredServiceDao,
-                             final RuntimeInfo runtimeInfo,
-                             final AlarmInventoryGrpcClient client,
-                             final long snapshotInterval) {
+    public InventoryService(final NodeDao nodeDao,
+                            final IpInterfaceDao ipInterfaceDao,
+                            final SnmpInterfaceDao snmpInterfaceDao,
+                            final MonitoredServiceDao onmsMonitoredServiceDao,
+                            final RuntimeInfo runtimeInfo,
+                            final NmsInventoryGrpcClient client,
+                            final long snapshotInterval) {
         this(nodeDao, ipInterfaceDao, snmpInterfaceDao, onmsMonitoredServiceDao, runtimeInfo, client, Duration.ofSeconds(snapshotInterval));
     }
 

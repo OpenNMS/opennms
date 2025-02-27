@@ -67,6 +67,7 @@ public class BsmGrpcClient extends GrpcExporter {
         super.startGrpcConnection();
         this.monitoredServiceSyncStub = ServiceSyncGrpc.newStub(super.getChannel());
         connectStreams();
+        LOG.info("BSM GrpcExporterClient started to {}", super.getHost());
     }
 
     public void stop() {
@@ -74,7 +75,7 @@ public class BsmGrpcClient extends GrpcExporter {
             scheduler.shutdownNow();
         }
         super.stopGrpcConnection();
-        LOG.info("GrpcExporterClient stopped");
+        LOG.info("BSM GrpcExporterClient stopped for {}", super.getHost());
     }
 
     public void setInventoryCallback(Callback inventoryCallback) {

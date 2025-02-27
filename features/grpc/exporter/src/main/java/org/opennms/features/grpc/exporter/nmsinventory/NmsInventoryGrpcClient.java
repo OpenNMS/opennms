@@ -20,7 +20,7 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.alarms;
+package org.opennms.features.grpc.exporter.nmsinventory;
 
 import com.google.protobuf.Empty;
 import io.grpc.ClientInterceptor;
@@ -42,8 +42,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class AlarmInventoryGrpcClient extends GrpcExporter {
-    private static final Logger LOG = LoggerFactory.getLogger(AlarmInventoryGrpcClient.class);
+public class NmsInventoryGrpcClient extends GrpcExporter {
+    private static final Logger LOG = LoggerFactory.getLogger(NmsInventoryGrpcClient.class);
 
     private final String threadName = "alarm-inventory-grpc-connect";
     private final AtomicBoolean reconnecting = new AtomicBoolean(false);
@@ -55,10 +55,10 @@ public class AlarmInventoryGrpcClient extends GrpcExporter {
 
     private Callback inventoryCallback;
 
-    public AlarmInventoryGrpcClient(final String host,
-                                    final String tlsCertPath,
-                                    final boolean tlsEnabled,
-                                    final ClientInterceptor clientInterceptor) {
+    public NmsInventoryGrpcClient(final String host,
+                                  final String tlsCertPath,
+                                  final boolean tlsEnabled,
+                                  final ClientInterceptor clientInterceptor) {
         super(host, tlsCertPath, tlsEnabled, clientInterceptor);
         this.scheduler = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory(threadName));
 
@@ -101,13 +101,11 @@ public class AlarmInventoryGrpcClient extends GrpcExporter {
         }
     }
 
-
     public void stop() {
         if (scheduler != null) {
             scheduler.shutdownNow();
         }
         super.stopGrpcConnection();
-        LOG.info("AlarmsInv - GrpcClient stopped");
     }
 
     private synchronized void reconnectStreams() {
@@ -154,9 +152,9 @@ public class AlarmInventoryGrpcClient extends GrpcExporter {
     private static class LoggingAckReceiver implements StreamObserver<Empty> {
 
         private final String type;
-        private final AlarmInventoryGrpcClient client;
+        private final NmsInventoryGrpcClient client;
 
-        private LoggingAckReceiver(final String type, AlarmInventoryGrpcClient client) {
+        private LoggingAckReceiver(final String type, NmsInventoryGrpcClient client) {
             this.type = Objects.requireNonNull(type);
             this.client = client;
         }

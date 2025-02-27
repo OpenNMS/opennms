@@ -20,9 +20,9 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.events.alarms;
+package org.opennms.features.grpc.exporter.events.nmsinventory;
 
-import org.opennms.features.grpc.exporter.alarms.EventService;
+import org.opennms.features.grpc.exporter.nmsinventory.EventService;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
 import  org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;

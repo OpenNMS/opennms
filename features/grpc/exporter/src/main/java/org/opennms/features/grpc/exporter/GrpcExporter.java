@@ -27,14 +27,12 @@ import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
-import org.jline.utils.Log;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.net.ssl.SSLException;
 import java.io.File;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 
 public abstract class GrpcExporter {
 
@@ -77,7 +75,7 @@ public abstract class GrpcExporter {
 
         if(getChannelState().equals(ConnectivityState.READY))
         {
-            Log.info("Grpc Channel already connected and in ready state!");
+            LOG.info("Grpc Channel already connected and in ready state!");
             return;
         }
 
@@ -86,29 +84,29 @@ public abstract class GrpcExporter {
                 .keepAliveWithoutCalls(true);
 
         if (tlsEnabled && tlsCertPath != null && !tlsCertPath.isBlank()) {
-            channel = channelBuilder.useTransportSecurity()
+            this.channel = channelBuilder.useTransportSecurity()
                     .sslContext(GrpcSslContexts.forClient()
                             .trustManager(new File(tlsCertPath)).build())
                     .build();
             LOG.info("TLS enabled with cert at {}", tlsCertPath);
         } else if (tlsEnabled) {
             // Use system store specified in javax.net.ssl.trustStore
-            channel = channelBuilder.useTransportSecurity()
+            this.channel = channelBuilder.useTransportSecurity()
                     .build();
             LOG.info("TLS enabled with certs from system store");
         } else {
-            channel = channelBuilder.usePlaintext()
+            this.channel = channelBuilder.usePlaintext()
                     .build();
             LOG.info("TLS disabled, using plain text");
         }
-        LOG.info("Grpc client started connection to {}", this.host);
+        LOG.info("Grpc client started connection to {} with channel {} ", this.host, this.channel);
     }
 
     public synchronized void stopGrpcConnection() {
-        if (channel != null) {
-            channel.shutdownNow();
+        if (this.channel != null) {
+            this.channel.shutdownNow();
         }
         stopped.set(true);
-        LOG.info("Grpc client stopped");
+        LOG.info("Grpc client stopped for host {} ", this.host);
     }
 }

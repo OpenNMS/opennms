@@ -20,9 +20,9 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.events.alarms;
+package org.opennms.features.grpc.exporter.events.nmsinventory;
 
-import org.opennms.features.grpc.exporter.alarms.AlarmService;
+import org.opennms.features.grpc.exporter.nmsinventory.AlarmService;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
