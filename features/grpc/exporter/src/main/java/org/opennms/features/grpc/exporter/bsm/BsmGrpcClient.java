@@ -20,23 +20,21 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter;
+package org.opennms.features.grpc.exporter.bsm;
 
 import com.google.protobuf.Empty;
 import io.grpc.ClientInterceptor;
 import io.grpc.ConnectivityState;
-import io.grpc.ManagedChannel;
-import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
-import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import io.grpc.stub.StreamObserver;
+import org.opennms.features.grpc.exporter.Callback;
+import org.opennms.features.grpc.exporter.GrpcExporter;
+import org.opennms.features.grpc.exporter.NamedThreadFactory;
 import org.opennms.plugin.grpc.proto.services.InventoryUpdateList;
 import org.opennms.plugin.grpc.proto.services.ServiceSyncGrpc;
 import org.opennms.plugin.grpc.proto.services.StateUpdateList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.net.ssl.SSLException;
-import java.io.File;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -44,74 +42,40 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
-public class GrpcExporterClient {
-    private static final Logger LOG = LoggerFactory.getLogger(GrpcExporterClient.class);
+public class BsmGrpcClient extends GrpcExporter {
+    private static final Logger LOG = LoggerFactory.getLogger(BsmGrpcClient.class);
 
     public static final String FOREIGN_TYPE = "OpenNMS";
-
-    private final String host;
-    private final String tlsCertPath;
-
-    private final boolean tlsEnabled;
-    private ManagedChannel channel;
-
     private ServiceSyncGrpc.ServiceSyncStub monitoredServiceSyncStub;
-
     private StreamObserver<InventoryUpdateList> inventoryUpdateStream;
     private StreamObserver<StateUpdateList> stateUpdateStream;
     private ScheduledExecutorService scheduler;
     private final AtomicBoolean reconnecting = new AtomicBoolean(false);
-    private final AtomicBoolean stopped = new AtomicBoolean(false);
     private Callback inventoryCallback;
-    private final ClientInterceptor clientInterceptor;
 
-    public GrpcExporterClient(final String host,
-                              final String tlsCertPath,
-                              final boolean tlsEnabled,
-                              final ClientInterceptor clientInterceptor) {
-        this.host = Objects.requireNonNull(host);
-        this.tlsCertPath = tlsCertPath;
-        this.tlsEnabled = tlsEnabled;
-        this.clientInterceptor = clientInterceptor;
+
+    public BsmGrpcClient(final String host,
+                         final String tlsCertPath,
+                         final boolean tlsEnabled,
+                         final ClientInterceptor clientInterceptor) {
+        super(host, tlsCertPath,  tlsEnabled, clientInterceptor);
+
         this.scheduler = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("grpc-exporter-connect"));
     }
 
     public void start() throws SSLException {
-        final NettyChannelBuilder channelBuilder = NettyChannelBuilder.forTarget(this.host)
-                    .intercept(clientInterceptor)
-                    .keepAliveWithoutCalls(true);
-
-        if (tlsEnabled && tlsCertPath != null && !tlsCertPath.isBlank()) {
-            channel = channelBuilder.useTransportSecurity()
-                    .sslContext(GrpcSslContexts.forClient()
-                            .trustManager(new File(tlsCertPath)).build())
-                    .build();
-            LOG.info("TLS enabled with cert at {}", tlsCertPath);
-        } else if (tlsEnabled) {
-            // Use system store specified in javax.net.ssl.trustStore
-            channel = channelBuilder.useTransportSecurity()
-                    .build();
-            LOG.info("TLS enabled with certs from system store");
-        } else {
-            channel = channelBuilder.usePlaintext()
-                    .build();
-            LOG.info("TLS disabled, using plain text");
-        }
-
-        this.monitoredServiceSyncStub = ServiceSyncGrpc.newStub(this.channel);
+        super.startGrpcConnection();
+        this.monitoredServiceSyncStub = ServiceSyncGrpc.newStub(super.getChannel());
         connectStreams();
-        LOG.info("GrpcExporterClient started connection to {}", this.host);
+        LOG.info("BSM GrpcExporterClient started to {}", super.getHost());
     }
 
     public void stop() {
         if (scheduler != null) {
             scheduler.shutdownNow();
         }
-        if (channel != null) {
-            channel.shutdownNow();
-        }
-        stopped.set(true);
-        LOG.info("GrpcExporterClient stopped");
+        super.stopGrpcConnection();
+        LOG.info("BSM GrpcExporterClient stopped for {}", super.getHost());
     }
 
     public void setInventoryCallback(Callback inventoryCallback) {
@@ -119,8 +83,10 @@ public class GrpcExporterClient {
     }
 
     private synchronized void initializeStreams() {
-        if (getChannelState().equals(ConnectivityState.READY)) {
+        if (super.getChannelState().equals(ConnectivityState.READY)) {
             try {
+
+                LOG.info("monitoredServiceSyncStub {}.", this.monitoredServiceSyncStub);
                 this.inventoryUpdateStream =
                         this.monitoredServiceSyncStub.inventoryUpdate(new LoggingAckReceiver("monitored_service_inventory_update", this));
                 this.stateUpdateStream =
@@ -148,7 +114,7 @@ public class GrpcExporterClient {
 
     private synchronized void reconnectStreams() {
         // Multiple streams may try to reconnect but should end up using one scheduler which schedules connection after a delay of 30 secs.
-        if (reconnecting.compareAndSet(false, true) && !stopped.get()) {
+        if (reconnecting.compareAndSet(false, true) && !super.getStopped()) {
             if (scheduler == null || scheduler.isShutdown()) {
                 scheduler = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("grpc-exporter-reconnect"));
                 scheduler.scheduleAtFixedRate(this::initializeStreams, 30, 30, TimeUnit.SECONDS);
@@ -156,9 +122,6 @@ public class GrpcExporterClient {
         }
     }
 
-    ConnectivityState getChannelState() {
-        return channel.getState(true);
-    }
 
     public void sendMonitoredServicesInventoryUpdate(final InventoryUpdateList inventoryUpdates) {
         if (inventoryUpdateStream != null) {
@@ -182,9 +145,9 @@ public class GrpcExporterClient {
 
         private final String type;
 
-        private final GrpcExporterClient client;
+        private final BsmGrpcClient client;
 
-        private LoggingAckReceiver(final String type, GrpcExporterClient client) {
+        private LoggingAckReceiver(final String type, BsmGrpcClient client) {
             this.type = Objects.requireNonNull(type);
             this.client = client;
         }
