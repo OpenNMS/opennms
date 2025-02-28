@@ -20,18 +20,17 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.events;
+package org.opennms.features.grpc.exporter.events.bsm;
 
-import org.opennms.features.grpc.exporter.StateService;
+import org.opennms.features.grpc.exporter.bsm.StateService;
 import org.opennms.features.grpc.exporter.common.MonitoredServiceWithMetadata;
+import org.opennms.features.grpc.exporter.events.EventConstants;
 import org.opennms.integration.api.v1.dao.NodeDao;
-import org.opennms.integration.api.v1.events.EventListener;
-import org.opennms.integration.api.v1.events.EventSubscriptionService;
-import org.opennms.integration.api.v1.model.InMemoryEvent;
-
+import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.EventSubscriptionService;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -40,9 +39,7 @@ public class StateEventHandler implements EventListener {
     private static final Logger LOG = LoggerFactory.getLogger(StateEventHandler.class);
 
     private final EventSubscriptionService eventSubscriptionService;
-
     private final NodeDao nodeDao;
-
     private final StateService stateService;
 
     public StateEventHandler(final EventSubscriptionService eventSubscriptionService,
@@ -80,25 +77,20 @@ public class StateEventHandler implements EventListener {
     }
 
     @Override
-    public int getNumThreads() {
-        return 1;
-    }
-
-    @Override
-    public void onEvent(final InMemoryEvent event) {
+    public void onEvent(final IEvent event) {
         LOG.debug("Got event: {}", event);
 
-        if (event.getNodeId() == null) {
+        if (event.getNodeid() == null) {
             return;
         }
 
-        final var node = nodeDao.getNodeById(event.getNodeId());
+        final var node = nodeDao.getNodeById(event.getNodeid().intValue());
         if (node == null) {
             return;
         }
 
         final var interfaces = event.getInterface() != null
-                ? node.getInterfaceByIp(event.getInterface()).stream()
+                ? node.getInterfaceByIp(event.getInterfaceAddress()).stream()
                 : node.getIpInterfaces().stream();
 
         final var services = interfaces
