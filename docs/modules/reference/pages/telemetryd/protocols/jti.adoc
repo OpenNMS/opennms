@@ -133,3 +133,30 @@ To increase the character size, modify the `%.-500m` part of the pattern. For ex
 ----
 log4j2.pattern = %d{ISO8601} | %-5p | %-16t | %-32c{1} | %X{bundle.id} - %X{bundle.name} - %X{bundle.version} | %encode{%.-1000m}{CRLF}%n
 ----
+
+===  Using Karaf Shell
+You can also modify the `org.ops4j.pax.logging` configuration dynamically using the Karaf shell
+
+Log in to the Karaf console in OpenNMS
+[source, console]
+----
+ssh -p 8101 admin@localhost
+----
+Use the `config:edit` command to start editing the `org.ops4j.pax.logging` configuration
+[source, console]
+----
+config:edit org.ops4j.pax.logging
+----
+Use the `config:property-set` command to update the `log4j2.pattern` property. For example, to increase the log message size to 1000 characters
+[source, console]
+----
+config:property-set log4j2.pattern '%d{ISO8601} | %-5p | %-16t | %-32c{1} | %X{bundle.id} - %X{bundle.name} - %X{bundle.version} | %encode{%.-1000m}{CRLF}%n'
+config:update
+----
+
+To verify that the changes have been applied, use the below command:
+[source, console]
+----
+ config:edit org.ops4j.pax.logging
+ config:property-get log4j2.pattern
+----
