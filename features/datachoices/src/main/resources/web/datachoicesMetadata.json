@@ -163,6 +163,12 @@
             "datatype": "number"
         },
         {
+            "key": "flowCountPerSecond",
+            "name": "Flow Count",
+            "description": "Number of Flows per Second (Last 24 Hours)",
+            "datatype": "number"
+        },
+        {
             "key": "freePhysicalMemorySize",
             "name": "Free physical memory size",
             "description": "How much physical memory does the core OS kernel see?",

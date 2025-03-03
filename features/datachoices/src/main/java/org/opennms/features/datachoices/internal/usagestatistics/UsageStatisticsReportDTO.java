@@ -95,6 +95,7 @@ public class UsageStatisticsReportDTO {
     private int outages;
     private int notifications;
     private long m_onmsStartupTimeSeconds;
+    private long m_flowCountPerSecond;
 
     private Map<String, Long> m_applianceCounts = Collections.emptyMap();
 
@@ -558,6 +559,15 @@ public class UsageStatisticsReportDTO {
 
     public void setApplianceCounts(Map<String, Long> applianceCounts) {
         m_applianceCounts = applianceCounts;
+    }
+
+
+    public long getFlowCountPerSecond() {
+        return m_flowCountPerSecond;
+    }
+
+    public void setFlowCountPerSecond(long flowCountPerSecond) {
+        this.m_flowCountPerSecond = flowCountPerSecond;
     }
 
     public String toJson() {

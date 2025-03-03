@@ -61,6 +61,7 @@ public class UsageStatisticsReportDTOTest {
         usageStatisticsReport.setGroups(0);
         usageStatisticsReport.setOnmsStartupTimeSeconds(1000L);
         usageStatisticsReport.setInContainer(false);
+        usageStatisticsReport.setFlowCountPerSecond(0l);
         String actualJson = usageStatisticsReport.toJson();
         System.err.println(actualJson);
 
@@ -84,6 +85,7 @@ public class UsageStatisticsReportDTOTest {
             "\"eventLogsProcessed\":0," +
             "\"events\":0," +
             "\"eventsLastHours\":0," +
+            "\"flowCountPerSecond\":0," +
             "\"freePhysicalMemorySize\":null," +
             "\"groups\":0," +
             "\"inContainer\":false," +
