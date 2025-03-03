@@ -82,8 +82,6 @@ commands:
           destination: filtered_vulnerabilities.csv
       - run:
           name: Create Jira Issues
+          context: Jira-secrets
           command: |
-            JIRA_USER="${JIRA_USER}" \
-            JIRA_API_TOKEN="${JIRA_API_TOKEN}" \
-            JIRA_URL="${JIRA_URL}" \
             python3 .circleci/pyscripts/create_jira_issues.py
