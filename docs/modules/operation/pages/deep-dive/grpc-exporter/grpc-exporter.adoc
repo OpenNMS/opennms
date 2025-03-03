@@ -13,7 +13,8 @@ See `monitored-services.proto` in the corresponding source distribution for the 
 $ ssh -p 8101 admin@localhost
 ...
 admin@opennms()> config:edit org.opennms.features.grpc.exporter
-admin@opennms()> config:property-set host bsm.onmshs.local:1443 <1>
+admin@opennms()> config:property-set bsm.host bsm.onmshs.local:1443 <1>
+admin@opennms()> config:property-set nms.inventory.host bsm.onmshs.local:1443 <1>
 admin@opennms()> config:property-set tenant.id opennms-prime <2>
 admin@opennms()> config:property-set tls.cert.path /opt/opennms/etc/tls.cert <3>
 admin@opennms()> config:property-set tls.enabled false <4>
