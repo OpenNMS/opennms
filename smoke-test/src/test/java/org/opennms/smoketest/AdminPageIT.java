@@ -44,6 +44,7 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         // OpenNMS System
         new String[] { "System Configuration", "//span[text()='OpenNMS Configuration']" },
         new String[] { "Configure Users, Groups and On-Call Roles", "//span[text()='Users and Groups']" },
+        new String[] { "Connect to Zenith", "//span[text()='Zenith Connect']" },
 
         // Provisioning
         new String[] { "Manage Provisioning Requisitions", "//h4[contains(text(), 'Requisitions (')]" },

@@ -385,6 +385,11 @@
                                 <property name="locationMatch" value="configurationManagement"/>
                                 <property name="roles" value="ROLE_ADMIN"/>
                             </bean>
+                            <bean class="org.opennms.web.navigate.LocationBasedNavBarEntry">
+                                <property name="name" value="Connect to Zenith"/>
+                                <property name="url" value="ui/index.html#/zenith-connect"/>
+                                <property name="locationMatch" value="configurationManagement"/>
+                            </bean>
                         </list>
                     </property>
                 </bean>

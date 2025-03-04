@@ -27,6 +27,8 @@ import Home from '@/containers/Home.vue'
 import FileEditor from '@/containers/FileEditor.vue'
 import Graphs from '@/components/Resources/Graphs.vue'
 import Resources from '@/components/Resources/Resources.vue'
+import ZenithConnect from '@/containers/ZenithConnect.vue'
+import ZenithConnectSuccess from '@/containers/ZenithConnectSuccess.vue'
 import useRole from '@/composables/useRole'
 import useSnackbar from '@/composables/useSnackbar'
 import useSpinner from '@/composables/useSpinner'
@@ -220,6 +222,18 @@ const router = createRouter({
         if (rolesAreLoaded.value) checkRoles()
         else whenever(rolesAreLoaded, () => checkRoles())
       }
+    },
+    {
+      path: '/zenith-connect',
+      name: 'ZenithConnect',
+      component: ZenithConnect
+      // for now, ignoring role access
+    },
+    {
+      path: '/zenith-connect/success',
+      name: 'ZenithConnect Success',
+      component: ZenithConnectSuccess
+      // for now, ignoring role access
     },
     {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
