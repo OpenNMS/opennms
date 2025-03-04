@@ -29,6 +29,7 @@ import java.util.Properties;
 import com.codahale.metrics.MetricRegistry;
 import io.opentracing.References;
 import io.opentracing.Scope;
+import io.opentracing.Span;
 import io.opentracing.Tracer;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
@@ -147,10 +148,13 @@ public class KafkaTwinPublisher extends AbstractTwinPublisher {
             String tracingOperationKey = generateTracingOperationKey(request.getLocation(), request.getKey());
             Tracer.SpanBuilder spanBuilder = TracingInfoCarrier.buildSpanFromTracingMetadata(getTracer(),
                     tracingOperationKey, request.getTracingInfo(), References.FOLLOWS_FROM);
-            try (Scope scope = spanBuilder.startActive(true)) {
+            final Span span = spanBuilder.start();
+            try (Scope scope = getTracer().scopeManager().activate(span)) {
                 final var response = this.getTwin(request);
-                addTracingInfo(scope.span(), response);
+                addTracingInfo(span, response);
                 this.handleSinkUpdate(response);
+            } finally {
+                span.finish();
             }
         } catch (Exception e) {
             LOG.error("Exception while processing request", e);

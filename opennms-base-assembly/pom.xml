@@ -1021,6 +1021,11 @@
       <version>${pyroscopeVersion}</version>
     </dependency>
     <dependency>
+      <groupId>io.opentelemetry.javaagent</groupId>
+      <artifactId>opentelemetry-javaagent</artifactId>
+      <version>${opentelemetryVersion}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features</groupId>
       <artifactId>org.opennms.features.request-tracker</artifactId>
     </dependency>
