@@ -272,15 +272,13 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
 
         try {
-            long currentTime = System.currentTimeMillis();
-            long last24Hours = currentTime - Duration.ofHours(24).toMillis();
+            final long currentTime = System.currentTimeMillis();
+            final long last24Hours = currentTime - Duration.ofHours(24).toMillis();
 
-            List<Filter> filters = Collections.singletonList( new TimeRangeFilter(last24Hours, currentTime));
-            long flowCount= flowQueryService.getFlowCount(filters).get();
+            final List<Filter> filters = Collections.singletonList(new TimeRangeFilter(last24Hours, currentTime));
+            final long flowCount = flowQueryService.getFlowCount(filters).get();
             usageStatisticsReport.setFlowCountPerSecond(flowCount);
-        } catch (InterruptedException e) {
-            LOG.warn("An error occurred while retrieving the flow count. ", e);
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             LOG.warn("An error occurred while retrieving the flow count. ", e);
         }
 
@@ -691,11 +689,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     public void setDeviceConfigDao(DeviceConfigDao deviceConfigDao) {
         this.m_deviceConfigDao = deviceConfigDao;
-    }
-
-
-    public FlowQueryService getFlowQueryService() {
-        return flowQueryService;
     }
 
     public void setFlowQueryService(FlowQueryService flowQueryService) {
