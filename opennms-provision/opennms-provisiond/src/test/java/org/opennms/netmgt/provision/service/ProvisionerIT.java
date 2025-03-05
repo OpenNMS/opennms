@@ -252,7 +252,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         m_provisioner.start();
 
         m_foreignSource = new ForeignSource();
-        m_foreignSource.setName("imported:");
+        m_foreignSource.setName("imported-");
         m_foreignSource.setScanInterval(Duration.standardDays(1));
 
         final PluginConfig policy = new PluginConfig("setCategory", NodeCategorySettingPolicy.class.getName());
