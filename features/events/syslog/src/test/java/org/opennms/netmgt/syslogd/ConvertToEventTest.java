@@ -490,7 +490,7 @@ public class ConvertToEventTest {
     public void testCiscoPatternA() throws ParseException {
         int messageFacilityPriority = 189;
         String messageContent = "%ETHPORT-5-IF_DOWN_LINK_FAILURE: Interface Ethernet119/1/36 is down (Link failure)";
-        String timeZone = "CDT";
+        String timeZone = "UTC";
         String date = "2018 Jul 16 23:56:11";
         String syslogMessage = "<" + messageFacilityPriority + ">: " + date + " " + timeZone + ": " + messageContent;
         Event event = parseSyslog("testCiscoPatternA", radixConfig, syslogMessage, new Date());
@@ -578,7 +578,7 @@ public class ConvertToEventTest {
         String messageContent = "1,2017/06/02 01:59:06,123ABC456, THREAT";
         String hostName = "host1-2-3-4";
         String date = "2017 Jul 6 08:42:31";
-        String timeZone = "CDT";
+        String timeZone = "UTC";
         String syslogMessage = "<" + messageFacilityPriority + "> " + date + " " + timeZone + " *" + hostName + "* " +
                 messageContent;
         Event event = parseSyslog("testCiscoPatternE", radixConfig, syslogMessage, new Date());
@@ -599,7 +599,7 @@ public class ConvertToEventTest {
         int messageFacilityPriority = 12;
         String messageContent = "1,2017/06/02 01:59:06,123ABC456, THREAT";
         String date = "2017 Jul 6 08:42:31";
-        String timeZone = "CDT";
+        String timeZone = "UTC";
         String syslogMessage = "<" + messageFacilityPriority + "> " + date + " " + timeZone + " " + messageContent;
         Event event = parseSyslog("testCiscoPatternF", radixConfig, syslogMessage, new Date());
         assertEquals(SyslogSeverity.getSeverityForCode(messageFacilityPriority).toString(),
