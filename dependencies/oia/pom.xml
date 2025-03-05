@@ -52,6 +52,10 @@
   </dependencies>
   <repositories>
     <repository>
+      <id>opennms-repo</id>
+      <url>https://archive.opennms.com/repo-maven/maven2/</url>
+    </repository>
+    <repository>
       <id>opennms-ossrh</id>
       <url>https://oss.sonatype.org/content/repositories/snapshots</url>
       <releases>

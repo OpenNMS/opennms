@@ -16,7 +16,7 @@ find_tests()
     mkdir -p "${FIND_TESTS_DIR}"
 
     echo "#### Generate project structure .json"
-    ./compile.pl -s .circleci/scripts/structure-settings.xml --batch-mode --fail-at-end -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
+    ./compile.pl --batch-mode --fail-at-end -Prun-expensive-tasks -Pbuild-bamboo org.opennms.maven.plugins:structure-maven-plugin:1.0:structure
 
     # Generate surefire & failsafe test list based on current
     # branch and the list of files changed

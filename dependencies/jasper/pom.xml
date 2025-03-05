@@ -340,14 +340,9 @@
     </dependency>
   </dependencies>
   <repositories>
-    <!-- jaspersoft's cert expired 2023-04-03, use our copy of the olap4j jar for now -->
     <repository>
-      <id>jaspersoft-third-party</id>
-      <url>https://maven.opennms.org/repository/thirdparty/</url>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
+      <id>jasper-3rdparty-ce</id>
+      <url>https://jaspersoft.jfrog.io/artifactory/third-party-ce-artifacts/</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>

@@ -14,7 +14,6 @@ JUNIT_PLUGIN_VERSION="$(grep '<maven.testing.plugin.version>' "${TOPDIR}/pom.xml
 # Ensure the plugin is available
 # We swap to another directory so that we don't need to spend time parsing our current pom
 (cd /tmp && mvn -llr org.apache.maven.plugins:maven-dependency-plugin:3.1.1:get \
-      -DremoteRepositories=https://maven.opennms.org/content/groups/opennms.org-release/ \
       -Dartifact=org.opennms.maven.plugins:structure-maven-plugin:1.0 \
       && mvn org.apache.maven.plugins:maven-dependency-plugin::get \
         -DartifactId=surefire-junit4 -DgroupId=org.apache.maven.surefire -Dversion="$JUNIT_PLUGIN_VERSION")
