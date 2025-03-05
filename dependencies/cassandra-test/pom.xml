@@ -86,4 +86,10 @@
       <version>${cassandraVersion}</version>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <id>atlassian-public</id>
+      <url>https://maven.artifacts.atlassian.com/</url>
+    </repository>
+  </repositories>
 </project>

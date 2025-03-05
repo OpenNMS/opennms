@@ -83,13 +83,4 @@
             <type>pom</type>
         </dependency>
     </dependencies>
-
-    <!-- override a bad repo that's causing issues -->
-    <repositories>
-        <repository>
-            <id>spring-ext</id>
-            <name>OpenNMS Mega-Repository (spring-ext override)</name>
-            <url>https://maven.opennms.org/repository/everything/</url>
-        </repository>
-    </repositories>
 </project>

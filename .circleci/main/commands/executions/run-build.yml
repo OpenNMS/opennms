@@ -57,7 +57,7 @@ commands:
               -Psmoke \
               --batch-mode \
               $MAVEN_ARGS || exit 1
-            ./compile.pl -s .circleci/scripts/structure-settings.xml \
+            ./compile.pl \
               --batch-mode \
               --fail-at-end \
               -Prun-expensive-tasks \
