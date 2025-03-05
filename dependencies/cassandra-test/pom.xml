@@ -126,13 +126,11 @@
       <version>4.17.0</version>
       <scope>compile</scope>
     </dependency>
-    <!--
-    <dependency>
-      <groupId>com.datastax.cassandra</groupId>
-      <artifactId>cassandra-driver-core</artifactId>
-      <version>3.11.2</version>
-      <scope>compile</scope>
-    </dependency>
-    -->
   </dependencies>
+  <repositories>
+    <repository>
+      <id>opennms-3rdparty</id>
+      <url>https://archive.opennms.com/repo-maven/3rdparty/</url>
+    </repository>
+  </repositories>
 </project>

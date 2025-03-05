@@ -64,4 +64,14 @@
       <version>2.0.0</version>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <id>opennms-repo</id>
+      <url>https://archive.opennms.com/repo-maven/maven2/</url>
+    </repository>
+    <repository>
+      <id>opennms-3rdparty</id>
+      <url>https://archive.opennms.com/repo-maven/3rdparty/</url>
+    </repository>
+  </repositories>
 </project>

@@ -1,14 +1,10 @@
 <settings>
- <mirrors>
-  <mirror>
-   <id>mirror-central</id>
-   <url>https://repo1.maven.org/maven2/</url>
-   <mirrorOf>central</mirrorOf>
-  </mirror>
-  <mirror>
-   <id>mirror-opennms-everything</id>
-   <url>https://maven.opennms.org/repository/everything/</url>
-   <mirrorOf>*</mirrorOf>
-  </mirror>
- </mirrors>
+    <mirrors>
+        <mirror>
+            <id>mvn-cdn-useast1-opennms-com</id>
+            <name>🇺🇸 Maven CDN in US East 1</name>
+            <url>https://mvn.cdn.useast1.opennms.com/</url>
+            <mirrorOf>*</mirrorOf>
+        </mirror>
+    </mirrors>
 </settings>

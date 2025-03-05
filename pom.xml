@@ -528,7 +528,7 @@
         <version>1.9.1</version>
       </plugin>
       <plugin>
-        <groupId>org.dstovall</groupId>
+        <groupId>com.jolira</groupId>
         <artifactId>onejar-maven-plugin</artifactId>
         <version>1.4.4</version>
         <executions>
@@ -2054,18 +2054,6 @@
           </snapshots>
         </repository>
         <repository>
-          <id>opennms-snapshots</id>
-          <name>OpenNMS Snapshot Maven Mega-Repository</name>
-          <url>https://maven.opennms.org/repository/everything/</url>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-            <updatePolicy>${updatePolicy}</updatePolicy>
-          </snapshots>
-        </repository>
-        <repository>
           <id>opennms-ossrh</id>
           <url>https://oss.sonatype.org/content/repositories/snapshots</url>
           <releases>
@@ -2088,18 +2076,6 @@
           <releases>
             <enabled>true</enabled>
             <updatePolicy>never</updatePolicy>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-            <updatePolicy>${updatePolicy}</updatePolicy>
-          </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-          <id>opennms-snapshots</id>
-          <name>OpenNMS Snapshot Maven Repository</name>
-          <url>https://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
-          <releases>
-            <enabled>false</enabled>
           </releases>
           <snapshots>
             <enabled>true</enabled>
@@ -5465,14 +5441,6 @@
         <enabled>false</enabled>
       </snapshots>
     </pluginRepository>
-    <pluginRepository>
-      <id>opennms-repo</id>
-      <name>OpenNMS Mega-Repository</name>
-      <url>https://maven.opennms.org/repository/everything/</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </pluginRepository>
   </pluginRepositories>
   <repositories>
     <!--
@@ -5485,14 +5453,6 @@
       <id>central</id>
       <name>Maven Central</name>
       <url>https://repo1.maven.org/maven2/</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>opennms-repo</id>
-      <name>OpenNMS Mega-Repository</name>
-      <url>https://maven.opennms.org/repository/everything/</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>

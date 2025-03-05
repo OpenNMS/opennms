@@ -2,22 +2,10 @@
   <profiles>
     <profile>
       <id>defrepo</id>
-      <activation>
-        <activeByDefault>true</activeByDefault>
-      </activation>
-      <repositories>
-        <repository>
-          <id>opennms-repo</id>
-          <name>OpenNMS Mega-Repository</name>
-          <url>https://maven.opennms.org/repository/everything/</url>
-          <releases>
-            <enabled>true</enabled>
-            <updatePolicy>never</updatePolicy>
-          </releases>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-        </repository>
+        <activation>
+          <activeByDefault>true</activeByDefault>
+        </activation>
+        <repositories>
         <repository>
           <id>central</id>
           <name>Maven Central</name>
@@ -32,18 +20,6 @@
         </repository>
       </repositories>
       <pluginRepositories>
-        <pluginRepository>
-          <id>opennms-repo</id>
-          <name>OpenNMS Mega-Repository</name>
-          <url>https://maven.opennms.org/repository/everything/</url>
-          <releases>
-            <enabled>true</enabled>
-            <updatePolicy>never</updatePolicy>
-          </releases>
-          <snapshots>
-            <enabled>false</enabled>
-          </snapshots>
-        </pluginRepository>
         <pluginRepository>
           <id>central</id>
           <name>Maven Central</name>

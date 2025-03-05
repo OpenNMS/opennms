@@ -515,4 +515,10 @@
           <artifactId>opennms-provisiond</artifactId>
       </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <id>restlet-talend</id>
+      <url>https://maven.restlet.talend.com/</url>
+    </repository>
+  </repositories>
 </project>
