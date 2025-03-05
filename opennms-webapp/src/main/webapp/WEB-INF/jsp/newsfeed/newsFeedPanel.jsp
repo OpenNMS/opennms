@@ -136,7 +136,6 @@
     }
 
     function getNewsFeed() {
-        <%
         const newsFeedUrl = 'api/v2/newsfeed';
 
         $.ajax({
