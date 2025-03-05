@@ -66,6 +66,8 @@
 
     <bean id="dataSourceFactoryBean" class="org.opennms.core.db.DataSourceFactoryBean" />
 
+    <reference id="flowQueryService" interface="org.opennms.netmgt.flows.api.FlowQueryService" />
+
 	<bean id="usageStatisticsReporter" class="org.opennms.features.datachoices.internal.usagestatistics.UsageStatisticsReporter"
         init-method="init" destroy-method="destroy">
         <property name="url" value="${url}"/>
@@ -93,6 +95,7 @@
         <property name="applicationDao" ref="applicationDao"/>
         <property name="outageDao" ref="outageDao"/>
         <property name="notificationDao" ref="notificationDao"/>
+        <property name="flowQueryService" ref="flowQueryService"/>
     </bean>
 
     <bean id="productUpdateEnrollmentSubmissionClient" class="org.opennms.features.datachoices.internal.productupdateenrollment.ProductUpdateEnrollmentSubmissionClient">

@@ -27,6 +27,7 @@ import java.lang.management.ManagementFactory;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,6 +35,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Collections;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import javax.management.AttributeNotFoundException;
@@ -83,6 +86,9 @@ import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.flows.api.FlowQueryService;
+import org.opennms.netmgt.flows.filter.api.Filter;
+import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
@@ -172,6 +178,9 @@ public class UsageStatisticsReporter implements StateChangeHandler {
 
     private NotificationDao m_notificationDao;
 
+
+    private FlowQueryService flowQueryService;
+
     public synchronized void init() {
         if (m_timer != null) {
             LOG.warn("Usage statistic reporter was already initialized.");
@@ -260,6 +269,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
             LOG.warn("An error occurred while retrieving the system id. " +
                         "The usage report will be submitted with a null system id.", e);
         }
+
+        usageStatisticsReport.setFlowCountPerSecond(getFlowCount());
         // Operating System
         usageStatisticsReport.setOsName(System.getProperty("os.name"));
         usageStatisticsReport.setOsArch(System.getProperty("os.arch"));
@@ -315,6 +326,26 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         setDatasourceInfo(usageStatisticsReport);
 
         return usageStatisticsReport;
+    }
+
+    private long getFlowCount() {
+
+        long flowCount = 0;
+
+        if(flowQueryService != null) {
+            try {
+                final long currentTime = System.currentTimeMillis();
+                final long twentyFourHoursAgo = currentTime - Duration.ofHours(24).toMillis();
+
+                final List<Filter> filters = Collections.singletonList(new TimeRangeFilter(twentyFourHoursAgo, currentTime));
+                flowCount = flowQueryService.getFlowCount(filters).get();
+
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.warn("An error occurred while retrieving the flow count. ", e);
+            }
+        }
+
+        return flowCount;
     }
 
     private boolean isContainerized() {
@@ -668,6 +699,11 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     public void setDeviceConfigDao(DeviceConfigDao deviceConfigDao) {
         this.m_deviceConfigDao = deviceConfigDao;
     }
+
+    public void setFlowQueryService(FlowQueryService flowQueryService) {
+        this.flowQueryService = flowQueryService;
+    }
+
 
     private int getDestinationPathCount(){
         try {
