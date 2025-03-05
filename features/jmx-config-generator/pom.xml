@@ -53,8 +53,9 @@
             </plugin>
             <!-- We generate a big onejar.jar file to make Deployment easier -->
             <plugin>
-                <groupId>org.dstovall</groupId>
+                <groupId>com.jolira</groupId>
                 <artifactId>onejar-maven-plugin</artifactId>
+                <version>1.4.4</version>
                 <configuration>
                     <filename>${project.artifactId}-${project.version}-onejar.jar</filename>
                     <mainClass>org.opennms.features.jmxconfiggenerator.Starter</mainClass>

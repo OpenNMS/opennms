@@ -252,5 +252,14 @@
 			<scope>test</scope>
         </dependency>
     </dependencies>
-
+	<repositories>
+		<repository>
+			<id>opennms-repo</id>
+			<url>https://archive.opennms.com/repo-maven/maven2/</url>
+		</repository>
+		<repository>
+			<id>atlassian-public</id>
+			<url>https://maven.artifacts.atlassian.com/</url>
+		</repository>
+	</repositories>
 </project>
