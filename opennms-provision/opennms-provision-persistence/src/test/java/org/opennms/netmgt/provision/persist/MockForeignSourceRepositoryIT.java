@@ -46,7 +46,7 @@ public class MockForeignSourceRepositoryIT extends ForeignSourceRepositoryTestCa
     @Before
     public void setUp() {
         m_foreignSourceRepository = new MockForeignSourceRepository();
-        m_defaultForeignSourceName = "imported:";
+        m_defaultForeignSourceName = "imported-";
         m_foreignSourceRepository.clear();
         m_foreignSourceRepository.flush();
     }

@@ -136,14 +136,7 @@
     }
 
     function getNewsFeed() {
-        <%
-          final String propertyUrl = System.getProperty("opennms.newsFeedPanel.url");
-
-          if (propertyUrl != null && propertyUrl.length() > 0) { %>
-          const newsFeedUrl = '<%=propertyUrl%>';
-        <% } else { %>
-          const newsFeedUrl = 'api/v2/newsfeed';
-        <% } %>
+        const newsFeedUrl = 'api/v2/newsfeed';
 
         $.ajax({
             url: newsFeedUrl,
