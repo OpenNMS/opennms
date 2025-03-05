@@ -270,18 +270,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
                         "The usage report will be submitted with a null system id.", e);
         }
 
-
-        try {
-            final long currentTime = System.currentTimeMillis();
-            final long last24Hours = currentTime - Duration.ofHours(24).toMillis();
-
-            final List<Filter> filters = Collections.singletonList(new TimeRangeFilter(last24Hours, currentTime));
-            final long flowCount = flowQueryService.getFlowCount(filters).get();
-            usageStatisticsReport.setFlowCountPerSecond(flowCount);
-        } catch (InterruptedException | ExecutionException e) {
-            LOG.warn("An error occurred while retrieving the flow count. ", e);
-        }
-
+        usageStatisticsReport.setFlowCountPerSecond(getFlowCount());
         // Operating System
         usageStatisticsReport.setOsName(System.getProperty("os.name"));
         usageStatisticsReport.setOsArch(System.getProperty("os.arch"));
@@ -337,6 +326,26 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         setDatasourceInfo(usageStatisticsReport);
 
         return usageStatisticsReport;
+    }
+
+    private long getFlowCount() {
+
+        long flowCount = 0;
+
+        if(flowQueryService != null) {
+            try {
+                final long currentTime = System.currentTimeMillis();
+                final long twentyFourHoursAgo = currentTime - Duration.ofHours(24).toMillis();
+
+                final List<Filter> filters = Collections.singletonList(new TimeRangeFilter(twentyFourHoursAgo, currentTime));
+                flowCount = flowQueryService.getFlowCount(filters).get();
+
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.warn("An error occurred while retrieving the flow count. ", e);
+            }
+        }
+
+        return flowCount;
     }
 
     private boolean isContainerized() {

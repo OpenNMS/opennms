@@ -148,7 +148,6 @@
             <groupId>org.opennms.features.flows</groupId>
             <artifactId>org.opennms.features.flows.api</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
         </dependency>
     </dependencies>
 </project>
