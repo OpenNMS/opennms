@@ -43,3 +43,6 @@ This means that things will have moved around a bit in the filesystem, and that 
 * The OpenNMS Plugin API has been updated to 1.6.0
 * Zookeeper APIs have been updated to 3.7.x
 * If you are performing automated tests, you may need to disable the new popup that shows on first launch.  To do so set `opennms.userDataCollection.show=false` in a properties file in `$OPENNMS_HOME/etc/opennms.properties.d/`.
+
+=== Stricter validation of requisition names
+Some characters (/, \, ?, &, *, ', “) may not be used in requisition names. The UI components have already enforced the validation of requisition names. This restriction is now also enforced when creating search requests via the OpenNMS ReST API.
