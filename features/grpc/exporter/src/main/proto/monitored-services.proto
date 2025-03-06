@@ -62,7 +62,20 @@ message StateUpdateList {
   repeated StateUpdate updates = 3;
 }
 
+message MonitoringInstance {
+  string  instance_type = 1;
+  string  instance_id = 2;
+  string  instance_name = 3;
+}
+
+message HeartBeat {
+  MonitoringInstance monitoring_instance = 1;
+  string message = 2;
+  uint64 timestamp = 3;
+}
+
 service ServiceSync {
   rpc InventoryUpdate(stream InventoryUpdateList) returns (stream google.protobuf.Empty) {}
   rpc StateUpdate(stream StateUpdateList) returns (stream google.protobuf.Empty) {}
+  rpc HeartBeatUpdate(stream HeartBeat) returns (stream google.protobuf.Empty) {}
 }
