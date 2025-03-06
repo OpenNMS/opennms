@@ -27,6 +27,13 @@ public class LocationBasedNavBarEntry implements NavBarEntry {
     private String m_locationMatch;
     private String m_url;
     private String m_name;
+
+    /**
+     * Optional.
+     * A system property, from the opennms.properties file, that must match the systemPropertyValue.
+     */
+    private String m_systemProperty;
+    private String m_systemPropertyValue;
     private List<NavBarEntry> m_entries;
 
     @Override
@@ -51,6 +58,21 @@ public class LocationBasedNavBarEntry implements NavBarEntry {
     }
 
     @Override
+    public String getSystemProperty() {
+        return m_systemProperty;
+    }
+    public void setSystemProperty(String systemProperty) {
+        m_systemProperty = systemProperty;
+    }
+    @Override
+    public String getSystemPropertyValue() {
+        return m_systemPropertyValue;
+    }
+    public void setSystemPropertyValue(String systemPropertyValue) {
+        m_systemPropertyValue = systemPropertyValue;
+    }
+
+    @Override
     public List<NavBarEntry> getEntries() {
         return m_entries;
     }
@@ -65,7 +87,26 @@ public class LocationBasedNavBarEntry implements NavBarEntry {
 
     @Override
     public DisplayStatus evaluate(MenuContext context) {
+        if (!evaluateSystemProperty()) {
+            return DisplayStatus.DISPLAY_NO_LINK;
+        }
+
         return isLinkMatches(context) ? DisplayStatus.DISPLAY_NO_LINK : DisplayStatus.DISPLAY_LINK;
+    }
+
+    /**
+     * If a systemProperty and systemPropertyValue are specified in the NavBarEntry, the runtime
+     * System property must match.
+     */
+    private boolean evaluateSystemProperty() {
+        if (m_systemProperty != null && !m_systemProperty.isEmpty() &&
+            m_systemPropertyValue != null && !m_systemPropertyValue.isEmpty()) {
+            String value = System.getProperty(m_systemProperty);
+
+            return value != null && !value.isEmpty() && value.equals(m_systemPropertyValue);
+        }
+
+        return true;
     }
 
     public String getLocationMatch() {
