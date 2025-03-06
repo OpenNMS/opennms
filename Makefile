@@ -8,8 +8,7 @@ WORKING_DIRECTORY     := $(shell pwd)
 SITE_FILE             := antora-playbook-local.yml
 ARTIFACTS_DIR         := target/artifacts
 MAVEN_BIN             := maven/bin/mvn
-MAVEN_SETTINGS_XML    ?= ./.cicd-assets/settings.xml
-MAVEN_ARGS            := --batch-mode -DupdatePolicy=never -Djava.awt.headless=true -Daether.connector.resumeDownloads=false -Daether.connector.basic.threads=1 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -DvaadinJavaMaxMemory=2g -DmaxCpus=8 --settings ${MAVEN_SETTINGS_XML} -Dstyle.color=always
+MAVEN_ARGS            := --batch-mode -DupdatePolicy=never -Djava.awt.headless=true -Daether.connector.resumeDownloads=false -Daether.connector.basic.threads=1 -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn -DvaadinJavaMaxMemory=2g -DmaxCpus=8 -Dstyle.color=always
 export MAVEN_OPTS     := -Xms8g -Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation -XX:TieredStopAtLevel=1 -XX:-UseGCOverheadLimit -XX:-MaxFDLimit -Djdk.util.zip.disableZip64ExtraFieldValidation=true -Dmaven.wagon.http.retryHandler.count=3
 
 GIT_BRANCH            := $(shell git branch | grep \* | cut -d' ' -f2)
@@ -177,12 +176,12 @@ show-info:
 
 .PHONY: validate
 validate: deps-build show-info
-	$(MAVEN_BIN) --settings $(MAVEN_SETTINGS_XML) clean
-	$(MAVEN_BIN) --settings $(MAVEN_SETTINGS_XML) clean --file opennms-full-assembly/pom.xml -Dbuild.profile=default
+	$(MAVEN_BIN) clean
+	$(MAVEN_BIN) clean --file opennms-full-assembly/pom.xml -Dbuild.profile=default
 
 .PHONY: maven-structure-graph
 maven-structure-graph: deps-build show-info
-	$(MAVEN_BIN) org.opennms.maven.plugins:structure-maven-plugin:1.0:structure $(MAVEN_ARGS) -Dbuild.profile=default -Droot.dir=$(WORKING_DIRECTORY) -s .cicd-assets/structure-settings.xml --fail-at-end -Prun-expensive-tasks -Pbuild-bamboo
+	$(MAVEN_BIN) org.opennms.maven.plugins:structure-maven-plugin:1.0:structure $(MAVEN_ARGS) -Dbuild.profile=default -Droot.dir=$(WORKING_DIRECTORY) --fail-at-end -Prun-expensive-tasks -Pbuild-bamboo
 
 .PHONY: test-lists
 test-lists: maven-structure-graph
@@ -413,7 +412,7 @@ core-deb-pkg: deps-deb-packages
 	@sed -i='' "s/OPA_VERSION/$(OPA_VERSION)/g" debian/control
 	@echo "- adding auto-generated changelog entry"
 	export DEBEMAIL="$(DEBEMAIL)"; dch -b -v "$(OPENNMS_VERSION)-$(DEB_PKG_RELEASE)" "$(EXTRA_INFO)$(EXTRA_INFO2)"
-	export OPENNMS_SETTINGS_XML="$(WORKING_DIRECTORY)/$(MAVEN_SETTINGS_XML)"; dpkg-buildpackage -us -uc -Zgzip
+	dpkg-buildpackage -us -uc -Zgzip
 	mkdir -p $(ARTIFACTS_DIR)/debian/core
 	mv ../*.deb ../*.dsc ../*.tar.gz ../*.buildinfo ../*.changes $(ARTIFACTS_DIR)/debian/core
 
@@ -459,7 +458,7 @@ sentinel-deb-pkg: compile assemble
 
 .PHONY: javadocs
 javadocs: deps-build show-info
-	$(MAVEN_BIN) javadoc:aggregate --batch-mode -Prun-expensive-tasks --settings=$(MAVEN_SETTINGS_XML)
+	$(MAVEN_BIN) javadoc:aggregate --batch-mode -Prun-expensive-tasks
 
 .PHONY: docs
 docs: deps-docs
@@ -490,7 +489,7 @@ clean-m2:
 
 .PHONY: clean-assembly
 clean-assembly:
-	$(MAVEN_BIN) -Passemblies clean --settings=$(MAVEN_SETTINGS_XML)
+	$(MAVEN_BIN) -Passemblies clean
 
 .PHONY: clean-docs
 clean-docs:
