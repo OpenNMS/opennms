@@ -54,6 +54,7 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import com.google.common.collect.Sets;
 import org.apache.commons.lang.builder.CompareToBuilder;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.provision.persist.OnmsNodeRequisition;
@@ -74,6 +75,7 @@ import org.springframework.core.io.Resource;
 public class Requisition implements Serializable, Comparable<Requisition> {
     private static final Logger LOG = LoggerFactory.getLogger(Requisition.class);
     private static final long serialVersionUID = 1629774241824443273L;
+    public static final Set<String> ILLEGAL_CHARACTERS = Sets.newHashSet(":", "/", "\\", "?", "&", "*", "'", "\"");
 
     @XmlTransient
     private Map<String, OnmsNodeRequisition> m_nodeReqs = new LinkedHashMap<String, OnmsNodeRequisition>();
@@ -85,7 +87,7 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     protected XMLGregorianCalendar m_dateStamp;
     
     @XmlAttribute(name="foreign-source")
-    protected String m_foreignSource = "imported:";
+    protected String m_foreignSource = "imported-";
     
     @XmlAttribute(name="last-import")
     protected XMLGregorianCalendar m_lastImport;
@@ -464,9 +466,12 @@ public class Requisition implements Serializable, Comparable<Requisition> {
     	if (m_foreignSource == null) {
     	    throw new ValidationException("Requisition 'foreign-source' must be set!");
     	}
-    	if (m_foreignSource.contains("/")) {
-            throw new ValidationException("Foreign Source (" + m_foreignSource + ") contains invalid characters. ('/' is forbidden.)");
-    	}
+
+        for(String illegalCharacter : ILLEGAL_CHARACTERS) {
+            if (m_foreignSource.contains(illegalCharacter)) {
+                throw new ValidationException("Foreign Source (" + m_foreignSource + ") contains invalid characters. ('" + illegalCharacter + "' is forbidden.)");
+            }
+        }
 
         // new ArrayList to prevent ConcurrentModificationException
         for (final RequisitionNode node : new ArrayList<>(m_nodes)) {

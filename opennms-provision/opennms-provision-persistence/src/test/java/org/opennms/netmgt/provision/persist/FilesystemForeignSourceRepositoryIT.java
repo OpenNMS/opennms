@@ -51,7 +51,7 @@ public class FilesystemForeignSourceRepositoryIT extends ForeignSourceRepository
 
     @Before
     public void setUp() {
-        m_defaultForeignSourceName = "imported:";
+        m_defaultForeignSourceName = "imported-";
         m_foreignSourceRepository.clear();
         m_foreignSourceRepository.flush();
     }

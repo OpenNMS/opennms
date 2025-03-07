@@ -113,6 +113,7 @@ public class InventoryService {
             LOG.debug("BSM service disabled, not sending heartbeat");
             return;
         }
+
         this.client.sendHeartBeatUpdate(org.opennms.plugin.grpc.proto.services.HeartBeat.newBuilder()
                 .setMonitoringInstance(org.opennms.plugin.grpc.proto.services.MonitoringInstance.newBuilder()
                         .setInstanceId(runtimeInfo.getSystemId())
