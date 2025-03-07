@@ -20,7 +20,7 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.inventory;
+package org.opennms.features.grpc.exporter.spog;
 
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.features.grpc.exporter.mapper.AlarmMapper;
@@ -39,9 +39,14 @@ public class AlarmExporter implements AlarmLifecycleListener {
 
     private final NmsInventoryGrpcClient client;
 
-    public AlarmExporter(RuntimeInfo runtimeInfo, NmsInventoryGrpcClient client) {
+    private final boolean alarmExportEnabled;
+
+    public AlarmExporter(RuntimeInfo runtimeInfo,
+                         NmsInventoryGrpcClient client,
+                         boolean alarmExportEnabled) {
         this.runtimeInfo = runtimeInfo;
         this.client = client;
+        this.alarmExportEnabled = alarmExportEnabled;
     }
 
     @Override
@@ -71,10 +76,13 @@ public class AlarmExporter implements AlarmLifecycleListener {
             LOG.debug("NMS Inventory service disabled, not sending alarm snapshot");
             return;
         }
+        if (!alarmExportEnabled) {
+            LOG.debug("Alarm export disabled, not sending alarm snapshot");
+            return;
+        }
 
         final var alarmUpdates = AlarmMapper.INSTANCE.toAlarmUpdatesList(alarms, this.runtimeInfo, SystemInfoUtils.getInstanceId(), true);
         this.client.sendAlarmUpdate(alarmUpdates);
-        LOG.info("Sent snapshot for {} alarms.", alarms.stream().count());
     }
 
     public void sendAddUpdateAlarms(final List<OnmsAlarm> onmsAlarms) {
@@ -82,7 +90,10 @@ public class AlarmExporter implements AlarmLifecycleListener {
             LOG.debug("NMS Inventory service disabled, not sending alarm updates");
             return;
         }
-
+        if (!alarmExportEnabled) {
+            LOG.debug("Alarm export disabled, not sending alarm updates");
+            return;
+        }
         final var alarms = AlarmMapper.INSTANCE.toAlarmUpdatesList(onmsAlarms, this.runtimeInfo, SystemInfoUtils.getInstanceId(), false);
         this.client.sendAlarmUpdate(alarms);
     }

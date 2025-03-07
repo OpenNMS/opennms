@@ -99,7 +99,7 @@ public abstract class GrpcClient {
                     .build();
             LOG.info("TLS disabled, using plain text");
         }
-        LOG.info("Grpc client started connection to {} with channel {} ", this.host, this.channel);
+        LOG.info("Grpc client started connection to {}", this.host);
     }
 
     public synchronized void stopGrpcConnection() {

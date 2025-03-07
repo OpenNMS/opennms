@@ -39,8 +39,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
-public class InventoryService {
-    private static final Logger LOG = LoggerFactory.getLogger(InventoryService.class);
+public class BsmInventoryService {
+    private static final Logger LOG = LoggerFactory.getLogger(BsmInventoryService.class);
     private final NodeDao nodeDao;
     private final RuntimeInfo runtimeInfo;
     private final BsmGrpcClient client;
@@ -50,10 +50,10 @@ public class InventoryService {
     private final ScheduledExecutorService heartBeatScheduler =
             Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("heartbeat-update"));
 
-    public InventoryService(final NodeDao nodeDao,
-                         final RuntimeInfo runtimeInfo,
-                         final BsmGrpcClient client,
-                         final Duration snapshotInterval) {
+    public BsmInventoryService(final NodeDao nodeDao,
+                               final RuntimeInfo runtimeInfo,
+                               final BsmGrpcClient client,
+                               final Duration snapshotInterval) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.runtimeInfo = Objects.requireNonNull(runtimeInfo);
         this.client = Objects.requireNonNull(client);
@@ -62,10 +62,10 @@ public class InventoryService {
                 new NamedThreadFactory("inventory-service-snapshot-sender"));
     }
 
-    public InventoryService(final NodeDao nodeDao,
-                         final RuntimeInfo runtimeInfo,
-                         final BsmGrpcClient client,
-                         final long snapshotInterval) {
+    public BsmInventoryService(final NodeDao nodeDao,
+                               final RuntimeInfo runtimeInfo,
+                               final BsmGrpcClient client,
+                               final long snapshotInterval) {
         this(nodeDao, runtimeInfo, client, Duration.ofSeconds(snapshotInterval));
     }
 
@@ -103,7 +103,7 @@ public class InventoryService {
                         .flatMap(iface -> iface.getMonitoredServices().stream()
                                 .map(service -> new MonitoredServiceWithMetadata(node, iface, service))))
                 .collect(Collectors.toList());
-        LOG.debug("Send snapshot: services={}", services.size());
+        LOG.debug("Send BSM snapshot: services={}", services.size());
         final var inventory = MonitoredServiceMapper.INSTANCE.toInventoryUpdates(services, this.runtimeInfo, true);
         this.client.sendMonitoredServicesInventoryUpdate(inventory);
     }
@@ -122,5 +122,28 @@ public class InventoryService {
                         .setTimestamp(Instant.now().toEpochMilli())
                         .setMessage("HeartBeat Update from OpenNMS")
                 .build());
+    }
+
+    public void sendState(final List<MonitoredServiceWithMetadata> services) {
+        if (!client.isEnabled()) {
+            LOG.debug("BSM service disabled, not sending state updates");
+            return;
+        }
+        final var updates = MonitoredServiceMapper.INSTANCE.toStateUpdates(services, this.runtimeInfo);
+        this.client.sendMonitoredServicesStatusUpdate(updates);
+    }
+
+    public void sendAllState() {
+        if (!client.isEnabled()) {
+            LOG.debug("BSM service disabled, not sending all state");
+            return;
+        }
+        final var services = this.nodeDao.getNodes().stream()
+                .flatMap(node -> node.getIpInterfaces().stream()
+                        .flatMap(iface -> iface.getMonitoredServices().stream()
+                                .map(service -> new MonitoredServiceWithMetadata(node, iface, service))))
+                .collect(Collectors.toList());
+
+        this.sendState(services);
     }
 }

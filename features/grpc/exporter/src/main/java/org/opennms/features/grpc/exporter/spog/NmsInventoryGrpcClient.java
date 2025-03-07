@@ -20,7 +20,7 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.inventory;
+package org.opennms.features.grpc.exporter.spog;
 
 import com.google.protobuf.Empty;
 import io.grpc.ClientInterceptor;
@@ -149,6 +149,7 @@ public class NmsInventoryGrpcClient extends GrpcClient {
     public void sendNmsInventoryUpdate(final NmsInventoryUpdateList updates) {
         if (this.nmsInventoryUpdateStream != null) {
             this.nmsInventoryUpdateStream.onNext(updates);
+            LOG.info("Client-Sent an inventory update with {} nodes", updates.getNodesCount());
         } else {
             LOG.warn("Client-Unable to send Inventory-Updates since channel is not ready yet .. {} ", super.getHost());
         }
@@ -175,18 +176,18 @@ public class NmsInventoryGrpcClient extends GrpcClient {
 
         @Override
         public void onNext(final Empty value) {
-            LOG.debug("AlarmInventory-Received ACK {}", this.type);
+            LOG.debug("NMSInventory-Received ACK {}", this.type);
         }
 
         @Override
         public void onError(final Throwable t) {
-            LOG.error("AlarmInventory-Received error {}", this.type, t);
+            LOG.error("NMSInventory-Received error {}", this.type, t);
             client.reconnectStreams();
         }
 
         @Override
         public void onCompleted() {
-            LOG.info("AlarmInventory-Completed {}", this.type);
+            LOG.info("NMSInventory-Completed {}", this.type);
             client.reconnectStreams();
         }
     }

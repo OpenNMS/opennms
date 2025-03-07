@@ -20,7 +20,7 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.inventory;
+package org.opennms.features.grpc.exporter.spog;
 
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventListener;

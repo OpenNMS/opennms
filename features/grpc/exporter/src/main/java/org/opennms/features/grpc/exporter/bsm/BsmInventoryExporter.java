@@ -34,18 +34,18 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Objects;
 
-public class InventoryEventHandler implements EventListener {
-    private static final Logger LOG = LoggerFactory.getLogger(InventoryEventHandler.class);
+public class BsmInventoryExporter implements EventListener {
+    private static final Logger LOG = LoggerFactory.getLogger(BsmInventoryExporter.class);
 
     private final EventSubscriptionService eventSubscriptionService;
 
     private final NodeDao nodeDao;
 
-    private final InventoryService inventoryService;
+    private final BsmInventoryService inventoryService;
 
-    public InventoryEventHandler(final EventSubscriptionService eventSubscriptionService,
-                                 final NodeDao nodeDao,
-                                 final InventoryService inventoryService) {
+    public BsmInventoryExporter(final EventSubscriptionService eventSubscriptionService,
+                                final NodeDao nodeDao,
+                                final BsmInventoryService inventoryService) {
         this.eventSubscriptionService = Objects.requireNonNull(eventSubscriptionService);
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.inventoryService = Objects.requireNonNull(inventoryService);
@@ -72,7 +72,7 @@ public class InventoryEventHandler implements EventListener {
 
     @Override
     public String getName() {
-        return InventoryEventHandler.class.getName();
+        return BsmInventoryExporter.class.getName();
     }
 
     @Override

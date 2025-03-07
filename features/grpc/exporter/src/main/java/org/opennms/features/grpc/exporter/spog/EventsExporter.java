@@ -20,7 +20,7 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.inventory;
+package org.opennms.features.grpc.exporter.spog;
 
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.features.grpc.exporter.mapper.EventsMapper;
@@ -42,10 +42,16 @@ public class EventsExporter implements EventListener {
 
     private final NmsInventoryGrpcClient client;
 
-    public EventsExporter(final EventSubscriptionService eventSubscriptionService, RuntimeInfo runtimeInfo, NmsInventoryGrpcClient client) {
+    private final boolean eventExportEnabled;
+
+    public EventsExporter(final EventSubscriptionService eventSubscriptionService,
+                          RuntimeInfo runtimeInfo,
+                          NmsInventoryGrpcClient client,
+                          boolean eventExportEnabled) {
         this.eventSubscriptionService = Objects.requireNonNull(eventSubscriptionService);
         this.runtimeInfo = runtimeInfo;
         this.client = client;
+        this.eventExportEnabled = eventExportEnabled;
     }
 
     public void start() {
@@ -74,6 +80,11 @@ public class EventsExporter implements EventListener {
 
         if (!client.isEnabled()) {
             LOG.debug("NMS Inventory service disabled, not sending event updates");
+            return;
+        }
+
+        if (!eventExportEnabled) {
+            LOG.debug("Event Export disabled, not sending event updates");
             return;
         }
 

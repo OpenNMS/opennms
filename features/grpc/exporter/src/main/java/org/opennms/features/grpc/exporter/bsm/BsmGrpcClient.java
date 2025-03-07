@@ -101,8 +101,6 @@ public class BsmGrpcClient extends GrpcClient {
     private synchronized void initializeStreams() {
         if (super.getChannelState().equals(ConnectivityState.READY)) {
             try {
-
-                LOG.info("monitoredServiceSyncStub {}.", this.monitoredServiceSyncStub);
                 this.inventoryUpdateStream =
                         this.monitoredServiceSyncStub.inventoryUpdate(new LoggingAckReceiver("monitored_service_inventory_update", this));
                 this.stateUpdateStream =
@@ -111,7 +109,7 @@ public class BsmGrpcClient extends GrpcClient {
                         this.monitoredServiceSyncStub.heartBeatUpdate(new LoggingAckReceiver("heartbeat_update", this));
                 this.scheduler.shutdown();
                 this.scheduler = null;
-                LOG.info("Streams initialized successfully.");
+                LOG.info("BSM Streams initialized successfully.");
                 reconnecting.set(false);
                 // While connecting, reconnecting, send callback to inventory service.
                 if (inventoryCallback != null) {
@@ -180,18 +178,18 @@ public class BsmGrpcClient extends GrpcClient {
 
         @Override
         public void onNext(final Empty value) {
-            LOG.debug("Received ACK {}", this.type);
+            LOG.debug("BSM gRPC Client : Received ACK {}", this.type);
         }
 
         @Override
         public void onError(final Throwable t) {
-            LOG.error("Received error {}", this.type, t);
+            LOG.error("BSM gRPC Client : Received error {}", this.type, t);
             client.reconnectStreams();
         }
 
         @Override
         public void onCompleted() {
-            LOG.info("Completed {}", this.type);
+            LOG.info("BSM gRPC Client : Completed {}", this.type);
             client.reconnectStreams();
         }
     }

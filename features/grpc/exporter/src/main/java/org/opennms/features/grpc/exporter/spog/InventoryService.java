@@ -20,7 +20,7 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.inventory;
+package org.opennms.features.grpc.exporter.spog;
 
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.features.grpc.exporter.NamedThreadFactory;
@@ -48,17 +48,20 @@ public class InventoryService {
     private final Duration snapshotInterval;
     private final ScheduledExecutorService scheduler;
     private final SessionUtils sessionUtils;
+    private final boolean inventoryExportEnabled;
 
     public InventoryService(final NodeDao nodeDao,
                             final RuntimeInfo runtimeInfo,
                             final NmsInventoryGrpcClient client,
                             final SessionUtils sessionUtils,
-                            final long snapshotInterval) {
+                            final long snapshotInterval,
+                            boolean inventoryExportEnabled) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.runtimeInfo = Objects.requireNonNull(runtimeInfo);
         this.client = Objects.requireNonNull(client);
         this.snapshotInterval = Duration.ofSeconds(snapshotInterval);
         this.sessionUtils = Objects.requireNonNull(sessionUtils);
+        this.inventoryExportEnabled = inventoryExportEnabled;
         this.scheduler = Executors.newSingleThreadScheduledExecutor(
                 new NamedThreadFactory("nms-inventory-service-snapshot-sender"));
     }
@@ -84,6 +87,11 @@ public class InventoryService {
             LOG.info("NMS Inventory service disabled, not sending inventory updates");
             return;
         }
+
+        if (!inventoryExportEnabled) {
+            LOG.info("Inventory Export disabled, not sending inventory updates");
+            return;
+        }
         sessionUtils.withReadOnlyTransaction(() -> {
             final var inventory = NmsInventoryMapper.INSTANCE.toInventoryUpdatesList(List.of(node),
                     this.runtimeInfo, SystemInfoUtils.getInstanceId(), false);
@@ -97,7 +105,10 @@ public class InventoryService {
             LOG.info("NMS Inventory service disabled, not sending inventory snapshot");
             return;
         }
-
+        if (!inventoryExportEnabled) {
+            LOG.info("Inventory Export disabled, not sending inventory snapshot");
+            return;
+        }
         sessionUtils.withReadOnlyTransaction(() -> {
             final var nodes = this.nodeDao.findAll();
             final var inventory = NmsInventoryMapper.INSTANCE.toInventoryUpdates(nodes, this.runtimeInfo, SystemInfoUtils.getInstanceId(), true);
@@ -105,6 +116,5 @@ public class InventoryService {
         });
 
     }
-
 
 }
