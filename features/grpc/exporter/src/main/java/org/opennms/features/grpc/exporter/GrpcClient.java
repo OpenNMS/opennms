@@ -34,21 +34,21 @@ import java.io.File;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class GrpcExporter {
+public abstract class GrpcClient {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GrpcExporter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GrpcClient.class);
 
-    private String host;
-    private String tlsCertPath;
-    private boolean tlsEnabled;
+    private final String host;
+    private final String tlsCertPath;
+    private final boolean tlsEnabled;
     private ManagedChannel channel;
-    private ClientInterceptor clientInterceptor;
+    private final ClientInterceptor clientInterceptor;
     private final AtomicBoolean stopped = new AtomicBoolean(false);
 
-    public GrpcExporter(final String host,
-                        final String tlsCertPath,
-                        final boolean tlsEnabled,
-                        ClientInterceptor clientInterceptor) {
+    public GrpcClient(final String host,
+                      final String tlsCertPath,
+                      final boolean tlsEnabled,
+                      ClientInterceptor clientInterceptor) {
         this.host = Objects.requireNonNull(host);
         this.tlsCertPath = tlsCertPath;
         this.tlsEnabled = tlsEnabled;

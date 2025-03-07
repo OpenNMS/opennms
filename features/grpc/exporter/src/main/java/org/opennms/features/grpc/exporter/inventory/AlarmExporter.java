@@ -20,27 +20,33 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.events.nmsinventory;
+package org.opennms.features.grpc.exporter.inventory;
 
-import org.opennms.features.grpc.exporter.nmsinventory.AlarmService;
+import org.opennms.core.utils.SystemInfoUtils;
+import org.opennms.features.grpc.exporter.mapper.AlarmMapper;
+import org.opennms.integration.api.v1.runtime.RuntimeInfo;
 import org.opennms.netmgt.alarmd.api.AlarmLifecycleListener;
+import org.opennms.netmgt.model.OnmsAlarm;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.List;
-import java.util.Objects;
 
 public class AlarmExporter implements AlarmLifecycleListener {
     private static final Logger LOG = LoggerFactory.getLogger(AlarmExporter.class);
 
-    private final AlarmService alarmService;
+    private final RuntimeInfo runtimeInfo;
 
-    public AlarmExporter(final AlarmService alarmService) {
-        this.alarmService = Objects.requireNonNull(alarmService);
+    private final NmsInventoryGrpcClient client;
+
+    public AlarmExporter(RuntimeInfo runtimeInfo, NmsInventoryGrpcClient client) {
+        this.runtimeInfo = runtimeInfo;
+        this.client = client;
     }
 
     @Override
     public void handleAlarmSnapshot(List<org.opennms.netmgt.model.OnmsAlarm> alarms) {
-            this.alarmService.sendAlarmsSnapshot(alarms);
+        sendAlarmsSnapshot(alarms);
     }
 
     @Override
@@ -53,11 +59,32 @@ public class AlarmExporter implements AlarmLifecycleListener {
 
     @Override
     public void handleNewOrUpdatedAlarm(org.opennms.netmgt.model.OnmsAlarm alarm) {
-        this.alarmService.sendAddUpdateAlarms(List.of(alarm));
+        sendAddUpdateAlarms(List.of(alarm));
     }
 
     @Override
     public void handleDeletedAlarm(int alarmId, String reductionKey) {
+    }
+
+    public void sendAlarmsSnapshot(final List<org.opennms.netmgt.model.OnmsAlarm> alarms) {
+        if (!client.isEnabled()) {
+            LOG.debug("NMS Inventory service disabled, not sending alarm snapshot");
+            return;
+        }
+
+        final var alarmUpdates = AlarmMapper.INSTANCE.toAlarmUpdatesList(alarms, this.runtimeInfo, SystemInfoUtils.getInstanceId(), true);
+        this.client.sendAlarmUpdate(alarmUpdates);
+        LOG.info("Sent snapshot for {} alarms.", alarms.stream().count());
+    }
+
+    public void sendAddUpdateAlarms(final List<OnmsAlarm> onmsAlarms) {
+        if (!client.isEnabled()) {
+            LOG.debug("NMS Inventory service disabled, not sending alarm updates");
+            return;
+        }
+
+        final var alarms = AlarmMapper.INSTANCE.toAlarmUpdatesList(onmsAlarms, this.runtimeInfo, SystemInfoUtils.getInstanceId(), false);
+        this.client.sendAlarmUpdate(alarms);
     }
 
 }

@@ -30,7 +30,7 @@ import org.opennms.features.grpc.exporter.bsm.InventoryService;
 
 @Command(scope = "opennms", name = "grpc-exporter-send-inventory-snapshot", description = "Send an inventory snapshot")
 @Service
-public class InventorySnapshot implements Action {
+public class InventorySnapshotCommand implements Action {
 
     @Reference
     private InventoryService inventoryService;

@@ -30,7 +30,7 @@ import org.opennms.features.grpc.exporter.bsm.StateService;
 
 @Command(scope = "opennms", name = "grpc-exporter-send-state", description = "Send all current  monitor service states")
 @Service
-public class State implements Action {
+public class SendServiceStateCommand implements Action {
 
     @Reference
     private StateService stateService;

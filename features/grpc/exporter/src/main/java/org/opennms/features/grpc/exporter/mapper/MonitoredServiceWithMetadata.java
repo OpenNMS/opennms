@@ -20,7 +20,7 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.common;
+package org.opennms.features.grpc.exporter.mapper;
 
 import org.opennms.integration.api.v1.model.IpInterface;
 import org.opennms.integration.api.v1.model.MonitoredService;

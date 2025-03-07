@@ -20,12 +20,12 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.events.bsm;
+package org.opennms.features.grpc.exporter.bsm;
 
-import org.opennms.features.grpc.exporter.bsm.InventoryService;
-import org.opennms.features.grpc.exporter.common.MonitoredServiceWithMetadata;
-import org.opennms.features.grpc.exporter.events.EventConstants;
+
+import org.opennms.features.grpc.exporter.mapper.MonitoredServiceWithMetadata;
 import org.opennms.integration.api.v1.dao.NodeDao;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.events.api.model.IEvent;

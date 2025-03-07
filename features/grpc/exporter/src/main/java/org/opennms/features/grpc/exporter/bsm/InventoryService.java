@@ -24,7 +24,7 @@ package org.opennms.features.grpc.exporter.bsm;
 
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.features.grpc.exporter.NamedThreadFactory;
-import org.opennms.features.grpc.exporter.common.MonitoredServiceWithMetadata;
+import org.opennms.features.grpc.exporter.mapper.MonitoredServiceWithMetadata;
 import org.opennms.features.grpc.exporter.mapper.MonitoredServiceMapper;
 import org.opennms.integration.api.v1.dao.NodeDao;
 import org.opennms.integration.api.v1.runtime.RuntimeInfo;
@@ -85,11 +85,19 @@ public class InventoryService {
     }
 
     public void sendAddService(final MonitoredServiceWithMetadata service) {
+        if (!client.isEnabled()) {
+            LOG.debug("BSM service disabled, not sending updates");
+            return;
+        }
         final var inventory = MonitoredServiceMapper.INSTANCE.toInventoryUpdates(List.of(service), this.runtimeInfo, false);
         this.client.sendMonitoredServicesInventoryUpdate(inventory);
     }
 
     public void sendSnapshot() {
+        if (!client.isEnabled()) {
+            LOG.debug("BSM service disabled, not sending snapshot");
+            return;
+        }
         final var services = this.nodeDao.getNodes().stream()
                 .flatMap(node -> node.getIpInterfaces().stream()
                         .flatMap(iface -> iface.getMonitoredServices().stream()
@@ -101,6 +109,10 @@ public class InventoryService {
     }
 
     public void sendHeartBeatUpdate() {
+        if (!client.isEnabled()) {
+            LOG.debug("BSM service disabled, not sending heartbeat");
+            return;
+        }
         this.client.sendHeartBeatUpdate(org.opennms.plugin.grpc.proto.services.HeartBeat.newBuilder()
                 .setMonitoringInstance(org.opennms.plugin.grpc.proto.services.MonitoringInstance.newBuilder()
                         .setInstanceId(runtimeInfo.getSystemId())

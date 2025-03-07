@@ -20,69 +20,49 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.nmsinventory;
+package org.opennms.features.grpc.exporter.inventory;
 
 import org.opennms.core.utils.SystemInfoUtils;
 import org.opennms.features.grpc.exporter.NamedThreadFactory;
 import org.opennms.features.grpc.exporter.mapper.NmsInventoryMapper;
-import org.opennms.netmgt.dao.api.MonitoredServiceDao;
-import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.integration.api.v1.runtime.RuntimeInfo;
 import org.opennms.netmgt.dao.api.NodeDao;
-import org.opennms.netmgt.model.OnmsIpInterface;
-import org.opennms.netmgt.dao.api.IpInterfaceDao;
-import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsNode;
-import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 public class InventoryService {
     private static final Logger LOG = LoggerFactory.getLogger(InventoryService.class);
 
     private final NodeDao nodeDao;
-    private final IpInterfaceDao ipInterfaceDao;
-    private final SnmpInterfaceDao snmpInterfaceDao;
-    private final MonitoredServiceDao onmsMonitoredServiceDao;
     private final RuntimeInfo runtimeInfo;
     private final NmsInventoryGrpcClient client;
     private final Duration snapshotInterval;
     private final ScheduledExecutorService scheduler;
+    private final SessionUtils sessionUtils;
 
     public InventoryService(final NodeDao nodeDao,
-                            final IpInterfaceDao ipInterfaceDao,
-                            final SnmpInterfaceDao snmpInterfaceDao,
-                            final MonitoredServiceDao onmsMonitoredServiceDao,
                             final RuntimeInfo runtimeInfo,
                             final NmsInventoryGrpcClient client,
-                            final Duration snapshotInterval) {
+                            final SessionUtils sessionUtils,
+                            final long snapshotInterval) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
-        this.ipInterfaceDao = ipInterfaceDao;
-        this.snmpInterfaceDao = snmpInterfaceDao;
-        this.onmsMonitoredServiceDao = onmsMonitoredServiceDao;
         this.runtimeInfo = Objects.requireNonNull(runtimeInfo);
         this.client = Objects.requireNonNull(client);
-        this.snapshotInterval = Objects.requireNonNull(snapshotInterval);
+        this.snapshotInterval = Duration.ofSeconds(snapshotInterval);
+        this.sessionUtils = Objects.requireNonNull(sessionUtils);
         this.scheduler = Executors.newSingleThreadScheduledExecutor(
                 new NamedThreadFactory("nms-inventory-service-snapshot-sender"));
     }
 
-    public InventoryService(final NodeDao nodeDao,
-                            final IpInterfaceDao ipInterfaceDao,
-                            final SnmpInterfaceDao snmpInterfaceDao,
-                            final MonitoredServiceDao onmsMonitoredServiceDao,
-                            final RuntimeInfo runtimeInfo,
-                            final NmsInventoryGrpcClient client,
-                            final long snapshotInterval) {
-        this(nodeDao, ipInterfaceDao, snmpInterfaceDao, onmsMonitoredServiceDao, runtimeInfo, client, Duration.ofSeconds(snapshotInterval));
-    }
 
     public void start() {
         // Start timer to send snapshots
@@ -100,36 +80,31 @@ public class InventoryService {
     }
 
     public void sendAddNmsInventory(OnmsNode node) {
-
-        loadNodeDetails(List.of(node));
-        final var inventory = NmsInventoryMapper.INSTANCE.toInventoryUpdatesList(List.of(node),
+        if (!client.isEnabled()) {
+            LOG.info("NMS Inventory service disabled, not sending inventory updates");
+            return;
+        }
+        sessionUtils.withReadOnlyTransaction(() -> {
+            final var inventory = NmsInventoryMapper.INSTANCE.toInventoryUpdatesList(List.of(node),
                     this.runtimeInfo, SystemInfoUtils.getInstanceId(), false);
-        this.client.sendNmsInventoryUpdate(inventory);
+            this.client.sendNmsInventoryUpdate(inventory);
+        });
 
     }
 
     public void sendSnapshot() {
-            final var nodes = this.nodeDao.findAll().stream().collect(Collectors.toList());
-            loadNodeDetails(nodes);
+        if (!client.isEnabled()) {
+            LOG.info("NMS Inventory service disabled, not sending inventory snapshot");
+            return;
+        }
+
+        sessionUtils.withReadOnlyTransaction(() -> {
+            final var nodes = this.nodeDao.findAll();
             final var inventory = NmsInventoryMapper.INSTANCE.toInventoryUpdates(nodes, this.runtimeInfo, SystemInfoUtils.getInstanceId(), true);
             this.client.sendNmsInventoryUpdate(inventory);
-    }
-
-    private void loadNodeDetails(List<OnmsNode> listNode) {
-        if (listNode == null) return;
-
-        listNode.forEach(node -> {
-            List<OnmsIpInterface> listIpInterfaces = ipInterfaceDao.findByNodeId(node.getId());
-            List<OnmsMonitoredService> listServices = this.onmsMonitoredServiceDao.findByNode(node.getId());
-            List<OnmsSnmpInterface> listSnmpInterfaces = snmpInterfaceDao.findByNodeId(node.getId());
-
-            listIpInterfaces.forEach(ipInterface ->
-                    ipInterface.setMonitoredServices(
-                            listServices.stream()
-                                    .filter(service -> service.getIpInterfaceId().equals(ipInterface.getId()))
-                                    .collect(Collectors.toSet())));
-            node.setSnmpInterfaces(listSnmpInterfaces.stream().collect(Collectors.toSet()));
-            node.setIpInterfaces(listIpInterfaces.stream().collect(Collectors.toSet()));
         });
+
     }
+
+
 }

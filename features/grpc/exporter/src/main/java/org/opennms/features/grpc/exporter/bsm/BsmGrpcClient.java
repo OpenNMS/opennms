@@ -27,7 +27,7 @@ import io.grpc.ClientInterceptor;
 import io.grpc.ConnectivityState;
 import io.grpc.stub.StreamObserver;
 import org.opennms.features.grpc.exporter.Callback;
-import org.opennms.features.grpc.exporter.GrpcExporter;
+import org.opennms.features.grpc.exporter.GrpcClient;
 import org.opennms.features.grpc.exporter.NamedThreadFactory;
 import org.opennms.plugin.grpc.proto.services.InventoryUpdateList;
 import org.opennms.plugin.grpc.proto.services.ServiceSyncGrpc;
@@ -43,7 +43,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
-public class BsmGrpcClient extends GrpcExporter {
+public class BsmGrpcClient extends GrpcClient {
     private static final Logger LOG = LoggerFactory.getLogger(BsmGrpcClient.class);
 
     public static final String FOREIGN_TYPE = "OpenNMS";
@@ -54,6 +54,7 @@ public class BsmGrpcClient extends GrpcExporter {
     private ScheduledExecutorService scheduler;
     private final AtomicBoolean reconnecting = new AtomicBoolean(false);
     private Callback inventoryCallback;
+    private boolean enabled = true;
 
 
     public BsmGrpcClient(final String host,
@@ -66,10 +67,23 @@ public class BsmGrpcClient extends GrpcExporter {
     }
 
     public void start() throws SSLException {
+        if (!enabled) {
+            LOG.info("BSM GrpcExporterClient disabled, not starting connections to {}", super.getHost());
+            return;
+        }
+        
         super.startGrpcConnection();
         this.monitoredServiceSyncStub = ServiceSyncGrpc.newStub(super.getChannel());
         connectStreams();
         LOG.info("BSM GrpcExporterClient started to {}", super.getHost());
+    }
+    
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+    
+    public boolean isEnabled() {
+        return enabled;
     }
 
     public void stop() {

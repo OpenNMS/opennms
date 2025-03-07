@@ -22,7 +22,7 @@
 
 package org.opennms.features.grpc.exporter.bsm;
 
-import org.opennms.features.grpc.exporter.common.MonitoredServiceWithMetadata;
+import org.opennms.features.grpc.exporter.mapper.MonitoredServiceWithMetadata;
 import org.opennms.features.grpc.exporter.mapper.MonitoredServiceMapper;
 import org.opennms.integration.api.v1.dao.NodeDao;
 import org.opennms.integration.api.v1.runtime.RuntimeInfo;
@@ -47,11 +47,19 @@ public class StateService {
     }
 
     public void sendState(final List<MonitoredServiceWithMetadata> services) {
+        if (!client.isEnabled()) {
+            LOG.debug("BSM service disabled, not sending state updates");
+            return;
+        }
         final var updates = MonitoredServiceMapper.INSTANCE.toStateUpdates(services, this.runtimeInfo);
         this.client.sendMonitoredServicesStatusUpdate(updates);
     }
 
     public void sendAllState() {
+        if (!client.isEnabled()) {
+            LOG.debug("BSM service disabled, not sending all state");
+            return;
+        }
         final var services = this.nodeDao.getNodes().stream()
                 .flatMap(node -> node.getIpInterfaces().stream()
                         .flatMap(iface -> iface.getMonitoredServices().stream()

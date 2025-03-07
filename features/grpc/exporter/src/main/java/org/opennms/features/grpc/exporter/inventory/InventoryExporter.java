@@ -20,16 +20,16 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.events.nmsinventory;
+package org.opennms.features.grpc.exporter.inventory;
 
-import org.opennms.features.grpc.exporter.events.EventConstants;
-import org.opennms.features.grpc.exporter.nmsinventory.InventoryService;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.util.List;
 import java.util.Objects;
 
@@ -51,16 +51,16 @@ public class InventoryExporter implements EventListener {
     public void start() {
 
         this.eventSubscriptionService.addEventListener(this, List.of(
-            // Events related to a service
-            EventConstants.NODE_GAINED_SERVICE_EVENT_UEI,
-            EventConstants.SERVICE_DELETED_EVENT_UEI,
+                // Events related to a service
+                EventConstants.NODE_GAINED_SERVICE_EVENT_UEI,
+                EventConstants.SERVICE_DELETED_EVENT_UEI,
 
-            //Events related to an interface
-            EventConstants.INTERFACE_DELETED_EVENT_UEI,
-            EventConstants.INTERFACE_REPARENTED_EVENT_UEI,
+                //Events related to an interface
+                EventConstants.INTERFACE_DELETED_EVENT_UEI,
+                EventConstants.INTERFACE_REPARENTED_EVENT_UEI,
 
-            //Events related to a node
-            EventConstants.NODE_DELETED_EVENT_UEI
+                //Events related to a node
+                EventConstants.NODE_DELETED_EVENT_UEI
         ));
     }
 
@@ -75,11 +75,14 @@ public class InventoryExporter implements EventListener {
 
     @Override
     public void onEvent(final IEvent event) {
-        LOG.debug("Got NmsInventory event: {}", event);
+        LOG.debug("Received with event with uei : {} and id {}", event.getUei(), event.getDbid());
 
         switch (event.getUei()) {
             case EventConstants.NODE_GAINED_SERVICE_EVENT_UEI:
-                if (event.getNodeid() == null || event.getInterface() == null || event.getService() == null) {
+            case EventConstants.SERVICE_DELETED_EVENT_UEI:
+            case EventConstants.INTERFACE_DELETED_EVENT_UEI:
+
+                if (event.getNodeid() == null) {
                     return;
                 }
 
@@ -88,11 +91,6 @@ public class InventoryExporter implements EventListener {
                     return;
                 }
                 this.inventoryService.sendAddNmsInventory(node);
-
-                break;
-
-            case EventConstants.SERVICE_DELETED_EVENT_UEI:
-                this.inventoryService.sendSnapshot();
                 break;
 
             default:
