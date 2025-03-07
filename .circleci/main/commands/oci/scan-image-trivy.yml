@@ -55,12 +55,14 @@ commands:
       - store_artifacts:
           path: /tmp/filtered_vulnerabilities.json
           destination: filtered_vulnerabilities.json
-      # - store_artifacts:
-      #     path: /tmp/report.txt
-      #     destination: report.txt
+          
+  trivy-analyze:
+    steps:
       - run:
-          name: Run Python script to analyze trivy report
+          name: Download and analyze Trivy scan results
           command: |
+            download-artifacts.pl --workflow="${CIRCLE_WORKFLOW_ID}" --match="*.json" --output /tmp
+            
             python3 .circleci/pyscripts/analyze_trivy_report.py /tmp/report.json
       - store_artifacts:
           path: report.txt

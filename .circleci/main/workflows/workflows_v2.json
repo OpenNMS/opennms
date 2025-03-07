@@ -89,7 +89,8 @@
                 "build",
                 "integration-test-with-coverage",
                 "code-coverage",
-                "trivy-scan"
+                "trivy-scan",
+                "trivy-analyze"
             ]
         },
         "master-branch": {
@@ -106,6 +107,11 @@
                 "horizon-image-single-arch-linux-amd64-trivy",
                 "sentinel-image-single-arch-linux-amd64-trivy",
                 "minion-image-single-arch-linux-amd64-trivy"
+            ]
+        },
+        "trivy-analyze": { 
+            "extends": [
+                "trivy-scan"
             ]
         },
         "experimental": {
