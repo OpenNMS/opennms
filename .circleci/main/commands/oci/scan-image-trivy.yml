@@ -62,7 +62,7 @@ commands:
           name: Download and analyze Trivy scan results
           command: |
             echo "Downloading Trivy scan artifacts..."
-            download-artifacts.pl --workflow="${CIRCLE_WORKFLOW_ID}" --match="*.json" --output /tmp
+            download-artifacts.pl --workflow="${CIRCLE_WORKFLOW_ID}" --match="*.json" "/tmp"
             
             echo "Checking downloaded files:"
             ls -l /tmp
