@@ -29,7 +29,6 @@ import org.mapstruct.Named;
 import org.mapstruct.NullValueCheckStrategy;
 import org.mapstruct.factory.Mappers;
 import org.opennms.features.grpc.exporter.bsm.BsmGrpcClient;
-import org.opennms.features.grpc.exporter.common.MonitoredServiceWithMetadata;
 import org.opennms.integration.api.v1.runtime.RuntimeInfo;
 import org.opennms.plugin.grpc.proto.services.InventoryUpdateList;
 import org.opennms.plugin.grpc.proto.services.ServiceComponent;
