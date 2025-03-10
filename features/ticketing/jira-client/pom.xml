@@ -156,7 +156,7 @@
     </dependencies>
     <repositories>
         <repository>
-            <id>atlassian</id>
+            <id>atlassian-public</id>
             <url>https://maven.artifacts.atlassian.com/</url>
             <snapshots>
                 <enabled>false</enabled>
