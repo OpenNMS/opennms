@@ -10,77 +10,73 @@
                              update-strategy="reload">
 
         <cm:default-properties>
+            <cm:property name="bsm.enabled" value="true"/>
             <cm:property name="bsm.host" value="bsm.onmshs.local:1443"/>
-            <cm:property name="nms.inventory.host" value="nms-inventory.onmshs.local:1443"/>
-            <cm:property name="snapshot.interval" value="3600"/>
+            <cm:property name="spog.enabled" value="true"/>
+            <cm:property name="spog.host" value="nms-inventory.onmshs.local:1443"/>
+            <cm:property name="spog.alarms.export" value="true"/>
+            <cm:property name="spog.events.export" value="true"/>
+            <cm:property name="spog.inventory.export" value="true"/>
             <cm:property name="tls.enabled" value="true"/>
             <cm:property name="tls.cert.path" value=""/>
             <cm:property name="tenant.id" value="opennms-prime"/>
+            <cm:property name="snapshot.interval" value="3600"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
     <reference id="onmsNodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="optional"/>
-    <reference id="onmsIpInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="optional"/>
-    <reference id="onmsSnmpInterfaceDao" interface="org.opennms.netmgt.dao.api.SnmpInterfaceDao" availability="optional"/>
-    <reference id="onmsMonitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao" availability="optional"/>
 
     <reference id="nodeDao" interface="org.opennms.integration.api.v1.dao.NodeDao" availability="optional"/>
     <reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService" availability="optional"/>
     <reference id="runtimeInfo" interface="org.opennms.integration.api.v1.runtime.RuntimeInfo" availability="optional"/>
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="optional"/>
 
     <bean id="grpcClientInterceptor" class="org.opennms.features.grpc.exporter.GrpcHeaderInterceptor">
         <argument value="${tenant.id}"/>
     </bean>
 
-    <bean id="bsmGrpcClient" class="org.opennms.features.grpc.exporter.bsm.BsmGrpcClient" init-method="start" destroy-method="stop">
+    <bean id="bsmGrpcClient" class="org.opennms.features.grpc.exporter.bsm.BsmGrpcClient" init-method="start" destroy-method="stop" >
         <argument value="${bsm.host}"/>
         <argument value="${tls.cert.path}"/>
         <argument value="${tls.enabled}"/>
         <argument ref="grpcClientInterceptor"/>
+        <property name="enabled" value="${bsm.enabled}"/>
     </bean>
 
-    <bean id="nmsInventoryGrpcClient" class="org.opennms.features.grpc.exporter.nmsinventory.NmsInventoryGrpcClient" init-method="start" destroy-method="stop">
-        <argument value="${nms.inventory.host}"/>
-        <argument value="${tls.cert.path}"/>
-        <argument value="${tls.enabled}"/>
-        <argument ref="grpcClientInterceptor"/>
-    </bean>
-
-    <bean id="inventoryService" class="org.opennms.features.grpc.exporter.bsm.InventoryService" init-method="start" destroy-method="stop" >
+    <bean id="bsmInventoryService" class="org.opennms.features.grpc.exporter.bsm.BsmInventoryService" init-method="start" destroy-method="stop" >
         <argument ref="nodeDao"/>
         <argument ref="runtimeInfo"/>
         <argument ref="bsmGrpcClient"/>
         <argument value="${snapshot.interval}" />
     </bean>
-    <service ref="inventoryService" interface="org.opennms.features.grpc.exporter.bsm.InventoryService" />
+    <service ref="bsmInventoryService" interface="org.opennms.features.grpc.exporter.bsm.BsmInventoryService" />
 
-    <bean id="stateService" class="org.opennms.features.grpc.exporter.bsm.StateService" >
-        <argument ref="nodeDao"/>
-        <argument ref="runtimeInfo"/>
-        <argument ref="bsmGrpcClient"/>
-    </bean>
-    <service ref="stateService" interface="org.opennms.features.grpc.exporter.bsm.StateService" />
-
-    <bean id="inventoryEventHandler" class="org.opennms.features.grpc.exporter.events.bsm.InventoryEventHandler" init-method="start" destroy-method="stop">
+    <bean id="bsmInventoryExporter" class="org.opennms.features.grpc.exporter.bsm.BsmInventoryExporter" init-method="start" destroy-method="stop">
         <argument ref="eventSubscriptionService"/>
         <argument ref="nodeDao"/>
-        <argument ref="inventoryService" />
+        <argument ref="bsmInventoryService" />
     </bean>
 
-    <bean id="stateEventHandler" class="org.opennms.features.grpc.exporter.events.bsm.StateEventHandler" init-method="start" destroy-method="stop">
+    <bean id="serviceStateExporter" class="org.opennms.features.grpc.exporter.bsm.ServiceStateExporter" init-method="start" destroy-method="stop">
         <argument ref="eventSubscriptionService"/>
         <argument ref="nodeDao"/>
-        <argument ref="stateService" />
+        <argument ref="bsmInventoryService" />
     </bean>
 
-    <bean id="alarmService" class="org.opennms.features.grpc.exporter.nmsinventory.AlarmService" >
-        <argument ref="runtimeInfo"/>
+    <!--    Single Pane of Glass ( SPOG)  -->
+
+    <bean id="nmsInventoryGrpcClient" class="org.opennms.features.grpc.exporter.spog.NmsInventoryGrpcClient" init-method="start" destroy-method="stop">
+        <argument value="${nms.inventory.host}"/>
+        <argument value="${tls.cert.path}"/>
+        <argument value="${tls.enabled}"/>
+        <argument ref="grpcClientInterceptor"/>
+        <property name="enabled" value="${nms.inventory.enabled}"/>
+    </bean>
+
+    <bean id="alarmExporter" class="org.opennms.features.grpc.exporter.spog.AlarmExporter">
+        <argument ref="runtimeInfo" />
         <argument ref="nmsInventoryGrpcClient"/>
-    </bean>
-    <service ref="alarmService" interface="org.opennms.features.grpc.exporter.nmsinventory.AlarmService" />
-
-    <bean id="alarmExporter" class="org.opennms.features.grpc.exporter.events.nmsinventory.AlarmExporter">
-        <argument ref="alarmService" />
+        <argument value="${spog.alarms.export}"/>
     </bean>
     <service ref="alarmExporter" interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener">
         <service-properties>
@@ -88,33 +84,30 @@
         </service-properties>
     </service>
 
-    <bean id="nmsinventoryService" class="org.opennms.features.grpc.exporter.nmsinventory.InventoryService" init-method="start" destroy-method="stop" >
+    <bean id="nmsinventoryService" class="org.opennms.features.grpc.exporter.spog.InventoryService" init-method="start" destroy-method="stop" >
         <argument ref="onmsNodeDao"/>
-        <argument ref="onmsIpInterfaceDao"/>
-        <argument ref="onmsSnmpInterfaceDao"/>
-        <argument ref="onmsMonitoredServiceDao"/>
         <argument ref="runtimeInfo"/>
         <argument ref="nmsInventoryGrpcClient"/>
+        <argument ref="sessionUtils"/>
         <argument value="${snapshot.interval}" />
+        <argument value="${spog.inventory.export}"/>
     </bean>
-    <service ref="nmsinventoryService" interface="org.opennms.features.grpc.exporter.nmsinventory.InventoryService" />
+    <service ref="nmsinventoryService" interface="org.opennms.features.grpc.exporter.spog.InventoryService" />
 
-    <bean id="nmsInventoryExporter" class="org.opennms.features.grpc.exporter.events.nmsinventory.InventoryExporter" init-method="start" destroy-method="stop">
+    <bean id="nmsInventoryExporter" class="org.opennms.features.grpc.exporter.spog.InventoryExporter" init-method="start" destroy-method="stop">
         <argument ref="eventSubscriptionService"/>
         <argument ref="onmsNodeDao"/>
         <argument ref="nmsinventoryService" />
     </bean>
 
-    <bean id="eventsService" class="org.opennms.features.grpc.exporter.nmsinventory.EventService" >
+
+    <bean id="eventsExporter" class="org.opennms.features.grpc.exporter.spog.EventsExporter" init-method="start" destroy-method="stop">
+        <argument ref="eventSubscriptionService"/>
         <argument ref="runtimeInfo"/>
         <argument ref="nmsInventoryGrpcClient"/>
+        <argument value="${spog.events.export}"/>
     </bean>
-    <service ref="eventsService" interface="org.opennms.features.grpc.exporter.nmsinventory.EventService" />
 
-    <bean id="eventsExporter" class="org.opennms.features.grpc.exporter.events.nmsinventory.EventsExporter" init-method="start" destroy-method="stop">
-        <argument ref="eventSubscriptionService"/>
-        <argument ref="eventsService" />
-    </bean>
     <service ref="eventsExporter" interface="org.opennms.netmgt.events.api.EventListener">
         <service-properties>
             <entry key="registration.export" value="true"/>
