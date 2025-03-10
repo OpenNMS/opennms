@@ -26,18 +26,18 @@ import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Command;
 import org.apache.karaf.shell.api.action.lifecycle.Reference;
 import org.apache.karaf.shell.api.action.lifecycle.Service;
-import org.opennms.features.grpc.exporter.bsm.StateService;
+import org.opennms.features.grpc.exporter.bsm.BsmInventoryService;
 
-@Command(scope = "opennms", name = "grpc-exporter-send-state", description = "Send all current  monitor service states")
+@Command(scope = "opennms", name = "grpc-exporter-send-inventory-snapshot", description = "Send an inventory snapshot")
 @Service
-public class State implements Action {
+public class InventorySnapshotCommand implements Action {
 
     @Reference
-    private StateService stateService;
+    private BsmInventoryService inventoryService;
 
     @Override
     public Object execute() {
-        this.stateService.sendAllState();
+        this.inventoryService.sendSnapshot();
         return null;
     }
 }
