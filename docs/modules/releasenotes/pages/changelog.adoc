@@ -1,6 +1,46 @@
 [[release-33-changelog]]
 
 = Changelog
+
+[[releasenotes-changelog-33.1.4]]
+
+== Release 33.1.4
+
+Release 33.1.4 contains bug fixes, security updates and enhancements.
+
+The codename for Horizon 33.1.4 is https://wikipedia.org/wiki/$$Thuja$$[_Arborvitae_].
+
+=== Bug
+
+* Device config backup ssh client throws key spec not recognised: class net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec (Issue https://issues.opennms.org/browse/NMS-16359[NMS-16359])
+* News Feed override URL should only apply to Rest service, not front end (Issue https://issues.opennms.org/browse/NMS-16373[NMS-16373])
+* Requisition file names with a colon \( : \) break resource graphs (Issue https://issues.opennms.org/browse/NMS-16537[NMS-16537])
+* Update neko-htmlunit Library (Issue https://issues.opennms.org/browse/NMS-16724[NMS-16724])
+* Asset table field userlastmodified length is too short (Issue https://issues.opennms.org/browse/NMS-17005[NMS-17005])
+* Update com.google.protobuf:protobuf-java Library (Issue https://issues.opennms.org/browse/NMS-17033[NMS-17033])
+* Update org.yaml:snakeyaml Library (Issue https://issues.opennms.org/browse/NMS-17048[NMS-17048])
+* Not possible to post graphs via the API - server returns 500 (Issue https://issues.opennms.org/browse/NMS-17073[NMS-17073])
+
+=== Story
+
+* Add support for Heartbeat in grpc exporter \( bsm\) (Issue https://issues.opennms.org/browse/NMS-17377[NMS-17377])
+* Grpc Exporter : Ability to disable BSM/ NMS-Inventory modules (Issue https://issues.opennms.org/browse/NMS-17727[NMS-17727])
+
+
+=== Enhancement
+
+* Poller log INFO message for "Another service is currently holding the lock", change to different Log Level (Issue https://issues.opennms.org/browse/NMS-16963[NMS-16963])
+* SCV metadata token replacement for system properties (Issue https://issues.opennms.org/browse/NMS-16989[NMS-16989])
+* Create simple a shell script to gather and package data helpful to Client Services (Issue https://issues.opennms.org/browse/NMS-17077[NMS-17077])
+
+=== Task
+
+* Add proto for NMS Inventory and Alarms (Issue https://issues.opennms.org/browse/NMS-16994[NMS-16994])
+* Refactoring existing GRPC client implementation and creation of new GRPC client for Alaram and Inventory (Issue https://issues.opennms.org/browse/NMS-16998[NMS-16998])
+* Replace Node to OnmsNode to pick up missing fields in proto (Issue https://issues.opennms.org/browse/NMS-17080[NMS-17080])
+* Update GRPC Routing using Sub-Domains (Issue https://issues.opennms.org/browse/NMS-17301[NMS-17301])
+* Add events updates in GRPC exporter (Issue https://issues.opennms.org/browse/NMS-17337[NMS-17337])
+
 [[releasenotes-changelog-33.1.3]]
 
 == Release 33.1.3
