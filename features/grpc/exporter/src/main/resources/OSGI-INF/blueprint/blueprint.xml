@@ -70,7 +70,7 @@
         <argument value="${tls.cert.path}"/>
         <argument value="${tls.enabled}"/>
         <argument ref="grpcClientInterceptor"/>
-        <property name="enabled" value="${nms.inventory.enabled}"/>
+        <property name="enabled" value="${spog.enabled}"/>
     </bean>
 
     <bean id="alarmExporter" class="org.opennms.features.grpc.exporter.spog.AlarmExporter">
