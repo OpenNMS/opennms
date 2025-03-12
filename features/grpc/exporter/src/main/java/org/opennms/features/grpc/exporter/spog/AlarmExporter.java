@@ -37,12 +37,12 @@ public class AlarmExporter implements AlarmLifecycleListener {
 
     private final RuntimeInfo runtimeInfo;
 
-    private final NmsInventoryGrpcClient client;
+    private final SpogGrpcClient client;
 
     private final boolean alarmExportEnabled;
 
     public AlarmExporter(RuntimeInfo runtimeInfo,
-                         NmsInventoryGrpcClient client,
+                         SpogGrpcClient client,
                          boolean alarmExportEnabled) {
         this.runtimeInfo = runtimeInfo;
         this.client = client;

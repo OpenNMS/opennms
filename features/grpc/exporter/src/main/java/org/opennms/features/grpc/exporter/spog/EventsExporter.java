@@ -40,13 +40,13 @@ public class EventsExporter implements EventListener {
     private final EventSubscriptionService eventSubscriptionService;
     private final RuntimeInfo runtimeInfo;
 
-    private final NmsInventoryGrpcClient client;
+    private final SpogGrpcClient client;
 
     private final boolean eventExportEnabled;
 
     public EventsExporter(final EventSubscriptionService eventSubscriptionService,
                           RuntimeInfo runtimeInfo,
-                          NmsInventoryGrpcClient client,
+                          SpogGrpcClient client,
                           boolean eventExportEnabled) {
         this.eventSubscriptionService = Objects.requireNonNull(eventSubscriptionService);
         this.runtimeInfo = runtimeInfo;
