@@ -29,6 +29,8 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -162,6 +164,54 @@ public class AlarmDaoIT implements InitializingBean {
 
 	}
 
+	@Test
+	@Transactional
+	public void testGetNumAlarmsLastHours() {
+
+		OnmsEvent event = new OnmsEvent();
+		event.setEventLog("Y");
+		event.setEventDisplay("Y");
+		event.setEventCreateTime(new Date());
+		event.setDistPoller(m_distPollerDao.whoami());
+		event.setEventTime(new Date());
+		event.setEventSeverity(OnmsSeverity.MAJOR.getId());
+		event.setEventUei("uei://org/opennms/test/EventDaoTest");
+		event.setEventSource("test");
+		m_eventDao.save(event);
+
+		OnmsNode node = m_nodeDao.findAll().iterator().next();
+
+		OnmsAlarm alarm = new OnmsAlarm();
+		alarm.setNode(node);
+		alarm.setUei(event.getEventUei());
+		alarm.setSeverityId(event.getEventSeverity());
+		alarm.setFirstEventTime(event.getEventTime());
+		alarm.setLastEvent(event);
+		alarm.setCounter(1);
+		alarm.setDistPoller(m_distPollerDao.whoami());
+
+		//verify no alarm exists last one hour
+		long alarmCount = m_alarmDao.getNumAlarmsLastHours(1);
+		Assert.assertTrue("Expected alarm count to be 0", alarmCount == 0);
+
+		//saving a new alarm
+		m_alarmDao.save(alarm);
+		m_alarmDao.flush();
+
+		//verify there should be one count for last one hour after saving new alarm
+		alarmCount = m_alarmDao.getNumAlarmsLastHours(1);
+		Assert.assertTrue("Expected alarm count to be 1", alarmCount == 1);
+
+		//updating alarm time 61 earlier
+		alarm.setFirstEventTime(Date.from(Instant.now().minus(Duration.ofMinutes(61))));
+
+		m_alarmDao.save(alarm);
+		m_alarmDao.flush();
+
+		//verify there should be 0 count after updating alarm time
+		alarmCount = m_alarmDao.getNumAlarmsLastHours(1);
+		Assert.assertTrue("Expected alarm count to be 0", alarmCount == 0);
+	}
 
 	@Test
 	@Transactional
