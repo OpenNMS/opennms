@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.grpc</artifactId>
-        <version>33.1.3</version>
+        <version>33.1.4</version>
     </parent>
 
     <groupId>org.opennms.features.grpc</groupId>
@@ -121,12 +121,21 @@
             <artifactId>org.apache.karaf.shell.core</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-alarm-api</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
             <groupId>org.opennms.integration.api</groupId>
             <artifactId>common</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opennms.integration.api</groupId>
             <artifactId>config</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core</groupId>
+            <artifactId>org.opennms.core.lib</artifactId>
         </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>

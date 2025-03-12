@@ -20,32 +20,32 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.events;
+package org.opennms.features.grpc.exporter.bsm;
 
-import org.opennms.features.grpc.exporter.InventoryService;
-import org.opennms.features.grpc.exporter.common.MonitoredServiceWithMetadata;
+
+import org.opennms.features.grpc.exporter.mapper.MonitoredServiceWithMetadata;
 import org.opennms.integration.api.v1.dao.NodeDao;
-import org.opennms.integration.api.v1.events.EventListener;
-import org.opennms.integration.api.v1.events.EventSubscriptionService;
-import org.opennms.integration.api.v1.model.InMemoryEvent;
+import org.opennms.netmgt.events.api.EventConstants;
+import org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.EventSubscriptionService;
+import org.opennms.netmgt.events.api.model.IEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.util.List;
 import java.util.Objects;
 
-public class InventoryEventHandler implements EventListener {
-    private static final Logger LOG = LoggerFactory.getLogger(InventoryEventHandler.class);
+public class BsmInventoryExporter implements EventListener {
+    private static final Logger LOG = LoggerFactory.getLogger(BsmInventoryExporter.class);
 
     private final EventSubscriptionService eventSubscriptionService;
 
     private final NodeDao nodeDao;
 
-    private final InventoryService inventoryService;
+    private final BsmInventoryService inventoryService;
 
-    public InventoryEventHandler(final EventSubscriptionService eventSubscriptionService,
-                                 final NodeDao nodeDao,
-                                 final InventoryService inventoryService) {
+    public BsmInventoryExporter(final EventSubscriptionService eventSubscriptionService,
+                                final NodeDao nodeDao,
+                                final BsmInventoryService inventoryService) {
         this.eventSubscriptionService = Objects.requireNonNull(eventSubscriptionService);
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.inventoryService = Objects.requireNonNull(inventoryService);
@@ -72,30 +72,25 @@ public class InventoryEventHandler implements EventListener {
 
     @Override
     public String getName() {
-        return InventoryEventHandler.class.getName();
+        return BsmInventoryExporter.class.getName();
     }
 
     @Override
-    public int getNumThreads() {
-        return 1;
-    }
-
-    @Override
-    public void onEvent(final InMemoryEvent event) {
-        LOG.debug("Got event: {}", event);
+    public void onEvent(final IEvent event) {
+        LOG.debug("Got inventory-event: {}", event);
 
         switch (event.getUei()) {
             case EventConstants.NODE_GAINED_SERVICE_EVENT_UEI:
-                if (event.getNodeId() == null || event.getInterface() == null || event.getService() == null) {
+                if (event.getNodeid() == null || event.getInterface() == null || event.getService() == null) {
                     return;
                 }
 
-                final var node = this.nodeDao.getNodeById(event.getNodeId());
+                final var node = this.nodeDao.getNodeById(event.getNodeid().intValue());
                 if (node == null) {
                     return;
                 }
 
-                final var iface = node.getInterfaceByIp(event.getInterface()).orElse(null);
+                final var iface = node.getInterfaceByIp(event.getInterfaceAddress()).orElse(null);
                 if (iface == null) {
                     return;
                 }
@@ -104,8 +99,6 @@ public class InventoryEventHandler implements EventListener {
                 if (service == null) {
                     return;
                 }
-
-                LOG.debug("New service: {}/{}/{}", node.getId(), iface.getIpAddress().getHostAddress(), service.getName());
 
                 this.inventoryService.sendAddService(new MonitoredServiceWithMetadata(node, iface, service));
                 break;

@@ -28,7 +28,7 @@
 ##
 ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.5.2.b283-jre-17"
 
-FROM ${BASE_IMAGE} as minion-base
+FROM ${BASE_IMAGE} AS minion-base
 
 ADD --chown=10001:0 ./tarball-root/ /opt/minion/
 RUN rm /opt/minion/etc/org.opennms.features.telemetry.listeners-single-port-flows.cfg
@@ -49,7 +49,7 @@ RUN chmod -R g-w /opt/minion && \
 ##
 # Download plugins
 ##
-FROM ${BASE_IMAGE} as minion-plugins
+FROM ${BASE_IMAGE} AS minion-plugins
 
 COPY plugins.sh /tmp/plugins.sh 
 RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh

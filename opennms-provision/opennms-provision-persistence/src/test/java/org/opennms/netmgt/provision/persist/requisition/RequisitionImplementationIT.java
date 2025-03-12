@@ -114,7 +114,7 @@ public class RequisitionImplementationIT implements InitializingBean, Applicatio
                     Requisition req = fsr.importResourceRequisition(new ClassPathResource("/requisition-test.xml"));
                     fsr.save(req);
                     fsr.flush();
-                    req = fsr.getRequisition("imported:");
+                    req = fsr.getRequisition("imported-");
                     assertNotNull(req);
                     assertEquals(2, req.getNodeCount());
                 },

@@ -23,4 +23,7 @@
         </createIndex>
     </changeSet>
 
+    <changeSet author="cpape" id="33.0.3-assets-userlastmodified">
+        <modifyDataType tableName="assets" columnName="userlastmodified" newDataType="varchar(256)"/>
+    </changeSet>
 </databaseChangeLog>
