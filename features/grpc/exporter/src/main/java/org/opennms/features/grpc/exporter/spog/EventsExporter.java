@@ -79,7 +79,7 @@ public class EventsExporter implements EventListener {
         }
 
         if (!client.isEnabled()) {
-            LOG.debug("NMS Inventory service disabled, not sending event updates");
+            LOG.debug("SPOG service disabled, not sending event updates");
             return;
         }
 

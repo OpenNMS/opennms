@@ -91,12 +91,12 @@ public class SpogInventoryService {
 
     public void sendAddNmsInventory(OnmsNode node) {
         if (!client.isEnabled()) {
-            LOG.info("NMS Inventory service disabled, not sending inventory updates");
+            LOG.info("SPOG service disabled, not sending inventory updates");
             return;
         }
 
         if (!inventoryExportEnabled) {
-            LOG.info("Inventory Export disabled, not sending inventory updates");
+            LOG.info("SPOG Inventory Export disabled, not sending inventory updates");
             return;
         }
         sessionUtils.withReadOnlyTransaction(() -> {
@@ -109,11 +109,11 @@ public class SpogInventoryService {
 
     public void sendSnapshot() {
         if (!client.isEnabled()) {
-            LOG.info("NMS Inventory service disabled, not sending inventory snapshot");
+            LOG.info("SPOG service disabled, not sending inventory snapshot");
             return;
         }
         if (!inventoryExportEnabled) {
-            LOG.info("Inventory Export disabled, not sending inventory snapshot");
+            LOG.info("SPOG : Inventory Export disabled, not sending inventory snapshot");
             return;
         }
         sessionUtils.withReadOnlyTransaction(() -> {
@@ -125,6 +125,12 @@ public class SpogInventoryService {
     }
 
     public void sendHeartBeatUpdate() {
+
+        if (!client.isEnabled()) {
+            LOG.info("SPOG service disabled, not sending heartbeat updates");
+            return;
+        }
+
         this.client.sendHeartBeatUpdate(HeartBeat.newBuilder()
                 .setMonitoringInstance(MonitoringInstance.newBuilder()
                         .setInstanceId(runtimeInfo.getSystemId())
