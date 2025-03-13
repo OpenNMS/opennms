@@ -55,12 +55,24 @@ commands:
       - store_artifacts:
           path: /tmp/filtered_vulnerabilities.json
           destination: filtered_vulnerabilities.json
-      # - store_artifacts:
-      #     path: /tmp/report.txt
-      #     destination: report.txt
+          
+  trivy-analyze:
+    steps:
       - run:
-          name: Run Python script to analyze trivy report
+          name: Download and analyze Trivy scan results
           command: |
+            echo "Downloading Trivy scan artifacts..."
+            download-artifacts.pl --workflow="${CIRCLE_WORKFLOW_ID}" --match="*.json" json "${CIRCLE_BRANCH}" "/tmp"
+            
+            echo "Checking downloaded files:"
+            ls -l /tmp
+            
+            if [[ ! -f /tmp/report.json ]]; then
+              echo "Error: /tmp/report.json not found!"
+              exit 1
+            fi
+            
+            echo "Analyzing Trivy scan results..."
             python3 .circleci/pyscripts/analyze_trivy_report.py /tmp/report.json
       - store_artifacts:
           path: report.txt
@@ -69,9 +81,16 @@ commands:
       - store_artifacts:
           path: report.csv
           destination: report.csv
+          
       - run:
-          name: Run Python script to analyze trivy report for Critical and High vulnerabilities
+          name: Run Python script to analyze filtered vulnerabilities
           command: |
+            if [[ ! -f /tmp/filtered_vulnerabilities.json ]]; then
+              echo "Error: /tmp/filtered_vulnerabilities.json not found!"
+              exit 1
+            fi
+            
+            echo "Analyzing filtered vulnerabilities..."
             python3 .circleci/pyscripts/analyze_trivy_report.py /tmp/filtered_vulnerabilities.json
       - store_artifacts:
           path: filtered_vulnerabilities.txt
@@ -80,8 +99,15 @@ commands:
       - store_artifacts:
           path: filtered_vulnerabilities.csv
           destination: filtered_vulnerabilities.csv
+          
       - run:
           name: Create Jira Issues
           context: Jira-secrets
           command: |
+            if [[ ! -f report.txt ]]; then
+              echo "No report.txt found. Skipping Jira issue creation."
+              exit 0
+            fi
+            
+            echo "Creating Jira Issues from report.txt..."
             python3 .circleci/pyscripts/create_jira_issues.py
