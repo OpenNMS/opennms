@@ -190,6 +190,9 @@ public class AlarmDaoIT implements InitializingBean {
 		alarm.setCounter(1);
 		alarm.setDistPoller(m_distPollerDao.whoami());
 
+		//there exists one populated alarm in setup with time: 2015-07-14 13:45:48
+		assertEquals(1, m_alarmDao.findAll().size());
+
 		//verify no alarm exists last one hour
 		long alarmCount = m_alarmDao.getNumAlarmsLastHours(1);
 		Assert.assertTrue("Expected alarm count to be 0", alarmCount == 0);
@@ -197,6 +200,9 @@ public class AlarmDaoIT implements InitializingBean {
 		//saving a new alarm
 		m_alarmDao.save(alarm);
 		m_alarmDao.flush();
+
+		//verify all count should be 2 after saving new alarm
+		assertEquals(2, m_alarmDao.findAll().size());
 
 		//verify there should be one count for last one hour after saving new alarm
 		alarmCount = m_alarmDao.getNumAlarmsLastHours(1);
@@ -207,6 +213,9 @@ public class AlarmDaoIT implements InitializingBean {
 
 		m_alarmDao.save(alarm);
 		m_alarmDao.flush();
+
+		//verify all count should still be 2 after updating new alarm event time
+		assertEquals(2, m_alarmDao.findAll().size());
 
 		//verify there should be 0 count after updating alarm time
 		alarmCount = m_alarmDao.getNumAlarmsLastHours(1);
