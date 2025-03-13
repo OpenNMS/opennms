@@ -154,6 +154,14 @@ public class PollStatus implements Serializable {
         return new PollStatus(decodeStatusName(statusName), reason, responseTime);
     }
 
+    public static PollStatus decodeWithTimestamp(final String statusName, final String reason, final Date timestamp) {
+        final PollStatus pollStatus = new PollStatus(decodeStatusName(statusName), reason, null);
+        if (timestamp != null) {
+            pollStatus.setTimestamp(timestamp);
+        }
+        return pollStatus;
+    }
+
     /**
      * <p>get</p>
      *

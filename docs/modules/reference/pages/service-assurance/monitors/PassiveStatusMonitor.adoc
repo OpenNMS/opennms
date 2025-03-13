@@ -34,6 +34,11 @@ Any event with this specific UEI and parameter set triggers a PassiveStatusKeepe
 If sending events directly from an external system such as via xref:operation:deep-dive/events/sources/rest.adoc[REST] or xref:operation:deep-dive/events/sources/kafka.adoc[Kafka Consumer], the event can be sent directly with these parameters for Eventd to process.
 If you will be extracting passive status updates from traps or syslog messages, you can use the xref:operation:deep-dive/events/event-translator.adoc#ga-event-translator-psk[event translator] to generate the `uei.opennms.org/services/passiveServiceStatus` events.
 
+In general, the PassiveStatusKeeper creates the status timestamp on the event's arrival.
+As this is too imprecise for some use cases, the time field of the event is also evaluated.
+If this field is set, it is adopted unchanged as the timestamp of the status.
+If no time is set, the timestamp is generated as usual on the event's arrival.
+
 == Monitor Facts
 
 [cols="1,7"]
