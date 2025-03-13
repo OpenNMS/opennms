@@ -115,32 +115,32 @@ public class EventDaoIT implements InitializingBean {
         //there exists one populated event in setup with time: 2015-07-14 13:45:48
         assertEquals(1, m_eventDao.findAll().size());
 
-        //verify no alarm exists last one hour
-        long alarmCount = m_eventDao.getNumEventsLastHours(1);
-        Assert.assertTrue("Expected event count to be 0", alarmCount == 0);
+        //verify no event exists last one hour
+        long eventCount = m_eventDao.getNumEventsLastHours(1);
+        Assert.assertTrue("Expected event count to be 0", eventCount == 0);
 
         //saving a new event
         m_eventDao.save(event);
 
-        //verify all count should be 2 after saving new alarm
+        //verify all count should be 2 after saving new event
         assertEquals(2, m_eventDao.findAll().size());
 
         //verify there should be one count for last one hour after saving new event
-        alarmCount = m_eventDao.getNumEventsLastHours(1);
-        Assert.assertTrue("Expected event count to be 1", alarmCount == 1);
+        eventCount = m_eventDao.getNumEventsLastHours(1);
+        Assert.assertTrue("Expected event count to be 1", eventCount == 1);
 
-        //updating alarm time 61 earlier
+        //updating event time 61 earlier
         event.setEventTime(Date.from(Instant.now().minus(Duration.ofMinutes(61))));
 
         m_eventDao.save(event);
         m_eventDao.flush();
 
-        //verify all count should still be 2 after updating new alarm event time
+        //verify all count should still be 2 after updating new event event time
         assertEquals(2, m_eventDao.findAll().size());
 
-        //verify there should be 0 count after updating alarm time
-        alarmCount = m_eventDao.getNumEventsLastHours(1);
-        Assert.assertTrue("Expected alarm count to be 0", alarmCount == 0);
+        //verify there should be 0 count after updating event time
+        eventCount = m_eventDao.getNumEventsLastHours(1);
+        Assert.assertTrue("Expected event count to be 0", eventCount == 0);
     }
 
 	@Test
