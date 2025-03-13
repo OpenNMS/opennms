@@ -24,6 +24,7 @@ package org.opennms.netmgt.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.criteria.CriteriaBuilder;
@@ -51,6 +52,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -93,6 +96,51 @@ public class EventDaoIT implements InitializingBean {
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
+    }
+
+    @Test
+    @Transactional
+    public void testGetNumEventsLastHours() {
+
+        OnmsEvent event = new OnmsEvent();
+        event.setEventLog("Y");
+        event.setEventDisplay("Y");
+        event.setEventCreateTime(new Date());
+        event.setDistPoller(m_distPollerDao.whoami());
+        event.setEventTime(new Date());
+        event.setEventSeverity(OnmsSeverity.MAJOR.getId());
+        event.setEventUei("uei://org/opennms/test/EventDaoTest");
+        event.setEventSource("test");
+
+        //there exists one populated event in setup with time: 2015-07-14 13:45:48
+        assertEquals(1, m_eventDao.findAll().size());
+
+        //verify no alarm exists last one hour
+        long alarmCount = m_eventDao.getNumEventsLastHours(1);
+        Assert.assertTrue("Expected event count to be 0", alarmCount == 0);
+
+        //saving a new event
+        m_eventDao.save(event);
+
+        //verify all count should be 2 after saving new alarm
+        assertEquals(2, m_eventDao.findAll().size());
+
+        //verify there should be one count for last one hour after saving new event
+        alarmCount = m_eventDao.getNumEventsLastHours(1);
+        Assert.assertTrue("Expected event count to be 1", alarmCount == 1);
+
+        //updating alarm time 61 earlier
+        event.setEventTime(Date.from(Instant.now().minus(Duration.ofMinutes(61))));
+
+        m_eventDao.save(event);
+        m_eventDao.flush();
+
+        //verify all count should still be 2 after updating new alarm event time
+        assertEquals(2, m_eventDao.findAll().size());
+
+        //verify there should be 0 count after updating alarm time
+        alarmCount = m_eventDao.getNumEventsLastHours(1);
+        Assert.assertTrue("Expected alarm count to be 0", alarmCount == 0);
     }
 
 	@Test

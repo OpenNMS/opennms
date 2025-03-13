@@ -90,8 +90,10 @@ public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Long> imp
 
     public long getNumEventsLastHours(int hours) {
         return getHibernateTemplate().execute(s -> {
-            BigInteger result = (BigInteger) s.createSQLQuery("SELECT COUNT(*) FROM events WHERE eventtime >= NOW() - " +
-                    "INTERVAL '" + hours + " hours'").uniqueResult();
+            BigInteger result = (BigInteger) s.createSQLQuery("SELECT COUNT(*) FROM events WHERE eventtime >= NOW() " +
+                            "- (:hours * INTERVAL '1 hour')")
+                    .setParameter("hours", hours)
+                    .uniqueResult();
             return result != null ? result.longValue() : 0L;
         });
     }
