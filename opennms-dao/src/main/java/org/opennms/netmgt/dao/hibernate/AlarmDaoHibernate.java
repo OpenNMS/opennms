@@ -238,7 +238,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
     public long getNumAlarmsLastHours(int hours) {
         return getHibernateTemplate().execute(s -> {
             BigInteger result = (BigInteger) s.createSQLQuery(
-                            "SELECT COUNT(*) FROM alarms WHERE firsteventtime >= NOW() - INTERVAL :hours HOURS")
+                            "SELECT COUNT(*) FROM alarms WHERE firsteventtime >= NOW() - (:hours * INTERVAL '1 hour')")
                     .setParameter("hours", hours)
                     .uniqueResult();
 
