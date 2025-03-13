@@ -9,3 +9,4 @@ jobs:
           container_dir: core
           tarball_match: -core
           tarball_path: opennms-full-assembly/target/
+      - trivy-analyze
