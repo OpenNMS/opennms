@@ -98,9 +98,7 @@ public class EventDaoIT implements InitializingBean {
         BeanUtils.assertAutowiring(this);
     }
 
-    @Test
-    @Transactional
-    public void testGetNumEventsLastHours() {
+    private OnmsEvent createEvent() {
 
         OnmsEvent event = new OnmsEvent();
         event.setEventLog("Y");
@@ -112,35 +110,72 @@ public class EventDaoIT implements InitializingBean {
         event.setEventUei("uei://org/opennms/test/EventDaoTest");
         event.setEventSource("test");
 
+        return event;
+    }
+
+    @Test
+    @Transactional
+    public void testGetNumEventsLastHours() {
+
         //there exists one populated event in setup with time: 2015-07-14 13:45:48
         assertEquals(1, m_eventDao.findAll().size());
 
-        //verify no event exists last one hour
-        long eventCount = m_eventDao.getNumEventsLastHours(1);
-        Assert.assertTrue("Expected event count to be 0", eventCount == 0);
+        //verify 0 count for last 0 hour
+        long eventCount = m_eventDao.getNumEventsLastHours(0);
+        assertEquals(0, eventCount);
 
         //saving a new event
+        OnmsEvent event = createEvent();
         m_eventDao.save(event);
 
-        //verify all count should be 2 after saving new event
-        assertEquals(2, m_eventDao.findAll().size());
+        //saving another event
+        OnmsEvent event1 = createEvent();
+        m_eventDao.save(event1);
 
-        //verify there should be one count for last one hour after saving new event
+        //verify all count should be 3 after saving two new events
+        assertEquals(3, m_eventDao.findAll().size());
+
+        //verify zero count for -1 hours,
+        eventCount = m_eventDao.getNumEventsLastHours(-1);
+        assertEquals(0, eventCount);
+        //verify count should be 0 for last 0 hours as per condition
+        eventCount = m_eventDao.getNumEventsLastHours(0);
+        assertEquals(0, eventCount);
+
+        //verify there should be 2 count for last one hour after saving new events
         eventCount = m_eventDao.getNumEventsLastHours(1);
-        Assert.assertTrue("Expected event count to be 1", eventCount == 1);
+        assertEquals(2, eventCount);
 
-        //updating event time 61 earlier
+        //updating event time 61 minutes earlier
         event.setEventTime(Date.from(Instant.now().minus(Duration.ofMinutes(61))));
-
         m_eventDao.save(event);
         m_eventDao.flush();
 
-        //verify all count should still be 2 after updating new event event time
-        assertEquals(2, m_eventDao.findAll().size());
+        //verify all count should still be 3 after updating event time
+        assertEquals(3, m_eventDao.findAll().size());
 
-        //verify there should be 0 count after updating event time
+        //verify there should be 1 count after updating event time, event1 event time is same
         eventCount = m_eventDao.getNumEventsLastHours(1);
-        Assert.assertTrue("Expected event count to be 0", eventCount == 0);
+        assertEquals(1, eventCount);
+
+        //verify there should be 2 count for last 10 hours also
+        eventCount = m_eventDao.getNumEventsLastHours(10);
+        assertEquals(2, eventCount);
+
+        //saving another event
+        OnmsEvent event2 = createEvent();
+        event2.setEventTime(Date.from(Instant.now().minus(Duration.ofHours(11))));
+        m_eventDao.save(event2);
+
+        //verify all count should be 4 after adding new with event2 time 11 hours earlier
+        assertEquals(4, m_eventDao.findAll().size());
+        //verify count should be 2 for last 10 hours, as event2 time lies in last 11th hour
+        eventCount = m_eventDao.getNumEventsLastHours(10);
+        assertEquals(2, eventCount);
+
+        //verify count should be 3 for last 11 hours, including 2 events for last 10 hours
+        eventCount = m_eventDao.getNumEventsLastHours(11);
+        assertEquals(3, eventCount);
     }
 
 	@Test
