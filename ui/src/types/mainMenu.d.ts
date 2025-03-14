@@ -40,6 +40,9 @@ export interface MainMenu {
   baseNodeUrl: string
   copyrightDates: string
   version: string
+  zenithConnectEnabled: boolean
+  zenithConnectBaseUrl: string
+  zenithConnectRelativeUrl: string
   userTileProviders?: TileProviderItem[]
   
   menus: TopMenuItem[]

@@ -67,6 +67,10 @@ public class MenuProvider {
 
     private final String ADMIN_ROLE_ICON = "fa-cogs";
 
+    public static final String ZENITH_CONNECT_ENABLED_KEY = "opennms.zenithConnect.enabled";
+    public static final String ZENITH_CONNECT_BASE_URL_KEY = "opennms.zenithConnect.zenithBaseUrl";
+    public static final String ZENITH_CONNECT_RELATIVE_URL_KEY = "opennms.zenithConnect.zenithRelativeUrl";
+
     private static final ImmutableSet<String> ADMIN_ROLES = ImmutableSet.of(
         Authentication.ROLE_ADMIN,
         Authentication.ROLE_FILESYSTEM_EDITOR
@@ -75,8 +79,15 @@ public class MenuProvider {
     /** Full file path to dispatcher.servlet.xml file, see "applicationContext-cxf-rest-v2.xml" */
     private String dispatcherServletPath;
 
+    /** Context that must be set before using the MenuProvider. */
+    private MenuRequestContext menuRequestContext;
+
     public MenuProvider(String dispatcherServletPath) {
         this.dispatcherServletPath = dispatcherServletPath;
+    }
+
+    public void setMenuRequestContext(MenuRequestContext context) {
+        this.menuRequestContext = context;
     }
 
     public String getDispatcherServletPath() {
@@ -87,23 +98,30 @@ public class MenuProvider {
         this.dispatcherServletPath = path;
     }
 
-    public MainMenu getMainMenu(final MenuRequestContext context) throws Exception, IOException {
+    public MainMenu getMainMenu() throws Exception, IOException {
+        ensureContext();
         MainMenu mainMenu = new MainMenu();
 
         try {
-            final boolean isProvision = context.isUserInRole(Authentication.ROLE_PROVISION);
-            final boolean isFlow = context.isUserInRole(Authentication.ROLE_FLOW_MANAGER);
-            final boolean isAdmin = context.isUserInRole(Authentication.ROLE_ADMIN);
+            final boolean isProvision = menuRequestContext.isUserInRole(Authentication.ROLE_PROVISION);
+            final boolean isFlow = menuRequestContext.isUserInRole(Authentication.ROLE_FLOW_MANAGER);
+            final boolean isAdmin = menuRequestContext.isUserInRole(Authentication.ROLE_ADMIN);
 
-            mainMenu.baseHref = context.calculateUrlBase();
+            mainMenu.baseHref = menuRequestContext.calculateUrlBase();
             mainMenu.homeUrl = mainMenu.baseHref + "index.jsp";
-            mainMenu.formattedTime = context.getFormattedTime();
-            mainMenu.username = context.getRemoteUser();
+            mainMenu.formattedTime = menuRequestContext.getFormattedTime();
+            mainMenu.username = menuRequestContext.getRemoteUser();
             // for navigating to a specific node id
             mainMenu.baseNodeUrl = "element/node.jsp?node=";
-            mainMenu.noticeStatus = context.getNoticeStatus();
+
+            mainMenu.zenithConnectEnabled =
+                Strings.nullToEmpty(menuRequestContext.getSystemProperty(ZENITH_CONNECT_ENABLED_KEY, "false")).equals("true");
+            mainMenu.zenithConnectBaseUrl = menuRequestContext.getSystemProperty(ZENITH_CONNECT_BASE_URL_KEY, "");
+            mainMenu.zenithConnectRelativeUrl = menuRequestContext.getSystemProperty(ZENITH_CONNECT_RELATIVE_URL_KEY, "");
+
+            mainMenu.noticeStatus = menuRequestContext.getNoticeStatus();
             // TODO: Remove
-            mainMenu.notices = buildNotices(context);
+            mainMenu.notices = buildNotices();
 
             mainMenu.copyrightDates = String.format("2002-%d", LocalDate.now().getYear());
             mainMenu.version = Vault.getProperty("version.display");
@@ -128,7 +146,7 @@ public class MenuProvider {
 
             List<TopMenuEntry> topMenuEntries = this.parseXmlToMenuEntries(xBeans);
             // Remove any MenuEntry items marked as RoleBased where user does not have any required role
-            evaluateRoleBasedEntries(topMenuEntries, context);
+            evaluateRoleBasedEntries(topMenuEntries);
 
             for (var topMenu : topMenuEntries) {
                 mainMenu.addTopMenu(topMenu);
@@ -136,8 +154,8 @@ public class MenuProvider {
 
             // These are taken from "navbar.ftl" and handled somewhat specially
             mainMenu.helpMenu = getHelpMenuEntry(isAdmin);
-            mainMenu.selfServiceMenu = getSelfServiceMenuEntry(context.getRemoteUser());
-            mainMenu.userNotificationMenu = getUserNotificationMenu(context.getRemoteUser());
+            mainMenu.selfServiceMenu = getSelfServiceMenuEntry(menuRequestContext.getRemoteUser());
+            mainMenu.userNotificationMenu = getUserNotificationMenu(menuRequestContext.getRemoteUser());
 
             if (isAdmin || isProvision) {
                 mainMenu.provisionMenu = getProvisionMenu();
@@ -200,20 +218,26 @@ public class MenuProvider {
         return topMenuEntries;
     }
 
+    private void ensureContext() throws Exception {
+        if (this.menuRequestContext == null) {
+            throw new Exception("Must set MenuRequestContext when using a MenuProvider.");
+        }
+    }
+
     /**
      * Evaluate a list of TopMenuEntry and child MenuEntry items, removing any that are RoleBased
      * and where current user does not have the required role.
      * Also sets ADMIN_ROLE_ICON for items that require Admin access.
      * Note, this modifies the passed-in 'topMenuEntries' parameter!
      */
-    private void evaluateRoleBasedEntries(List<TopMenuEntry> topMenuEntries, final MenuRequestContext context) {
+    private void evaluateRoleBasedEntries(List<TopMenuEntry> topMenuEntries) {
         for (TopMenuEntry topEntry : topMenuEntries) {
             // For now, we don't evaluate the TopMenuEntries
             if (topEntry.items != null && !topEntry.items.isEmpty()) {
                 for (int i = topEntry.items.size() - 1; i >= 0; i--) {
                     MenuEntry entry = topEntry.items.get(i);
 
-                    if (!evaluateRoleBasedMenuEntry(entry, context)) {
+                    if (!evaluateRoleBasedMenuEntry(entry)) {
                         topEntry.items.remove(i);
                     } else if (isInAnyRole(ADMIN_ROLES, entry)) {
                         entry.iconType = "fa";
@@ -224,17 +248,33 @@ public class MenuProvider {
         }
     }
 
-    private boolean evaluateRoleBasedMenuEntry(MenuEntry menuEntry, final MenuRequestContext context) {
+    private boolean evaluateRoleBasedMenuEntry(MenuEntry menuEntry) {
         if (menuEntry.className != null &&
             menuEntry.className.equals(ROLE_BASED_NAV_BAR_ENTRY_CLASS)) {
             List<String> roles = rolesAsList(menuEntry.roles);
 
-            if (!roles.isEmpty() && roles.stream().noneMatch(context::isUserInRole)) {
+            if (!roles.isEmpty() && roles.stream().noneMatch(menuRequestContext::isUserInRole)) {
                 return false;
             }
         }
 
        return true;
+    }
+
+    /**
+     * Evaluate any system properties on a RoleBasedMenuEntry to determine whether to add this menu item or not.
+     * We do this separately from evaluateRoleBasedMenuEntry because we don't want to map the
+     * systemProperty and systemPropertyValue properties to a MenuEntry,
+     * since we don't want to return those properties in the Menu Rest API response.
+     */
+    private boolean evaluateSystemPropertyMenuEntry(String systemProperty, String systemPropertyValue) {
+        if (!Strings.isNullOrEmpty(systemProperty) && !Strings.isNullOrEmpty(systemPropertyValue)) {
+            String value = menuRequestContext.getSystemProperty(systemProperty, "");
+
+            return !Strings.isNullOrEmpty(value) && value.equals(systemPropertyValue);
+        }
+
+        return true;
     }
 
     private Optional<TopMenuEntry> parseTopMenuEntry(MenuXml.BeanElement xTopLevelBean) {
@@ -243,16 +283,21 @@ public class MenuProvider {
         topEntry.id = xTopLevelBean.getId();
         topEntry.className = xTopLevelBean.getClassName();
 
+        final String[] topMenuSystemProp = new String[] { null, null };
+
         for (var prop : xTopLevelBean.getProperties()) {
             setFromBeanProperty(prop, "name", (s) -> topEntry.name = s);
             setFromBeanProperty(prop, "url", (s) -> topEntry.url = s);
             setFromBeanProperty(prop, "locationMatch", (s) -> topEntry.locationMatch = s);
             setFromBeanProperty(prop, "roles", (s) -> topEntry.roles = s);
+            setFromBeanProperty(prop, "systemProperty", (s) -> topMenuSystemProp[0] = s);
+            setFromBeanProperty(prop, "systemPropertyValue", (s) -> topMenuSystemProp[1] = s);
         }
 
         boolean isValid = false;
 
-        if (!Strings.isNullOrEmpty(topEntry.name) && !Strings.isNullOrEmpty(topEntry.url)) {
+        if (!Strings.isNullOrEmpty(topEntry.name) && !Strings.isNullOrEmpty(topEntry.url) &&
+            evaluateSystemPropertyMenuEntry(topMenuSystemProp[0], topMenuSystemProp[1])) {
             isValid = true;
 
             MenuXml.BeanPropertyElement xEntries =
@@ -266,14 +311,19 @@ public class MenuProvider {
                     menuEntry.id = xBean.getId();
                     menuEntry.className = xBean.getClassName();
 
+                    final String[] systemProp = new String[] { null, null };
+
                     for (var prop : xBean.getProperties()) {
                         setFromBeanProperty(prop, "name", (s) -> menuEntry.name = s);
                         setFromBeanProperty(prop, "url", (s) -> menuEntry.url = s);
                         setFromBeanProperty(prop, "locationMatch", (s) -> menuEntry.locationMatch = s);
                         setFromBeanProperty(prop, "roles", (s) -> menuEntry.roles = s);
+                        setFromBeanProperty(prop, "systemProperty", (s) -> systemProp[0] = s);
+                        setFromBeanProperty(prop, "systemPropertyValue", (s) -> systemProp[1] = s);
                     }
 
-                    if (!Strings.isNullOrEmpty(menuEntry.name) && !Strings.isNullOrEmpty(menuEntry.url)) {
+                    if (!Strings.isNullOrEmpty(menuEntry.name) && !Strings.isNullOrEmpty(menuEntry.url) &&
+                        evaluateSystemPropertyMenuEntry(systemProp[0], systemProp[1])) {
                         topEntry.addItem(menuEntry);
                     }
                 }
@@ -415,10 +465,11 @@ public class MenuProvider {
     }
 
     // TODO: Remove, we are handling this in UI with separate Rest call to 'rest/notifications/summary'
-    private Notices buildNotices(MenuRequestContext context) {
+    private Notices buildNotices() throws Exception {
+        ensureContext();
         Notices notices = new Notices();
 
-        notices.status = context.getNoticeStatus();
+        notices.status = menuRequestContext.getNoticeStatus();
 
         return notices;
     }
@@ -446,12 +497,14 @@ public class MenuProvider {
      * If 'userDefinedAsDefault' is true, the user-defined tile provider will appear first on the Geographical Map
      * and be loaded by default.
      */
-    private List<TileProviderItem> getTileProviders() {
+    private List<TileProviderItem> getTileProviders() throws Exception {
+        ensureContext();
+
         final var list = new ArrayList<TileProviderItem>();
-        final String name = System.getProperty("gwt.openlayers.name");
-        final String url = System.getProperty("gwt.openlayers.url");
-        final String attribution = System.getProperty("gwt.openlayers.options.attribution");
-        final String userDefinedAsDefault = System.getProperty("gwt.openlayers.userDefinedAsDefault");
+        final String name = menuRequestContext.getSystemProperty("gwt.openlayers.name", "");
+        final String url = menuRequestContext.getSystemProperty("gwt.openlayers.url", "");
+        final String attribution = menuRequestContext.getSystemProperty("gwt.openlayers.options.attribution", "");
+        final String userDefinedAsDefault = menuRequestContext.getSystemProperty("gwt.openlayers.userDefinedAsDefault", "");
 
         if (!Strings.isNullOrEmpty(url)) {
             var item = new TileProviderItem();

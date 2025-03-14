@@ -90,7 +90,8 @@ const wrapper = mount(DCB, {
       date: dateFormatDirective
     },
     stubs: {
-      RouterLink: RouterLinkStub
+      RouterLink: RouterLinkStub,
+      'FeatherRipple': true
     }
   }
 })

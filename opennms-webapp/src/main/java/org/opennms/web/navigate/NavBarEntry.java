@@ -52,6 +52,8 @@ public interface NavBarEntry {
     String getName();
     String getDisplayString();
     String getUrl();
+    String getSystemProperty();
+    String getSystemPropertyValue();
 
     /**
      * If this navbar entry has sub-entries, return them.  May return null if there are no sub-entries.

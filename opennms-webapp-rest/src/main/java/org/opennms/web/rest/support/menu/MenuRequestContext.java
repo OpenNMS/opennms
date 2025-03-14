@@ -21,6 +21,10 @@
  */
 package org.opennms.web.rest.support.menu;
 
+/**
+ * Context that can be passed to a MenuProvider.
+ * This can be used in unit or smoke tests to provide alternative implementations.
+ */
 public interface MenuRequestContext {
     String getRemoteUser();
 
@@ -31,4 +35,6 @@ public interface MenuRequestContext {
     String getFormattedTime();
 
     String getNoticeStatus();
+
+    String getSystemProperty(String name, String def);
 }

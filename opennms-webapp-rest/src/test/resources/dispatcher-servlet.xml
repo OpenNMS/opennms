@@ -380,6 +380,14 @@
                                 <property name="locationMatch" value="configurationManagement"/>
                                 <property name="roles" value="ROLE_ADMIN"/>
                             </bean>
+                            <bean class="org.opennms.web.navigate.RoleBasedNavBarEntry">
+                                <property name="name" value="Connect to Zenith"/>
+                                <property name="url" value="ui/index.html#/zenith-connect"/>
+                                <property name="locationMatch" value="configurationManagement"/>
+                                <property name="systemProperty" value="opennms.zenithConnect.enabled"/>
+                                <property name="systemPropertyValue" value="true"/>
+                                <property name="roles" value="ROLE_ADMIN,ROLE_USER"/>
+                            </bean>
                         </list>
                     </property>
                 </bean>

@@ -22,7 +22,7 @@
 
 import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
-import { describe, expect, test } from 'vitest'
+import { beforeEach, describe, expect, test } from 'vitest'
 import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'
 import SCV from '@/containers/SecureCredentialsVault.vue'
@@ -34,18 +34,20 @@ const mockCredentials: SCVCredentials = {
   attributes: {}
 }
 
-const wrapper = mount(SCV, {
-  global: {
-    plugins: [
-      createTestingPinia({ stubActions: false })
-    ],
-    stubs: ['router-link']
-  }
-})
-
-const scvStore = useScvStore()
-
 describe('scvStore test', () => {
+  let wrapper: any
+
+  beforeEach(() => {
+    wrapper = mount(SCV, {
+      global: {
+        plugins: [
+          createTestingPinia({ stubActions: false })
+        ],
+        stubs: ['router-link']
+      }
+    })
+  })
+
   test('adding an alias should enable the add btn', async () => {
     const addCredsBtn = wrapper.get('[data-test="add-creds-btn"]')
     const aliasInput = wrapper.get('[data-test="alias-input"] .feather-input')
@@ -60,6 +62,8 @@ describe('scvStore test', () => {
   })
 
   test('the user may not add a duplicate alias', async () => {
+    const scvStore = useScvStore()
+
     const addCredsBtn = wrapper.get('[data-test="add-creds-btn"]')
     const aliasInput = wrapper.get('[data-test="alias-input"] .feather-input')
 
@@ -76,6 +80,8 @@ describe('scvStore test', () => {
   })
 
   test('the update btn should appear and be enabled', async () => {
+    const scvStore = useScvStore()
+
     const updateCreds = wrapper.find('[data-test="update-creds-btn"]')
 
     // the update btn should not be available
@@ -92,6 +98,8 @@ describe('scvStore test', () => {
 
   // NOTE: skipping this test, need to fix
   test.skip('if password is masked and username is being updated, prevent submission', async () => {
+    const scvStore = useScvStore()
+
     const usernameInput = wrapper.get('[data-test="username-input"] .feather-input')
     const passwordInput = wrapper.get('[data-test="password-input"] .feather-input')
 
@@ -118,6 +126,8 @@ describe('scvStore test', () => {
   })
 
   test('the clear btn', async () => {
+    const scvStore = useScvStore()
+
     const usernameInput = wrapper.get('[data-test="username-input"] .feather-input')
     const passwordInput = wrapper.get('[data-test="password-input"] .feather-input')
     const aliasInput = wrapper.get('[data-test="alias-input"] .feather-input')
