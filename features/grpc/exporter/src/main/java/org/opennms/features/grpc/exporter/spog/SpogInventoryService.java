@@ -29,33 +29,39 @@ import org.opennms.integration.api.v1.runtime.RuntimeInfo;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.plugin.grpc.proto.spog.HeartBeat;
+import org.opennms.plugin.grpc.proto.spog.MonitoringInstance;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
-public class InventoryService {
-    private static final Logger LOG = LoggerFactory.getLogger(InventoryService.class);
+public class SpogInventoryService {
+    private static final Logger LOG = LoggerFactory.getLogger(SpogInventoryService.class);
 
     private final NodeDao nodeDao;
     private final RuntimeInfo runtimeInfo;
-    private final NmsInventoryGrpcClient client;
+    private final SpogGrpcClient client;
     private final Duration snapshotInterval;
     private final ScheduledExecutorService scheduler;
     private final SessionUtils sessionUtils;
     private final boolean inventoryExportEnabled;
+    private final ScheduledExecutorService heartBeatScheduler =
+            Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("spog-heartbeat-update"));
 
-    public InventoryService(final NodeDao nodeDao,
-                            final RuntimeInfo runtimeInfo,
-                            final NmsInventoryGrpcClient client,
-                            final SessionUtils sessionUtils,
-                            final long snapshotInterval,
-                            boolean inventoryExportEnabled) {
+
+    public SpogInventoryService(final NodeDao nodeDao,
+                                final RuntimeInfo runtimeInfo,
+                                final SpogGrpcClient client,
+                                final SessionUtils sessionUtils,
+                                final long snapshotInterval,
+                                boolean inventoryExportEnabled) {
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.runtimeInfo = Objects.requireNonNull(runtimeInfo);
         this.client = Objects.requireNonNull(client);
@@ -73,6 +79,7 @@ public class InventoryService {
                 this.snapshotInterval.getSeconds(),
                 this.snapshotInterval.getSeconds(),
                 TimeUnit.SECONDS);
+        this.heartBeatScheduler.scheduleAtFixedRate(this::sendHeartBeatUpdate, 60, 60, TimeUnit.SECONDS);
         // Set this callback to send snapshot for initial server connect and reconnects
         this.client.setInventoryCallback(this::sendSnapshot);
 
@@ -84,12 +91,12 @@ public class InventoryService {
 
     public void sendAddNmsInventory(OnmsNode node) {
         if (!client.isEnabled()) {
-            LOG.info("NMS Inventory service disabled, not sending inventory updates");
+            LOG.info("SPOG service disabled, not sending inventory updates");
             return;
         }
 
         if (!inventoryExportEnabled) {
-            LOG.info("Inventory Export disabled, not sending inventory updates");
+            LOG.info("SPOG Inventory Export disabled, not sending inventory updates");
             return;
         }
         sessionUtils.withReadOnlyTransaction(() -> {
@@ -102,11 +109,11 @@ public class InventoryService {
 
     public void sendSnapshot() {
         if (!client.isEnabled()) {
-            LOG.info("NMS Inventory service disabled, not sending inventory snapshot");
+            LOG.info("SPOG service disabled, not sending inventory snapshot");
             return;
         }
         if (!inventoryExportEnabled) {
-            LOG.info("Inventory Export disabled, not sending inventory snapshot");
+            LOG.info("SPOG : Inventory Export disabled, not sending inventory snapshot");
             return;
         }
         sessionUtils.withReadOnlyTransaction(() -> {
@@ -115,6 +122,23 @@ public class InventoryService {
             this.client.sendNmsInventoryUpdate(inventory);
         });
 
+    }
+
+    public void sendHeartBeatUpdate() {
+
+        if (!client.isEnabled()) {
+            LOG.info("SPOG service disabled, not sending heartbeat updates");
+            return;
+        }
+
+        this.client.sendHeartBeatUpdate(HeartBeat.newBuilder()
+                .setMonitoringInstance(MonitoringInstance.newBuilder()
+                        .setInstanceId(runtimeInfo.getSystemId())
+                        .setInstanceName(SystemInfoUtils.getInstanceId())
+                        .setInstanceType("OpenNMS").build())
+                .setTimestamp(Instant.now().toEpochMilli())
+                .setMessage("HeartBeat Update from OpenNMS")
+                .build());
     }
 
 }
