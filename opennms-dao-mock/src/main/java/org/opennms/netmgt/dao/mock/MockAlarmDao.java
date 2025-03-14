@@ -82,7 +82,7 @@ public class MockAlarmDao extends AbstractMockDao<OnmsAlarm, Integer> implements
     }
 
     @Override
-    public int getNumAlarmsLastHours(int hours) {
+    public long getNumAlarmsLastHours(int hours) {
         return 0;
     }
 
