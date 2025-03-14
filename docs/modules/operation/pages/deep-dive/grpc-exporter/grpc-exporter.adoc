@@ -14,15 +14,16 @@ $ ssh -p 8101 admin@localhost
 ...
 admin@opennms()> config:edit org.opennms.features.grpc.exporter
 admin@opennms()> config:property-set bsm.host bsm.onmshs.local:1443 <1>
-admin@opennms()> config:property-set spog.host bsm.onmshs.local:1443 <1>
-admin@opennms()> config:property-set tenant.id opennms-prime <2>
-admin@opennms()> config:property-set tls.cert.path /opt/opennms/etc/tls.cert <3>
+admin@opennms()> config:property-set spog.host nms-inventory.onmshs.local:1443 <2>
+admin@opennms()> config:property-set tenant.id opennms-prime <3>
+admin@opennms()> config:property-set tls.cert.path /opt/opennms/etc/tls.cert <4>
 admin@opennms()> config:update
 ----
 
-<1> Set the hostname of the external gRPC application.
-<2> Set tenant id for the data being sent, defaults to `opennms-prime`
-<3> Configure the path to the TLS certificate.
+<1> Set the hostname of the external gRPC application for the BSM
+<2> Set the hostname of the external gRPC application for the SPoG
+<3> Set tenant id for the data being sent, defaults to `opennms-prime`
+<4> Configure the path to the TLS certificate.
 
 === Optional Configuration
 [source, karaf]

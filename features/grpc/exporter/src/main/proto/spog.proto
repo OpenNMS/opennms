@@ -24,10 +24,10 @@ syntax = "proto3";
 
 import "google/protobuf/empty.proto";
 
-package org.opennms.plugin.grpc.proto.services;
+package org.opennms.plugin.grpc.proto.spog;
 
 option java_multiple_files = true;
-option java_package = "org.opennms.plugin.grpc.proto.services";
+option java_package = "org.opennms.plugin.grpc.proto.spog";
 
 message NodeCriteria {
   uint64 id = 1;
@@ -166,8 +166,22 @@ message EventUpdateList {
   repeated Event event = 5;
 }
 
+message MonitoringInstance {
+  string  instance_type = 1;
+  string  instance_id = 2;
+  string  instance_name = 3;
+}
+
+message HeartBeat {
+  MonitoringInstance monitoring_instance = 1;
+  string message = 2;
+  uint64 timestamp = 3;
+}
+
+
 service NmsInventoryServiceSync {
   rpc InventoryUpdate(stream NmsInventoryUpdateList) returns (stream google.protobuf.Empty) {}
   rpc AlarmUpdate(stream AlarmUpdateList) returns (stream google.protobuf.Empty) {}
   rpc EventUpdate(stream EventUpdateList) returns (stream google.protobuf.Empty) {}
+  rpc HeartBeatUpdate(stream HeartBeat) returns (stream google.protobuf.Empty) {}
 }

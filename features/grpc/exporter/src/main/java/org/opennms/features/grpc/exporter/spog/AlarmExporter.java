@@ -37,12 +37,12 @@ public class AlarmExporter implements AlarmLifecycleListener {
 
     private final RuntimeInfo runtimeInfo;
 
-    private final NmsInventoryGrpcClient client;
+    private final SpogGrpcClient client;
 
     private final boolean alarmExportEnabled;
 
     public AlarmExporter(RuntimeInfo runtimeInfo,
-                         NmsInventoryGrpcClient client,
+                         SpogGrpcClient client,
                          boolean alarmExportEnabled) {
         this.runtimeInfo = runtimeInfo;
         this.client = client;
@@ -73,7 +73,7 @@ public class AlarmExporter implements AlarmLifecycleListener {
 
     public void sendAlarmsSnapshot(final List<org.opennms.netmgt.model.OnmsAlarm> alarms) {
         if (!client.isEnabled()) {
-            LOG.debug("NMS Inventory service disabled, not sending alarm snapshot");
+            LOG.debug("SPOG service disabled, not sending alarm snapshot");
             return;
         }
         if (!alarmExportEnabled) {
@@ -87,7 +87,7 @@ public class AlarmExporter implements AlarmLifecycleListener {
 
     public void sendAddUpdateAlarms(final List<OnmsAlarm> onmsAlarms) {
         if (!client.isEnabled()) {
-            LOG.debug("NMS Inventory service disabled, not sending alarm updates");
+            LOG.debug("SPOG service disabled, not sending alarm updates");
             return;
         }
         if (!alarmExportEnabled) {
