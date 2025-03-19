@@ -25,10 +25,12 @@ package org.opennms.features.grpc.exporter;
 import io.grpc.ClientInterceptor;
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import javax.net.ssl.SSLException;
 import java.io.File;
 import java.util.Objects;
@@ -44,6 +46,10 @@ public abstract class GrpcExporter {
     private ManagedChannel channel;
     private ClientInterceptor clientInterceptor;
     private final AtomicBoolean stopped = new AtomicBoolean(false);
+
+    public AtomicBoolean isItTest = new AtomicBoolean(false);
+    public final int PORT = 50051;
+
 
     public GrpcExporter(final String host,
                         final String tlsCertPath,
@@ -71,6 +77,14 @@ public abstract class GrpcExporter {
         return this.stopped.get();
     }
 
+    public AtomicBoolean getIsItTest() {
+        return isItTest;
+    }
+
+    public void setIsItTest(AtomicBoolean isItTest) {
+        this.isItTest = isItTest;
+    }
+
     public synchronized void startGrpcConnection() throws SSLException {
 
         if(getChannelState().equals(ConnectivityState.READY))
@@ -78,28 +92,37 @@ public abstract class GrpcExporter {
             LOG.info("Grpc Channel already connected and in ready state!");
             return;
         }
+        if(isItTest.get()) {
 
-        final NettyChannelBuilder channelBuilder = NettyChannelBuilder.forTarget(this.host)
-                .intercept(clientInterceptor)
-                .keepAliveWithoutCalls(true);
+            // Example target with localhost and dynamic port
+            this.channel = ManagedChannelBuilder.forTarget("localhost:" + PORT)
+                    .usePlaintext()  // non-SSL connection
+                    .build();
 
-        if (tlsEnabled && tlsCertPath != null && !tlsCertPath.isBlank()) {
-            this.channel = channelBuilder.useTransportSecurity()
-                    .sslContext(GrpcSslContexts.forClient()
-                            .trustManager(new File(tlsCertPath)).build())
-                    .build();
-            LOG.info("TLS enabled with cert at {}", tlsCertPath);
-        } else if (tlsEnabled) {
-            // Use system store specified in javax.net.ssl.trustStore
-            this.channel = channelBuilder.useTransportSecurity()
-                    .build();
-            LOG.info("TLS enabled with certs from system store");
-        } else {
-            this.channel = channelBuilder.usePlaintext()
-                    .build();
-            LOG.info("TLS disabled, using plain text");
+        }else {
+
+            final NettyChannelBuilder channelBuilder = NettyChannelBuilder.forTarget(this.host)
+                    .intercept(clientInterceptor)
+                    .keepAliveWithoutCalls(true);
+
+            if (tlsEnabled && tlsCertPath != null && !tlsCertPath.isBlank()) {
+                this.channel = channelBuilder.useTransportSecurity()
+                        .sslContext(GrpcSslContexts.forClient()
+                                .trustManager(new File(tlsCertPath)).build())
+                        .build();
+                LOG.info("TLS enabled with cert at {}", tlsCertPath);
+            } else if (tlsEnabled) {
+                // Use system store specified in javax.net.ssl.trustStore
+                this.channel = channelBuilder.useTransportSecurity()
+                        .build();
+                LOG.info("TLS enabled with certs from system store");
+            } else {
+                this.channel = channelBuilder.usePlaintext()
+                        .build();
+                LOG.info("TLS disabled, using plain text");
+            }
+            LOG.info("Grpc client started connection to {} with channel {} ", this.host, this.channel);
         }
-        LOG.info("Grpc client started connection to {} with channel {} ", this.host, this.channel);
     }
 
     public synchronized void stopGrpcConnection() {
