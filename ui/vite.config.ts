@@ -26,6 +26,14 @@ import svgLoader from 'vite-svg-loader'
 import AutoImport from 'unplugin-auto-import/vite'
 
 export default defineConfig({
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern',
+        silenceDeprecations: ['color-functions', 'global-builtin', 'legacy-js-api', 'import']
+      }
+    }
+  },
   resolve: {
     alias: {
       '@/': new URL('./src/', import.meta.url).pathname,
