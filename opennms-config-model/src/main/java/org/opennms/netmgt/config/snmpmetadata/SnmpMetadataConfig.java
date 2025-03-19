@@ -39,6 +39,8 @@ import org.opennms.core.xml.ValidateUsing;
 public class SnmpMetadataConfig {
     @XmlAttribute(name = "resultsBehavior")
     private String resultsBehavior = "replace";
+    @XmlAttribute(name = "enabled")
+    private Boolean enabled = false;
 
     @XmlElement(name = "config")
     private List<Config> configs = new ArrayList<>();
@@ -59,25 +61,33 @@ public class SnmpMetadataConfig {
         this.resultsBehavior = resultsBehavior;
     }
 
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
+
     @Override
     public String toString() {
         return "SnmpMetadataConfig{" +
-                "resultsBehavior=" + resultsBehavior +
-                "configs=" + configs +
+                "resultsBehavior='" + resultsBehavior + '\'' +
+                ", enabled=" + enabled +
+                ", configs=" + configs +
                 '}';
     }
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         SnmpMetadataConfig that = (SnmpMetadataConfig) o;
-        return Objects.equals(configs, that.configs);
+        return Objects.equals(resultsBehavior, that.resultsBehavior) && Objects.equals(enabled, that.enabled) && Objects.equals(configs, that.configs);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(configs);
+        return Objects.hash(resultsBehavior, enabled, configs);
     }
 }
 
