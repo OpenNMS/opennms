@@ -371,25 +371,25 @@
 
   <!-- Custom Authentication Filter -->
   <beans:bean id="onmsUsernamePasswordAuthenticationFilter" class="org.opennms.web.springframework.security.OnmsUsernamePasswordAuthenticationFilter">
-        <beans:property name="authenticationManager" ref="authenticationManager"/>
-        <beans:property name="authenticationFailureHandler" ref="failureHandler"/>
-        <beans:property name="authenticationSuccessHandler" ref="successHandler"/>
-        <beans:property name="postOnly" value="false"/>
+    <beans:property name="authenticationManager" ref="authenticationManager"/>
+    <beans:property name="authenticationFailureHandler" ref="failureHandler"/>
+    <beans:property name="authenticationSuccessHandler" ref="successHandler"/>
+    <beans:property name="postOnly" value="false"/>
   </beans:bean>
 
-    <beans:bean id="successHandler" class="org.opennms.web.springframework.security.OpenNMSAuthSuccessHandler">
-        <beans:property name="defaultTargetUrl" value="/index.jsp"/>
-    </beans:bean>
-    <beans:bean id="failureHandler" class="org.opennms.web.springframework.security.OpenNMSAuthFailureHandler">
-        <beans:property name="defaultFailureUrl" value="/login.jsp?login_error=1"/>
-    </beans:bean>
+  <beans:bean id="successHandler" class="org.opennms.web.springframework.security.OpenNMSAuthSuccessHandler">
+    <beans:property name="defaultTargetUrl" value="/index.jsp"/>
+  </beans:bean>
+  <beans:bean id="failureHandler" class="org.opennms.web.springframework.security.OpenNMSAuthFailureHandler">
+    <beans:property name="defaultFailureUrl" value="/login.jsp?login_error=1"/>
+  </beans:bean>
 
-    <beans:bean id="loginUrlAuthenticationEntryPoint" class="org.opennms.web.springframework.security.OpenNMSLoginUrlAuthEntryPoint">
-        <beans:constructor-arg value="/login.jsp" />
-    </beans:bean>
-    <beans:bean id="openNMSlLogoutSuccessHandler" class="org.opennms.web.springframework.security.OpenNMSlLogoutSuccessHandler" />
+  <beans:bean id="loginUrlAuthenticationEntryPoint" class="org.opennms.web.springframework.security.OpenNMSLoginUrlAuthEntryPoint">
+    <beans:constructor-arg value="/login.jsp" />
+  </beans:bean>
+  <beans:bean id="openNMSlLogoutSuccessHandler" class="org.opennms.web.springframework.security.OpenNMSlLogoutSuccessHandler" />
 
-    <!-- END CUSTOM AUthentication Filter -->
+  <!-- END CUSTOM Authentication Filter -->
 
   <!-- If a user is pre-authenticated, this will provide user details for the pre-authenticated user -->
   <beans:bean id="preauthAuthProvider" class="org.springframework.security.web.authentication.preauth.PreAuthenticatedAuthenticationProvider">

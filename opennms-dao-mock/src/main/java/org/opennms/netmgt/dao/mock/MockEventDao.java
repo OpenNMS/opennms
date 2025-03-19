@@ -101,7 +101,7 @@ public class MockEventDao extends AbstractMockDao<OnmsEvent, Long> implements Ev
     }
 
     @Override
-    public int getNumEventsLastHours(int hours) {
+    public long getNumEventsLastHours(int hours) {
         return 0;
     }
 }

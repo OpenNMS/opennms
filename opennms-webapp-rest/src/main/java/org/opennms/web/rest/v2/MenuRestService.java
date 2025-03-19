@@ -78,6 +78,7 @@ public class MenuRestService {
      */
     private MainMenu buildMenu(final HttpServletRequest request) throws Exception {
         MainMenu mainMenu = null;
+        this.menuProvider.setMenuRequestContext(new HttpMenuRequestContext(request));
 
         // TODO: This may not be needed, need more testing to be sure that variable expansion is working
         String webInfRealPath = request.getServletContext().getRealPath(WEB_INF_PREFIX);
@@ -91,14 +92,11 @@ public class MenuRestService {
             }
         }
 
-        if (this.menuProvider != null) {
-            try {
-                HttpMenuRequestContext context = new HttpMenuRequestContext(request);
-                mainMenu = this.menuProvider.getMainMenu(context);
-            } catch (Exception e) {
-                LOG.error("Error creating menu entries: " + e.getMessage(), e);
-                throw e;
-            }
+        try {
+            mainMenu = this.menuProvider.getMainMenu();
+        } catch (Exception e) {
+            LOG.error("Error creating menu entries: " + e.getMessage(), e);
+            throw e;
         }
 
         return mainMenu;

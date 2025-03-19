@@ -222,7 +222,7 @@ public class PassiveStatusKeeper extends AbstractServiceDaemon implements EventL
     				EventUtils.getParm(e, EventConstants.PARM_PASSIVE_NODE_LABEL),
     				EventUtils.getParm(e, EventConstants.PARM_PASSIVE_IPADDR),
     				EventUtils.getParm(e, EventConstants.PARM_PASSIVE_SERVICE_NAME),
-    				PollStatus.decode(EventUtils.getParm(e, EventConstants.PARM_PASSIVE_SERVICE_STATUS),EventUtils.getParm(e,EventConstants.PARM_PASSIVE_REASON_CODE))
+    				PollStatus.decodeWithTimestamp(EventUtils.getParm(e, EventConstants.PARM_PASSIVE_SERVICE_STATUS), EventUtils.getParm(e,EventConstants.PARM_PASSIVE_REASON_CODE), e.getTime())
     				);
     		
 	}
