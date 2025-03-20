@@ -75,21 +75,6 @@ public class NmsInventoryGrpcClient extends GrpcClient {
         this.nmsSyncStub = NmsInventoryServiceSyncGrpc.newStub(super.getChannel());
         connectStreams();
     }
-    public void startIT() throws SSLException, InterruptedException {
-        super.startGrpcConnection();
-        int maxWaitTime = 60;  // maximum wait time in seconds
-        int waitTime = 0;
-
-        while (getChannelState() != ConnectivityState.READY && waitTime < maxWaitTime) {
-            Thread.sleep(1000);  // wait for 1 second before checking again
-            waitTime++;
-        }
-
-        if (getChannelState() != ConnectivityState.READY) {
-            throw new IllegalStateException("Grpc channel failed to connect within the expected time.");
-        }
-    }
-
 
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
@@ -176,112 +161,6 @@ public class NmsInventoryGrpcClient extends GrpcClient {
             LOG.info("Client-Sent an Event-Update with {} count", updates.getEventCount());
         } else {
             LOG.warn("Client-Unable to send Event-Updates since channel is not ready yet .. {} ", super.getHost());
-        }
-    }
-
-    public synchronized void sendInventoryUpdateIT(CompletableFuture<Boolean> responseFuture,NmsInventoryUpdateList inventoryUpdateList) {
-        if (super.getChannelState().equals(ConnectivityState.READY)) {
-            NmsInventoryServiceSyncGrpc.NmsInventoryServiceSyncStub nmsSyncStub = NmsInventoryServiceSyncGrpc.newStub(super.getChannel());
-            // Create a StreamObserver for sending inventory updates
-            StreamObserver<NmsInventoryUpdateList> requestObserver = nmsSyncStub.inventoryUpdate(new StreamObserver<Empty>() {
-                @Override
-                public void onNext(Empty value) {
-                    // Acknowledgment from server
-                    System.out.println("Received acknowledgment from server.");
-                    responseFuture.complete(true); // Mark future as complete
-                }
-
-                @Override
-                public void onError(Throwable t) {
-                    System.err.println("Error from server: " + t.getMessage());
-                    responseFuture.completeExceptionally(t); // Complete exceptionally if there's an error
-                }
-
-                @Override
-                public void onCompleted() {
-                    // Completion of the stream
-                    System.out.println("Inventory update stream completed.");
-                }
-            });
-
-            // Send the inventory update to the server
-            requestObserver.onNext(inventoryUpdateList);
-
-            // Complete the stream (this will trigger the acknowledgment)
-            requestObserver.onCompleted();
-        } else {
-            System.out.println("Channel is not ready for communication.");
-        }
-    }
-    public synchronized void sendAlarmUpdateIT(CompletableFuture<Boolean> responseFuture, org.opennms.plugin.grpc.proto.services.AlarmUpdateList alarmUpdateList) {
-
-        if (super.getChannelState().equals(ConnectivityState.READY)) {
-            NmsInventoryServiceSyncGrpc.NmsInventoryServiceSyncStub nmsSyncStub = NmsInventoryServiceSyncGrpc.newStub(super.getChannel());
-            // Create a StreamObserver for sending alarm updates
-            StreamObserver<AlarmUpdateList> requestObserver = nmsSyncStub.alarmUpdate(new StreamObserver<Empty>() {
-                @Override
-                public void onNext(Empty value) {
-                    // Acknowledgment from server
-                    System.out.println("Received acknowledgment from server.");
-                    responseFuture.complete(true); // Mark future as complete
-                }
-
-                @Override
-                public void onError(Throwable t) {
-                    System.err.println("Error from server: " + t.getMessage());
-                    responseFuture.completeExceptionally(t); // Complete exceptionally if there's an error
-                }
-
-                @Override
-                public void onCompleted() {
-                    // Completion of the stream
-                    System.out.println("Alarm update stream completed.");
-                }
-            });
-
-            // Send the alarm update to the server
-            requestObserver.onNext(alarmUpdateList);
-
-            // Complete the stream (this will trigger the acknowledgment)
-            requestObserver.onCompleted();
-        } else {
-            System.out.println("Channel is not ready for communication.");
-        }
-
-    }
-    public synchronized void sendEventUpdateIT(CompletableFuture<Boolean> responseFuture, org.opennms.plugin.grpc.proto.services.EventUpdateList eventUpdateList) {
-
-        if (super.getChannelState().equals(ConnectivityState.READY)) {
-            NmsInventoryServiceSyncGrpc.NmsInventoryServiceSyncStub nmsSyncStub = NmsInventoryServiceSyncGrpc.newStub(super.getChannel());
-            // Create a StreamObserver for sending event updates
-            StreamObserver<EventUpdateList> requestObserver = nmsSyncStub.eventUpdate(new StreamObserver<Empty>() {
-                @Override
-                public void onNext(Empty value) {
-                    // Acknowledgment from server
-                    System.out.println("Received acknowledgment from server.");
-                    responseFuture.complete(true); // Mark future as complete
-                }
-
-                @Override
-                public void onError(Throwable t) {
-                    System.err.println("Error from server: " + t.getMessage());
-                    responseFuture.completeExceptionally(t); // Complete exceptionally if there's an error
-                }
-
-                @Override
-                public void onCompleted() {
-                    // Completion of the stream
-                    System.out.println("Event update stream completed.");
-                }
-            });
-
-            // Send the event update to the server
-            requestObserver.onNext(eventUpdateList);
-
-            // Complete the stream (this will trigger the acknowledgment)
-            requestObserver.onCompleted();
-        } else {
-            System.out.println("Channel is not ready for communication.");
         }
     }
 

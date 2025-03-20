@@ -23,8 +23,11 @@ package org.opennms.features.grpc.exporter;
 
 
 import com.google.protobuf.Empty;
+import io.grpc.ConnectivityState;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
+import io.grpc.Status;
+import io.grpc.StatusRuntimeException;
 import io.grpc.stub.StreamObserver;
 import org.junit.After;
 import org.junit.Assert;
@@ -37,7 +40,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.features.grpc.exporter.nmsinventory.NmsInventoryGrpcClient;
+import org.opennms.features.grpc.exporter.spog.NmsInventoryGrpcClient;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
@@ -54,17 +57,21 @@ import org.opennms.plugin.grpc.proto.services.AlarmUpdateList;
 import org.opennms.plugin.grpc.proto.services.EventUpdateList;
 import org.opennms.plugin.grpc.proto.services.NmsInventoryUpdateList;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.NoSuchElementException;
 import java.util.TreeSet;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.assertTrue;
 
@@ -73,21 +80,18 @@ import static org.junit.Assert.assertTrue;
         "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
-        "classpath:/META-INF/opennms/applicationContext-eventUtil.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
         "classpath:/META-INF/opennms/applicationContext-daemon.xml",
         "classpath:/META-INF/opennms/mockEventIpcManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-alarmd.xml",
         "classpath*:/META-INF/opennms/component-dao.xml"})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext = false, tempDbClass = MockDatabase.class, reuseDatabase = false)
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDatabase> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(NmsInventoryServiceSyncIT.class);
-
     private static final int PORT = 50051;
+    private static final String TENANT_ID = "opennms-prime";
+    private static final String HOST_NAME = "localhost";
 
     private Server server;
     private NmsInventoryGrpcClient client;
@@ -111,10 +115,8 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
     private MockEventIpcManager eventdIpcMgr;
 
     private int _id = 1;
-
-
     private MockDatabase mockDatabase;
-    NmsInventoryServiceSyncImpl inventoryService = new NmsInventoryServiceSyncImpl();
+    private final NmsInventoryServiceSyncImpl inventoryService = new NmsInventoryServiceSyncImpl();
 
     @Before
     public void setUp() throws Exception {
@@ -128,7 +130,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         configureTestServerWithRealClient();
     }
 
-    private void populateData(){
+    private void populateData() {
 
         databasePopulator.addExtension(new DatabasePopulator.Extension<HwEntityDao>() {
 
@@ -168,20 +170,20 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         databasePopulator.populateDatabase();
     }
 
-    private void configureTestServerWithRealClient() throws IOException, InterruptedException {
+    private void configureTestServerWithRealClient() throws IOException, InterruptedException, ExecutionException {
         server = ServerBuilder.forPort(PORT)
                 .addService(inventoryService)
                 .build()
                 .start(); // Restart the server
 
-        client = new NmsInventoryGrpcClient("localhost",
+        client = new NmsInventoryGrpcClient(HOST_NAME,
                 null,
                 false,
-                new GrpcHeaderInterceptor("opennms-prime")
+                new GrpcHeaderInterceptor(TENANT_ID)
         );
-        client.setIsItTest(new AtomicBoolean(true));
-        client.startIT(); // Restart the client
+        this.startIT();
     }
+
     @Test
     public void testClientRecoveryAfterServerRestart() throws Exception {
         // Step 1: Send initial inventory update
@@ -202,17 +204,17 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
                         .build())
                 .build();
 
-        client.sendInventoryUpdateIT(initialResponseFuture, initialInventoryUpdateList);
+        this.sendInventoryUpdateIT(initialResponseFuture, initialInventoryUpdateList);
         assertTrue("The initial response was not completed successfully.", initialResponseFuture.join());
 
         // Step 2: Stop the server to simulate a restart
         if (server != null) {
             server.shutdown();
             // Wait for the server to fully shutdown
-            isShutdown =  server.awaitTermination(5, TimeUnit.SECONDS);
+            isShutdown = server.awaitTermination(5, TimeUnit.SECONDS);
         }
 
-        Assert.assertTrue("Server failed to be shutdown properly",isShutdown);
+        Assert.assertTrue("Server failed to be shutdown properly", isShutdown);
 
         // Step 3: Restart the server and client
         configureTestServerWithRealClient();
@@ -233,7 +235,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
                         .build())
                 .build();
 
-        client.sendInventoryUpdateIT(recoveryResponseFuture, recoveryInventoryUpdateList);
+        this.sendInventoryUpdateIT(recoveryResponseFuture, recoveryInventoryUpdateList);
         assertTrue("The response after server recovery was not completed successfully.", recoveryResponseFuture.join());
         // Step 5: Assert that the client was able to reconnect and send the update after server restart
         System.out.println("Client successfully recovered and sent inventory update after server restart.");
@@ -244,14 +246,15 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
 
         CompletableFuture<Boolean> responseFuture = new CompletableFuture<>();
 
-        final var node  = nodeDao.findAll().stream().findFirst().get();
+        final var node = nodeDao.findAll().stream().findFirst()
+                .orElseThrow(() -> new NoSuchElementException("No node found"));
 
         Assert.assertNotNull(node);
-        Assert.assertTrue("Node id should be exist",node.getId()>0);
-        Assert.assertNotNull("ForeignSource should not be null",node.getForeignSource());
-        Assert.assertNotNull("ForeignId should not be null",node.getForeignId());
-        Assert.assertNotNull("Location should not be null",node.getLocation().getLocationName());
-        Assert.assertNotNull("Node Label should not be null",node.getLabel());
+        Assert.assertTrue("Node id should be exist", node.getId() > 0);
+        Assert.assertNotNull("ForeignSource should not be null", node.getForeignSource());
+        Assert.assertNotNull("ForeignId should not be null", node.getForeignId());
+        Assert.assertNotNull("Location should not be null", node.getLocation().getLocationName());
+        Assert.assertNotNull("Node Label should not be null", node.getLabel());
 
         NmsInventoryUpdateList inventoryUpdateList = NmsInventoryUpdateList.newBuilder()
                 .setInstanceId("instance_1")
@@ -268,13 +271,13 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
 
 
         // Send the inventory update to the server
-        client.sendInventoryUpdateIT(responseFuture,inventoryUpdateList);
-        assertTrue( "The response was not completed successfully for inventory valid input.",responseFuture.join());
+        this.sendInventoryUpdateIT(responseFuture, inventoryUpdateList);
+        assertTrue("The response was not completed successfully for inventory valid input.", responseFuture.join());
 
     }
 
     @Test
-    public void testAlarmDataToBeSent(){
+    public void testAlarmDataToBeSent() {
 
         CompletableFuture<Boolean> responseFuture = new CompletableFuture<>();
 
@@ -282,12 +285,13 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         final OnmsAlarm alarm = nodeDownAlarmWithRelatedAlarm();
         alarmDao.save(alarm);
 
-        final var alarmResponse = eventDao.findAll().stream().findFirst().get();
+        final var alarmResponse = eventDao.findAll().stream().findFirst()
+                .orElseThrow(() -> new NoSuchElementException("No alarm found"));
 
         Assert.assertNotNull(alarmResponse);
-        Assert.assertTrue("Alarm id should be exist",alarmResponse.getId()>0);
-        Assert.assertTrue("Node id in alarm should be exist",alarmResponse.getNodeId()>0);
-        Assert.assertEquals(EventConstants.NODE_DOWN_EVENT_UEI,alarmResponse.getUei());
+        Assert.assertTrue("Alarm id should be exist", alarmResponse.getId() > 0);
+        Assert.assertTrue("Node id in alarm should be exist", alarmResponse.getNodeId() > 0);
+        Assert.assertEquals(EventConstants.NODE_DOWN_EVENT_UEI, alarmResponse.getUei());
 
         AlarmUpdateList alarmUpdateList = AlarmUpdateList.newBuilder()
                 .setInstanceId("instance_1")
@@ -304,23 +308,24 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
                                 .build()))
                 .build();
 
-        client.sendAlarmUpdateIT(responseFuture,alarmUpdateList);
-        assertTrue( "The response was not completed successfully for alarm valid input.",responseFuture.join());
+        this.sendAlarmUpdateIT(responseFuture, alarmUpdateList);
+        assertTrue("The response was not completed successfully for alarm valid input.", responseFuture.join());
     }
 
     @Test
-    public void testEventDataToBeSent(){
+    public void testEventDataToBeSent() {
         CompletableFuture<Boolean> responseFuture = new CompletableFuture<>();
         eventdIpcMgr.sendNow(MockEventUtil.createNodeUpEventBuilder("test", databasePopulator.getNode1()).getEvent());
         final OnmsAlarm alarm = nodeUpAlarmWithRelatedAlarm();
         alarmDao.save(alarm);
 
-        final var eventResponse = eventDao.findAll().stream().findFirst().get();
+        final var eventResponse = eventDao.findAll().stream().findFirst()
+                .orElseThrow(() -> new NoSuchElementException("No event found"));
 
         Assert.assertNotNull(eventResponse);
-        Assert.assertTrue("Event id should be exist",eventResponse.getId()>0);
-        Assert.assertTrue("Node id in event should be exist",eventResponse.getNodeId()>0);
-        Assert.assertEquals(EventConstants.NODE_UP_EVENT_UEI,eventResponse.getUei());
+        Assert.assertTrue("Event id should be exist", eventResponse.getId() > 0);
+        Assert.assertTrue("Node id in event should be exist", eventResponse.getNodeId() > 0);
+        Assert.assertEquals(EventConstants.NODE_UP_EVENT_UEI, eventResponse.getUei());
 
         EventUpdateList eventUpdateList = org.opennms.plugin.grpc.proto.services.EventUpdateList.newBuilder()
                 .setInstanceId("instance_1")
@@ -333,10 +338,53 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
                         .build())
                 .build();
 
-        client.sendEventUpdateIT(responseFuture,eventUpdateList);
-        assertTrue( "The response was not completed successfully for event valid input.",responseFuture.join());
+        this.sendEventUpdateIT(responseFuture, eventUpdateList);
+        assertTrue("The response was not completed successfully for event valid input.", responseFuture.join());
 
     }
+
+    public void startIT() throws InterruptedException, ExecutionException {
+        client.startInProcessChannel();
+
+        int maxWaitTime = 60;
+        ExecutorService executor = Executors.newSingleThreadExecutor();
+
+        try {
+
+            ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
+
+            Future<Boolean> future = scheduler.submit(() -> {
+                int waitTime = 0;
+                while (waitTime < maxWaitTime) {
+                    if (client.getChannelState() == ConnectivityState.READY) {
+                        return true;
+                    }
+                    waitTime++;
+                    try {
+                        TimeUnit.SECONDS.sleep(1);
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        throw new RuntimeException("Interrupted while waiting for channel readiness.", e);
+                    }
+                }
+                return false;
+            });
+
+            // Wait for the task to complete or time out
+            boolean isReady = future.get(maxWaitTime, TimeUnit.SECONDS);
+
+            // Check the result and throw exception if not ready
+            if (!isReady) {
+                throw new IllegalStateException("GRPC channel failed to connect within the expected time.");
+            }
+
+        } catch (TimeoutException e) {
+            throw new IllegalStateException("GRPC channel failed to connect within the expected time.", e);
+        } finally {
+            executor.shutdownNow();
+        }
+    }
+
     private OnmsAlarm nodeUpAlarmWithRelatedAlarm() {
         OnmsAlarm alarm = nodeUpAlarm();
         OnmsAlarm relatedAlarm = nodeUpAlarm();
@@ -373,6 +421,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         eventdIpcMgr.reset();
         alarmDao.findAll().forEach(alarm -> alarmDao.delete(alarm));
         databasePopulator.resetDatabase();
+        client.stop();
     }
 
     private OnmsAlarm nodeDownAlarmWithRelatedAlarm() {
@@ -414,6 +463,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         chassis.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.3.760");
         return chassis;
     }
+
     static OnmsHwEntity getHwEntityPowerSupply(OnmsNode node) {
         final OnmsHwEntity powerSupply = new OnmsHwEntity();
         powerSupply.setNode(node);
@@ -425,6 +475,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         powerSupply.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.7.81");
         return powerSupply;
     }
+
     static OnmsHwEntity getHwEntityModule(OnmsNode node) {
         final OnmsHwEntity module = new OnmsHwEntity();
         module.setNode(node);
@@ -437,6 +488,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         module.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.6.223");
         return module;
     }
+
     static OnmsHwEntity getHwEntityContainer(OnmsNode node) {
         OnmsHwEntity container = new OnmsHwEntity();
         container.setNode(node);
@@ -448,6 +500,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         container.setEntPhysicalVendorType(".1.3.6.1.4.1.9.12.3.1.5.115");
         return container;
     }
+
     static OnmsHwEntity getHwEntityPort(OnmsNode node) {
         final OnmsHwEntity port = new OnmsHwEntity();
         port.setNode(node);
@@ -541,4 +594,137 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
             };
         }
     }
+
+    private synchronized void sendInventoryUpdateIT(CompletableFuture<Boolean> responseFuture, NmsInventoryUpdateList inventoryUpdateList) {
+        if (client.getChannelState().equals(ConnectivityState.READY)) {
+            org.opennms.plugin.grpc.proto.services.NmsInventoryServiceSyncGrpc.NmsInventoryServiceSyncStub nmsSyncStub = org.opennms.plugin.grpc.proto.services.NmsInventoryServiceSyncGrpc.newStub(client.getChannel());
+            // Create a StreamObserver for sending inventory updates
+            StreamObserver<NmsInventoryUpdateList> requestObserver = nmsSyncStub.inventoryUpdate(new StreamObserver<Empty>() {
+                @Override
+                public void onNext(Empty value) {
+                    // Acknowledgment from server
+                    System.out.println("Received acknowledgment from server.");
+                    responseFuture.complete(true); // Mark future as complete
+                }
+
+                @Override
+                public void onError(Throwable t) {
+                    // Complete exceptionally if there's an error
+                    if (t instanceof StatusRuntimeException) {
+                        StatusRuntimeException exception = (StatusRuntimeException) t;
+                        if (exception.getStatus().getCode() == Status.INVALID_ARGUMENT.getCode()) {
+                            responseFuture.complete(false);
+                        }
+                    } else {
+                        responseFuture.completeExceptionally(t);
+                    }
+                    System.err.println("Error from server: " + t.getMessage());
+                }
+
+                @Override
+                public void onCompleted() {
+                    // Completion of the stream
+                    System.out.println("Inventory update stream completed.");
+                }
+            });
+
+            // Send the inventory update to the server
+            requestObserver.onNext(inventoryUpdateList);
+
+            // Complete the stream (this will trigger the acknowledgment)
+            requestObserver.onCompleted();
+        } else {
+            System.out.println("Channel is not ready for communication.");
+        }
+    }
+
+    private synchronized void sendAlarmUpdateIT(CompletableFuture<Boolean> responseFuture, org.opennms.plugin.grpc.proto.services.AlarmUpdateList alarmUpdateList) {
+
+        if (client.getChannelState().equals(ConnectivityState.READY)) {
+            org.opennms.plugin.grpc.proto.services.NmsInventoryServiceSyncGrpc.NmsInventoryServiceSyncStub nmsSyncStub = org.opennms.plugin.grpc.proto.services.NmsInventoryServiceSyncGrpc.newStub(client.getChannel());
+            // Create a StreamObserver for sending alarm updates
+            StreamObserver<AlarmUpdateList> requestObserver = nmsSyncStub.alarmUpdate(new StreamObserver<Empty>() {
+                @Override
+                public void onNext(Empty value) {
+                    // Acknowledgment from server
+                    System.out.println("Received acknowledgment from server.");
+                    responseFuture.complete(true); // Mark future as complete
+                }
+
+                @Override
+                public void onError(Throwable t) {
+                    // Complete exceptionally if there's an error
+                    if (t instanceof StatusRuntimeException) {
+                        StatusRuntimeException exception = (StatusRuntimeException) t;
+                        if (exception.getStatus().getCode() == Status.INVALID_ARGUMENT.getCode()) {
+                            responseFuture.complete(false);
+                        }
+                    } else {
+                        responseFuture.completeExceptionally(t);
+                    }
+                    System.err.println("Error from server: " + t.getMessage());
+                }
+
+                @Override
+                public void onCompleted() {
+                    // Completion of the stream
+                    System.out.println("Alarm update stream completed.");
+                }
+            });
+
+            // Send the alarm update to the server
+            requestObserver.onNext(alarmUpdateList);
+
+            // Complete the stream (this will trigger the acknowledgment)
+            requestObserver.onCompleted();
+        } else {
+            System.out.println("Channel is not ready for communication.");
+        }
+
+    }
+
+    private synchronized void sendEventUpdateIT(CompletableFuture<Boolean> responseFuture, org.opennms.plugin.grpc.proto.services.EventUpdateList eventUpdateList) {
+
+        if (client.getChannelState().equals(ConnectivityState.READY)) {
+            org.opennms.plugin.grpc.proto.services.NmsInventoryServiceSyncGrpc.NmsInventoryServiceSyncStub nmsSyncStub = org.opennms.plugin.grpc.proto.services.NmsInventoryServiceSyncGrpc.newStub(client.getChannel());
+            // Create a StreamObserver for sending event updates
+            StreamObserver<EventUpdateList> requestObserver = nmsSyncStub.eventUpdate(new StreamObserver<Empty>() {
+                @Override
+                public void onNext(Empty value) {
+                    // Acknowledgment from server
+                    System.out.println("Received acknowledgment from server.");
+                    responseFuture.complete(true); // Mark future as complete
+                }
+
+                @Override
+                public void onError(Throwable t) {
+                    // Complete exceptionally if there's an error
+                    if (t instanceof StatusRuntimeException) {
+                        StatusRuntimeException exception = (StatusRuntimeException) t;
+                        if (exception.getStatus().getCode() == Status.INVALID_ARGUMENT.getCode()) {
+                            responseFuture.complete(false);
+                        }
+                    } else {
+                        responseFuture.completeExceptionally(t);
+                    }
+                    System.err.println("Error from server: " + t.getMessage());
+                }
+
+                @Override
+                public void onCompleted() {
+                    // Completion of the stream
+                    System.out.println("Event update stream completed.");
+                }
+            });
+
+            // Send the event update to the server
+            requestObserver.onNext(eventUpdateList);
+
+            // Complete the stream (this will trigger the acknowledgment)
+            requestObserver.onCompleted();
+        } else {
+            System.out.println("Channel is not ready for communication.");
+        }
+    }
+
 }

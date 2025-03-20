@@ -25,6 +25,7 @@ package org.opennms.features.grpc.exporter;
 import io.grpc.ClientInterceptor;
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
+import io.grpc.ManagedChannelBuilder;
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import org.slf4j.Logger;
@@ -44,9 +45,6 @@ public abstract class GrpcClient {
     private ManagedChannel channel;
     private final ClientInterceptor clientInterceptor;
     private final AtomicBoolean stopped = new AtomicBoolean(false);
-
-    public AtomicBoolean isItTest = new AtomicBoolean(false);
-    public final int PORT = 50051;
 
     public GrpcClient(final String host,
                       final String tlsCertPath,
@@ -74,14 +72,6 @@ public abstract class GrpcClient {
         return this.stopped.get();
     }
 
-    public AtomicBoolean getIsItTest() {
-        return isItTest;
-    }
-
-    public void setIsItTest(AtomicBoolean isItTest) {
-        this.isItTest = isItTest;
-    }
-
     public synchronized void startGrpcConnection() throws SSLException {
 
         if(getChannelState().equals(ConnectivityState.READY))
@@ -89,14 +79,6 @@ public abstract class GrpcClient {
             LOG.info("Grpc Channel already connected and in ready state!");
             return;
         }
-        if(isItTest.get()) {
-
-            // Example target with localhost and dynamic port
-            this.channel = ManagedChannelBuilder.forTarget("localhost:" + PORT)
-                    .usePlaintext()  // non-SSL connection
-                    .build();
-
-        }else {
 
         final NettyChannelBuilder channelBuilder = NettyChannelBuilder.forTarget(this.host)
                 .intercept(clientInterceptor)
@@ -120,6 +102,11 @@ public abstract class GrpcClient {
         }
         LOG.info("Grpc client started connection to {}", this.host);
     }
+
+    public synchronized void startInProcessChannel(){
+        this.channel = ManagedChannelBuilder.forTarget("localhost:50051")
+                .usePlaintext()  // non-SSL connection
+                .build();
     }
 
     public synchronized void stopGrpcConnection() {
