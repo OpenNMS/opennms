@@ -20,14 +20,14 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.nmsinventory;
+package org.opennms.features.grpc.exporter.spog;
 
 import com.google.protobuf.Empty;
 import io.grpc.ClientInterceptor;
 import io.grpc.ConnectivityState;
 import io.grpc.stub.StreamObserver;
 import org.opennms.features.grpc.exporter.Callback;
-import org.opennms.features.grpc.exporter.GrpcExporter;
+import org.opennms.features.grpc.exporter.GrpcClient;
 import org.opennms.features.grpc.exporter.NamedThreadFactory;
 import org.opennms.plugin.grpc.proto.services.AlarmUpdateList;
 import org.opennms.plugin.grpc.proto.services.NmsInventoryServiceSyncGrpc;
@@ -37,13 +37,12 @@ import org.opennms.plugin.grpc.proto.services.NmsInventoryUpdateList;
 import org.opennms.plugin.grpc.proto.services.EventUpdateList;
 import javax.net.ssl.SSLException;
 import java.util.Objects;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class NmsInventoryGrpcClient extends GrpcExporter {
+public class NmsInventoryGrpcClient extends GrpcClient {
     private static final Logger LOG = LoggerFactory.getLogger(NmsInventoryGrpcClient.class);
 
     private final String threadName = "alarm-inventory-grpc-connect";
@@ -53,6 +52,7 @@ public class NmsInventoryGrpcClient extends GrpcExporter {
     private StreamObserver<AlarmUpdateList> alarmsUpdateStream;
     private StreamObserver<NmsInventoryUpdateList> nmsInventoryUpdateStream;
     private StreamObserver<EventUpdateList> eventUpdateStream;
+    private boolean enabled = true;
 
     private Callback inventoryCallback;
 
@@ -66,11 +66,15 @@ public class NmsInventoryGrpcClient extends GrpcExporter {
     }
 
     public void start() throws SSLException{
+        if (!enabled) {
+            LOG.info("NMS Inventory GrpcClient disabled, not starting connections to {}", super.getHost());
+            return;
+        }
+
         super.startGrpcConnection();
         this.nmsSyncStub = NmsInventoryServiceSyncGrpc.newStub(super.getChannel());
         connectStreams();
     }
-
     public void startIT() throws SSLException, InterruptedException {
         super.startGrpcConnection();
         int maxWaitTime = 60;  // maximum wait time in seconds
@@ -87,6 +91,13 @@ public class NmsInventoryGrpcClient extends GrpcExporter {
     }
 
 
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+
+    public boolean isEnabled() {
+        return enabled;
+    }
     private void connectStreams() {
         // Schedule connect streams immediately and 30 secs thereafter.
         scheduler.scheduleAtFixedRate(this::initializeStreams, 30, 30, TimeUnit.SECONDS);
@@ -136,6 +147,7 @@ public class NmsInventoryGrpcClient extends GrpcExporter {
         }
     }
 
+
     public void setInventoryCallback(Callback inventoryCallback) {
         this.inventoryCallback = inventoryCallback;
     }
@@ -152,6 +164,7 @@ public class NmsInventoryGrpcClient extends GrpcExporter {
     public void sendNmsInventoryUpdate(final NmsInventoryUpdateList updates) {
         if (this.nmsInventoryUpdateStream != null) {
             this.nmsInventoryUpdateStream.onNext(updates);
+            LOG.info("Client-Sent an inventory update with {} nodes", updates.getNodesCount());
         } else {
             LOG.warn("Client-Unable to send Inventory-Updates since channel is not ready yet .. {} ", super.getHost());
         }
@@ -284,18 +297,18 @@ public class NmsInventoryGrpcClient extends GrpcExporter {
 
         @Override
         public void onNext(final Empty value) {
-            LOG.debug("AlarmInventory-Received ACK {}", this.type);
+            LOG.debug("NMSInventory-Received ACK {}", this.type);
         }
 
         @Override
         public void onError(final Throwable t) {
-            LOG.error("AlarmInventory-Received error {}", this.type, t);
+            LOG.error("NMSInventory-Received error {}", this.type, t);
             client.reconnectStreams();
         }
 
         @Override
         public void onCompleted() {
-            LOG.info("AlarmInventory-Completed {}", this.type);
+            LOG.info("NMSInventory-Completed {}", this.type);
             client.reconnectStreams();
         }
     }

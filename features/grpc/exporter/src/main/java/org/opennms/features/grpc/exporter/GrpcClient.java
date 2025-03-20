@@ -25,36 +25,33 @@ package org.opennms.features.grpc.exporter;
 import io.grpc.ClientInterceptor;
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import javax.net.ssl.SSLException;
 import java.io.File;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public abstract class GrpcExporter {
+public abstract class GrpcClient {
 
-    private static final Logger LOG = LoggerFactory.getLogger(GrpcExporter.class);
+    private static final Logger LOG = LoggerFactory.getLogger(GrpcClient.class);
 
-    private String host;
-    private String tlsCertPath;
-    private boolean tlsEnabled;
+    private final String host;
+    private final String tlsCertPath;
+    private final boolean tlsEnabled;
     private ManagedChannel channel;
-    private ClientInterceptor clientInterceptor;
+    private final ClientInterceptor clientInterceptor;
     private final AtomicBoolean stopped = new AtomicBoolean(false);
 
     public AtomicBoolean isItTest = new AtomicBoolean(false);
     public final int PORT = 50051;
 
-
-    public GrpcExporter(final String host,
-                        final String tlsCertPath,
-                        final boolean tlsEnabled,
-                        ClientInterceptor clientInterceptor) {
+    public GrpcClient(final String host,
+                      final String tlsCertPath,
+                      final boolean tlsEnabled,
+                      ClientInterceptor clientInterceptor) {
         this.host = Objects.requireNonNull(host);
         this.tlsCertPath = tlsCertPath;
         this.tlsEnabled = tlsEnabled;
@@ -101,28 +98,28 @@ public abstract class GrpcExporter {
 
         }else {
 
-            final NettyChannelBuilder channelBuilder = NettyChannelBuilder.forTarget(this.host)
-                    .intercept(clientInterceptor)
-                    .keepAliveWithoutCalls(true);
+        final NettyChannelBuilder channelBuilder = NettyChannelBuilder.forTarget(this.host)
+                .intercept(clientInterceptor)
+                .keepAliveWithoutCalls(true);
 
-            if (tlsEnabled && tlsCertPath != null && !tlsCertPath.isBlank()) {
-                this.channel = channelBuilder.useTransportSecurity()
-                        .sslContext(GrpcSslContexts.forClient()
-                                .trustManager(new File(tlsCertPath)).build())
-                        .build();
-                LOG.info("TLS enabled with cert at {}", tlsCertPath);
-            } else if (tlsEnabled) {
-                // Use system store specified in javax.net.ssl.trustStore
-                this.channel = channelBuilder.useTransportSecurity()
-                        .build();
-                LOG.info("TLS enabled with certs from system store");
-            } else {
-                this.channel = channelBuilder.usePlaintext()
-                        .build();
-                LOG.info("TLS disabled, using plain text");
-            }
-            LOG.info("Grpc client started connection to {} with channel {} ", this.host, this.channel);
+        if (tlsEnabled && tlsCertPath != null && !tlsCertPath.isBlank()) {
+            this.channel = channelBuilder.useTransportSecurity()
+                    .sslContext(GrpcSslContexts.forClient()
+                            .trustManager(new File(tlsCertPath)).build())
+                    .build();
+            LOG.info("TLS enabled with cert at {}", tlsCertPath);
+        } else if (tlsEnabled) {
+            // Use system store specified in javax.net.ssl.trustStore
+            this.channel = channelBuilder.useTransportSecurity()
+                    .build();
+            LOG.info("TLS enabled with certs from system store");
+        } else {
+            this.channel = channelBuilder.usePlaintext()
+                    .build();
+            LOG.info("TLS disabled, using plain text");
         }
+        LOG.info("Grpc client started connection to {}", this.host);
+    }
     }
 
     public synchronized void stopGrpcConnection() {

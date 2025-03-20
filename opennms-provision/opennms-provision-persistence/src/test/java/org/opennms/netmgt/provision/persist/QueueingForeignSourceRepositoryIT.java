@@ -48,7 +48,7 @@ public class QueueingForeignSourceRepositoryIT extends ForeignSourceRepositoryTe
 
     @Before
     public void setUp() {
-        m_defaultForeignSourceName = "imported:";
+        m_defaultForeignSourceName = "imported-";
         m_foreignSourceRepository.clear();
     }
 

@@ -29,6 +29,16 @@ An enhanced node list has been introduced with options for sorting and filtering
 
 == Breaking changes
 
+=== Passive Status Monitor
+The Passive Status Monitor previously used the time of the event's arrival as the timestamp of the status.
+As this is too imprecise for some use cases, the time field of the event is now also evaluated.
+If the field is set, it is adopted unchanged as the timestamp of the status.
+If no time is set, the timestamp is generated as before when the event arrives.
+
+=== SNMP Metadata Provisioning Adapter
+The SNMP Metadata Provisioning Adapter is not enabled by default anymore.
+Set `enabled="true"` in the configuration file `$OPENNMS_HOME/etc/snmp-metadata-adapter-configuration.xml` to enable it.
+
 === Docker image changes
 
 The Docker images for the core, minion, and sentinel have been changed from being Ubuntu-based to using RedHat's link:https://www.redhat.com/en/blog/introducing-red-hat-universal-base-image[Universal Base Image].
@@ -43,3 +53,6 @@ This means that things will have moved around a bit in the filesystem, and that 
 * The OpenNMS Plugin API has been updated to 1.6.0
 * Zookeeper APIs have been updated to 3.7.x
 * If you are performing automated tests, you may need to disable the new popup that shows on first launch.  To do so set `opennms.userDataCollection.show=false` in a properties file in `$OPENNMS_HOME/etc/opennms.properties.d/`.
+
+=== Stricter validation of requisition names
+Some characters (/, \, ?, &, *, ', “) may not be used in requisition names. The UI components have already enforced the validation of requisition names. This restriction is now also enforced when creating search requests via the OpenNMS ReST API.

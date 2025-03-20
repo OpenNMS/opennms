@@ -27,11 +27,12 @@ import io.grpc.ClientInterceptor;
 import io.grpc.ConnectivityState;
 import io.grpc.stub.StreamObserver;
 import org.opennms.features.grpc.exporter.Callback;
-import org.opennms.features.grpc.exporter.GrpcExporter;
+import org.opennms.features.grpc.exporter.GrpcClient;
 import org.opennms.features.grpc.exporter.NamedThreadFactory;
 import org.opennms.plugin.grpc.proto.services.InventoryUpdateList;
 import org.opennms.plugin.grpc.proto.services.ServiceSyncGrpc;
 import org.opennms.plugin.grpc.proto.services.StateUpdateList;
+import org.opennms.plugin.grpc.proto.services.HeartBeat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import javax.net.ssl.SSLException;
@@ -42,16 +43,18 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 
-public class BsmGrpcClient extends GrpcExporter {
+public class BsmGrpcClient extends GrpcClient {
     private static final Logger LOG = LoggerFactory.getLogger(BsmGrpcClient.class);
 
     public static final String FOREIGN_TYPE = "OpenNMS";
     private ServiceSyncGrpc.ServiceSyncStub monitoredServiceSyncStub;
     private StreamObserver<InventoryUpdateList> inventoryUpdateStream;
     private StreamObserver<StateUpdateList> stateUpdateStream;
+    private StreamObserver<HeartBeat> heartBeatStream;
     private ScheduledExecutorService scheduler;
     private final AtomicBoolean reconnecting = new AtomicBoolean(false);
     private Callback inventoryCallback;
+    private boolean enabled = true;
 
 
     public BsmGrpcClient(final String host,
@@ -64,10 +67,23 @@ public class BsmGrpcClient extends GrpcExporter {
     }
 
     public void start() throws SSLException {
+        if (!enabled) {
+            LOG.info("BSM GrpcExporterClient disabled, not starting connections to {}", super.getHost());
+            return;
+        }
+        
         super.startGrpcConnection();
         this.monitoredServiceSyncStub = ServiceSyncGrpc.newStub(super.getChannel());
         connectStreams();
         LOG.info("BSM GrpcExporterClient started to {}", super.getHost());
+    }
+    
+    public void setEnabled(boolean enabled) {
+        this.enabled = enabled;
+    }
+    
+    public boolean isEnabled() {
+        return enabled;
     }
 
     public void stop() {
@@ -85,15 +101,15 @@ public class BsmGrpcClient extends GrpcExporter {
     private synchronized void initializeStreams() {
         if (super.getChannelState().equals(ConnectivityState.READY)) {
             try {
-
-                LOG.info("monitoredServiceSyncStub {}.", this.monitoredServiceSyncStub);
                 this.inventoryUpdateStream =
                         this.monitoredServiceSyncStub.inventoryUpdate(new LoggingAckReceiver("monitored_service_inventory_update", this));
                 this.stateUpdateStream =
                         this.monitoredServiceSyncStub.stateUpdate(new LoggingAckReceiver("monitored_service_state_update", this));
+                this.heartBeatStream =
+                        this.monitoredServiceSyncStub.heartBeatUpdate(new LoggingAckReceiver("heartbeat_update", this));
                 this.scheduler.shutdown();
                 this.scheduler = null;
-                LOG.info("Streams initialized successfully.");
+                LOG.info("BSM Streams initialized successfully.");
                 reconnecting.set(false);
                 // While connecting, reconnecting, send callback to inventory service.
                 if (inventoryCallback != null) {
@@ -141,6 +157,14 @@ public class BsmGrpcClient extends GrpcExporter {
         }
     }
 
+    public void sendHeartBeatUpdate(HeartBeat heartBeat) {
+        if (heartBeatStream != null) {
+            this.heartBeatStream.onNext(heartBeat);
+        } else {
+            LOG.warn("Unable to send heartbeat status update since channel is not ready yet");
+        }
+    }
+
     private static class LoggingAckReceiver implements StreamObserver<Empty> {
 
         private final String type;
@@ -154,18 +178,18 @@ public class BsmGrpcClient extends GrpcExporter {
 
         @Override
         public void onNext(final Empty value) {
-            LOG.debug("Received ACK {}", this.type);
+            LOG.debug("BSM gRPC Client : Received ACK {}", this.type);
         }
 
         @Override
         public void onError(final Throwable t) {
-            LOG.error("Received error {}", this.type, t);
+            LOG.error("BSM gRPC Client : Received error {}", this.type, t);
             client.reconnectStreams();
         }
 
         @Override
         public void onCompleted() {
-            LOG.info("Completed {}", this.type);
+            LOG.info("BSM gRPC Client : Completed {}", this.type);
             client.reconnectStreams();
         }
     }
