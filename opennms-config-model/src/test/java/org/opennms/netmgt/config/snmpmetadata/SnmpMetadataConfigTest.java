@@ -42,7 +42,7 @@ public class SnmpMetadataConfigTest  extends XmlTestNoCastor<SnmpMetadataConfig>
                 {
                         getConfig(),
                         "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\n" +
-                                "<snmp-metadata-config resultsBehavior=\"replace\">\n" +
+                                "<snmp-metadata-config resultsBehavior=\"replace\" enabled=\"false\">\n" +
                                 "    <config name=\"rootLevel\" sysObjectId=\".4.3.2.1\" tree=\".1.2.3.4\">\n" +
                                 "        <entry tree=\".1\" name=\"entry1\" index=\"false\" exact=\"false\"/>\n" +
                                 "        <entry tree=\".2\" name=\"entry2\" index=\"false\" exact=\"false\">\n" +
