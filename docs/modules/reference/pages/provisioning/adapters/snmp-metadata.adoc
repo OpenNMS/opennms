@@ -8,7 +8,7 @@ The file `$\{OPENNMS_HOME}/etc/snmp-metadata-adapter-configuration.xml` is used 
 
 [source, xml]
 ----
-<snmp-metadata-config updateBehavior="replace">
+<snmp-metadata-config updateBehavior="replace" enabled="true">
     <config tree=".1.2.3.4" name="myHardware" sysObjectId="~^\.4\.3\.2\.1.*">
         <entry tree=".1" name="someKey"/>
         <entry tree=".2" name="otherKey"/>

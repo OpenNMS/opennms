@@ -97,6 +97,14 @@ function parseEnvironment() {
     for VAR in $(env)
     do
         env_var=$(echo "$VAR" | cut -d= -f1)
+        env_val=$(echo "$VAR" | cut -d= -f2)
+
+        if [ "${env_var}" == "JAVA_MIN_MEM" ]; then
+          export JAVA_OPTS="$JAVA_OPTS -Xms${env_val}"
+        fi
+        if [ "${env_var}" == "JAVA_MAX_MEM" ]; then
+          export JAVA_OPTS="$JAVA_OPTS -Xmx${env_val}"
+        fi
 
         if [[ $env_var =~ ^KAFKA_RPC_ ]]; then
             rpc_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)

@@ -33,6 +33,7 @@ import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.snmpmetadata.Config;
 import org.opennms.netmgt.config.snmpmetadata.Container;
 import org.opennms.netmgt.config.snmpmetadata.Entry;
+import org.opennms.netmgt.config.snmpmetadata.SnmpMetadataConfig;
 import org.opennms.netmgt.config.snmpmetadata.SnmpMetadataConfigDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -84,17 +85,33 @@ public class SnmpMetadataProvisioningAdapter extends SimplerQueuedProvisioningAd
 
     @Override
     public void doAddNode(final int nodeId) throws ProvisioningAdapterException {
+        final SnmpMetadataConfig snmpMetadataConfig = snmpMetadataAdapterConfigDao.getContainer().getObject();
+
+        if (!snmpMetadataConfig.isEnabled()) {
+            LOG.debug("SnmpMetadataProvisioningAdapter not enabled. Skipping...");
+            return ;
+        }
+
         LOG.debug("doAddNode: adding nodeId: {}", nodeId);
         queryNode(nodeId);
     }
 
     @Override
     public void doUpdateNode(final int nodeId) throws ProvisioningAdapterException {
+        final SnmpMetadataConfig snmpMetadataConfig = snmpMetadataAdapterConfigDao.getContainer().getObject();
+
+        if (!snmpMetadataConfig.isEnabled()) {
+            LOG.debug("SnmpMetadataProvisioningAdapter not enabled. Skipping...");
+            return ;
+        }
+
         LOG.debug("doUpdateNode: updating nodeId: {}", nodeId);
         queryNode(nodeId);
     }
 
     public List<OnmsMetaData> createMetadata(final OnmsNode node, final OnmsIpInterface primaryInterface) throws SnmpMetadataException {
+        final SnmpMetadataConfig snmpMetadataConfig = snmpMetadataAdapterConfigDao.getContainer().getObject();
+
         // now get the sysObjectId
         if (node.getSysObjectId() == null) {
             LOG.debug("Node {} does not support SNMP. Skipping...", node.getNodeId());
@@ -102,7 +119,7 @@ public class SnmpMetadataProvisioningAdapter extends SimplerQueuedProvisioningAd
         }
 
         // get all configs that apply to the node's sysObjectId
-        final List<Config> configs = snmpMetadataAdapterConfigDao.getContainer().getObject().getConfigs().stream()
+        final List<Config> configs = snmpMetadataConfig.getConfigs().stream()
                 .filter(c -> {
                     if (Strings.isNullOrEmpty(c.getSysObjectId())) {
                         return false;
