@@ -38,16 +38,11 @@
             <artifactId>oshi-core</artifactId>
             <version>${oshi.core.version}</version>
         </dependency>
-            <dependency>
-                <groupId>net.java.dev.jna</groupId>
-                <artifactId>jna</artifactId>
-                <version>${jnaVersion}</version>
-            </dependency>
-            <dependency>
-                <groupId>net.java.dev.jna</groupId>
-                <artifactId>jna-platform</artifactId>
-                <version>${jnaVersion}</version>
-            </dependency>
+        <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>jna-dependencies</artifactId>
+            <type>pom</type>
+        </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.core</artifactId>
