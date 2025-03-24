@@ -121,7 +121,7 @@ public class DefaultBusinessServiceStateMachineIT {
 
     @After
     public void after() {
-        populator.resetDatabase(true);
+        populator.resetDatabase(false, true);
     }
 
     /**
