@@ -1,0 +1,41 @@
+
+[[ga-zenith-connect-introduction]]
+= Zenith Connect
+:description: Connect {page-component-title} with the OpenNMS Zenith platform to send BSM, Inventory and Alarm data.
+
+{page-component-title} can be configured to send data to the OpenNMS Zenith platform via gRPC.
+Please see xref:deep-dive/grpc-exporter/grpc-exporter.adoc[] for more information.
+
+More documentation will be added as we develop this new feature.
+
+== Configure Zenith Connect
+
+Configuring Zenith Connect can be done by adding a `*.properties` file.
+See xref:deep-dive/admin/configuration/system-properties.adoc[] for general information.
+
+The following properties can be set.
+
+- `opennms.zenithConnect.enabled`: `true` to enable, `false` to disable. Zenith Connect is disabled by default
+- `opennms.zenithConnect.zenithBaseUrl`: Base URL to your Zenith instance
+- `opennms.zenithConnect.zenithRelativeUrl`: Relative URL of Zenith Connect on your Zenith instance. Typically this
+   is `/zenith-connect`
+
+Example:
+
+```
+opennms.zenithConnect.enabled=true
+opennms.zenithConnect.zenithBaseUrl=https://zenith.example.com:8980
+opennms.zenithConnect.zenithRelativeUrl=/zenith-connect
+```
+
+== Using Zenith Connect
+
+When Zenith Connect is enabled, links will appear both under the Info menu as well
+as the Admin page.
+
+Going to the Zenith Connect page will display current registration/connection
+information as well as allow you to register your {page-component-tite} instance
+with Zenith.
+
+More information will be provided as this feature is developed.
+
