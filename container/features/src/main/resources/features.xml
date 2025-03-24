@@ -1566,7 +1566,8 @@
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.usageanalytics/org.opennms.features.usageanalytics.api/${project.version}</bundle>
-        <bundle dependency="true">mvn:com.github.oshi/oshi-core/${oshi.core.version}</bundle>
+        <feature>java-native-access</feature>
+        <bundle>mvn:com.github.oshi/oshi-core/${oshi.core.version}</bundle>
     </feature>
     <feature name="opennms-es-rest" version="${project.version}" description="OpenNMS :: Features :: ElasticSearch Rest">
         <details>OpenNMS :: Features :: ElasticSearch Rest</details>

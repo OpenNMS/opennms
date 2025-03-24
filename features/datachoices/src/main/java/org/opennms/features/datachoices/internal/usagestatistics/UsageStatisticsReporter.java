@@ -336,7 +336,6 @@ public class UsageStatisticsReporter implements StateChangeHandler {
             try {
                 final long currentTime = System.currentTimeMillis();
                 final long twentyFourHoursAgo = currentTime - Duration.ofHours(24).toMillis();
-
                 final List<Filter> filters = Collections.singletonList(new TimeRangeFilter(twentyFourHoursAgo, currentTime));
                 flowCount = flowQueryService.getFlowCount(filters).get();
 
