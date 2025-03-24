@@ -103,7 +103,11 @@
       <artifactId>oshi-core</artifactId>
       <version>${oshi.core.version}</version>
     </dependency>
-
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jna-dependencies</artifactId>
+      <type>pom</type>
+    </dependency>
     <dependency>
       <groupId>org.mockito</groupId>
       <artifactId>mockito-core</artifactId>
