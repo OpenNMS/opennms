@@ -121,8 +121,6 @@ public class AggregatedFlowQueryIT {
     private RawFlowQueryService rawFlowQueryService;
     private AggregatedFlowQueryService aggFlowQueryService;
     private DocumentEnricherImpl documentEnricher;
-    private final String TEMPLATE_RESOURCE_FLOW="/netflow-template";
-    private final String TEMPLATE_RESOURCE_FLOW_AGG="/netflow_agg-template";
     @Before
     public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {
         final MetricRegistry metricRegistry = new MetricRegistry();
@@ -137,7 +135,7 @@ public class AggregatedFlowQueryIT {
 
         // Here we load the flows by building the documents ourselves,
         // so we must initialize the repository manually
-        final RawIndexInitializer initializer = new RawIndexInitializer(client,TEMPLATE_RESOURCE_FLOW, rawIndexSettings);
+        final RawIndexInitializer initializer = new RawIndexInitializer(client, rawIndexSettings);
         initializer.initialize();
 
         final IndexSelector rawIndexSelector = new IndexSelector(rawIndexSettings, RawFlowQueryService.INDEX_NAME,
