@@ -1846,7 +1846,7 @@
     <jldapVersion>4.3</jldapVersion>
     <jmhVersion>1.37</jmhVersion>
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
-    <jnaVersion>5.12.1</jnaVersion>
+    <jnaVersion>5.16.0</jnaVersion>
     <jnrVersion>3.1.17</jnrVersion>
     <jodaTimeVersion>2.12.5</jodaTimeVersion>
     <jolokiaVersion>1.7.2</jolokiaVersion>
@@ -2011,7 +2011,7 @@
     <!-- CI Settings -->
     <!-- Limit ITs to 30 minutes by default -->
     <test.fork.timeout>1800</test.fork.timeout>
-    <oshi.core.version>6.2.2</oshi.core.version>
+    <oshi.core.version>6.7.1</oshi.core.version>
   </properties>
 
   <profiles>
