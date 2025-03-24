@@ -29,14 +29,15 @@ import java.util.Optional;
 
 import com.google.common.base.Strings;
 import org.junit.Assert;
+
+import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.containsInAnyOrder;
-import static org.hamcrest.Matchers.startsWith;
+
 import org.opennms.web.rest.support.menu.xml.MenuXml;
 
 public class MenuProviderTest {
@@ -45,7 +46,7 @@ public class MenuProviderTest {
     @Test
     public void testParseBeansXml() {
         MenuProvider provider = new MenuProvider(getResourcePath());
-        provider.setMenuRequestContext(new TestMenuRequestContext());
+        provider.setMenuRequestContext(new TestMenuRequestContext(true));
 
         MenuXml.BeansElement xBeansElem = null;
 
@@ -83,7 +84,7 @@ public class MenuProviderTest {
 
         try {
             MenuProvider provider = new MenuProvider(getResourcePath());
-            provider.setMenuRequestContext(new TestMenuRequestContext());
+            provider.setMenuRequestContext(new TestMenuRequestContext(true));
             mainMenu = provider.getMainMenu();
         } catch (Exception e) {
             Assert.fail("Error in MenuProvider.getMainMenu: " + e.getMessage());
@@ -145,12 +146,51 @@ public class MenuProviderTest {
         assertEquals("ROLE_ADMIN,ROLE_REST,ROLE_DEVICE_CONFIG_BACKUP", deviceConfigMenuOpt.get().roles);
     }
 
+    @Test
+    public void testParseMainMenuZenithConnectDisabled() {
+        MainMenu mainMenu = null;
+
+        try {
+            MenuProvider provider = new MenuProvider(getResourcePath());
+            provider.setMenuRequestContext(new TestMenuRequestContext(false));
+            mainMenu = provider.getMainMenu();
+        } catch (Exception e) {
+            Assert.fail("Error in MenuProvider.getMainMenu: " + e.getMessage());
+        }
+
+        assertNotNull(mainMenu);
+
+        // Check names in sub-menus under the Info menu
+        Optional<TopMenuEntry> infoMenuOpt = mainMenu.menus.stream().filter(m -> m.name.equals("Info")).findFirst();
+        assertTrue(infoMenuOpt.isPresent());
+
+        TopMenuEntry infoMenu = infoMenuOpt.get();
+
+        assertEquals("Info", infoMenu.name);
+
+        List<String> infoEntryNames = infoMenu.items.stream().map(m -> m.name).toList();
+        assertEquals(9, infoEntryNames.size());
+
+        final String[] expectedInfoNames = new String[] {
+                "Nodes", "Assets", "Path Outages", "Device Configs", "External Requisitions",
+                "File Editor", "Logs", "Endpoints", "Secure Credentials Vault"
+        };
+
+        assertThat(infoEntryNames, containsInAnyOrder(expectedInfoNames));
+    }
+
     private String getResourcePath() {
         Path p = Paths.get(RESOURCE_PATH);
         return p.toFile().getAbsolutePath();
     }
 
     public static class TestMenuRequestContext implements MenuRequestContext {
+        public TestMenuRequestContext(boolean isZenithConnectEnabled) {
+            this.isZenithConnectEnabled = isZenithConnectEnabled;
+        }
+
+        private boolean isZenithConnectEnabled;
+
         public String getRemoteUser() {
             return "admin1";
         }
@@ -174,7 +214,7 @@ public class MenuProviderTest {
         public String getSystemProperty(String name, String def) {
             switch (name) {
                 case MenuProvider.ZENITH_CONNECT_ENABLED_KEY -> {
-                    return "true";
+                    return this.isZenithConnectEnabled ? "true": "false";
                 }
                 case MenuProvider.ZENITH_CONNECT_BASE_URL_KEY -> {
                     return "https://zenith.opennms.com";
