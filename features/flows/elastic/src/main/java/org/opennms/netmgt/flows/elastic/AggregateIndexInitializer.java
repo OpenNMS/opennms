@@ -33,8 +33,8 @@ import java.nio.file.Paths;
 
 public class AggregateIndexInitializer extends DefaultTemplateInitializer {
 
-    private static final String OPENNMS_HOME = System.getProperty("opennms.home");
-    public static final String TEMPLATE_RESOURCE = Paths.get(OPENNMS_HOME, "etc", "elastic-templates" ,"netflow_agg-template").toString();
+    //private static final String OPENNMS_HOME = System.getProperty("opennms.home");
+    public static final String TEMPLATE_RESOURCE = "/netflow_agg-template";//Paths.get(OPENNMS_HOME, "etc", "elastic-templates" ,"netflow_agg-template").toString();
     private static final String FLOW_TEMPLATE_NAME = "netflow_agg";
 
     public AggregateIndexInitializer(BundleContext bundleContext, JestClient client, IndexSettings indexSettings) {
