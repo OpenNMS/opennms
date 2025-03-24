@@ -35,6 +35,10 @@ As this is too imprecise for some use cases, the time field of the event is now 
 If the field is set, it is adopted unchanged as the timestamp of the status.
 If no time is set, the timestamp is generated as before when the event arrives.
 
+=== SNMP Metadata Provisioning Adapter
+The SNMP Metadata Provisioning Adapter is not enabled by default anymore.
+Set `enabled="true"` in the configuration file `$OPENNMS_HOME/etc/snmp-metadata-adapter-configuration.xml` to enable it.
+
 === Docker image changes
 
 The Docker images for the core, minion, and sentinel have been changed from being Ubuntu-based to using RedHat's link:https://www.redhat.com/en/blog/introducing-red-hat-universal-base-image[Universal Base Image].
