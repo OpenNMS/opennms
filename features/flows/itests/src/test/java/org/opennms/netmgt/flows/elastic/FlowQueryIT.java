@@ -117,6 +117,8 @@ public class FlowQueryIT {
 
     private SmartQueryService smartQueryService;
 
+    private final String TEMPLATE_RESOURCE_FLOW="/netflow-template";
+
     @Before
     public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {
         final MetricRegistry metricRegistry = new MetricRegistry();
@@ -155,7 +157,7 @@ public class FlowQueryIT {
                                                                   .build(), 0,
                                                     new DocumentMangler(new ScriptEngineManager()));
 
-        final RawIndexInitializer initializer = new RawIndexInitializer(client, settings);
+        final RawIndexInitializer initializer = new RawIndexInitializer(client,TEMPLATE_RESOURCE_FLOW, settings);
 
         // Here we load the flows by building the documents ourselves,
         // so we must initialize the repository manually

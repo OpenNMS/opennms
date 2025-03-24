@@ -49,4 +49,9 @@ public class RawIndexInitializer extends DefaultTemplateInitializer {
     public RawIndexInitializer(JestClient client) {
         super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new DefaultTemplateLoader(), new IndexSettings());
     }
+
+    public RawIndexInitializer(JestClient client,String templateLocation, IndexSettings indexSettings) {
+        super(client, templateLocation,FLOW_TEMPLATE_NAME, new DefaultTemplateLoader(), indexSettings);
+    }
+
 }

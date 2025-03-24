@@ -48,4 +48,8 @@ public class AggregateIndexInitializer extends DefaultTemplateInitializer {
     public AggregateIndexInitializer(JestClient client) {
         super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new DefaultTemplateLoader(), new IndexSettings());
     }
+
+    public AggregateIndexInitializer(JestClient client, String templateLocation, IndexSettings indexSettings) {
+        super(client, templateLocation, FLOW_TEMPLATE_NAME, new MergingTemplateLoader(new DefaultTemplateLoader(), indexSettings), indexSettings);
+    }
 }
