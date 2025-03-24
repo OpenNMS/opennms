@@ -144,7 +144,7 @@ public class AggregatedFlowQueryIT {
                 IndexStrategy.MONTHLY, 120000);
         rawFlowQueryService = new RawFlowQueryService(client, rawIndexSelector);
 
-        final AggregateIndexInitializer aggIndexInitializer = new AggregateIndexInitializer(client,TEMPLATE_RESOURCE_FLOW_AGG, aggIndexSettings);
+        final AggregateIndexInitializer aggIndexInitializer = new AggregateIndexInitializer(client, aggIndexSettings);
         aggIndexInitializer.initialize();
 
         final IndexSelector aggIndexSelector = new IndexSelector(aggIndexSettings, AggregatedFlowQueryService.INDEX_NAME,
