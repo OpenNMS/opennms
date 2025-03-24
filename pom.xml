@@ -1924,7 +1924,7 @@
     <osgiServiceJdbcVersion>1.0.1</osgiServiceJdbcVersion>
     <owaspEncoderVersion>1.2.3</owaspEncoderVersion>
     <owaspHtmlSanitizerVersion>20211018.2</owaspHtmlSanitizerVersion>
-    <osgiJaxRsVersion>1.3.0.bbo</osgiJaxRsVersion>
+    <osgiJaxRsVersion>1.1.0.bbo</osgiJaxRsVersion>
     <osMavenPluginVersion>1.7.1</osMavenPluginVersion>
     <opencsvVersion>2.3</opencsvVersion>
     <opentracingVersion>0.32.0</opentracingVersion>
