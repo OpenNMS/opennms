@@ -43,7 +43,7 @@ import com.google.common.collect.Lists;
  *   acknowledged-at=13943454545
  *
  * Same file also holds:
- *   url=http://stats.opennms.org/datachoices/
+ *   url=https://telemetry.bluebirdops.org/
  *   interval=86400000
  *
  * @author jwhite

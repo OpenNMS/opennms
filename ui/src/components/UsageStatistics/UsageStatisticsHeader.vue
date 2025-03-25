@@ -2,8 +2,8 @@
   <div class="usage-stats-header">
     <div>
       <p>
-        OpenNMS anonymously sends usage statistics data to <a href="https://stats.opennms.org" target="_blank">OpenNMS Statistics</a>.
-        We use this data to help us improve your OpenNMS software, subject to the <a href="https://www.opennms.com/privacy/" target="_blank">privacy policy</a>.
+        OpenNMS anonymously sends usage statistics data to <a href="https://stats.bluebirdops.org" target="_blank">OpenNMS Statistics</a>.
+        We use this data to help us improve your OpenNMS software, subject to the <a href="https://github.com/bluebird-community" target="_blank">privacy policy</a>.
       </p>
     </div>
     <div class="spacer-medium"></div>

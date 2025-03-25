@@ -216,7 +216,7 @@ public class LiquibaseUpgraderIT implements TemporaryDatabaseAware<TemporaryData
             // boolean in openable is impossible to be null
             assertEquals(false, config.get().get("enabled"));
             assertEquals(BigDecimal.valueOf(86400000), config.get().get("interval"));
-            assertEquals("http://stats.opennms.org/datachoices/", config.get().get("url"));
+            assertEquals("https://telemetry.bluebirdops.org/", config.get().get("url"));
 
             // check for graphml a + b
             config = this.cm.getJSONConfiguration(SCHEMA_NAME_GRAPHML, "a");

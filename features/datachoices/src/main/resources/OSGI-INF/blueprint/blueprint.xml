@@ -14,7 +14,7 @@
             <!-- The Oracle JDK does not currently recognize the Let's Encrypt Certificate Chain
                  in default installations (the 'ISRG Root X1' root certificate in particular)
                  so we resort to using HTTP. -->
-            <cm:property name="url" value="http://stats.opennms.org/datachoices/"/>
+            <cm:property name="url" value="https://telemetry.bluebirdops.org/"/>
             <cm:property name="interval" value="86400000"/> <!-- 24 hours -->
             <cm:property name="useSystemProxy" value="false"/>
         </cm:default-properties>
@@ -101,7 +101,7 @@
     </bean>
 
     <bean id="productUpdateEnrollmentSubmissionClient" class="org.opennms.features.datachoices.internal.productupdateenrollment.ProductUpdateEnrollmentSubmissionClient">
-        <property name="endpointUrl" value="https://stats.opennms.org/datachoices/user-data-collection" />
+        <property name="endpointUrl" value="https://telemetry.bluebirdops.org/user-data-collection" />
     </bean>
 
     <bean id="productUpdateEnrollmentService" class="org.opennms.features.datachoices.internal.productupdateenrollment.ProductUpdateEnrollmentServiceImpl">

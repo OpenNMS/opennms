@@ -31,7 +31,7 @@
             <cm:put name="enabled" type="boolean" default="false"/>
             <cm:put name="acknowledged-by" type="string"/>
             <cm:put name="acknowledged-at" type="string"/>
-            <cm:put name="url" type="string" default="http://stats.opennms.org/datachoices/"/>
+            <cm:put name="url" type="string" default="https://telemetry.bluebirdops.org/"/>
             <cm:put name="interval" type="number" default="86400000"/> <!-- 24 hours -->
             <cm:put name="useSystemProxy" type="boolean" default="false"/>
             <cm:put name="systemid" type="string" />
