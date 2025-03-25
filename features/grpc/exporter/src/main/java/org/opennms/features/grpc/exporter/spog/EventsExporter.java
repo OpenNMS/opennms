@@ -20,27 +20,38 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.events.nmsinventory;
+package org.opennms.features.grpc.exporter.spog;
 
-import org.opennms.features.grpc.exporter.nmsinventory.EventService;
+import org.opennms.core.utils.SystemInfoUtils;
+import org.opennms.features.grpc.exporter.mapper.EventsMapper;
+import org.opennms.integration.api.v1.runtime.RuntimeInfo;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
-import  org.opennms.netmgt.events.api.EventListener;
+import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.Objects;
 
 public class EventsExporter implements EventListener {
     private static final Logger LOG = LoggerFactory.getLogger(EventsExporter.class);
 
     private final EventSubscriptionService eventSubscriptionService;
-    private final EventService eventService;
+    private final RuntimeInfo runtimeInfo;
+
+    private final SpogGrpcClient client;
+
+    private final boolean eventExportEnabled;
 
     public EventsExporter(final EventSubscriptionService eventSubscriptionService,
-                          final EventService eventService) {
+                          RuntimeInfo runtimeInfo,
+                          SpogGrpcClient client,
+                          boolean eventExportEnabled) {
         this.eventSubscriptionService = Objects.requireNonNull(eventSubscriptionService);
-        this.eventService = Objects.requireNonNull(eventService);
+        this.runtimeInfo = runtimeInfo;
+        this.client = client;
+        this.eventExportEnabled = eventExportEnabled;
     }
 
     public void start() {
@@ -58,11 +69,28 @@ public class EventsExporter implements EventListener {
 
     @Override
     public void onEvent(IEvent event) {
-        LOG.info("received new event: {}", event);
-        if (event.getNodeid() == null) {
+        sendEventUpdate(event);
+    }
+
+    private void sendEventUpdate(final IEvent event) {
+
+        if (!event.hasNodeid()) {
             return;
         }
-        this.eventService.sendEventUpdate(event);
+
+        if (!client.isEnabled()) {
+            LOG.debug("SPOG service disabled, not sending event updates");
+            return;
+        }
+
+        if (!eventExportEnabled) {
+            LOG.debug("Event Export disabled, not sending event updates");
+            return;
+        }
+
+        LOG.debug("Received new event with uei : {} and id : {}", event.getUei(), event.getDbid());
+        final var events = EventsMapper.INSTANCE.toEventUpdateList(List.of(event), this.runtimeInfo, SystemInfoUtils.getInstanceId(), false);
+        this.client.sendEventUpdate(events);
     }
 
 }

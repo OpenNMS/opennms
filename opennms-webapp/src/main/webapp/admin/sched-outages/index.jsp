@@ -63,37 +63,6 @@
 			WriteablePollOutagesDao.class);
 
 	NotifdConfigFactory.init(); //Must do this early on - if it fails, then just throw the exception to the web gui
-	String deleteName = request.getParameter("deleteOutage");
-	if (deleteName != null) {
-		pollOutagesDao.getWriteLock().lock();
-		try {
-			pollOutagesDao.getWriteableConfig().removeOutage(deleteName);
-			//Remove from all the package configurations as well
-			for (final org.opennms.netmgt.config.threshd.Package thisPackage : threshdDao.getWriteableConfig().getPackages()) {
-				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
-			}
-
-			for (final org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getExtendedConfiguration().getPackages()) {
-				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
-			}
-
-			CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
-			for (Package thisPackage : collectdConfig.getPackages()) {
-				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
-			}
-
-			NotifdConfigFactory.getInstance().getConfiguration().removeOutageCalendar(deleteName);
-
-			pollOutagesDao.saveConfig();
-			NotifdConfigFactory.getInstance().saveCurrent();
-			threshdDao.saveConfig();
-			collectdConfig.saveCurrent();
-			PollerConfigFactory.getInstance().save();
-			sendOutagesChangedEvent();
-		} finally {
-			pollOutagesDao.getWriteLock().unlock();
-		}
-	}
 %>
 
 
@@ -122,6 +91,23 @@
     </form>
   </div> <!-- card-header -->
 <div class="card-body">
+
+<script type="text/javascript">
+	function DeleteAction(name) {
+		if (!confirm('Are you sure you wish to delete this outage?')) {
+			return false;
+		}
+
+		var xhttp = new XMLHttpRequest();
+		xhttp.onload = function() {
+			location.reload();
+		}
+		xhttp.open("DELETE", "/opennms/rest/sched-outages/" + encodeURIComponent(name), true);
+		xhttp.setRequestHeader("Content-type", "application/json");
+		xhttp.send(null);
+	}
+</script>
+
 <table id="outages" class="table table-sm table-striped">
 	<tr>
 		<th>Name</th>
@@ -251,8 +237,7 @@
 		<td><a id="<%=java.net.URLEncoder.encode(outageName, "UTF-8")%>.edit"
 			href="admin/sched-outages/editoutage.jsp?name=<%=java.net.URLEncoder.encode(outageName, "UTF-8")%>">Edit</a></td>
 		<td><a id="<%=java.net.URLEncoder.encode(outageName, "UTF-8")%>.delete"
-			href="admin/sched-outages/index.jsp?deleteOutage=<%=java.net.URLEncoder.encode(outageName, "UTF-8")%>"
-			onClick="if(!confirm('Are you sure you wish to delete this outage?')) {return false;}">Delete</a></td>
+			   href="javascript:DeleteAction('<%=outageName%>')">Delete</a></td>
 	</tr>
 
 	<%

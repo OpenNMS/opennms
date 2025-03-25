@@ -116,3 +116,47 @@ The following globals will be passed to the script:
 | Decoded JTI message from which the metrics should be extracted.
 | org.opennms.netmgt.telemetry.adapters.jti.proto.TelemetryTop
 |===
+
+=== Steps to Increase Log Character Size
+By default, the log message size is limited to 500 characters with karaf logs. However, in some cases, such as when viewing detailed proto object logs, you may need to increase the character size to capture the full log details.
+
+Locate file `org.ops4j.pax.logging.cfg`  in the `${OPENNMS_HOME}/etc/` directory.
+
+Locate the `log4j2.pattern` property in the file. By default, it is set to limit log messages to 500 characters  see `%encode{%.-500m}`
+
+[source, console]
+----
+log4j2.pattern = %d{ISO8601} | %-5p | %-16t | %-32c{1} | %X{bundle.id} - %X{bundle.name} - %X{bundle.version} | %encode{%.-500m}{CRLF}%n
+----
+To increase the character size, modify the `%.-500m` part of the pattern. For example, to increase the limit to 1000 characters, change it to `%.-1000m`:
+[source, console]
+----
+log4j2.pattern = %d{ISO8601} | %-5p | %-16t | %-32c{1} | %X{bundle.id} - %X{bundle.name} - %X{bundle.version} | %encode{%.-1000m}{CRLF}%n
+----
+
+===  Using Karaf Shell
+You can also modify the `org.ops4j.pax.logging` configuration dynamically using the Karaf shell
+
+Log in to the Karaf console in OpenNMS
+[source, console]
+----
+ssh -p 8101 admin@localhost
+----
+Use the `config:edit` command to start editing the `org.ops4j.pax.logging` configuration
+[source, console]
+----
+config:edit org.ops4j.pax.logging
+----
+Use the `config:property-set` command to update the `log4j2.pattern` property. For example, to increase the log message size to 1000 characters
+[source, console]
+----
+config:property-set log4j2.pattern '%d{ISO8601} | %-5p | %-16t | %-32c{1} | %X{bundle.id} - %X{bundle.name} - %X{bundle.version} | %encode{%.-1000m}{CRLF}%n'
+config:update
+----
+
+To verify that the changes have been applied, use the below command:
+[source, console]
+----
+ config:edit org.ops4j.pax.logging
+ config:property-get log4j2.pattern
+----

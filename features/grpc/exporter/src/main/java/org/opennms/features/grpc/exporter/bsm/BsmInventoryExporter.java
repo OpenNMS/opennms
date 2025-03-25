@@ -20,36 +20,38 @@
  * License.
  */
 
-package org.opennms.features.grpc.exporter.events.nmsinventory;
+package org.opennms.features.grpc.exporter.bsm;
 
-import org.opennms.features.grpc.exporter.events.EventConstants;
-import org.opennms.features.grpc.exporter.nmsinventory.InventoryService;
+
+import org.opennms.features.grpc.exporter.mapper.MonitoredServiceWithMetadata;
+import org.opennms.integration.api.v1.dao.NodeDao;
+import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.List;
 import java.util.Objects;
 
-public class InventoryExporter implements EventListener {
-    private static final Logger LOG = LoggerFactory.getLogger(InventoryExporter.class);
+public class BsmInventoryExporter implements EventListener {
+    private static final Logger LOG = LoggerFactory.getLogger(BsmInventoryExporter.class);
 
     private final EventSubscriptionService eventSubscriptionService;
-    private final NodeDao nodeDao;
-    private final InventoryService inventoryService;
 
-    public InventoryExporter(final EventSubscriptionService eventSubscriptionService,
-                             final NodeDao nodeDao,
-                             final InventoryService inventoryService) {
+    private final NodeDao nodeDao;
+
+    private final BsmInventoryService inventoryService;
+
+    public BsmInventoryExporter(final EventSubscriptionService eventSubscriptionService,
+                                final NodeDao nodeDao,
+                                final BsmInventoryService inventoryService) {
         this.eventSubscriptionService = Objects.requireNonNull(eventSubscriptionService);
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.inventoryService = Objects.requireNonNull(inventoryService);
     }
 
     public void start() {
-
         this.eventSubscriptionService.addEventListener(this, List.of(
             // Events related to a service
             EventConstants.NODE_GAINED_SERVICE_EVENT_UEI,
@@ -70,12 +72,12 @@ public class InventoryExporter implements EventListener {
 
     @Override
     public String getName() {
-        return InventoryExporter.class.getName();
+        return BsmInventoryExporter.class.getName();
     }
 
     @Override
     public void onEvent(final IEvent event) {
-        LOG.debug("Got NmsInventory event: {}", event);
+        LOG.debug("Got inventory-event: {}", event);
 
         switch (event.getUei()) {
             case EventConstants.NODE_GAINED_SERVICE_EVENT_UEI:
@@ -83,17 +85,26 @@ public class InventoryExporter implements EventListener {
                     return;
                 }
 
-                final var node = this.nodeDao.get(event.getNodeid().intValue());
+                final var node = this.nodeDao.getNodeById(event.getNodeid().intValue());
                 if (node == null) {
                     return;
                 }
-                this.inventoryService.sendAddNmsInventory(node);
 
+                final var iface = node.getInterfaceByIp(event.getInterfaceAddress()).orElse(null);
+                if (iface == null) {
+                    return;
+                }
+
+                final var service = iface.getMonitoredService(event.getService()).orElse(null);
+                if (service == null) {
+                    return;
+                }
+
+                this.inventoryService.sendAddService(new MonitoredServiceWithMetadata(node, iface, service));
                 break;
 
             case EventConstants.SERVICE_DELETED_EVENT_UEI:
-                this.inventoryService.sendSnapshot();
-                break;
+                // There is not much we can do here for now
 
             default:
                 this.inventoryService.sendSnapshot();

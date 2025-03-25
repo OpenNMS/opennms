@@ -33,8 +33,10 @@ import org.mapstruct.factory.Mappers;
 import org.opennms.integration.api.v1.runtime.RuntimeInfo;
 import java.util.Date;
 import java.util.List;
-import org.opennms.plugin.grpc.proto.services.NmsInventoryUpdateList;
-import org.opennms.plugin.grpc.proto.services.Node;
+import org.opennms.plugin.grpc.proto.spog.NmsInventoryUpdateList;
+import org.opennms.plugin.grpc.proto.spog.Node;
+import org.opennms.plugin.grpc.proto.spog.SnmpInterface;
+import org.opennms.plugin.grpc.proto.spog.IpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -55,11 +57,11 @@ public interface NmsInventoryMapper {
 
     @IterableMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
     @Mapping(target = "ifPhysAddress", source = "physAddr")
-    org.opennms.plugin.grpc.proto.services.SnmpInterface mapSnmpInterface(org.opennms.netmgt.model.OnmsSnmpInterface onmsSnmpInterface );
+    SnmpInterface mapSnmpInterface(org.opennms.netmgt.model.OnmsSnmpInterface onmsSnmpInterface );
 
     @Mapping(target = "primaryType", expression = "java(mapPrimaryType(onmsIpInterface))")
     @Mapping(target = "service", source = "monitoredServices")
-    org.opennms.plugin.grpc.proto.services.IpInterface mapIpInterface(org.opennms.netmgt.model.OnmsIpInterface onmsIpInterface);
+    IpInterface mapIpInterface(org.opennms.netmgt.model.OnmsIpInterface onmsIpInterface);
 
     default String mapMonitoredService(org.opennms.netmgt.model.OnmsMonitoredService onmsMonitoredService){
         return onmsMonitoredService.getServiceName();

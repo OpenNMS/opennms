@@ -39,6 +39,11 @@
             <version>${oshi.core.version}</version>
         </dependency>
         <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>jna-dependencies</artifactId>
+            <type>pom</type>
+        </dependency>
+        <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.core</artifactId>
             <scope>provided</scope>
