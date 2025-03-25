@@ -30,13 +30,14 @@ import java.util.Optional;
 import com.google.common.base.Strings;
 import org.junit.Assert;
 
-import static org.hamcrest.Matchers.*;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.startsWith;
 
 import org.opennms.web.rest.support.menu.xml.MenuXml;
 
@@ -189,7 +190,7 @@ public class MenuProviderTest {
             this.isZenithConnectEnabled = isZenithConnectEnabled;
         }
 
-        private boolean isZenithConnectEnabled;
+        final private boolean isZenithConnectEnabled;
 
         public String getRemoteUser() {
             return "admin1";
