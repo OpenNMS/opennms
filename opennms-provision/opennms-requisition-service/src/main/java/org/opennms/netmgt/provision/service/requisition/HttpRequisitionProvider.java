@@ -64,6 +64,7 @@ public class HttpRequisitionProvider extends AbstractRequisitionProvider<HttpReq
             if (request.getUsername() != null) {
                 client.addBasicCredentials(request.getPassword(), request.getPassword());
             }
+            get.setHeader("Accept", "application/json");
             try (CloseableHttpResponse response = client.execute(get)) {
                 String responseString = new BasicResponseHandler().handleResponse(response);
                 return JaxbUtils.unmarshal(Requisition.class, responseString);
