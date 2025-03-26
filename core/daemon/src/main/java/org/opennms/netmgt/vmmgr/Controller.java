@@ -195,6 +195,7 @@ public class Controller {
             if (entry.getKey() == null || entry.getValue() == null || !(entry.getValue() instanceof String)) {
                 continue;
             }
+            // Since we are only interpolating scv related properties, we restrict this to interpolating only scv related properties.
             if (((String) entry.getValue()).contains("${scv:")) {
                 System.setProperty(entry.getKey().toString(), Interpolator.interpolate(entry.getValue().toString(), scope).output);
             }
