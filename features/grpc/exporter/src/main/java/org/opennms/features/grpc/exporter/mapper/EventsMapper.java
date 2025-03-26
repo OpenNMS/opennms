@@ -33,9 +33,10 @@ import org.opennms.integration.api.v1.runtime.RuntimeInfo;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.events.api.model.IParm;
 import org.opennms.netmgt.events.api.model.ISnmp;
-import org.opennms.plugin.grpc.proto.services.EventUpdateList;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.opennms.plugin.grpc.proto.spog.EventUpdateList;
+import org.opennms.plugin.grpc.proto.spog.Severity;
+import org.opennms.plugin.grpc.proto.spog.Event;
+import org.opennms.plugin.grpc.proto.spog.SnmpInfo;
 import java.util.Date;
 import java.util.List;
 
@@ -43,7 +44,6 @@ import java.util.List;
         nullValueCheckStrategy = NullValueCheckStrategy.ALWAYS
         )
 public interface EventsMapper {
-    static final Logger LOG = LoggerFactory.getLogger(EventsMapper.class);
 
     EventsMapper INSTANCE = Mappers.getMapper(EventsMapper.class);
 
@@ -58,9 +58,9 @@ public interface EventsMapper {
     @Mapping(target = "snmpInfo", source = "snmp")
     @Mapping(target = "parameter", source = "parmCollection")
     @Mapping(target = "nodeId", source = "nodeid")
-    org.opennms.plugin.grpc.proto.services.Event mapEvent (IEvent event);
+    Event mapEvent (IEvent event);
 
-    org.opennms.plugin.grpc.proto.services.SnmpInfo mapSnmpInfo(ISnmp snmp);
+    SnmpInfo mapSnmpInfo(ISnmp snmp);
 
     @IterableMapping(nullValueMappingStrategy = NullValueMappingStrategy.RETURN_DEFAULT)
     @Mapping(target = "instanceId", source = "runtimeInfo.systemId")
@@ -79,30 +79,30 @@ public interface EventsMapper {
     @Mapping(target = "name", source = "parmName")
     @Mapping(target = "value", source = "value.content")
     @Mapping(target = "type", source = "value.type")
-    org.opennms.plugin.grpc.proto.services.EventParameter mapEventParameter(IParm param);
+    org.opennms.plugin.grpc.proto.spog.EventParameter mapEventParameter(IParm param);
 
     default long mapDate(Date date) {
         return date != null ? date.getTime() : 0;
     }
 
-    default org.opennms.plugin.grpc.proto.services.Severity mapSeverity(String severity) {
+    default Severity mapSeverity(String severity) {
         switch (severity.toUpperCase()) {
             case "NORMAL":
-                return org.opennms.plugin.grpc.proto.services.Severity.NORMAL;
+                return Severity.NORMAL;
             case "CLEARED":
-                return org.opennms.plugin.grpc.proto.services.Severity.CLEARED;
+                return Severity.CLEARED;
             case "MINOR":
-                return org.opennms.plugin.grpc.proto.services.Severity.MINOR;
+                return Severity.MINOR;
             case "WARNING":
-                return org.opennms.plugin.grpc.proto.services.Severity.WARNING;
+                return Severity.WARNING;
             case "INDETERMINATE":
-                return org.opennms.plugin.grpc.proto.services.Severity.INDETERMINATE;
+                return Severity.INDETERMINATE;
             case "MAJOR":
-                return org.opennms.plugin.grpc.proto.services.Severity.MAJOR;
+                return Severity.MAJOR;
             case "CRITICAL":
-                return org.opennms.plugin.grpc.proto.services.Severity.CRITICAL;
+                return Severity.CRITICAL;
             default:
-                return org.opennms.plugin.grpc.proto.services.Severity.UNRECOGNIZED;
+                return Severity.UNRECOGNIZED;
         }
     }
 }

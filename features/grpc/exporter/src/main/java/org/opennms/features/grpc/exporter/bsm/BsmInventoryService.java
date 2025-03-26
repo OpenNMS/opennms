@@ -48,7 +48,7 @@ public class BsmInventoryService {
     private final ScheduledExecutorService scheduler;
 
     private final ScheduledExecutorService heartBeatScheduler =
-            Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("heartbeat-update"));
+            Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory("bsm-heartbeat-update"));
 
     public BsmInventoryService(final NodeDao nodeDao,
                                final RuntimeInfo runtimeInfo,
