@@ -94,7 +94,6 @@ public class ControllerTest {
 
     @Test
     public void testNoInterpolationForNonMatchingProperties() throws Exception {
-        // Define properties with placeholders not related to the secure credentials vault.
         final String nodePropertyKey = "org.opennms.timeseries.tin.metatags.tag.node";
         final String nodeOriginalValue = "${node:label}";
         final String locationPropertyKey = "org.opennms.timeseries.tin.metatags.tag.location";
