@@ -3,16 +3,14 @@ import os
 import json
 import logging
 import re
-from typing import List, Dict, Optional, Set
-
+import urllib.parse
 
 PROJECT_KEY = "NMS"
 JIRA_USER = os.getenv("JIRA_USER")
 JIRA_API_TOKEN = os.getenv("JIRA_API_TOKEN")
 JIRA_URL = os.getenv("JIRA_URL")
-SECURITY_LEVEL = "TOG (migrated)"
 
-
+# Priority mapping for Trivy severity levels
 PRIORITY_MAP = {
     "CRITICAL": "Critical",
     "HIGH": "High",
@@ -20,6 +18,11 @@ PRIORITY_MAP = {
     "LOW": "Low",
     "Trivial": "Trivial"
 }
+
+# Security level for Trivy issues
+SECURITY_LEVEL = "TOG (migrated)"
+
+logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
 
 # Blocklist of package names or vulnerability IDs to ignore
 BLOCKLIST = {
@@ -42,6 +45,7 @@ BLOCKLIST = {
     "CVE-2025-24970",
     "CVE-2023-6597",
     "CVE-2024-12797",
+    "CVE-2024-12797",
     "CVE-2024-56171",
     "CVE-2023-39325",
     "CVE-2024-45338",
@@ -49,268 +53,231 @@ BLOCKLIST = {
     "CVE-2020-11971",
 }
 
-# Setup logging
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s [%(levelname)s] %(message)s',
-    handlers=[
-        logging.FileHandler('jira_integration.log'),
-        logging.StreamHandler()
-    ]
-)
+processed_packages = set()
+processed_issues = set()
 
-class JiraIntegrator:
-    def __init__(self):
-        self.processed_packages: Set[str] = set()
-        self.processed_issues: Set[str] = set()
-        self.session = requests.Session()
-        self.session.auth = (JIRA_USER, JIRA_API_TOKEN)
-        self.session.headers.update({'Content-Type': 'application/json'})
-        self.blocklist = BLOCKLIST
+def normalize_package_name(pkg_name):
+    """Normalize package names by removing version numbers and special chars"""
+    # Remove version numbers if present
+    pkg_name = re.sub(r'[-_]\d+.*$', '', pkg_name)
+    # Replace special characters with dashes
+    pkg_name = re.sub(r'[:@/]', '-', pkg_name)
+    return pkg_name.lower().strip()
 
-    def is_blocked(self, package_name: str, vulnerabilities: List[Dict]) -> bool:
-
-        if package_name in self.blocklist:
-            return True
-        return any(v['VulnerabilityID'] in self.blocklist for v in vulnerabilities)
-
-    def normalize_package_name(self, name: str) -> str:
-
-        name = re.sub(r'[:@/]', '-', name)  # Replace special chars
-        name = re.sub(r'[-_]\d+.*$', '', name)  # Remove version numbers
-        return name.lower().strip()
-
-    def escape_jql_value(self, text: str) -> str:
-        return text.translate(str.maketrans({
-            '"': r'\"',
-            "'": r"\'",
-            "(": r"\(",
-            ")": r"\)",
-            "[": r"\[",
-            "]": r"\]",
-            "~": r"\~"
-        }))
-
-    def build_safe_jql(self, package_name: str, cve_ids: List[str]) -> str:
-        safe_pkg = self.escape_jql_value(package_name)
-        cve_conditions = []
-        
-        for cve in cve_ids:
-            safe_cve = self.escape_jql_value(cve)
-            cve_conditions.append(f'description ~ "{safe_cve}"')
-            cve_conditions.append(f'description ~ "\\\\"{safe_cve}\\\\""')
-            cve_conditions.append(f'description ~ "{safe_cve}[^a-zA-Z0-9]"')
-            cve_conditions.append(f'description ~ "[^a-zA-Z0-9]{safe_cve}"')
-        
-        return (
-            f'project = {PROJECT_KEY} AND '
-            f'(summary ~ "{safe_pkg}" OR description ~ "{safe_pkg}") AND '
-            f'({" OR ".join(cve_conditions)}) AND '
-            f'resolution IS EMPTY'
-        )
-
-    def find_existing_issue(self, package_name: str, cve_ids: List[str]) -> Optional[Dict]:
-
-        normalized_pkg = self.normalize_package_name(package_name)
-        jql = self.build_safe_jql(normalized_pkg, cve_ids)
-        
-        try:
-            response = self.session.get(
-                f"{JIRA_URL}/rest/api/2/search",
-                params={'jql': jql, 'maxResults': 1},
-                timeout=30
-            )
-            response.raise_for_status()
-            issues = response.json().get('issues', [])
-            return issues[0] if issues else None
-        except requests.exceptions.HTTPError as e:
-            logging.error(f"Jira search failed (HTTP {e.response.status_code}): {e.response.text}")
-            logging.debug(f"Problematic JQL: {jql}")
-        except Exception as e:
-            logging.error(f"Error searching Jira: {str(e)}")
-        return None
-
-    def create_issue(self, package_name: str, vulnerabilities: List[Dict]) -> Optional[str]:
-
-        severities = {v['Severity'] for v in vulnerabilities}
-        priority = "Medium"
-        if "CRITICAL" in severities:
-            priority = "Critical"
-        elif "HIGH" in severities:
-            priority = "High"
-        elif "LOW" in severities:
-            priority = "Low"
-        elif "Trivial" in severities:
-            priority = "Trivial"
-
-        vuln_details = "\n".join(self.format_vulnerability(v) for v in vulnerabilities)
-        description = (
-            f"*Package Name:* {package_name}\n\n"
-            f"*Vulnerabilities:*\n{vuln_details}"
-        )
-
-        payload = {
-            "fields": {
-                "project": {"key": PROJECT_KEY},
-                "summary": f"Vulnerability: {package_name}",
-                "description": description,
-                "issuetype": {"name": "Bug"},
-                "priority": {"name": priority},
-                "security": {"name": SECURITY_LEVEL},
-                "labels": ["trivy", "security"]
-            }
-        }
-
-        try:
-            response = self.session.post(
-                f"{JIRA_URL}/rest/api/2/issue",
-                json=payload,
-                timeout=30
-            )
-            response.raise_for_status()
-            return response.json()['key']
-        except requests.exceptions.HTTPError as e:
-            logging.error(f"Failed to create issue (HTTP {e.response.status_code}): {e.response.text}")
-        except Exception as e:
-            logging.error(f"Failed to create issue: {str(e)}")
-        return None
-
-    def update_existing_issue(self, issue_key: str, vulnerabilities: List[Dict]) -> bool:
-
-        try:
-
-            issue_url = f"{JIRA_URL}/rest/api/2/issue/{issue_key}"
-            response = self.session.get(issue_url, timeout=30)
-            response.raise_for_status()
-            issue_data = response.json()
-            
-            current_desc = issue_data["fields"]["description"]
-            current_labels = issue_data["fields"].get("labels", [])
-            
-
-            new_cves = [v for v in vulnerabilities if v['VulnerabilityID'] not in current_desc]
-            
-            if not new_cves:
-                logging.info(f"No new CVEs to add to {issue_key}")
-                return True
-                
-
-            new_content = "\n".join(self.format_vulnerability(v) for v in new_cves)
-            updated_desc = f"{current_desc}\n{new_content}"
-            
-
-            payload = {
-                "fields": {
-                    "description": updated_desc,
-                    "labels": list(set(current_labels + ["trivy"]))
-                }
-            }
-            
-            # Send update
-            response = self.session.put(
-                issue_url,
-                json=payload,
-                timeout=30
-            )
-            response.raise_for_status()
-            logging.info(f"Updated {issue_key} with {len(new_cves)} new CVEs")
-            return True
-            
-        except Exception as e:
-            logging.error(f"Failed to update {issue_key}: {str(e)}")
-            return False
-
-    def format_vulnerability(self, vulnerability: Dict) -> str:
-        return (
-            f"* *{vulnerability['VulnerabilityID']}* - {vulnerability['Severity']}\n"
-            f"  *Status:* {vulnerability['Status']}\n"
-            f"  *Installed Version:* {vulnerability['InstalledVersion']}\n"
-            f"  *Fixed Version:* {vulnerability['FixedVersion'] or 'None'}\n"
-            f"  *Target:* {vulnerability['Target']}\n"
-        )
-
-    def parse_vulnerabilities(self, file_path: str) -> List[Dict]:
-        vulnerabilities = []
-        try:
-            with open(file_path, 'r') as file:
-                lines = file.readlines()[2:]  # Skip header
-                for line in lines:
-                    if line.strip():
-                        fields = re.split(r'\s*\|\s*', line.strip())
-                        if len(fields) >= 10:
-                            vulnerabilities.append({
-                                'VulnerabilityID': fields[0].strip(),
-                                'Severity': fields[1].strip(),
-                                'Status': fields[2].strip(),
-                                'InstalledVersion': fields[3].strip(),
-                                'FixedVersion': fields[4].strip(),
-                                'Class': fields[5].strip(),
-                                'Target': fields[6].strip(),
-                                'PkgName': fields[7].strip(),
-                                'PkgPath': fields[8].strip(),
-                                'Title': fields[9].strip()
-                            })
-        except Exception as e:
-            logging.error(f"Error parsing {file_path}: {str(e)}")
-        return vulnerabilities
-
-    def process_vulnerabilities(self, vulnerabilities: List[Dict]):
-        packages = {}
-        for vuln in vulnerabilities:
-            pkg_name = vuln['PkgName']
-            normalized_name = self.normalize_package_name(pkg_name)
-            
-            if normalized_name not in packages:
-                packages[normalized_name] = []
-            packages[normalized_name].append(vuln)
-        
-        # Process each package group
-        for norm_pkg, vulns in packages.items():
-            original_pkg_name = vulns[0]['PkgName']
-            
-            if norm_pkg in self.processed_packages:
-                logging.debug(f"Skipping already processed package: {norm_pkg}")
-                continue
-                
-            if self.is_blocked(original_pkg_name, vulns) or self.is_blocked(norm_pkg, vulns):
-                logging.info(f"Skipping blocked package: {original_pkg_name}")
-                continue
-            
-            cve_ids = [v['VulnerabilityID'] for v in vulns]
-            existing_issue = self.find_existing_issue(norm_pkg, cve_ids)
-            
-            if existing_issue:
-                issue_key = existing_issue['key']
-                if issue_key not in self.processed_issues:
-                    logging.info(f"Found existing issue {issue_key} for {original_pkg_name}")
-                    self.update_existing_issue(issue_key, vulns)
-                    self.processed_issues.add(issue_key)
-                else:
-                    logging.debug(f"Issue {issue_key} already processed")
-            else:
-                issue_key = self.create_issue(original_pkg_name, vulns)
-                if issue_key:
-                    logging.info(f"Created new issue {issue_key} for {original_pkg_name}")
-                    self.processed_issues.add(issue_key)
-            
-            self.processed_packages.add(norm_pkg)
-
-def main():
+def parse_filtered_vulnerabilities(file_path):
+    vulnerabilities = []
 
     try:
-        integrator = JiraIntegrator()
-        vulnerabilities = integrator.parse_vulnerabilities('filtered_vulnerabilities.txt')
-        
-        if not vulnerabilities:
-            logging.warning("No vulnerabilities found to process")
-            return
-        
-        logging.info(f"Processing {len(vulnerabilities)} vulnerabilities")
-        integrator.process_vulnerabilities(vulnerabilities)
-        logging.info("Processing completed successfully")
-        
+        with open(file_path, 'r') as file:
+            lines = file.readlines()[2:]  # Skip the first two lines (header and separator)
+    except FileNotFoundError:
+        logging.error(f"File {file_path} not found.")
+        return vulnerabilities
     except Exception as e:
-        logging.error(f"Fatal error in main execution: {str(e)}", exc_info=True)
+        logging.error(f"Error reading file {file_path}: {e}")
+        return vulnerabilities
+
+    for line in lines:
+        if line.strip():
+            fields = re.split(r'\s*\|\s*', line.strip())
+            if len(fields) >= 10:
+                vulnerabilities.append({
+                    'VulnerabilityID': fields[0].strip(),
+                    'Severity': fields[1].strip(),
+                    'Status': fields[2].strip(),
+                    'InstalledVersion': fields[3].strip(),
+                    'FixedVersion': fields[4].strip(),
+                    'Class': fields[5].strip(),
+                    'Target': fields[6].strip(),
+                    'PkgName': fields[7].strip(),
+                    'PkgPath': fields[8].strip(),
+                    'Title': fields[9].strip()
+                })
+
+    return vulnerabilities
+
+def issue_exists_for_package_and_cves(package_name, vulnerability_ids):
+    """Improved version with better JQL query formatting"""
+    normalized_pkg = normalize_package_name(package_name)
+    
+    # Create simple CVE conditions without complex escaping
+    cve_conditions = []
+    for vuln_id in vulnerability_ids:
+        # Just search for the raw CVE ID (Jira usually indexes these well)
+        cve_conditions.append(f'text ~ "{vuln_id}"')
+    
+    jql = (
+        f'project = {PROJECT_KEY} AND '
+        f'(summary ~ "{normalized_pkg}" OR description ~ "{normalized_pkg}") AND '
+        f'({" OR ".join(cve_conditions)}) AND '
+        f'resolution IS EMPTY'
+    )
+    
+    try:
+        response = requests.get(
+            f"{JIRA_URL}/rest/api/2/search",
+            params={'jql': jql, 'maxResults': 1},
+            auth=(JIRA_USER, JIRA_API_TOKEN)
+        )
+        response.raise_for_status()
+        issues = response.json().get('issues', [])
+        return issues[0] if issues else None
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error searching for existing issues: {e}")
+        logging.debug(f"JQL query that failed: {jql}")
+        return None
+
+def add_cves_to_existing_issue(issue_key, vulnerabilities):
+    issue_url = f"{JIRA_URL}/rest/api/2/issue/{issue_key}"
+
+    try:
+        response = requests.get(issue_url, auth=(JIRA_USER, JIRA_API_TOKEN))
+        response.raise_for_status()
+        issue_data = response.json()
+        current_description = issue_data["fields"]["description"]
+        current_labels = issue_data["fields"]["labels"]
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Error fetching issue details for {issue_key}: {e}")
+        return
+
+    new_cves_text = "\n".join([format_vulnerability_details(v) for v in vulnerabilities])
+    new_cve_ids = [v['VulnerabilityID'] for v in vulnerabilities]
+
+    if any(cve in current_description for cve in new_cve_ids):
+        logging.info(f"All CVEs already exist in issue {issue_key}. Skipping update.")
+        return
+
+    updated_description = current_description + "\n" + new_cves_text
+    if "trivy" not in current_labels:
+        current_labels.append("trivy")
+
+    update_payload = {
+        "fields": {
+            "description": updated_description,
+            "labels": current_labels
+        }
+    }
+
+    try:
+        response = requests.put(issue_url, auth=(JIRA_USER, JIRA_API_TOKEN),
+                               headers={"Content-Type": "application/json"},
+                               data=json.dumps(update_payload))
+        response.raise_for_status()
+        logging.info(f"Updated issue {issue_key} with new CVEs")
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Failed to update issue {issue_key}: {e}")
+
+def format_vulnerability_details(vulnerability):
+    return (
+        f"*Vulnerability ID:* {vulnerability['VulnerabilityID']}\n"
+        f"*Severity:* {vulnerability['Severity']}\n"
+        f"*Status:* {vulnerability['Status']}\n"
+        f"*Installed Version:* {vulnerability['InstalledVersion']}\n"
+        f"*Fixed Version:* {vulnerability['FixedVersion']}\n"
+        f"*Class:* {vulnerability['Class']}\n"
+        f"*Target:* {vulnerability['Target']}\n"
+        f"*Package Path:* {vulnerability['PkgPath']}\n"
+        f"*Title:* {vulnerability['Title']}\n\n"
+    )
+
+def create_issue_for_package(package_name, vulnerabilities):
+    severity_levels = set([v['Severity'] for v in vulnerabilities])
+    priority_name = "Trivial"
+    if "CRITICAL" in severity_levels:
+        priority_name = "Critical"
+    elif "HIGH" in severity_levels:
+        priority_name = "High"
+    elif "MEDIUM" in severity_levels:
+        priority_name = "Medium"
+    elif "LOW" in severity_levels:
+        priority_name = "Low"
+
+    summary = f"Trivy Bug: Vulnerabilities in {package_name}"
+    vulnerabilities_list = "\n".join([format_vulnerability_details(v) for v in vulnerabilities])
+    description = (
+        f"**Package Name:** {package_name}\n\n"
+        f"**List of CVEs:**\n"
+        f"{vulnerabilities_list}"
+    )
+
+    issue_payload = {
+        "fields": {
+            "project": {
+                "key": PROJECT_KEY
+            },
+            "summary": summary,
+            "description": description,
+            "issuetype": {
+                "name": "Bug"
+            },
+            "priority": {
+                "name": priority_name
+            },
+            "security": {
+                "name": SECURITY_LEVEL
+            },
+            "labels": ["trivy"]
+        }
+    }
+
+    try:
+        response = requests.post(f"{JIRA_URL}/rest/api/2/issue", auth=(JIRA_USER, JIRA_API_TOKEN),
+                                 headers={"Content-Type": "application/json"},
+                                 data=json.dumps(issue_payload))
+        response.raise_for_status()
+        created_issue_key = response.json().get('key')
+        processed_issues.add(created_issue_key)
+        logging.info(f"Created issue: {created_issue_key}")
+        return created_issue_key
+    except requests.exceptions.RequestException as e:
+        logging.error(f"Failed to create issue: {e}")
+        return None
+
+def create_issues(vulnerabilities):
+    packages = {}
+    for vulnerability in vulnerabilities:
+        pkg_name = vulnerability['PkgName']
+        if pkg_name not in packages:
+            packages[pkg_name] = []
+        packages[pkg_name].append(vulnerability)
+
+    for package_name, package_vulnerabilities in packages.items():
+        if package_name in processed_packages:
+            logging.info(f"Package {package_name} already processed. Skipping.")
+            continue
+
+        if package_name in BLOCKLIST or any(v['VulnerabilityID'] in BLOCKLIST for v in package_vulnerabilities):
+            logging.info(f"Package {package_name} or its vulnerabilities are in the blocklist. Skipping.")
+            continue
+
+        vulnerability_ids = [v['VulnerabilityID'] for v in package_vulnerabilities]
+        existing_issue = issue_exists_for_package_and_cves(package_name, vulnerability_ids)
+
+        if existing_issue:
+            issue_key = existing_issue["key"]
+            logging.info(f"Issue for {package_name} exists: {issue_key}")
+
+            if issue_key not in processed_issues:
+                add_cves_to_existing_issue(issue_key, package_vulnerabilities)
+                processed_issues.add(issue_key)
+            else:
+                logging.info(f"Issue {issue_key} already processed. Skipping.")
+        else:
+            logging.info(f"Issue for {package_name} does not exist. Creating issue.")
+            created_issue = create_issue_for_package(package_name, package_vulnerabilities)
+            if created_issue:
+                processed_issues.add(created_issue)
+
+        processed_packages.add(package_name)
+
+def main():
+    vulnerabilities = parse_filtered_vulnerabilities('filtered_vulnerabilities.txt')
+
+    if not vulnerabilities:
+        logging.info("No vulnerabilities to process.")
+        return
+
+    create_issues(vulnerabilities)
 
 if __name__ == "__main__":
     main()
