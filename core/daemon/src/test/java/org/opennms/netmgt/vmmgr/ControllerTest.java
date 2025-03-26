@@ -93,16 +93,21 @@ public class ControllerTest {
     }
 
     @Test
-    public void testNoInterpolationForNonMatchingProperty() throws Exception {
-        final String propertyKey = "non.placeholder.${scv:secret:password}";
-        final String originalValue = "this is a plain value";
-        System.setProperty(propertyKey, originalValue);
+    public void testNoInterpolationForNonMatchingProperties() throws Exception {
+        // Define properties with placeholders not related to the secure credentials vault.
+        final String nodePropertyKey = "org.opennms.timeseries.tin.metatags.tag.node";
+        final String nodeOriginalValue = "${node:label}";
+        final String locationPropertyKey = "org.opennms.timeseries.tin.metatags.tag.location";
+        final String locationOriginalValue = "${node:location}";
+
+        System.setProperty(nodePropertyKey, nodeOriginalValue);
+        System.setProperty(locationPropertyKey, locationOriginalValue);
 
         Controller.setSecureCredentialsVault(secureCredentialsVault);
         Controller.interpolateSystemProperties();
 
-        Assert.assertEquals("Property value should not be modified",
-                originalValue, System.getProperty(propertyKey));
+        Assert.assertEquals("Property value should not be modified", nodeOriginalValue, System.getProperty(nodePropertyKey));
+        Assert.assertEquals("Property value should not be modified", locationOriginalValue, System.getProperty(locationPropertyKey));
     }
 
 
