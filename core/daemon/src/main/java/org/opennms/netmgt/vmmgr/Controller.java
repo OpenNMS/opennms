@@ -75,8 +75,6 @@ public class Controller {
      */
     public static final String CONNECTOR_ADDRESS = "com.sun.management.jmxremote.localConnectorAddress";
 
-
-   // public  static final  String LOAD_INTERPOLATE_PROPERTIES ="org.opennnms.load.interpolate.properties";
     /**
      * The log4j category used to log debug messages and statements.
      */
@@ -150,12 +148,7 @@ public class Controller {
             System.exit(1);
         }
 
-     //   final String shouldLoadInterpolatePropertiesStr = System.getProperty(LOAD_INTERPOLATE_PROPERTIES, "false");
-     //   final boolean shouldLoadInterpolateProperties = Boolean.parseBoolean(shouldLoadInterpolatePropertiesStr);
-
-      //  if(shouldLoadInterpolateProperties) {
-            interpolateSystemProperties();
-       // }
+        interpolateSystemProperties();
 
         String command = argv[argv.length - 1];
 

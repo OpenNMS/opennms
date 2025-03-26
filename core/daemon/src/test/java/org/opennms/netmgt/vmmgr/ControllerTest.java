@@ -93,6 +93,21 @@ public class ControllerTest {
     }
 
     @Test
+    public void testNoInterpolationForNonMatchingProperty() throws Exception {
+        final String propertyKey = "non.placeholder.${scv:secret:password}";
+        final String originalValue = "this is a plain value";
+        System.setProperty(propertyKey, originalValue);
+
+        Controller.setSecureCredentialsVault(secureCredentialsVault);
+        Controller.interpolateSystemProperties();
+
+        Assert.assertEquals("Property value should not be modified",
+                originalValue, System.getProperty(propertyKey));
+    }
+
+
+
+    @Test
     public void testAttach() throws Exception {
     
         for (VirtualMachineDescriptor vm : VirtualMachine.list()) {
