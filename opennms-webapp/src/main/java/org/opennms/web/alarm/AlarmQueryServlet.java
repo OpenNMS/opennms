@@ -77,7 +77,7 @@ public class AlarmQueryServlet extends HttpServlet {
      * The list of parameters that are extracted by this servlet and not passed
      * on to the {@link AlarmFilterController AlarmFilterController}.
      */
-    protected static String[] IGNORE_LIST = new String[]{"alarmtext", "msgsub", "msgmatchany", "nodenamelike", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear", "category", "_csrf"};
+    protected static String[] IGNORE_LIST = new String[]{"situation", "alarmtext", "msgsub", "msgmatchany", "nodenamelike", "service", "iplike", "severity", "relativetime", "usebeforetime", "beforehour", "beforeminute", "beforeampm", "beforedate", "beforemonth", "beforeyear", "useaftertime", "afterhour", "afterminute", "afterampm", "afterdate", "aftermonth", "afteryear", "category", "_csrf"};
 
     /**
      * The URL for the {@link AlarmFilterController AlarmFilterController}. The
