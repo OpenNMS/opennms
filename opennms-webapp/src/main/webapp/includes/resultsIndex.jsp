@@ -122,7 +122,7 @@
 
     <% for( int i=startIndex; i <= endIndex; i++ ) { %>
       <% if( multiple == i ) { %>
-         <li class="page-item active"><a class="page-link" href=""><%=i+1%> <span class="sr-only">(current)</span></a></li>
+         <li class="page-item active"><a class="page-link"><%=i+1%> <span class="sr-only">(current)</span></a></li>
       <% } else { %>
         <li class="page-item"><a class="page-link" href="<%=baseUrl%>&amp;<%=multipleName%>=<%=i%>&amp;<%=limitName%>=<%=limit%>"><%=i+1%></a></li>
       <% } %>
