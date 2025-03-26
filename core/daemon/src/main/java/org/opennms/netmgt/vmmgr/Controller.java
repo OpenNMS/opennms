@@ -76,7 +76,7 @@ public class Controller {
     public static final String CONNECTOR_ADDRESS = "com.sun.management.jmxremote.localConnectorAddress";
 
 
-    public  static final  String LOAD_INTERPOLATE_PROPERTIES ="org.opennnms.load.interpolate.properties";
+   // public  static final  String LOAD_INTERPOLATE_PROPERTIES ="org.opennnms.load.interpolate.properties";
     /**
      * The log4j category used to log debug messages and statements.
      */
@@ -150,12 +150,12 @@ public class Controller {
             System.exit(1);
         }
 
-        final String shouldLoadInterpolatePropertiesStr = System.getProperty(LOAD_INTERPOLATE_PROPERTIES, "false");
-        final boolean shouldLoadInterpolateProperties = Boolean.parseBoolean(shouldLoadInterpolatePropertiesStr);
+     //   final String shouldLoadInterpolatePropertiesStr = System.getProperty(LOAD_INTERPOLATE_PROPERTIES, "false");
+     //   final boolean shouldLoadInterpolateProperties = Boolean.parseBoolean(shouldLoadInterpolatePropertiesStr);
 
-        if(shouldLoadInterpolateProperties) {
+      //  if(shouldLoadInterpolateProperties) {
             interpolateSystemProperties();
-        }
+       // }
 
         String command = argv[argv.length - 1];
 
@@ -199,7 +199,12 @@ public class Controller {
         final Scope scope = new SecureCredentialsVaultScope(secureCredentialsVault);
 
         for(final Map.Entry<Object, Object> entry : System.getProperties().entrySet()) {
-            System.setProperty(entry.getKey().toString(), Interpolator.interpolate(entry.getValue().toString(), scope).output);
+            if (entry.getKey() == null || entry.getValue() == null || !(entry.getValue() instanceof String)) {
+                continue;
+            }
+            if (((String) entry.getValue()).contains("${scv:")) {
+                System.setProperty(entry.getKey().toString(), Interpolator.interpolate(entry.getValue().toString(), scope).output);
+            }
         }
     }
 
