@@ -38,11 +38,11 @@ public class InventoryExporter implements EventListener {
 
     private final EventSubscriptionService eventSubscriptionService;
     private final NodeDao nodeDao;
-    private final InventoryService inventoryService;
+    private final SpogInventoryService inventoryService;
 
     public InventoryExporter(final EventSubscriptionService eventSubscriptionService,
                              final NodeDao nodeDao,
-                             final InventoryService inventoryService) {
+                             final SpogInventoryService inventoryService) {
         this.eventSubscriptionService = Objects.requireNonNull(eventSubscriptionService);
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.inventoryService = Objects.requireNonNull(inventoryService);

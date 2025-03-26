@@ -40,13 +40,13 @@ public class EventsExporter implements EventListener {
     private final EventSubscriptionService eventSubscriptionService;
     private final RuntimeInfo runtimeInfo;
 
-    private final NmsInventoryGrpcClient client;
+    private final SpogGrpcClient client;
 
     private final boolean eventExportEnabled;
 
     public EventsExporter(final EventSubscriptionService eventSubscriptionService,
                           RuntimeInfo runtimeInfo,
-                          NmsInventoryGrpcClient client,
+                          SpogGrpcClient client,
                           boolean eventExportEnabled) {
         this.eventSubscriptionService = Objects.requireNonNull(eventSubscriptionService);
         this.runtimeInfo = runtimeInfo;
@@ -79,7 +79,7 @@ public class EventsExporter implements EventListener {
         }
 
         if (!client.isEnabled()) {
-            LOG.debug("NMS Inventory service disabled, not sending event updates");
+            LOG.debug("SPOG service disabled, not sending event updates");
             return;
         }
 
