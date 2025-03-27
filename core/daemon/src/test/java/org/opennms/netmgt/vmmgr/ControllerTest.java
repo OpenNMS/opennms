@@ -93,6 +93,25 @@ public class ControllerTest {
     }
 
     @Test
+    public void testNoInterpolationForNonMatchingProperties() throws Exception {
+        final String nodePropertyKey = "org.opennms.timeseries.tin.metatags.tag.node";
+        final String nodeOriginalValue = "${node:label}";
+        final String locationPropertyKey = "org.opennms.timeseries.tin.metatags.tag.location";
+        final String locationOriginalValue = "${node:location}";
+
+        System.setProperty(nodePropertyKey, nodeOriginalValue);
+        System.setProperty(locationPropertyKey, locationOriginalValue);
+
+        Controller.setSecureCredentialsVault(secureCredentialsVault);
+        Controller.interpolateSystemProperties();
+
+        Assert.assertEquals("Property value should not be modified", nodeOriginalValue, System.getProperty(nodePropertyKey));
+        Assert.assertEquals("Property value should not be modified", locationOriginalValue, System.getProperty(locationPropertyKey));
+    }
+
+
+
+    @Test
     public void testAttach() throws Exception {
     
         for (VirtualMachineDescriptor vm : VirtualMachine.list()) {
