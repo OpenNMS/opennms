@@ -33,7 +33,8 @@ import java.nio.file.Paths;
 
 public class AggregateIndexInitializer extends DefaultTemplateInitializer {
 
-    public static final String TEMPLATE_RESOURCE = "/netflow_agg-template";
+    private static final String FLOW_TEMPLATE_DIR = System.getProperty("flow.templates.dir","");
+    public static final String TEMPLATE_RESOURCE = Paths.get(FLOW_TEMPLATE_DIR, "/netflow_agg-template").toString();
 
     private static final String FLOW_TEMPLATE_NAME = "netflow_agg";
 

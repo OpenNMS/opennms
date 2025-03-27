@@ -33,7 +33,8 @@ import java.nio.file.Paths;
 
 public class RawIndexInitializer extends DefaultTemplateInitializer {
 
-    public static final String TEMPLATE_RESOURCE = "/netflow-template";
+    private static final String FLOW_TEMPLATE_DIR = System.getProperty("flow.templates.dir","");
+    public static final String TEMPLATE_RESOURCE = Paths.get(FLOW_TEMPLATE_DIR, "/netflow-template").toString();
 
     private static final String FLOW_TEMPLATE_NAME = "netflow";
 
