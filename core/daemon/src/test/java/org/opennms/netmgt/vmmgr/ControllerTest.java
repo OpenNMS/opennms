@@ -94,6 +94,7 @@ public class ControllerTest {
 
     @Test
     public void testNoInterpolationForNonMatchingProperties() throws Exception {
+
         final String nodePropertyKey = "org.opennms.timeseries.tin.metatags.tag.node";
         final String nodeOriginalValue = "${node:label}";
         final String locationPropertyKey = "org.opennms.timeseries.tin.metatags.tag.location";
