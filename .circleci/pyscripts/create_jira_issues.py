@@ -19,7 +19,6 @@ PRIORITY_MAP = {
     "Trivial": "Trivial"
 }
 
-# Security level for Trivy issues
 SECURITY_LEVEL = "TOG (migrated)"
 
 logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
@@ -57,10 +56,10 @@ processed_packages = set()
 processed_issues = set()
 
 def normalize_package_name(pkg_name):
-    """Normalize package names by removing version numbers and special chars"""
-    # Remove version numbers if present
+
+
     pkg_name = re.sub(r'[-_]\d+.*$', '', pkg_name)
-    # Replace special characters with dashes
+
     pkg_name = re.sub(r'[:@/]', '-', pkg_name)
     return pkg_name.lower().strip()
 
@@ -97,13 +96,11 @@ def parse_filtered_vulnerabilities(file_path):
     return vulnerabilities
 
 def issue_exists_for_package_and_cves(package_name, vulnerability_ids):
-    """Improved version with better JQL query formatting"""
+
     normalized_pkg = normalize_package_name(package_name)
-    
-    # Create simple CVE conditions without complex escaping
+
     cve_conditions = []
     for vuln_id in vulnerability_ids:
-        # Just search for the raw CVE ID (Jira usually indexes these well)
         cve_conditions.append(f'text ~ "{vuln_id}"')
     
     jql = (
