@@ -191,4 +191,16 @@ public class NmsInventoryGrpcClient extends GrpcClient {
             client.reconnectStreams();
         }
     }
+
+    public StreamObserver<NmsInventoryUpdateList> getNmsInventoryUpdateStream() {
+        return nmsInventoryUpdateStream;
+    }
+
+    public StreamObserver<AlarmUpdateList> getAlarmsUpdateStream() {
+        return alarmsUpdateStream;
+    }
+
+    public StreamObserver<EventUpdateList> getEventUpdateStream() {
+        return eventUpdateStream;
+    }
 }

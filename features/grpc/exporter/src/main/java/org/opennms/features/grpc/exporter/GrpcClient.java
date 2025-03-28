@@ -25,7 +25,6 @@ package org.opennms.features.grpc.exporter;
 import io.grpc.ClientInterceptor;
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
-import io.grpc.ManagedChannelBuilder;
 import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import org.slf4j.Logger;
@@ -101,12 +100,6 @@ public abstract class GrpcClient {
             LOG.info("TLS disabled, using plain text");
         }
         LOG.info("Grpc client started connection to {}", this.host);
-    }
-
-    public synchronized void startInProcessChannel(){
-        this.channel = ManagedChannelBuilder.forTarget("localhost:50051")
-                .usePlaintext()  // non-SSL connection
-                .build();
     }
 
     public synchronized void stopGrpcConnection() {
