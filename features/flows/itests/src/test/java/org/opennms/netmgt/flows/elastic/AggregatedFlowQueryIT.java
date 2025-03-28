@@ -121,6 +121,7 @@ public class AggregatedFlowQueryIT {
     private RawFlowQueryService rawFlowQueryService;
     private AggregatedFlowQueryService aggFlowQueryService;
     private DocumentEnricherImpl documentEnricher;
+
     @Before
     public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {
         final MetricRegistry metricRegistry = new MetricRegistry();

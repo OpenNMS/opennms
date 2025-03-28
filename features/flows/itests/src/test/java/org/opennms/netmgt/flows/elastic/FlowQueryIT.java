@@ -117,8 +117,6 @@ public class FlowQueryIT {
 
     private SmartQueryService smartQueryService;
 
-    private final String TEMPLATE_RESOURCE_FLOW="/netflow-template";
-
     @Before
     public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {
         final MetricRegistry metricRegistry = new MetricRegistry();
