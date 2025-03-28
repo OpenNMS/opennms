@@ -29,12 +29,13 @@ import io.grpc.stub.StreamObserver;
 import org.opennms.features.grpc.exporter.Callback;
 import org.opennms.features.grpc.exporter.GrpcClient;
 import org.opennms.features.grpc.exporter.NamedThreadFactory;
-import org.opennms.plugin.grpc.proto.services.AlarmUpdateList;
-import org.opennms.plugin.grpc.proto.services.NmsInventoryServiceSyncGrpc;
+import org.opennms.plugin.grpc.proto.spog.AlarmUpdateList;
+import org.opennms.plugin.grpc.proto.spog.NmsInventoryServiceSyncGrpc;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.opennms.plugin.grpc.proto.services.NmsInventoryUpdateList;
-import org.opennms.plugin.grpc.proto.services.EventUpdateList;
+import org.opennms.plugin.grpc.proto.spog.NmsInventoryUpdateList;
+import org.opennms.plugin.grpc.proto.spog.EventUpdateList;
+import org.opennms.plugin.grpc.proto.spog.HeartBeat;
 import javax.net.ssl.SSLException;
 import java.util.Objects;
 import java.util.concurrent.Executors;
@@ -42,8 +43,8 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-public class NmsInventoryGrpcClient extends GrpcClient {
-    private static final Logger LOG = LoggerFactory.getLogger(NmsInventoryGrpcClient.class);
+public class SpogGrpcClient extends GrpcClient {
+    private static final Logger LOG = LoggerFactory.getLogger(SpogGrpcClient.class);
 
     private final String threadName = "alarm-inventory-grpc-connect";
     private final AtomicBoolean reconnecting = new AtomicBoolean(false);
@@ -52,14 +53,15 @@ public class NmsInventoryGrpcClient extends GrpcClient {
     private StreamObserver<AlarmUpdateList> alarmsUpdateStream;
     private StreamObserver<NmsInventoryUpdateList> nmsInventoryUpdateStream;
     private StreamObserver<EventUpdateList> eventUpdateStream;
+    private StreamObserver<HeartBeat> heartBeatUpdateStream;
     private boolean enabled = true;
 
     private Callback inventoryCallback;
 
-    public NmsInventoryGrpcClient(final String host,
-                                  final String tlsCertPath,
-                                  final boolean tlsEnabled,
-                                  final ClientInterceptor clientInterceptor) {
+    public SpogGrpcClient(final String host,
+                          final String tlsCertPath,
+                          final boolean tlsEnabled,
+                          final ClientInterceptor clientInterceptor) {
         super(host, tlsCertPath, tlsEnabled, clientInterceptor);
         this.scheduler = Executors.newSingleThreadScheduledExecutor(new NamedThreadFactory(threadName));
 
@@ -67,7 +69,7 @@ public class NmsInventoryGrpcClient extends GrpcClient {
 
     public void start() throws SSLException{
         if (!enabled) {
-            LOG.info("NMS Inventory GrpcClient disabled, not starting connections to {}", super.getHost());
+            LOG.info("SPOG GrpcClient disabled, not starting connections to {}", super.getHost());
             return;
         }
 
@@ -93,15 +95,17 @@ public class NmsInventoryGrpcClient extends GrpcClient {
         if (super.getChannelState().equals(ConnectivityState.READY)) {
             try {
                 this.alarmsUpdateStream =
-                        this.nmsSyncStub.alarmUpdate(new LoggingAckReceiver("nms_alarm_update", this));
+                        this.nmsSyncStub.alarmUpdate(new LoggingAckReceiver("spog_alarm_update", this));
                 this.nmsInventoryUpdateStream =
-                        this.nmsSyncStub.inventoryUpdate(new LoggingAckReceiver("nms_inventory_update", this));
+                        this.nmsSyncStub.inventoryUpdate(new LoggingAckReceiver("spog_inventory_update", this));
                 this.eventUpdateStream =
-                        this.nmsSyncStub.eventUpdate(new LoggingAckReceiver("events_update", this));
+                        this.nmsSyncStub.eventUpdate(new LoggingAckReceiver("spog_events_update", this));
+                this.heartBeatUpdateStream =
+                        this.nmsSyncStub.heartBeatUpdate(new LoggingAckReceiver("spog_heartbeat_update", this));
 
                 this.scheduler.shutdown();
                 this.scheduler = null;
-                LOG.info("NMS Streams initialized successfully.");
+                LOG.info("SPOG Streams initialized successfully.");
                 reconnecting.set(false);
                 // While connecting, reconnecting, send callback to inventory service.
                 if (inventoryCallback != null) {
@@ -140,54 +144,62 @@ public class NmsInventoryGrpcClient extends GrpcClient {
     public void sendAlarmUpdate(final AlarmUpdateList alarmUpdates) {
         if (this.alarmsUpdateStream != null) {
             this.alarmsUpdateStream.onNext(alarmUpdates);
-            LOG.info("Client-Sent an alarm-Updates with {} count", alarmUpdates.getAlarmsCount());
+            LOG.info("SPOG-Sent an alarm-Updates with {} count", alarmUpdates.getAlarmsCount());
         } else {
-            LOG.warn("Client-Unable to send alarm-Updates since channel is not ready yet .. {} ", super.getHost());
+            LOG.warn("SPOG-Unable to send alarm-Updates since channel is not ready yet .. {} ", super.getHost());
         }
     }
 
     public void sendNmsInventoryUpdate(final NmsInventoryUpdateList updates) {
         if (this.nmsInventoryUpdateStream != null) {
             this.nmsInventoryUpdateStream.onNext(updates);
-            LOG.info("Client-Sent an inventory update with {} nodes", updates.getNodesCount());
+            LOG.info("SPOG-Sent an inventory update with {} nodes", updates.getNodesCount());
         } else {
-            LOG.warn("Client-Unable to send Inventory-Updates since channel is not ready yet .. {} ", super.getHost());
+            LOG.warn("SPOG-Unable to send Inventory-Updates since channel is not ready yet .. {} ", super.getHost());
         }
     }
 
     public void sendEventUpdate(final EventUpdateList updates) {
         if (this.eventUpdateStream != null) {
             this.eventUpdateStream.onNext(updates);
-            LOG.info("Client-Sent an Event-Update with {} count", updates.getEventCount());
+            LOG.info("SPOG-Sent an Event-Update with {} count", updates.getEventCount());
         } else {
-            LOG.warn("Client-Unable to send Event-Updates since channel is not ready yet .. {} ", super.getHost());
+            LOG.warn("SPOG-Unable to send Event-Updates since channel is not ready yet .. {} ", super.getHost());
+        }
+    }
+
+    public void sendHeartBeatUpdate(HeartBeat heartBeat) {
+        if (heartBeatUpdateStream != null) {
+            this.heartBeatUpdateStream.onNext(heartBeat);
+        } else {
+            LOG.warn("SPOG-Unable to send heartbeat status update since channel is not ready yet .. {} ", super.getHost());
         }
     }
 
     private static class LoggingAckReceiver implements StreamObserver<Empty> {
 
         private final String type;
-        private final NmsInventoryGrpcClient client;
+        private final SpogGrpcClient client;
 
-        private LoggingAckReceiver(final String type, NmsInventoryGrpcClient client) {
+        private LoggingAckReceiver(final String type, SpogGrpcClient client) {
             this.type = Objects.requireNonNull(type);
             this.client = client;
         }
 
         @Override
         public void onNext(final Empty value) {
-            LOG.debug("NMSInventory-Received ACK {}", this.type);
+            LOG.debug("Received ACK {}", this.type);
         }
 
         @Override
         public void onError(final Throwable t) {
-            LOG.error("NMSInventory-Received error {}", this.type, t);
+            LOG.error("Received error {}", this.type, t);
             client.reconnectStreams();
         }
 
         @Override
         public void onCompleted() {
-            LOG.info("NMSInventory-Completed {}", this.type);
+            LOG.info("Completed {}", this.type);
             client.reconnectStreams();
         }
     }

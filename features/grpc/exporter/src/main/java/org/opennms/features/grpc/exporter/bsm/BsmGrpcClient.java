@@ -102,11 +102,11 @@ public class BsmGrpcClient extends GrpcClient {
         if (super.getChannelState().equals(ConnectivityState.READY)) {
             try {
                 this.inventoryUpdateStream =
-                        this.monitoredServiceSyncStub.inventoryUpdate(new LoggingAckReceiver("monitored_service_inventory_update", this));
+                        this.monitoredServiceSyncStub.inventoryUpdate(new LoggingAckReceiver("bsm_monitored_service_inventory_update", this));
                 this.stateUpdateStream =
-                        this.monitoredServiceSyncStub.stateUpdate(new LoggingAckReceiver("monitored_service_state_update", this));
+                        this.monitoredServiceSyncStub.stateUpdate(new LoggingAckReceiver("bsm_monitored_service_state_update", this));
                 this.heartBeatStream =
-                        this.monitoredServiceSyncStub.heartBeatUpdate(new LoggingAckReceiver("heartbeat_update", this));
+                        this.monitoredServiceSyncStub.heartBeatUpdate(new LoggingAckReceiver("bsm_heartbeat_update", this));
                 this.scheduler.shutdown();
                 this.scheduler = null;
                 LOG.info("BSM Streams initialized successfully.");
@@ -151,9 +151,9 @@ public class BsmGrpcClient extends GrpcClient {
     public void sendMonitoredServicesStatusUpdate(final StateUpdateList stateUpdates) {
         if (this.stateUpdateStream != null) {
             this.stateUpdateStream.onNext(stateUpdates);
-            LOG.info("Sent an monitored service state update with {} services", stateUpdates.getUpdatesCount());
+            LOG.info("BSM-Sent an monitored service state update with {} services", stateUpdates.getUpdatesCount());
         } else {
-            LOG.warn("Unable to send monitored service status update since channel is not ready yet");
+            LOG.warn("BSM-Unable to send monitored service status update since channel is not ready yet");
         }
     }
 
@@ -161,7 +161,7 @@ public class BsmGrpcClient extends GrpcClient {
         if (heartBeatStream != null) {
             this.heartBeatStream.onNext(heartBeat);
         } else {
-            LOG.warn("Unable to send heartbeat status update since channel is not ready yet");
+            LOG.warn("BSM-Unable to send heartbeat status update since channel is not ready yet");
         }
     }
 

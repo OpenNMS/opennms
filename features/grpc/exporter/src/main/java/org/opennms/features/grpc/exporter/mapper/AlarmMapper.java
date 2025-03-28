@@ -32,10 +32,12 @@ import org.mapstruct.NullValuePropertyMappingStrategy;
 import org.mapstruct.factory.Mappers;
 import org.opennms.integration.api.v1.runtime.RuntimeInfo;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.plugin.grpc.proto.services.Alarm;
-import org.opennms.plugin.grpc.proto.services.Alarm.Type;
-import org.opennms.plugin.grpc.proto.services.AlarmUpdateList;
-import org.opennms.plugin.grpc.proto.services.Severity;
+import org.opennms.plugin.grpc.proto.spog.Alarm;
+import org.opennms.plugin.grpc.proto.spog.Severity;
+import org.opennms.plugin.grpc.proto.spog.AlarmUpdateList;
+import org.opennms.plugin.grpc.proto.spog.Alarm.Type;
+import org.opennms.plugin.grpc.proto.spog.NodeCriteria;
+
 import java.util.Date;
 import java.util.List;
 
@@ -66,7 +68,7 @@ public interface AlarmMapper {
     AlarmUpdateList toAlarmUpdates(final List<OnmsAlarm> onmsAlarmUpdates, final RuntimeInfo runtimeInfo, final String instanceName, final boolean snapshot);
 
     default AlarmUpdateList toAlarmUpdatesList(final List<OnmsAlarm> onmsAlarmUpdates, final RuntimeInfo runtimeInfo, final String instanceName, final boolean snapshot) {
-        AlarmUpdateList.Builder builder = toAlarmUpdates(onmsAlarmUpdates,runtimeInfo, instanceName,snapshot).toBuilder();
+       AlarmUpdateList.Builder builder = toAlarmUpdates(onmsAlarmUpdates,runtimeInfo, instanceName,snapshot).toBuilder();
         return builder.build();
     }
 
@@ -75,7 +77,7 @@ public interface AlarmMapper {
     @Mapping(target = "foreignId", source = "node.foreignId", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT)
     @Mapping(target = "foreignSource", source = "node.foreignSource", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT)
     @Mapping(target = "id", source = "nodeId", nullValuePropertyMappingStrategy = NullValuePropertyMappingStrategy.SET_TO_DEFAULT)
-    org.opennms.plugin.grpc.proto.services.NodeCriteria mapNodeCriteria(OnmsAlarm alarm);
+    NodeCriteria mapNodeCriteria(OnmsAlarm alarm);
 
     default int mapType(Integer value) {
         switch (value) {
