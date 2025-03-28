@@ -38,7 +38,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.TemporaryDatabaseAware;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.features.grpc.exporter.spog.NmsInventoryGrpcClient;
+import org.opennms.features.grpc.exporter.spog.SpogGrpcClient;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.HwEntityDao;
@@ -50,9 +50,10 @@ import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsHwEntity;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
-import org.opennms.plugin.grpc.proto.services.AlarmUpdateList;
-import org.opennms.plugin.grpc.proto.services.EventUpdateList;
-import org.opennms.plugin.grpc.proto.services.NmsInventoryUpdateList;
+import org.opennms.plugin.grpc.proto.spog.AlarmUpdateList;
+import org.opennms.plugin.grpc.proto.spog.EventUpdateList;
+import org.opennms.plugin.grpc.proto.spog.NmsInventoryServiceSyncGrpc;
+import org.opennms.plugin.grpc.proto.spog.NmsInventoryUpdateList;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
@@ -84,7 +85,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
     private static final String HOST_NAME = "localhost:" + PORT;
 
     private Server server;
-    private NmsInventoryGrpcClient client;
+    private SpogGrpcClient client;
 
     @Autowired
     private DatabasePopulator databasePopulator;
@@ -154,7 +155,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
     }
 
     private void initializeAndStartClient() throws SSLException {
-        client = new NmsInventoryGrpcClient(HOST_NAME,
+        client = new SpogGrpcClient(HOST_NAME,
                 null,
                 false,
                 new GrpcHeaderInterceptor(TENANT_ID)
@@ -173,7 +174,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
                 .setInstanceId("instance_1")
                 .setInstanceName("TestInstance")
                 .setSnapshot(true)
-                .addNodes(org.opennms.plugin.grpc.proto.services.Node.newBuilder()
+                .addNodes(org.opennms.plugin.grpc.proto.spog.Node.newBuilder()
                         .setId(node.getId())
                         .setForeignSource(node.getForeignSource())
                         .setForeignId(node.getForeignId())
@@ -205,7 +206,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
                 .setInstanceId("instance_1")
                 .setInstanceName("TestInstance")
                 .setSnapshot(false)
-                .addNodes(org.opennms.plugin.grpc.proto.services.Node.newBuilder()
+                .addNodes(org.opennms.plugin.grpc.proto.spog.Node.newBuilder()
                         .setId(node.getId())
                         .setForeignSource(node.getForeignSource())
                         .setForeignId(node.getForeignId())
@@ -237,7 +238,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
                 .setInstanceId("instance_1")
                 .setInstanceName("TestInstance")
                 .setSnapshot(true)
-                .addNodes(org.opennms.plugin.grpc.proto.services.Node.newBuilder()
+                .addNodes(org.opennms.plugin.grpc.proto.spog.Node.newBuilder()
                         .setId(node.getId())
                         .setForeignSource(node.getForeignSource())
                         .setForeignId(node.getForeignId())
@@ -275,7 +276,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
                 .setInstanceId("instance_1")
                 .setInstanceName("TestInstance")
                 .setSnapshot(false)
-                .addNodes(org.opennms.plugin.grpc.proto.services.Node.newBuilder()
+                .addNodes(org.opennms.plugin.grpc.proto.spog.Node.newBuilder()
                         .setId(node.getId())
                         .setForeignSource(node.getForeignSource())
                         .setForeignId(node.getForeignId())
@@ -323,7 +324,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
                 .setInstanceId("instance_1")
                 .setInstanceName("TestInstance")
                 .setSnapshot(true)
-                .addNodes(org.opennms.plugin.grpc.proto.services.Node.newBuilder()
+                .addNodes(org.opennms.plugin.grpc.proto.spog.Node.newBuilder()
                         .setId(node.getId())
                         .setForeignSource(node.getForeignSource())
                         .setForeignId(node.getForeignId())
@@ -363,11 +364,11 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
                 .setInstanceId("instance_1")
                 .setInstanceName("TestInstance")
                 .setSnapshot(true)
-                .addAlarms(org.opennms.plugin.grpc.proto.services.Alarm.newBuilder()
+                .addAlarms(org.opennms.plugin.grpc.proto.spog.Alarm.newBuilder()
                         .setId(alarmResponse.getId())
                         .setUei(alarmResponse.getUei())
                         .setDescription(alarmResponse.getDescription())
-                        .setNodeCriteria(org.opennms.plugin.grpc.proto.services.NodeCriteria.newBuilder()
+                        .setNodeCriteria(org.opennms.plugin.grpc.proto.spog.NodeCriteria.newBuilder()
                                 .setId(alarmResponse.getNodeId())
                                 .setForeignId(alarmResponse.getNode().getForeignId())
                                 .setForeignSource(alarmResponse.getNode().getForeignSource())
@@ -400,10 +401,10 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         Assert.assertTrue("Node id in event should be exist", eventResponse.getNodeId() > 0);
         Assert.assertEquals(EventConstants.NODE_UP_EVENT_UEI, eventResponse.getUei());
 
-        final EventUpdateList eventUpdateList = org.opennms.plugin.grpc.proto.services.EventUpdateList.newBuilder()
+        final EventUpdateList eventUpdateList = EventUpdateList.newBuilder()
                 .setInstanceId("instance_1")
                 .setInstanceName("TestInstance")
-                .addEvent(org.opennms.plugin.grpc.proto.services.Event.newBuilder()
+                .addEvent(org.opennms.plugin.grpc.proto.spog.Event.newBuilder()
                         .setId(eventResponse.getId())
                         .setDescription(eventResponse.getDescription())
                         .setLabel(eventResponse.getNodeLabel())
@@ -485,7 +486,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         this.mockDatabase = database;
     }
 
-    public class NmsInventoryServiceSyncImpl extends org.opennms.plugin.grpc.proto.services.NmsInventoryServiceSyncGrpc.NmsInventoryServiceSyncImplBase {
+    public class NmsInventoryServiceSyncImpl extends NmsInventoryServiceSyncGrpc.NmsInventoryServiceSyncImplBase {
         private final CompletableFuture<Boolean> responseFuture;
 
         public NmsInventoryServiceSyncImpl(CompletableFuture<Boolean> responseFuture) {
@@ -493,7 +494,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         }
 
         @Override
-        public StreamObserver<NmsInventoryUpdateList> inventoryUpdate(final StreamObserver<Empty> responseObserver) {
+        public StreamObserver<NmsInventoryUpdateList> inventoryUpdate(StreamObserver<Empty> responseObserver) {
             return new StreamObserver<NmsInventoryUpdateList>() {
                 @Override
                 public void onNext(NmsInventoryUpdateList value) {
