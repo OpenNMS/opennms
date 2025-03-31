@@ -1924,7 +1924,7 @@
     <osgiServiceJdbcVersion>1.0.1</osgiServiceJdbcVersion>
     <owaspEncoderVersion>1.2.3</owaspEncoderVersion>
     <owaspHtmlSanitizerVersion>20211018.2</owaspHtmlSanitizerVersion>
-    <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
+    <osgiJaxRsVersion>1.1.0.bbo</osgiJaxRsVersion>
     <osMavenPluginVersion>1.7.1</osMavenPluginVersion>
     <opencsvVersion>2.3</opencsvVersion>
     <opentracingVersion>0.32.0</opentracingVersion>
@@ -5493,18 +5493,8 @@
   </repositories>
   <pluginRepositories>
     <pluginRepository>
-      <id>opennms-3rdparty</id>
-      <url>https://archive.opennms.com/repo-maven/3rdparty/</url>
+      <id>opennms-repo</id>
+      <url>https://archive.opennms.com/repo-maven/maven2/</url>
     </pluginRepository>
   </pluginRepositories>
-  <distributionManagement>
-    <snapshotRepository>
-      <id>opennms-ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
-    </snapshotRepository>
-    <repository>
-      <id>opennms-ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
-    </repository>
-  </distributionManagement>
 </project>

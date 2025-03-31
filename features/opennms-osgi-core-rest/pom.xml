@@ -56,8 +56,8 @@
     </dependencies>
     <repositories>
         <repository>
-            <id>opennms-repo</id>
-            <url>https://archive.opennms.com/repo-maven/maven2/</url>
+            <id>bluebird-bbo-third-party</id>
+            <url>https://dl.cloudsmith.io/public/bluebird/bbo-third-party/maven/</url>
         </repository>
     </repositories>
 </project>

@@ -25,6 +25,7 @@ RELEASE_BUILDNAME     := ${RELEASE_BRANCH}
 RELEASE_COMMIT        := $(shell git rev-parse --short HEAD)
 RELEASE_MINOR_VERSION := $(shell git log --pretty="format:%cd" --date=short -1 | sed -e "s,^Date: *,," -e "s,-,,g" )
 RELEASE_MICRO_VERSION := ${RELEASE_BUILD_KEY}.${RELEASE_BUILDNAME}.${RELEASE_BUILD_NUM}
+OPEN_FILES_LIMIT      := 20000
 
 RELEASE_VERSION     := UNSET.0.0
 RELEASE_BRANCH      := develop
@@ -163,6 +164,9 @@ deps-build:
 	@mkdir -p $(ARTIFACTS_DIR)
 	@echo -n "👮‍♀️ Check Java version $(JAVA_MAJOR_VERSION):       "
 	@java -version 2>&1 | grep '$(JAVA_MAJOR_VERSION)\..*' >/dev/null
+	@echo $(OK)
+	@echo -n "👮‍♀️ Check open file limits:      "
+	@if [ "$(shell ulimit -n)" -lt "$(OPEN_FILES_LIMIT)" ]; then echo -n "$(FAIL) "; echo "Increase your open file limit with: ulimit -n $(OPEN_FILES_LIMIT)"; exit 1; fi >/dev/null
 	@echo $(OK)
 
 .PHONY: deps-deb-packages
@@ -503,7 +507,7 @@ docs: deps-docs
 install-core: quick-compile quick-assemble
 	@echo "Install OpenNMS Horizon Core to $(OPENNMS_HOME)"
 	mkdir -p $(OPENNMS_HOME)
-	tar xzf ./target/opennms-$(OPENNMS_VERSION).tar.gz -C $(OPENNMS_HOME)
+	tar xzf ./target/opennms-34.0.0-SNAPSHOT.tar.gz -C $(OPENNMS_HOME)
 
 .PHONY: uninstall-core
 uninstall-core:
