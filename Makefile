@@ -165,7 +165,7 @@ deps-build:
 	@echo -n "👮‍♀️ Check Java version $(JAVA_MAJOR_VERSION):       "
 	@java -version 2>&1 | grep '$(JAVA_MAJOR_VERSION)\..*' >/dev/null
 	@echo $(OK)
-	@echo -n "👮‍♀️ Check open file limits:      "
+	@echo -n "👮‍♀️ Check file limits ($(OPEN_FILES_LIMIT)):   "
 	@if [ "$(shell ulimit -n)" -lt "$(OPEN_FILES_LIMIT)" ]; then echo -n "$(FAIL) "; echo "Increase your open file limit with: ulimit -n $(OPEN_FILES_LIMIT)"; exit 1; fi >/dev/null
 	@echo $(OK)
 
