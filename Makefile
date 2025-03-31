@@ -507,7 +507,7 @@ docs: deps-docs
 install-core: quick-compile quick-assemble
 	@echo "Install OpenNMS Horizon Core to $(OPENNMS_HOME)"
 	mkdir -p $(OPENNMS_HOME)
-	tar xzf ./target/opennms-34.0.0-SNAPSHOT.tar.gz -C $(OPENNMS_HOME)
+	tar xzf ./target/opennms-$(OPENNMS_VERSION).tar.gz -C $(OPENNMS_HOME)
 
 .PHONY: uninstall-core
 uninstall-core:
