@@ -1,0 +1,46 @@
+
+= Monitoring Systems REST API
+
+Use the Monitoring Systems REST API to fetch information about the main monitoring system.
+
+An OpenNMS monitoring system is a system that can poll status of nodes
+and report events that occur on the network.
+Examples of monitoring systems include:
+
+- OpenNMS (main)
+- OpenNMS Remote Poller
+- OpenNMS Minion
+
+NOTE: If not otherwise specified, the `Content-Type` of the request and response is `application/json`.
+
+[caption=]
+.Monitoring Systems API functions
+[cols="1,1,3"]
+|===
+| Resource  | Method    | Description
+
+| /monitoringSystems/main
+| GET
+| Retrieves information about the main monitoring system in OpenNMS, including the `id`, `label`, `location` and `type`.
+This API should return the core OpenNMS system. Other systems include sentinels and minions. The `id` is a `uuid` which uniquely identifies this monitoring system.
+|===
+
+== Examples:
+
+.Get main monitoring system
+[source,bash]
+----
+curl -u admin:admin http://localhost:8980/opennms/rest/monitoringSystems/main -v
+----
+
+.Response:
+
+[source,json]
+----
+{
+  "id": "9e0a8a1d-46e0-4833-b3f1-f0deba566785",
+  "label": "localhost",
+  "location": "Default",
+  "type": "OpenNMS"
+}
+----
