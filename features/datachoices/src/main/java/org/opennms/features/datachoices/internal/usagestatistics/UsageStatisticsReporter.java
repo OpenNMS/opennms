@@ -25,6 +25,7 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.util.ArrayList;
@@ -310,9 +311,14 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     }
 
     private boolean isContainerized() {
+        // this will detect podman even in custom container builds
         final boolean inPodman = new File("/run/.containerenv").exists();
+        // this will detect docker even in custom container builds
         final boolean inDocker = new File("/.dockerenv").exists();
-        return inPodman || inDocker;
+        // this will detect in any case if our unmodified container is run, since this file was created in our Dockerfile
+        final boolean containerRunning = new File("/CONTAINER_RUNNING").exists();
+
+        return inPodman || inDocker || containerRunning;
     }
 
     private void setJmxAttributes(UsageStatisticsReportDTO usageStatisticsReport) {
