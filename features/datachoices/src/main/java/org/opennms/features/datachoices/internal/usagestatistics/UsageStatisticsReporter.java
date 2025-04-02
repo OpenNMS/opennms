@@ -316,7 +316,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         // this will detect docker even in custom container builds
         final boolean inDocker = new File("/.dockerenv").exists();
         // this will detect in any case if our unmodified container is run, since this file was created in our Dockerfile
-        final boolean containerRunning = new File("/CONTAINER_RUNNING").exists();
+        final boolean containerRunning = "container".equals(System.getenv("OPENNMS_EXECUTION_ENVIRONMENT"));
 
         return inPodman || inDocker || containerRunning;
     }

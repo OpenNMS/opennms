@@ -164,6 +164,7 @@ CMD [ "-h" ]
 
 ### Runtime information and not relevant at build time
 ENV JAVA_OPTS="-Xmx1024m -XX:MaxMetaspaceSize=512m"
+ENV OPENNMS_EXECUTION_ENVIRONMENT=container
 
 # Volumes for storing data outside of the container
 VOLUME [ "/opt/opennms/etc", "/opt/opennms-etc-overlay", "/opennms-data" ]
