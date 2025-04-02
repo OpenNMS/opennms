@@ -88,7 +88,7 @@ public class LocationBasedNavBarEntry implements NavBarEntry {
     @Override
     public DisplayStatus evaluate(MenuContext context) {
         if (!evaluateSystemProperty()) {
-            return DisplayStatus.DISPLAY_NO_LINK;
+            return DisplayStatus.NO_DISPLAY;
         }
 
         return isLinkMatches(context) ? DisplayStatus.DISPLAY_NO_LINK : DisplayStatus.DISPLAY_LINK;
