@@ -110,6 +110,7 @@
         </plugins>
     </build>
 
+
     <dependencies>
         <dependency>
             <groupId>org.osgi</groupId>
@@ -159,10 +160,6 @@
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
             <version>${protobufVersion}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.opennms</groupId>
-            <artifactId>opennms-dao-api</artifactId>
         </dependency>
         <dependency>
             <groupId>org.opennms.core.test-api</groupId>
