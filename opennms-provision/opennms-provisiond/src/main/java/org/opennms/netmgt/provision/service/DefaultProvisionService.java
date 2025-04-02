@@ -24,7 +24,12 @@ package org.opennms.netmgt.provision.service;
 import static org.opennms.core.utils.InetAddressUtils.addr;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -39,6 +44,8 @@ import java.util.Set;
 import java.util.TreeSet;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.opennms.core.spring.BeanUtils;
@@ -111,6 +118,7 @@ import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
+import org.xml.sax.InputSource;
 
 /**
  * DefaultProvisionService
@@ -955,12 +963,42 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
     /** {@inheritDoc} */
     @Override
     public Requisition loadRequisition(final Resource resource) {
-        final Requisition r = m_foreignSourceRepository.importResourceRequisition(resource);
+        Requisition r;
+        try {
+            String content = inputSourceToString(resource.getInputStream());
+            if (isJson(content)) {
+                r = parseJson(content, Requisition.class);
+            } else {
+                r = m_foreignSourceRepository.importResourceRequisition(resource);
+            }
+        } catch (final IOException e) {
+            throw new RuntimeException("Error reading input source", e);
+        }
         r.updateLastImported();
         m_foreignSourceRepository.save(r);
         m_foreignSourceRepository.flush();
         return r;
     }
+
+    private static String inputSourceToString(InputStream inputStream) throws IOException {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8))) {
+            return reader.lines().collect(Collectors.joining("\n"));
+        }
+    }
+
+    private static boolean isJson(String content) {
+        return content.trim().startsWith("{") || content.trim().startsWith("[");
+    }
+
+    private static <T> T parseJson(String json, Class<T> clazz) {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.readValue(json, clazz);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Error parsing JSON", e);
+        }
+    }
+
 
     /* (non-Javadoc)
      * @see org.opennms.netmgt.provision.service.ProvisionService#updateNodeInfo(org.opennms.netmgt.model.OnmsNode)
