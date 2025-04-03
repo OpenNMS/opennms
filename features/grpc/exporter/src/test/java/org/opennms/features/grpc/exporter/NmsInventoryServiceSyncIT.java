@@ -371,7 +371,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
                 public void onNext(NmsInventoryUpdateList value) {
                     // Process the received inventory update
                     System.out.println("Received inventory update: " + value);
-                    final var node = value.getNodesList().stream().filter(obj -> obj.getId() == nodeId).findFirst()
+                    final var node = value.getNodesList().stream().filter(obj -> obj.getId() == nodeId).findAny()
                             .orElseThrow(() -> new NoSuchElementException("No node found"));
 
                     Assert.assertNotNull(node);
