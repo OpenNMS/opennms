@@ -29,9 +29,12 @@ import org.osgi.framework.BundleContext;
 
 import io.searchbox.client.JestClient;
 
+import java.nio.file.Paths;
+
 public class AggregateIndexInitializer extends DefaultTemplateInitializer {
 
-    public static final String TEMPLATE_RESOURCE = "/netflow_agg-template";
+    private static final String FLOW_TEMPLATE_DIR = Paths.get(System.getProperty("opennms.home",""),"etc").toString();
+    public static final String TEMPLATE_RESOURCE = Paths.get(FLOW_TEMPLATE_DIR.equals("etc")?"":FLOW_TEMPLATE_DIR, "/netflow_agg-template").toString();
 
     private static final String FLOW_TEMPLATE_NAME = "netflow_agg";
 
