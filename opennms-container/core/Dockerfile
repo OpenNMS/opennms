@@ -126,8 +126,6 @@ COPY --chown=10001:0 ./container-fs/health.sh /
 # Allow users in the root group to access them with the same authorization as the directory and file owner
 RUN chmod -R g=u /usr/share/opennms/etc
 RUN find /usr/share/opennms/data /usr/share/opennms/system /opennms-data -type d -print0 | xargs -0 chmod g=u
-# Allow OpenNMS to detect whether it is run in a container
-RUN touch /CONTAINER_RUNNING
 
 # Arguments for labels should not invalidate caches
 ARG VERSION
@@ -164,6 +162,7 @@ CMD [ "-h" ]
 
 ### Runtime information and not relevant at build time
 ENV JAVA_OPTS="-Xmx1024m -XX:MaxMetaspaceSize=512m"
+# Allow OpenNMS to detect whether it is run in a container
 ENV OPENNMS_EXECUTION_ENVIRONMENT=container
 
 # Volumes for storing data outside of the container
