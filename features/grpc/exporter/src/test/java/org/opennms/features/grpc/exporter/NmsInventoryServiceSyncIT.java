@@ -55,8 +55,6 @@ import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.events.api.model.ImmutableMapper;
 import org.opennms.netmgt.mock.MockEventUtil;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsHwEntity;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.plugin.grpc.proto.spog.AlarmUpdateList;
 import org.opennms.plugin.grpc.proto.spog.EventUpdateList;
@@ -70,9 +68,7 @@ import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertTrue;
@@ -114,6 +110,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
     private MockEventIpcManager eventdIpcMgr;
 
     private int _id = 1;
+    private long nodeId = 0;
     private MockDatabase mockDatabase;
 
     private NmsInventoryServiceSyncImpl grpcServerService = null;
@@ -143,27 +140,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
     }
 
     private void populateData() {
-
-        databasePopulator.addExtension(new DatabasePopulator.Extension<HwEntityDao>() {
-            @Override
-            public DatabasePopulator.DaoSupport<HwEntityDao> getDaoSupport() {
-                return new DatabasePopulator.DaoSupport<HwEntityDao>(HwEntityDao.class, hwEntityDao);
-            }
-
-            @Override
-            public void onPopulate(DatabasePopulator populator, HwEntityDao dao) {
-                OnmsNode node = databasePopulator.getNode1();
-                dao.flush();
-            }
-
-            @Override
-            public void onShutdown(DatabasePopulator populator, HwEntityDao dao) {
-                for (OnmsHwEntity entity : dao.findAll()) {
-                    dao.delete(entity);
-                }
-            }
-        });
-        databasePopulator.populateDatabase();
+        this.databasePopulator.populateDatabase();
     }
 
     private void initializeAndStartServer() throws IOException {
@@ -191,11 +168,12 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
 
         final var nodeEvent = MockEventUtil.createNodeUpEventBuilder("test", databasePopulator.getNode1()).getEvent();
         eventdIpcMgr.sendNow(nodeEvent);
+        this.nodeId = nodeEvent.getNodeid();
         // Ensure that the Stream is initialized
         Thread.sleep(60000);
         // Send the initial inventory update
         inventoryExporter.onEvent(ImmutableMapper.fromMutableEvent(nodeEvent));
-        assertTrue("The initial response was not completed successfully.", serverResponseFuture.join());
+        assertTrue("The initial response was not completed successfully.", serverResponseFuture.get(30, TimeUnit.SECONDS));
         // Step 2: Stop the server to simulate a restart scenario
         if (server != null) {
             server.shutdownNow();
@@ -210,7 +188,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         Thread.sleep(60000);
         // Send the recovery inventory update after server recovery
         inventoryExporter.onEvent(ImmutableMapper.fromMutableEvent(nodeEvent));
-        assertTrue("The response after server recovery was not completed successfully.", serverResponseFuture.join());
+        assertTrue("The response after server recovery was not completed successfully.", serverResponseFuture.get(30, TimeUnit.SECONDS));
         // Step 6: Assert that the client was able to reconnect and send the update after server restart
         System.out.println("Client successfully recovered and sent inventory update after server restart.");
     }
@@ -226,13 +204,14 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
 
         final var nodeEvent = MockEventUtil.createNodeUpEventBuilder("test", databasePopulator.getNode2()).getEvent();
         eventdIpcMgr.sendNow(nodeEvent);
+        this.nodeId = nodeEvent.getNodeid();
 
         // Ensure that the Stream is initialized
         Thread.sleep(60000);
 
         inventoryExporter.onEvent(ImmutableMapper.fromMutableEvent(nodeEvent));
 
-        assertTrue("The initial response was not completed successfully.", serverResponseFuture.join());
+        assertTrue("The initial response was not completed successfully.", serverResponseFuture.get(30, TimeUnit.SECONDS));
 
         // Step 2: Stop the server and client to simulate a restart
         if (server != null) {
@@ -250,30 +229,31 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         // Step 4: Ensure that the Stream is initialized
         Thread.sleep(60000);
         inventoryExporter.onEvent(ImmutableMapper.fromMutableEvent(nodeEvent));
-        assertTrue("The response after server recovery was not completed successfully.", serverResponseFuture.join());
+        assertTrue("The response after server recovery was not completed successfully.", serverResponseFuture.get(30, TimeUnit.SECONDS));
         // Step 5: Assert that the client was able to reconnect and send the update after server restart
         System.out.println("Client successfully recovered and sent inventory update after server restart.");
     }
 
     @Test
-    public void testInventoryDataToBeSent() throws ExecutionException, InterruptedException, TimeoutException {
+    public void testInventoryDataToBeSent() throws Exception {
 
         waitForChannelToBeReady();
 
         spogInventoryService = new SpogInventoryService(nodeDao, runtimeInfo, client, new MockSessionUtils(), 0, true);
         inventoryExporter = new InventoryExporter(eventSubscriptionService, nodeDao, spogInventoryService);
 
-        final var nodeEvent = MockEventUtil.createNodeUpEventBuilder("test", databasePopulator.getNode1()).getEvent();
+        final var nodeEvent = MockEventUtil.createNodeUpEventBuilder("testInventoryDataToBeSent", databasePopulator.getNode3()).getEvent();
         eventdIpcMgr.sendNow(nodeEvent);
+        this.nodeId = nodeEvent.getNodeid();
         // Ensure that the Stream is initialized
         Thread.sleep(60000);
         inventoryExporter.onEvent(ImmutableMapper.fromMutableEvent(nodeEvent));
 
-        assertTrue("The response was not completed successfully for inventory valid input.", serverResponseFuture.join());
+        assertTrue("The response was not completed successfully for inventory valid input.", serverResponseFuture.get(30, TimeUnit.SECONDS));
     }
 
     @Test
-    public void testAlarmDataToBeSent() throws InterruptedException {
+    public void testAlarmDataToBeSent() throws Exception {
 
         waitForChannelToBeReady();
 
@@ -286,11 +266,11 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         Thread.sleep(60000);
 
         alarmExporter.handleAlarmSnapshot(alarmDao.findAll());
-        assertTrue("The response was not completed successfully for alarm valid input.", serverResponseFuture.join());
+        assertTrue("The response was not completed successfully for alarm valid input.", serverResponseFuture.get(30, TimeUnit.SECONDS));
     }
 
     @Test
-    public void testEventDataToBeSent() throws InterruptedException {
+    public void testEventDataToBeSent() throws Exception {
 
         waitForChannelToBeReady();
 
@@ -304,7 +284,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         Thread.sleep(60000);
 
         eventsExporter.onEvent(ImmutableMapper.fromMutableEvent(event));
-        assertTrue("The response was not completed successfully for event valid input.", serverResponseFuture.join());
+        assertTrue("The response was not completed successfully for event valid input.", serverResponseFuture.get(30, TimeUnit.SECONDS));
     }
 
     private void waitForChannelToBeReady() {
@@ -366,6 +346,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
             server.shutdown();
         }
         eventdIpcMgr.reset();
+        this.nodeId = 0;
         alarmDao.findAll().forEach(alarm -> alarmDao.delete(alarm));
         databasePopulator.resetDatabase();
         client.stop();
@@ -390,11 +371,11 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
                 public void onNext(NmsInventoryUpdateList value) {
                     // Process the received inventory update
                     System.out.println("Received inventory update: " + value);
-
-                    final var node = value.getNodesList().stream().findFirst()
+                    final var node = value.getNodesList().stream().filter(obj -> obj.getId() == nodeId).findFirst()
                             .orElseThrow(() -> new NoSuchElementException("No node found"));
 
                     Assert.assertNotNull(node);
+                    Assert.assertEquals(nodeId, node.getId());
                     Assert.assertTrue("Node id should be exist", node.getId() > 0);
                     Assert.assertNotNull("ForeignSource should not be null", node.getForeignSource());
                     Assert.assertNotNull("ForeignId should not be null", node.getForeignId());
@@ -436,6 +417,7 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
                 public void onNext(AlarmUpdateList alarmUpdateList) {
                     // Process the received alarm update
                     System.out.println("Received alarm update: " + alarmUpdateList);
+                    Assert.assertEquals(1, alarmUpdateList.getAlarmsList().size());
 
                     final var alarm = alarmUpdateList.getAlarmsList().stream().findFirst()
                             .orElseThrow(() -> new NoSuchElementException("No alarm found"));
@@ -479,12 +461,12 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
                 public void onNext(EventUpdateList eventUpdateList) {
                     // Process the received event update
                     System.out.println("Received event update: " + eventUpdateList);
+                    Assert.assertEquals(1, eventUpdateList.getEventList().size());
 
                     final var event = eventUpdateList.getEventList().stream().findFirst()
                             .orElseThrow(() -> new NoSuchElementException("No event found"));
 
                     Assert.assertNotNull(event);
-
                     Assert.assertTrue("Event id should be exist", event.getId() > 0);
                     Assert.assertTrue("Node id in event should be exist", event.getNodeId() > 0);
                     Assert.assertEquals(EventConstants.NODE_UP_EVENT_UEI, event.getUei());
