@@ -34,8 +34,8 @@ import java.nio.file.Paths;
 public class RawIndexInitializer extends DefaultTemplateInitializer {
 
     private static final String FLOW_TEMPLATE_DIR = Paths.get(System.getProperty("opennms.home",""),"etc","flows","templates").toString();
-    public static final String TEMPLATE_RESOURCE = Paths.get(FLOW_TEMPLATE_DIR.equals("etc/flows/templates")?"":FLOW_TEMPLATE_DIR, "/netflow-template").toString();
-
+    private static final String DEFAULT_TEMPLATE_DIR = Paths.get("etc", "flows", "templates").toString();
+    public static final String TEMPLATE_RESOURCE = Paths.get(FLOW_TEMPLATE_DIR.equals(DEFAULT_TEMPLATE_DIR) ? "" : FLOW_TEMPLATE_DIR, "/netflow-template").toString();
     private static final String FLOW_TEMPLATE_NAME = "netflow";
 
     public RawIndexInitializer(BundleContext bundleContext, JestClient client, IndexSettings indexSettings) {
