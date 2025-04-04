@@ -83,18 +83,20 @@ import { FeatherButton } from '@featherds/button'
 import { FeatherInput } from '@featherds/input'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { useMenuStore } from '@/stores/menuStore'
+import { useMonitoringSystemStore } from '@/stores/monitoringSystemStore'
 import { BreadCrumb } from '@/types'
 
 const menuStore = useMenuStore()
-
-const systemId = ref('TBD')
-const displayName = ref('')
+const monitoringSystemStore = useMonitoringSystemStore()
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
 const zenithConnectBaseUrl = computed<string>(() => menuStore.mainMenu.zenithConnectBaseUrl)
 const zenithConnectRelativeUrl = computed<string>(() => menuStore.mainMenu.zenithConnectRelativeUrl)
 const zenithUrl = computed<string>(() => `${zenithConnectBaseUrl.value}${zenithConnectRelativeUrl.value}`)
+const systemId = computed(() => monitoringSystemStore.mainMonitoringSystem?.id ?? '')
+const systemLabel = computed(() => monitoringSystemStore.mainMonitoringSystem?.label ?? '')
+const displayName = ref(systemLabel.value)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
@@ -105,8 +107,6 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 })
 
 const onRegisterWithZenith = () => {
-  // TODO: Get this from DB
-  systemId.value = '12345'
   // Example callbackUrl: http://localhost:8980/opennms/ui/index.html#/zenith-connect/register
   const callbackUrl = `${baseHref.value}ui/index.html#/zenith-connect/register-result`
 
@@ -120,6 +120,10 @@ const onRegisterWithZenith = () => {
 onMounted(async () => {
   if (!homeUrl.value || !baseHref.value) {
     menuStore.getMainMenu()
+  }
+
+  if (!monitoringSystemStore.mainMonitoringSystem) {
+    monitoringSystemStore.getMainMonitoringSystem()
   }
 })
 </script>

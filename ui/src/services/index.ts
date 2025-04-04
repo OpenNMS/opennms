@@ -49,6 +49,7 @@ import {
 } from './deviceService'
 
 import { getMainMenu, getNotificationSummary } from './menuService'
+import { getMainMonitoringSystem } from './monitoringSystemService'
 import { getFileNames, getFile, getSnippets, postFile, deleteFile, getFileExtensions } from './configService'
 import { getAliases, getCredentialsByAlias, addCredentials, updateCredentials } from './scvService'
 
@@ -97,6 +98,7 @@ export default {
   getSnippets,
   getMainMenu,
   getNotificationSummary,
+  getMainMonitoringSystem,
   getFileNames,
   getFileExtensions,
   getOpenApiV1,

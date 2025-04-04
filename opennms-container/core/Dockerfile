@@ -103,6 +103,8 @@ CMD [ "-h" ]
 ### Runtime information and not relevant at build time
 # Set conservative default memory usage options
 ENV JAVA_OPTS="-Xmx2g -XX:MaxMetaspaceSize=1g"
+# Allow OpenNMS to detect whether it is run in a container
+ENV OPENNMS_EXECUTION_ENVIRONMENT=container
 
 # Volumes for storing data outside of the container
 # Suggestions how to use the following volumes:
