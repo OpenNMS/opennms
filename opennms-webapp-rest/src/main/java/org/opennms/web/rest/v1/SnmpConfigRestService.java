@@ -128,7 +128,7 @@ public class SnmpConfigRestService extends OnmsRestService {
             throw getException(Status.BAD_REQUEST, "Malformed IP Address: {}.", ipAddr);
         }
         final SnmpAgentConfig config = m_accessService.getAgentConfig(addr, location);
-        return new SnmpInfo(config);
+        return new SnmpInfo(config, location);
     }
 
     /**
