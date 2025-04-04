@@ -333,9 +333,13 @@ org.jolokia.authMode=jaas
         <feature version="[${jackson2Version},3)">jackson-core</feature>
         <bundle>wrap:mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}$Bundle-SymbolicName=org.apache.zookeeper.zookeeper&amp;Bundle-Version=${zookeeperVersion}&amp;Export-Package=org.apache.zookeeper*;version="${zookeeperVersion}"</bundle>
         <bundle>wrap:mvn:org.apache.zookeeper/zookeeper-jute/${zookeeperVersion}$Bundle-SymbolicName=org.apache.zookeeper.zookeeper.jute&amp;Bundle-Version=${zookeeperVersion}&amp;Export-Package=org.apache.*;version="${zookeeperVersion}"</bundle>
-        <bundle>mvn:org.apache.curator/curator-client/${curatorVersion}</bundle>
-        <bundle>mvn:org.apache.curator/curator-framework/${curatorVersion}</bundle>
-        <bundle>mvn:org.apache.curator/curator-recipes/${curatorVersion}</bundle>
+        <!--  Apache Curator shades Guava with a replacement, which complicates its use with OSGi.
+        For OSGi environments, this shaded dependency is omitted via the "osgi" classifier,
+        allowing the project to work with the standard Guava library.For more details,
+        see https://github.com/apache/curator/issues//984, https://github.com/apache/curator/pull/362 -->
+        <bundle>mvn:org.apache.curator/curator-client/${curatorVersion}/jar/osgi</bundle>
+        <bundle>mvn:org.apache.curator/curator-framework/${curatorVersion}/jar/osgi</bundle>
+        <bundle>mvn:org.apache.curator/curator-recipes/${curatorVersion}/jar/osgi</bundle>
     </feature>
 
     <feature name="scv-api" version="${project.version}" description="Secure Credentials Vault">

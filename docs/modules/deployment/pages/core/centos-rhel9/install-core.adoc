@@ -12,19 +12,6 @@ endif::[]
 sudo dnf -y install {package-prefix}
 ----
 
-If you want time series trending and forecast functions, you must install the https://www.r-project.org/[R project] packages.
-The additional download size for packages is ~390MB.
-
-Note that R-core packages require that you have a PowerTools repository enabled.
-
-.(Optional) Install R-core packages for time series trending and forecasting
-[source, console]
-----
-sudo dnf config-manager --set-enabled powertools
-sudo dnf -y install epel-release
-sudo dnf -y install R-core
-----
-
 TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
 After upgrading, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
 We recommend that you exclude the {page-component-title} packages from updates except when you plan to perform an upgrade.
