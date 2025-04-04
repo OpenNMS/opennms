@@ -61,6 +61,8 @@ import org.opennms.plugin.grpc.proto.spog.EventUpdateList;
 import org.opennms.plugin.grpc.proto.spog.NmsInventoryServiceSyncGrpc;
 import org.opennms.plugin.grpc.proto.spog.NmsInventoryUpdateList;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
@@ -69,6 +71,7 @@ import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicReference;
 
 import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertTrue;
@@ -85,8 +88,9 @@ import static org.mockito.Mockito.mock;
         "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml"})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext = false, tempDbClass = MockDatabase.class, reuseDatabase = false)
-public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDatabase> {
+public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDatabase> {
 
+    private static final Logger LOG = LoggerFactory.getLogger(SpogInventoryServiceSyncIT.class);
     private static final int PORT = 50051;
     private static final String TENANT_ID = "opennms-prime";
     private static final String HOST_NAME = "localhost:" + PORT;
@@ -169,11 +173,20 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         final var nodeEvent = MockEventUtil.createNodeUpEventBuilder("test", databasePopulator.getNode1()).getEvent();
         eventdIpcMgr.sendNow(nodeEvent);
         this.nodeId = nodeEvent.getNodeid();
-        // Ensure that the Stream is initialized
-        Thread.sleep(60000);
-        // Send the initial inventory update
-        inventoryExporter.onEvent(ImmutableMapper.fromMutableEvent(nodeEvent));
-        assertTrue("The initial response was not completed successfully.", serverResponseFuture.get(30, TimeUnit.SECONDS));
+        AtomicReference<Boolean> inventoryFlag = new AtomicReference<>(false);
+        await().pollInterval(2000, TimeUnit.MILLISECONDS)
+                .atMost(1, TimeUnit.MINUTES)
+                .until(() -> {
+                    try {
+                        inventoryExporter.onEvent(ImmutableMapper.fromMutableEvent(nodeEvent));
+                        inventoryFlag.set(serverResponseFuture.get(10, TimeUnit.SECONDS));
+                        return inventoryFlag.get();
+                    } catch (Exception e) {
+                        LOG.error(e.getMessage());
+                        return false;
+                    }
+                });
+        assertTrue("The initial response was not completed successfully.", inventoryFlag.get());
         // Step 2: Stop the server to simulate a restart scenario
         if (server != null) {
             server.shutdownNow();
@@ -184,12 +197,22 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         initializeAndStartServer();
         // Step 4: Wait for the client to automatically reconnect
         waitForChannelToBeReady();
-        // Step 5: Ensure that the Stream is initialized
-        Thread.sleep(60000);
-        // Send the recovery inventory update after server recovery
-        inventoryExporter.onEvent(ImmutableMapper.fromMutableEvent(nodeEvent));
-        assertTrue("The response after server recovery was not completed successfully.", serverResponseFuture.get(30, TimeUnit.SECONDS));
+        // Step 5: reset and await
+        inventoryFlag.set(false);
+        await().pollInterval(2000, TimeUnit.MILLISECONDS)
+                .atMost(1, TimeUnit.MINUTES)
+                .until(() -> {
+                    try {
+                        inventoryExporter.onEvent(ImmutableMapper.fromMutableEvent(nodeEvent));
+                        inventoryFlag.set(serverResponseFuture.get(10, TimeUnit.SECONDS));
+                        return inventoryFlag.get();
+                    } catch (Exception e) {
+                        LOG.error(e.getMessage());
+                        return false;
+                    }
+                });
         // Step 6: Assert that the client was able to reconnect and send the update after server restart
+        assertTrue("The response after server recovery was not completed successfully.", inventoryFlag.get());
         System.out.println("Client successfully recovered and sent inventory update after server restart.");
     }
 
@@ -206,12 +229,20 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         eventdIpcMgr.sendNow(nodeEvent);
         this.nodeId = nodeEvent.getNodeid();
 
-        // Ensure that the Stream is initialized
-        Thread.sleep(60000);
-
-        inventoryExporter.onEvent(ImmutableMapper.fromMutableEvent(nodeEvent));
-
-        assertTrue("The initial response was not completed successfully.", serverResponseFuture.get(30, TimeUnit.SECONDS));
+        AtomicReference<Boolean> inventoryFlag = new AtomicReference<>(false);
+        await().pollInterval(2000, TimeUnit.MILLISECONDS)
+                .atMost(1, TimeUnit.MINUTES)
+                .until(() -> {
+                    try {
+                        inventoryExporter.onEvent(ImmutableMapper.fromMutableEvent(nodeEvent));
+                        inventoryFlag.set(serverResponseFuture.get(10, TimeUnit.SECONDS));
+                        return inventoryFlag.get();
+                    } catch (Exception e) {
+                        LOG.error(e.getMessage());
+                        return false;
+                    }
+                });
+        assertTrue("The initial response was not completed successfully.", inventoryFlag.get());
 
         // Step 2: Stop the server and client to simulate a restart
         if (server != null) {
@@ -224,18 +255,29 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         // Step 3: Restart the server and client
         initializeAndStartServer();
         initializeAndStartClient();
-
+        // Step 4: await channel to be ready
         waitForChannelToBeReady();
-        // Step 4: Ensure that the Stream is initialized
-        Thread.sleep(60000);
-        inventoryExporter.onEvent(ImmutableMapper.fromMutableEvent(nodeEvent));
-        assertTrue("The response after server recovery was not completed successfully.", serverResponseFuture.get(30, TimeUnit.SECONDS));
-        // Step 5: Assert that the client was able to reconnect and send the update after server restart
+        // Step 5: reset and await
+        inventoryFlag.set(false);
+        await().pollInterval(2000, TimeUnit.MILLISECONDS)
+                .atMost(1, TimeUnit.MINUTES)
+                .until(() -> {
+                    try {
+                        inventoryExporter.onEvent(ImmutableMapper.fromMutableEvent(nodeEvent));
+                        inventoryFlag.set(serverResponseFuture.get(10, TimeUnit.SECONDS));
+                        return inventoryFlag.get();
+                    } catch (Exception e) {
+                        LOG.error(e.getMessage());
+                        return false;
+                    }
+                });
+        // Step 6: Assert that the client was able to reconnect and send the update after server restart
+        assertTrue("The response after server recovery was not completed successfully.", inventoryFlag.get());
         System.out.println("Client successfully recovered and sent inventory update after server restart.");
     }
 
     @Test
-    public void testInventoryDataToBeSent() throws Exception {
+    public void testInventoryDataToBeSent() {
 
         waitForChannelToBeReady();
 
@@ -245,15 +287,24 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         final var nodeEvent = MockEventUtil.createNodeUpEventBuilder("testInventoryDataToBeSent", databasePopulator.getNode3()).getEvent();
         eventdIpcMgr.sendNow(nodeEvent);
         this.nodeId = nodeEvent.getNodeid();
-        // Ensure that the Stream is initialized
-        Thread.sleep(60000);
-        inventoryExporter.onEvent(ImmutableMapper.fromMutableEvent(nodeEvent));
-
-        assertTrue("The response was not completed successfully for inventory valid input.", serverResponseFuture.get(30, TimeUnit.SECONDS));
+        AtomicReference<Boolean> inventoryFlag = new AtomicReference<>(false);
+        await().pollInterval(2000, TimeUnit.MILLISECONDS)
+                .atMost(1, TimeUnit.MINUTES)
+                .until(() -> {
+                    try {
+                        inventoryExporter.onEvent(ImmutableMapper.fromMutableEvent(nodeEvent));
+                        inventoryFlag.set(serverResponseFuture.get(10, TimeUnit.SECONDS));
+                        return inventoryFlag.get();
+                    } catch (Exception e) {
+                        LOG.error(e.getMessage());
+                        return false;
+                    }
+                });
+        assertTrue("The response was not completed successfully for inventory valid input.", inventoryFlag.get());
     }
 
     @Test
-    public void testAlarmDataToBeSent() throws Exception {
+    public void testAlarmDataToBeSent() {
 
         waitForChannelToBeReady();
 
@@ -262,15 +313,24 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         eventdIpcMgr.sendNow(MockEventUtil.createNodeDownEventBuilder("test", databasePopulator.getNode1()).getEvent());
         final OnmsAlarm alarm = nodeDownAlarmWithRelatedAlarm();
         alarmDao.save(alarm);
-        // Ensure that the Stream is initialized
-        Thread.sleep(60000);
-
-        alarmExporter.handleAlarmSnapshot(alarmDao.findAll());
-        assertTrue("The response was not completed successfully for alarm valid input.", serverResponseFuture.get(30, TimeUnit.SECONDS));
+        AtomicReference<Boolean> alarmFlag = new AtomicReference<>(false);
+        await().pollInterval(2000, TimeUnit.MILLISECONDS)
+                .atMost(1, TimeUnit.MINUTES)
+                .until(() -> {
+                    try {
+                        alarmExporter.handleAlarmSnapshot(alarmDao.findAll());
+                        alarmFlag.set(serverResponseFuture.get(10, TimeUnit.SECONDS));
+                        return alarmFlag.get();
+                    } catch (Exception e) {
+                        LOG.error(e.getMessage());
+                        return false;
+                    }
+                });
+        assertTrue("The response was not completed successfully for alarm valid input.", alarmFlag.get());
     }
 
     @Test
-    public void testEventDataToBeSent() throws Exception {
+    public void testEventDataToBeSent() {
 
         waitForChannelToBeReady();
 
@@ -280,11 +340,20 @@ public class NmsInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDat
         eventdIpcMgr.sendNow(event);
         final OnmsAlarm alarm = nodeUpAlarmWithRelatedAlarm();
         alarmDao.save(alarm);
-        // Ensure that the Stream is initialized
-        Thread.sleep(60000);
-
-        eventsExporter.onEvent(ImmutableMapper.fromMutableEvent(event));
-        assertTrue("The response was not completed successfully for event valid input.", serverResponseFuture.get(30, TimeUnit.SECONDS));
+        AtomicReference<Boolean> eventFlag = new AtomicReference<>(false);
+        await().pollInterval(2000, TimeUnit.MILLISECONDS)
+                .atMost(1, TimeUnit.MINUTES)
+                .until(() -> {
+                    try {
+                        eventsExporter.onEvent(ImmutableMapper.fromMutableEvent(event));
+                        eventFlag.set(serverResponseFuture.get(10, TimeUnit.SECONDS));
+                        return eventFlag.get();
+                    } catch (Exception e) {
+                        LOG.error(e.getMessage());
+                        return false;
+                    }
+                });
+        assertTrue("The response was not completed successfully for event valid input.", eventFlag.get());
     }
 
     private void waitForChannelToBeReady() {
