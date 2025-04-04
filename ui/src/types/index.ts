@@ -103,6 +103,13 @@ export interface MonitoringLocationApiResponse extends ApiResponse {
   location: MonitoringLocation[]
 }
 
+export interface MonitoringSystemMainResponse {
+  id: string
+  label: string
+  location: string
+  type: string
+}
+
 export interface Node {
   location: string
   type: string
