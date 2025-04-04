@@ -33,8 +33,8 @@ import java.nio.file.Paths;
 
 public class RawIndexInitializer extends DefaultTemplateInitializer {
 
-    private static final String FLOW_TEMPLATE_DIR = Paths.get(System.getProperty("opennms.home",""),"etc").toString();
-    public static final String TEMPLATE_RESOURCE = Paths.get(FLOW_TEMPLATE_DIR.equals("etc")?"":FLOW_TEMPLATE_DIR, "/netflow-template").toString();
+    private static final String FLOW_TEMPLATE_DIR = Paths.get(System.getProperty("opennms.home",""),"etc","flows","templates").toString();
+    public static final String TEMPLATE_RESOURCE = Paths.get(FLOW_TEMPLATE_DIR.equals("etc/flows/templates")?"":FLOW_TEMPLATE_DIR, "/netflow-template").toString();
 
     private static final String FLOW_TEMPLATE_NAME = "netflow";
 
