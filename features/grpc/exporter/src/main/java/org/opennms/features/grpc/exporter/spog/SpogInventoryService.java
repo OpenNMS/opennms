@@ -89,7 +89,7 @@ public class SpogInventoryService {
         this.scheduler.shutdown();
     }
 
-    public void sendAddNmsInventory(OnmsNode node) {
+    public void sendAddNmsInventory(Long nodeId) {
         if (!client.isEnabled()) {
             LOG.info("SPOG service disabled, not sending inventory updates");
             return;
@@ -99,7 +99,9 @@ public class SpogInventoryService {
             LOG.info("SPOG Inventory Export disabled, not sending inventory updates");
             return;
         }
+        final Long nodeIdToSend = nodeId;
         sessionUtils.withReadOnlyTransaction(() -> {
+            final var node = this.nodeDao.get(nodeIdToSend.intValue());
             final var inventory = NmsInventoryMapper.INSTANCE.toInventoryUpdatesList(List.of(node),
                     this.runtimeInfo, SystemInfoUtils.getInstanceId(), false);
             this.client.sendNmsInventoryUpdate(inventory);
