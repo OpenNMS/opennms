@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.provision.service;
 
+import org.apache.http.client.utils.URIBuilder;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
@@ -28,6 +29,8 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.util.Assert;
+
+import java.net.URI;
 
 /**
  * Wrapper object for the doImport method of the Provisioner
@@ -41,6 +44,8 @@ public class ImportJob implements Job {
 
     /** Constant <code>URL="url"</code> */
     protected static final String URL = "url";
+
+    public static final String URI_SCHEME = "requisition";
     
     /** Constant <code>RESCAN_EXISTING="rescanExisting"</code> */
     protected static final String RESCAN_EXISTING = "rescanExisting";
@@ -60,7 +65,9 @@ public class ImportJob implements Job {
             Assert.notNull(url);
             Assert.notNull(provisionMonitor);
             String rescanExisting = context.getJobDetail().getJobDataMap().getString(RESCAN_EXISTING);
-            getProvisioner().doImport(url, rescanExisting == null ? Boolean.TRUE.toString() : rescanExisting, provisionMonitor);
+            URIBuilder builder = new URIBuilder().setScheme(URI_SCHEME).setHost(new URI(url).getScheme());
+            builder.addParameter("url",url);
+            getProvisioner().doImport(builder.build().toString(), rescanExisting == null ? Boolean.TRUE.toString() : rescanExisting, provisionMonitor);
         } catch (Exception t) {
             throw new JobExecutionException(t);
         }
