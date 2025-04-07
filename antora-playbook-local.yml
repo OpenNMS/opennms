@@ -8,7 +8,7 @@ content:
     start_path: docs
 ui:
   bundle:
-    url: https://github.com/opennms-forge/antora-ui-opennms/releases/download/v2.0.4/ui-bundle.zip
+    url: https://github.com/OpenNMS/antora-ui-opennms/releases/download/v3.1.1/ui-bundle.zip
 asciidoc:
   attributes:
     experimental: true
