@@ -24,17 +24,16 @@ ssh -p 8201 admin@localhost
 [source, karaf]
 ----
 config:edit org.opennms.features.deviceconfig.tftp
-config:property-set port 10069 <1>
+config:property-set port 69 <1>
 config:update
 ----
-<1> If you have set `CAP_NET_BIND_SERVICE` on the service unit, you can set the port to the TFTP default of `69` and skip the firewall port redirect steps below.
+<1> {page-component-title} ships with the `CAP_NET_BIND_SERVICE` capability set in the systemd service unit, in most cases you can set the port to the IANA-assigned default port `69` and skip the firewall port redirect steps below.
 
 NOTE: Some devices (for example, Juniper) may allow TFTP upload on a non-default port.
-In these cases, you do not need to change the default port.
+In these cases, you may not need to change the default port.
 
-The {page-component-title} core services run as an unprivileged user and cannot bind on port numbers lower than `1024` without escalated privileges.
-For this reason, the default port for the TFTP listener is set to `6969/udp` instead of the IANA-registered port number `69/udp`.
-The following example shows how to configure the local firewall daemon to forward port `69/udp` to `6969/udp`:
+{page-component-title} runs as a non-privileged user with the `CAP_NET_BIND_SERVICE` capability and can bind to IANA-registered TFTP port number `69/udp`.
+However, if you prefer the TFTP listener bind to the default non-privileged port `6969/udp` instead of port number `69/udp`, the following example shows how to configure the local firewall daemon to forward port `69/udp` to `6969/udp`:
 
 [{tabs}]
 ====
