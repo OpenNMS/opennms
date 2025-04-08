@@ -65,9 +65,8 @@ public class ImportJob implements Job {
             Assert.notNull(url);
             Assert.notNull(provisionMonitor);
             String rescanExisting = context.getJobDetail().getJobDataMap().getString(RESCAN_EXISTING);
-            URIBuilder builder = new URIBuilder().setScheme(URI_SCHEME).setHost(new URI(url).getScheme());
-            builder.addParameter("url",url);
-            getProvisioner().doImport(builder.build().toString(), rescanExisting == null ? Boolean.TRUE.toString() : rescanExisting, provisionMonitor);
+            getProvisioner().doImport(new URIBuilder().setScheme(URI_SCHEME).setHost(new URI(url).getScheme()).addParameter(URL,url).build().toString(),
+                    rescanExisting == null ? Boolean.TRUE.toString() : rescanExisting, provisionMonitor);
         } catch (Exception t) {
             throw new JobExecutionException(t);
         }
