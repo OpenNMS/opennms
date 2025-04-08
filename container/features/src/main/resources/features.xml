@@ -2073,4 +2073,10 @@
         <bundle>mvn:org.opennms.features.grpc/org.opennms.features.grpc.exporter/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-zenith-connect" description="OpenNMS :: Zenith Connect" version="${project.version}">
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.json.postgres/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.zenith-connect/org.opennms.features.zenith-connect.persistence/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.zenith-connect/org.opennms.features.zenith-connect.rest/${project.version}</bundle>
+    </feature>
 </features>
