@@ -5,7 +5,7 @@
     <parent>
         <groupId>org.opennms.features.distributed</groupId>
         <artifactId>coordination-parent</artifactId>
-        <version>33.1.4</version>
+        <version>33.1.5</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>coordination-zookeeper</artifactId>
@@ -56,6 +56,8 @@
         <dependency>
             <groupId>org.apache.curator</groupId>
             <artifactId>curator-recipes</artifactId>
+            <version>${curatorVersion}</version>
+            <classifier>osgi</classifier>
         </dependency>
         <dependency>
             <groupId>junit</groupId>

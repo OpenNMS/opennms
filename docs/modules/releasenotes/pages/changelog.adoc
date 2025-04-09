@@ -2,6 +2,37 @@
 
 = Changelog
 
+[[releasenotes-changelog-33.1.5]]
+
+Release 33.1.5 contains bug fixes, security updates and enhancements.
+
+The codename for Horizon 33.1.5 is https://wikipedia.org/wiki/$$Ilex_verticillata$$[_Winterberry_].
+
+=== Bug
+
+* ALEC installation on Sentinel Meridian (Issue https://opennms.atlassian.net/browse/NMS-15396[NMS-15396])
+* Deleting scheduled outage replayed by browser refresh (Issue https://opennms.atlassian.net/browse/NMS-15517[NMS-15517])
+* Horizon 33.0.2-1 on CentOS9 - Alarm/Event list paging filters issue (Issue https://opennms.atlassian.net/browse/NMS-16421[NMS-16421])
+* Java Heap settings are not applied when Minion is running in a container (Issue https://opennms.atlassian.net/browse/NMS-17725[NMS-17725])
+* Coretex timeseries metatags broken in 33.1.4 (Issue https://opennms.atlassian.net/browse/NMS-17753[NMS-17753])
+* Update cxf-core library (Issue https://opennms.atlassian.net/browse/NMS-17854[NMS-17854])
+* Remove R-core Reference from Installation Instructions (Issue https://opennms.atlassian.net/browse/NMS-17856[NMS-17856])
+* Update the Base image for Opennms-core, Minion and sentinel (Issue https://opennms.atlassian.net/browse/NMS-17735[NMS-17735])
+
+=== Enhancement
+
+* isInContainer KPI should recognize Azure, AWS, GCP container runtimes (Issue https://opennms.atlassian.net/browse/NMS-15676[NMS-15676])
+
+=== Story
+
+* Don't load snmp-metadata-adapter-configuration.xml by default (Issue https://opennms.atlassian.net/browse/NMS-17721[NMS-17721])
+* Add Heartbeat support for SPOG (Single Pane of Glass) (Issue https://opennms.atlassian.net/browse/NMS-17738[NMS-17738])
+* Grpc Exporter: SPOG doesn't show the new nodes that are added (Issue https://opennms.atlassian.net/browse/NMS-17857[NMS-17857])
+
+=== Task
+
+* Get Meridian system ID and return in Monitoring System API (Issue https://opennms.atlassian.net/browse/NMS-17751[NMS-17751])
+
 [[releasenotes-changelog-33.1.4]]
 
 == Release 33.1.4

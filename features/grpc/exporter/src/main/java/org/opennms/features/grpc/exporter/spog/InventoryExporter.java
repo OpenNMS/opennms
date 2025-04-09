@@ -38,11 +38,11 @@ public class InventoryExporter implements EventListener {
 
     private final EventSubscriptionService eventSubscriptionService;
     private final NodeDao nodeDao;
-    private final InventoryService inventoryService;
+    private final SpogInventoryService inventoryService;
 
     public InventoryExporter(final EventSubscriptionService eventSubscriptionService,
                              final NodeDao nodeDao,
-                             final InventoryService inventoryService) {
+                             final SpogInventoryService inventoryService) {
         this.eventSubscriptionService = Objects.requireNonNull(eventSubscriptionService);
         this.nodeDao = Objects.requireNonNull(nodeDao);
         this.inventoryService = Objects.requireNonNull(inventoryService);
@@ -81,16 +81,10 @@ public class InventoryExporter implements EventListener {
             case EventConstants.NODE_GAINED_SERVICE_EVENT_UEI:
             case EventConstants.SERVICE_DELETED_EVENT_UEI:
             case EventConstants.INTERFACE_DELETED_EVENT_UEI:
-
                 if (event.getNodeid() == null) {
                     return;
                 }
-
-                final var node = this.nodeDao.get(event.getNodeid().intValue());
-                if (node == null) {
-                    return;
-                }
-                this.inventoryService.sendAddNmsInventory(node);
+                this.inventoryService.sendAddNmsInventory(event.getNodeid());
                 break;
 
             default:

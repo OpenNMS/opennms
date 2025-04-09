@@ -23,7 +23,7 @@
 ##
 # Use Java base image and setup required RPMs as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.5.2.b283-jre-17"
+ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.5.3.b286-jre-17"
 
 FROM ${BASE_IMAGE} AS core-tarball
 
@@ -162,6 +162,8 @@ CMD [ "-h" ]
 
 ### Runtime information and not relevant at build time
 ENV JAVA_OPTS="-Xmx1024m -XX:MaxMetaspaceSize=512m"
+# Allow OpenNMS to detect whether it is run in a container
+ENV OPENNMS_EXECUTION_ENVIRONMENT=container
 
 # Volumes for storing data outside of the container
 VOLUME [ "/opt/opennms/etc", "/opt/opennms-etc-overlay", "/opennms-data" ]
