@@ -50,7 +50,7 @@ DEB_PKG_RELEASE       := $(RELEASE_BUILD_NUM)
 DEBEMAIL              ?= cicd@bluebirdlabs.tech
 
 INSTALL_VERSION       := ${VERSION}-0.${RELEASE_MINOR_VERSION}.${RELEASE_MICRO_VERSION}.${RELEASE_COMMIT}
-DEPLOY_BASE_IMAGE     := quay.io/bluebird/deploy-base:2.0.0.b16
+DEPLOY_BASE_IMAGE     := quay.io/bluebird/deploy-base:2.0.1.b20
 BUILD_DATE            := $(shell date '+%Y%m%d')
 DOCKER_ARCH           := linux/amd64
 OCI_REGISTRY          ?= quay.io
