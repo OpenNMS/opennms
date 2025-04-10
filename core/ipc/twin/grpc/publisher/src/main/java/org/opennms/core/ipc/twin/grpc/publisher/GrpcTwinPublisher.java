@@ -176,13 +176,17 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
             sinkStreamsBySystemId.put(request.getSystemId(), responseObserver);
 
             forEachSession(((sessionKey, twinTracker) -> {
-                if(sessionKey.location == null || sessionKey.location.equals(request.getLocation())) {
-                    TwinUpdate twinUpdate = new TwinUpdate(sessionKey.key, sessionKey.location, twinTracker.getObj());
-                    twinUpdate.setSessionId(twinTracker.getSessionId());
-                    twinUpdate.setVersion(twinTracker.getVersion());
-                    twinUpdate.setPatch(false);
-                    TwinResponseProto twinResponseProto = mapTwinResponse(twinUpdate);
-                    responseObserver.onNext(twinResponseProto);
+                try {
+                    if (sessionKey.location == null || sessionKey.location.equals(request.getLocation())) {
+                        TwinUpdate twinUpdate = new TwinUpdate(sessionKey.key, sessionKey.location, twinTracker.getObj());
+                        twinUpdate.setSessionId(twinTracker.getSessionId());
+                        twinUpdate.setVersion(twinTracker.getVersion());
+                        twinUpdate.setPatch(false);
+                        TwinResponseProto twinResponseProto = mapTwinResponse(twinUpdate);
+                        responseObserver.onNext(twinResponseProto);
+                    }
+                } catch (Exception e) {
+                    LOG.error("Exception while sending twin response", e);
                 }
             }));
         }
