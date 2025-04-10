@@ -28,8 +28,8 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
+import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
@@ -43,16 +43,12 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Optional;
 import java.util.stream.Collectors;
-
-import static org.junit.Assert.fail;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -89,6 +85,9 @@ public class ImportSchedulerIT implements InitializingBean {
     @Autowired
     MockEventIpcManager m_mockEventIpcManager;
 
+    @Autowired
+    private SecureCredentialsVault secureCredentialsVault;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -97,6 +96,7 @@ public class ImportSchedulerIT implements InitializingBean {
     @Before
     public void setUp() throws IOException, JAXBException {
         MockLogAppender.setupLogging();
+        secureCredentialsVault.setCredentials("requisition", new Credentials("admin", "admin"));
     }
 
     @After
@@ -229,6 +229,90 @@ public class ImportSchedulerIT implements InitializingBean {
         // Verify
         anticipator.waitForAnticipated(10*1000);
         anticipator.verifyAnticipated();
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void buildHttpImportSchedule() throws SchedulerException, IOException, InterruptedException {
+
+        RequisitionDef def = new RequisitionDef();
+        // Every 5 seconds
+        def.setCronSchedule("*/5 * * * * ? *");
+        def.setImportName("test");
+        def.setImportUrlResource("http://${scv:requisition:username}:${scv:requisition:password}@localhost:8980/opennms/rest/requisitions/test");
+        def.setRescanExisting(Boolean.FALSE.toString());
+
+        JobDetail detail = JobBuilder.newJob(ImportJob.class).withIdentity("test", ImportScheduler.JOB_GROUP).storeDurably(false).requestRecovery(false).build();
+        detail.getJobDataMap().put(ImportJob.URL, def.getImportUrlResource().orElse(null));
+        detail.getJobDataMap().put(ImportJob.RESCAN_EXISTING, def.getRescanExisting());
+        String expectedUrl = "http://admin:admin@localhost:8980/opennms/rest/requisitions/test";
+
+        class MyBoolWrapper {
+            volatile Boolean m_called = false;
+
+            public Boolean getCalled() {
+                return m_called;
+            }
+
+            public void setCalled(Boolean called) {
+                m_called = called;
+            }
+        }
+
+        final MyBoolWrapper callTracker = new MyBoolWrapper();
+        m_importScheduler.getScheduler().getListenerManager().addTriggerListener(new TriggerListener() {
+
+
+            @Override
+            public String getName() {
+                return "TestTriggerListener";
+            }
+
+            @Override
+            public void triggerComplete(Trigger trigger, JobExecutionContext context, Trigger.CompletedExecutionInstruction triggerInstructionCode) {
+                LOG.info("triggerComplete called on trigger listener");
+                callTracker.setCalled(true);
+            }
+
+            @Override
+            public void triggerFired(Trigger trigger, JobExecutionContext context) {
+                LOG.info("triggerFired called on trigger listener");
+                Job jobInstance = context.getJobInstance();
+
+                if (jobInstance instanceof ImportJob) {
+                    Assert.assertNotNull( ((ImportJob)jobInstance).getProvisioner());
+                    Assert.assertTrue(context.getJobDetail().getJobDataMap().containsKey(ImportJob.URL));
+                    String actualUrl = ((ImportJob)jobInstance).interpolate((String) context.getJobDetail().getJobDataMap().get(ImportJob.URL));
+                    Assert.assertEquals(actualUrl, expectedUrl);
+                }
+                callTracker.setCalled(true);
+            }
+
+            @Override
+            public void triggerMisfired(Trigger trigger) {
+                LOG.info("triggerMisFired called on trigger listener");
+                callTracker.setCalled(true);
+            }
+
+            @Override
+            public boolean vetoJobExecution(Trigger trigger, JobExecutionContext context) {
+                LOG.info("vetoJobExecution called on trigger listener");
+                callTracker.setCalled(true);
+                return false;
+            }
+
+        });
+
+        Calendar testCal = Calendar.getInstance();
+        testCal.add(Calendar.SECOND, 5);
+        Trigger trigger = TriggerBuilder.newTrigger().withIdentity("test", ImportScheduler.JOB_GROUP).startAt(testCal.getTime()).build();
+        m_importScheduler.getScheduler().scheduleJob(detail, trigger);
+        m_importScheduler.start();
+
+        int callCheck = 0;
+        while (!callTracker.getCalled() && callCheck++ < 2 ) {
+            Thread.sleep(5000);
+        }
     }
 
 }

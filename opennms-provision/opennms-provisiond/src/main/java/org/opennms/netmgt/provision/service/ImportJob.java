@@ -21,7 +21,6 @@
  */
 package org.opennms.netmgt.provision.service;
 
-import org.apache.http.client.utils.URIBuilder;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.netmgt.provision.service.operations.ProvisionMonitor;
@@ -29,8 +28,6 @@ import org.quartz.Job;
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.util.Assert;
-
-import java.net.URI;
 
 /**
  * Wrapper object for the doImport method of the Provisioner
@@ -44,8 +41,6 @@ public class ImportJob implements Job {
 
     /** Constant <code>URL="url"</code> */
     protected static final String URL = "url";
-
-    public static final String URI_SCHEME = "requisition";
     
     /** Constant <code>RESCAN_EXISTING="rescanExisting"</code> */
     protected static final String RESCAN_EXISTING = "rescanExisting";
@@ -61,24 +56,18 @@ public class ImportJob implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         try {
-            String url = Interpolator.interpolate(context.getJobDetail().getJobDataMap().getString(URL), entityScopeProvider.getScopeForScv()).output;
+            String url = interpolate(context.getJobDetail().getJobDataMap().getString(URL));
             Assert.notNull(url);
             Assert.notNull(provisionMonitor);
             String rescanExisting = context.getJobDetail().getJobDataMap().getString(RESCAN_EXISTING);
-            URI inputUri = new URI(url);
-            String scheme = inputUri.getScheme();
-            if ("http".equalsIgnoreCase(scheme) || "https".equalsIgnoreCase(scheme)) {
-                url = new URIBuilder()
-                        .setScheme(URI_SCHEME)
-                        .setHost(scheme)
-                        .addParameter(URL, url)
-                        .build()
-                        .toString();
-            }
             getProvisioner().doImport(url, rescanExisting == null ? Boolean.TRUE.toString() : rescanExisting, provisionMonitor);
         } catch (Exception t) {
             throw new JobExecutionException(t);
         }
+    }
+
+    public String interpolate(String url) {
+        return Interpolator.interpolate(url, entityScopeProvider.getScopeForScv()).output;
     }
     
     /**
