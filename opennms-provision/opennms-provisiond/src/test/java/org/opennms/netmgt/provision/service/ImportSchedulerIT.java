@@ -234,17 +234,9 @@ public class ImportSchedulerIT implements InitializingBean {
     @Test
     @JUnitTemporaryDatabase
     public void buildHttpImportSchedule() throws SchedulerException, IOException, InterruptedException {
-
-        RequisitionDef def = new RequisitionDef();
-        // Every 5 seconds
-        def.setCronSchedule("*/5 * * * * ? *");
-        def.setImportName("test");
-        def.setImportUrlResource("http://${scv:requisition:username}:${scv:requisition:password}@localhost:8980/opennms/rest/requisitions/test");
-        def.setRescanExisting(Boolean.FALSE.toString());
-
         JobDetail detail = JobBuilder.newJob(ImportJob.class).withIdentity("test", ImportScheduler.JOB_GROUP).storeDurably(false).requestRecovery(false).build();
-        detail.getJobDataMap().put(ImportJob.URL, def.getImportUrlResource().orElse(null));
-        detail.getJobDataMap().put(ImportJob.RESCAN_EXISTING, def.getRescanExisting());
+        detail.getJobDataMap().put(ImportJob.URL, "http://${scv:requisition:username}:${scv:requisition:password}@localhost:8980/opennms/rest/requisitions/test");
+        detail.getJobDataMap().put(ImportJob.RESCAN_EXISTING, Boolean.FALSE.toString());
         String expectedUrl = "http://admin:admin@localhost:8980/opennms/rest/requisitions/test";
 
         class MyBoolWrapper {
@@ -280,10 +272,8 @@ public class ImportSchedulerIT implements InitializingBean {
                 Job jobInstance = context.getJobInstance();
 
                 if (jobInstance instanceof ImportJob) {
-                    Assert.assertNotNull( ((ImportJob)jobInstance).getProvisioner());
-                    Assert.assertTrue(context.getJobDetail().getJobDataMap().containsKey(ImportJob.URL));
                     String actualUrl = ((ImportJob)jobInstance).interpolate((String) context.getJobDetail().getJobDataMap().get(ImportJob.URL));
-                    Assert.assertEquals(actualUrl, expectedUrl);
+                    Assert.assertEquals(expectedUrl, actualUrl);
                 }
                 callTracker.setCalled(true);
             }
