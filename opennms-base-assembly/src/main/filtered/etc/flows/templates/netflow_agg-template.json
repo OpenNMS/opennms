@@ -1,0 +1,77 @@
+{
+    "index_patterns": ["netflow_agg-*"],
+    "mappings": {
+        "properties": {
+            "@timestamp": {
+                "type": "date",
+                "format": "epoch_millis"
+            },
+            "range_start": {
+                "type": "date",
+                "format": "epoch_millis"
+            },
+            "range_end": {
+                "type": "date",
+                "format": "epoch_millis"
+            },
+
+            "grouped_by": {
+                "type": "keyword",
+                "norms": false
+            },
+            "grouped_by_key": {
+                "type": "keyword",
+                "norms": false
+            },
+            "aggregation_type": {
+                "type": "keyword",
+                "norms": false
+            },
+
+            "ranking": {
+                "type": "integer"
+            },
+            "bytes_ingress": {
+                "type": "long"
+            },
+            "bytes_egress": {
+                "type": "long"
+            },
+
+            "exporter": {
+                "dynamic": true,
+                "type": "object",
+                "properties": {
+                    "foreign_source": {
+                        "type": "keyword",
+                        "norms": false
+                    },
+                    "foreign_id": {
+                        "type": "keyword",
+                        "norms": false
+                    },
+                    "node_id": {
+                        "type": "integer"
+                    }
+                }
+            },
+            "if_index": {
+                "type": "integer"
+            },
+            "application": {
+                "type": "keyword",
+                "norms": false
+            },
+            "host_address": {
+                "type": "keyword"
+            },
+            "host_name": {
+                "type": "keyword"
+            },
+            "conversation_key": {
+                "type": "keyword",
+                "norms": false
+            }
+        }
+    }
+}
