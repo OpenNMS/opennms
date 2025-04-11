@@ -1698,7 +1698,7 @@
     <install.etc.dir>${install.dir}/etc</install.etc.dir>
     <install.logs.dir>${install.dir}/logs</install.logs.dir>
     <install.pid.file>${install.logs.dir}/opennms.pid</install.pid.file>
-
+    <flow.templates.dir>${install.etc.dir}/elastic-templates</flow.templates.dir>
     <install.postgresql.service>postgresql</install.postgresql.service>
     <install.database.name>opennms</install.database.name>
     <install.database.user>${scv:postgres:username|opennms}</install.database.user>
