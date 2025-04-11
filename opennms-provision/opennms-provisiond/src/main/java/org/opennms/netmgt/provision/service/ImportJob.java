@@ -56,7 +56,7 @@ public class ImportJob implements Job {
     @Override
     public void execute(JobExecutionContext context) throws JobExecutionException {
         try {
-            String url = Interpolator.interpolate(context.getJobDetail().getJobDataMap().getString(URL), entityScopeProvider.getScopeForScv()).output;
+            String url = interpolate(context.getJobDetail().getJobDataMap().getString(URL));
             Assert.notNull(url);
             Assert.notNull(provisionMonitor);
             String rescanExisting = context.getJobDetail().getJobDataMap().getString(RESCAN_EXISTING);
@@ -64,6 +64,10 @@ public class ImportJob implements Job {
         } catch (Exception t) {
             throw new JobExecutionException(t);
         }
+    }
+
+    public String interpolate(String url) {
+        return Interpolator.interpolate(url, entityScopeProvider.getScopeForScv()).output;
     }
     
     /**
