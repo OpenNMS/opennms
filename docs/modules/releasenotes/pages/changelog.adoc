@@ -1,8 +1,8 @@
 [[release-33-changelog]]
 
-= Changelog
-
 [[releasenotes-changelog-33.1.5]]
+
+== Release 33.1.5
 
 Release 33.1.5 contains bug fixes, security updates and enhancements.
 

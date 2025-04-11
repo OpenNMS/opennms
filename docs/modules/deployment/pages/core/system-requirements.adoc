@@ -31,16 +31,11 @@ OpenNMS {page-component-title} requires one of the following operating systems:
 
 [options="autowidth"]
 |===
-| Operating System  | Compatible Versions (64-bit)
+| Operating System  | Compatible Versions (Intel x86 64 bit)
 
-| RHEL
-| {compatible-rhel7} +
-{compatible-rhel8} +
-{compatible-rhel9}
-
-| CentOS
-| {compatible-centos7} +
-{compatible-centos-stream}
+| CentOS Stream
+|
+{compatible-rpm}
 
 ifeval::["{page-component-title}" == "Horizon"]
 | Debian
@@ -49,16 +44,13 @@ ifeval::["{page-component-title}" == "Horizon"]
 | Ubuntu
 | {compatible-ubuntu}
 endif::[]
-
-| Rocky Linux
-| {compatible-rocky-linux}
 |===
 
 See the xref:releasenotes:whatsnew.adoc[release notes] for information about platform support changes, including deprecated platforms.
 
 == Compatibility
 
-{page-component-title} {full-display-version} is compatible with the following components.
+{page-component-title} {full-display-version} is tested with the following components.
 Components marked with an asterisk are required:
 
 [options="autowidth"]
@@ -69,7 +61,7 @@ Components marked with an asterisk are required:
 | {compatible-opennms-plugin}
 
 | OpenNMS Plugin API
-| {compatible-oia}
+| {compatible-opa}
 
 | Cassandra
 | {compatible-cassandra}

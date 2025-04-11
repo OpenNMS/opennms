@@ -9,7 +9,7 @@ The secure credentials vault is enabled by default.
 
 == Configure password
 
-You can configure a custom password for the secure credentials vault by editing `org.opennms.features.scv.jceks.key` in `$\{OPENNMS_HOME}/etc/opennms.properties.d/svc.properties`.
+You can configure a custom password for the secure credentials vault by editing `org.opennms.features.scv.jceks.key` in `$\{OPENNMS_HOME}/etc/opennms.properties.d/scv.properties`.
 
 IMPORTANT: You cannot change the secure credentials vault password after credentials have been stored.
 You must delete `$\{OPENNMS_HOME}/etc/scv.jce` and manually re-add any credentials if you want to change the password after the file has been created.

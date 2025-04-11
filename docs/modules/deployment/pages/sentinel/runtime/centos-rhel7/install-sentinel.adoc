@@ -5,11 +5,11 @@ sudo yum -y install java-11-openjdk-headless
 ----
 
 ifeval::["{page-component-title}" == "Horizon"]
-include::../../../repos/rhel-centos/horizon-rhel7.adoc[]
+include::../../../repos/rpm-horizon/horizon-rhel7.adoc[]
 endif::[]
 
 ifeval::["{page-component-title}" == "Meridian"]
-include::../../../repos/rhel-centos/meridian-rhel7.adoc[]
+include::../../../repos/rpm-horizon/meridian-rhel7.adoc[]
 endif::[]
 
 .Installing the of {page-component-title} Sentinel

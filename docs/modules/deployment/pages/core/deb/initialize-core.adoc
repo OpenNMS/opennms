@@ -1,0 +1,31 @@
+
+. Initialize a secure vault file with the PostgreSQL database credentials:
++
+[source, console]
+----
+sudo -u opennms /usr/share/opennms/bin/scvcli set postgres opennms CHANGE_ME <1>
+sudo -u opennms /usr/share/opennms/bin/scvcli set postgres-admin postgres CHANGE_ME
+----
+<1> Replace both `CHANGE_ME` entries with your actual passwords for your `opennms` and `postgres` database accounts.
+
+TIP: The credentials alias `postgres` and `postgres-admin` is used by default in the `opennms-datasources.xml`.
+
+.Detect and assign Java environment and persist in /usr/share/opennms/etc/java.conf
+[source, console]
+----
+sudo /usr/share/opennms/bin/runjava -s
+----
+
+.Initialize the database and detect system libraries persisted in /usr/share/opennms/etc/libraries.properties
+[source, console]
+----
+sudo /usr/share/opennms/bin/install -dis
+----
+
+.Enable {page-component-title} core instance on system boot and start immediately
+[source, console]
+----
+sudo systemctl enable --now opennms
+----
+
+TIP: If you are using Uncomplicated Firewall (UFW) as your host firewall, you can allow access to the web user interface with `sudo ufw allow 8980/tcp`

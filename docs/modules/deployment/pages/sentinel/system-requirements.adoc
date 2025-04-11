@@ -1,9 +1,9 @@
 
-[[system-requirements-minion]]
+[[system-requirements-sentinel]]
 = Minimum System Requirements
-:description: Minimum requirements for OpenNMS {page-component-title} Minion, including operating systems.
+:description: Minimum requirements for OpenNMS {page-component-title} Sentinel, including operating systems.
 
-The following hardware specs are the minimum required to run a Minion:
+The following hardware specs are the minimum required to run a Sentinel:
 
 [options="autowidth"]
 |===
@@ -19,16 +19,16 @@ s| RAM
 
 s| Storage (disk space)
 | 20-GB HDD, SSD
-| 100GB with SSD and above
+| 50GB with SSD and above
 |===
 
-. You can install the packages, and the Minion services start. +
+. You can install the packages, and the Sentinel services start. +
 . Your intended workload (network size, number of monitored metrics, flows, events, and data retention requirements) affects these requirements.
 
-[[operating-systems-minion]]
+[[operating-systems-sentinel]]
 == Operating systems
 
-OpenNMS {page-component-title} Minion runs on the following operating systems:
+OpenNMS {page-component-title} Sentinel runs on the following operating systems:
 
 [options="autowidth"]
 |===

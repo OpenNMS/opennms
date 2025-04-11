@@ -1,37 +1,36 @@
 ifeval::["{page-component-title}" == "Horizon"]
-include::../../repos/rhel-centos/horizon-rhel7.adoc[]
+include::../../repos/rpm-horizon.adoc[]
 endif::[]
 
 ifeval::["{page-component-title}" == "Meridian"]
-include::../../repos/rhel-centos/meridian-rhel7.adoc[]
+include::../../repos/rpm-meridian.adoc[]
 endif::[]
 
 .Install {page-component-title} with all built-in dependencies
 [source, console, subs="attributes"]
 ----
-sudo yum -y install {package-prefix}
+sudo dnf -y install {package-prefix}
 ----
 
 TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
-     After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
-     We recommend that you exclude the {page-component-title} packages from update except when you plan to perform an upgrade.
+After upgrading, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
+We recommend that you exclude the {page-component-title} packages from updates except when you plan to perform an upgrade.
 
 .Disable auto updates for OpenNMS {page-component-title}
 [source, console]
 ----
-sudo yum -y install yum-utils
 ifeval::["{page-component-title}" == "Horizon"]
-sudo yum-config-manager --disable opennms-repo-stable-*
+sudo dnf config-manager --disable opennms-stable*
 endif::[]
 ifeval::["{page-component-title}" == "Meridian"]
-sudo yum-config-manager --disable meridian
+sudo dnf config-manager --disable meridian
 endif::[]
 ----
 
 .Verify directory structure with the tree command
 [source, console]
 ----
-sudo yum -y install tree
+sudo dnf -y install tree
 tree /opt/opennms -L 1
 ----
 

@@ -1,18 +1,5 @@
-.Install GnuPG and add OpenNMS repository GPG key
-[source, console]
-----
-sudo apt -y install curl gnupg ca-certificates
-curl -fsSL https://debian.opennms.org/OPENNMS-GPG-KEY | sudo gpg --dearmor -o /usr/share/keyrings/opennms.gpg
-----
 
-.Add and update apt repository
-[source, console]
-----
-echo "deb [signed-by=/usr/share/keyrings/opennms.gpg] https://debian.opennms.org stable main" | sudo tee /etc/apt/sources.list.d/opennms.list
-sudo apt update
-----
-
-NOTE: You can safely ignore the message about conflicting distributions (expected stable but got opennms-xx).
+include::../../repos/deb-horizon.adoc[]
 
 .Install OpenNMS {page-component-title} with built-in dependencies
 [source, console]

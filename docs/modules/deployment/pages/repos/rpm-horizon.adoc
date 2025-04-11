@@ -1,0 +1,14 @@
+
+.Fetch the repository installation scripts from Cloudsmith
+[source, console]
+----
+curl -1sLf 'https://packages.opennms.com/public/stable/setup.rpm.sh' -o setup.rpm.stable.sh
+curl -1sLf 'https://packages.opennms.com/public/common/setup.rpm.sh' -o setup.rpm.common.sh
+----
+
+.Setup the package repositories
+[source, console]
+----
+sudo -E bash setup.rpm.stable.sh
+sudo -E bash setup.rpm.common.sh
+----

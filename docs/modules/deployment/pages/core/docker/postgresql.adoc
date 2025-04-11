@@ -11,8 +11,6 @@ vi docker-compose.yml
 [subs="verbatim,attributes"]
 ----
 ---
-version: '3'
-
 volumes:
   data-postgres: {}<1>
 

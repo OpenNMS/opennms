@@ -8,10 +8,12 @@
 ** xref:core/admin-password-reset.adoc[]
 * xref:minion/introduction.adoc[]
 ** xref:minion/system-requirements.adoc[]
+** xref:minion/system-requirements.adoc[]
 ** xref:minion/install.adoc[]
 ** xref:minion/installing-jdbc-driver.adoc[]
 ** xref:minion/off-heap-storage.adoc[]
 * xref:sentinel/introduction.adoc[]
+** xref:sentinel/system-requirements.adoc[]
 ** xref:sentinel/runtime/install.adoc[]
 
 * xref:time-series-storage/timeseries/time-series-storage.adoc[]

@@ -15,8 +15,6 @@ vi docker-compose.yml
 [subs="verbatim,attributes"]
 ----
 ---
-version: '3'
-
 volumes:<1>
   data-opennms: {}
   data-config: {}

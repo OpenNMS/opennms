@@ -3,11 +3,11 @@
 sudo dnf -y install java-11-openjdk-headless
 
 ifeval::["{page-component-title}" == "Horizon"]
-include::../../../repos/rhel-centos/horizon-rhel9.adoc[]
+include::../../../repos/deb-horizon.adoc[]
 endif::[]
 
 ifeval::["{page-component-title}" == "Meridian"]
-include::../../../repos/rhel-centos/meridian-rhel9.adoc[]
+include::../../../repos/rpm-horizon/meridian-rhel9.adoc[]
 endif::[]
 
 .Install {page-component-title} Sentinel

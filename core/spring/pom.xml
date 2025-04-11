@@ -16,8 +16,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
           <!-- To load the jar file into jaspersoft studio it is required to be Java 7 compatible -->
-          <source>1.7</source>
-          <target>1.7</target>
+          <release>17</release>
         </configuration>
       </plugin>
       <plugin>

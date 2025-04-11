@@ -26,7 +26,7 @@
 %{!?_descr:%define _descr "OpenNMS"}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
-%{!?jdk:%define jdk java-11-openjdk-devel}
+%{!?jdk:%define jdk java-17-openjdk-devel}
 
 %{!?extrainfo:%define extrainfo }
 %{!?extrainfo2:%define extrainfo2 }
@@ -65,8 +65,8 @@ Requires(pre):		%{name}-webui       = %{version}-%{release}
 Requires:		%{name}-webui       = %{version}-%{release}
 Requires(pre):		%{name}-core        = %{version}-%{release}
 Requires:		%{name}-core        = %{version}-%{release}
-Requires(pre):		postgresql-server  >= 10
-Requires:		postgresql-server  >= 10
+Requires(pre):		postgresql-server  >= 13
+Requires:		postgresql-server  >= 13
 Requires(pre):		%{jdk}
 Requires:		%{jdk}
 

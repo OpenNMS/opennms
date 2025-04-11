@@ -30,7 +30,7 @@ sudo cp /opt/opennms/etc/opennms.service /lib/systemd/system/
 
 ._Assign CAP_NET_RAW capabilities_
 
-See xref:deployment:core/centos-rhel/initialize-core.adoc#initialize-core-cap[Assign CAP_NET_RAW capabilities].
+See xref:core/rpm/initialize-core.adoc#initialize-core-cap[Assign CAP_NET_RAW capabilities].
 
 .Install PostgreSQL database
 [source, console]
@@ -65,8 +65,8 @@ sudo /opt/opennms/bin/install -dis
 
 Depending on where OpenNMS gets restored, you need to set the firewall settings again.
 
-See xref:deployment:core/centos-rhel/initialize-core.adoc#initialize-core-firewall[firewall settings] and xref:deployment:core/centos-rhel/firewall-core.adoc[firewall core].
-xref:deployment:core/centos-rhel/firewall-core.adoc[firewall].
+See xref:core/rpm/initialize-core.adoc#initialize-core-firewall[firewall settings] and xref:core/rpm/firewall-core.adoc[firewall core].
+xref:core/rpm/firewall-core.adoc[firewall].
 
 .Start OpenNMS service
 [source, console]

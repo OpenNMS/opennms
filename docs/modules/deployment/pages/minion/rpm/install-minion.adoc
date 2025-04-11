@@ -1,17 +1,16 @@
-.Install OpenJDK 11 JRE runtime
+.Install OpenJDK {compatible-javajdk} JRE runtime
 [source, console]
+[subs="verbatim,attributes"]
 ----
-sudo dnf -y install java-11-openjdk-headless
+sudo dnf -y install java-17-openjdk-headless
 ----
-
-NOTE: On some distributions, such as Oracle Linux 8, you may also need to manually install the `tzdata-java` package.
 
 ifeval::["{page-component-title}" == "Horizon"]
-include::../../repos/rhel-centos/horizon-rhel8.adoc[]
+include::../../repos/deb-horizon.adoc[]
 endif::[]
 
 ifeval::["{page-component-title}" == "Meridian"]
-include::../../repos/rhel-centos/meridian-rhel8.adoc[]
+include::../../repos/rpm-horizon/meridian-rhel9.adoc[]
 endif::[]
 
 .Install the {page-component-title} Minion package

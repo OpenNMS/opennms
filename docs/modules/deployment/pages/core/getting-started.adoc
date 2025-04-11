@@ -1,46 +1,17 @@
 
 [[getting-started-core]]
 = Installation and Configuration
-:description: Install and configure OpenNMS instance including PostgreSQL set up on CentOS/RHEL 7-9, Debian/Ubuntu, and Docker.
+:description: Install and configure the OpenNMS {page-component-title} Core instance including PostgreSQL set up on RPM, DEB, and Docker environments.
 
-This section explains how to install and configure a new {page-component-title} instance, including the following tasks:
-
-* Install all required OpenNMS {page-component-title} components, including PostgreSQL, on a single node.
-* Run {page-component-title} core and PostgreSQL with the default configuration.
-+
-NOTE: The default configuration is not optimized to run in a production environment or monitor large networks.
-
+This section explains how to install and configure a new {page-component-title} Core instance.
 ifeval::["{page-component-title}" == "Horizon"]
-** By default, your time series database is JRobin, which persists RRD files on the local file system.
+The goal of this section is to deploy a OpenNMS {page-component-title} Core instance, the PostgreSQL database and store the JRobin time series data on a single node.
+
+TIP: If you want a quick evaluation of OpenNMS Horizon on a bare metal system or a virtual machine, you can check out our https://github.com/opennms-forge/opennms-install[quick install scripts].
 endif::[]
 ifeval::["{page-component-title}" == "Meridian"]
-** By default, your time series database is RRDtool, which persists RRD files on the local file system.
+The goal of this section is to deploy a OpenNMS {page-component-title} Core instance, the PostgreSQL database and store the RRDtool time series data on a single node.
 endif::[]
-* Sign in to the web UI and change the `admin` account's default password.
-
-== DNS considerations
-
-If you are planning a large deployment, you may need to review your DNS configuration to ensure name lookups can be processed quickly.
-DNS lookups may be preformed by different processes, including while provisioning new nodes and when receiving syslog messages.
-It is vital that DNS lookups can be performed quickly to prevent them from becoming a bottleneck, which can happen if your deployment covers thousands of nodes.
-One way to mitigate DNS performance is to setup your {page-component-title} as a secondary DNS server so that it is able to self-host DNS records for your network.
-
-ifeval::["{page-component-title}" == "Horizon"]
-== Quick installation
-
-If you want to get started quickly with OpenNMS Horizon on a bare metal system or a virtual machine, you can check out our https://github.com/opennms-forge/opennms-install[quick install scripts].
-This convenient script installs Horizon on Debian or Red Hat compatible systems, running the steps documented in this section of the deployment guide.
-Use this quick starting point to evaluate and explore how to configure Horizon before moving to more complex distributed environments.
-
-=== Scope
-
-* Bootstrap a single-node Horizon system on RPM or DEB-based systems quickly, with the latest stable release.
-* Installation follows the best-practices from our official docs.
-* Script is only for new installs and does not deal with existing installations or upgrades.
-* Script does not configure or install Minions, Sentinels, or distributed time series storage like Newts or Cortex.
-
-endif::[]
-
 
 == Requirements
 
@@ -49,68 +20,87 @@ The following components and settings are required to set up a new {page-compone
 ifeval::["{page-component-title}" == "Meridian"]
 * Credentials to access the Meridian repositories.
 endif::[]
-* A Linux physical server, or a virtual machine running a <<system-requirements.adoc#operating-systems-core, supported Linux operating system>>.
+* A Linux physical server, or a virtual machine running a <<./system-requirements.adoc#operating-systems-core, supported Linux operating system>>.´
 * Internet access to download the installation packages.
 * A working DNS server, and a localhost and server name that resolve properly.
-* A system user with administrative permissions (`sudo`) to perform installation.
-* A SELinux policy that permits binding to the ICMP service, if necessary.
-+
-NOTE: If you do not include the appropriate SELinux policy, {page-component-title} may generate an ICMP permissions error when starting up (see xref:reference:configuration/selinux.adoc[]).
-
+* A system user with administrative permissions (`sudo`) to perform installation. On Debian, you must install and configure `sudo` yourself.
+See the https://wiki.debian.org/sudo/[Debian Wiki] for more information.
 ifeval::["{page-component-title}" == "Horizon"]
 * To run services in Docker, you need https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples.
-* On Debian, you must install and configure `sudo` yourself.
-See the https://wiki.debian.org/sudo/[Debian Wiki] for more information.
+*
 endif::[]
+* With SELinux enabled, you need a policy that permits sending ICMP echo requests as an unprivileged user, see xref:reference:configuration/selinux.adoc[].
+* Use a time synchronization protocol in your environment, see knowledgebase article link:https://opennms.discourse.group/t/ensure-time-synchronization-for-your-opennms-components/159[Ensure time synchronization for your OpenNMS components].
+* The system locale should support the characters set `UTF-8`.
 
-include::../time-sync.adoc[]
+Follow these steps if your system locale is not set to UTF-8:
+
+[{tabs}]
+====
+RPM::
++
+--
+.Installing language packages
+[source, console]
+----
+sudo dnf install langpacks-en glibc-all-langpacks -y
+----
+
+.Set the locale to english US using UTF-8
+[source, console]
+----
+sudo localectl set-locale LANG=en_US.UTF-8
+----
+
+.Verify if the locale is set
+[source, console]
+----
+localectl
+----
+--
+ifeval::["{page-component-title}" == "Horizon"]
+DEB::
++
+--
+.Installing language packages
+[source, console]
+----
+sudo apt -y install language-pack-en
+----
+
+.Set the locale to english US using UTF-8
+[source, console]
+----
+sudo localectl set-locale LANG=en_US.UTF-8
+----
+
+.Verify if the locale is set
+[source, console]
+----
+sudo localectl
+----
+--
+endif::[]
+====
+
 
 [[setup-postgresql]]
 == Set up PostgreSQL
 
-TIP: PostgreSQL 14 and 15 use the `scram-sha-256` https://www.postgresql.org/docs/14/auth-password.html[password authentication] method by default.
-If you use older versions of PostgreSQL, you should change the method in `postgresql.conf` and in `pg_hba.conf` before installing the {page-component-title} core instance.
-
-== Pool size and maximum database connections
-
-You must configure the PostgreSQL https://www.postgresql.org/docs/15/runtime-config-connection.html[max_connections] setting to at least twice the maximum pool size in {page-component-title}.
-
-The default maximum pool size value in {page-component-title} is 50, but it applies to each connect in `opennms-datasources.xml`: `opennms` (the main connection used at runtime) and `opennms-admin` (the connection used during administrative operations, including installation).
-Therefore, your `max_connections` setting should be at least 100.
-
-If you change the default pool size, make sure you also update the `max_connections`.
-You typically set this in `PG_HOME/data/postgresql.conf`, but you may also use the `ALTER SYSTEM` syntax.
-You must restart the PostgreSQL server for the changes to take effect.
-
-NOTE: You may find https://pgtune.leopard.in.ua/[PGTune] useful to calculate configuration parameters for PostgreSQL.
-As with all third-party tools, we do not endorse or guarantee it.
-Use it at your own discretion.
-
 [{tabs}]
 ====
-CentOS/RHEL 9::
+RPM::
 +
 --
-include::centos-rhel9/postgresql.adoc[]
+include::rpm/postgresql.adoc[]
 --
 
-CentOS/RHEL 8::
-+
---
-include::centos-rhel8/postgresql.adoc[]
---
-
-CentOS/RHEL 7::
-+
---
-include::centos-rhel7/postgresql.adoc[]
---
 ifeval::["{page-component-title}" == "Horizon"]
 
-Debian/Ubuntu::
+DEB::
 +
 --
-include::debian-ubuntu/postgresql.adoc[]
+include::deb/postgresql.adoc[]
 --
 
 Docker::
@@ -125,39 +115,22 @@ endif::[]
 == Install the core instance
 
 IMPORTANT: For security reasons, {page-component-title} is designed to run within an organization's protected intranet.
-Do not expose the web console or sign in pages directly to the Internet without appropriate isolation controls (for example, a VPN with multi-factor authentication).
+Do not expose the web console or sign in pages directly to the Internet without appropriate isolation controls (for example, a VPN with multifactorial authentication).
 
 [{tabs}]
 ====
-CentOS/RHEL 9::
+RPM::
 +
 --
-include::centos-rhel9/install-core.adoc[]
+include::rpm/install-core.adoc[]
 --
 
-CentOS/RHEL 8::
-+
---
-include::centos-rhel8/install-core.adoc[]
---
-
-CentOS/RHEL 7::
-+
---
-include::centos-rhel7/install-core.adoc[]
---
 ifeval::["{page-component-title}" == "Horizon"]
 
-Ubuntu::
+DEB::
 +
 --
-include::ubuntu/install-core.adoc[]
---
-
-Debian::
-+
---
-include::debian/install-core.adoc[]
+include::deb/install-core.adoc[]
 --
 
 Docker::
@@ -173,17 +146,17 @@ endif::[]
 
 [{tabs}]
 ====
-CentOS/RHEL 7/8/9::
+RPM::
 +
 --
-include::centos-rhel/initialize-core.adoc[]
+include::rpm/initialize-core.adoc[]
 --
 
 ifeval::["{page-component-title}" == "Horizon"]
-Debian/Ubuntu::
+DEB::
 +
 --
-include::debian-ubuntu/initialize-core.adoc[]
+include::deb/initialize-core.adoc[]
 --
 
 Docker::
