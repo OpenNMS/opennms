@@ -48,6 +48,8 @@ import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -239,22 +241,9 @@ public class ImportSchedulerIT implements InitializingBean {
         detail.getJobDataMap().put(ImportJob.RESCAN_EXISTING, Boolean.FALSE.toString());
         String expectedUrl = "http://admin:admin@localhost:8980/opennms/rest/requisitions/test";
 
-        class MyBoolWrapper {
-            volatile Boolean m_called = false;
+        CountDownLatch latch = new CountDownLatch(1);
 
-            public Boolean getCalled() {
-                return m_called;
-            }
-
-            public void setCalled(Boolean called) {
-                m_called = called;
-            }
-        }
-
-        final MyBoolWrapper callTracker = new MyBoolWrapper();
         m_importScheduler.getScheduler().getListenerManager().addTriggerListener(new TriggerListener() {
-
-
             @Override
             public String getName() {
                 return "TestTriggerListener";
@@ -263,7 +252,6 @@ public class ImportSchedulerIT implements InitializingBean {
             @Override
             public void triggerComplete(Trigger trigger, JobExecutionContext context, Trigger.CompletedExecutionInstruction triggerInstructionCode) {
                 LOG.info("triggerComplete called on trigger listener");
-                callTracker.setCalled(true);
             }
 
             @Override
@@ -272,25 +260,24 @@ public class ImportSchedulerIT implements InitializingBean {
                 Job jobInstance = context.getJobInstance();
 
                 if (jobInstance instanceof ImportJob) {
-                    String actualUrl = ((ImportJob)jobInstance).interpolate((String) context.getJobDetail().getJobDataMap().get(ImportJob.URL));
-                    Assert.assertEquals(expectedUrl, actualUrl);
+                    ImportJob importJob = (ImportJob) jobInstance;
+                    String actualUrl = importJob.interpolate(context.getJobDetail().getJobDataMap().getString(ImportJob.URL));
+                    Assert.assertEquals("Interpolated URL did not match expected value.", expectedUrl, actualUrl);
                 }
-                callTracker.setCalled(true);
+                latch.countDown();
             }
 
             @Override
             public void triggerMisfired(Trigger trigger) {
                 LOG.info("triggerMisFired called on trigger listener");
-                callTracker.setCalled(true);
+                latch.countDown(); // Mark as called so test doesn't hang
             }
 
             @Override
             public boolean vetoJobExecution(Trigger trigger, JobExecutionContext context) {
                 LOG.info("vetoJobExecution called on trigger listener");
-                callTracker.setCalled(true);
                 return false;
             }
-
         });
 
         Calendar testCal = Calendar.getInstance();
@@ -299,10 +286,8 @@ public class ImportSchedulerIT implements InitializingBean {
         m_importScheduler.getScheduler().scheduleJob(detail, trigger);
         m_importScheduler.start();
 
-        int callCheck = 0;
-        while (!callTracker.getCalled() && callCheck++ < 2 ) {
-            Thread.sleep(5000);
-        }
+        // Wait max 30 seconds for the listener to be called
+        boolean completed = latch.await(30, TimeUnit.SECONDS);
+        Assert.assertTrue("Trigger listener was never called.", completed);
     }
-
 }
