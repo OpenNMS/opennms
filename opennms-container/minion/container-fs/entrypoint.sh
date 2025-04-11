@@ -95,6 +95,12 @@ function updateConfig() {
 function parseEnvironment() {
     # Configure additional features
     IFS=$'\n'
+
+    IPC_CONFIGURED="false"
+    TWIN_CONFIGURED="false"
+    RPC_CONFIGURED="false"
+    SINK_CONFIGURED="false"
+
     for VAR in $(env)
     do
         env_var=$(echo "$VAR" | cut -d= -f1)
@@ -107,10 +113,30 @@ function parseEnvironment() {
           export JAVA_OPTS="$JAVA_OPTS -Xmx${env_val}"
         fi
 
+        if [[ $env_var =~ ^KAFKA_IPC_ ]]; then
+            ipc_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
+            updateConfig "$ipc_name" "${!env_var}" "${MINION_HOME}/etc/org.opennms.core.ipc.kafka.cfg"
+            if [[ "$ipc_name" == "bootstrap.servers" ]]; then
+                IPC_CONFIGURED="true"
+                echo "opennms-core-ipc-kafka"   > ${MINION_HOME}/etc/featuresBoot.d/kafka.boot
+            fi
+        fi
+
+        if [[ $env_var =~ ^KAFKA_TWIN_ ]]; then
+            twin_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
+            updateConfig "$twin_name" "${!env_var}" "${MINION_HOME}/etc/org.opennms.core.ipc.twin.kafka.cfg"
+            if [[ "$twin_name" == "bootstrap.servers" ]]; then
+                TWIN_CONFIGURED="true"
+                echo "!opennms-core-ipc-twin-jms"   > ${MINION_HOME}/etc/featuresBoot.d/kafka-twin.boot
+                echo "opennms-core-ipc-twin-kafka" >> ${MINION_HOME}/etc/featuresBoot.d/kafka-twin.boot
+            fi
+        fi
+
         if [[ $env_var =~ ^KAFKA_RPC_ ]]; then
             rpc_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
             updateConfig "$rpc_name" "${!env_var}" "${MINION_HOME}/etc/org.opennms.core.ipc.rpc.kafka.cfg"
             if [[ "$rpc_name" == "bootstrap.servers" ]]; then
+                RPC_CONFIGURED="true"
                 echo "!opennms-core-ipc-rpc-jms"   > ${MINION_HOME}/etc/featuresBoot.d/kafka-rpc.boot
                 echo "opennms-core-ipc-rpc-kafka" >> ${MINION_HOME}/etc/featuresBoot.d/kafka-rpc.boot
             fi
@@ -120,11 +146,17 @@ function parseEnvironment() {
             sink_key=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
             updateConfig "$sink_key" "${!env_var}" "${MINION_HOME}/etc/org.opennms.core.ipc.sink.kafka.cfg"
             if [[ "$sink_key" == "bootstrap.servers" ]]; then
+                SINK_CONFIGURED="true"
                 echo "!opennms-core-ipc-sink-camel" > ${MINION_HOME}/etc/featuresBoot.d/kafka-sink.boot
                 echo "opennms-core-ipc-sink-kafka" >> ${MINION_HOME}/etc/featuresBoot.d/kafka-sink.boot
             fi
         fi
     done
+
+    if [[ "$IPC_CONFIGURED"=="true" || ("$RPC_CONFIGURED"=="true" && "$TWIN_CONFIGURED"=="true" && "$SINK_CONFIGURED"=="true") ]]; then
+        echo "!minion-jms" > ${MINION_HOME}/etc/featuresBoot.d/disable-activemq.boot
+        echo "!opennms-core-ipc-jms" >> ${MINION_HOME}/etc/featuresBoot.d/disable-activemq.boot
+    fi
 }
 
 initConfig() {
