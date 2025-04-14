@@ -38,8 +38,13 @@ import com.google.protobuf.ByteString;
 import com.google.protobuf.InvalidProtocolBufferException;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
+import org.opennms.core.ipc.twin.api.LocalTwinSubscriber;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
+import org.opennms.core.ipc.twin.api.TwinRequest;
 import org.opennms.core.ipc.twin.api.TwinStrategy;
+import org.opennms.core.ipc.twin.api.TwinTracker;
+import org.opennms.core.ipc.twin.api.TwinUpdate;
 import org.opennms.core.ipc.twin.model.TwinRequestProto;
 import org.opennms.core.ipc.twin.model.TwinResponseProto;
 import org.opennms.core.logging.Logging;
@@ -79,14 +84,29 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
 
     public AbstractTwinPublisher(LocalTwinSubscriber localTwinSubscriber, TracerRegistry tracerRegistry, MetricRegistry metricRegistry) {
         this.localTwinSubscriber = Objects.requireNonNull(localTwinSubscriber);
-        Objects.requireNonNull(tracerRegistry);
-        tracerRegistry.init(SystemInfoUtils.getInstanceId());
-        this.tracer = tracerRegistry.getTracer();
+        if ( tracerRegistry != null) {
+            tracerRegistry.init(SystemInfoUtils.getInstanceId());
+            this.tracer = tracerRegistry.getTracer();
+        } else {
+            this.tracer = GlobalTracer.get();
+        }
         this.metrics = metricRegistry;
     }
 
     public AbstractTwinPublisher(LocalTwinSubscriber localTwinSubscriber) {
-        this(localTwinSubscriber, localTwinSubscriber.getTracerRegistry(), localTwinSubscriber.getMetricRegistry());
+        this(localTwinSubscriber, null, new MetricRegistry());
+    }
+
+    public class TracerRegistryImpl implements TracerRegistry {
+        @Override
+        public Tracer getTracer() {
+            return tracer;
+        }
+
+        @Override
+        public void init(String serviceName) {
+
+        }
     }
 
     /**
@@ -110,7 +130,7 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
             // No twin object exists for this key yet, return with null object.
             twinUpdate = new TwinUpdate(twinRequest.getKey(), twinRequest.getLocation(), null);
             // JMX Metrics
-            updateCounter(MetricRegistry.name(twinRequest.location, twinRequest.getKey(), TWIN_EMPTY_RESPONSE_SENT));
+            updateCounter(MetricRegistry.name(twinRequest.getLocation(), twinRequest.getKey(), TWIN_EMPTY_RESPONSE_SENT));
         } else {
             // Fill TwinUpdate fields from TwinTracker.
             twinUpdate = new TwinUpdate(twinRequest.getKey(), twinRequest.getLocation(), twinTracker.getObj());
@@ -118,7 +138,7 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
             twinUpdate.setVersion(twinTracker.getVersion());
             twinUpdate.setSessionId(twinTracker.getSessionId());
             // JMX Metrics
-            updateCounter(MetricRegistry.name(twinRequest.location, twinRequest.getKey(), TWIN_RESPONSE_SENT));
+            updateCounter(MetricRegistry.name(twinRequest.getLocation(), twinRequest.getKey(), TWIN_RESPONSE_SENT));
         }
         return twinUpdate;
     }
