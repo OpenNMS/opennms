@@ -35,7 +35,7 @@ import org.opennms.smoketest.utils.KarafShellUtils;
 public class AlecPluginIT {
     @ClassRule
     public static OpenNMSStack stack = OpenNMSStack.minimal(
-            b -> b.withInstallFeature("opennms-alarm-history-elastic")
+            b -> b.withInstallFeature("opennms-alarm-history-elastic"),
             b -> b.withInstallFeature("alec-opennms-standalone", "opennms-alec-plugin")
     );
 
