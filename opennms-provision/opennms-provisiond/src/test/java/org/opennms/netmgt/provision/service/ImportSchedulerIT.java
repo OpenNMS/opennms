@@ -270,7 +270,7 @@ public class ImportSchedulerIT implements InitializingBean {
             @Override
             public void triggerMisfired(Trigger trigger) {
                 LOG.info("triggerMisFired called on trigger listener");
-                latch.countDown(); // Mark as called so test doesn't hang
+                Assert.fail("Trigger misfired — job was not executed.");
             }
 
             @Override
