@@ -35,7 +35,7 @@ import org.opennms.smoketest.utils.KarafShellUtils;
 public class GrpcExporterPluginIT {
     @ClassRule
     public static OpenNMSStack stack = OpenNMSStack.MINIMAL;
-    private static final String FEATURE_GRPC_EXPORTER="opennms-grpc-exporter";
+    private static final String FEATURE_GRPC_EXPORTER = "opennms-grpc-exporter";
     protected KarafShell karafShell = new KarafShell(stack.opennms().getSshAddress());
 
     @Before
