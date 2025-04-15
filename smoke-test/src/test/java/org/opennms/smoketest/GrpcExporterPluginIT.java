@@ -46,7 +46,7 @@ public class GrpcExporterPluginIT {
 
     @Test
     public void everythingHappy() throws Exception {
-        karafShell.runCommandOnce("feature:install "+FEATURE_GRPC_EXPORTER ,
+        karafShell.runCommandOnce("feature:install " + FEATURE_GRPC_EXPORTER ,
                output -> !output.toLowerCase().contains("error"), false);
         karafShell.checkFeature(FEATURE_GRPC_EXPORTER, "Started", Duration.ofSeconds(30));
     }
