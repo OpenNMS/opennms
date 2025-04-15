@@ -430,6 +430,9 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         if (model.isJaegerEnabled()) {
             featuresOnBoot.add("opennms-core-tracing-jaeger");
         }
+
+        featuresOnBoot.add("opennms-grpc-exporter");
+
         return featuresOnBoot;
     }
 
