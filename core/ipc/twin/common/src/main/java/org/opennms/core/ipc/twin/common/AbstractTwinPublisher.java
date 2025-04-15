@@ -84,7 +84,7 @@ public abstract class AbstractTwinPublisher implements TwinPublisher {
 
     public AbstractTwinPublisher(LocalTwinSubscriber localTwinSubscriber, TracerRegistry tracerRegistry, MetricRegistry metricRegistry) {
         this.localTwinSubscriber = Objects.requireNonNull(localTwinSubscriber);
-        if ( tracerRegistry != null) {
+        if (tracerRegistry != null) {
             tracerRegistry.init(SystemInfoUtils.getInstanceId());
             this.tracer = tracerRegistry.getTracer();
         } else {
