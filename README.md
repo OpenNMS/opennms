@@ -1,11 +1,10 @@
-[OpenNMS][]
-===========
+[![opennms-build](https://github.com/Bluebird-Community/opennms/actions/workflows/opennms-build.yml/badge.svg)](https://github.com/Bluebird-Community/opennms/actions/workflows/opennms-build.yml) [![Hosted By: Cloudsmith](https://img.shields.io/badge/OSS%20hosting%20by-cloudsmith-blue?logo=cloudsmith&style=flat-square)](https://cloudsmith.com)
 
-[OpenNMS][] is an open-source network monitoring platform that helps you visualize and monitor everything on your local and distributed networks. OpenNMS offers comprehensive fault, performance, and traffic monitoring with alarm generation in one place. Highly customizable and scalable, OpenNMS integrates with your core business applications and workflows.
+This is an open-source network monitoring platform that helps you visualize and monitor everything on your local and distributed networks.
+OpenNMS offers comprehensive fault, performance, and traffic monitoring with alarm generation in one place.
+Highly customizable and scalable, OpenNMS integrates with your core business applications and workflows.
 
-
-Features
----------
+## 🦄 Features
 
 * **Full inventory management**
 
@@ -35,18 +34,62 @@ Features
 
 	Customizable dashboards that you can export as a PDF. Resource graphs, database reports, charts. Define and customize complex layered topologies to integrate topology maps into your service problem management workflow.
 
-Install OpenNMS
-==================
+## 👩‍🏭 Installation
 
-For details on installing OpenNMS, see [Install OpenNMS][].
+* Installing the [Core server](docs/modules/deployment/pages/core/getting-started.adoc)
+* Installing a [Minion](docs/modules/deployment/pages/minion/install.adoc)
+* Installing a [Sentinel](docs/modules/deployment/pages/sentinel/runtime/install.adoc)
+* Setting up [Flows](docs/modules/operation/pages/deep-dive/flows/basic.adoc)
 
-TL;DR - If you just want to set up a simple non-production evaluation of OpenNMS Horizon on Linux, some basic install scripts are available at [opennms-forge/opennms-install](https://github.com/opennms-forge/opennms-install)
+## 👩‍🔬 Build from source
 
-Build OpenNMS
-================
+Building from source requires the following components:
 
-For details on how to build OpenNMS, see [Build OpenNMS from source][].
+* OpenJDK 17 Development Kit
+* Maven
+* Docker if you run tests
+* NodeJS 16
+* NPM
+* Yarn
+* Docker with Docker Compose plugin
 
-[OpenNMS]:           http://www.opennms.com/
-[Build OpenNMS from source]:  docs/modules/development/pages/build-from-source.adoc
-[Install OpenNMS]:  docs/modules/deployment/pages/core/getting-started.adoc
+```console
+git clone https://github.com/Bluebird-Community/opennms.git
+cd opennms
+make
+```
+
+The build artifacts are located in
+
+* Core server: target/opennms-{pom-version}.tar.gz
+* Minion: opennms-assemblies/minion/target/org.opennms.assemblies.minion-{pom-version}-minion.tar.gz
+* Sentinel: opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-{pom-version}-sentinel.tar.gz
+
+Compile and assemble the tarballs with `make`.
+The tarballs are required to build the container images.
+
+```console
+cd opennms-container/core
+docker build -t core .
+```
+
+```console
+cd opennms-container/minion
+docker build -t minion .
+```
+
+```console
+cd opennms-container/sentinel
+docker build -t sentinel .
+```
+
+## 🌈 Support
+
+[![Hosted By: Cloudsmith](https://img.shields.io/badge/OSS%20hosting%20by-cloudsmith-blue?logo=cloudsmith&style=for-the-badge)](https://cloudsmith.com)
+
+Package repository hosting is graciously provided by  [Cloudsmith](https://cloudsmith.com).
+Cloudsmith is the only fully hosted, cloud-native, universal package management solution, that
+enables your organization to create, store and share packages in any format, to any place, with total
+confidence.
+
+
