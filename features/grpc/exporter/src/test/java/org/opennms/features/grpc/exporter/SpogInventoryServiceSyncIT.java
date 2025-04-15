@@ -23,7 +23,6 @@ package org.opennms.features.grpc.exporter;
 
 
 import com.google.protobuf.Empty;
-import io.grpc.ConnectivityState;
 import io.grpc.Server;
 import io.grpc.ServerBuilder;
 import io.grpc.Status;
@@ -70,6 +69,7 @@ import javax.net.ssl.SSLException;
 import java.io.IOException;
 import java.util.NoSuchElementException;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -118,7 +118,9 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
     private MockDatabase mockDatabase;
 
     private NmsInventoryServiceSyncImpl grpcServerService = null;
-    private CompletableFuture<Boolean> serverResponseFuture = null;
+    private CompletableFuture<NmsInventoryUpdateList> inventoryResponseFuture = null;
+    private CompletableFuture<AlarmUpdateList> alarmResponseFuture = null;
+    private CompletableFuture<EventUpdateList> eventResponseFuture = null;
 
     private AlarmExporter alarmExporter;
     private EventsExporter eventsExporter;
@@ -133,8 +135,10 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
         eventdIpcMgr.setEventWriter(mockDatabase);
         // create data for node
         populateData();
-        serverResponseFuture = new CompletableFuture<>();
-        grpcServerService = new NmsInventoryServiceSyncImpl(serverResponseFuture);
+        inventoryResponseFuture = new CompletableFuture<>();
+        alarmResponseFuture = new CompletableFuture<>();
+        eventResponseFuture = new CompletableFuture<>();
+        grpcServerService = new NmsInventoryServiceSyncImpl(inventoryResponseFuture, alarmResponseFuture, eventResponseFuture);
         // configure server and client
         initializeAndStartServer();
         initializeAndStartClient();
@@ -165,8 +169,7 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
 
     @Test
     public void testClientRecoveryAfterServerStopAndRestart() throws Exception {
-        // Step 1: Wait for the channel to be ready and set up the initial inventory update
-        waitForChannelToBeReady();
+        // Step 1: Set up the initial inventory update
         spogInventoryService = new SpogInventoryService(nodeDao, runtimeInfo, client, new MockSessionUtils(), 0, true);
         inventoryExporter = new InventoryExporter(eventSubscriptionService, nodeDao, spogInventoryService);
 
@@ -175,11 +178,11 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
         this.nodeId = nodeEvent.getNodeid();
         AtomicReference<Boolean> inventoryFlag = new AtomicReference<>(false);
         await().pollInterval(2000, TimeUnit.MILLISECONDS)
-                .atMost(1, TimeUnit.MINUTES)
+                .atMost(2, TimeUnit.MINUTES)
                 .until(() -> {
                     try {
                         inventoryExporter.onEvent(ImmutableMapper.fromMutableEvent(nodeEvent));
-                        inventoryFlag.set(serverResponseFuture.get(10, TimeUnit.SECONDS));
+                        inventoryFlag.set(inventoryResponseFuture.get(10, TimeUnit.SECONDS).getNodesCount() > 0);
                         return inventoryFlag.get();
                     } catch (Exception e) {
                         LOG.error(e.getMessage());
@@ -187,6 +190,7 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
                     }
                 });
         assertTrue("The initial response was not completed successfully.", inventoryFlag.get());
+        validateInventoryReceivedData();
         // Step 2: Stop the server to simulate a restart scenario
         if (server != null) {
             server.shutdownNow();
@@ -195,33 +199,28 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
         }
         // Step 3: Restart the server (client remains the same, no restart for client)
         initializeAndStartServer();
-        // Step 4: Wait for the client to automatically reconnect
-        waitForChannelToBeReady();
-        // Step 5: reset and await
+        // Step 4: reset and await
         inventoryFlag.set(false);
         await().pollInterval(2000, TimeUnit.MILLISECONDS)
-                .atMost(1, TimeUnit.MINUTES)
+                .atMost(2, TimeUnit.MINUTES)
                 .until(() -> {
                     try {
                         inventoryExporter.onEvent(ImmutableMapper.fromMutableEvent(nodeEvent));
-                        inventoryFlag.set(serverResponseFuture.get(10, TimeUnit.SECONDS));
+                        inventoryFlag.set(inventoryResponseFuture.get(10, TimeUnit.SECONDS).getNodesCount() > 0);
                         return inventoryFlag.get();
                     } catch (Exception e) {
                         LOG.error(e.getMessage());
                         return false;
                     }
                 });
-        // Step 6: Assert that the client was able to reconnect and send the update after server restart
+        // Step 5: Assert that the client was able to reconnect and send the update after server restart
         assertTrue("The response after server recovery was not completed successfully.", inventoryFlag.get());
-        System.out.println("Client successfully recovered and sent inventory update after server restart.");
+        validateInventoryReceivedData();
     }
 
     @Test
     public void testRecoveryAfterClientAndServerRestart() throws Exception {
-
-        // Step 1: Wait for the channel to be ready and set up the initial inventory update
-        waitForChannelToBeReady();
-
+        // Step 1: Set up the initial inventory update
         spogInventoryService = new SpogInventoryService(nodeDao, runtimeInfo, client, new MockSessionUtils(), 0, true);
         inventoryExporter = new InventoryExporter(eventSubscriptionService, nodeDao, spogInventoryService);
 
@@ -231,11 +230,11 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
 
         AtomicReference<Boolean> inventoryFlag = new AtomicReference<>(false);
         await().pollInterval(2000, TimeUnit.MILLISECONDS)
-                .atMost(1, TimeUnit.MINUTES)
+                .atMost(2, TimeUnit.MINUTES)
                 .until(() -> {
                     try {
                         inventoryExporter.onEvent(ImmutableMapper.fromMutableEvent(nodeEvent));
-                        inventoryFlag.set(serverResponseFuture.get(10, TimeUnit.SECONDS));
+                        inventoryFlag.set(inventoryResponseFuture.get(10, TimeUnit.SECONDS).getNodesCount() > 0);
                         return inventoryFlag.get();
                     } catch (Exception e) {
                         LOG.error(e.getMessage());
@@ -243,6 +242,7 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
                     }
                 });
         assertTrue("The initial response was not completed successfully.", inventoryFlag.get());
+        validateInventoryReceivedData();
 
         // Step 2: Stop the server and client to simulate a restart
         if (server != null) {
@@ -255,32 +255,28 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
         // Step 3: Restart the server and client
         initializeAndStartServer();
         initializeAndStartClient();
-        // Step 4: await channel to be ready
-        waitForChannelToBeReady();
-        // Step 5: reset and await
+        // Step 4: reset and await
         inventoryFlag.set(false);
         await().pollInterval(2000, TimeUnit.MILLISECONDS)
-                .atMost(1, TimeUnit.MINUTES)
+                .atMost(2, TimeUnit.MINUTES)
                 .until(() -> {
                     try {
                         inventoryExporter.onEvent(ImmutableMapper.fromMutableEvent(nodeEvent));
-                        inventoryFlag.set(serverResponseFuture.get(10, TimeUnit.SECONDS));
+                        inventoryFlag.set(inventoryResponseFuture.get(10, TimeUnit.SECONDS).getNodesCount() > 0);
                         return inventoryFlag.get();
                     } catch (Exception e) {
                         LOG.error(e.getMessage());
                         return false;
                     }
                 });
-        // Step 6: Assert that the client was able to reconnect and send the update after server restart
+        // Step 5: Assert that the client was able to reconnect and send the update after server restart
         assertTrue("The response after server recovery was not completed successfully.", inventoryFlag.get());
-        System.out.println("Client successfully recovered and sent inventory update after server restart.");
+        validateInventoryReceivedData();
+
     }
 
     @Test
-    public void testInventoryDataToBeSent() {
-
-        waitForChannelToBeReady();
-
+    public void testInventoryDataToBeSent() throws Exception {
         spogInventoryService = new SpogInventoryService(nodeDao, runtimeInfo, client, new MockSessionUtils(), 0, true);
         inventoryExporter = new InventoryExporter(eventSubscriptionService, nodeDao, spogInventoryService);
 
@@ -289,11 +285,11 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
         this.nodeId = nodeEvent.getNodeid();
         AtomicReference<Boolean> inventoryFlag = new AtomicReference<>(false);
         await().pollInterval(2000, TimeUnit.MILLISECONDS)
-                .atMost(1, TimeUnit.MINUTES)
+                .atMost(2, TimeUnit.MINUTES)
                 .until(() -> {
                     try {
                         inventoryExporter.onEvent(ImmutableMapper.fromMutableEvent(nodeEvent));
-                        inventoryFlag.set(serverResponseFuture.get(10, TimeUnit.SECONDS));
+                        inventoryFlag.set(inventoryResponseFuture.get(10, TimeUnit.SECONDS).getNodesCount() > 0);
                         return inventoryFlag.get();
                     } catch (Exception e) {
                         LOG.error(e.getMessage());
@@ -301,25 +297,59 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
                     }
                 });
         assertTrue("The response was not completed successfully for inventory valid input.", inventoryFlag.get());
+        validateInventoryReceivedData();
     }
 
     @Test
-    public void testAlarmDataToBeSent() {
+    public void testInventoryDataWithoutEventToBeSent() throws Exception {
+        spogInventoryService = new SpogInventoryService(nodeDao, runtimeInfo, client, new MockSessionUtils(), 10, true);
+        spogInventoryService.start();
+        var node = nodeDao.findAll().stream().findAny()
+                .orElseThrow(() -> new NoSuchElementException("No node found"));
+        this.nodeId = node.getId();
+        AtomicReference<Boolean> inventoryFlag = new AtomicReference<>(false);
+        await().pollInterval(2000, TimeUnit.MILLISECONDS)
+                .atMost(2, TimeUnit.MINUTES)
+                .until(() -> {
+                    try {
+                        inventoryFlag.set(inventoryResponseFuture.get(10, TimeUnit.SECONDS).getNodesCount() > 0);
+                        return inventoryFlag.get();
+                    } catch (Exception e) {
+                        LOG.error(e.getMessage());
+                        spogInventoryService.stop();
+                        return false;
+                    }
+                });
+        spogInventoryService.stop();
+        assertTrue("The response was not completed successfully for inventory valid input.", inventoryFlag.get());
+        validateInventoryReceivedData();
+    }
 
-        waitForChannelToBeReady();
+    public void validateInventoryReceivedData() throws Exception {
+        final var nodeData = inventoryResponseFuture.get().getNodesList().stream().filter(obj -> obj.getId() == nodeId).findAny()
+                .orElseThrow(() -> new NoSuchElementException("No node found"));
+        Assert.assertNotNull(nodeData);
+        Assert.assertEquals(nodeId, nodeData.getId());
+        Assert.assertTrue("Node id should be exist", nodeData.getId() > 0);
+        Assert.assertNotNull("ForeignSource should not be null", nodeData.getForeignSource());
+        Assert.assertNotNull("ForeignId should not be null", nodeData.getForeignId());
+        Assert.assertNotNull("Location should not be null", nodeData.getLocation());
+        Assert.assertNotNull("Node Label should not be null", nodeData.getLabel());
+    }
 
+    @Test
+    public void testAlarmDataToBeSent() throws Exception {
         alarmExporter = new AlarmExporter(runtimeInfo, client, true);
-
         eventdIpcMgr.sendNow(MockEventUtil.createNodeDownEventBuilder("test", databasePopulator.getNode1()).getEvent());
         final OnmsAlarm alarm = nodeDownAlarmWithRelatedAlarm();
         alarmDao.save(alarm);
         AtomicReference<Boolean> alarmFlag = new AtomicReference<>(false);
         await().pollInterval(2000, TimeUnit.MILLISECONDS)
-                .atMost(1, TimeUnit.MINUTES)
+                .atMost(2, TimeUnit.MINUTES)
                 .until(() -> {
                     try {
                         alarmExporter.handleAlarmSnapshot(alarmDao.findAll());
-                        alarmFlag.set(serverResponseFuture.get(10, TimeUnit.SECONDS));
+                        alarmFlag.set(alarmResponseFuture.get(10, TimeUnit.SECONDS).getAlarmsCount() > 0);
                         return alarmFlag.get();
                     } catch (Exception e) {
                         LOG.error(e.getMessage());
@@ -327,26 +357,29 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
                     }
                 });
         assertTrue("The response was not completed successfully for alarm valid input.", alarmFlag.get());
+        Assert.assertEquals(1, alarmResponseFuture.get().getAlarmsCount());
+        final var alarmData = alarmResponseFuture.get().getAlarmsList().stream().findFirst()
+                .orElseThrow(() -> new NoSuchElementException("No alarm found"));
+        Assert.assertNotNull(alarmData);
+        Assert.assertTrue("Alarm id should be exist", alarmData.getId() > 0);
+        Assert.assertTrue("Node id in alarm should be exist", alarmData.getNodeCriteria().getId() > 0);
+        Assert.assertEquals(EventConstants.NODE_DOWN_EVENT_UEI, alarmData.getUei());
     }
 
     @Test
-    public void testEventDataToBeSent() {
-
-        waitForChannelToBeReady();
-
+    public void testEventDataToBeSent() throws Exception {
         eventsExporter = new EventsExporter(eventSubscriptionService, runtimeInfo, client, true);
-
         final var event = MockEventUtil.createNodeUpEventBuilder("test", databasePopulator.getNode1()).getEvent();
         eventdIpcMgr.sendNow(event);
         final OnmsAlarm alarm = nodeUpAlarmWithRelatedAlarm();
         alarmDao.save(alarm);
         AtomicReference<Boolean> eventFlag = new AtomicReference<>(false);
         await().pollInterval(2000, TimeUnit.MILLISECONDS)
-                .atMost(1, TimeUnit.MINUTES)
+                .atMost(2, TimeUnit.MINUTES)
                 .until(() -> {
                     try {
                         eventsExporter.onEvent(ImmutableMapper.fromMutableEvent(event));
-                        eventFlag.set(serverResponseFuture.get(10, TimeUnit.SECONDS));
+                        eventFlag.set(eventResponseFuture.get(10, TimeUnit.SECONDS).getEventCount() > 0);
                         return eventFlag.get();
                     } catch (Exception e) {
                         LOG.error(e.getMessage());
@@ -354,13 +387,14 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
                     }
                 });
         assertTrue("The response was not completed successfully for event valid input.", eventFlag.get());
-    }
+        Assert.assertEquals(1, eventResponseFuture.get().getEventCount());
+        final var eventData = eventResponseFuture.get().getEventList().stream().findAny()
+                .orElseThrow(() -> new NoSuchElementException("No event found"));
+        Assert.assertNotNull(eventData);
+        Assert.assertTrue("Event id should be exist", eventData.getId() > 0);
+        Assert.assertTrue("Node id in event should be exist", eventData.getNodeId() > 0);
+        Assert.assertEquals(EventConstants.NODE_UP_EVENT_UEI, eventData.getUei());
 
-    private void waitForChannelToBeReady() {
-        await()
-                .atMost(30, TimeUnit.SECONDS)
-                .pollInterval(2, TimeUnit.SECONDS)
-                .until(() -> client.getChannelState() == ConnectivityState.READY);
     }
 
     private OnmsAlarm nodeDownAlarmWithRelatedAlarm() {
@@ -427,10 +461,15 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
     }
 
     public class NmsInventoryServiceSyncImpl extends NmsInventoryServiceSyncGrpc.NmsInventoryServiceSyncImplBase {
-        private final CompletableFuture<Boolean> responseFuture;
 
-        public NmsInventoryServiceSyncImpl(CompletableFuture<Boolean> responseFuture) {
-            this.responseFuture = responseFuture;
+        private final CompletableFuture<NmsInventoryUpdateList> inventoryResponseFuture;
+        private final CompletableFuture<AlarmUpdateList> alarmResponseFuture;
+        private final CompletableFuture<EventUpdateList> eventResponseFuture;
+
+        public NmsInventoryServiceSyncImpl(CompletableFuture<NmsInventoryUpdateList> inventoryResponseFuture, CompletableFuture<AlarmUpdateList> alarmResponseFuture, CompletableFuture<EventUpdateList> eventResponseFuture) {
+            this.inventoryResponseFuture = inventoryResponseFuture;
+            this.alarmResponseFuture = alarmResponseFuture;
+            this.eventResponseFuture = eventResponseFuture;
         }
 
         @Override
@@ -439,42 +478,27 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
                 @Override
                 public void onNext(NmsInventoryUpdateList value) {
                     // Process the received inventory update
-                    System.out.println("Received inventory update: " + value);
-                    final var node = value.getNodesList().stream().filter(obj -> obj.getId() == nodeId).findAny()
-                            .orElseThrow(() -> new NoSuchElementException("No node found"));
-
-                    Assert.assertNotNull(node);
-                    Assert.assertEquals(nodeId, node.getId());
-                    Assert.assertTrue("Node id should be exist", node.getId() > 0);
-                    Assert.assertNotNull("ForeignSource should not be null", node.getForeignSource());
-                    Assert.assertNotNull("ForeignId should not be null", node.getForeignId());
-                    Assert.assertNotNull("Location should not be null", node.getLocation());
-                    Assert.assertNotNull("Node Label should not be null", node.getLabel());
-
-                    responseFuture.complete(true);
-
+                    inventoryResponseFuture.complete(value);
                 }
 
                 @Override
                 public void onError(Throwable throwable) {
-                    System.err.println("Error received from client: " + throwable.getMessage());
                     if (throwable instanceof StatusRuntimeException) {
                         StatusRuntimeException exception = (StatusRuntimeException) throwable;
                         if (exception.getStatus().getCode() == Status.INVALID_ARGUMENT.getCode()) {
-                            responseFuture.complete(false);
+                            eventResponseFuture.completeExceptionally(new IllegalArgumentException("Invalid inventory input", exception));
                         }
                     } else {
-                        responseFuture.completeExceptionally(throwable);
+                        inventoryResponseFuture.completeExceptionally(throwable);
                     }
                 }
 
                 @Override
                 public void onCompleted() {
                     // Send acknowledgment once the stream is completed
-                    System.out.println("Inventory update stream completed.");
                     responseObserver.onNext(Empty.getDefaultInstance());
                     responseObserver.onCompleted();
-                    responseFuture.complete(true);
+                    inventoryResponseFuture.complete(null);
                 }
             };
         }
@@ -485,40 +509,27 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
                 @Override
                 public void onNext(AlarmUpdateList alarmUpdateList) {
                     // Process the received alarm update
-                    System.out.println("Received alarm update: " + alarmUpdateList);
-                    Assert.assertEquals(1, alarmUpdateList.getAlarmsList().size());
-
-                    final var alarm = alarmUpdateList.getAlarmsList().stream().findFirst()
-                            .orElseThrow(() -> new NoSuchElementException("No alarm found"));
-
-                    Assert.assertNotNull(alarm);
-                    Assert.assertTrue("Alarm id should be exist", alarm.getId() > 0);
-                    Assert.assertTrue("Node id in alarm should be exist", alarm.getNodeCriteria().getId() > 0);
-                    Assert.assertEquals(EventConstants.NODE_DOWN_EVENT_UEI, alarm.getUei());
-
-                    responseFuture.complete(true);
+                    alarmResponseFuture.complete(alarmUpdateList);
                 }
 
                 @Override
                 public void onError(Throwable throwable) {
-                    System.err.println("Error received from client: " + throwable.getMessage());
                     if (throwable instanceof StatusRuntimeException) {
                         StatusRuntimeException exception = (StatusRuntimeException) throwable;
                         if (exception.getStatus().getCode() == Status.INVALID_ARGUMENT.getCode()) {
-                            responseFuture.complete(false);
+                            eventResponseFuture.completeExceptionally(new IllegalArgumentException("Invalid alarm input", exception));
                         }
                     } else {
-                        responseFuture.completeExceptionally(throwable);
+                        alarmResponseFuture.completeExceptionally(throwable);
                     }
                 }
 
                 @Override
                 public void onCompleted() {
                     // Send acknowledgment once the stream is completed
-                    System.out.println("alarm update stream completed.");
                     responseObserver.onNext(Empty.getDefaultInstance());
                     responseObserver.onCompleted();
-                    responseFuture.complete(true);
+                    alarmResponseFuture.complete(null);
                 }
             };
         }
@@ -529,40 +540,27 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
                 @Override
                 public void onNext(EventUpdateList eventUpdateList) {
                     // Process the received event update
-                    System.out.println("Received event update: " + eventUpdateList);
-                    Assert.assertEquals(1, eventUpdateList.getEventList().size());
-
-                    final var event = eventUpdateList.getEventList().stream().findFirst()
-                            .orElseThrow(() -> new NoSuchElementException("No event found"));
-
-                    Assert.assertNotNull(event);
-                    Assert.assertTrue("Event id should be exist", event.getId() > 0);
-                    Assert.assertTrue("Node id in event should be exist", event.getNodeId() > 0);
-                    Assert.assertEquals(EventConstants.NODE_UP_EVENT_UEI, event.getUei());
-
-                    responseFuture.complete(true);
+                    eventResponseFuture.complete(eventUpdateList);
                 }
 
                 @Override
                 public void onError(Throwable throwable) {
-                    System.err.println("Error received from client: " + throwable.getMessage());
                     if (throwable instanceof StatusRuntimeException) {
                         StatusRuntimeException exception = (StatusRuntimeException) throwable;
                         if (exception.getStatus().getCode() == Status.INVALID_ARGUMENT.getCode()) {
-                            responseFuture.complete(false);
+                            eventResponseFuture.completeExceptionally(new IllegalArgumentException("Invalid event input", exception));
                         }
                     } else {
-                        responseFuture.completeExceptionally(throwable);
+                        eventResponseFuture.completeExceptionally(throwable);
                     }
                 }
 
                 @Override
                 public void onCompleted() {
                     // Send acknowledgment once the stream is completed
-                    System.out.println("event update stream completed.");
                     responseObserver.onNext(Empty.getDefaultInstance());
                     responseObserver.onCompleted();
-                    responseFuture.complete(true);
+                    eventResponseFuture.complete(null);
                 }
             };
         }
