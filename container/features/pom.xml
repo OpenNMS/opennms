@@ -216,7 +216,7 @@
                       <goal>verify</goal>
                   </goals>
                   <configuration>
-                      <javase>11</javase>
+                      <javase>17</javase>
                       <descriptors>
                           <descriptor>file:${project.build.directory}/classes/features.xml</descriptor>
                           <descriptor>file:${project.build.directory}/classes/features-core.xml</descriptor>

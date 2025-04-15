@@ -69,8 +69,7 @@
               <goal>testCompile</goal>
             </goals>
             <configuration>
-              <source>1.8</source>
-              <target>1.8</target>
+              <release>17</release>
               <encoding>UTF-8</encoding>
               <optimize>true</optimize>
             </configuration>
