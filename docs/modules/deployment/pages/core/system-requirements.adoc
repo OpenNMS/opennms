@@ -50,7 +50,7 @@ See the xref:releasenotes:whatsnew.adoc[release notes] for information about pla
 
 == Compatibility
 
-{page-component-title} {full-display-version} is tested with the following components.
+{page-component-title} {full-display-version} is compatible with the following components.
 Components marked with an asterisk are required:
 
 [options="autowidth"]
