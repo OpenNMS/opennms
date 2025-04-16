@@ -790,7 +790,7 @@ const validateCronTab = (item: LocalConfiguration, oldErrors: LocalErrors) => {
  */
 const validateHost = (host: string) => {
   // no spaces, may starts and ends with brackets, may contain (but not start with) hyphen or dot or colon, cannot be over 49 chars (e.g. IPv6 - vmware://[2001:db8:0:8d3:0:8a2e:70:7344])
-  const customHostnameRegex = /^(?:(?:(?:[a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}|[a-zA-Z0-9-]+|(?:(?:\[(?:[0-9a-fA-F]{1,4}:){7}[0-9a-fA-F]{1,4}\])|(?:\[(?:[0-9a-fA-F]{1,4}:){1,7}:\])|(?:\[(?:[0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}\])|(?:\[(?:[0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}\])|(?:\[(?:[0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}\])|(?:\[(?:[0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}\])|(?:\[(?:[0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}\])|(?:\[(?:[0-9a-fA-F]{1,4}:){1,1}(:[0-9a-fA-F]{1,4}){1,6}\])|(?:\[(?:[0-9a-fA-F]{1,4}:){0,1}(:[0-9a-fA-F]{1,4}){1,7}\])|(?:\[(?:[0-9a-fA-F]{1,4}:){0,1}(:[0-9a-fA-F]{1,4}){1,7}\]))))(?::\d{1,5})?$/
+  const hostRegex = /^(?:(?:[a-zA-Z0-9._\-]+|\$\{[^}]+\}):(?:[a-zA-Z0-9._\-]+|\$\{[^}]+\})@)?(?:(?:\d{1,3}\.){3}\d{1,3}(?!\d)|\[(?:[A-Fa-f0-9]{1,4}:){7}[A-Fa-f0-9]{1,4}\]|(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?(?:\.(?!\.)(?:[a-zA-Z0-9](?:[a-zA-Z0-9\-]*[a-zA-Z0-9])?))*))(?::([1-9][0-9]{0,4}))?$/
   // Either IPv4, IPv6, a valid domain name, or passes custom regex
   const isHostValid = 
     ipRegex({exact: true}).test(host) 
