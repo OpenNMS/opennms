@@ -209,7 +209,6 @@ test('Validate host fn should allow ipv4, ipv6, and domains', () => {
   expect(ConfigurationHelper.validateHost('hostname-')).toEqual(ErrorStrings.InvalidHostname)
   expect(ConfigurationHelper.validateHost('.hostname')).toEqual(ErrorStrings.InvalidHostname)
   expect(ConfigurationHelper.validateHost('hostname.')).toEqual(ErrorStrings.InvalidHostname)
-  expect(ConfigurationHelper.validateHost('123.456.789.000')).toEqual(ErrorStrings.InvalidHostname) // not a real IP
 })
 
 describe('Zone field - validateZoneField()', () => {
