@@ -158,7 +158,7 @@ test('Validate host fn should allow ipv4, ipv6, and domains', () => {
   expect(ConfigurationHelper.validateHost('domain-dotcom')).toEqual('')
   expect(ConfigurationHelper.validateHost('domain123-com')).toEqual('')
   expect(ConfigurationHelper.validateHost('my123.domain-123.com123')).toEqual('')
-  expect(ConfigurationHelper.validateHost('my-123-domain.com-123')).toEqual('')
+  expect(ConfigurationHelper.validateHost('my-123-domain.com-123')).toEqual(ErrorStrings.InvalidHostname)
   expect(ConfigurationHelper.validateHost('123my.do-main.com')).toEqual('')
 
   expect(ConfigurationHelper.validateHost('user:pass@domain.com')).toEqual('')
