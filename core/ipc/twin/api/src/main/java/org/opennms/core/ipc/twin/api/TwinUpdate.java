@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.twin.common;
+package org.opennms.core.ipc.twin.api;
 
 import com.google.common.base.Objects;
 
@@ -34,7 +34,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
-import java.util.function.BiConsumer;
 
 public class TwinUpdate {
 

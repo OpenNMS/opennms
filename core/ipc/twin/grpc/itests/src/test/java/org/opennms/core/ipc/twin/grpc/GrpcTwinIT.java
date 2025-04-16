@@ -37,7 +37,7 @@ import org.opennms.core.grpc.common.GrpcIpcServerBuilder;
 import org.opennms.core.grpc.common.GrpcIpcUtils;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
-import org.opennms.core.ipc.twin.common.LocalTwinSubscriber;
+import org.opennms.core.ipc.twin.api.LocalTwinSubscriber;
 import org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl;
 import org.opennms.core.ipc.twin.grpc.publisher.GrpcTwinPublisher;
 import org.opennms.core.ipc.twin.grpc.subscriber.GrpcTwinSubscriber;

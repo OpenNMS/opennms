@@ -26,7 +26,7 @@
  *     http://www.opennms.com/
  *******************************************************************************/
 
-package org.opennms.core.ipc.twin.common;
+package org.opennms.core.ipc.twin.api;
 
 import java.util.HashMap;
 import java.util.Map;
