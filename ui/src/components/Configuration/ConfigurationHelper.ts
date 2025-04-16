@@ -788,9 +788,9 @@ const validateCronTab = (item: LocalConfiguration, oldErrors: LocalErrors) => {
  * @param host Hostname
  * @returns Blank if Valid, Error Message if Not.
  */
-/* const validateHost = (host: string) => {
+const validateHost = (host: string) => {
   // no spaces, may starts and ends with brackets, may contain (but not start with) hyphen or dot or colon, cannot be over 49 chars (e.g. IPv6 - vmware://[2001:db8:0:8d3:0:8a2e:70:7344])
-  const customHostnameRegex = /^(?:(\$\{[^}]+\}|\w+):(\$\{[^}]+\}|\S+)@)?(?!.*\.\.)(?!.*[.-]$)(?!.*^[-.])([a-zA-Z\d][a-zA-Z\d.-]*[a-zA-Z\d]?|\[[a-fA-F\d:]+\])(?::([0-9]{1,5}))?$/
+  const customHostnameRegex = /^(?:(\$\{[^}]+\}|\w+):(\$\{[^}]+\}|\S+)@)?(?!.*\.\.)(?!.*[.-]$)(?!.*^[-.])((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){2}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)|\[?(?:[a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4}\]?|([a-zA-Z\d][a-zA-Z\d.-]*[a-zA-Z\d]?))(?::([0-9]{1,5}))?$/
 
   // Either IPv4, IPv6, a valid domain name, or passes custom regex
   const isHostValid = 
@@ -806,52 +806,8 @@ const validateCronTab = (item: LocalConfiguration, oldErrors: LocalErrors) => {
     }
   }
   return !isHostValid ? ErrorStrings.InvalidHostname : ''
-} */
-
-const validateHost = (host: string) => {
-  // Regex for validating IPv4 addresses
-  const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.((25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){2}(25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/
-
-  // Regex for validating IPv6 addresses
-  const ipv6Regex = /^\[?(?:[a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4}\]?$/
-
-  // Updated regex to validate hostname and port
-  const customHostnameRegex = /^(?:(\$\{[^}]+\}|\w+):(\$\{[^}]+\}|\S+)@)?(?!.*\.\.)(?!.*[.-]$)(?!.*^[-.])([a-zA-Z\d][a-zA-Z\d.-]*[a-zA-Z\d]?|\[[a-fA-F\d:]+\])(?::([0-9]{1,5}))?$/
-
-  // Check for valid IPv4 addresses
-  if (ipv4Regex.test(host)) {
-    return '' // Valid IPv4
-  }
-
-  // Check for valid IPv6 addresses
-  if (ipv6Regex.test(host)) {
-    return '' // Valid IPv6
-  }
-
-  // Check for valid domain names and custom hostnames
-  const isHostValid = customHostnameRegex.test(host)
-
-  // Additional checks for specific invalid cases
-  if (!isHostValid) {
-    return ErrorStrings.InvalidHostname
-  }
-
-  // Additional checks for specific invalid cases
-  if (host.includes('..') || host.match(/^[.-]|[.-]$/) || host.match(/@.*[.-]$/)) {
-    return ErrorStrings.InvalidHostname
-  }
-
-  // Check for invalid port numbers explicitly
-  const portMatch = host.match(/:(\d+)$/);
-  if (portMatch) {
-    const port = parseInt(portMatch[1], 10);
-    if (port < 0 || port > 65535) {
-      return ErrorStrings.InvalidHostname
-    }
-  }
-
-  return ''
 }
+
 
 /**
  * Field required
