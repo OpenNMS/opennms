@@ -188,7 +188,7 @@ test('Validate host fn should allow ipv4, ipv6, and domains', () => {
 
   expect(ConfigurationHelper.validateHost('${scv:requisition:username}:${scv:requisition:password}@host.com')).toEqual('')
   expect(ConfigurationHelper.validateHost('${scv:requisition:username}:${scv:requisition:password}@192.168.0.1')).toEqual('')
-  expect(ConfigurationHelper.validateHost('${scv:requisition:username}:${scv:requisition:password}@[2001:db8::1]:443')).toEqual('')
+  expect(ConfigurationHelper.validateHost('${scv:requisition:username}:${scv:requisition:password}@[2345:0425:2CA1:0000:0000:0567:5673:23b5]:443')).toEqual('')
   expect(ConfigurationHelper.validateHost('${scv:requisition:password}@example.com')).toEqual(ErrorStrings.InvalidHostname)
   expect(ConfigurationHelper.validateHost('user:${scv:requisition:password}@host.com')).toEqual('')
   expect(ConfigurationHelper.validateHost('${scv:requisition:username}@example.com:8080')).toEqual(ErrorStrings.InvalidHostname)
