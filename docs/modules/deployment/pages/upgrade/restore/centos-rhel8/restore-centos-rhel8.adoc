@@ -28,19 +28,11 @@ sudo tar -xzf /tmp/opennms-var.tar.gz -C /
 sudo cp /opt/opennms/etc/opennms.service /lib/systemd/system/
 ----
 
-._Assign CAP_NET_RAW capabilities_
-
-See xref:core/rpm/initialize-core.adoc#initialize-core-cap[Assign CAP_NET_RAW capabilities].
-
 .Install PostgreSQL database
 [source, console]
 ----
 sudo dnf -y install postgresql-server postgresql
 ----
-
-.Change the access policy for PostgreSQL
-
-See xref:deployment:core/centos-rhel8/postgresql.adoc#core-centos-rhel8-pg_hba[change the access policy for PostgreSQL].
 
 .Restore OpenNMS database
 [source, console]
