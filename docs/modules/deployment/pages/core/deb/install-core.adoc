@@ -1,5 +1,16 @@
+.Fetch the repository installation scripts from Cloudsmith
+[source, console]
+----
+curl -1sLf 'https://packages.opennms.com/public/stable/setup.deb.sh' -o setup.deb.stable.sh
+curl -1sLf 'https://packages.opennms.com/public/common/setup.deb.sh' -o setup.deb.common.sh
+----
 
-include::../../repos/deb-horizon.adoc[]
+.Setup the package repositories
+[source, console]
+----
+sudo -E bash setup.deb.stable.sh
+sudo -E bash setup.deb.common.sh
+----
 
 .Install OpenNMS {page-component-title} with built-in dependencies
 [source, console]
