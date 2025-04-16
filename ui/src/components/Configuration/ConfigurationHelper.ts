@@ -790,7 +790,7 @@ const validateCronTab = (item: LocalConfiguration, oldErrors: LocalErrors) => {
  */
 const validateHost = (host: string) => {
   // no spaces, may starts and ends with brackets, may contain (but not start with) hyphen or dot or colon, cannot be over 49 chars (e.g. IPv6 - vmware://[2001:db8:0:8d3:0:8a2e:70:7344])
-  const customHostnameRegex = /^(?:(\$\{[^}]+\}|\w+):(\$\{[^}]+\}|\S+)@)?(?!.*\.\.)(?!.*[.-]$)(?!.*^[-.])([a-zA-Z\d][a-zA-Z\d.-]*[a-zA-Z\d]?|\[[a-fA-F\d:]+\])(?::(6553[0-5]|655[0-2][0-9]|65[0-4][0-9]{2}|6[0-4][0-9]{3}|[1-5][0-9]{0,4}|[1-9][0-9]{0,4}|0))?$/
+  const customHostnameRegex = /^(?:(\$\{[^}]+\}|\w+):(\$\{[^}]+\}|\S+)@)?(?!.*\.\.)(?!.*[.-]$)(?!.*^[-.])([a-zA-Z\d][a-zA-Z\d.-]*[a-zA-Z\d]?|\[[a-fA-F\d:]+\])(?::([0-9]{1,5}))?$/
 
   // Either IPv4, IPv6, a valid domain name, or passes custom regex
   const isHostValid = 
@@ -798,6 +798,13 @@ const validateHost = (host: string) => {
     || isValidDomain(host) 
     || customHostnameRegex.test(host)
 
+  const portMatch = host.match(/:(\d+)$/);
+  if (portMatch) {
+    const port = parseInt(portMatch[1], 10);
+    if (port < 0 || port > 65535) {
+      return ErrorStrings.InvalidHostname;
+    }
+  }
   return !isHostValid ? ErrorStrings.InvalidHostname : ''
 }
 
