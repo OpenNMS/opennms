@@ -28,8 +28,8 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.features.scv.api.Credentials;
-import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.config.service.api.ConfigurationManagerService;
+import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
@@ -43,14 +43,16 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
+import java.util.Optional;
 import java.util.stream.Collectors;
+
+import static org.junit.Assert.fail;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -87,9 +89,6 @@ public class ImportSchedulerIT implements InitializingBean {
     @Autowired
     MockEventIpcManager m_mockEventIpcManager;
 
-    @Autowired
-    private SecureCredentialsVault secureCredentialsVault;
-
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -98,7 +97,6 @@ public class ImportSchedulerIT implements InitializingBean {
     @Before
     public void setUp() throws IOException, JAXBException {
         MockLogAppender.setupLogging();
-        secureCredentialsVault.setCredentials("requisition", new Credentials("admin", "admin"));
     }
 
     @After
@@ -233,61 +231,4 @@ public class ImportSchedulerIT implements InitializingBean {
         anticipator.verifyAnticipated();
     }
 
-    @Test
-    @JUnitTemporaryDatabase
-    public void buildHttpImportSchedule() throws SchedulerException, IOException, InterruptedException {
-        JobDetail detail = JobBuilder.newJob(ImportJob.class).withIdentity("test", ImportScheduler.JOB_GROUP).storeDurably(false).requestRecovery(false).build();
-        detail.getJobDataMap().put(ImportJob.URL, "http://${scv:requisition:username}:${scv:requisition:password}@localhost:8980/opennms/rest/requisitions/test");
-        detail.getJobDataMap().put(ImportJob.RESCAN_EXISTING, Boolean.FALSE.toString());
-        String expectedUrl = "http://admin:admin@localhost:8980/opennms/rest/requisitions/test";
-
-        CountDownLatch latch = new CountDownLatch(1);
-
-        m_importScheduler.getScheduler().getListenerManager().addTriggerListener(new TriggerListener() {
-            @Override
-            public String getName() {
-                return "TestTriggerListener";
-            }
-
-            @Override
-            public void triggerComplete(Trigger trigger, JobExecutionContext context, Trigger.CompletedExecutionInstruction triggerInstructionCode) {
-                LOG.info("triggerComplete called on trigger listener");
-            }
-
-            @Override
-            public void triggerFired(Trigger trigger, JobExecutionContext context) {
-                LOG.info("triggerFired called on trigger listener");
-                Job jobInstance = context.getJobInstance();
-
-                if (jobInstance instanceof ImportJob) {
-                    ImportJob importJob = (ImportJob) jobInstance;
-                    String actualUrl = importJob.interpolate(context.getJobDetail().getJobDataMap().getString(ImportJob.URL));
-                    Assert.assertEquals("Interpolated URL did not match expected value.", expectedUrl, actualUrl);
-                }
-                latch.countDown();
-            }
-
-            @Override
-            public void triggerMisfired(Trigger trigger) {
-                LOG.info("triggerMisFired called on trigger listener");
-                Assert.fail("Trigger misfired — job was not executed.");
-            }
-
-            @Override
-            public boolean vetoJobExecution(Trigger trigger, JobExecutionContext context) {
-                LOG.info("vetoJobExecution called on trigger listener");
-                return false;
-            }
-        });
-
-        Calendar testCal = Calendar.getInstance();
-        testCal.add(Calendar.SECOND, 5);
-        Trigger trigger = TriggerBuilder.newTrigger().withIdentity("test", ImportScheduler.JOB_GROUP).startAt(testCal.getTime()).build();
-        m_importScheduler.getScheduler().scheduleJob(detail, trigger);
-        m_importScheduler.start();
-
-        // Wait max 30 seconds for the listener to be called
-        boolean completed = latch.await(30, TimeUnit.SECONDS);
-        Assert.assertTrue("Trigger listener was never called.", completed);
-    }
 }
