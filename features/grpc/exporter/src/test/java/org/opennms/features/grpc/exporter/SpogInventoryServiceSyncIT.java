@@ -134,10 +134,7 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
         eventdIpcMgr.setEventWriter(mockDatabase);
         // create data for node
         populateData();
-        inventoryResponseFuture = new CompletableFuture<>();
-        alarmResponseFuture = new CompletableFuture<>();
-        eventResponseFuture = new CompletableFuture<>();
-        grpcServerService = new NmsInventoryServiceSyncImpl(inventoryResponseFuture, alarmResponseFuture, eventResponseFuture);
+        initializeAndResetFutures();
         // configure server and client
         initializeAndStartServer();
         initializeAndStartClient();
@@ -165,7 +162,12 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
         );
         client.start();
     }
-
+    private void initializeAndResetFutures(){
+        inventoryResponseFuture = new CompletableFuture<>();
+        alarmResponseFuture = new CompletableFuture<>();
+        eventResponseFuture = new CompletableFuture<>();
+        grpcServerService = new NmsInventoryServiceSyncImpl(inventoryResponseFuture, alarmResponseFuture, eventResponseFuture);
+    }
     @Test
     public void testClientRecoveryAfterServerStopAndRestart() throws Exception {
         // Step 1: Set up the initial inventory update
@@ -197,6 +199,7 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
             assertTrue("Server failed to shut down properly", server.awaitTermination(30, TimeUnit.SECONDS));
         }
         // Step 3: Restart the server (client remains the same, no restart for client)
+        initializeAndResetFutures();
         initializeAndStartServer();
         // Step 4: reset and await
         inventoryFlag.set(false);
@@ -252,8 +255,11 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
         }
 
         // Step 3: Restart the server and client
+        initializeAndResetFutures();
         initializeAndStartServer();
         initializeAndStartClient();
+        spogInventoryService = new SpogInventoryService(nodeDao, runtimeInfo, client, new MockSessionUtils(), 0, true);
+        inventoryExporter = new InventoryExporter(eventSubscriptionService, nodeDao, spogInventoryService);
         // Step 4: reset and await
         inventoryFlag.set(false);
         await().pollInterval(2000, TimeUnit.MILLISECONDS)
