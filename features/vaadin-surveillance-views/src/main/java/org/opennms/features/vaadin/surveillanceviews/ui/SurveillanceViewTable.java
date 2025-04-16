@@ -30,6 +30,8 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import com.vaadin.v7.shared.ui.label.ContentMode;
+import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewDetail;
 import org.opennms.netmgt.config.surveillanceViews.ColumnDef;
@@ -181,6 +183,7 @@ public class SurveillanceViewTable extends Table {
 
             addGeneratedColumn(columnDef.getLabel(), new Table.ColumnGenerator() {
                 public Object generateCell(Table source, final Object itemId, Object columnId) {
+                    setColumnHeader(columnId, WebSecurityUtils.sanitizeString(columnDef.getLabel()));
 
                     final Optional<RowDef> rowDef = view.getRowDef((String) itemId);
                     final Optional<ColumnDef> columnDef = view.getColumnDef((String) columnId);
