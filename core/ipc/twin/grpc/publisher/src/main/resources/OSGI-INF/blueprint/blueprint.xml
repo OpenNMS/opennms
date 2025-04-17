@@ -9,8 +9,9 @@
 
     <reference id="grpcIpcServer" interface="org.opennms.core.grpc.common.GrpcIpcServer" />
 
-    <reference id="localTwinSubscriber" interface="org.opennms.core.ipc.twin.common.LocalTwinSubscriber"/>
+    <reference id="localTwinSubscriber" interface="org.opennms.core.ipc.twin.api.LocalTwinSubscriber"/>
 
+    <!-- Tracing, metrics disabled for grpc due to class loader issues, see NMS-17732 -->
     <bean id="grpcTwinPublisher" class="org.opennms.core.ipc.twin.grpc.publisher.GrpcTwinPublisher"
           init-method="start" destroy-method="close">
         <argument ref="localTwinSubscriber"/>
