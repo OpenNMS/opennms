@@ -4,7 +4,7 @@
 [[objectives]]
 == Objectives
 
-* Setting up a {page-component-title} Sentinel running on one of the following <<minion/system-requirements.adoc#operating-systems-Core, Operating Systems>>
+* Setting up a {page-component-title} Sentinel running on one of the following <<./system-requirements.adoc#operating-systems-sentinel, Operating Systems>>
 * Secure access with encrypted passwords to the Karaf shell
 * Sentinel can be configured with the Karaf Shell from th
 

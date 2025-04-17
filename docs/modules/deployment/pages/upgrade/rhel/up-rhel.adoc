@@ -52,11 +52,11 @@ yum -y upgrade opennms
 yum-config-manager --disable opennms-repo-stable-*
 ----
 
-. Upgrade Java 11 to the latest release:
+. Upgrade Java 17 to the latest release:
 +
 [source, console]
 ----
-yum -y install java-11-openjdk java-11-openjdk-devel
+yum -y install java-17-openjdk-devel
 ----
 
 . Use the `runjava` command to set the JVM that {page-component-title} will use:

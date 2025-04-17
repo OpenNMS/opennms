@@ -1,32 +1,30 @@
-.Install OpenJDK 11 JRE runtime
+.Install OpenJDK 17 JRE runtime
 [source, console]
-----
-sudo dnf -y install java-11-openjdk-headless
-----
+sudo dnf -y install java-17-openjdk-headless
 
 ifeval::["{page-component-title}" == "Horizon"]
-include::../../../repos/rpm-horizon/horizon-rhel8.adoc[]
+include::../../../repos/rpm-horizon.adoc[]
 endif::[]
 
 ifeval::["{page-component-title}" == "Meridian"]
-include::../../../repos/rpm-horizon/meridian-rhel8.adoc[]
+include::../../../repos/rpm-meridian.adoc[]
 endif::[]
 
-.Installing the of {page-component-title} Sentinel
+.Install {page-component-title} Sentinel
 [source, console]
 ----
-sudo dnf -y install {package-prefix}-sentinel
+sudo dnf -y install opennms-sentinel
 ----
 
 TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
-     After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
-     For this reason, it is recommended to exclude the {page-component-title} packages from update except when you are planning on performing an upgrade.
+After upgrading, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
+For this reason, it is recommended to exclude the {page-component-title} packages from updates except when you are planning on performing an upgrade.
 
 .Disable auto updates for {page-component-title} Sentinel
 [source, console]
 ----
 ifeval::["{page-component-title}" == "Horizon"]
-sudo dnf config-manager --disable opennms-repo-stable-*
+sudo dnf config-manager --disable opennms-stable*
 endif::[]
 ifeval::["{page-component-title}" == "Meridian"]
 sudo dnf config-manager --disable meridian
@@ -54,6 +52,4 @@ tree /opt/sentinel -L 1
 
 .Enable {page-component-title} Sentinel on system boot and start immediately
 [source, console]
-----
 sudo systemctl enable --now sentinel
-----

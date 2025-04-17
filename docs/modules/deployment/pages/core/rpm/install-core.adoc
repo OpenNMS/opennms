@@ -1,3 +1,4 @@
+
 ifeval::["{page-component-title}" == "Horizon"]
 include::../../repos/rpm-horizon.adoc[]
 endif::[]
@@ -9,14 +10,14 @@ endif::[]
 .Install {page-component-title} with all built-in dependencies
 [source, console, subs="attributes"]
 ----
-sudo dnf -y install {package-prefix}
+sudo dnf -y install opennms
 ----
 
 TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
 After upgrading, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
 We recommend that you exclude the {page-component-title} packages from updates except when you plan to perform an upgrade.
 
-.Disable auto updates for OpenNMS {page-component-title}
+.Disable auto updates for OpenNMS {page-component-title} Core
 [source, console]
 ----
 ifeval::["{page-component-title}" == "Horizon"]

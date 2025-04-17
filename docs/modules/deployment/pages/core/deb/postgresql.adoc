@@ -47,3 +47,6 @@ IMPORTANT: Set a secure password for your PostgreSQL superuser.
            The superuser is required to initialize and change the database schema for installation and updates.
 
 TIP: If you use PostgreSQL 13 you need to change the authentication method from `ident` to `md5` in the `pg_hba.conf`. In PostgreSQL 14 onwards the default is `scram-sha-256` which you can just use out of the box.
+
+TIP: When you want to install the PostgreSQL server on a dedicated machine, configure the PostgreSQL listener so that it can be reached from the OpenNMS Horizon Core server and Sentinels.
+     The listener configuration `listen_addresses` can be set in the `postgresql.conf` and the allowed IP ranges and authentication can be configured in the `pg_hba.conf`.

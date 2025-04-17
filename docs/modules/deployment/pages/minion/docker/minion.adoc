@@ -15,8 +15,6 @@ vi docker-compose.yml
 [subs="verbatim,attributes"]
 ----
 ---
-version: '3'
-
 services:
   minion:
 ifeval::["{page-component-title}" == "Horizon"]
@@ -101,7 +99,7 @@ Next, we need to create the keystore file and add the credentials for connecting
 ----
 mkdir keystore
 chown -R 10001:10001 keystore<1>
-docker-compose run --rm -v $(pwd)/keystore:/keystore minion -s<2>
+docker compose run --rm -v $(pwd)/keystore:/keystore minion -s<2>
 ----
 <1> Assign ownership so the container user account can write within the directory.
 <2> When prompted, enter the username and password for a `ROLE_MINION` user account on the {page-component-title} server.
@@ -117,19 +115,19 @@ You may be prompted for the same username and password twice.
 .Validate your Docker Compose file
 [source, console]
 ----
-docker-compose config -q
+docker compose config -q
 ----
 
 .Start the service in background
 [source, console]
 ----
-docker-compose up -d
+docker compose up -d
 ----
 
 .Verify the connectivity and the configuration with the health check
 [source, console]
 ----
-docker-compose exec minion bin/client opennms:health-check
+docker compose exec minion bin/client opennms:health-check
 ----
 
 .The endpoints should be reachable and the bundles should be installed successful

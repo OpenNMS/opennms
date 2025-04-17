@@ -6,8 +6,8 @@ endif::[]
 .Create a project directory for {page-component-title} Core and create a `docker-compose.yml` file.
 [source, console]
 ----
-mkdir horizon
-cd horizon
+mkdir core
+cd core
 vi docker-compose.yml
 ----
 
@@ -20,9 +20,8 @@ volumes:<1>
   data-config: {}
 
 services:
-  horizon:<2>
+  core:<2>
     image: opennms/horizon:{full-display-version}<3>
-    container_name: horizon
     environment:
       TZ: 'America/New_York'<4>
       POSTGRES_HOST: 'my-database-host'<5>
@@ -47,7 +46,7 @@ services:
 ----
 
 <1> Volume definitions to persist the {page-component-title} Core data and configuration files.
-<2> The {page-component-title} Core instance service is named `horizon` with a friendly `container_name`.
+<2> The service is named `core`.
 <3> Image reference using the {page-component-title} container image with the Core services.
 <4> Set the time zone and the postgres credentials to initialize the database that the {page-component-title} Core instance uses. To list all available time zones, use `timedatectl list-timezones`.
 <5> Set the host or IP address of the host that runs the PostgreSQL database.
@@ -58,10 +57,10 @@ services:
 NOTE: The process inside the container runs as a non-privileged user with user id `10001`.
      If you want the configuration files in a bind mount on your local host system, make sure you set permissions and ownership accordingly with `chown 10001:10001 ./path/to/my/config-dir`.
 
-TIP: To run a release candidate or a different version, use the public image tags from our repository on <<link:https://hub.docker.com/repository/docker/opennms/horizon/tags, DockerHub>>.
+TIP: To run a release candidate or a different version, use the public image tags from our repository on <<link:https://hub.docker.com/r/opennms/horizon/tags, DockerHub>>.
 
 .Validate your Docker Compose file
 [source, console]
 ----
-docker-compose config -q
+docker compose config -q
 ----

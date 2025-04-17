@@ -34,13 +34,12 @@ You should also be familiar with {page-component-title}, its components, and how
 Make sure to set them up, with SSL enabled, before deploying {page-component-title}.
 
 * PostgreSQL server as the central database for OpenNMS and Grafana.
-** For Google Cloud, the solution was tested using Google SQL for PostgreSQL with SSL and a private IP.
+  For Google Cloud, the solution was tested using Google SQL for PostgreSQL with SSL and a private IP.
 * Elasticsearch cluster for flow persistence
-* Grafana Loki server for log aggregation
-** https://grafana.com/docs/loki/v2.8.x/tools/logcli/[logcli] helps extract OpenNMS logs from the command line for troubleshooting purposes.
+* Grafana Loki server for log aggregation.
+  The https://grafana.com/docs/loki/v2.8.x/tools/logcli/[logcli] helps extract OpenNMS logs from the command line for troubleshooting purposes.
 * https://cert-manager.io/docs/[cert-manager] to provide HTTPS/TLS support to the web-based services the ingress controller manages.
-** A `ClusterIssuer` to use it across multiple independent {page-component-title} installations.
-* Nginx Ingress Controller, as the solution has not been tested with other Ingress implementations.
+* A `ClusterIssuer` to use it across multiple independent {page-component-title} installations.
 
 == Deployment on Kubernetes
 Once you have set up Helm properly, use the following commands to deploy {page-component-title} on Kubernetes:
@@ -80,11 +79,10 @@ To install {page-component-title} on OpenShift, follow these steps:
 5. In the Create drop-down menu, select Helm Release.
 6. Under Repository, select the newly created repository entry.
 7. Click on Horizon.
-8.	Make sure that the project name matches the name you set in step 2.
-    * Skip this step if you are setting “CreateNamespace” option to true.
-9.	Make the required modifications (for example, set the PostgreSQL information).
+8. Make sure that the project name matches the name you set in step 2.
+   Skip this step if you are setting “CreateNamespace” option to true.
+9. Make the required modifications (for example, set the PostgreSQL information).
 10.	Click Create.
 11.	Wait for the pods to come up. This may take a few minutes.
 
 NOTE: The process to install the Minion is similar.
-

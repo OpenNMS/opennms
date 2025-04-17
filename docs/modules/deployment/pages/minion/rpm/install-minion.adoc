@@ -1,33 +1,33 @@
-.Install OpenJDK {compatible-javajdk} JRE runtime
+
+.Install OpenJDK JRE runtime
 [source, console]
-[subs="verbatim,attributes"]
 ----
 sudo dnf -y install java-17-openjdk-headless
 ----
 
 ifeval::["{page-component-title}" == "Horizon"]
-include::../../repos/deb-horizon.adoc[]
+include::../../repos/rpm-horizon.adoc[]
 endif::[]
 
 ifeval::["{page-component-title}" == "Meridian"]
-include::../../repos/rpm-horizon/meridian-rhel9.adoc[]
+include::../../repos/rpm-meridian.adoc[]
 endif::[]
 
 .Install the {page-component-title} Minion package
 [source, console]
 ----
-sudo dnf -y install {package-prefix}-minion
+sudo dnf -y install opennms-minion
 ----
 
 TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
      After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
      For this reason, we recommend that you exclude the {page-component-title} packages from update except when you plan to perform an upgrade.
 
-.Disable auto updates for {page-component-title} Minion
+.Disable auto updates for OpenNMS {page-component-title} Minion
 [source, console]
 ----
 ifeval::["{page-component-title}" == "Horizon"]
-sudo dnf config-manager --disable opennms-repo-stable-*
+sudo dnf config-manager --disable opennms-stable*
 endif::[]
 ifeval::["{page-component-title}" == "Meridian"]
 sudo dnf config-manager --disable meridian

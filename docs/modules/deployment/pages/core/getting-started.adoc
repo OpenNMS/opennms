@@ -20,17 +20,22 @@ The following components and settings are required to set up a new {page-compone
 ifeval::["{page-component-title}" == "Meridian"]
 * Credentials to access the Meridian repositories.
 endif::[]
-* A Linux physical server, or a virtual machine running a <<./system-requirements.adoc#operating-systems-core, supported Linux operating system>>.´
+* A Linux physical server, or a virtual machine running a <<./system-requirements.adoc#operating-systems-core, supported Linux operating system>>.
 * Internet access to download the installation packages.
 * A working DNS server, and a localhost and server name that resolve properly.
 * A system user with administrative permissions (`sudo`) to perform installation. On Debian, you must install and configure `sudo` yourself.
 See the https://wiki.debian.org/sudo/[Debian Wiki] for more information.
 ifeval::["{page-component-title}" == "Horizon"]
 * To run services in Docker, you need https://docs.docker.com/compose/install[Docker Compose] for the service stacks from our examples.
-*
 endif::[]
 * With SELinux enabled, you need a policy that permits sending ICMP echo requests as an unprivileged user, see xref:reference:configuration/selinux.adoc[].
 * Use a time synchronization protocol in your environment, see knowledgebase article link:https://opennms.discourse.group/t/ensure-time-synchronization-for-your-opennms-components/159[Ensure time synchronization for your OpenNMS components].
+ifeval::["{page-component-title}" == "Horizon"]
++
+NOTE: If you run Debian, you may have to install and configure `sudo` yourself.
+See https://wiki.debian.org/sudo/[Debian Wiki] for guidance.
+endif::[]
+
 * The system locale should support the characters set `UTF-8`.
 
 Follow these steps if your system locale is not set to UTF-8:
@@ -43,8 +48,22 @@ RPM::
 .Installing language packages
 [source, console]
 ----
-sudo dnf install langpacks-en glibc-all-langpacks -y
+sudo dnf -y install langpacks-en glibc-all-langpacks
 ----
+
+--
+ifeval::["{page-component-title}" == "Horizon"]
+DEB::
++
+--
+.Installing language packages
+[source, console]
+----
+sudo apt -y install language-pack-en
+----
+--
+endif::[]
+====
 
 .Set the locale to english US using UTF-8
 [source, console]
@@ -57,32 +76,6 @@ sudo localectl set-locale LANG=en_US.UTF-8
 ----
 localectl
 ----
---
-ifeval::["{page-component-title}" == "Horizon"]
-DEB::
-+
---
-.Installing language packages
-[source, console]
-----
-sudo apt -y install language-pack-en
-----
-
-.Set the locale to english US using UTF-8
-[source, console]
-----
-sudo localectl set-locale LANG=en_US.UTF-8
-----
-
-.Verify if the locale is set
-[source, console]
-----
-sudo localectl
-----
---
-endif::[]
-====
-
 
 [[setup-postgresql]]
 == Set up PostgreSQL

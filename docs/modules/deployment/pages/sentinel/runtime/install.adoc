@@ -16,49 +16,30 @@
 * Internet access to download the installation packages
 * Ensure DNS is configured so that `localhost` and your server's host name are resolved properly
 * {page-component-title} Core instance runs on latest stable release
-* Java {compatible-javajdk} is installed
 * System user with administrative permissions (`sudo`) to perform the installation tasks
+* Use a time synchronization protocol in your environment, see knowledgebase article link:https://opennms.discourse.group/t/ensure-time-synchronization-for-your-opennms-components/159[Ensure time synchronization for your OpenNMS components].
+
 ifeval::["{page-component-title}" == "Horizon"]
 +
 NOTE: If you run Debian, you may have to install and configure `sudo` yourself.
 See https://wiki.debian.org/sudo/[Debian Wiki] for guidance.
 endif::[]
 
-include::../../time-sync.adoc[]
-
 == Installing the Sentinel package
 
 [{tabs}]
 ====
-CentOS/RHEL 9::
+RPM::
 +
 --
-include::centos-rhel9/install-sentinel.adoc[]
---
-
-CentOS/RHEL 8::
-+
---
-include::centos-rhel8/install-sentinel.adoc[]
---
-
-CentOS/RHEL 7::
-+
---
-include::centos-rhel7/install-sentinel.adoc[]
+include::rpm/install-sentinel.adoc[]
 --
 
 ifeval::["{page-component-title}" == "Horizon"]
-Ubuntu::
+DEB::
 +
 --
-include::ubuntu/install-sentinel.adoc[]
---
-
-Debian::
-+
---
-include::debian/install-sentinel.adoc[]
+include::deb/install-sentinel.adoc[]
 --
 endif::[]
 ====
@@ -72,14 +53,14 @@ IMPORTANT: Change the default user/password _admin/admin_ for the Karaf shell an
 CentOS/RHEL 7/8/9::
 +
 --
-include::centos-rhel/secure-karaf.adoc[]
+include::rpm/secure-karaf.adoc[]
 --
 
 ifeval::["{page-component-title}" == "Horizon"]
 Debian/Ubuntu::
 +
 --
-include::debian-ubuntu/secure-karaf.adoc[]
+include::deb/secure-karaf.adoc[]
 --
 endif::[]
 ====
