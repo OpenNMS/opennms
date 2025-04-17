@@ -30,7 +30,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
-import com.vaadin.v7.shared.ui.label.ContentMode;
 import org.opennms.core.utils.WebSecurityUtils;
 import org.opennms.features.vaadin.surveillanceviews.service.SurveillanceViewService;
 import org.opennms.features.vaadin.surveillanceviews.ui.dashboard.SurveillanceViewDetail;
