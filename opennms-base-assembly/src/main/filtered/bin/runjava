@@ -175,7 +175,7 @@ printVersion() {
 printInstallJava() {
     warn ""
     warn "You can install a JVM by downloading one from Oracle, or by running something like"
-    warn "'apt-get install openjdk-11-jdk' or 'yum install java-11-openjdk-devel'."
+    warn "'apt-get install openjdk-17-jdk' or 'yum install java-17-openjdk-devel'."
 }
 
 #
