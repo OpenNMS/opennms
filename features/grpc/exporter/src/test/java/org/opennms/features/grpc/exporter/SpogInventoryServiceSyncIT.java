@@ -376,8 +376,6 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
         eventsExporter = new EventsExporter(eventSubscriptionService, runtimeInfo, client, true);
         final var event = MockEventUtil.createNodeUpEventBuilder("test", databasePopulator.getNode1()).getEvent();
         eventdIpcMgr.sendNow(event);
-        final OnmsAlarm alarm = nodeUpAlarmWithRelatedAlarm();
-        alarmDao.save(alarm);
         AtomicReference<Boolean> eventFlag = new AtomicReference<>(false);
         await().pollInterval(2000, TimeUnit.MILLISECONDS)
                 .atMost(2, TimeUnit.MINUTES)

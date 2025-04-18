@@ -73,6 +73,7 @@ public class SpogGrpcClient extends GrpcClient {
             return;
         }
 
+
         super.startGrpcConnection();
         this.nmsSyncStub = NmsInventoryServiceSyncGrpc.newStub(super.getChannel());
         connectStreams();
