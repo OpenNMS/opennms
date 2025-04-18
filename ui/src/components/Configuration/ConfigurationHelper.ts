@@ -794,7 +794,6 @@ const validateHost = (host: string) => {
     const ipv6Regex = /^\[?(?:[a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4}\]?$/
     const domainRegex = /^(?!.*\.\.)(?![.-])(?!.*[.-]$)([a-zA-Z\d](?:[a-zA-Z\d\-]{0,61}[a-zA-Z\d])?)(\.[a-zA-Z\d](?:[a-zA-Z\d\-]{0,61}[a-zA-Z\d])?)*$/
     const customRegex = /^\$\{[^}]+\}:\$\{[^}]+\}|\w+:\$\{[^}]+\}|\w+:\S+$/ // Adjust this regex based on custom requirements
-    function validateHost(host) {
     // Check if the host is a valid IPv4 address
     const isIPv4 = ipv4Regex.test(host)
     // Check if the host is a valid IPv6 address
@@ -825,7 +824,6 @@ const validateHost = (host: string) => {
     }
     // Final validation
     return !isHostValid ? ErrorStrings.InvalidHostname : ''
-    }
 }
 
 
