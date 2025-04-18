@@ -19,10 +19,9 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.core.ipc.twin.common;
+package org.opennms.core.ipc.twin.api;
 
 import com.codahale.metrics.MetricRegistry;
-import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.core.tracing.api.TracerRegistry;
 
 public interface LocalTwinSubscriber extends TwinSubscriber {
