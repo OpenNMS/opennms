@@ -12,19 +12,6 @@ endif::[]
 sudo yum -y install {package-prefix}
 ----
 
-If you want time series trending and forecast functions you must install the link:https://www.r-project.org/[R project] packages.
-The additional download size for packages is ~390 MB.
-
-Note that R-core packages require that you have a PowerTools repository enabled.
-
-.Install R-core packages for time series trending and forecasting (optional)
-[source, console]
-----
-sudo dnf config-manager --set-enabled powertools
-sudo yum -y install epel-release
-sudo yum -y install R-core
-----
-
 TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
      After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
      We recommend that you exclude the {page-component-title} packages from update except when you plan to perform an upgrade.

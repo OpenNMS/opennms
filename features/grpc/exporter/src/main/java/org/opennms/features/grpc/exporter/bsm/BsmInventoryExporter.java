@@ -77,7 +77,7 @@ public class BsmInventoryExporter implements EventListener {
 
     @Override
     public void onEvent(final IEvent event) {
-        LOG.debug("Got inventory-event: {}", event);
+        LOG.debug("Got BSM inventory-event with uei : {}", event.getUei());
 
         switch (event.getUei()) {
             case EventConstants.NODE_GAINED_SERVICE_EVENT_UEI:

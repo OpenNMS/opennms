@@ -140,7 +140,7 @@ public abstract class AbstractBusinessServiceRestServiceIT extends AbstractSprin
     @After
     public void tearDown() throws Exception {
         super.tearDown();
-        databasePopulator.resetDatabase(true);
+        databasePopulator.resetDatabase(false, true);
     }
 
     public AbstractBusinessServiceRestServiceIT() {

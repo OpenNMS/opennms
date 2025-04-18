@@ -118,7 +118,7 @@ public class BusinessServiceManagerImplIT {
 
     @After
     public void after() {
-        populator.resetDatabase(true);
+        populator.resetDatabase(false, true);
     }
 
     @Test

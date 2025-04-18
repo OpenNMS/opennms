@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.core.ipc.twin.common;
+package org.opennms.core.ipc.twin.api;
 
 import java.util.HashMap;
 import java.util.Map;
