@@ -72,17 +72,16 @@ public class SpogGrpcClient extends GrpcClient {
             LOG.info("SPOG GrpcClient disabled, not starting connections to {}", super.getHost());
             return;
         }
-
-
+        
         super.startGrpcConnection();
         this.nmsSyncStub = NmsInventoryServiceSyncGrpc.newStub(super.getChannel());
         connectStreams();
     }
-
+    
     public void setEnabled(boolean enabled) {
         this.enabled = enabled;
     }
-
+    
     public boolean isEnabled() {
         return enabled;
     }
