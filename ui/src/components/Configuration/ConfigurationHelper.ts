@@ -789,41 +789,74 @@ const validateCronTab = (item: LocalConfiguration, oldErrors: LocalErrors) => {
  * @returns Blank if Valid, Error Message if Not.
  */
 const validateHost = (host: string) => {
-    // no spaces, may starts and ends with brackets, may contain (but not start with) hyphen or dot or colon, cannot be over 49 chars (e.g. IPv6 - vmware://[2001:db8:0:8d3:0:8a2e:70:7344])
-    const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}$/
-    const ipv6Regex = /^\[?(?:[a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4}\]?$/
-    const domainRegex = /^(?!.*\.\.)(?![.-])(?!.*[.-]$)([a-zA-Z\d](?:[a-zA-Z\d\-]{0,61}[a-zA-Z\d])?)(\.[a-zA-Z\d](?:[a-zA-Z\d\-]{0,61}[a-zA-Z\d])?)*$/
-    const customRegex = /^\$\{[^}]+\}:\$\{[^}]+\}|\w+:\$\{[^}]+\}|\w+:\S+$/ // Adjust this regex based on custom requirements
-    // Check if the host is a valid IPv4 address
-    const isIPv4 = ipv4Regex.test(host)
-    // Check if the host is a valid IPv6 address
-    const isIPv6 = ipv6Regex.test(host)
-    // Check if the host is a valid domain name
-    const isDomain = domainRegex.test(host)
-    // Check if the host matches the custom regex
-    const isCustom = customRegex.test(host)
-    // Combine the results
-    const isHostValid = isIPv4 || isIPv6 || isDomain || isCustom
-    // Check for user:pass@host format
-    const userPassRegex = /^(?:(\$\{[^}]+\}|\w+):(\$\{[^}]+\}|\S+)@)?/
-    const userPassMatch = host.match(userPassRegex)
-    // If user:pass is present, ensure it is followed by a valid host
-    if (userPassMatch) {
-      const hostPart = host.replace(userPassMatch[0], '')
-      if (!isHostValid) {
-        return ErrorStrings.InvalidHostname
+    const atIndex = host.indexOf('@');
+      let credentials = '';
+      let hostPart = host;
+
+      if (atIndex !== -1) {
+        credentials = host.slice(0, atIndex);
+        hostPart = host.slice(atIndex + 1);
+
+        // Must match user:pass with either static or ${...}
+        const credRegex = /^(\$\{[^}]+\}|\w+):(\$\{[^}]+\}|\S+)$/;
+        if (!credRegex.test(credentials)) {
+          return ErrorStrings.InvalidHostname;
+        }
       }
-    }
-    // Check for port number
-    const portMatch = host.match(/:(\d+)$/)
-    if (portMatch) {
-      const port = parseInt(portMatch[1], 10)
-      if (port < 0 || port > 65535) {
-        return ErrorStrings.InvalidHostname
+
+      // Extract optional port
+      let hostname = hostPart;
+      let port: number | undefined;
+
+      // IPv6 with port
+      const ipv6PortMatch = hostPart.match(/^\[([a-fA-F0-9:]+)\]:(\d+)$/);
+      if (ipv6PortMatch) {
+        hostname = `[${ipv6PortMatch[1]}]`;
+        port = parseInt(ipv6PortMatch[2], 10);
+      } else {
+        // Generic port split, but not for IPv6
+        const lastColonIndex = hostPart.lastIndexOf(':');
+        if (lastColonIndex !== -1 && hostPart[lastColonIndex - 1] !== ']') {
+          hostname = hostPart.substring(0, lastColonIndex);
+          const portStr = hostPart.substring(lastColonIndex + 1);
+          if (!/^\d+$/.test(portStr)) return ErrorStrings.InvalidHostname;
+          port = parseInt(portStr, 10);
+        }
       }
-    }
-    // Final validation
-    return !isHostValid ? ErrorStrings.InvalidHostname : ''
+
+      // Validate port range
+      if (port !== undefined && (isNaN(port) || port < 0 || port > 65535)) {
+        return ErrorStrings.InvalidHostname;
+      }
+
+      // Remove brackets for IPv6 and validate
+      const rawHostname = hostname.replace(/^\[|\]$/g, '');
+
+      const doubleDot = rawHostname.includes('..');
+      const leadingTrailingDotHyphen = /^[.-]|[.-]$/.test(rawHostname);
+      if (doubleDot || leadingTrailingDotHyphen) {
+        return ErrorStrings.InvalidHostname;
+      }
+
+      // Check for IPv4
+      const ipv4Regex = /^(\d{1,3}\.){3}\d{1,3}$/;
+      const isIPv4 = ipv4Regex.test(rawHostname) &&
+        rawHostname.split('.').every(n => +n >= 0 && +n <= 255);
+
+      // Check for IPv6
+      const ipv6Regex = /^([a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4}$/;
+      const isIPv6 = ipv6Regex.test(rawHostname);
+
+      // Check for valid domain
+      const domainRegex = /^(?!.*\.\.)(?![.-])(?!.*[.-]$)[a-zA-Z\d](?:[a-zA-Z\d\-]{0,61}[a-zA-Z\d])?(?:\.[a-zA-Z\d](?:[a-zA-Z\d\-]{0,61}[a-zA-Z\d])?)*$/;
+      const isDomain = domainRegex.test(rawHostname);
+
+      // Allow template vars as full hostnames if no dots/hyphens to validate
+      const isTemplate = /^\$\{[^}]+\}$/.test(rawHostname);
+
+      // Final decision
+      if (isIPv4 || isIPv6 || isDomain || isTemplate) {
+        return '';
 }
 
 
