@@ -119,14 +119,13 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
     private final GrpcIpcServer grpcIpcServer;
     private String location;
     private Identity identity;
-    private Properties properties;
     private long ttl;
     private MetricRegistry rpcMetrics;
     private MetricRegistry sinkMetrics;
     private JmxReporter rpcMetricsReporter;
     private JmxReporter sinkMetricsReporter;
     private TracerRegistry tracerRegistry;
-    private AtomicBoolean closed = new AtomicBoolean(false);
+    private final AtomicBoolean closed = new AtomicBoolean(false);
     private final ThreadFactory responseHandlerThreadFactory = new ThreadFactoryBuilder()
             .setNameFormat("rpc-response-handler-%d")
             .build();
@@ -145,14 +144,14 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
     private final Map<String, RpcResponseHandler> rpcResponseMap = new ConcurrentHashMap<>();
     // Delay queue maintains the priority queue of RPC requests and times out the requests if no response was received
     // within the delay specified.
-    private DelayQueue<RpcResponseHandler> rpcTimeoutQueue = new DelayQueue<>();
+    private final DelayQueue<RpcResponseHandler> rpcTimeoutQueue = new DelayQueue<>();
     // Maintains map of minionId and rpc handler for that minion. Used for directed RPC requests.
-    private Map<String, StreamObserver<RpcRequestProto>> rpcHandlerByMinionId = new HashMap<>();
+    private final Map<String, StreamObserver<RpcRequestProto>> rpcHandlerByMinionId = new HashMap<>();
     // Maintains multi element map of location and rpc handlers for that location.
     // Used to get one of the rpc handlers for a specific location.
-    private Multimap<String, StreamObserver<RpcRequestProto>> rpcHandlerByLocation = LinkedListMultimap.create();
+    private final Multimap<String, StreamObserver<RpcRequestProto>> rpcHandlerByLocation = LinkedListMultimap.create();
     // Maintains the state of iteration for the list of minions for a given location.
-    private Map<String, Iterator<StreamObserver<RpcRequestProto>>> rpcHandlerIteratorMap = new HashMap<>();
+    private final Map<String, Iterator<StreamObserver<RpcRequestProto>>> rpcHandlerIteratorMap = new HashMap<>();
     // Maintains the map of sink modules by it's id.
     private final Map<String, SinkModule<?, Message>> sinkModulesById = new ConcurrentHashMap<>();
     // Maintains the map of sink consumer executor and by module Id.
@@ -169,7 +168,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
             grpcIpcServer.startServer(new OpennmsIpcService());
             LOG.info("Added RPC/Sink Service to OpenNMS IPC Grpc Server");
 
-            properties = grpcIpcServer.getProperties();
+            Properties properties = grpcIpcServer.getProperties();
             ttl = PropertiesUtils.getProperty(properties, GRPC_TTL_PROPERTY, DEFAULT_GRPC_TTL);
             rpcTimeoutExecutor.execute(this::handleRpcTimeouts);
             rpcMetricsReporter = JmxReporter.forRegistry(getRpcMetrics())
@@ -228,7 +227,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
                 Long timeToLive = request.getTimeToLiveMs();
                 timeToLive = (timeToLive != null && timeToLive > 0) ? timeToLive : ttl;
                 long expirationTime = System.currentTimeMillis() + timeToLive;
-                RpcResponseHandlerImpl responseHandler = new RpcResponseHandlerImpl<S, T>(future,
+                RpcResponseHandlerImpl<S, T> responseHandler = new RpcResponseHandlerImpl<S, T>(future,
                         module, rpcId, request.getLocation(), expirationTime, span, loggingContext);
                 rpcResponseMap.put(rpcId, responseHandler);
                 rpcTimeoutQueue.offer(responseHandler);
@@ -236,6 +235,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
                         .setRpcId(rpcId)
                         .setLocation(request.getLocation())
                         .setModuleId(module.getId())
+                        .setExpirationTime(expirationTime)
                         .setRpcContent(ByteString.copyFrom(marshalRequest.getBytes()));
                 if (!Strings.isNullOrEmpty(request.getSystemId())) {
                     builder.setSystemId(request.getSystemId());
@@ -305,7 +305,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
         }
         // Handle response from the Minion.
         RpcResponseHandler responseHandler = rpcResponseMap.get(responseProto.getRpcId());
-        if (responseHandler != null && responseProto.getRpcContent() != null) {
+        if (responseHandler != null) {
             responseHandler.sendResponse(responseProto.getRpcContent().toStringUtf8());
         } else {
             LOG.debug("Received a response for request for module: {} with RpcId:{}, but no outstanding request was found with this id." +
@@ -536,7 +536,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
 
     private void dispatchSinkMessage(SinkMessage sinkMessage) {
         SinkModule<?, Message> sinkModule = sinkModulesById.get(sinkMessage.getModuleId());
-        if (sinkModule != null && sinkMessage.getContent() != null) {
+        if (sinkModule != null) {
             Message message = sinkModule.unmarshal(sinkMessage.getContent().toByteArray());
 
             MessageConsumerManager.updateMessageSize(getSinkMetrics(), sinkMessage.getLocation(),
@@ -581,7 +581,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
         private final Map<String, String> loggingContext;
         private boolean isProcessed = false;
         private final Long requestCreationTime;
-        private Span span;
+        private final Span span;
 
         private RpcResponseHandlerImpl(CompletableFuture<T> responseFuture, RpcModule<S, T> rpcModule, String rpcId,
                                        String location, long timeout, Span span, Map<String, String> loggingContext) {
