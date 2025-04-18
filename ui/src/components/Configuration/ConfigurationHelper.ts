@@ -857,6 +857,7 @@ const validateHost = (host: string) => {
       // Final decision
       if (isIPv4 || isIPv6 || isDomain || isTemplate) {
         return '';
+        }
 }
 
 
