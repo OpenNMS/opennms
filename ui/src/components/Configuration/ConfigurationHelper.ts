@@ -789,22 +789,43 @@ const validateCronTab = (item: LocalConfiguration, oldErrors: LocalErrors) => {
  * @returns Blank if Valid, Error Message if Not.
  */
 const validateHost = (host: string) => {
-  // no spaces, may starts and ends with brackets, may contain (but not start with) hyphen or dot or colon, cannot be over 49 chars (e.g. IPv6 - vmware://[2001:db8:0:8d3:0:8a2e:70:7344])
-  const customHostnameRegex = /^(?:(\$\{[^}]+\}|\w+):(\$\{[^}]+\}|\S+)@)?(?!.*\.\.)(?![.-])(?!.*[.-]$)((?:(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])\.){3}(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])|\[?(?:[a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4}\]?|(?:[a-zA-Z\d](?:[a-zA-Z\d\-]{0,61}[a-zA-Z\d])?(?:\.[a-zA-Z\d](?:[a-zA-Z\d\-]{0,61}[a-zA-Z\d])?)*))(?::([0-9]{1,5}))?$/
-  // Either IPv4, IPv6, a valid domain name, or passes custom regex
-  const isHostValid = 
-    ipRegex({exact: true}).test(host) 
-    || isValidDomain(host) 
-    || customHostnameRegex.test(host)
-
-  const portMatch = host.match(/:(\d+)$/)
-  if (portMatch) {
-    const port = parseInt(portMatch[1], 10)
-    if (port < 0 || port > 65535) {
-      return ErrorStrings.InvalidHostname
+    // no spaces, may starts and ends with brackets, may contain (but not start with) hyphen or dot or colon, cannot be over 49 chars (e.g. IPv6 - vmware://[2001:db8:0:8d3:0:8a2e:70:7344])
+    const ipv4Regex = /^(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])(\.(25[0-5]|2[0-4][0-9]|1[0-9]{2}|[1-9]?[0-9])){3}$/
+    const ipv6Regex = /^\[?(?:[a-fA-F0-9]{1,4}:){7}[a-fA-F0-9]{1,4}\]?$/
+    const domainRegex = /^(?!.*\.\.)(?![.-])(?!.*[.-]$)([a-zA-Z\d](?:[a-zA-Z\d\-]{0,61}[a-zA-Z\d])?)(\.[a-zA-Z\d](?:[a-zA-Z\d\-]{0,61}[a-zA-Z\d])?)*$/
+    const customRegex = /^\$\{[^}]+\}:\$\{[^}]+\}|\w+:\$\{[^}]+\}|\w+:\S+$/ // Adjust this regex based on custom requirements
+    function validateHost(host) {
+    // Check if the host is a valid IPv4 address
+    const isIPv4 = ipv4Regex.test(host)
+    // Check if the host is a valid IPv6 address
+    const isIPv6 = ipv6Regex.test(host)
+    // Check if the host is a valid domain name
+    const isDomain = domainRegex.test(host)
+    // Check if the host matches the custom regex
+    const isCustom = customRegex.test(host)
+    // Combine the results
+    const isHostValid = isIPv4 || isIPv6 || isDomain || isCustom
+    // Check for user:pass@host format
+    const userPassRegex = /^(?:(\$\{[^}]+\}|\w+):(\$\{[^}]+\}|\S+)@)?/
+    const userPassMatch = host.match(userPassRegex)
+    // If user:pass is present, ensure it is followed by a valid host
+    if (userPassMatch) {
+      const hostPart = host.replace(userPassMatch[0], '')
+      if (!isHostValid) {
+        return ErrorStrings.InvalidHostname
+      }
     }
-  }
-  return !isHostValid ? ErrorStrings.InvalidHostname : ''
+    // Check for port number
+    const portMatch = host.match(/:(\d+)$/)
+    if (portMatch) {
+      const port = parseInt(portMatch[1], 10)
+      if (port < 0 || port > 65535) {
+        return ErrorStrings.InvalidHostname
+      }
+    }
+    // Final validation
+    return !isHostValid ? ErrorStrings.InvalidHostname : ''
+    }
 }
 
 
