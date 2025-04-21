@@ -35,7 +35,10 @@ import io.opentracing.References;
 import io.opentracing.Scope;
 import io.opentracing.Span;
 import io.opentracing.Tracer;
+import io.opentracing.util.GlobalTracer;
+import org.opennms.core.ipc.twin.api.TwinRequest;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
+import org.opennms.core.ipc.twin.api.TwinUpdate;
 import org.opennms.core.ipc.twin.model.TwinRequestProto;
 import org.opennms.core.ipc.twin.model.TwinResponseProto;
 import org.opennms.core.tracing.api.TracerConstants;
@@ -89,9 +92,17 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
     protected AbstractTwinSubscriber(final Identity identity, TracerRegistry tracerRegistry, MetricRegistry metricRegistry) {
         this.identity = Objects.requireNonNull(identity);
         this.tracerRegistry = tracerRegistry;
-        this.tracerRegistry.init(identity.getLocation() + "@" + identity.getId());
-        this.tracer = this.tracerRegistry.getTracer();
-        this.metrics = metricRegistry;
+        if (tracerRegistry != null) {
+            this.tracerRegistry.init(identity.getLocation() + "@" + identity.getId());
+            this.tracer = tracerRegistry.getTracer();
+        } else {
+            this.tracer = GlobalTracer.get();
+        }
+        if (metricRegistry != null) {
+            this.metrics = metricRegistry;
+        } else {
+            this.metrics = new MetricRegistry();
+        }
     }
 
     protected abstract void sendRpcRequest(TwinRequest twinRequest);
