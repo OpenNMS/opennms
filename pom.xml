@@ -1801,11 +1801,11 @@
     <geohashVersion>1.4.0</geohashVersion>
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
-    <groovyVersion>2.5.23</groovyVersion>
+    <groovyVersion>3.0.21</groovyVersion>
     <grpcVersion>1.71.0</grpcVersion>
     <gsonVersion>2.9.1</gsonVersion>
-    <guavaVersion>25.1-jre</guavaVersion>
-    <guavaOsgiVersion>25.1.0</guavaOsgiVersion>
+    <guavaVersion>31.1-jre</guavaVersion>
+    <guavaOsgiVersion>31.1</guavaOsgiVersion>
     <guavagRPCVersion>33.3.1-jre</guavagRPCVersion>
     <gwtVersion>2.9.0</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
