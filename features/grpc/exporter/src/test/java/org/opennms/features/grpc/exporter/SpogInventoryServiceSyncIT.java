@@ -397,7 +397,6 @@ public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDa
         Assert.assertTrue("Event id should be exist", eventData.getId() > 0);
         Assert.assertTrue("Node id in event should be exist", eventData.getNodeId() > 0);
         Assert.assertEquals(EventConstants.NODE_UP_EVENT_UEI, eventData.getUei());
-
     }
 
     private OnmsAlarm nodeDownAlarmWithRelatedAlarm() {
