@@ -17,7 +17,7 @@ To use this feature you have to install the reverse DNS provisioning plugin from
 
 == Configuration
 
-To configure this adapter, create a `rdns.properties` file in  the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` folder and set the `importer.adapter.dns.server property`:
+To configure this adapter, create a `rdns.properties` file in  the `$\{OPENNMS_HOME}/etc/opennms.properties.d/` folder and set the `importer.adapter.dns.server` property as specified below.
 
 [source, properties]
 ----
