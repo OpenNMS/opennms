@@ -262,7 +262,7 @@
                 '                    </div>' +
                 '                    <div class="row">' +
                 '                        <div class="col">' + notification.notificationName + '</div>' +
-                '                        <div class="col">' + nodeLabel + '</div>' +
+                '                        <div class="col">' + $('<div/>').text(nodeLabel).html() + '</div>' +
                 '                        <div class="col">' + ipAddress + '</div>' +
                 '                        <div class="col">' + serviceName + '</div>' +
                 '                    </div>' +
