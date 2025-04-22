@@ -182,7 +182,7 @@ jobs:
           context: ./opennms-container/core
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: quay.io/bluebird/core-snapshot:${{ github.sha }}.b${{ github.run_id }}
+          tags: quay.io/bluebird/core-snapshot:${{ github.sha }}
 
   minion-oci:
     if: "!contains(github.event.commits[0].message, '[skip minion-oci]')"
@@ -227,7 +227,7 @@ jobs:
           context: ./opennms-container/minion
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: quay.io/bluebird/minion-snapshot:${{ github.sha }}.b${{ github.run_id }}
+          tags: quay.io/bluebird/minion-snapshot:${{ github.sha }}
 
   sentinel-oci:
     if: "!contains(github.event.commits[0].message, '[skip sentinel-oci]')"
@@ -265,7 +265,7 @@ jobs:
           context: ./opennms-container/sentinel
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: quay.io/bluebird/sentinel-snapshot:${{ github.sha }}.b${{ github.run_id }}
+          tags: quay.io/bluebird/sentinel-snapshot:${{ github.sha }}
 
   unit-tests:
     if: "!contains(github.event.commits[0].message, '[skip unit-tests]')"
