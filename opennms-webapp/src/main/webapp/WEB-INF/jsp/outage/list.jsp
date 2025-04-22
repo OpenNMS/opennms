@@ -142,7 +142,7 @@
             <% if(outages[i].getNodeId() != 0 ) { %>
               <% OnmsNode node = NetworkElementFactory.getInstance(getServletContext()).getNode(outages[i].getNodeId()); %>
               <% if(node.getForeignSource() != null) { %>
-              <%=node.getForeignSource()%>
+              <%=WebSecurityUtils.sanitizeString(node.getForeignSource())%>
               <% Filter foreignSourceFilter = new ForeignSourceFilter(node.getForeignSource()); %>
               <% if( !parms.filters.contains(foreignSourceFilter) ) { %>
                   <a href="<%=OutageUtil.makeLink( request, parms, foreignSourceFilter, true)%>" title="Show only outages for this foreign source"><%=ZOOM_IN_ICON%></a>
