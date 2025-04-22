@@ -95,12 +95,6 @@ DEB::
 --
 include::deb/postgresql.adoc[]
 --
-
-Docker::
-+
---
-include::docker/postgresql.adoc[]
---
 endif::[]
 ====
 
@@ -150,12 +144,6 @@ DEB::
 +
 --
 include::deb/initialize-core.adoc[]
---
-
-Docker::
-+
---
-include::docker/initialize.adoc[]
 --
 endif::[]
 ====
