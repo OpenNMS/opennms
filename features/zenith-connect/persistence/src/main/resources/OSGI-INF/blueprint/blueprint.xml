@@ -1,0 +1,20 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		https://osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+">
+    <reference id="jsonStore" interface="org.opennms.features.distributed.kvstore.api.JsonStore" availability="optional" />
+
+    <bean
+        id="zenithConnectPersistenceServiceImpl"
+        class="org.opennms.features.zenithconnect.persistence.impl.ZenithConnectPersistenceServiceImpl">
+        <argument ref="jsonStore" />
+    </bean>
+
+    <service
+        id="zenithConnectPersistenceService"
+        ref="zenithConnectPersistenceServiceImpl"
+        interface="org.opennms.features.zenithconnect.persistence.api.ZenithConnectPersistenceService"
+    />
+</blueprint>
