@@ -35,7 +35,7 @@ import org.mockito.Mockito;
 import org.opennms.core.ipc.common.kafka.KafkaConfigProvider;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
-import org.opennms.core.ipc.twin.common.LocalTwinSubscriber;
+import org.opennms.core.ipc.twin.api.LocalTwinSubscriber;
 import org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl;
 import org.opennms.core.ipc.twin.kafka.publisher.KafkaTwinPublisher;
 import org.opennms.core.ipc.twin.kafka.subscriber.KafkaTwinSubscriber;

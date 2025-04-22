@@ -1810,12 +1810,12 @@
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
     <groovyVersion>3.0.21</groovyVersion>
-    <grpcVersion>1.66.0</grpcVersion>
+    <grpcVersion>1.71.0</grpcVersion>
     <gsonVersion>2.9.1</gsonVersion>
     <guavaVersion>31.1-jre</guavaVersion>
     <guava32Version>32.1.3-jre</guava32Version>
     <guavaOsgiVersion>31.1</guavaOsgiVersion>
-    <guavagRPCVersion>30.1-jre</guavagRPCVersion>
+    <guavagRPCVersion>33.3.1-jre</guavagRPCVersion>
     <gwtVersion>2.9.0</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
