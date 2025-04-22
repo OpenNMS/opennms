@@ -276,14 +276,14 @@
 
                 $('<a class="dropdown-item" id="notification-"' + notification.id + '" href="' + baseHref + 'notification/detail.jsp?notice=' + notification.id + '">' +
                     '            <div class="row align-items-center">' +
-                    '                <div class="col-1"><span class="fa fa-circle text-severity-' + severity + '"></span></div>' +
+                    '                <div class="col-1"><span class="fa fa-circle text-severity-'+ severity +'"></span></div>' +
                     '                <div class="col-11">' +
                     '                    <div class="row">' +
                     '                        <div class="col"><span class="font-weight-bold">' + dateTime + '</span></div>' +
                     '                    </div>' +
                     '                    <div class="row">' +
                     '                        <div class="col">' + notification.notificationName + '</div>' +
-                    '                        <div class="col">' + nodeLabel + '</div>' +
+                    '                        <div class="col">' + $('<div/>').text(nodeLabel).html() + '</div>' +
                     '                        <div class="col">' + ipAddress + '</div>' +
                     '                        <div class="col">' + serviceName + '</div>' +
                     '                    </div>' +

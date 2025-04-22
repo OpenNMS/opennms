@@ -367,6 +367,10 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
     public Properties getSystemProperties() {
         final Properties props = new Properties();
 
+        if (!IpcStrategy.JMS.equals(model.getIpcStrategy())) {
+            props.put("org.opennms.activemq.broker.disable", "true");
+        }
+
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
             props.put("org.opennms.core.ipc.strategy", "kafka");
             props.put("org.opennms.core.ipc.kafka.bootstrap.servers", KAFKA_ALIAS + ":9092");

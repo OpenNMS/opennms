@@ -28,21 +28,27 @@
 
 package org.opennms.features.status.api.node.strategy.query;
 
+import java.lang.reflect.Method;
 import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import org.opennms.features.status.api.node.strategy.NodeStatusCalculatorConfig;
 import org.opennms.features.status.api.node.strategy.Status;
 import org.opennms.netmgt.dao.api.GenericPersistenceAccessor;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsSeverity;
+import org.opennms.web.svclayer.support.PropertyUtils;
 import org.opennms.web.utils.QueryParameters;
 
 import com.google.common.base.Strings;
+
+import javax.persistence.Column;
 
 public abstract class Query {
 
@@ -53,6 +59,28 @@ public abstract class Query {
     protected final NodeStatusCalculatorConfig config;
 
     private final GenericPersistenceAccessor genericPersistenceAccessor;
+
+    public final static Set<String> ORDER_COLUMNS;
+
+    static {
+        ORDER_COLUMNS = PropertyUtils.getProperties(new OnmsNode()).stream()
+                .map(s -> {
+                    try {
+                        final Method method = OnmsNode.class.getMethod("get" + s.substring(0, 1).toUpperCase() + s.substring(1));
+                        final Column annotation = method.getAnnotation(Column.class);
+                        if (annotation != null) {
+                            return annotation.name().toLowerCase();
+                        }
+                    } catch (NoSuchMethodException e) {
+                        // Ignore
+                    }
+                    return null;
+                })
+                .filter(Objects::nonNull)
+                .collect(Collectors.toSet());
+
+        ORDER_COLUMNS.add("severity");
+    }
 
     public Query(GenericPersistenceAccessor genericPersistenceAccessor, NodeStatusCalculatorConfig config) {
         this.config = Objects.requireNonNull(config);
@@ -104,7 +132,11 @@ public abstract class Query {
         // Apply ordering
         if (config.getOrder() != null && !Strings.isNullOrEmpty(config.getOrder().getColumn())) {
             final QueryParameters.Order order = config.getOrder();
-            sql.append(String.format("ORDER BY %s %s ",  order.getColumn(), order.isDesc() ? "desc" : "asc"));
+            if (order.getColumn() != null && ORDER_COLUMNS.contains(order.getColumn().toLowerCase())) {
+                sql.append(String.format("ORDER BY %s %s ",  order.getColumn(), order.isDesc() ? "DESC" : "ASC"));
+            } else {
+                throw new IllegalStateException("Invalid order column: " + order.getColumn());
+            }
         }
     }
 
