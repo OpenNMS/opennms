@@ -21,29 +21,78 @@
 ///
 
 import { defineStore } from 'pinia'
-import { ZenithConnectRegisterResponse, ZenithConnectRegistration } from '@/types/zenithConnect'
+import API from '@/services'
+import {
+  ZenithConnectRegistrationResponse,
+  ZenithConnectRegistration,
+  ZenithConnectRegistrations
+} from '@/types/zenithConnect'
 
 export const useZenithConnectStore = defineStore('zenithConnectStore', () => {
-  const registerResponse = ref<ZenithConnectRegisterResponse>()
-  const registrations = ref<ZenithConnectRegistration[]>([])
+  const registerResponse = ref<ZenithConnectRegistrationResponse>()
+  const registrations = ref<ZenithConnectRegistrations>()
+  const currentRegistration = ref<ZenithConnectRegistration>()
 
-  const setRegisterResponse = (response: ZenithConnectRegisterResponse) => {
+  const resetRegistration = () => {
+    const regs = registrations.value?.registrations ?? []
+
+    currentRegistration.value = regs && regs.length > 0 ? regs[0] : undefined
+  }
+
+  const addRegistration = async (registration: ZenithConnectRegistration) => {
+    const resp = await API.addZenithRegistration(registration)
+
+    if (resp) {
+      const newRegistration = resp as ZenithConnectRegistration
+
+      if (newRegistration) {
+        registrations.value = {
+          registrations: [newRegistration]
+        }
+      
+        return true
+      }
+    }
+
+    return false
+  }
+
+  const fetchRegistrations = async () => {
+    const resp = await API.getZenithRegistrations()
+
+    if (resp) {
+      const newRegistrations = resp as ZenithConnectRegistrations
+
+      if (newRegistrations) {
+        registrations.value = newRegistrations
+        resetRegistration()
+
+        return true
+      }
+    }
+
+    return false
+  }
+
+  const setRegistrationResponse = (response: ZenithConnectRegistrationResponse) => {
     registerResponse.value = response
   }
 
-  const addRegistration = (registration: ZenithConnectRegistration) => {
-    registrations.value.push(registration)
-  }
-
+  // TODO: remove
   const clearRegistrations = () => {
-    registrations.value = []
+    registrations.value = {
+      registrations: []
+    }
   }
 
   return {
+    currentRegistration,
     registerResponse,
     registrations,
     addRegistration,
     clearRegistrations,
-    setRegisterResponse
+    fetchRegistrations,
+    resetRegistration,
+    setRegistrationResponse
   }
 })

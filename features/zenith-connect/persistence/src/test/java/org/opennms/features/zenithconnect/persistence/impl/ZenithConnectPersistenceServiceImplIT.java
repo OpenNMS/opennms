@@ -84,6 +84,38 @@ public class ZenithConnectPersistenceServiceImplIT {
     }
 
     @Test
+    public void testAddDuplicateRegistrations() throws ZenithConnectPersistenceException {
+        // add a registration
+        var registration = createDefaultRegistration();
+        long currentTime = Instant.now().toEpochMilli();
+        persistenceService.addRegistration(registration);
+
+        // make sure it was added correctly
+        ZenithConnectRegistrations registrations = persistenceService.getRegistrations();
+        assertNotNull(registrations);
+
+        ZenithConnectRegistration createdRegistration = registrations.first();
+        assertRegistrationFieldsEqual(registration, createdRegistration);
+
+        assertThat(createdRegistration.id, not(emptyString()));
+        assertThat(createdRegistration.id, matchesPattern(UUID_REGEX));
+        assertThat(createdRegistration.createTimeMs, greaterThanOrEqualTo(currentTime));
+
+        // Now add it again, should fail with specific exception and flag
+        var duplicate = createDefaultRegistration();
+        ZenithConnectPersistenceException exception = null;
+
+        try {
+            persistenceService.addRegistration(duplicate, true);
+        } catch (ZenithConnectPersistenceException e) {
+           exception = e;
+        }
+
+        assertNotNull("Adding duplicate to persistenceService.addRegistration should throw a ZenithConnectPersistenceException.", exception);
+        assertTrue("Adding duplicate to persistenceService.addRegistration should set attemptedToAddDuplicate.", exception.isAttemptedToAddDuplicate());
+    }
+
+    @Test
     public void testUpdateRegistration() throws ZenithConnectPersistenceException {
         // add a registration
         var registration = createDefaultRegistration();
