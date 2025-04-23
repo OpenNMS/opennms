@@ -8,7 +8,7 @@ parameters:
   trigger-prebuild:
     description: whether to trigger a pre-build evaluation
     type: boolean
-    default: true
+    default: false
   trigger-coverage-api:
     description: whether to trigger a code coverage build
     type: boolean
