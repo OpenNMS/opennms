@@ -29,11 +29,11 @@ sudo vi etc/opennms.properties.d/jaeger.properties
 [source, jaeger.properties]
 ----
 org.opennms.core.tracer=jaeger<1>
-JAEGER_AGENT_HOST=my-jaeger-host<2>
+JAEGER_ENDPOINT=http://localhost:14268/api/traces<2>
 ----
 
 <1> Set Jaeger as the tracing implementation
-<2> Replace the `my-jaeger-host` with your Jaeger instance where you collect the tracing information
+<2> Replace the `http://localhost:14268` with your Jaeger instance where you collect the tracing information
 
 TIP: Available configuration options are listed in the link:https://github.com/jaegertracing/jaeger-client-java/blob/master/jaeger-core/README.md[Jaeger Core Readme].
 

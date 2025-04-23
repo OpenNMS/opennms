@@ -391,6 +391,7 @@
                 <feature>opennms-kafka-producer</feature>
                 <feature>opennms-kafka-consumer</feature>
                 <feature>opennms-grpc-exporter</feature>
+                <feature>opennms-zenith-connect</feature>
                 <feature>opennms-model</feature>
                 <feature>opennms-measurements-shell</feature>
                 <feature>opennms-notifications-shell</feature>
