@@ -65,7 +65,7 @@ import com.sun.tools.attach.VirtualMachineDescriptor;
 public class Controller {
 
     private static final Logger LOG = LoggerFactory.getLogger(Controller.class);
-
+    private final static String SCV_KEYSTORE_FILE_PROPERTY = "org.opennms.features.scv.keystore.file.name";
     /**
      * The system property used to determine the JMX management agent URI for the
      * JVM that we are attaching to. This is used for getting status information from a
@@ -179,7 +179,7 @@ public class Controller {
                 final String keyStoreKeyProperty = (String) clazz.getField("KEYSTORE_KEY_PROPERTY").get(null);
                 final String defaultKeyStoreKey = (String) clazz.getField("DEFAULT_KEYSTORE_KEY").get(null);
                 secureCredentialsVault = (SecureCredentialsVault) constructor.newInstance(
-                        Paths.get(System.getProperty("opennms.home"), "etc", "scv.jce").toString(),
+                        Paths.get(System.getProperty("opennms.home"), "etc",  System.getProperty(SCV_KEYSTORE_FILE_PROPERTY,"scv.jce")).toString(),
                         System.getProperty(keyStoreKeyProperty, defaultKeyStoreKey)
                 );
             } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException |
