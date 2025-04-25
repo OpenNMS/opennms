@@ -25,6 +25,17 @@ import java.util.Set;
 
 public interface SecureCredentialsVault {
 
+    public enum KeyStoreType {
+        JCEKS,
+        PKCS12;
+
+        public static KeyStoreType fromSystemProperty() {
+            return KeyStoreType.valueOf(System.getProperty("org.opennms.features.scv.keystore", "JCEKS").toUpperCase());
+        }
+    }
+
+    public final KeyStoreType m_keyStoreType = KeyStoreType.fromSystemProperty();
+
     Set<String> getAliases();
 
     Credentials getCredentials(String alias);
