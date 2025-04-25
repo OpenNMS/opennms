@@ -30,7 +30,7 @@ public interface SecureCredentialsVault {
         PKCS12;
 
         public static KeyStoreType fromSystemProperty() {
-            return KeyStoreType.valueOf(System.getProperty("org.opennms.features.scv.keystore", "JCEKS").toUpperCase());
+            return KeyStoreType.valueOf(System.getProperty(SCV_KEYSTORE_PROPERTY, "JCEKS").toUpperCase());
         }
     }
 
