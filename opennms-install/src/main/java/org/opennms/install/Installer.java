@@ -396,6 +396,16 @@ public class Installer {
         // Used to retrieve 'org.opennms.rrd.strategyClass'
         loadEtcPropertiesFile("rrd-configuration.properties");
 
+        loadEtcPropertiesFile(Path.of("opennms.properties.d","scv.properties").toString());
+
+        if (m_properties.containsKey("org.opennms.features.scv.keystore.type")) {
+            System.setProperty("org.opennms.features.scv.keystore.type", m_properties.getProperty("org.opennms.features.scv.keystore.type"));
+        }
+
+        if (m_properties.containsKey("org.opennms.features.scv.keystore.file.name")) {
+            System.setProperty("org.opennms.features.scv.keystore.file.name", m_properties.getProperty("org.opennms.features.scv.keystore.file.name"));
+        }
+
         m_install_servletdir = fetchProperty("install.servlet.dir");
         try {
             m_import_dir = fetchProperty("importer.requisition.dir");
@@ -426,7 +436,7 @@ public class Installer {
                 }
             }
         } catch (final FileNotFoundException e) {
-            System.out.println("WARNING: unable to load " + m_etc_dir + File.separator + propertiesFile);
+            System.out.println("WARNING: unable to load test " + m_etc_dir + File.separator + propertiesFile);
         }
     }
 

@@ -24,7 +24,7 @@
     </cm:property-placeholder>
 
     <bean id="jceksSecureCredentialsVault" class="org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault" destroy-method="destroy">
-        <argument value="$[karaf.etc]$[file.separator]scv.jce"/>
+        <argument value="$[karaf.etc]$[file.separator]$[org.opennms.features.scv.keystore.file.name:scv.jce]"/>
         <argument value="[[key]]"/>
         <argument value="[[enable.watcher]]" type="boolean"/>
     </bean>

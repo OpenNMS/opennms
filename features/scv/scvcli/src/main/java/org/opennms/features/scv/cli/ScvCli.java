@@ -21,7 +21,10 @@
  */
 package org.opennms.features.scv.cli;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Path;
 import java.util.Properties;
 import java.util.function.Function;
 
@@ -42,7 +45,8 @@ import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 public class ScvCli {
 
     private final static String DEFAULT_PASSWORD_PROPERTY = "org.opennms.features.scv.cli.password";
-
+    private final static String SCV_KEYSTORE_TYPE_PROPERTY = "org.opennms.features.scv.keystore.type";
+    private final static String SCV_KEYSTORE_FILE_PROPERTY = "org.opennms.features.scv.keystore.file.name";
     @Argument(required = true,
             index = 0,
             metaVar = "ACTION",
@@ -57,7 +61,7 @@ public class ScvCli {
             aliases = {"-k"},
             required = false,
             metaVar = "KEYSTORE")
-    private String keystore = "scv.jce";
+    private String keystore = lookupKeyStore();
 
     @Option(name = "--password",
             aliases = {"-p"},
@@ -76,6 +80,26 @@ public class ScvCli {
         }
 
         return secureCredentialsVault;
+    }
+
+    private static String lookupKeyStore() {
+        Properties properties = new Properties();
+        String defaultKeyStore="scv.jce";
+        try {
+            properties.load(ScvCli.class.getResourceAsStream("/scvcli-filtered.properties"));
+            String etc_dir=properties.getProperty("install.etc.dir");
+            final Properties scvProperties = new Properties();
+            final String scvPropPath= Path.of(etc_dir,"opennms.properties.d","scv.properties").toString();
+            final InputStream ois = new FileInputStream(scvPropPath);
+            scvProperties.load(ois);
+            System.setProperty(SCV_KEYSTORE_TYPE_PROPERTY, scvProperties.getProperty(SCV_KEYSTORE_TYPE_PROPERTY));
+            System.setProperty(SCV_KEYSTORE_FILE_PROPERTY, scvProperties.getProperty(SCV_KEYSTORE_FILE_PROPERTY));
+            defaultKeyStore=scvProperties.getProperty(SCV_KEYSTORE_FILE_PROPERTY,"scv.jce");
+        } catch (Exception e) {
+            System.out.println("WARNING: unable to load files opennms.properties.d/scv.properties");
+        }
+
+        return defaultKeyStore;
     }
 
     private static String lookupDefaultPassword() {
