@@ -436,7 +436,7 @@ public class Installer {
                 }
             }
         } catch (final FileNotFoundException e) {
-            System.out.println("WARNING: unable to load test " + m_etc_dir + File.separator + propertiesFile);
+            System.out.println("WARNING: unable to load " + m_etc_dir + File.separator + propertiesFile);
         }
     }
 
