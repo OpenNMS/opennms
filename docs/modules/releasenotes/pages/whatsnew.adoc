@@ -31,7 +31,7 @@ An enhanced node list has been introduced with options for sorting and filtering
 
 === Time series storage strategy
 The RrdTool strategy (MultithreadedJniRrdStrategy) is now the default strategy for time series data.
-The pure-java JRobin strategy is deprecated and will be removed in the next major release.
+The pure-Java JRobin strategy is deprecated and will be removed in the next major release.
 
 === Passive Status Monitor
 The Passive Status Monitor previously used the time of the event's arrival as the timestamp of the status.

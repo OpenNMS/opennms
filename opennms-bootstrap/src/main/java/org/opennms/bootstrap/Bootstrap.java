@@ -499,7 +499,7 @@ public abstract class Bootstrap {
             dir += File.pathSeparator + System.getProperty("org.opennms.protocols.icmp.interfaceJar");
         }
 
-        if (System.getProperty("org.opennms.rrd.strategyClass", DEFAULT_RRD_STRATEGY_CLASS).equals("org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy")) {
+        if (System.getProperty("org.opennms.rrd.strategyClass", DEFAULT_RRD_STRATEGY_CLASS).equals(DEFAULT_RRD_STRATEGY_CLASS)) {
             dir += File.pathSeparator + System.getProperty("org.opennms.rrd.interfaceJar", DEFAULT_RRD_INTERFACE_JAR);
         }
 
