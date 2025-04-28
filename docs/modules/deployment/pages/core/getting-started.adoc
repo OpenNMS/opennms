@@ -94,17 +94,6 @@ CentOS/RHEL 9::
 include::centos-rhel9/postgresql.adoc[]
 --
 
-CentOS/RHEL 8::
-+
---
-include::centos-rhel8/postgresql.adoc[]
---
-
-CentOS/RHEL 7::
-+
---
-include::centos-rhel7/postgresql.adoc[]
---
 ifeval::["{page-component-title}" == "Horizon"]
 
 Debian/Ubuntu::
@@ -135,17 +124,6 @@ CentOS/RHEL 9::
 include::centos-rhel9/install-core.adoc[]
 --
 
-CentOS/RHEL 8::
-+
---
-include::centos-rhel8/install-core.adoc[]
---
-
-CentOS/RHEL 7::
-+
---
-include::centos-rhel7/install-core.adoc[]
---
 ifeval::["{page-component-title}" == "Horizon"]
 
 Ubuntu::
@@ -173,7 +151,7 @@ endif::[]
 
 [{tabs}]
 ====
-CentOS/RHEL 7/8/9::
+CentOS/RHEL 9::
 +
 --
 include::centos-rhel/initialize-core.adoc[]
