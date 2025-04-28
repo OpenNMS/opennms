@@ -1,8 +1,8 @@
 [![opennms-build](https://github.com/Bluebird-Community/opennms/actions/workflows/opennms-build.yml/badge.svg)](https://github.com/Bluebird-Community/opennms/actions/workflows/opennms-build.yml) [![Hosted By: Cloudsmith](https://img.shields.io/badge/OSS%20hosting%20by-cloudsmith-blue?logo=cloudsmith&style=flat-square)](https://cloudsmith.com)
 
 This is an open-source network monitoring platform that helps you visualize and monitor everything on your local and distributed networks.
-OpenNMS offers comprehensive fault, performance, and traffic monitoring with alarm generation in one place.
-Highly customizable and scalable, OpenNMS integrates with your core business applications and workflows.
+BluebirdOps offers comprehensive fault, performance, and traffic monitoring with alarm generation in one place.
+Highly customizable and scalable, BluebirdOps integrates with your business applications and workflows.
 
 ## 🦄 Features
 
@@ -20,7 +20,7 @@ Highly customizable and scalable, OpenNMS integrates with your core business app
 
 * **Digital experience monitoring**
 
-	 Use the OpenNMS Minion to monitor a service’s latency and availability from different perspectives.
+	 Use the BluebirdOps Minion to monitor a service’s latency and availability from different perspectives.
 
 * **Robust configuration**
 
@@ -92,4 +92,13 @@ Cloudsmith is the only fully hosted, cloud-native, universal package management 
 enables your organization to create, store and share packages in any format, to any place, with total
 confidence.
 
+## Licenses
 
+The BlueBirdOps software, as distributed here, is Copyright © 2025 by the BlueBirdOps contributors.
+
+BlueBirdOps is a derivative work, containing original code, included code, and modified code that was published under the GNU Affero General Public License or a compatible license. Please see the source code for detailed copyright notices, but some notable copyright holders are listed below:
+
+* The OpenNMS Horizon 34.x code base is Copyright © 2002-2025 by The OpenNMS Group, Inc.
+* Source code files whose comments list other copyright holders are as indicated therein.
+
+OpenNMS is a registered trademark of The OpenNMS Group, Inc. 
