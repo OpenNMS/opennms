@@ -22,7 +22,7 @@ asciidoc:
     compatible-elasticsearch: '6.7.0 - 7.17.9'
     compatible-javajdk: 'OpenJDK 17'
     compatible-kafka: '1.x - 3.x'
-    compatible-postgresql: '10.x - 15.x'
+    compatible-postgresql: '13.x - 15.x'
     compatible-rrdtool: '1.7.x'
     jasperreportsversion: '6.3.0'
     latest-meridian-stable: '2023'
