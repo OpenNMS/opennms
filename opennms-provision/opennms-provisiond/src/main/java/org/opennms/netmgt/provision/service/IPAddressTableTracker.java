@@ -123,7 +123,7 @@ public class IPAddressTableTracker extends TableTracker {
                         final InetAddress address = byteStringToInetAddress(instanceIds, addressIndex, addressLength);
                         return str(address);
                     } catch (Exception e) {
-                        LOG.debug("\"IPV4: BAD AGENT: Could not parse raw oids as octet string", e);
+                        LOG.debug("IPV4: BAD AGENT: Could not parse raw oids as octet string", e);
                     }
                 }
                 addressIndex = instanceIds.length - 4;
