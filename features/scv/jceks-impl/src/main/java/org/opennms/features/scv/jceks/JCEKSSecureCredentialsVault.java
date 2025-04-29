@@ -102,8 +102,11 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
         m_salt = Objects.requireNonNull(salt);
         m_iterationCount = iterationCount;
         m_keyLength = keyLength;
-        m_keystoreFile = new File(keystoreFile);
+        m_keystoreFile = new File(getKeyStoreFileName(keystoreFile));
         try {
+
+
+
             m_keystore = KeyStore.getInstance(m_keyStoreType.toString());
             if (!m_keystoreFile.isFile()) {
                 LOG.info("No existing keystore found at: {}. Using empty keystore.", m_keystoreFile);
@@ -122,6 +125,17 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
         } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
             throw Throwables.propagate(e);
         }
+    }
+
+    private String getKeyStoreFileName(String keystoreFile){
+
+        String fileName = keystoreFile;
+
+        if (m_keyStoreType.equals(KeyStoreType.PKCS12)) {
+            fileName = keystoreFile.replaceAll(".jce",".pk12");
+        }
+
+        return fileName;
     }
 
     private void createFileUpdateWatcher() {
@@ -257,7 +271,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
                 throw new IllegalStateException("Unable to create a temporary scv keystore home!", e);
             }
         }
-        return Paths.get(opennmsHome, "etc", System.getProperty("org.opennms.features.scv.keystore.file.name", "scv.jce")).toString();
+        return Paths.get(opennmsHome, "etc", "scv.jce").toString();
     }
 
     private static String getKeystorePassword() {

@@ -6,7 +6,7 @@
   http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
 
     <bean name="jceksSecureCredentialsVault" class="org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault" destroy-method="destroy">
-        <constructor-arg value="#{systemProperties['opennms.home']}/etc/#{systemProperties['org.opennms.features.scv.keystore.file.name']?:'scv.jce'}"/>
+        <constructor-arg value="#{systemProperties['opennms.home']}/etc/scv.jce"/>
         <constructor-arg value="#{systemProperties['org.opennms.features.scv.jceks.key'] ?: 'QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw'}"/>
         <constructor-arg value="#{systemProperties['org.opennms.features.scv.jceks.enable.watcher'] ?: true}" type="boolean"/>
     </bean>

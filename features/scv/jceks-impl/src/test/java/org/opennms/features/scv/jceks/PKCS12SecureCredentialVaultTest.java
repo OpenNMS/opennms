@@ -62,8 +62,6 @@ public class PKCS12SecureCredentialVaultTest{
     public void setUp() {
         System.setProperty("karaf.etc", tempFolder.getRoot().getAbsolutePath());
         System.setProperty("org.opennms.features.scv.keystore.type", SCV_KEYSTORE_TYPE);
-        System.setProperty("org.opennms.features.scv.keystore.file.name", SCV_KEYSTORE_FILE_NAME);
-
     }
 
     @Test

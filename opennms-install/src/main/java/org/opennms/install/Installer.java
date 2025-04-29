@@ -149,6 +149,7 @@ public class Installer {
     public void install(final String[] argv) throws Exception {
         printHeader();
         loadProperties();
+        loadScvProperties();
         parseArguments(argv);
 
         final boolean doDatabase = (m_update_database || m_update_iplike);
@@ -396,16 +397,6 @@ public class Installer {
         // Used to retrieve 'org.opennms.rrd.strategyClass'
         loadEtcPropertiesFile("rrd-configuration.properties");
 
-        loadEtcPropertiesFile(Path.of("opennms.properties.d","scv.properties").toString());
-
-        if (m_properties.containsKey("org.opennms.features.scv.keystore.type")) {
-            System.setProperty("org.opennms.features.scv.keystore.type", m_properties.getProperty("org.opennms.features.scv.keystore.type"));
-        }
-
-        if (m_properties.containsKey("org.opennms.features.scv.keystore.file.name")) {
-            System.setProperty("org.opennms.features.scv.keystore.file.name", m_properties.getProperty("org.opennms.features.scv.keystore.file.name"));
-        }
-
         m_install_servletdir = fetchProperty("install.servlet.dir");
         try {
             m_import_dir = fetchProperty("importer.requisition.dir");
@@ -422,6 +413,19 @@ public class Installer {
         //
         //        m_installerDb.setStoredProcedureDirectory(m_etc_dir);
         //        m_installerDb.setCreateSqlLocation(m_etc_dir + File.separator + "create.sql");
+    }
+
+    private void loadScvProperties() throws IOException{
+
+        loadEtcPropertiesFile(Path.of("opennms.properties.d","scv.properties").toString());
+
+        if (m_properties.containsKey("org.opennms.features.scv.keystore.type")) {
+            System.setProperty("org.opennms.features.scv.keystore.type", m_properties.getProperty("org.opennms.features.scv.keystore.type"));
+        }
+
+        if (m_properties.containsKey("org.opennms.features.scv.jceks.key")) {
+            System.setProperty("org.opennms.features.scv.jceks.key", m_properties.getProperty("org.opennms.features.scv.jceks.key"));
+        }
     }
 
     private void loadEtcPropertiesFile(final String propertiesFile) throws IOException {

@@ -33,7 +33,7 @@ public interface SecureCredentialsVault {
             return KeyStoreType.valueOf(System.getProperty(SCV_KEYSTORE_PROPERTY, "JCEKS").toUpperCase());
         }
     }
-    public final static String SCV_KEYSTORE_PROPERTY = "org.opennms.features.scv.keystore";
+    public final static String SCV_KEYSTORE_PROPERTY = "org.opennms.features.scv.keystore.type";
     public final KeyStoreType m_keyStoreType = KeyStoreType.fromSystemProperty();
 
     Set<String> getAliases();
