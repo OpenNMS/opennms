@@ -347,3 +347,11 @@ Use this to threshold on the number results returned by an enumeration.
     <attrib name="##ElementCount##" alias="elementCount" type="Gauge"/>
 </group>
 ----
+=== Kerberos + WS-Man over HTTPS
+When using Kerberos authentication over HTTPS `(port 5986)` WS-Man, Java 17’s HTTP/2 negotiation may trigger a `RST_STREAM: Use HTTP/1.1 for request` error.
+Put below configuration in `${OPENNMS_HOME}/etc/opennms.conf` as referenced  https://opennms.discourse.group/t/wsman-with-kerberos-gssapi/2270).aspx[here]
+
+----
+ADDITIONAL_MANAGER_OPTIONS="${ADDITIONAL_MANAGER_OPTIONS} -Dorg.apache.cxf.transport.http.forceVersion=1.1"
+----
+
