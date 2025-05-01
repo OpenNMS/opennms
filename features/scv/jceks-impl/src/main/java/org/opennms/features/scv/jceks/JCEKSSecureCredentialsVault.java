@@ -81,10 +81,6 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
     private final AtomicBoolean m_fileUpdated = new AtomicBoolean(false);
     private long m_lastModified = System.currentTimeMillis();
 
-    public static final String KEYSTORE_KEY_PROPERTY = "org.opennms.features.scv.jceks.key";
-
-    public static final String DEFAULT_KEYSTORE_KEY = "QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw";
-
     public JCEKSSecureCredentialsVault(String keystoreFile, String password, boolean useWatcher)  {
         this(keystoreFile, password, useWatcher, new byte[]{0x0, 0xd, 0xd, 0xb, 0xa, 0x1, 0x1});
     }
@@ -107,7 +103,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
 
 
 
-            m_keystore = KeyStore.getInstance(m_keyStoreType.toString());
+            m_keystore = KeyStore.getInstance(KeyStoreType.fromSystemProperty().toString());
             if (!m_keystoreFile.isFile()) {
                 LOG.info("No existing keystore found at: {}. Using empty keystore.", m_keystoreFile);
                 m_keystore.load(null, m_password);
@@ -131,7 +127,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
 
         String fileName = keystoreFile;
 
-        if (m_keyStoreType.equals(KeyStoreType.PKCS12)) {
+        if (KeyStoreType.fromSystemProperty().equals(KeyStoreType.PKCS12)) {
             fileName = keystoreFile.replaceAll(".jce",".pk12");
         }
 
@@ -283,6 +279,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
        Should be mostly used for read-only access, short-lived and instantiate for each access.
      */
     public static JCEKSSecureCredentialsVault defaultScv() {
+        SecureCredentialsVault.loadScvProperties(System.getProperty("opennms.home",""));
         return new JCEKSSecureCredentialsVault(getKeystoreFilename(), getKeystorePassword());
     }
 
