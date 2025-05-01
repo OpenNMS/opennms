@@ -173,6 +173,7 @@ public class Controller {
     static void interpolateSystemProperties() {
         if (secureCredentialsVault == null) {
             try {
+                SecureCredentialsVault.loadScvProperties(System.getProperty("opennms.home",""));
                 final Class clazz = Class.forName("org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault");
                 final Constructor constructor = clazz.getConstructor(String.class, String.class);
                 final String keyStoreKeyProperty = (String) clazz.getField("KEYSTORE_KEY_PROPERTY").get(null);

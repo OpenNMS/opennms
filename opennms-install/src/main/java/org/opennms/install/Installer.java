@@ -76,6 +76,7 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.StringUtils;
 
 import joptsimple.internal.Strings;
+import org.opennms.features.scv.api.SecureCredentialsVault;
 
 /*
  * TODO:
@@ -415,17 +416,8 @@ public class Installer {
         //        m_installerDb.setCreateSqlLocation(m_etc_dir + File.separator + "create.sql");
     }
 
-    private void loadScvProperties() throws IOException{
-
-        loadEtcPropertiesFile(Path.of("opennms.properties.d","scv.properties").toString());
-
-        if (m_properties.containsKey("org.opennms.features.scv.keystore.type")) {
-            System.setProperty("org.opennms.features.scv.keystore.type", m_properties.getProperty("org.opennms.features.scv.keystore.type"));
-        }
-
-        if (m_properties.containsKey("org.opennms.features.scv.jceks.key")) {
-            System.setProperty("org.opennms.features.scv.jceks.key", m_properties.getProperty("org.opennms.features.scv.jceks.key"));
-        }
+    private void loadScvProperties() {
+        SecureCredentialsVault.loadScvProperties(m_opennms_home);
     }
 
     private void loadEtcPropertiesFile(final String propertiesFile) throws IOException {
