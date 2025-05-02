@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2016-2023 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
+ * Copyright (C) 2016-2024 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -84,6 +84,7 @@ import com.google.protobuf.InvalidProtocolBufferException;
 
 import io.opentracing.References;
 import io.opentracing.Scope;
+import io.opentracing.Span;
 import io.opentracing.SpanContext;
 import io.opentracing.Tracer;
 import io.opentracing.propagation.Format;
@@ -211,11 +212,12 @@ public class KafkaMessageConsumerManager extends AbstractMessageConsumerManager 
                             messageSize.update(messageInBytes.length);
                             Tracer.SpanBuilder spanBuilder = buildSpanFromSinkMessage(sinkMessage);
                             // Tracing scope and Metrics Timer context will measure the time to dispatch.
-                            try(Scope scope = spanBuilder.startActive(true);
+                            final Span span = spanBuilder.start();
+                            try (Scope scope = getTracer().scopeManager().activate(span);
                                 Timer.Context context = dispatchTime.time()) {
-                                scope.span().setTag(TracerConstants.TAG_MESSAGE_SIZE, messageInBytes.length);
-                                scope.span().setTag(TracerConstants.TAG_TOPIC, topic);
-                                scope.span().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
+                                span.setTag(TracerConstants.TAG_MESSAGE_SIZE, messageInBytes.length);
+                                span.setTag(TracerConstants.TAG_TOPIC, topic);
+                                span.setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
                                 dispatch(module, module.unmarshal(messageInBytes));
                             }
 
