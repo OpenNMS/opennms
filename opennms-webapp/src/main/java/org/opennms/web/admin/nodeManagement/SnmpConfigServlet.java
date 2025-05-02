@@ -114,7 +114,8 @@ public class SnmpConfigServlet extends HttpServlet {
 			case GetConfigForIp:
 				request.setAttribute("snmpConfigForIp",
 						new SnmpInfo(
-								SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(ipAddress), location)));
+								SnmpPeerFactory.getInstance().getAgentConfig(InetAddressUtils.addr(ipAddress), location),
+								location));
 				request.setAttribute("firstIPAddress", ipAddress);
 				request.setAttribute("location", location);
 				break;
