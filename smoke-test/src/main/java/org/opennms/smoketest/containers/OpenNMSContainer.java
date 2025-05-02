@@ -63,8 +63,7 @@ import org.opennms.smoketest.utils.RestClient;
 import org.opennms.smoketest.utils.RestHealthClient;
 import org.opennms.smoketest.utils.SshClient;
 import org.opennms.smoketest.utils.TestContainerUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.json.JSONObject;
 import org.testcontainers.containers.BindMode;
 import org.testcontainers.containers.CassandraContainer;
 import org.testcontainers.containers.GenericContainer;
@@ -96,8 +95,6 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
     public static final String ADMIN_USER = "admin";
     public static final String ADMIN_PASSWORD = "admin";
     public static final Path CONTAINER_LOG_DIR = Paths.get("/opt", ALIAS, "logs");
-
-    private static final Logger LOG = LoggerFactory.getLogger(OpenNMSContainer.class);
 
     public static final int OPENNMS_WEB_PORT = 8980;
     private static final int OPENNMS_SSH_PORT = 8101;
@@ -137,6 +134,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
     private int generatedUserId = -1;
     private Exception afterTestCalled = null;
     private Exception waitUntilReadyException = null;
+    private JSONObject containerMetadata;
 
     public OpenNMSContainer(StackModel model, OpenNMSProfile profile) {
         super(IMAGE);
@@ -402,7 +400,9 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
 
         if (model.isJaegerEnabled()) {
             props.put("org.opennms.core.tracer", "jaeger");
-            props.put("JAEGER_ENDPOINT", JaegerContainer.getThriftHttpURL());
+            props.put("otel.traces.exporter", "jaeger");
+            props.put("otel.metrics.exporter", "none"); // disable this so we don't get complaints
+            props.put("otel.exporter.jaeger.endpoint", JaegerContainer.getGrpcHttpURL());
         }
 
         // disable Product Update Enrollment
@@ -483,7 +483,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         }
 
         protected void waitUntilReadyWrapped() {
-            LOG.info("Waiting for startup to begin.");
+            container.logger().info("Waiting for startup to begin.");
             final Path managerLog = CONTAINER_LOG_DIR.resolve("manager.log");
             await("waiting for startup to begin")
                     .atMost(3, MINUTES)
@@ -491,9 +491,9 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                     .ignoreException(NotFoundException.class)
                     .until(() -> TestContainerUtils.getFileFromContainerAsString(container, managerLog),
                     containsString("Starter: Beginning startup"));
-            LOG.info("OpenNMS has begun starting up.");
+            container.logger().info("OpenNMS has begun starting up.");
 
-            LOG.info("Waiting for OpenNMS REST API...");
+            container.logger().info("Waiting for OpenNMS REST API...");
             final long timeoutMins = 5;
             final RestClient restClient = container.getRestClient();
 
@@ -503,22 +503,22 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                     .failFast("container is no longer running", () -> !container.isRunning())
                     .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
                     .until(restClient::getDisplayVersion, notNullValue());
-            LOG.info("OpenNMS REST API is online.");
+            container.logger().info("OpenNMS REST API is online.");
 
             // Wait until all daemons have finished starting up
             // This helps ensure that all of the sockets that should be up and listening i.e. teletrymd flows
             // have been given a chance to bind
-            LOG.info("Waiting for startup to complete.");
+            container.logger().info("Waiting for startup to complete.");
             await("waiting for startup to complete")
                     .atMost(5, MINUTES)
                     .failFast("container is no longer running", () -> !container.isRunning())
                     .until(() -> TestContainerUtils.getFileFromContainerAsString(container, managerLog),
                             containsString("Starter: Startup complete"));
-            LOG.info("OpenNMS has started.");
+            container.logger().info("OpenNMS has started.");
 
             // Defer the health-check until the system has completely started
             // in order to give all the health checks a chance to load.
-            LOG.info("Waiting for OpenNMS health check...");
+            container.logger().info("Waiting for OpenNMS health check...");
             RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
             await("waiting for good health check probe")
                     .atMost(5, MINUTES)
@@ -526,7 +526,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                     .failFast("container is no longer running", () -> !container.isRunning())
                     .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
                     .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
-            LOG.info("Health check passed.");
+            container.logger().info("Health check passed.");
 
             container.assertNoKarafDestroy(Paths.get("/opt", ALIAS, "logs", "karaf.log"));
         }
@@ -538,11 +538,28 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
     }
 
     @Override
+    protected void containerIsCreated(String containerId) {
+        super.containerIsCreated(containerId);
+
+        var path = Path.of("/usr/share/opennms/.container-labels.json");
+
+        try {
+            containerMetadata = new JSONObject(TestContainerUtils.getFileFromContainerAsString(this, path));
+            logger().info("Container metadata: {}", containerMetadata.toString());
+            logger().info("Labels: {}", this.getCurrentContainerInfo().getConfig().getLabels());
+        } catch (NotFoundException e) {
+            logger().warn("Could not get metadata from container: {}", e.getMessage().trim());
+        } catch (Exception e) {
+            logger().warn("Could not get metadata from container", e);
+        }
+    }
+
+    @Override
     public void afterTest(final TestDescription description, final Optional<Throwable> throwable) {
         var pid = ProcessHandle.current().pid();
         if (afterTestCalled != null) {
-            LOG.warn("afterTest has already been called, not running on subsequent calls. My PID {}.", pid, new Exception("exception placeholder for stacktrace -- subsequent call location of afterTest"));
-            LOG.warn("original call location of afterTest", afterTestCalled);
+            logger().warn("afterTest has already been called, not running on subsequent calls. My PID {}.", pid, new Exception("exception placeholder for stacktrace -- subsequent call location of afterTest"));
+            logger().warn("original call location of afterTest", afterTestCalled);
             return;
         }
         afterTestCalled = new Exception("exception placeholder for stacktrace -- original call location of afterTest; PID: " + pid);
@@ -578,7 +595,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                         () -> { threadDump.set(DevDebugUtils.gatherThreadDump(this, targetLogFolder, null)); }
                 );
 
-        LOG.info("Gathering logs...");
+        logger().info("Gathering logs...");
         DevDebugUtils.copyLogs(this,
                 // dest
                 targetLogFolder,
@@ -587,11 +604,11 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                 // log files
                 logFiles);
 
-        LOG.info("Log directory: {}", targetLogFolder.toUri());
-        LOG.info("Console log: {}", targetLogFolder.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
-        LOG.info("Output log: {}", targetLogFolder.resolve("output.log").toUri());
+        logger().info("Log directory: {}", targetLogFolder.toUri());
+        logger().info("Console log: {}", targetLogFolder.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
+        logger().info("Output log: {}", targetLogFolder.resolve("output.log").toUri());
         if (threadDump.get() != null) {
-            LOG.info("Thread dump: {}", threadDump.get().toUri());
+            logger().info("Thread dump: {}", threadDump.get().toUri());
         }
     }
 }

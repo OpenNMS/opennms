@@ -1945,7 +1945,8 @@
     <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
     <osMavenPluginVersion>1.7.1</osMavenPluginVersion>
     <opencsvVersion>2.3</opencsvVersion>
-    <opentracingVersion>0.32.0</opentracingVersion>
+    <opentelemetryVersion>1.21.0</opentelemetryVersion>
+    <opentracingVersion>0.33.0</opentracingVersion>
     <jaegertracingVersion>1.8.1</jaegertracingVersion>
     <pyroscopeVersion>0.13.1</pyroscopeVersion>
     <lz4JavaVersion>1.8.0</lz4JavaVersion>
@@ -5585,6 +5586,28 @@
         <groupId>org.xerial.snappy</groupId>
         <artifactId>snappy-java</artifactId>
         <version>${snappyJavaVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.opentelemetry</groupId>
+        <artifactId>opentelemetry-bom</artifactId>
+        <version>${opentelemetryVersion}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+      <dependency>
+        <groupId>io.opentelemetry</groupId>
+        <artifactId>opentelemetry-sdk-extension-autoconfigure</artifactId> <!-- not included in opentelemetry-bom -->
+        <version>${opentelemetryVersion}-alpha</version>
+      </dependency>
+      <dependency>
+        <groupId>io.opentelemetry</groupId>
+        <artifactId>opentelemetry-semconv</artifactId> <!-- not included in opentelemetry-bom -->
+        <version>${opentelemetryVersion}-alpha</version>
+      </dependency>
+      <dependency>
+        <groupId>io.opentelemetry</groupId>
+        <artifactId>opentelemetry-opentracing-shim</artifactId> <!-- not included in opentelemetry-bom -->
+        <version>${opentelemetryVersion}-alpha</version>
       </dependency>
     </dependencies>
   </dependencyManagement>

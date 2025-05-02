@@ -116,6 +116,15 @@ initConfigWhenEmpty() {
   else
     echo "Use existing RRD data directory."
   fi
+
+#  # XXX note: this appends the key, but doesn't erase the file like is done for minion and sentinel
+#  mkdir -p "${OPENNMS_HOME}/.ssh" && \
+#            chmod 700 "${OPENNMS_HOME}/.ssh" && \
+#            ssh-keygen -t rsa -f "${OPENNMS_HOME}/.ssh/id_rsa" -q -N "" && \
+#            echo "opennms=$(cat "${OPENNMS_HOME}/.ssh/id_rsa.pub" | awk '{print $2}'),viewer" > "${OPENNMS_HOME}/etc/keys.properties" && \
+#            echo "_g_\\:admingroup = group,admin,manager,viewer,systembundles,ssh" >> ${OPENNMS_HOME}/etc/keys.properties && \
+#            ls -l "${OPENNMS_HOME}/.ssh/id_rsa" && \
+#            chmod 600 "${OPENNMS_HOME}/.ssh/id_rsa"
 }
 
 applyOverlayConfig() {
@@ -147,6 +156,15 @@ applyOverlayConfig() {
 
 # Start opennms in foreground
 start() {
+  local revision=$(jq -r '."org.opencontainers.image.revision"' <  /usr/share/opennms/.container-labels.json)
+  local branch=$(jq -r '."org.opennms.cicd.branch"' <  /usr/share/opennms/.container-labels.json)
+  local jobid=$(jq -r '."org.opennms.cicd.jobid"' <  /usr/share/opennms/.container-labels.json)
+
+  local resource_attributes="service.version=${revision}"
+
+  test -z "${branch}" || resource_attributes+=",opennms.cicd.branch=${branch}"
+  test -z "${jobid}" || resource_attributes+=",opennms.cicd.jobid=${jobid}"
+
   local OPENNMS_JAVA_OPTS="$("${OPENNMS_HOME}/bin/_module_opts.sh") \
   -Dorg.apache.jasper.compiler.disablejsr199=true
   -Dopennms.home=${OPENNMS_HOME}
@@ -161,6 +179,8 @@ start() {
   -Dgroovy.use.classvalue=true
   -Djava.io.tmpdir=${OPENNMS_HOME}/data/tmp
   -Djava.locale.providers=CLDR,COMPAT
+  -Dotel.service.name=OpenNMS
+  -Dotel.resource.attributes=${resource_attributes}
   -XX:+StartAttachListener"
   exec ${JAVA_HOME}/bin/java ${OPENNMS_JAVA_OPTS} ${JAVA_OPTS} -jar ${OPENNMS_HOME}/lib/opennms_bootstrap.jar start
 }

@@ -135,14 +135,17 @@ public abstract class AbstractTwinSubscriber implements TwinSubscriber {
         this.executorService.execute(() -> {
             final var subscription = this.subscriptions.computeIfAbsent(twinUpdate.getKey(), Subscription::new);
 
-            try (Scope scope = spanBuilder.startActive(true)) {
-                addTracingTags(scope.span(), twinUpdate);
+            final Span span = spanBuilder.start();
+            try (Scope scope = getTracer().scopeManager().activate(span)) {
+                addTracingTags(span, twinUpdate);
                 subscription.update(twinUpdate);
             } catch (final IOException e) {
                 LOG.error("Processing update failed: {}", twinUpdate.getKey(), e);
                 // JMX Metrics
                 updateCounter(MetricRegistry.name(twinUpdate.getKey(), TWIN_UPDATE_DROPPED));
                 subscription.request();
+            } finally {
+                span.finish();
             }
         });
     }

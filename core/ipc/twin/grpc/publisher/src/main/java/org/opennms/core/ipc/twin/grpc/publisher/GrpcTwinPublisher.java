@@ -28,6 +28,7 @@ import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import io.grpc.stub.StreamObserver;
 import io.opentracing.References;
 import io.opentracing.Scope;
+import io.opentracing.Span;
 import io.opentracing.Tracer;
 import org.opennms.core.grpc.common.GrpcIpcServer;
 import org.opennms.core.grpc.common.GrpcIpcUtils;
@@ -129,12 +130,15 @@ public class GrpcTwinPublisher extends AbstractTwinPublisher {
                             String tracingOperationKey = generateTracingOperationKey(twinRequest.getLocation(), twinRequest.getKey());
                             Tracer.SpanBuilder spanBuilder = TracingInfoCarrier.buildSpanFromTracingMetadata(getTracer(),
                                     tracingOperationKey, twinRequest.getTracingInfo(), References.FOLLOWS_FROM);
-                            try (Scope scope = spanBuilder.startActive(true)){
+                            final Span span = spanBuilder.start();
+                            try (Scope scope = getTracer().scopeManager().activate(span)){
                                 TwinUpdate twinUpdate = getTwin(twinRequest);
-                                addTracingInfo(scope.span(), twinUpdate);
+                                addTracingInfo(span, twinUpdate);
                                 TwinResponseProto twinResponseProto = mapTwinResponse(twinUpdate);
                                 LOG.debug("Sent Twin response for key {} at location {}", twinRequest.getKey(), twinRequest.getLocation());
                                 sendTwinResponse(twinResponseProto, rpcStream);
+                            } finally {
+                                span.finish();
                             }
                         } catch (Exception e) {
                             LOG.error("Exception while processing request", e);

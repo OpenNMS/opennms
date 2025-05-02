@@ -52,6 +52,7 @@ import com.codahale.metrics.Timer;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 
+import io.opentracing.Span;
 import io.opentracing.Scope;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
@@ -199,10 +200,11 @@ public class ElasticFlowRepository implements FlowRepository {
     private void persistBulk(final List<FlowDocument> bulk) throws FlowException {
         LOG.debug("Persisting {} flow documents.", bulk.size());
         final Tracer tracer = getTracer();
+        final Span span = tracer.buildSpan(TRACER_FLOW_MODULE).start();
         try (final Timer.Context ctx = logPersistingTimer.time();
-             Scope scope = tracer.buildSpan(TRACER_FLOW_MODULE).startActive(true)) {
+             Scope scope = tracer.scopeManager().activate(span)) {
             // Add location and source address tags to span.
-            scope.span().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
+            span.setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
             final BulkRequest<FlowDocument> bulkRequest = new BulkRequest<>(client, bulk, (documents) -> {
                 final Bulk.Builder bulkBuilder = new Bulk.Builder();
                 for (FlowDocument flowDocument : documents) {
@@ -229,6 +231,8 @@ public class ElasticFlowRepository implements FlowRepository {
             flowsPersistedMeter.mark(bulk.size());
 
             bulk.clear();
+        } finally {
+            span.finish();
         }
     }
 

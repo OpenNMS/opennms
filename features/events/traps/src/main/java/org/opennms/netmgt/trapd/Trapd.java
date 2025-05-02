@@ -211,7 +211,9 @@ public class Trapd extends AbstractServiceDaemon {
         // shutdown and wait on the background processing thread to exit.
         LOG.debug("stop: Closing communication paths");
 
-        m_trapListener.stop();
+        if (m_trapListener != null) {
+            m_trapListener.stop();
+        }
 
         m_status = STOPPED;
 

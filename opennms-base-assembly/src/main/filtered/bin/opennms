@@ -71,6 +71,9 @@ THREAD_DUMP=1
 # JaCoCo Code Coverage agent, used in smoke tests
 [ -z "$JACOCO_AGENT_ENABLED" ] && JACOCO_AGENT_ENABLED=0
 
+# Whether to enable the OpenTelemetry agent
+[ -z "$OTEL_AGENT_ENABLED" ] && OTEL_AGENT_ENABLED=0
+
 # The user that OpenNMS needs to run as.
 [ -z "$RUNAS" ] && RUNAS=opennms
 
@@ -798,6 +801,10 @@ if [[ "$JAVA_HEAP_SIZE" =~ ^[0-9]+$ ]]; then
    MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}")
 fi
 
+# OpenTelemetry defaults for auto-configuration.
+# https://github.com/open-telemetry/opentelemetry-java/tree/main/sdk-extensions/autoconfigure
+[ -z "$OTEL_SERVICE_NAME" ] && export OTEL_SERVICE_NAME="${install.package.description}"
+
 # https://pyroscope.io/docs/java-tracing/#running-as-otel-java-instrumentation-extension
 if [ -n "$PYROSCOPE_AGENT_ENABLED" ] && [ "$PYROSCOPE_AGENT_ENABLED" -gt 0 ]; then
 	export PYROSCOPE_APPLICATION_NAME="${PYROSCOPE_APPLICATION_NAME:=OpenNMS}"
@@ -809,6 +816,11 @@ fi
 # https://www.jacoco.org/jacoco/trunk/doc/agent.html
 if [ -n "$JACOCO_AGENT_ENABLED" ] && [ "$JACOCO_AGENT_ENABLED" -gt 0 ]; then
 	MANAGER_OPTIONS+=("-javaagent:${OPENNMS_HOME}/agent/jacoco-agent.jar=output=none,jmx=true,excludes=org.drools.*")
+fi
+
+# https://github.com/open-telemetry/opentelemetry-java-instrumentation/blob/main/README.md
+if [ -n "$OTEL_AGENT_ENABLED" ] && [ "$OTEL_AGENT_ENABLED" -gt 0 ]; then
+	MANAGER_OPTIONS+=("-javaagent:${OPENNMS_HOME}/agent/opentelemetry-javaagent.jar")
 fi
 
 JAVA_VERSION="$("$OPENNMS_HOME/bin/runjava" -p -f 2> /dev/null)"

@@ -28,6 +28,7 @@ export JAVA_OPTS="$JAVA_OPTS -Djava.locale.providers=CLDR,COMPAT"
 export JAVA_OPTS="$JAVA_OPTS $("${MINION_HOME}/bin/_module_opts.sh")"
 export JAVA_OPTS="$JAVA_OPTS -Dopennms.home=${MINION_HOME}"
 export JAVA_OPTS="$JAVA_OPTS -Djdk.util.zip.disableZip64ExtraFieldValidation=true"
+export JAVA_OPTS="$JAVA_OPTS -Dotel.service.name=Minion"
 
 # Error codes
 E_ILLEGAL_ARGS=126

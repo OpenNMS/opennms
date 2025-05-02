@@ -102,6 +102,7 @@
         <exclude>org.slf4j:slf4j-jdk14</exclude>
         <exclude>io.pyroscope:agent</exclude>
         <exclude>org.jacoco:org.jacoco.agent:jar:runtime</exclude>
+        <exclude>io.opentelemetry.javaagent:opentelemetry-javaagent</exclude>
         <!-- Exclude the dependency POMs -->
         <exclude>*:pom</exclude>
       </excludes>
@@ -109,6 +110,7 @@
     <dependencySet>
       <useProjectArtifact>false</useProjectArtifact>
       <outputDirectory>lib</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
       <includes>
         <!-- adds httpasyncclient-osgi to /lib class path - only used by Elasticsearch OSGi plugin -->
         <include>org.apache.httpcomponents:httpasyncclient-osgi:jar:${httpasyncclientVersion}</include>
@@ -130,6 +132,16 @@
       <useStrictFiltering>true</useStrictFiltering>
       <includes>
         <include>org.jacoco:org.jacoco.agent:jar:runtime</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
+      <useProjectArtifact>false</useProjectArtifact>
+      <outputFileNameMapping>opentelemetry-javaagent.jar</outputFileNameMapping>
+      <outputDirectory>agent</outputDirectory>
+      <useStrictFiltering>true</useStrictFiltering>
+      <includes>
+        <!-- adds to /agent - it needs to not be in the class path for now due to Guava mismatch -->
+        <include>io.opentelemetry.javaagent:opentelemetry-javaagent:jar</include>
       </includes>
     </dependencySet>
   </dependencySets>

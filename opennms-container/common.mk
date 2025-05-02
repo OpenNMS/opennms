@@ -27,10 +27,10 @@ DOCKER_OUTPUT_OCI       := type=docker,dest=$(DOCKER_OCI)
 DOCKER_OUTPUT_IMAGE     := type=image
 DOCKERX_INSTANCE        := opennms-build-env-oci
 SOURCE                  := $(shell git remote get-url origin)
-REVISION                := $(shell git describe --always)
+REVISION                := $(shell git describe --always --dirty)
 BUILD_NUMBER            := 0
 BUILD_URL               := "unset"
-BUILD_BRANCH            := $(shell git describe --always)
+BUILD_BRANCH            := $(shell git describe --always --all --always --dirty | sed -e 's,^heads/,,' -e 's,^tags/,,')
 README                  := tarball-root/data/tmp/README
 ASSEMBLE_COMMAND        := ./assemble.pl -Dopennms.home=/opt/opennms -DskipTests
 
@@ -102,7 +102,7 @@ test: $(TARBALL)
 # the proper opennms.home path, otherwise the build can succeed but
 # people get really weird startup errors from runjava because it can't
 # find find-java.sh.
-$(README): $(TARBALL) Dockerfile $(shell find container-fs -type f)
+$(README): $(TARBALL)
 	@echo "Sanity checking OPENNMS_HOME path in **/fix-permissions script..."
 	@fix_permissions_file=`tar -t -z -f $< | grep '/fix-permissions$$'` || exit 1 ; \
 	  fix_permissions_opennms_home=`tar -x -z -f $< -O "$$fix_permissions_file" | \
@@ -150,7 +150,7 @@ check-docker-buildx-default:
 
 # The docker-buildx target is intended to be called from another recipe
 # and DOCKER_OUTPUT needs to be set
-docker-buildx: $(README) $(ADDITIONAL_TARGETS)
+docker-buildx: $(README) Dockerfile $(shell find container-fs -type f) $(ADDITIONAL_TARGETS)
 ifndef DOCKER_OUTPUT
 	$(warning DOCKER_OUTPUT cannot be empty when running 'docker-buildx')
 	$(warning The 'docker-buildx' goal is not intended to be run directly.)
@@ -173,7 +173,7 @@ endif
 	  $(DOCKER_FLAGS) \
 	  .
 
-$(DOCKER_OCI): $(README) $(ADDITIONAL_TARGETS)
+$(DOCKER_OCI): $(README) Dockerfile $(shell find container-fs -type f) $(ADDITIONAL_TARGETS)
 	$(MAKE) DOCKER_OUTPUT="$(DOCKER_OUTPUT_OCI)" docker-buildx
 
 oci: $(DOCKER_OCI)
