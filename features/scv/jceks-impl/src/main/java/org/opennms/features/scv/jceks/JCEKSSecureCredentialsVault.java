@@ -85,6 +85,10 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
         this(keystoreFile, password, useWatcher, new byte[]{0x0, 0xd, 0xd, 0xb, 0xa, 0x1, 0x1});
     }
 
+    public JCEKSSecureCredentialsVault(String keystoreFile, String keyType, String password, boolean useWatcher)  {
+        this(getKeyStoreFileName(keystoreFile,keyType), password, useWatcher, new byte[]{0x0, 0xd, 0xd, 0xb, 0xa, 0x1, 0x1});
+    }
+
     public JCEKSSecureCredentialsVault(String keystoreFile, String password)  {
         this(keystoreFile, password, false, new byte[]{0x0, 0xd, 0xd, 0xb, 0xa, 0x1, 0x1});
     }
@@ -124,6 +128,22 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
     }
 
     private String getKeyStoreFileName(String keystoreFile){
+
+        String fileName = keystoreFile;
+
+        if (KeyStoreType.fromSystemProperty().equals(KeyStoreType.PKCS12)) {
+            fileName = keystoreFile.replaceAll(".jce",".pk12");
+        }
+
+        return fileName;
+    }
+
+
+    private static String getKeyStoreFileName(String keystoreFile, String keyStoreType){
+
+        if(keyStoreType != null && !keyStoreType.isEmpty()) {
+            System.setProperty(SCV_KEYSTORE_PROPERTY, keyStoreType);
+        }
 
         String fileName = keystoreFile;
 

@@ -38,9 +38,12 @@ import org.opennms.features.scv.cli.commands.ListCommand;
 import org.opennms.features.scv.cli.commands.SetCommand;
 import org.opennms.features.scv.cli.commands.DeleteCommand;
 import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ScvCli {
 
+    public static final Logger LOG = LoggerFactory.getLogger(ScvCli.class);
     private final static String DEFAULT_PASSWORD_PROPERTY = "org.opennms.features.scv.cli.password";
 
     @Argument(required = true,
@@ -86,7 +89,7 @@ public class ScvCli {
             String opennmsHome = properties.getProperty("install.dir");
             SecureCredentialsVault.loadScvProperties(opennmsHome);
         } catch (Exception e) {
-            System.out.println("WARNING: unable to load files opennms.properties.d/scv.properties");
+            LOG.error("WARNING: unable to load properties files");
         }
 
         return defaultKeyStore;
