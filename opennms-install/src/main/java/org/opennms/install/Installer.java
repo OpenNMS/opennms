@@ -76,7 +76,6 @@ import org.springframework.context.support.GenericApplicationContext;
 import org.springframework.util.StringUtils;
 
 import joptsimple.internal.Strings;
-import org.opennms.features.scv.api.SecureCredentialsVault;
 
 /*
  * TODO:
@@ -150,7 +149,6 @@ public class Installer {
     public void install(final String[] argv) throws Exception {
         printHeader();
         loadProperties();
-        loadScvProperties();
         parseArguments(argv);
 
         final boolean doDatabase = (m_update_database || m_update_iplike);
@@ -405,6 +403,8 @@ public class Installer {
             m_import_dir = m_opennms_home + File.separator + "etc" + File.separator + "imports";
         }
 
+        System.setProperty("opennms.home",m_opennms_home);
+
         //        final String pg_lib_dir = m_properties.getProperty("install.postgresql.dir");
         //
         //        if (pg_lib_dir != null) {
@@ -414,10 +414,6 @@ public class Installer {
         //
         //        m_installerDb.setStoredProcedureDirectory(m_etc_dir);
         //        m_installerDb.setCreateSqlLocation(m_etc_dir + File.separator + "create.sql");
-    }
-
-    private void loadScvProperties() {
-        SecureCredentialsVault.loadScvProperties(m_opennms_home);
     }
 
     private void loadEtcPropertiesFile(final String propertiesFile) throws IOException {

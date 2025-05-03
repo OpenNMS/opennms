@@ -21,6 +21,9 @@
  */
 package org.opennms.features.scv.api;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -37,12 +40,24 @@ public interface SecureCredentialsVault {
         JCEKS,
         PKCS12;
 
+        /**
+         * Returns the KeyStoreType from the system property {@code SCV_KEYSTORE_PROPERTY}.
+         * <p>
+         * If the system property is not set or contains a value that does not match any
+         * of the defined KeyStoreType enums, the default value {@code JCEKS} will be returned.
+         *
+         * @return the resolved KeyStoreType, or {@code JCEKS} if invalid or unspecified
+         */
         public static KeyStoreType fromSystemProperty() {
-            return KeyStoreType.valueOf(System.getProperty(SCV_KEYSTORE_PROPERTY, "JCEKS").toUpperCase());
+            return Arrays.stream(values())
+                    .filter(t -> t.name().equalsIgnoreCase(System.getProperty(SCV_KEYSTORE_PROPERTY, "JCEKS").toUpperCase()))
+                    .findFirst()
+                    .orElse(JCEKS);
         }
     }
-    public final static String SCV_KEYSTORE_PROPERTY = "org.opennms.features.scv.keystore.type";
-    public final static Properties m_onmsProperties = new Properties();
+    public static final Logger LOG = LoggerFactory.getLogger(SecureCredentialsVault.class);
+    public final static String SCV_KEYSTORE_PROPERTY = "org.opennms.features.scv.jceks.keystore.type";
+    public final static Properties onmsProperties = new Properties();
     public static final String OPENNMS_PROPERTIES_D_NAME = "opennms.properties.d";
     public static final String OPENNMS_PROPERTIES_NAME = "opennms.properties";
     public static final String KEYSTORE_KEY_PROPERTY = "org.opennms.features.scv.jceks.key";
@@ -50,15 +65,18 @@ public interface SecureCredentialsVault {
 
     public static void loadScvProperties( String opennmsHome){
 
-        loadProperties(Path.of(opennmsHome,"etc",OPENNMS_PROPERTIES_NAME).toString());
-        loadProperties(Path.of(opennmsHome,"etc",OPENNMS_PROPERTIES_D_NAME).toString());
+        if(opennmsHome != null && !opennmsHome.isEmpty()){
 
-        if (m_onmsProperties.containsKey(SCV_KEYSTORE_PROPERTY)) {
-            System.setProperty(SCV_KEYSTORE_PROPERTY, m_onmsProperties.getProperty(SCV_KEYSTORE_PROPERTY));
-        }
+            loadProperties(Path.of(opennmsHome,"etc",OPENNMS_PROPERTIES_NAME).toString());
+            loadProperties(Path.of(opennmsHome,"etc",OPENNMS_PROPERTIES_D_NAME).toString());
 
-        if (m_onmsProperties.containsKey(KEYSTORE_KEY_PROPERTY)) {
-            System.setProperty(KEYSTORE_KEY_PROPERTY, m_onmsProperties.getProperty(KEYSTORE_KEY_PROPERTY, DEFAULT_KEYSTORE_KEY));
+            if (onmsProperties.containsKey(SCV_KEYSTORE_PROPERTY)) {
+                System.setProperty(SCV_KEYSTORE_PROPERTY, onmsProperties.getProperty(SCV_KEYSTORE_PROPERTY));
+            }
+
+            if (onmsProperties.containsKey(KEYSTORE_KEY_PROPERTY)) {
+                System.setProperty(KEYSTORE_KEY_PROPERTY, onmsProperties.getProperty(KEYSTORE_KEY_PROPERTY, DEFAULT_KEYSTORE_KEY));
+            }
         }
     }
 
@@ -66,7 +84,7 @@ public interface SecureCredentialsVault {
         File fileOrDir = new File(path);
 
         if (!fileOrDir.exists()) {
-            System.out.println("ERROR: Path does not exist: " + path);
+            LOG.error(" Path does not exist: " + path);
             return;
         }
 
@@ -78,7 +96,7 @@ public interface SecureCredentialsVault {
                     .orElse(Stream.empty())
                     .forEach(SecureCredentialsVault::loadSingleFile);
         } else {
-            System.out.println("ERROR: Not a valid .properties file or directory: " + path);
+            LOG.error(" Not a valid .properties file or directory: " + path);
         }
     }
 
@@ -87,10 +105,10 @@ public interface SecureCredentialsVault {
             Properties props = new Properties();
             props.load(fis);
             props.stringPropertyNames().stream()
-                    .filter(key -> !m_onmsProperties.containsKey(key))
-                    .forEach(key -> m_onmsProperties.setProperty(key, props.getProperty(key)));
+                    .filter(key -> !onmsProperties.containsKey(key))
+                    .forEach(key -> onmsProperties.setProperty(key, props.getProperty(key)));
         } catch (IOException e) {
-            System.out.println("ERROR: Failed to load properties from: " + file.getName());
+            LOG.error("Failed to load properties from: " + file.getName());
         }
     }
 
