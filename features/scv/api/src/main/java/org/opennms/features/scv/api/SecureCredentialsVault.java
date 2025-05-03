@@ -84,7 +84,7 @@ public interface SecureCredentialsVault {
         File fileOrDir = new File(path);
 
         if (!fileOrDir.exists()) {
-            LOG.error(" Path does not exist: " + path);
+            LOG.info(" Path does not exist: " + path);
             return;
         }
 
@@ -96,7 +96,7 @@ public interface SecureCredentialsVault {
                     .orElse(Stream.empty())
                     .forEach(SecureCredentialsVault::loadSingleFile);
         } else {
-            LOG.error(" Not a valid .properties file or directory: " + path);
+            LOG.info(" Not a valid .properties file or directory: " + path);
         }
     }
 
@@ -108,7 +108,7 @@ public interface SecureCredentialsVault {
                     .filter(key -> !onmsProperties.containsKey(key))
                     .forEach(key -> onmsProperties.setProperty(key, props.getProperty(key)));
         } catch (IOException e) {
-            LOG.error("Failed to load properties from: " + file.getName());
+            LOG.info("Failed to load properties from: " + file.getName());
         }
     }
 
