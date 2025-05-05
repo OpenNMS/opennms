@@ -16,6 +16,8 @@ OpenNMS supports two keystore types: `JCEKS` and `PKCS12`. You can customize key
 org.opennms.features.scv.jceks.keystore.type=PKCS12
 ----
 NOTE: If you want to convert the `PKCS12` keystore format instead of `JCEKS`, be sure to update the file extension to match the new format (e.g., use `.pk12` instead of `.jce`).
+You can convert a `JCEKS` file to `PKCS12` using the following command.
+`keytool -importkeystore -srckeystore /opt/opennms/etc/scv.jce -destkeystore /opt/opennms/etc/scv.pk12 -deststoretype pkcs12`.
 
 == Configure password
 

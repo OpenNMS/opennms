@@ -120,7 +120,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
         }
     }
 
-    private String getKeyStoreFileName(String keystoreFile){
+    private String getKeyStoreFileName(String keystoreFile) {
 
         String fileName = keystoreFile;
 
@@ -133,7 +133,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
 
     public static JCEKSSecureCredentialsVault createInstance(String keystoreFile, String keyStoreType, String password, boolean useWatcher) {
         // Set the system property before creating the instance
-        if(keyStoreType != null && !keyStoreType.isEmpty()) {
+        if (keyStoreType != null && !keyStoreType.isEmpty()) {
             System.setProperty(SCV_KEYSTORE_PROPERTY, keyStoreType);
         }
 
@@ -285,7 +285,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
        Should be mostly used for read-only access, short-lived and instantiate for each access.
      */
     public static JCEKSSecureCredentialsVault defaultScv() {
-        SecureCredentialsVault.loadScvProperties(System.getProperty("opennms.home",""));
+        SecureCredentialsVault.loadScvProperties(System.getProperty("opennms.home"));
         return new JCEKSSecureCredentialsVault(getKeystoreFilename(), getKeystorePassword());
     }
 

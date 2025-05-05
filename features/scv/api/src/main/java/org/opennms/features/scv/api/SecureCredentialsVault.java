@@ -63,9 +63,9 @@ public interface SecureCredentialsVault {
     public static final String KEYSTORE_KEY_PROPERTY = "org.opennms.features.scv.jceks.key";
     public static final String DEFAULT_KEYSTORE_KEY = "QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw";
 
-    public static void loadScvProperties( String opennmsHome){
+    public static void loadScvProperties(String opennmsHome) {
 
-        if(opennmsHome != null && !opennmsHome.isEmpty()){
+        if (opennmsHome != null && !opennmsHome.isEmpty()) {
 
             loadProperties(Path.of(opennmsHome,"etc",OPENNMS_PROPERTIES_NAME).toString());
             loadProperties(Path.of(opennmsHome,"etc",OPENNMS_PROPERTIES_D_NAME).toString());
