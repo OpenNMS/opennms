@@ -1700,7 +1700,7 @@
     <snakeyamlVersion>2.2</snakeyamlVersion>
     <spiflyVersion>1.3.6</spiflyVersion>
     <jacocoVersion>0.8.9</jacocoVersion>
-    <jasperreportsVersion>6.20.0</jasperreportsVersion>
+    <jasperreportsVersion>7.0.3</jasperreportsVersion>
     <jasperreportsMavenPluginVersion>1.0-beta-4-OPENNMS-20160912-1</jasperreportsMavenPluginVersion>
     <jasyptVersion>1.9.3</jasyptVersion>
     <javassistVersion>3.29.2-GA</javassistVersion>
