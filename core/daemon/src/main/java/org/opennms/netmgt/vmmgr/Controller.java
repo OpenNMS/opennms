@@ -173,15 +173,19 @@ public class Controller {
     static void interpolateSystemProperties() {
         if (secureCredentialsVault == null) {
             try {
-                SecureCredentialsVault.loadScvProperties(System.getProperty("opennms.home"));
-                final Class clazz = Class.forName("org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault");
-                final Constructor constructor = clazz.getConstructor(String.class, String.class);
-                final String keyStoreKeyProperty = (String) clazz.getField("KEYSTORE_KEY_PROPERTY").get(null);
-                final String defaultKeyStoreKey = (String) clazz.getField("DEFAULT_KEYSTORE_KEY").get(null);
-                secureCredentialsVault = (SecureCredentialsVault) constructor.newInstance(
-                        Paths.get(System.getProperty("opennms.home"), "etc", "scv.jce").toString(),
-                        System.getProperty(keyStoreKeyProperty, defaultKeyStoreKey)
-                );
+
+                String opennmsHome = System.getProperty("opennms.home");
+                if (opennmsHome != null && !opennmsHome.isEmpty()) {
+                    SecureCredentialsVault.loadScvProperties(opennmsHome);
+                    final Class clazz = Class.forName("org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault");
+                    final Constructor constructor = clazz.getConstructor(String.class, String.class);
+                    final String keyStoreKeyProperty = (String) clazz.getField("KEYSTORE_KEY_PROPERTY").get(null);
+                    final String defaultKeyStoreKey = (String) clazz.getField("DEFAULT_KEYSTORE_KEY").get(null);
+                    secureCredentialsVault = (SecureCredentialsVault) constructor.newInstance(
+                            Paths.get(opennmsHome, "etc", "scv.jce").toString(),
+                            System.getProperty(keyStoreKeyProperty, defaultKeyStoreKey)
+                    );
+                }
             } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException |
                      InvocationTargetException | NoSuchFieldException e) {
                 LOG.warn("Error instantiating JCEKSSecureCredentialsVault: {}", e.getMessage());

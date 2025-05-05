@@ -67,8 +67,8 @@ public interface SecureCredentialsVault {
 
         if (opennmsHome != null && !opennmsHome.isEmpty()) {
 
-            loadProperties(Path.of(opennmsHome,"etc",OPENNMS_PROPERTIES_NAME).toString());
-            loadProperties(Path.of(opennmsHome,"etc",OPENNMS_PROPERTIES_D_NAME).toString());
+            loadProperties(Path.of(opennmsHome, "etc", OPENNMS_PROPERTIES_NAME).toString());
+            loadProperties(Path.of(opennmsHome, "etc", OPENNMS_PROPERTIES_D_NAME).toString());
 
             if (onmsProperties.containsKey(SCV_KEYSTORE_PROPERTY)) {
                 System.setProperty(SCV_KEYSTORE_PROPERTY, onmsProperties.getProperty(SCV_KEYSTORE_PROPERTY));
