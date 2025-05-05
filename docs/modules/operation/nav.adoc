@@ -122,6 +122,12 @@
 **** xref:deep-dive/notifications/strategies/mattermost.adoc[]
 **** xref:deep-dive/notifications/strategies/slack.adoc[]
 *** xref:deep-dive/notifications/shell.adoc[]
+*** xref:deep-dive/notifications/plugins.adoc[]
+**** xref:deep-dive/notifications/pagerdutyplugin/pagerduty.adoc[]
+***** xref:deep-dive/notifications/pagerdutyplugin/installation.adoc[]
+***** xref:deep-dive/notifications/pagerdutyplugin/configuration.adoc[]
+***** xref:deep-dive/notifications/pagerdutyplugin/filtering.adoc[]
+***** xref:deep-dive/notifications/pagerdutyplugin/holddown.adoc[]
 
 ** xref:deep-dive/bsm/introduction.adoc[]
 *** xref:deep-dive/bsm/business-service-definition.adoc[]

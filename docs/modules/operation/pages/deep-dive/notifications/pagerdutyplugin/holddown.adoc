@@ -1,0 +1,33 @@
+= Hold-Down Timer
+
+Some alarms may quickly resolve themselves, especially occasional brief outages from the OpenNMS service pollers.
+
+To be able to get the full benefits of the OpenNMS xref:operation:deep-dive/service-assurance/downtime-model.adoc[Downtime Model] you can specify a hold-down timer of at least a few minutes, to trade off instant notification of issues for
+reduced false positives (issues that resolved themselves before you were able to look at them).
+
+Similar to configuring the `jexlFilter`, you can edit a specific service's configuration. To find
+the specific configuration to edit, use `config:list` as shown below, then use `config:edit` to edit the Pid of that specific
+service's configuration:
+
+
+[source, console]
+----
+admin@opennms> config:list '(service.factoryPid=org.opennms.plugins.pagerduty.services)'
+----------------------------------------------------------------
+Pid:            org.opennms.plugins.pagerduty.services.bbc99bb4-bc56-4d56-b35c-14066b6e2dcf
+FactoryPid:     org.opennms.plugins.pagerduty.services
+BundleLocation: ?
+Properties:
+   felix.fileinstall.filename = file:/opt/opennms/etc/org.opennms.plugins.pagerduty.services-test-servers.cfg
+   jexlFilter = "Servers" =~ alarm.node.categories and "Test" =~ alarm.node.categories and alarm.type.name == "PROBLEM"
+   routingKey = YOUR-INTEGRATION-KEY-HERE
+   service.factoryPid = org.opennms.plugins.pagerduty.services
+   service.pid = org.opennms.plugins.pagerduty.services.bbc99bb4-bc56-4d56-b35c-14066b6e2dcf
+admin@opennms> config:edit org.opennms.plugins.pagerduty.services.bbc99bb4-bc56-4d56-b35c-14066b6e2dcf
+admin@opennms> property-set holdDownDelay "PT5M"
+admin@opennms> config:update
+----
+In addition, you can update config directly in the `org.opennms.plugins.pagerduty.services-$ALIAS.cfg` file.
+
+The `holdDownDelay` property should be a string that follows ISO-8601 duration format, as supported
+by https://docs.oracle.com/javase/8/docs/api/java/time/Duration.html#parse-java.lang.CharSequence-[`java.time.Duration.parse()`]

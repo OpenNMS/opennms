@@ -1,0 +1,6 @@
+
+[[ga-notifications-plugins]]
+= Notification Plugins
+:description: Overview of notification methods using OPA plugins in {page-component-title}
+
+{page-component-title} offers several https://github.com/OpenNMS/opennms-integration-api[OPA] plugins that can be leveraged for notifications.

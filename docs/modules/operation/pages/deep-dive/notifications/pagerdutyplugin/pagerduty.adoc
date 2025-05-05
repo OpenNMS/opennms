@@ -1,0 +1,12 @@
+
+= PagerDuty plugin
+:description: How to use the PagerDuty Plugin to configure {page-component-title} to send incidents through PagerDuty.
+
+If your organization uses https://pagerduty.com/[PagerDuty], this plugin allows you to configure {page-component-title} to create PagerDuty incidents that correspond to alarms in OpenNMS by integrating with PagerDuty's https://developer.pagerduty.com/docs/events-api-v2/overview/[Events API v2]
+
+OpenNMS alarms map naturally to incidents in PagerDuty:
+
+* Events create incidents
+* Events are deduplicated by the `dedup_key` (or `reduction key` in OpenNMS)
+* Incidents can be acknowledged while someone is working on the problem
+* Incidents are cleared when there is no longer a problem

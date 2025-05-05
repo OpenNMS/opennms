@@ -1,0 +1,33 @@
+
+= Configuration
+
+Configure global options (affects all services for this instance):
+[source, console]
+----
+config:edit org.opennms.plugins.pagerduty
+property-set client OpenNMS
+property-set alarmDetailsUrlPattern 'http://"YOUR-OPENNMS-HOSTNAME"/opennms/alarm/detail.htm?id=%d'
+config:update
+----
+
+Alternatively, you may manually create the global configuration in a file `$OPENNMS_HOME/etc/org.opennms.plugins.pagerduty.cfg`
+
+NOTE: Use the IP address or hostname of your OpenNMS {page-component-title} server (e.g., 127.0.0.1:8980 or opennms.yourdomain.com:8980).
+
+Configure services:
+[source, console]
+----
+config:edit --alias core --factory org.opennms.plugins.pagerduty.services
+property-set routingKey "YOUR-INTEGRATION-KEY-HERE"
+config:update
+----
+
+You may also manually create service configurations in a file `$OPENNMS_HOME/etc/org.opennms.plugins.pagerduty.services-$ALIAS.cfg`
+
+NOTE: Use the value of the "Integration Key" as the `routingKey` in the service integrations. +
+
+Use a JEXL expression to filter the types of notifications you receive.
+For example,`property-set jexlFilter 'alarm.reductionKey =~ ".*trigger.*"'` will forward only alarms with the label "trigger" to PagerDuty.
+No alarms will forward to PagerDuty until a JEXL expression is configured.   
+
+The plugin supports handling multiple services simultaneously - use a different `alias` for each of these when configuring.

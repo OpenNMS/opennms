@@ -1,0 +1,111 @@
+= Alarm filtering
+
+We currently only support JEXL expressions for controlling which alarms get forwarded to a given service.
+
+You can use the `opennms-pagerduty:eval-jexl` command to help test expressions before committing them to configuration.
+
+== The eval-jexl command
+[source, console]
+----
+admin@opennms()> opennms-pagerduty:eval-jexl --help
+DESCRIPTION
+        opennms-pagerduty:eval-jexl
+
+        Evaluate a JEXL expression for the PagerDuty plugin
+
+SYNTAX
+        opennms-pagerduty:eval-jexl [options] expression
+
+ARGUMENTS
+        expression
+
+                (required)
+
+OPTIONS
+        --help
+                Display this help message
+        -a, --alarm-id
+                Lookup an alarm by its id and evaluate the given expression against it.
+        -c, --count
+                Only show the number of matching alarms, without alarm data
+        -p, --topayload
+                Convert matching alarms to JSON PagerDuty event payloads
+----
+
+== Command examples
+[source, console]
+----
+admin@opennms> opennms-pagerduty:eval-jexl 'alarm.reductionKey =~ ".*trigger.*"'
+No alarms matched (out of 1 alarms.)
+
+admin@opennms> opennms-pagerduty:eval-jexl 'alarm.reductionKey =~ ".*"'
+MATCHED: ImmutableAlarm{reductionKey='uei.opennms.org/devjam/2020/minecraft/playerEnteredZone:mousebar:x_intercept', id=109, node=null, managedObjectInstance='null', managedObjectType='zone', type=null, severity=WARNING, attributes={}, relatedAlarms=[], logMessage='x_intercept has entered mousebar.', description='x_intercept has entered mousebar.', lastEventTime=2020-07-30 16:31:26.904, firstEventTime=2020-07-30 16:31:26.904, lastEvent=ImmutableDatabaseEvent{uei='uei.opennms.org/devjam/2020/minecraft/playerEnteredZone', id=195, parameters=[ImmutableEventParameter{name='zone', value='mousebar'}, ImmutableEventParameter{name='player', value='x_intercept'}]}, acknowledged=false}
+
+admin@opennms()> eval-jexl -c 'alarm.reductionKey =~ ".*dataCollectionFailed.*"'
+
+Expression matched 2 alarms (out of 6 alarms.)
+admin@opennms()> opennms-pagerduty:eval-jexl -a 2523 'alarm.reductionKey =~ ".*dataCollectionFailed.*"'
+Alarm with ID '2523' has reduction key: 'uei.opennms.org/nodes/dataCollectionFailed::1:127.0.0.1:OpenNMS-DB'
+Expression evaluates: true
+
+Expression matched 2 alarms (out of 5 alarms.)
+admin@opennms()> opennms-pagerduty:eval-jexl -a 2523 -p 'alarm.reductionKey =~ ".*dataCollectionFailed.*"'
+Alarm with ID '2523' has reduction key: 'uei.opennms.org/nodes/dataCollectionFailed::1:127.0.0.1:OpenNMS-DB'
+Expression evaluates: true
+PagerDuty JSON Payload:
+ {
+  "payload" : {
+    "summary" : "OpenNMS-DB data collection on interface 127.0.0.1 failed.",
+    "source" : "localhost",
+    "severity" : "error",
+    "custom_details" : {
+      "reason" : "An undeclared throwable was caught during data collection for interface 1/127.0.0.1/OpenNMS-DB",
+      "nodeLabel" : "localhost",
+      "node_categories" : "[]",
+      "node_ipAddress" : "/127.0.0.1",
+    [ ... ]
+    }
+  },
+  "event_action" : "trigger",
+  "images" : [ ],
+  "links" : [ ]
+}
+Expression matched 2 alarms (out of 3 alarms.)
+----
+The `opennms-pagerduty:eval-jexl` command can evalate a JEXL expression aginst a single alarm (using `--alarm-id`) or against all available alarms (the default).
+The `--topayload` option will display alarms matching the expression as the JSON encoded request payload that would be sent to the PagerDuty Events v2 API.
+
+== JEXL Expression Examples
+
+The OpenNMS PagerDuty integration leverages https://commons.apache.org/proper/commons-jexl/reference/syntax.html[Apache Commons JEXL Syntax] to allow filtering the alarms that get passed to PagerDuty.
+
+Each expression will have a single `alarm` variable set, which is an https://github.com/OpenNMS/opennms-integration-api/blob/master/api/src/main/java/org/opennms/integration/api/v1/model/Alarm.java[Alarm] object with details about the alarm.
+If the expression evaluates to `true`, then a PagerDuty event is created for this alarm.
+
+=== All alarms for a nodes with "Test" and "Servers" categories assigned
+
+[source, console]
+----
+admin@opennms> property-set jexlFilter '"Servers" =~ alarm.node.categories and "Test" =~ alarm.node.categories'
+----
+
+This leverages the `=~` operator to mean "'Servers' is in the alarm's node's categories" and "'Test' is in the alarm's node's categories".
+
+=== Excluding some alarms from the above
+
+[source, console]
+----
+admin@opennms> property-set jexlFilter '"Servers" =~ alarm.node.categories and "Test" =~ alarm.node.categories and alarm.reductionKey !~ "^uei\.opennms\.org/generic/traps/SNMP_Authen_Failure:.*"'
+----
+
+This leverages the `!~` operator to mean "the alarm reduction key does not match the given regex", in addition to the "in" sense of `=~` as shown above.
+
+=== Only Alarms That Can Auto-Resolve
+
+[source, console]
+----
+admin@opennms> property-set jexlFilter '"Servers" =~ alarm.node.categories and "Test" =~ alarm.node.categories and alarm.type.name == "PROBLEM"'
+----
+
+This limits to only alarms for certain categories of nodes that have a resolution.
+Some alarms have no "clearing" event, so they would stay present in PagerDuty forever unless manual action is taken, or certain special configuration is used within PagerDuty to expire the events.

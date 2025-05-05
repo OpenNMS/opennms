@@ -1,0 +1,68 @@
+
+= Installation
+
+== From package
+
+=== Download the latest release from https://github.com/OpenNMS/opennms-pagerduty-plugin/releases/[GitHub]:
+[source, console]
+----
+mkdir pager-duty-plugin && cd pager-duty-plugin
+wget https://github.com/OpenNMS/opennms-pagerduty-plugin/releases/latest/download/opennms-pagerduty-plugin.tar.gz
+----
+
+=== Extract the archive and verify the checksum:
+[source, console]
+----
+tar xzf opennms-pagerduty-plugin.tar.gz
+shasum -c shasum256.txt
+----
+
+=== Copy the kar file to your deploy folder:
+[source, console]
+----
+cp opennms-pagerduty-plugin-*.kar ${OPENNMS_HOME}/deploy
+----
+
+=== Configure the plugin to be installed when OpenNMS starts:
+[source, console]
+----
+echo 'opennms-plugins-pagerduty wait-for-kar=opennms-pagerduty-plugin' | sudo tee ${OPENNMS_HOME}/etc/featuresBoot.d/pagerduty.boot
+----
+
+=== Access the https://opennms.discourse.group/t/karaf-cli-cheat-sheet/149[Karaf shell] and install the feature manually to avoid having to restart:
+[source, console]
+----
+feature:install opennms-plugins-pagerduty
+----
+
+== From source
+
+=== Clone the plugin repository:
+[source, console]
+----
+git clone http://github.com/opennms/opennms-pagerduty-plugin
+----
+
+=== Checkout a release tag:
+[source, console]
+----
+git checkout v0.1.4
+----
+
+=== Compile:
+[source, console]
+----
+mvn clean install
+----
+
+=== Copy the kar file to your deploy folder:
+[source, console]
+----
+cp opennms-pagerduty-plugin-*.kar ${OPENNMS_HOME}/deploy
+----
+
+=== Configure the plugin to be installed when OpenNMS starts:
+[source, console]
+----
+echo 'opennms-plugins-pagerduty wait-for-kar=opennms-pagerduty-plugin' | sudo tee ${OPENNMS_HOME}/etc/featuresBoot.d/pagerduty.boot
+----
