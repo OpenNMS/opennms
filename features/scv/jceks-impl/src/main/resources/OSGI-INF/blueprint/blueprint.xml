@@ -24,7 +24,7 @@
         </cm:default-properties>
     </cm:property-placeholder>
 
-    <bean id="jceksSecureCredentialsVault" class="org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault" destroy-method="destroy">
+    <bean id="jceksSecureCredentialsVault" class="org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault" destroy-method="destroy" factory-method="createInstance">
         <argument value="$[karaf.etc]$[file.separator]scv.jce"/>
         <argument value="[[keystore.type]]"/>
         <argument value="[[key]]"/>

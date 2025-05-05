@@ -21,3 +21,14 @@ org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy
 
 The release of Horizon 34 will be the last version which supports reading and writing timeseries data using JRobin.
 The JRobin library and the JRobin timeseries strategy will be removed from Horizon 35+ moving forward.
+
+=== Secure Credentials Vault changes
+The `Secure Credentials Vault` in `OpenNMS` traditionally supported the `JCEKS` keystore format. As of the latest enhancement,
+support has been added for the `PKCS12` keystore format.
+
+Set `org.opennms.features.scv.jceks.keystore.type=PKCS12` in configuration file
+ `$OPENNMS_HOME/etc/opennms.properties.d/scv.properties.`
+
+If you want to convert the `PKCS12` keystore format instead of `JCEKS`, be sure to update the file extension to match the new format (e.g., use `.pk12` instead of `.jce`).
+You can convert a `JCEKS` file to `PKCS12` using the following command.
+`keytool -importkeystore -srckeystore $OPENNMS_HOME/etc/scv.jce -destkeystore $OPENNMS_HOME/etc/scv.pk12 -deststoretype pkcs12`.

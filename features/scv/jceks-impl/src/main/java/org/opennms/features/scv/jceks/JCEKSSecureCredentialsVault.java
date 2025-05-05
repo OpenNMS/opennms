@@ -85,10 +85,6 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
         this(keystoreFile, password, useWatcher, new byte[]{0x0, 0xd, 0xd, 0xb, 0xa, 0x1, 0x1});
     }
 
-    public JCEKSSecureCredentialsVault(String keystoreFile, String keyType, String password, boolean useWatcher)  {
-        this(getKeyStoreFileName(keystoreFile,keyType), password, useWatcher, new byte[]{0x0, 0xd, 0xd, 0xb, 0xa, 0x1, 0x1});
-    }
-
     public JCEKSSecureCredentialsVault(String keystoreFile, String password)  {
         this(keystoreFile, password, false, new byte[]{0x0, 0xd, 0xd, 0xb, 0xa, 0x1, 0x1});
     }
@@ -104,9 +100,6 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
         m_keyLength = keyLength;
         m_keystoreFile = new File(getKeyStoreFileName(keystoreFile));
         try {
-
-
-
             m_keystore = KeyStore.getInstance(KeyStoreType.fromSystemProperty().toString());
             if (!m_keystoreFile.isFile()) {
                 LOG.info("No existing keystore found at: {}. Using empty keystore.", m_keystoreFile);
@@ -138,20 +131,13 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
         return fileName;
     }
 
-
-    private static String getKeyStoreFileName(String keystoreFile, String keyStoreType){
-
+    public static JCEKSSecureCredentialsVault createInstance(String keystoreFile, String keyStoreType, String password, boolean useWatcher) {
+        // Set the system property before creating the instance
         if(keyStoreType != null && !keyStoreType.isEmpty()) {
             System.setProperty(SCV_KEYSTORE_PROPERTY, keyStoreType);
         }
 
-        String fileName = keystoreFile;
-
-        if (KeyStoreType.fromSystemProperty().equals(KeyStoreType.PKCS12)) {
-            fileName = keystoreFile.replaceAll(".jce",".pk12");
-        }
-
-        return fileName;
+        return new JCEKSSecureCredentialsVault(keystoreFile, password, useWatcher);
     }
 
     private void createFileUpdateWatcher() {
