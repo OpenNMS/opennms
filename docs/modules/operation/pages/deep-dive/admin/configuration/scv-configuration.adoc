@@ -8,7 +8,6 @@ It stores them in the Java keystore (JKS) format.
 The secure credentials vault is enabled by default.
 
 == Configure keystore type and file name
-By default, the Secure Credentials Vault in OpenNMS uses a `JCEKS` keystore with the file name `scv.jce`.
 OpenNMS supports two keystore types: `JCEKS` and `PKCS12`. You can customize keystore type by setting the appropriate properties in:
 `$\{OPENNMS_HOME}/etc/opennms.properties.d/scv.properties.`
 +
@@ -16,7 +15,7 @@ OpenNMS supports two keystore types: `JCEKS` and `PKCS12`. You can customize key
 ----
 org.opennms.features.scv.jceks.keystore.type=PKCS12
 ----
-NOTE: If you change the keystore type to `PKCS12`, be sure to update the file extension to match the format (e.g., use `.pk12` instead of `.jce`).
+NOTE: If you want to convert the `PKCS12` keystore format instead of `JCEKS`, be sure to update the file extension to match the new format (e.g., use `.pk12` instead of `.jce`).
 
 == Configure password
 

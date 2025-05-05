@@ -403,7 +403,7 @@ public class Installer {
             m_import_dir = m_opennms_home + File.separator + "etc" + File.separator + "imports";
         }
 
-        System.setProperty("opennms.home",m_opennms_home);
+        System.setProperty("opennms.home", m_opennms_home);
 
         //        final String pg_lib_dir = m_properties.getProperty("install.postgresql.dir");
         //

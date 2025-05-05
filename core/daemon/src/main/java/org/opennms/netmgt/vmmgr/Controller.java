@@ -179,7 +179,7 @@ public class Controller {
                 final String keyStoreKeyProperty = (String) clazz.getField("KEYSTORE_KEY_PROPERTY").get(null);
                 final String defaultKeyStoreKey = (String) clazz.getField("DEFAULT_KEYSTORE_KEY").get(null);
                 secureCredentialsVault = (SecureCredentialsVault) constructor.newInstance(
-                        Paths.get(System.getProperty("opennms.home"), "etc",  "scv.jce").toString(),
+                        Paths.get(System.getProperty("opennms.home"), "etc", "scv.jce").toString(),
                         System.getProperty(keyStoreKeyProperty, defaultKeyStoreKey)
                 );
             } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException |

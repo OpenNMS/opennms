@@ -47,6 +47,12 @@ This move shrinks the image a bit, makes minimal updating easier, and should sim
 The images are based on the `ubi9-minimal` image, which is essentially a stripped down version of RHEL 9.
 This means that things will have moved around a bit in the filesystem, and that you should use `microdnf` for package management.
 
+=== Secure Credentials Vault changes
+The `Secure Credentials Vault` in `OpenNMS` traditionally supported the `JCEKS` keystore format. As of the latest enhancement,
+support has been added for the `PKCS12` keystore format.
+Set `org.opennms.features.scv.jceks.keystore.type=PKCS12` in configuration file `$OPENNMS_HOME/etc/opennms.properties.d/scv.properties.`
+If you want to convert the `PKCS12` keystore format instead of `JCEKS`, be sure to update the file extension to match the new format (e.g., use `.pk12` instead of `.jce`).
+
 === Important internal updates
 
 * Our embedded Karaf container and Karaf APIs have been updated to 4.3.10
