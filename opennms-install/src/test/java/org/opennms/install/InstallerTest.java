@@ -23,18 +23,21 @@ package org.opennms.install;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
+import static org.mockito.Mockito.mockStatic;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Arrays;
+import java.util.Locale;
 import java.util.Properties;
 import java.util.Set;
 
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.MockedStatic;
 import org.opennms.bootstrap.FilesystemPermissionValidator;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
@@ -196,5 +199,38 @@ public class InstallerTest {
         }
         userManager.reload();
         assertTrue(userManager.comparePasswords("admin", "foobar"));
+    }
+
+    public void testPath(final String path, final String extension) throws Exception {
+        try (final MockedStatic<Files> filesMock = mockStatic(Files.class)) {
+            // mock Files.exists(), so the path (e.g. /usr/lib64) exists for this test
+            filesMock.when(() -> Files.exists(Paths.get(path))).thenReturn(true);
+            final Installer installer = new Installer() {
+                @Override
+                public boolean loadLibrary(String p) {
+                    // library exists in the given location
+                    return p.equals(path + "/libjrrd2." + extension);
+                }
+            };
+            final String lib = installer.findLibrary("jrrd2", null, true);
+            // check that library was found in the given location
+            assertEquals(path + "/libjrrd2." + extension, lib);
+            System.out.println(lib);
+        }
+    }
+
+    @Test
+    public void testNMS17883() throws Exception {
+        // we need this, otherwise the test will either fail on Mac OS X or Linux
+        final String os = System.getProperty("os.name", "generic").toLowerCase(Locale.ENGLISH);
+        final String libExtension;
+        if (os.contains("mac") || os.contains("darwin")) {
+            libExtension = "dylib";
+        } else {
+            libExtension = "so";
+        }
+        // check deb- and rpm-based library locations
+        testPath("/usr/lib64", libExtension);
+        testPath("/usr/lib/jni", libExtension);
     }
 }
