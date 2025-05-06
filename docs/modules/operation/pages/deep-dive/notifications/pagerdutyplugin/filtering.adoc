@@ -72,7 +72,7 @@ PagerDuty JSON Payload:
 }
 Expression matched 2 alarms (out of 3 alarms.)
 ----
-The `opennms-pagerduty:eval-jexl` command can evalate a JEXL expression aginst a single alarm (using `--alarm-id`) or against all available alarms (the default).
+The `opennms-pagerduty:eval-jexl` command can evaluate a JEXL expression against a single alarm (using `--alarm-id`) or against all available alarms (the default).
 The `--topayload` option will display alarms matching the expression as the JSON encoded request payload that would be sent to the PagerDuty Events v2 API.
 
 == JEXL Expression Examples
