@@ -152,23 +152,23 @@ public class ZenithConnectPersistenceServiceImpl implements ZenithConnectPersist
         ZenithConnectRegistrations existingRegistrations = getRegistrationsImpl();
         ZenithConnectRegistration existingRegistration = existingRegistrations.first();
 
-        if (existingRegistration != null) {
-            boolean systemIdsMatch = registration.systemId != null && existingRegistration.systemId != null &&
-                    registration.systemId.equals(existingRegistration.systemId);
+        if (existingRegistration == null) {
+            return false;
+        }
 
-            if (systemIdsMatch) {
-                boolean accessTokenMatches = registration.accessToken != null &&
-                        existingRegistration.accessToken != null &&
-                        registration.accessToken.equals(existingRegistration.accessToken);
+        boolean systemIdsMatch = registration.systemId != null && existingRegistration.systemId != null &&
+                registration.systemId.equals(existingRegistration.systemId);
 
-                boolean refreshTokenMatches = registration.refreshToken != null &&
-                        existingRegistration.refreshToken != null &&
-                        registration.refreshToken.equals(existingRegistration.refreshToken);
+        if (systemIdsMatch) {
+            boolean accessTokenMatches = registration.accessToken != null &&
+                    existingRegistration.accessToken != null &&
+                    registration.accessToken.equals(existingRegistration.accessToken);
 
-                if (accessTokenMatches || refreshTokenMatches) {
-                    return true;
-                }
-            }
+            boolean refreshTokenMatches = registration.refreshToken != null &&
+                    existingRegistration.refreshToken != null &&
+                    registration.refreshToken.equals(existingRegistration.refreshToken);
+
+            return accessTokenMatches || refreshTokenMatches;
         }
 
         return false;
