@@ -60,7 +60,7 @@ public class ScvCli {
             aliases = {"-k"},
             required = false,
             metaVar = "KEYSTORE")
-    private String keystore = lookupKeyStore();
+    private String keystore = "scv.jce";
 
     @Option(name = "--password",
             aliases = {"-p"},
@@ -75,24 +75,25 @@ public class ScvCli {
 
     public SecureCredentialsVault getSecureCredentialsVault() {
         if (secureCredentialsVault == null) {
-            secureCredentialsVault = new JCEKSSecureCredentialsVault(this.keystore, this.password);
+            secureCredentialsVault = new JCEKSSecureCredentialsVault(this.keystore, this.password, lookupKeyStoreType());
         }
 
         return secureCredentialsVault;
     }
 
-    private static String lookupKeyStore() {
+    private  String lookupKeyStoreType() {
+        String keyStoreType = SecureCredentialsVault.KeyStoreType.JCEKS.name();
         Properties properties = new Properties();
-        String defaultKeyStore="scv.jce";
         try {
             properties.load(ScvCli.class.getResourceAsStream("/scvcli-filtered.properties"));
             String opennmsHome = properties.getProperty("install.dir");
-            SecureCredentialsVault.loadScvProperties(opennmsHome);
+            Properties scvProps = SecureCredentialsVault.loadScvProperties(opennmsHome);
+            keyStoreType = scvProps.getProperty(SecureCredentialsVault.SCV_KEYSTORE_PROPERTY);
         } catch (Exception e) {
             LOG.error("WARNING: unable to load properties files");
         }
 
-        return defaultKeyStore;
+        return keyStoreType;
     }
 
     private static String lookupDefaultPassword() {
