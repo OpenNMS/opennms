@@ -27,6 +27,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
@@ -65,11 +66,12 @@ import com.sun.tools.attach.VirtualMachineDescriptor;
 public class Controller {
 
     private static final Logger LOG = LoggerFactory.getLogger(Controller.class);
+
     /**
      * The system property used to determine the JMX management agent URI for the
      * JVM that we are attaching to. This is used for getting status information from a
      * running OpenNMS instance.
-     * 
+     *
      * @see https://docs.oracle.com/javase/8/docs/technotes/guides/management/agent.html
      */
     public static final String CONNECTOR_ADDRESS = "com.sun.management.jmxremote.localConnectorAddress";
@@ -176,14 +178,14 @@ public class Controller {
 
                 String opennmsHome = System.getProperty("opennms.home");
                 if (opennmsHome != null && !opennmsHome.isEmpty()) {
-                    SecureCredentialsVault.loadScvProperties(opennmsHome);
+                    Properties scvProps = SecureCredentialsVault.loadScvProperties(opennmsHome);
                     final Class clazz = Class.forName("org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault");
-                    final Constructor constructor = clazz.getConstructor(String.class, String.class);
+                    final Constructor constructor = clazz.getConstructor(String.class, String.class, String.class);
                     final String keyStoreKeyProperty = (String) clazz.getField("KEYSTORE_KEY_PROPERTY").get(null);
                     final String defaultKeyStoreKey = (String) clazz.getField("DEFAULT_KEYSTORE_KEY").get(null);
                     secureCredentialsVault = (SecureCredentialsVault) constructor.newInstance(
                             Paths.get(opennmsHome, "etc", "scv.jce").toString(),
-                            System.getProperty(keyStoreKeyProperty, defaultKeyStoreKey)
+                            System.getProperty(keyStoreKeyProperty, defaultKeyStoreKey), scvProps.getProperty(SecureCredentialsVault.SCV_KEYSTORE_PROPERTY)
                     );
                 }
             } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException |

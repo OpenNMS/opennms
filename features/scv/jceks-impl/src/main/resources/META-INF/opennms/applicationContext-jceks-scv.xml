@@ -7,8 +7,9 @@
 
     <bean name="jceksSecureCredentialsVault" class="org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault" destroy-method="destroy">
         <constructor-arg value="#{systemProperties['opennms.home']}/etc/scv.jce"/>
-        <constructor-arg value="#{systemProperties['org.opennms.features.scv.jceks.key'] ?: 'QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw'}"/>
-        <constructor-arg value="#{systemProperties['org.opennms.features.scv.jceks.enable.watcher'] ?: true}" type="boolean"/>
+        <constructor-arg value="#{systemProperties['org.opennms.features.scv.key'] ?: 'QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw'}"/>
+        <constructor-arg value="#{systemProperties['org.opennms.features.scv.enable.watcher'] ?: true}" type="boolean"/>
+        <constructor-arg value="#{systemProperties['org.opennms.features.scv.keystore.type']}" />
     </bean>
 
     <onmsgi:service interface="org.opennms.features.scv.api.SecureCredentialsVault" ref="jceksSecureCredentialsVault"/>

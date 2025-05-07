@@ -69,7 +69,7 @@ public class PKCS12SecureCredentialVaultTest{
         File keystoreFile = new File(tempFolder.getRoot(),  SCV_KEYSTORE_FILE_NAME);
 
         // Create a new vault
-        SecureCredentialsVault scv = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "testing123");
+        SecureCredentialsVault scv = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "testing123", SCV_KEYSTORE_TYPE);
         // Aliases should be empty
         assertEquals(0, scv.getAliases().size());
         // Retrieving from an non-existent alias should return null
@@ -82,7 +82,7 @@ public class PKCS12SecureCredentialVaultTest{
         // Retrieve it back
         assertEquals(creds, scv.getCredentials("http"));
         // Recreate the store
-        scv = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "testing123");
+        scv = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "testing123", SCV_KEYSTORE_TYPE);
         // And retrieve it again
         assertEquals(Sets.newHashSet("http"), scv.getAliases());
         assertEquals(creds, scv.getCredentials("http"));
@@ -100,7 +100,7 @@ public class PKCS12SecureCredentialVaultTest{
     public void cachingCredentials() {
         File keystoreFile = new File(tempFolder.getRoot(), SCV_KEYSTORE_FILE_NAME);
         // Create a new vault
-        SecureCredentialsVault scv = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "testing123");
+        SecureCredentialsVault scv = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "testing123", SCV_KEYSTORE_TYPE);
         // Store some creds
         Map<String, String> attributes = Map.of("key1", "value1", "key2", "value2");
         Credentials credentials1 = new Credentials("adm1n", "p@ssw0rd", attributes);
@@ -123,7 +123,7 @@ public class PKCS12SecureCredentialVaultTest{
         int numberOfThreads = 20;
 
         // Create a new vault and save some credentials
-        final SecureCredentialsVault scv = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "testing123");
+        final SecureCredentialsVault scv = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "testing123", SCV_KEYSTORE_TYPE);
         final Map<String, String> attributes = Map.of("key1", "value1", "key2", "value2");
         final Credentials credentials1 = new Credentials("adm1n", "p@ssw0rd", attributes);
         scv.setCredentials("http", credentials1);
@@ -133,7 +133,7 @@ public class PKCS12SecureCredentialVaultTest{
         final AtomicLong idCounter = new AtomicLong();
 
         //Create a new vault to access existing credentials and to add new credentials
-        final SecureCredentialsVault scv2 = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "testing123");
+        final SecureCredentialsVault scv2 = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "testing123", SCV_KEYSTORE_TYPE);
         for (int i = 0; i < numberOfThreads; i++) {
             service.execute(() -> {
                 final Credentials credentials2 = new Credentials("adm2n", "p@ssw0rd2", attributes);
@@ -163,7 +163,7 @@ public class PKCS12SecureCredentialVaultTest{
         scv.setCredentials("http", credentials1);
 
         //Add a new vault by directly loading keystore file ( as Opennms UI does), this is using watcher.
-        final SecureCredentialsVault scv2 = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "testing123", true);
+        final SecureCredentialsVault scv2 = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "testing123", true, SCV_KEYSTORE_TYPE);
         assertEquals(credentials1, scv2.getCredentials("http"));
 
         // Update credentials from default scv ( assuming scvcli updates credentials)

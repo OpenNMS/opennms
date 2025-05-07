@@ -39,48 +39,40 @@ public interface SecureCredentialsVault {
     public enum KeyStoreType {
         JCEKS,
         PKCS12;
-
-        /**
-         * Returns the KeyStoreType from the system property {@code SCV_KEYSTORE_PROPERTY}.
-         * <p>
-         * If the system property is not set or contains a value that does not match any
-         * of the defined KeyStoreType enums, the default value {@code JCEKS} will be returned.
-         *
-         * @return the resolved KeyStoreType, or {@code JCEKS} if invalid or unspecified
-         */
-        public static KeyStoreType fromSystemProperty() {
-            return Arrays.stream(values())
-                    .filter(t -> t.name().equalsIgnoreCase(System.getProperty(SCV_KEYSTORE_PROPERTY, "JCEKS").toUpperCase()))
-                    .findFirst()
-                    .orElse(JCEKS);
-        }
     }
     public static final Logger LOG = LoggerFactory.getLogger(SecureCredentialsVault.class);
-    public final static String SCV_KEYSTORE_PROPERTY = "org.opennms.features.scv.jceks.keystore.type";
-    public final static Properties onmsProperties = new Properties();
+    public final static String SCV_KEYSTORE_PROPERTY = "org.opennms.features.scv.keystore.type";
     public static final String OPENNMS_PROPERTIES_D_NAME = "opennms.properties.d";
     public static final String OPENNMS_PROPERTIES_NAME = "opennms.properties";
-    public static final String KEYSTORE_KEY_PROPERTY = "org.opennms.features.scv.jceks.key";
+    public static final String KEYSTORE_KEY_PROPERTY = "org.opennms.features.scv.key";
     public static final String DEFAULT_KEYSTORE_KEY = "QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw";
 
-    public static void loadScvProperties(String opennmsHome) {
 
-        if (opennmsHome != null && !opennmsHome.isEmpty()) {
+    /**
+     * Loads SCV-related properties from system properties first if not found in system properties,
+     * then from properties files  under $OPENNMS_HOME/etc/opennms.properties.d
+     * and $OPENNMS_HOME/etc/opennms.properties.
+     *
+     * @param opennmsHome The path to the OpenNMS home directory.
+     * @return Properties containing SCV-related properties.
+     */
+    public static Properties loadScvProperties(String opennmsHome) {
 
-            loadProperties(Path.of(opennmsHome, "etc", OPENNMS_PROPERTIES_NAME).toString());
-            loadProperties(Path.of(opennmsHome, "etc", OPENNMS_PROPERTIES_D_NAME).toString());
-
-            if (onmsProperties.containsKey(SCV_KEYSTORE_PROPERTY)) {
-                System.setProperty(SCV_KEYSTORE_PROPERTY, onmsProperties.getProperty(SCV_KEYSTORE_PROPERTY));
-            }
-
-            if (onmsProperties.containsKey(KEYSTORE_KEY_PROPERTY)) {
-                System.setProperty(KEYSTORE_KEY_PROPERTY, onmsProperties.getProperty(KEYSTORE_KEY_PROPERTY, DEFAULT_KEYSTORE_KEY));
+        final Properties onmsProperties = new Properties();
+        String keyStoreTypeSp = System.getProperty(SCV_KEYSTORE_PROPERTY);
+        if(keyStoreTypeSp !=null && !keyStoreTypeSp.isEmpty()){
+            onmsProperties.setProperty(SCV_KEYSTORE_PROPERTY, keyStoreTypeSp);
+        } else {
+            if (opennmsHome != null && !opennmsHome.isEmpty()) {
+                loadProperties(Path.of(opennmsHome, "etc", OPENNMS_PROPERTIES_D_NAME).toString(), onmsProperties);
+                loadProperties(Path.of(opennmsHome, "etc", OPENNMS_PROPERTIES_NAME).toString(), onmsProperties);
             }
         }
+
+        return onmsProperties;
     }
 
-    private static void loadProperties(String path) {
+    private static void loadProperties(String path, Properties onmsProperties) {
         File fileOrDir = new File(path);
 
         if (!fileOrDir.exists()) {
@@ -89,18 +81,18 @@ public interface SecureCredentialsVault {
         }
 
         if (fileOrDir.isFile() && path.endsWith(".properties")) {
-            loadSingleFile(fileOrDir);
+            loadSingleFile(fileOrDir, onmsProperties);
         } else if (fileOrDir.isDirectory()) {
             Optional.ofNullable(fileOrDir.listFiles((dir, name) -> name.endsWith(".properties")))
                     .map(Arrays::stream)
                     .orElse(Stream.empty())
-                    .forEach(SecureCredentialsVault::loadSingleFile);
+                    .forEach(file -> SecureCredentialsVault.loadSingleFile(file, onmsProperties));
         } else {
             LOG.info(" Not a valid .properties file or directory: " + path);
         }
     }
 
-    private static  void loadSingleFile(File file) {
+    private static void loadSingleFile(File file, Properties onmsProperties) {
         try (FileInputStream fis = new FileInputStream(file)) {
             Properties props = new Properties();
             props.load(fis);
