@@ -19,8 +19,7 @@
               <thead>
                 <th>Registration Status</th>
                 <th>Registered On</th>
-                <th>Last Connected On</th>
-                <th>Connected Status</th>
+                <th>Active</th>
                 <th>System ID</th>
                 <th>Display Name</th>
                 <th>Access Token</th>
@@ -28,34 +27,33 @@
                 <th>Actions</th>
               </thead>
               <tbody>
-                <tr v-for="reg of zenithConnectStore.registrations" :key="reg.id">
+                <tr>
                   <td>
-                    <div v-if="reg.success === true">
-                      <div class="register-success">Success</div>
+                    <div v-if="currentRegistration?.registered">
+                      <div class="register-success">Registered</div>
                     </div>
                     <div v-else>
-                      <div class="register-failed">Failed</div>
+                      <div class="register-failed">Unregistered</div>
                     </div>
                   </td>
-                  <td>{{ reg.registrationDate ? fnsFormat(reg.registrationDate, 'yyyy-MM-dd HH:mm:ss') : '--' }}</td>
-                  <td>{{ reg.lastConnected ? fnsFormat(reg.lastConnected, 'yyyy-MM-dd HH:mm:ss') : '--' }}</td>
+                  <td>{{ formatRegistrationDate(currentRegistration) }}</td>
                   <td>
-                    <div v-if="reg.connected === true">
-                      <div class="register-success">Connected</div>
+                    <div v-if="currentRegistration?.active">
+                      <div class="register-success">Active</div>
                     </div>
                     <div v-else>
-                      <div class="register-failed">Not Connected</div>
+                      <div class="register-failed">Inactive</div>
                     </div>
                   </td>
-                  <td>{{ reg.nmsSystemId }}</td>
-                  <td>{{ reg.nmsDisplayName }}</td>
+                  <td>{{ currentRegistration?.systemId }}</td>
+                  <td>{{ currentRegistration?.displayName }}</td>
                   <td>
                     <div>
-                      {{ ellipsify(reg.accessToken ?? '', 30) }}
+                      {{ ellipsify(currentRegistration?.accessToken ?? '', 30) }}
                       <FeatherButton
                         primary
                         icon="Copy Access Token"
-                        @click.prevent="() => onCopyToken(reg.accessToken ?? '')"
+                        @click.prevent="() => onCopyToken(currentRegistration?.accessToken ?? '')"
                       >
                         <FeatherIcon :icon="icons.ContentCopy"/>
                       </FeatherButton>
@@ -63,11 +61,11 @@
                   </td>
                   <td>
                     <div>
-                      {{ ellipsify(reg.refreshToken ?? '', 30) }}
+                      {{ ellipsify(currentRegistration?.refreshToken ?? '', 30) }}
                       <FeatherButton
                         primary
                         icon="Copy Refresh Token"
-                        @click.prevent="() => onCopyToken(reg.refreshToken ?? '')"
+                        @click.prevent="() => onCopyToken(currentRegistration?.refreshToken ?? '')"
                       >
                         <FeatherIcon :icon="icons.ContentCopy"/>
                       </FeatherButton>
@@ -77,8 +75,8 @@
                     <div>
                       <FeatherButton
                         primary
-                        :disabled="!reg.nmsSystemId"
-                        @click.prevent="() => onSendData(reg)"
+                        :disabled="!currentRegistration?.registered || !currentRegistration?.systemId"
+                        @click.prevent="() => onSendData(currentRegistration)"
                       >
                         Send Data
                       </FeatherButton>
@@ -125,6 +123,7 @@ const router = useRouter()
 const { showSnackBar } = useSnackbar()
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
+const currentRegistration = computed<ZenithConnectRegistration | undefined>(() => zenithConnectStore.currentRegistration)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
@@ -137,36 +136,48 @@ const icons = markRaw({
   ContentCopy
 })
 
-const onCopyToken = (token: string) => {
-  navigator.clipboard
-    .writeText(token)
-    .then(() => {
-      showSnackBar({
-        msg: 'Token copied'
-      })
+const formatRegistrationDate = (reg?: ZenithConnectRegistration) => {
+  if (reg?.createTimeMs) {
+    const date = new Date(reg.createTimeMs)
+
+    return fnsFormat(date, 'yyyy-MM-dd HH:mm:ss')
+  }
+
+  return '--'
+}
+
+const onCopyToken = async (token: string) => {
+  try {
+    await navigator.clipboard.writeText(token)
+
+    showSnackBar({
+      msg: 'Token copied'
     })
-    .catch(() => {
-      showSnackBar({
-        msg: 'Failed to copy token.'
-      })
+  } catch {
+    showSnackBar({
+      msg: 'Failed to copy token.'
     })
+  }
 }
 
 const onSendData = (reg?: ZenithConnectRegistration) => {
-  if (reg && reg.nmsSystemId) {
-    // fake for now
-    reg.connected = true
-    reg.lastConnected = new Date()
+  if (reg && reg.registered && reg.systemId) {
+    // TODO: fake for now, should set 'active' in DB and possibly notify exporter process
+    reg.active = true
 
     showSnackBar({
-      msg: `Sending data for system: ${reg.nmsSystemId}`
+      msg: `Sending data for ${reg.displayName} (${reg.systemId})`
     })
   }
 }
 
 const gotoRegister = () => {
-  router.push('zenith-connect/register')
+  router.push('/zenith-connect/register')
 }
+
+onMounted(async () => {
+  await zenithConnectStore.fetchRegistrations()
+})
 </script>
 
 <style scoped lang="scss">
