@@ -88,7 +88,7 @@ public class ScvCli {
             properties.load(ScvCli.class.getResourceAsStream("/scvcli-filtered.properties"));
             String opennmsHome = properties.getProperty("install.dir");
             Properties scvProps = SecureCredentialsVault.loadScvProperties(opennmsHome);
-            keyStoreType = scvProps.getProperty(SecureCredentialsVault.SCV_KEYSTORE_PROPERTY);
+            keyStoreType = scvProps.getProperty(SecureCredentialsVault.SCV_KEYSTORE_TYPE_PROPERTY);
         } catch (Exception e) {
             LOG.error("WARNING: unable to load properties files");
         }

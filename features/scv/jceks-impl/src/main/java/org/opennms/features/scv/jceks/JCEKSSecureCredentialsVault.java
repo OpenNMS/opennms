@@ -291,7 +291,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
      */
     public static JCEKSSecureCredentialsVault defaultScv() {
         Properties properties = SecureCredentialsVault.loadScvProperties(System.getProperty("opennms.home"));
-        return new JCEKSSecureCredentialsVault(getKeystoreFilename(), getKeystorePassword(), properties.getProperty(SCV_KEYSTORE_PROPERTY));
+        return new JCEKSSecureCredentialsVault(getKeystoreFilename(), getKeystorePassword(), properties.getProperty(SCV_KEYSTORE_TYPE_PROPERTY));
     }
 
     @Override
