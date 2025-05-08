@@ -44,7 +44,7 @@ public interface SecureCredentialsVault {
     public final static String SCV_KEYSTORE_PROPERTY = "org.opennms.features.scv.keystore.type";
     public static final String OPENNMS_PROPERTIES_D_NAME = "opennms.properties.d";
     public static final String OPENNMS_PROPERTIES_NAME = "opennms.properties";
-    public static final String KEYSTORE_KEY_PROPERTY = "org.opennms.features.scv.key";
+    public static final String KEYSTORE_KEY_PROPERTY = "org.opennms.features.scv.jceks.key";
     public static final String DEFAULT_KEYSTORE_KEY = "QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw";
 
 
