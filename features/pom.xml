@@ -194,5 +194,6 @@
     <module>inmemory-timeseries-plugin</module>
     
     <module>grpc</module>
+    <module>elastic</module>
   </modules>
 </project>

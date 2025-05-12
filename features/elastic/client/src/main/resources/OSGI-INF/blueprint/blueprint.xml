@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0 
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+">
+
+    <!-- Configuration properties -->
+    <cm:property-placeholder id="elasticClientProperties" persistent-id="org.opennms.features.elastic.client" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="elasticHosts" value="localhost:9200"/>
+            <cm:property name="elasticUsername" value=""/>
+            <cm:property name="elasticPassword" value=""/>
+            <cm:property name="templateDirectory" value="${karaf.etc}/elastic/templates"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <bean id="elasticRestClient" class="org.opennms.features.elastic.client.DefaultElasticRestClient"
+          init-method="init" destroy-method="close">
+        <argument value="${elasticHosts}"/>
+        <argument value="${elasticUsername}"/>
+        <argument value="${elasticPassword}"/>
+    </bean>
+
+    <service ref="elasticRestClient" interface="org.opennms.features.elastic.client.ElasticRestClient"/>
+
+
+</blueprint>
