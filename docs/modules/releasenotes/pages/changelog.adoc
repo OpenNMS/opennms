@@ -3,6 +3,8 @@
 = Changelog
 [[releasenotes-changelog-33.1.6]]
 
+== Release 33.1.6
+
 Release 33.1.6 contains bug fixes, security updates and enhancements.
 
 The codename for Horizon 33.1.6 is https://wikipedia.org/wiki/$$Basswood$$[_Basswood_].
@@ -39,6 +41,8 @@ The codename for Horizon 33.1.6 is https://wikipedia.org/wiki/$$Basswood$$[_Bass
 * Update Jaeger Tracing endpoint in docs. (Issue https://opennms.atlassian.net/browse/NMS-17891[NMS-17891])
 
 [[releasenotes-changelog-33.1.5]]
+
+== Release 33.1.5
 
 Release 33.1.5 contains bug fixes, security updates and enhancements.
 
