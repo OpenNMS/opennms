@@ -26,6 +26,10 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.apache.http.util.EntityUtils;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
@@ -45,7 +49,7 @@ public class TemplateCommand implements Action {
     @Reference
     private ElasticRestClient elasticRestClient;
 
-    @Option(name = "-l", aliases = "--list", description = "List available templates")
+    @Option(name = "-l", aliases = "--list", description = "List available templates (only names)")
     private boolean list;
 
     @Option(name = "-a", aliases = "--apply", description = "Apply a template")
@@ -79,7 +83,7 @@ public class TemplateCommand implements Action {
 
 
             if (applyAll && directory != null) {
-                int count = ((DefaultElasticRestClient)elasticRestClient).applyAllTemplatesFromDirectory(directory);
+                int count = elasticRestClient.applyAllTemplatesFromDirectory(directory);
                 System.out.println("Applied " + count + " templates and policies");
                 return null;
             } else if (list) {
@@ -97,31 +101,54 @@ public class TemplateCommand implements Action {
             return null;
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
-            e.printStackTrace();
             return null;
         }
     }
 
+
     private void listResources() throws IOException {
         String endpoint;
+        String type;
         if (ilmPolicy) {
             endpoint = "/_ilm/policy";
+            type = "ILM Policies";
         } else if (componentTemplate) {
             endpoint = "/_component_template";
+            type = "Component Templates";
         } else {
             endpoint = "/_index_template";
+            type = "Index Templates";
         }
 
         Request request = new Request("GET", endpoint);
         Response response = ((DefaultElasticRestClient)elasticRestClient).getRestClient().performRequest(request);
+        String responseBody = EntityUtils.toString(response.getEntity());
 
-        String type = ilmPolicy ? "ILM Policies" : (componentTemplate ? "Component Templates" : "Index Templates");
         System.out.println(type + ":");
 
-        String responseBody = EntityUtils.toString(response.getEntity());
-        // Parse JSON and print names (simplified here)
-        System.out.println(responseBody);
+        Gson gson = new Gson();
+        JsonElement jsonElement = gson.fromJson(responseBody, JsonElement.class);
+
+        if (ilmPolicy) {
+            JsonObject root = jsonElement.getAsJsonObject();
+            for (String policyName : root.keySet()) {
+                System.out.println("- " + policyName);
+            }
+        } else if (componentTemplate) {
+            JsonArray templates = jsonElement.getAsJsonObject().getAsJsonArray("component_templates");
+            for (JsonElement el : templates) {
+                String name = el.getAsJsonObject().get("name").getAsString();
+                System.out.println("- " + name);
+            }
+        } else {
+            JsonArray templates = jsonElement.getAsJsonObject().getAsJsonArray("index_templates");
+            for (JsonElement el : templates) {
+                String name = el.getAsJsonObject().get("name").getAsString();
+                System.out.println("- " + name);
+            }
+        }
     }
+
 
     private void showResource() throws IOException {
         if (templateName == null) {
@@ -174,11 +201,11 @@ public class TemplateCommand implements Action {
         boolean success;
 
         if (ilmPolicy) {
-            success = ((DefaultElasticRestClient)elasticRestClient).applyILMPolicy(templateName, content);
+            success = elasticRestClient.applyILMPolicy(templateName, content);
         } else if (componentTemplate) {
-            success = ((DefaultElasticRestClient)elasticRestClient).applyComponentTemplate(templateName, content);
+            success = elasticRestClient.applyComponentTemplate(templateName, content);
         } else {
-            success = ((DefaultElasticRestClient)elasticRestClient).applyComposableIndexTemplate(templateName, content);
+            success = elasticRestClient.applyComposableIndexTemplate(templateName, content);
         }
 
         String resourceType = ilmPolicy ? "policy" : (componentTemplate ? "component template" : "index template");

@@ -66,7 +66,7 @@ public class DefaultElasticRestClient implements ElasticRestClient {
     }
 
 
-    public DefaultElasticRestClient(String... hosts) {
+    public DefaultElasticRestClient(String[] hosts) {
         this(hosts, null, null);
     }
 

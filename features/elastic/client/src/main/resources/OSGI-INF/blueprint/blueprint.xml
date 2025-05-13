@@ -15,7 +15,6 @@
             <cm:property name="elasticHosts" value="localhost:9200"/>
             <cm:property name="elasticUsername" value=""/>
             <cm:property name="elasticPassword" value=""/>
-            <cm:property name="templateDirectory" value="${karaf.etc}/elastic/templates"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
