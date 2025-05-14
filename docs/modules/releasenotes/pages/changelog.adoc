@@ -1,6 +1,42 @@
 [[release-33-changelog]]
 
 = Changelog
+[[releasenotes-changelog-33.1.6]]
+
+Release 33.1.6 contains bug fixes, security updates and enhancements.
+
+The codename for Horizon 33.1.6 is https://wikipedia.org/wiki/$$Basswood$$[_Basswood_].
+
+=== Bug
+
+* Changes in NMS-17726 are not properly merged in foundation-2023, foundation-2024 and horizon 33.x (Issue https://opennms.atlassian.net/browse/NMS-17734[NMS-17734])
+* Update the polyfill library (Issue https://opennms.atlassian.net/browse/NMS-17865[NMS-17865])
+* Enable secure parsing of XML files performing XSL transformation (Issue https://opennms.atlassian.net/browse/NMS-16414[NMS-16414])
+* gRPC messaging not working when Trapd is enabled on the Core server (Issue https://opennms.atlassian.net/browse/NMS-17732[NMS-17732])
+* Setting KAFKA_RPC_ and KAFKA_SINK_ variables insufficient to disable ActiveMQ for minion container (Issue https://opennms.atlassian.net/browse/NMS-17756[NMS-17756])
+* Unreachable code in Minion gRPC client (Issue https://opennms.atlassian.net/browse/NMS-17858[NMS-17858])
+* incorrectly extracts the IPs during discovery (Issue https://opennms.atlassian.net/browse/NMS-17873[NMS-17873])
+* Sanitize user provided inputs (Issue https://opennms.atlassian.net/browse/NMS-17875[NMS-17875])
+* Limit the columns for orderBy clause (Issue https://opennms.atlassian.net/browse/NMS-17876[NMS-17876])
+* SpogInventoryServiceSyncIT Failed to load ApplicationContext (Issue https://opennms.atlassian.net/browse/NMS-17896[NMS-17896])
+
+=== Enhancement
+
+* Create simple a shell script to gather and package data helpful to Client Services (Issue https://opennms.atlassian.net/browse/NMS-17077[NMS-17077])
+* Allow basic auth credentials / scv metadata in external requisition URL (Issue https://opennms.atlassian.net/browse/NMS-17318[NMS-17318])
+
+=== Story
+* Add a smoke test to validate installation of grpc exporter feature (Issue https://opennms.atlassian.net/browse/NMS-17869[NMS-17869])
+
+=== Task
+
+* FE: Display list of currently active Zenith registrations (Issue https://opennms.atlassian.net/browse/NMS-17749[NMS-17749])
+* Rest API for getting active Zenith registrations/connections (Issue https://opennms.atlassian.net/browse/NMS-17750[NMS-17750])
+* Add service to store/retrieve ZenithConnect registration info (Issue https://opennms.atlassian.net/browse/NMS-17851[NMS-17851])
+* Create GRPC server Side Tests (Issue https://opennms.atlassian.net/browse/NMS-17722[NMS-17722])
+* Create GRPC client Side Tests (Issue https://opennms.atlassian.net/browse/NMS-17723[NMS-17723])
+* Make grpc exporter compatible to run using in process server. (Issue https://opennms.atlassian.net/browse/NMS-17746[NMS-17746])
+* Update Jaeger Tracing endpoint in docs. (Issue https://opennms.atlassian.net/browse/NMS-17891[NMS-17891])
 
 [[releasenotes-changelog-33.1.6]]
 
