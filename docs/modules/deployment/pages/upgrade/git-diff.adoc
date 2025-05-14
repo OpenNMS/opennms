@@ -27,7 +27,7 @@ Run the following code to prevent breaking the link between folders:
 
 [source, console]
 ----
-cd /opt/opennms
+cd /usr/share/opennms
 mv etc etc_bad
 ln -s /etc/opennms etc
 ----

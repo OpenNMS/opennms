@@ -19,14 +19,14 @@ if ! getent passwd opennms >/dev/null 2>&1; then
         # try to match Minion/Sentinel UID if possible
         adduser --system \
                 --uid 1000 \
-                --home /opt/opennms \
+                --home /usr/share/opennms \
                 --no-create-home \
                 --disabled-password \
                 --ingroup opennms \
                 opennms
     else
         adduser --system \
-                --home /opt/opennms \
+                --home /usr/share/opennms \
                 --no-create-home \
                 --disabled-password \
                 --ingroup opennms \

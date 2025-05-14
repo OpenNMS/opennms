@@ -7,7 +7,7 @@ This section describes how to install RRDtool and how to configure your {page-co
 WARNING: This guide does not cover data migration from JRobin to RRDtool.
 
 Configurations must in the `etc` directory relative to the {page-component-title} Core home directory.
-Depending on your operating system, the home directory is `/opt/opennms` for Debian/Ubuntu or `/opt/opennms` for CentOS/RHEL.
+Depending on your operating system, the home directory is `/usr/share/opennms` for Debian/Ubuntu or `/opt/opennms` for CentOS/RHEL.
 
 [{tabs}]
 ====

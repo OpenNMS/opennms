@@ -137,7 +137,7 @@ fi
 if [ -f /etc/os-release ]; then
    if [ $(grep -ci ubuntu /etc/os-release) -ge 1 -o $(grep -ci debian /etc/os-release) -ge 1 ]; then  #deb
       FAMILY="deb";
-      OPENNMS_HOME="/opt/opennms"
+      OPENNMS_HOME="/usr/share/opennms"
       MINION_HOME="/usr/share/minion"
       SENTINEL_HOME="/usr/share/sentinel"
    fi

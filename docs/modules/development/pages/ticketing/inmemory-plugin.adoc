@@ -7,7 +7,7 @@ Once installed, use `opennms:inmemory-ticketer` karaf command to query/update ti
 
 NOTE: Configurations has to be made in the {page-component-title} etc directory.
       We reference `etc` relative to the OpenNMS {page-component-title} Core home directory.
-      Depending on your operating system the home directory is `/opt/opennms` for Debian/Ubuntu or `/opt/opennms` for CentOS/RHEL.
+      Depending on your operating system the home directory is `/usr/share/opennms` for Debian/Ubuntu or `/opt/opennms` for CentOS/RHEL.
 
 .Create a OpenNMS properties file to enable the ticketer plugin
 [source, console]
