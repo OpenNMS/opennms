@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.config</groupId>
         <artifactId>org.opennms.features.config.rest</artifactId>
-        <version>33.1.5</version>
+        <version>33.1.6</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.config.rest</groupId>

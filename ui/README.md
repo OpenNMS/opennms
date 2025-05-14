@@ -53,7 +53,7 @@ Developer workflow for development -> build -> fast deploy. There may be issues 
 
 - from your `~/projects/opennms/ui` directory, run `yarn dev` or `yarn watch:dev` to build in development mode (or `yarn build` for production / minified mode)
 
-- have a console window open in the target directory where the built/deployed files need to be, e.g., `~/projects/opennms/target/opennms-33.1.5/jetty-webapps/opennms/ui`
+- have a console window open in the target directory where the built/deployed files need to be, e.g., `~/projects/opennms/target/opennms-33.1.6/jetty-webapps/opennms/ui`
 
 - after build completes, run `cp ~/projects/opennms/ui/dist/assets/*.* assets` to copy all the built JS and other asset files, then run `cp ~/projects/opennms/ui/dist/index.html .` to copy the new `index.html` file
 

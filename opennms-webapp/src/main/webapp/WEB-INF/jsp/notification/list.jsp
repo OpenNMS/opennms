@@ -263,7 +263,7 @@
             <% if(notification.getNodeId() > 0 ) { %>
               <% Filter nodeFilter = new NodeFilter(notification.getNodeId()); %>
               <% String[] labels = nodeLabels.get(notification.getNodeId()); %>
-              <a href="element/node.jsp?node=<%=notification.getNodeId()%>" title="<%=labels[1]%>"><%=labels[0]%></a>
+              <a href="element/node.jsp?node=<%=notification.getNodeId()%>" title="<%=WebSecurityUtils.sanitizeString(labels[1])%>"><%=WebSecurityUtils.sanitizeString(labels[0])%>&hellip;</a>
               <% if( parms.filters != null && !parms.filters.contains(nodeFilter) ) { %>
                 <nobr>
                   <a href="<%=this.makeLink( parms, nodeFilter, true)%>" class="filterLink" title="Show only notices on this node">${addPositiveFilter}</a>

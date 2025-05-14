@@ -5,7 +5,7 @@
   <parent>
     <artifactId>org.opennms.core.grpc</artifactId>
     <groupId>org.opennms.core</groupId>
-    <version>33.1.5</version>
+    <version>33.1.6</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -22,12 +22,24 @@
         <version>${maven.shade.plugin.version}</version>
         <executions>
           <execution>
+            <phase>package</phase>
             <goals>
               <goal>shade</goal>
             </goals>
-            <phase>package</phase>
             <configuration>
+              <artifactSet>
+              </artifactSet>
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                </filter>
+              </filters>
               <createDependencyReducedPom>true</createDependencyReducedPom>
+              <!-- This pulls in META-INF/services files from the dependencies otherwise we run into strange error
+               like  Address types of NameResolver 'unix' for 'localhost:8990' not supported by transport on grpc client -->
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+              </transformers>
             </configuration>
           </execution>
         </executions>
@@ -39,14 +51,13 @@
         <configuration>
           <instructions>
             <Import-Package>
-              com.google.protobuf;version="[3.19,5)",
-              javax.net,
               javax.net.ssl,
               javax.security.cert,
               javax.security.auth.x500,
             </Import-Package>
-            <Export-Package>io.grpc,
-              io.grpc.core,
+            <Export-Package>
+              com.google.protobuf,
+              io.grpc,
               io.grpc.stub,
               io.grpc.protobuf,
               io.grpc.internal,
@@ -66,7 +77,7 @@
   <dependencies>
     <dependency>
       <groupId>io.grpc</groupId>
-      <artifactId>grpc-core</artifactId>
+      <artifactId>grpc-netty-shaded</artifactId>
       <version>${grpcVersion}</version>
     </dependency>
     <dependency>
@@ -78,12 +89,6 @@
       <groupId>io.grpc</groupId>
       <artifactId>grpc-protobuf</artifactId>
       <version>${grpcVersion}</version>
-      <exclusions>
-        <exclusion>
-          <groupId>com.google.protobuf</groupId>
-          <artifactId>protobuf-java</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>io.grpc</groupId>
@@ -91,9 +96,14 @@
       <version>${grpcVersion}</version>
     </dependency>
     <dependency>
-      <groupId>io.grpc</groupId>
-      <artifactId>grpc-netty-shaded</artifactId>
-      <version>${grpcVersion}</version>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>${guavagRPCVersion}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.protobuf</groupId>
+      <artifactId>protobuf-java</artifactId>
+      <version>${protobufVersion}</version>
     </dependency>
   </dependencies>
 

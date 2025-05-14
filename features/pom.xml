@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>33.1.5</version>
+    <version>33.1.6</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>org.opennms.features</artifactId>
@@ -183,6 +183,7 @@
     <module>perspectivepoller</module>
     <module>openconfig</module>
     <module>device-config</module>
+    <module>zenith-connect</module>
     <module>ui-extension</module>
     <!-- Configuration Manager -->
     <module>config</module>

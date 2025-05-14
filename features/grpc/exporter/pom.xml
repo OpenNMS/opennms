@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.grpc</artifactId>
-        <version>33.1.5</version>
+        <version>33.1.6</version>
     </parent>
 
     <groupId>org.opennms.features.grpc</groupId>
@@ -160,6 +160,26 @@
             <groupId>com.google.protobuf</groupId>
             <artifactId>protobuf-java</artifactId>
             <version>${protobufVersion}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.test-api</groupId>
+            <artifactId>org.opennms.core.test-api.services</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms</groupId>
+            <artifactId>opennms-dao-mock</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.test-api</groupId>
+            <artifactId>org.opennms.core.test-api.db</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 </project>
