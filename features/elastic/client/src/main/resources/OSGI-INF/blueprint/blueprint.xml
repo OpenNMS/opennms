@@ -18,8 +18,7 @@
         </cm:default-properties>
     </cm:property-placeholder>
 
-    <bean id="elasticRestClient" class="org.opennms.features.elastic.client.DefaultElasticRestClient"
-          init-method="init" destroy-method="close">
+    <bean id="elasticRestClient" class="org.opennms.features.elastic.client.DefaultElasticRestClient" destroy-method="close">
         <argument value="${elasticHosts}"/>
         <argument value="${elasticUsername}"/>
         <argument value="${elasticPassword}"/>

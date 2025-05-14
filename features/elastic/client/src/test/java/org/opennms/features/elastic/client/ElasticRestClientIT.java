@@ -69,7 +69,6 @@ public class ElasticRestClientIT {
 
         String[] hosts = {elasticsearch.getHttpHostAddress()};
         client = new DefaultElasticRestClient(hosts);
-        client.init();
         client.connect();
 
         Awaitility.setDefaultTimeout(20, TimeUnit.SECONDS);
