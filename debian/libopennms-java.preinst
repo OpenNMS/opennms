@@ -7,11 +7,11 @@
 
 # Move the lib directory if it's not a symlink
 if [ "$1" = "upgrade" ] || [ "$1" = "install" ]; then
-    if [ -d "/opt/opennms/lib" -a ! -L "/opt/opennms/lib" ] ; then
+    if [ -d "/usr/share/opennms/lib" -a ! -L "/usr/share/opennms/lib" ] ; then
         mkdir -p /usr/share/java/opennms/ || :
-        mv /opt/opennms/lib/* /usr/share/java/opennms/ || :
-        rm -rf /opt/opennms/lib/ || :
-        ln -s /usr/share/java/opennms/ /opt/opennms/lib || :
+        mv /usr/share/opennms/lib/* /usr/share/java/opennms/ || :
+        rm -rf /usr/share/opennms/lib/ || :
+        ln -s /usr/share/java/opennms/ /usr/share/opennms/lib || :
     fi
 fi
 

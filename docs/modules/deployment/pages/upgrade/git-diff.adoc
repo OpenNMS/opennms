@@ -37,7 +37,7 @@ Run the following code to move your customized configuration files to `/etc/open
 [source, console]
 ----
 mv /etc/opennms /etc/opennms.bak
-cp -pR /opt/opennms/share/etc-pristine /etc/opennms
+cp -pR /usr/share/opennms/share/etc-pristine /etc/opennms
 ----
 --
 

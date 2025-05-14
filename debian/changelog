@@ -2253,7 +2253,7 @@ opennms (1.0.2-0) unstable; urgency=low
 opennms (1.0.1-2) unstable; urgency=low
 
   * Added Depends on metamail since the Reports mailing functions require it.
-  * Now linking /opt/opennms/share to /var/lib/opennms, since certain
+  * Now linking /usr/share/opennms/share to /var/lib/opennms, since certain
     functions are hardcoded to the share dir.  This fixes reports generation.
   * Moved all Java native libs to /usr/lib, and do ldconfig in postinst.
   * Fixed logrotate script to be quiet unless there is a problem.

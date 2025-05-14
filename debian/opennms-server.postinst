@@ -15,18 +15,18 @@ case "$1" in
 
         # try to detect java if possible
         if [ ! -e /etc/opennms/java.conf ]; then
-            /opt/opennms/bin/runjava -s || :
-            /opt/opennms/bin/fix-permissions -R /opt/opennms/etc/java.conf
+            /usr/share/opennms/bin/runjava -s || :
+            /usr/share/opennms/bin/fix-permissions -R /usr/share/opennms/etc/java.conf
         fi
 
-        if [ -d "/opt/opennms/data" ]; then
-            find /opt/opennms/data/ -maxdepth 1 -mindepth 1 -name tmp -o -name history.txt -prune -o -print0 | xargs --no-run-if-empty -0 rm -rf
-            if [ -d "/opt/opennms/data/tmp" ]; then
-                find /opt/opennms/data/tmp/ -maxdepth 1 -mindepth 1 -name README -prune -o -print0 | xargs --no-run-if-empty -0 rm -rf
+        if [ -d "/usr/share/opennms/data" ]; then
+            find /usr/share/opennms/data/ -maxdepth 1 -mindepth 1 -name tmp -o -name history.txt -prune -o -print0 | xargs --no-run-if-empty -0 rm -rf
+            if [ -d "/usr/share/opennms/data/tmp" ]; then
+                find /usr/share/opennms/data/tmp/ -maxdepth 1 -mindepth 1 -name README -prune -o -print0 | xargs --no-run-if-empty -0 rm -rf
             fi
         fi
 
-        /opt/opennms/bin/update-package-permissions opennms-server
+        /usr/share/opennms/bin/update-package-permissions opennms-server
 
         echo ""
         echo " *** Thanks for using OpenNMS!"

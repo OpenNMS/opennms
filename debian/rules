@@ -16,11 +16,11 @@ export BUILDDEFINES=\
 	-Denable.license=true \
 	-Ddist.dir=$(CURDIR)/debian -Ddist.name=temp \
 	-Dinstall.dir=/usr/share/opennms \
-	-Dinstall.bin.dir=/opt/opennms/bin \
+	-Dinstall.bin.dir=/usr/share/opennms/bin \
 	-Dinstall.rrdtool.bin=/usr/bin/rrdtool \
 	-Dinstall.share.dir=/var/lib/opennms \
-	-Dinstall.servlet.dir=/opt/opennms/webapps \
-	-Dinstall.webapps.dir=/opt/opennms/webapps \
+	-Dinstall.servlet.dir=/usr/share/opennms/webapps \
+	-Dinstall.webapps.dir=/usr/share/opennms/webapps \
 	-Dinstall.logs.dir=/var/log/opennms \
 	-Dinstall.pid.file=/var/run/opennms/opennms.pid \
 	-Dmaven.test.skip.exec=true \
@@ -165,10 +165,10 @@ install: build
 	sed -e 's,@PACKAGE@,opennms-plugin-collector-juniper-tca,g' debian/package-permissions.sh > debian/opennms-plugin-collector-juniper-tca.postinst
 	
 	# JIRA
-	mkdir -p debian/opennms-plugin-ticketer-jira/opt/opennms/system/org/opennms/features/jira-troubleticketer
-	mv debian/temp/system/org/opennms/features/jira-troubleticketer/*                          debian/opennms-plugin-ticketer-jira/opt/opennms/system/org/opennms/features/jira-troubleticketer/
-	mkdir -p debian/opennms-plugin-ticketer-jira/opt/opennms/system/org/opennms/features/jira-client
-	mv debian/temp/system/org/opennms/features/jira-client/*                                   debian/opennms-plugin-ticketer-jira/opt/opennms/system/org/opennms/features/jira-client/
+	mkdir -p debian/opennms-plugin-ticketer-jira/usr/share/opennms/system/org/opennms/features/jira-troubleticketer
+	mv debian/temp/system/org/opennms/features/jira-troubleticketer/*                          debian/opennms-plugin-ticketer-jira/usr/share/opennms/system/org/opennms/features/jira-troubleticketer/
+	mkdir -p debian/opennms-plugin-ticketer-jira/usr/share/opennms/system/org/opennms/features/jira-client
+	mv debian/temp/system/org/opennms/features/jira-client/*                                   debian/opennms-plugin-ticketer-jira/usr/share/opennms/system/org/opennms/features/jira-client/
 	mv debian/temp/etc/jira.properties                                                         debian/opennms-plugin-ticketer-jira/etc/opennms/
 	mv debian/opennms-common/var/lib/opennms/etc-pristine/jira.properties                      debian/opennms-plugin-ticketer-jira/var/lib/opennms/etc-pristine/
 	sed -e 's,@PACKAGE@,opennms-plugin-ticketer-jira,g' debian/package-permissions.sh > debian/opennms-plugin-ticketer-jira.postinst
@@ -182,9 +182,9 @@ install: build
 	##
 	## opennms-jmx-config-generator
 	##
-	install -d -m 755 debian/opennms-jmx-config-generator/opt/opennms/bin debian/opennms-jmx-config-generator/usr/bin debian/opennms-jmx-config-generator/usr/share/java/opennms
+	install -d -m 755 debian/opennms-jmx-config-generator/usr/share/opennms/bin debian/opennms-jmx-config-generator/usr/bin debian/opennms-jmx-config-generator/usr/share/java/opennms
 	install -m 755 debian/opennms-jmx-config-generator.bin debian/opennms-jmx-config-generator/usr/bin/opennms-jmx-config-generator
-	mv debian/temp/bin/jmx-config-generator debian/opennms-jmx-config-generator/opt/opennms/bin/
+	mv debian/temp/bin/jmx-config-generator debian/opennms-jmx-config-generator/usr/share/opennms/bin/
 	mv debian/temp/lib/opennms_jmx_config_generator.jar debian/opennms-jmx-config-generator/usr/share/java/opennms/
 	sed -e 's,@PACKAGE@,opennms-jmx-config-generator,g' debian/package-permissions.sh > debian/opennms-jmx-config-generator.postinst
 	
@@ -206,11 +206,11 @@ install: build
 	##
 	## Setup the opennms-common package
 	##
-	mv debian/temp/bin/* debian/opennms-common/opt/opennms/bin/
-	find debian/opennms-common/opt/opennms/bin -type f -execdir chmod 755 {} \;
+	mv debian/temp/bin/* debian/opennms-common/usr/share/opennms/bin/
+	find debian/opennms-common/usr/share/opennms/bin -type f -execdir chmod 755 {} \;
 	mv debian/temp/etc/* debian/opennms-common/etc/opennms/
-	mv debian/temp/lib   debian/opennms-common/opt/opennms/
-	mv debian/temp/agent   debian/opennms-common/opt/opennms/
+	mv debian/temp/lib   debian/opennms-common/usr/share/opennms/
+	mv debian/temp/agent   debian/opennms-common/usr/share/opennms/
 	install -d -m 755 debian/opennms-common/var/lib/opennms/xsds
 	mv debian/temp/share/xsds/* debian/opennms-common/var/lib/opennms/xsds/
 	find debian/opennms-common/etc/opennms -type f -execdir chmod 644 {} \;
@@ -218,9 +218,9 @@ install: build
 	install -c -m 644 debian/opennms-common/etc/opennms/opennms.service debian/opennms-common.opennms.service
 	
 	# move karaf stuff to common
-	mv debian/temp/{data,deploy,system} debian/opennms-common/opt/opennms/
-	find debian/opennms-common/opt/opennms/{data,deploy,system} ! -type d -execdir chmod 644 {} \;
-	find debian/opennms-common/opt/opennms/{data,deploy,system}   -type d -execdir chmod 755 {} \;
+	mv debian/temp/{data,deploy,system} debian/opennms-common/usr/share/opennms/
+	find debian/opennms-common/usr/share/opennms/{data,deploy,system} ! -type d -execdir chmod 644 {} \;
+	find debian/opennms-common/usr/share/opennms/{data,deploy,system}   -type d -execdir chmod 755 {} \;
 	
 	# move SNMP MIB files
 	install -d -m 755 debian/opennms-common/var/lib/opennms/mibs
@@ -236,7 +236,7 @@ install: build
 		debian/opennms-common/etc/opennms/snmp-config.xml
 
 	# Update paths in scripts and config files
-	sed -i -e 's,/opt/OpenNMS,/usr/share/opennms,g' debian/opennms-common/opt/opennms/bin/opennms
+	sed -i -e 's,/opt/OpenNMS,/usr/share/opennms,g' debian/opennms-common/usr/share/opennms/bin/opennms
 	sed -i -e 's,bin/mail,usr/bin/mail,' debian/opennms-common/etc/opennms/notificationCommands.xml
 
 	# Adjust the HttpAdaptor port number to avoid conflicting with tomcat,
@@ -255,28 +255,28 @@ install: build
 	##
 	## Setup the opennms-source package
 	##
-	install -d -m 755 debian/opennms-source/opt/opennms/jetty-webapps/opennms
-	mv debian/temp/jetty-webapps/opennms/source debian/opennms-source/opt/opennms/jetty-webapps/opennms/
-	find debian/opennms-webapp-jetty/opt/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
+	install -d -m 755 debian/opennms-source/usr/share/opennms/jetty-webapps/opennms
+	mv debian/temp/jetty-webapps/opennms/source debian/opennms-source/usr/share/opennms/jetty-webapps/opennms/
+	find debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
 	sed -e 's,@PACKAGE@,opennms-source,g' debian/package-permissions.sh > debian/opennms-source.postinst
 
 	##
 	## Setup the opennms-webapp-jetty package
 	##
 	install -m 644 debian/opennms-webapp-jetty.overrides debian/opennms-webapp-jetty/usr/share/lintian/overrides/opennms-webapp-jetty
-	install -d -m 755 debian/opennms-webapp-jetty/opt/opennms/jetty-webapps/{opennms,ROOT}
-	mv debian/temp/jetty-webapps/opennms/*          debian/opennms-webapp-jetty/opt/opennms/jetty-webapps/opennms/
-	mv debian/temp/jetty-webapps/ROOT/*             debian/opennms-webapp-jetty/opt/opennms/jetty-webapps/ROOT/
-	find debian/opennms-webapp-jetty/opt/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
+	install -d -m 755 debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/{opennms,ROOT}
+	mv debian/temp/jetty-webapps/opennms/*          debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms/
+	mv debian/temp/jetty-webapps/ROOT/*             debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/ROOT/
+	find debian/opennms-webapp-jetty/usr/share/opennms/jetty-webapps/opennms* -type f -execdir chmod 644 {} \;
 	sed -e 's,@PACKAGE@,opennms-webapp-jetty,g' debian/package-permissions.sh > debian/opennms-webapp-jetty.postinst
 
 	##
 	## Setup the opennms-webapp-hawtio package
 	##
-	install -d -m 755 debian/opennms-webapp-hawtio/opt/opennms/jetty-webapps/hawtio debian/opennms-webapp-hawtio/usr/share/lintian/overrides
+	install -d -m 755 debian/opennms-webapp-hawtio/usr/share/opennms/jetty-webapps/hawtio debian/opennms-webapp-hawtio/usr/share/lintian/overrides
 	install -m 644 debian/opennms-webapp-hawtio.overrides debian/opennms-webapp-hawtio/usr/share/lintian/overrides/opennms-webapp-hawtio
-	mv debian/temp/jetty-webapps/hawtio/* debian/opennms-webapp-hawtio/opt/opennms/jetty-webapps/hawtio/
-	find debian/opennms-webapp-hawtio/opt/opennms/jetty-webapps/hawtio* -type f -execdir chmod 644 {} \;
+	mv debian/temp/jetty-webapps/hawtio/* debian/opennms-webapp-hawtio/usr/share/opennms/jetty-webapps/hawtio/
+	find debian/opennms-webapp-hawtio/usr/share/opennms/jetty-webapps/hawtio* -type f -execdir chmod 644 {} \;
 	sed -e 's,@PACKAGE@,opennms-webapp-hawtio,g' debian/package-permissions.sh > debian/opennms-webapp-hawtio.postinst
 
 	##

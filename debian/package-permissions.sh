@@ -5,7 +5,7 @@
 
 case "$1" in
     configure)
-      /opt/opennms/bin/update-package-permissions "@PACKAGE@"
+      /usr/share/opennms/bin/update-package-permissions "@PACKAGE@"
       ;;
     *)
       ;;

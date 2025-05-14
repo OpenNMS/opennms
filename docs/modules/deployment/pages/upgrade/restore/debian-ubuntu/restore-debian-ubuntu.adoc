@@ -47,13 +47,13 @@ sudo runuser -l postgres -c 'psql -f /tmp/opennms-postgres.dmp postgres'
 [source, console]
 ----
 apt-get install openjdk-11-jdk
-sudo /opt/opennms/bin/runjava -s
+sudo /usr/share/opennms/bin/runjava -s
 ----
 
 .Run `install -dis` command
 [source, console]
 ----
-sudo /opt/opennms/bin/install -dis
+sudo /usr/share/opennms/bin/install -dis
 ----
 
 .Start OpenNMS service

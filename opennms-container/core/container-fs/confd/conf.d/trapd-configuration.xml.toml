@@ -1,6 +1,6 @@
 [template]
 src = "trapd-configuration.xml.tpl"
-dest = "/opt/opennms/etc/trapd-configuration.xml"
+dest = "/usr/share/opennms/etc/trapd-configuration.xml"
 keys = [
     "opennms/trapd/address",
     "opennms/trapd/port",

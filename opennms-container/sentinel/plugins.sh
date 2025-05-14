@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export ALEC_VERSION="latest"
-#export DEPLOY_FOLDER="/opt/opennms/deploy" 
+#export DEPLOY_FOLDER="/usr/share/opennms/deploy" 
 export DEPLOY_FOLDER="/opt/usr-plugins"
 
 mkdir -p "$DEPLOY_FOLDER"
