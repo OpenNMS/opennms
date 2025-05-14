@@ -69,13 +69,13 @@ RUN groupadd \
     adduser \
         --uid 10001 \
         --gid 10001 \
-        --home /usr/share/opennms \
+        --home /opt/opennms \
         --no-create-home \
         --shell /usr/bin/bash \
         opennms
 
-# If you copy from /usr/share/opennms to /usr/share/opennms the permissions are not preserved
-# We would have 755 for opennms:root instead of 775 and prevents writing lock files in /usr/share/opennms
+# If you copy from /opt/opennms to /opt/opennms the permissions are not preserved
+# We would have 755 for opennms:root instead of 775 and prevents writing lock files in /opt/opennms
 COPY --chown=10001:0 --from=core-tarball /opt/usr-share /usr/share
 
 COPY --chown=10001:0 --from=core-plugins /opt/usr-plugins /opt/opennms/deploy
@@ -111,7 +111,7 @@ RUN rm -rf /opt/opennms/share/rrd \
     ln -s /opennms-data/reports /opt/opennms/share/reports && \
     ln -s /opennms-data/mibs /opt/opennms/share/mibs && \
 # Compatibility with other OpenNMS paths
-    ln -s /usr/share/opennms /opt/opennms && \
+    ln -s /opt/opennms /opt/opennms && \
     ln -s /opt/opennms/etc /etc/opennms && \
     ln -s /opt/opennms/logs /var/log/opennms && \
     ln -s /opt/opennms/share /var/lib/opennms && \
@@ -149,7 +149,7 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opennms.cicd.buildurl="${BUILD_URL}" \
       org.opennms.cicd.branch="${BUILD_BRANCH}"
 
-WORKDIR /usr/share/opennms
+WORKDIR /opt/opennms
 
 ### Containers should NOT run as root as a good practice
 USER 10001

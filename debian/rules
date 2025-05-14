@@ -12,10 +12,10 @@ export OPTS_ASSEMBLIES=-Passemblies
 export OPTS_PROFILES=-Prun-expensive-tasks
 
 export BUILDDEFINES=\
-	-Dopennms.home=/usr/share/opennms \
+	-Dopennms.home=/opt/opennms \
 	-Denable.license=true \
 	-Ddist.dir=$(CURDIR)/debian -Ddist.name=temp \
-	-Dinstall.dir=/usr/share/opennms \
+	-Dinstall.dir=/opt/opennms \
 	-Dinstall.bin.dir=/opt/opennms/bin \
 	-Dinstall.rrdtool.bin=/usr/bin/rrdtool \
 	-Dinstall.share.dir=/var/lib/opennms \
@@ -236,7 +236,7 @@ install: build
 		debian/opennms-common/etc/opennms/snmp-config.xml
 
 	# Update paths in scripts and config files
-	sed -i -e 's,/opt/OpenNMS,/usr/share/opennms,g' debian/opennms-common/opt/opennms/bin/opennms
+	sed -i -e 's,/opt/OpenNMS,/opt/opennms,g' debian/opennms-common/opt/opennms/bin/opennms
 	sed -i -e 's,bin/mail,usr/bin/mail,' debian/opennms-common/etc/opennms/notificationCommands.xml
 
 	# Adjust the HttpAdaptor port number to avoid conflicting with tomcat,
