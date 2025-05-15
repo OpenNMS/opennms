@@ -24,12 +24,14 @@ package org.opennms.features.elastic.client;
 import java.io.IOException;
 import java.io.File;
 import java.io.StringReader;
+import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import com.google.gson.JsonArray;
@@ -68,6 +70,7 @@ public class DefaultElasticRestClient implements ElasticRestClient {
 
     public DefaultElasticRestClient(String[] hosts) {
         this(hosts, null, null);
+        init();
     }
 
     public DefaultElasticRestClient(String hostsString, String username, String password) {
@@ -79,6 +82,7 @@ public class DefaultElasticRestClient implements ElasticRestClient {
 
         this.username = (username != null && !username.isEmpty()) ? username : null;
         this.password = (password != null && !password.isEmpty()) ? password : null;
+        init();
     }
 
 
@@ -89,17 +93,27 @@ public class DefaultElasticRestClient implements ElasticRestClient {
         this.hosts = Arrays.copyOf(hosts, hosts.length);
         this.username = username;
         this.password = password;
+        init();
     }
 
     public void init() {
         HttpHost[] httpHosts = Arrays.stream(hosts)
                 .map(host -> {
-                    String[] parts = host.split(":");
-                    String hostname = parts[0];
-                    int port = parts.length > 1 ? Integer.parseInt(parts[1]) : 9200;
-                    return new HttpHost(hostname, port, "http");
-                })
-                .toArray(HttpHost[]::new);
+                    try {
+                        URI uri = host.contains("://") ? new URI(host) : new URI("http://" + host);
+                        String scheme = uri.getScheme() != null ? uri.getScheme() : "http";
+                        String hostname = uri.getHost();
+                        int port = uri.getPort() != -1 ? uri.getPort() : 9200;
+
+                        if (hostname == null) {
+                            throw new IllegalArgumentException("Invalid host: " + host);
+                        }
+
+                        return new HttpHost(hostname, port, scheme);
+                    } catch (Exception e) {
+                        throw new RuntimeException("Invalid Elasticsearch host: " + host, e);
+                    }
+                }).toArray(HttpHost[]::new);
 
         // Create the low-level client
         if (username != null && password != null) {
