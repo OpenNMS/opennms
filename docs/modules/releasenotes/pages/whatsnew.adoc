@@ -7,12 +7,27 @@
 * *Java 17*: OpenNMS Horizon 34 runs on OpenJDK 17.
 * *PostgreSQL 13 or higher*: Horizon 33 requires any supported version of PostgreSQL from 13 up to (and including) 15.
 
-== New features and important changes
-
 == Breaking changes
+The default time series storage strategy is now by default RRDTool.
 
-=== Removed support
-The dependencies to components who reached end of life are removed:
+IMPORTANT: If you use JRobin, make sure you set the property.
+You can easily verify it by checking the file extension created in the directory  `${OPENNMS_HOME}/share/rrd/snmp`. The extension .jrb indicates JRobin and .rrd indicates RRDtool.
+If you miss this setting, all your timeseries files will be newely created as .rrd files and you won't have access to your JRobin files with your history.
+
+IMPORTANT: When you have .jrb files, ensure after upgrading to Horizon 34 you explicitly configure JRobin in a file like `${OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`.
+
+.Configure explicitly JRobin for Horizon 34.x if required
+[source, console]
+----
+org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy
+----
+
+== Deprecation of JRobin as timeseries storage
+
+The release of Horizon 34 will be the last version which supports reading and writing timeseries data using JRobin.
+The JRobin library and the JRobin timeseries strategy will be removed from Horizon 35+ moving forward.
+
+== Removed
 
 * Removed support for OpenJDK 11, the support reached end of life October 31, 2024
 * Removed support for PostgreSQL 10, 11, 12

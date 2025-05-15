@@ -32,10 +32,22 @@ public interface ZenithConnectPersistenceService {
 
     /**
      * Add a new registration.
-     * Currently we only support a single registration.
+     * Currently we only support a single registration, so this will replace any registration that
+     * already exists.
      * Returns the added registration, including an id and createTimeMs.
+     * @param preventDuplicates If true, will check to see if the given registration appears to be
+     *     a duplicate of an existing registration (same systemId and same accessToken or refreshToken).
+     *     If so, will throw an exception. This is to prevent e.g. the UI from sending multiple
+     *     duplicate add requests.
      */
-    ZenithConnectRegistration addRegistration(ZenithConnectRegistration registration) throws ZenithConnectPersistenceException;
+    ZenithConnectRegistration addRegistration(ZenithConnectRegistration registration, boolean preventDuplicates)
+            throws ZenithConnectPersistenceException;
+
+    /**
+     * Add a new registration, ignoring preventDuplicates.
+     */
+    ZenithConnectRegistration addRegistration(ZenithConnectRegistration registration)
+            throws ZenithConnectPersistenceException;
 
     /**
      * Update an existing registration. The given id and registration.id must match an existing registration.
