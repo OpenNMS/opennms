@@ -44,6 +44,32 @@
                     <reuseForks>false</reuseForks>
                 </configuration>
             </plugin>
+            <!-- Plugin to download Elasticsearch plugins -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-elasticsearch-plugins</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.opennms.elasticsearch</groupId>
+                                    <artifactId>elasticsearch-drift-plugin-7.17.9</artifactId>
+                                    <version>2.0.5</version>
+                                    <type>zip</type>
+                                    <outputDirectory>${project.build.directory}/elasticsearch-plugins</outputDirectory>
+                                    <destFileName>drift-plugin.zip</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <!-- We create a key for 'localhost' for test purposes -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -311,6 +337,25 @@
             <groupId>pl.pragmatists</groupId>
             <artifactId>JUnitParams</artifactId>
             <version>1.1.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>1.17.6</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>1.17.6</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>4.2.0</version>
             <scope>test</scope>
         </dependency>
         <!-- used by test runtime SSL bits -->

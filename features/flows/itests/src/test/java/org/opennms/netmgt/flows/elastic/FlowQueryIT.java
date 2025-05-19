@@ -34,6 +34,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.mock;
 import static org.opennms.integration.api.v1.flows.Flow.Direction;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -59,6 +60,8 @@ import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.hamcrest.number.IsCloseTo;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.core.cache.CacheConfigBuilder;
@@ -104,23 +107,63 @@ import com.google.common.collect.Table;
 
 import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
 import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FlowQueryIT {
 
     @Rule
     public ElasticSearchRule elasticSearchRule = new ElasticSearchRule(new ElasticSearchServerConfig()
-            .withPlugins(DriftPlugin.class, PainlessPlugin.class));
+            .withPlugins(PainlessPlugin.class, DriftPlugin.class));
 
-    private ElasticFlowRepository flowRepository;
 
-    private DocumentEnricherImpl documentEnricher;
+    protected ElasticFlowRepository flowRepository;
 
-    private SmartQueryService smartQueryService;
+    protected DocumentEnricherImpl documentEnricher;
+
+    protected SmartQueryService smartQueryService;
+
+
+    private static final Logger LOG = LoggerFactory.getLogger(ComposableTemplatesFlowQueryIT.class);
+
+    // Elasticsearch version used for testing
+    private static final String ES_VERSION = "7.17.9";
+    private static final String DRIFT_PLUGIN_VERSION = "2.0.5";
+
+    @ClassRule
+    public static ElasticTestContainerWithPlugins elasticsearchContainer;
+
+    static {
+        try {
+            elasticsearchContainer = new ElasticTestContainerWithPlugins("docker.elastic.co/elasticsearch/elasticsearch:" + ES_VERSION)
+                    // We only need to add the drift plugin - the Painless plugin is built into the Elasticsearch image
+                    .withPlugin("org.opennms.elasticsearch", "elasticsearch-drift-plugin-" + ES_VERSION, DRIFT_PLUGIN_VERSION);
+
+            LOG.info("Initialized ElasticsearchMavenPluginContainer using downloaded plugin from Maven");
+            LOG.info("If container fails to start, run: mvn generate-test-resources");
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to initialize ElasticsearchMavenPluginContainer", e);
+        }
+    }
+
+    @BeforeClass
+    public static void setUpClass() {
+        // Ensure container is started before any test method is run
+        LOG.info("Elasticsearch container started at URL: {}", elasticsearchContainer.getHttpHostAddress());
+
+        // Verify plugins were correctly installed
+        boolean pluginsInstalled = elasticsearchContainer.verifyPluginsInstalled();
+        LOG.info("Elasticsearch plugins successfully installed: {}", pluginsInstalled);
+
+        if (!pluginsInstalled) {
+            throw new RuntimeException("Failed to install required Elasticsearch plugins. Test cannot continue.");
+        }
+    }
 
     @Before
     public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {
         final MetricRegistry metricRegistry = new MetricRegistry();
-        final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
+        final RestClientFactory restClientFactory = new RestClientFactory(elasticsearchContainer.getHttpHostAddress());
         final EventForwarder eventForwarder = new AbstractMockDao.NullEventForwarder();
         final JestClientWithCircuitBreaker client = restClientFactory.createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
                 CircuitBreakerConfig.custom().build()).circuitBreaker(FlowQueryIT.class.getName()), eventForwarder);
@@ -154,6 +197,16 @@ public class FlowQueryIT {
                                                                   .withExpireAfterWrite(300)
                                                                   .build(), 0,
                                                     new DocumentMangler(new ScriptEngineManager()));
+        
+        // Delete any existing indices before initializing to ensure a clean state
+        try {
+            LOG.info("Deleting any existing flow indices before test");
+            io.searchbox.indices.DeleteIndex deleteIndex = new io.searchbox.indices.DeleteIndex.Builder("flows*").build();
+            client.execute(deleteIndex);
+            LOG.info("Successfully deleted existing indices");
+        } catch (Exception e) {
+            LOG.info("No existing indices to delete or error during deletion: {}", e.getMessage());
+        }
 
         final RawIndexInitializer initializer = new RawIndexInitializer(client, settings);
 
@@ -1033,7 +1086,7 @@ public class FlowQueryIT {
         return getFlowSet(false);
     }
 
-    private void loadDefaultFlows() throws Exception {
+    protected void loadDefaultFlows() throws Exception {
         loadFlows(getDefaultFlows());
     }
 
