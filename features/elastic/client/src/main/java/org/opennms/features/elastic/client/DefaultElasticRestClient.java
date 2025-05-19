@@ -27,12 +27,14 @@ import java.io.StringReader;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
-import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Stream;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -40,8 +42,6 @@ import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.CredentialsProvider;
-import org.apache.http.entity.ContentType;
-import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.BasicCredentialsProvider;
 import org.apache.http.util.EntityUtils;
 import org.elasticsearch.client.Request;
@@ -214,7 +214,7 @@ public class DefaultElasticRestClient implements ElasticRestClient {
 
         try {
             Request request = new Request("PUT", "/_ilm/policy/" + policyName);
-            request.setEntity(new StringEntity(policyBody, ContentType.APPLICATION_JSON));
+            request.setJsonEntity(policyBody);
 
             Response response = restClient.performRequest(request);
             int statusCode = response.getStatusLine().getStatusCode();
@@ -244,7 +244,7 @@ public class DefaultElasticRestClient implements ElasticRestClient {
 
         try {
             Request request = new Request("PUT", "/_component_template/" + componentName);
-            request.setEntity(new StringEntity(componentBody, ContentType.APPLICATION_JSON));
+            request.setJsonEntity(componentBody);
 
             Response response = restClient.performRequest(request);
             int statusCode = response.getStatusLine().getStatusCode();
@@ -275,7 +275,7 @@ public class DefaultElasticRestClient implements ElasticRestClient {
 
         try {
             Request request = new Request("PUT", "/_index_template/" + templateName);
-            request.setEntity(new StringEntity(templateBody, ContentType.APPLICATION_JSON));
+            request.setJsonEntity(templateBody);
 
             Response response = restClient.performRequest(request);
             int statusCode = response.getStatusLine().getStatusCode();
@@ -300,95 +300,103 @@ public class DefaultElasticRestClient implements ElasticRestClient {
             throw new IllegalStateException("Not connected to Elasticsearch cluster");
         }
 
-        LOG.info("Applying all templates from directory: {}", templateDirectory);
         int appliedCount = 0;
 
-        // ILM policies first
-        File policiesDir = new File(templateDirectory, "policies");
-        if (policiesDir.exists() && policiesDir.isDirectory()) {
-            LOG.info("Processing ILM policies from: {}", policiesDir.getAbsolutePath());
-            File[] policyFiles = policiesDir.listFiles((dir, name) -> name.endsWith(".json"));
-            if (policyFiles != null && policyFiles.length > 0) {
-                LOG.info("Found {} ILM policy files", policyFiles.length);
-                for (File policyFile : policyFiles) {
-                    try {
-                        String policyName = policyFile.getName().replaceAll("\\.json$", "");
-                        String policyContent = Files.readString(policyFile.toPath(), StandardCharsets.UTF_8);
-                        LOG.info("Applying ILM policy: {}", policyName);
-                        if (applyILMPolicy(policyName, policyContent)) {
-                            LOG.info("Successfully applied ILM policy: {}", policyName);
-                            appliedCount++;
-                        } else {
-                            LOG.warn("Failed to apply ILM policy: {}", policyName);
-                        }
-                    } catch (Exception e) {
-                        LOG.error("Error applying ILM policy from file {}: {}", policyFile.getName(), e.getMessage(), e);
-                    }
-                }
-            } else {
-                LOG.info("No ILM policy files found in {}", policiesDir.getAbsolutePath());
-            }
-        } else {
-            LOG.info("Policies directory does not exist: {}", policiesDir.getAbsolutePath());
+        File directory = new File(templateDirectory);
+        if (!directory.exists() || !directory.isDirectory()) {
+            LOG.error("Template directory does not exist or is not a directory: {}", templateDirectory);
+            return 0;
         }
 
-        // Component templates
-        File componentsDir = new File(templateDirectory, "components");
-        if (componentsDir.exists() && componentsDir.isDirectory()) {
-            LOG.info("Processing component templates from: {}", componentsDir.getAbsolutePath());
-            File[] componentFiles = componentsDir.listFiles((dir, name) -> name.endsWith(".json"));
-            if (componentFiles != null && componentFiles.length > 0) {
-                LOG.info("Found {} component template files", componentFiles.length);
-                for (File componentFile : componentFiles) {
-                    try {
-                        String componentName = componentFile.getName().replaceAll("\\.json$", "");
-                        String componentContent = Files.readString(componentFile.toPath(), StandardCharsets.UTF_8);
-                        LOG.info("Applying component template: {}", componentName);
-                        if (applyComponentTemplate(componentName, componentContent)) {
-                            LOG.info("Successfully applied component template: {}", componentName);
-                            appliedCount++;
-                        } else {
-                            LOG.warn("Failed to apply component template: {}", componentName);
-                        }
-                    } catch (Exception e) {
-                        LOG.error("Error applying component template from file {}: {}", componentFile.getName(), e.getMessage(), e);
-                    }
-                }
-            } else {
-                LOG.info("No component template files found in {}", componentsDir.getAbsolutePath());
-            }
-        } else {
-            LOG.info("Components directory does not exist: {}", componentsDir.getAbsolutePath());
+        // Recursively find all .json files
+        List<File> jsonFiles;
+        try (Stream<Path> paths = Files.walk(directory.toPath())) {
+            jsonFiles = paths
+                    .filter(Files::isRegularFile)
+                    .filter(path -> path.toString().endsWith(".json"))
+                    .map(Path::toFile)
+                    .toList();
+        } catch (IOException e) {
+            LOG.error("Error walking through template directory: {}", e.getMessage());
+            return 0;
         }
 
-        // Index templates
-        File indexTemplatesDir = new File(templateDirectory, "index-templates");
-        if (indexTemplatesDir.exists() && indexTemplatesDir.isDirectory()) {
-            LOG.info("Processing index templates from: {}", indexTemplatesDir.getAbsolutePath());
-            File[] templateFiles = indexTemplatesDir.listFiles((dir, name) -> name.endsWith(".json"));
-            if (templateFiles != null && templateFiles.length > 0) {
-                LOG.info("Found {} index template files", templateFiles.length);
-                for (File templateFile : templateFiles) {
-                    try {
-                        String templateName = templateFile.getName().replaceAll("\\.json$", "");
-                        String templateContent = Files.readString(templateFile.toPath(), StandardCharsets.UTF_8);
-                        ;
-                        LOG.info("Applying index template: {}", templateName);
-                        if (applyComposableIndexTemplate(templateName, templateContent)) {
-                            LOG.info("Successfully applied index template: {}", templateName);
-                            appliedCount++;
-                        } else {
-                            LOG.warn("Failed to apply index template: {}", templateName);
-                        }
-                    } catch (Exception e) {
-                        LOG.error("Error applying index template from file {}: {}", templateFile.getName(), e.getMessage(), e);
-                    }
-                }
+        if (jsonFiles.isEmpty()) {
+            LOG.info("No template files found in {}", directory.getAbsolutePath());
+            return 0;
+        }
+
+        LOG.info("Found {} template files", jsonFiles.size());
+
+
+        // Sort files into categories based on filename patterns
+        java.util.List<File> ilmPolicyFiles = new java.util.ArrayList<>();
+        java.util.List<File> componentTemplateFiles = new java.util.ArrayList<>();
+        java.util.List<File> indexTemplateFiles = new java.util.ArrayList<>();
+        
+        for (File file : jsonFiles) {
+            String fileName = file.getName().toLowerCase();
+            if (fileName.contains("ilm") || fileName.contains("policy") || fileName.contains("lifecycle")) {
+                ilmPolicyFiles.add(file);
+            } else if (fileName.contains("component") || fileName.contains("setting") ||
+                       fileName.contains("mapping") || fileName.contains("alias")) {
+                componentTemplateFiles.add(file);
+            } else if (fileName.contains("composable") || fileName.contains("index")) {
+                indexTemplateFiles.add(file);
             } else {
-                LOG.info("No index template files found in {}", indexTemplatesDir.getAbsolutePath());
+                LOG.warn("Unknown template type for file: {}", fileName);
             }
-        } else {
-            LOG.info("Index templates directory does not exist: {}", indexTemplatesDir.getAbsolutePath());
+        }
+        
+        // Apply templates in the correct order: ILM policies first
+        LOG.info("Processing {} ILM policy files", ilmPolicyFiles.size());
+        for (File policyFile : ilmPolicyFiles) {
+            try {
+                String policyName = policyFile.getName().replaceAll("\\.json$", "");
+                String policyContent = Files.readString(policyFile.toPath(), StandardCharsets.UTF_8);
+                if (applyILMPolicy(policyName, policyContent)) {
+                    LOG.info("Successfully applied ILM policy: {}", policyName);
+                    appliedCount++;
+                } else {
+                    LOG.warn("Failed to apply ILM policy: {}", policyName);
+                }
+            } catch (Exception e) {
+                LOG.error("Error applying ILM policy from file {}: {}", policyFile.getName(), e.getMessage(), e);
+            }
+        }
+        
+        // Component templates second
+        LOG.info("Processing {} component template files", componentTemplateFiles.size());
+        for (File componentFile : componentTemplateFiles) {
+            try {
+                String componentName = componentFile.getName().replaceAll("\\.json$", "");
+                String componentContent = Files.readString(componentFile.toPath(), StandardCharsets.UTF_8);
+                if (applyComponentTemplate(componentName, componentContent)) {
+                    LOG.info("Successfully applied component template: {}", componentName);
+                    appliedCount++;
+                } else {
+                    LOG.warn("Failed to apply component template: {}", componentName);
+                }
+            } catch (Exception e) {
+                LOG.error("Error applying component template from file {}: {}", componentFile.getName(), e.getMessage(), e);
+            }
+        }
+        
+        // Index templates last
+        LOG.info("Processing {} index template files", indexTemplateFiles.size());
+        for (File templateFile : indexTemplateFiles) {
+            try {
+                String templateName = templateFile.getName().replaceAll("\\.json$", "");
+                String templateContent = Files.readString(templateFile.toPath(), StandardCharsets.UTF_8);
+                if (applyComposableIndexTemplate(templateName, templateContent)) {
+                    LOG.info("Successfully applied index template: {}", templateName);
+                    appliedCount++;
+                } else {
+                    LOG.warn("Failed to apply index template: {}", templateName);
+                }
+            } catch (Exception e) {
+                LOG.error("Error applying index template from file {}: {}", templateFile.getName(), e.getMessage(), e);
+            }
         }
 
         LOG.info("Successfully applied {} templates/policies from {}", appliedCount, templateDirectory);
