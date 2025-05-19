@@ -181,16 +181,7 @@ public class TemplateCommand implements Action {
             return;
         }
 
-        String subdir;
-        if (ilmPolicy) {
-            subdir = "policies";
-        } else if (componentTemplate) {
-            subdir = "components";
-        } else {
-            subdir = "index-templates";
-        }
-
-        Path resourcePath = Paths.get(directory, subdir, templateName + ".json");
+        Path resourcePath = Paths.get(directory, templateName + ".json");
 
         if (!Files.exists(resourcePath)) {
             System.err.println("Error: File not found: " + resourcePath);

@@ -51,4 +51,7 @@ public class ElasticRestClientFactory {
         elasticRestClient.close();
     }
 
+    public ElasticRestClient getClient() {
+        return elasticRestClient;
+    }
 }
