@@ -116,7 +116,6 @@ Provides:	%{name}-plugin-ticketing-otrs = %{version}-%{release}
 Obsoletes:	%{name}-plugin-ticketing-otrs < %{version}
 Provides:	%{name}-plugin-ticketing-remedy = %{version}-%{release}
 Obsoletes:	%{name}-plugin-ticketing-remedy < %{version}
-Recommends:	haveged
 
 %description core
 The core backend.  This package contains the main daemon responsible

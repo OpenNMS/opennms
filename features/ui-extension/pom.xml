@@ -14,8 +14,7 @@
     <name>OpenNMS :: Features :: UI Extension</name>
 
     <properties>
-        <maven.compiler.source>11</maven.compiler.source>
-        <maven.compiler.target>11</maven.compiler.target>
+        <maven.compiler.release>17</maven.compiler.release>
     </properties>
 
     <build>
