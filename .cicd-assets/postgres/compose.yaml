@@ -1,7 +1,12 @@
 ---
 services:
   postgres:
-    image: postgres:10.7-alpine
+    image: postgres:13-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ./init:/docker-entrypoint-initdb.d
     ports:
       - "5432:5432/tcp"
     command: ['-c', 'shared_buffers=256MB', '-c', 'max_connections=200', '-c', 'fsync=off']
@@ -10,14 +15,3 @@ services:
       interval: 5s
       timeout: 2s
       retries: 10
-  init:
-    depends_on:
-      postgres:
-        condition: service_healthy
-    image: postgres:10.7-alpine
-    command: |
-      bash -c "psql -h postgres -U postgres -c \"CREATE USER opennms;\"
-               psql -h postgres -U postgres -c \"ALTER USER opennms WITH SUPERUSER;\"
-               psql -h postgres -U postgres -c \"ALTER USER opennms WITH PASSWORD 'opennms';\"
-               psql -h postgres -U postgres -c \"CREATE DATABASE opennms;\"
-               psql -h postgres -U postgres -c \"GRANT ALL PRIVILEGES ON DATABASE opennms TO opennms;\""
