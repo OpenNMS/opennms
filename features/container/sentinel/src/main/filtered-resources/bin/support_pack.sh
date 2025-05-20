@@ -27,6 +27,8 @@ SENTINEL_HOME="/opt/nothing_yet"
 PACK_DIR="${TEMPDIR}/support-pack-$DATETIME"
 PSQL=$(/usr/bin/env which psql 2>/dev/null || echo "false")
 TAR=$(/usr/bin/env which tar 2>/dev/null || echo "false")
+JAVA_MIN_VERSION="17.0"
+JAVA_MAX_VERSION="17.999"
 
 usage(){ echo -e >&2 "
 Usage: $(basename $0) [-j -o -p -e -t -c -l -x -u -s]
@@ -163,12 +165,12 @@ if [ -e $OPENNMS_HOME/etc/java.conf ]; then
       JSTACK="false";
    fi
 elif [ -e $MINION_HOME/bin/find-java.sh ]; then
-   JSTACK="$($MINION_HOME/bin/find-java.sh 11.0 17.9999)/bin/jstack"
+   JSTACK="$($MINION_HOME/bin/find-java.sh ${JAVA_MIN_VERSION} ${JAVA_MAX_VERSION})/bin/jstack"
    if [ ! -e $JSTACK ]; then
       JSTACK="false";
    fi
 elif [ -e $SENTINEL_HOME/bin/find-java.sh ]; then
-   JSTACK="$($SENTINEL_HOME/bin/find-java.sh 11.0 17.9999)/bin/jstack"
+   JSTACK="$($SENTINEL_HOME/bin/find-java.sh ${JAVA_MIN_VERSION} ${JAVA_MAX_VERSION})/bin/jstack"
    if [ ! -e $JSTACK ]; then
       JSTACK="false";
    fi
@@ -191,10 +193,10 @@ if [ $DOJAVA == "true" ]; then
    if [ -e $OPENNMS_HOME/etc/java.conf ]; then
       $(<$OPENNMS_HOME/etc/java.conf) -version &>> $PACK_DIR/java-out.txt
    elif [ -e $MINION_HOME/bin/find-java.sh ]; then
-      FOUND_JDK=$($MINION_HOME/bin/find-java.sh 11.0 17.9999)
+      FOUND_JDK=$($MINION_HOME/bin/find-java.sh ${JAVA_MIN_VERSION} ${JAVA_MAX_VERSION})
       $FOUND_JDK/bin/java -version &>> $PACK_DIR/java-out.txt
    elif [ -e $SENTINEL_HOME/bin/find-java.sh ]; then
-      FOUND_JDK=$($SENTINEL_HOME/bin/find-java.sh 11.0 17.9999)
+      FOUND_JDK=$($SENTINEL_HOME/bin/find-java.sh ${JAVA_MIN_VERSION} ${JAVA_MAX_VERSION})
       $FOUND_JDK/bin/java -version &>> $PACK_DIR/java-out.txt
    fi
 fi

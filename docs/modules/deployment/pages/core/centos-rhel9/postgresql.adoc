@@ -17,16 +17,16 @@ Make sure you reference your current PostgreSQL version.
 [source, console]
 ----
 sudo dnf -y install https://download.postgresql.org/pub/repos/yum/reporpms/EL-9-x86_64/pgdg-redhat-repo-latest.noarch.rpm
-sudo dnf -y install postgresql14-server
+sudo dnf -y install postgresql15-server
 ----
 
 .Initialize the PostgreSQL database
 [source, console]
-sudo /usr/pgsql-14/bin/postgresql-14-setup initdb
+sudo /usr/pgsql-15/bin/postgresql-15-setup initdb
 
 .Enable PostgreSQL on system boot and start immediately
 [source, console]
-sudo systemctl enable --now postgresql-14
+sudo systemctl enable --now postgresql-15
 
 .Create an opennms database user and password
 [source, console]
@@ -49,7 +49,7 @@ The superuser is required to be able to initialize and change the database schem
 [[core-centos-rhel9-pg_hba]]
 .Change the access policy for PostgreSQL
 [source, console]
-sudo vi /var/lib/pgsql/14/data/pg_hba.conf
+sudo vi /var/lib/pgsql/15/data/pg_hba.conf
 
 .Allow {page-component-title} to access the database over the local network with an MD5 hashed password
 [source, pg_hba.conf]
@@ -62,4 +62,4 @@ host    all             all             ::1/128                 md5 <1>
 
 .Apply configuration changes for PostgreSQL
 [source, console]
-sudo systemctl reload postgresql-14
+sudo systemctl reload postgresql-15

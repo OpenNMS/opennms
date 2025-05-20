@@ -9,6 +9,8 @@ RUNAS="@RUNAS@"
 STOP_RETRIES=10
 STOP_WAIT=5
 PIDFILE="@PIDFILE@"
+JAVA_MIN_VERSION=17.0
+JAVA_MAX_VERSION=17.999
 
 export NAME DESC PATH
 
@@ -23,7 +25,7 @@ if [ -f /etc/rc.d/init.d/functions ]; then
 fi
 
 if [ -z "$JAVA_HOME" ]; then
-	JAVA_HOME="$("$CONTAINER_HOME/bin/find-java.sh" 11.0 17.9999)"
+	JAVA_HOME="$("$CONTAINER_HOME/bin/find-java.sh" ${JAVA_MIN_VERSION} ${JAVA_MAX_VERSION})"
 fi
 
 if [ -r "$SYSCONFDIR/$NAME" ]; then
