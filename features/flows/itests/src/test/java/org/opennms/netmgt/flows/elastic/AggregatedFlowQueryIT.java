@@ -116,11 +116,11 @@ public class AggregatedFlowQueryIT {
     public ElasticSearchRule elasticSearchRule = new ElasticSearchRule(new ElasticSearchServerConfig()
                     .withPlugins(DriftPlugin.class, PainlessPlugin.class));
 
-    private ElasticFlowRepository flowRepository;
-    private SmartQueryService smartQueryService;
-    private RawFlowQueryService rawFlowQueryService;
-    private AggregatedFlowQueryService aggFlowQueryService;
-    private DocumentEnricherImpl documentEnricher;
+    protected ElasticFlowRepository flowRepository;
+    protected SmartQueryService smartQueryService;
+    protected RawFlowQueryService rawFlowQueryService;
+    protected AggregatedFlowQueryService aggFlowQueryService;
+    protected DocumentEnricherImpl documentEnricher;
 
     @Before
     public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {
@@ -132,7 +132,9 @@ public class AggregatedFlowQueryIT {
         final IndexSettings rawIndexSettings = new IndexSettings();
         rawIndexSettings.setIndexPrefix("flows");
         final IndexSettings aggIndexSettings = new IndexSettings();
-        aggIndexSettings.setIndexPrefix("aggflows");
+        // Although this works fine, we want to use templates from etc directly for composable templates.
+        // So In order to work for both test cases, we commented out this.
+        //aggIndexSettings.setIndexPrefix("aggflows");
 
         // Here we load the flows by building the documents ourselves,
         // so we must initialize the repository manually
@@ -882,7 +884,7 @@ public class AggregatedFlowQueryIT {
         options.setElasticUrl(elasticSearchRule.getUrl());
         // Must match!
         options.setElasticIndexStrategy(org.opennms.nephron.elastic.IndexStrategy.MONTHLY);
-        options.setElasticFlowIndex("aggflowsnetflow_agg");
+        options.setElasticFlowIndex("netflow_agg");
 
         p.apply(flowStream)
                 .apply(new Pipeline.CalculateFlowStatistics(options))
