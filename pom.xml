@@ -1844,8 +1844,8 @@
     <jcommonVersion>1.0.24</jcommonVersion>
     <jdom2Version>2.0.6.1</jdom2Version>
     <jettisonVersion>1.5.4</jettisonVersion>
-    <jettyVersion>9.4.53.v20231009</jettyVersion>
-    <jettyOsgiVersion>9.4.53</jettyOsgiVersion>
+    <jettyVersion>9.4.57.v20241219</jettyVersion>
+    <jettyOsgiVersion>9.4.57</jettyOsgiVersion>
     <jestVersion>5.3.4</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
     <jfreechartVersion>1.5.4</jfreechartVersion>
