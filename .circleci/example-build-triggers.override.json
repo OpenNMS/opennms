@@ -3,7 +3,7 @@
     "coverage": false,
     "docs": false,
     "ui": false,
-    "integration": true,
+    "integration": false,
     "smoke": false,
     "rpms": false,
     "debs": false,
