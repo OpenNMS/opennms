@@ -31,6 +31,7 @@ public class ElasticsearchContainer extends org.testcontainers.elasticsearch.Ela
     public ElasticsearchContainer() {
         super("docker.elastic.co/elasticsearch/elasticsearch:7.17.9");
         withEnv("ES_JAVA_OPTS", "-Xms512m -Xmx512m")
+                .withEnv("xpack.security.enabled", "false")
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(OpenNMSContainer.ELASTIC_ALIAS)
                 .withCreateContainerCmdModifier(TestContainerUtils::setGlobalMemAndCpuLimits);

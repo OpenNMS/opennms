@@ -30,6 +30,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.concurrent.atomic.AtomicInteger;
 
 public class ComposableTemplateInitializer implements TemplateInitializer {
@@ -50,9 +53,10 @@ public class ComposableTemplateInitializer implements TemplateInitializer {
 
     public ComposableTemplateInitializer(ElasticRestClient elasticRestClient, String templatesPath, boolean useComposableTemplates) {
         this.elasticRestClient = elasticRestClient;
-        this.templatesPath = templatesPath;
+        this.templatesPath = resolveTemplatesPath(templatesPath);
         this.useComposableTemplates = useComposableTemplates;
     }
+
 
     @Override
     public void initialize() {
@@ -80,6 +84,15 @@ public class ComposableTemplateInitializer implements TemplateInitializer {
                 initialized = true;
             }
         }
+    }
+
+    private String resolveTemplatesPath(String templatesPath) {
+        // If karaf.etc doesn't resolve properly from blueprint, get it from karaf.etc
+        if (templatesPath == null || templatesPath.isBlank() || templatesPath.contains("karaf.etc")) {
+            Path pathForTemplates = Paths.get(System.getProperty("karaf.etc"), "netflow-templates");
+            return pathForTemplates.toString();
+        } else
+            return templatesPath;
     }
 
     private void waitBeforeRetrying(long cooldown) {

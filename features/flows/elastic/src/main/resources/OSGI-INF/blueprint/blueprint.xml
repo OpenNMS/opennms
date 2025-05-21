@@ -28,7 +28,7 @@
             <cm:property name="retries" value="0" /> <!-- Disable retries by default -->
             <cm:property name="skipElasticsearchPersistence" value="false"/> <!-- Set to true to disable persisting flows to ES. -->
             <cm:property name="useComposableTemplates" value="false"/>
-            <cm:property name="templatesPath" value="$[karaf.etc]$[file.separator]netflow-templates"/>
+            <cm:property name="templatesPath" value="${karaf.etc}/netflow-templates"/>
 
             <!-- Bulk Action settings -->
             <cm:property name="bulkSize" value="1000" /> <!-- Number of flow document collected into a bulk operation -->
