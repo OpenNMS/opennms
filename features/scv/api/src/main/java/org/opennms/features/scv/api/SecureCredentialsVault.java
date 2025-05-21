@@ -38,7 +38,7 @@ public interface SecureCredentialsVault {
 
     public enum KeyStoreType {
         JCEKS,
-        PKCS12;
+        PKCS12
     }
     public static final Logger LOG = LoggerFactory.getLogger(SecureCredentialsVault.class);
     public final static String SCV_KEYSTORE_PROPERTY = "org.opennms.features.scv.keystore.type";

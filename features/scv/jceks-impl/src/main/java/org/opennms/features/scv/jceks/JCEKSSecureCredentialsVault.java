@@ -81,7 +81,7 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
     private FileUpdateWatcher m_fileUpdateWatcher;
     private final AtomicBoolean m_fileUpdated = new AtomicBoolean(false);
     private long m_lastModified = System.currentTimeMillis();
-    private String m_keyStoreType;
+    private final String m_keyStoreType;
 
     public JCEKSSecureCredentialsVault(String keystoreFile, String password, boolean useWatcher)  {
         this(keystoreFile, password, useWatcher, new byte[]{0x0, 0xd, 0xd, 0xb, 0xa, 0x1, 0x1});
