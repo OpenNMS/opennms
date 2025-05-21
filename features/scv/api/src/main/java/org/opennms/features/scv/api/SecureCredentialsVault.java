@@ -27,7 +27,7 @@ public interface SecureCredentialsVault {
 
     public enum KeyStoreType {
         JCEKS,
-        PKCS12;
+        PKCS12
     }
 
     Set<String> getAliases();
