@@ -45,12 +45,12 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
 
 public class ElasticRestClientIT {
 
-    private static final String ELASTICSEARCH_IMAGE = "docker.elastic.co/elasticsearch/elasticsearch:7.17.9";
+    private static final String ELASTICSEARCH_CONTAINER_IMAGE = "docker.elastic.co/elasticsearch/elasticsearch:7.17.9";
 
     private static final Logger LOG = LoggerFactory.getLogger(ElasticRestClientIT.class);
 
     @ClassRule
-    public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer(ELASTICSEARCH_IMAGE)
+    public static ElasticsearchContainer elasticsearch = new ElasticsearchContainer(ELASTICSEARCH_CONTAINER_IMAGE)
             .withEnv("xpack.security.enabled", "false")
             .withEnv("discovery.type", "single-node")
             .withEnv("ES_JAVA_OPTS", "-Xms512m -Xmx512m");
