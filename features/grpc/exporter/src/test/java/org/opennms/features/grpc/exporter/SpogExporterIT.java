@@ -78,7 +78,6 @@ import static org.mockito.Mockito.mock;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-soa.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
         "classpath:/META-INF/opennms/applicationContext-mockDao.xml",
@@ -87,9 +86,9 @@ import static org.mockito.Mockito.mock;
         "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml"})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext = false, tempDbClass = MockDatabase.class, reuseDatabase = false)
-public class SpogInventoryServiceSyncIT implements TemporaryDatabaseAware<MockDatabase> {
+public class SpogExporterIT implements TemporaryDatabaseAware<MockDatabase> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(SpogInventoryServiceSyncIT.class);
+    private static final Logger LOG = LoggerFactory.getLogger(SpogExporterIT.class);
     private static final int PORT = 50051;
     private static final String TENANT_ID = "opennms-prime";
     private static final String HOST_NAME = "localhost:" + PORT;

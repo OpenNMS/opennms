@@ -59,7 +59,12 @@ public class ZenithConnectPersistenceServiceImpl implements ZenithConnectPersist
     }
 
     /** {@inheritDoc} */
-    public ZenithConnectRegistration addRegistration(ZenithConnectRegistration registration) throws ZenithConnectPersistenceException {
+    public ZenithConnectRegistration addRegistration(ZenithConnectRegistration registration, boolean preventDuplicates)
+            throws ZenithConnectPersistenceException {
+        if (preventDuplicates && isDuplicateRegistration(registration)) {
+           throw new ZenithConnectPersistenceException(true);
+        }
+
         registration.id = UUID.randomUUID().toString();
         registration.createTimeMs = Instant.now().toEpochMilli();
 
@@ -67,6 +72,11 @@ public class ZenithConnectPersistenceServiceImpl implements ZenithConnectPersist
         setRegistrations(registrations);
 
         return registration;
+    }
+
+    public ZenithConnectRegistration addRegistration(ZenithConnectRegistration registration)
+            throws ZenithConnectPersistenceException {
+        return addRegistration(registration, false);
     }
 
     /** {@inheritDoc} */
@@ -135,5 +145,32 @@ public class ZenithConnectPersistenceServiceImpl implements ZenithConnectPersist
         } catch (JsonProcessingException e) {
             throw new ZenithConnectPersistenceException("Could not serialize Zenith Connect registrations", e);
         }
+    }
+
+    private boolean isDuplicateRegistration(ZenithConnectRegistration registration)
+            throws ZenithConnectPersistenceException {
+        ZenithConnectRegistrations existingRegistrations = getRegistrationsImpl();
+        ZenithConnectRegistration existingRegistration = existingRegistrations.first();
+
+        if (existingRegistration == null) {
+            return false;
+        }
+
+        boolean systemIdsMatch = registration.systemId != null && existingRegistration.systemId != null &&
+                registration.systemId.equals(existingRegistration.systemId);
+
+        if (systemIdsMatch) {
+            boolean accessTokenMatches = registration.accessToken != null &&
+                    existingRegistration.accessToken != null &&
+                    registration.accessToken.equals(existingRegistration.accessToken);
+
+            boolean refreshTokenMatches = registration.refreshToken != null &&
+                    existingRegistration.refreshToken != null &&
+                    registration.refreshToken.equals(existingRegistration.refreshToken);
+
+            return accessTokenMatches || refreshTokenMatches;
+        }
+
+        return false;
     }
 }

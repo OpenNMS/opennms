@@ -11,31 +11,39 @@
           <div class="title-container">
             <span class="title">Zenith Connect</span>
           </div>
-          <div class="spacer"></div>
           <div>
-            Register your Meridian instance with Zenith in order to send data.
+            Register your OpenNMS instance with Zenith in order to send data.
           </div>
-          <h3>Steps</h3>
-          <div class="instructions">
-            <ul>
-              <li>Enter the Zenith base URL below.</li>
-              <li>If desired, enter a friendly display name for your Meridian instance.</li>
-              <li>Click Connect to Zenith</li>
-              <li>You will then be directed to Zenith to login with the Zenith user associated with your Meridian instance.</li>
-              <li>Zenith will register your user. You may need to enter your Zenith password again.</li>
-              <li>Zenith will display your Refresh Token which Meridian will need to connect with Zenith.</li>
-              <li>You can copy the token to the clipboard and manually enter it into Meridian, or...</li>
-              <li>
-                You will be given a link to return to Meridian which will automatically save this token in Meridian for you. Note, you
-                may need to open a separate tab, log into Meridian, then copy that link into that same browser tab for this to work.
-              </li>
-            </ul>
-          </div>
+          <div class="spacer"></div>
+          <FeatherExpansionPanel
+            class="zc-register-steps-expansion-panel"
+          >
+            <template #title>
+              <h4>Steps</h4>
+            </template>
+            <template #default>
+              <div class="instructions">
+                <ul>
+                  <li>Confirm the Zenith Connect URL below. If desired, modify the display name for your OpenNMS instance.</li>
+                  <li>Click Connect to Zenith</li>
+                  <li>You will then be directed to Zenith to login with the Zenith user associated with your OpenNMS instance.</li>
+                  <li>Zenith will register your user. You may need to enter your Zenith password again.</li>
+                  <li>Zenith will display your Refresh Token which OpenNMS will need to connect with Zenith.</li>
+                  <li>You can copy the token to the clipboard and manually enter it into OpenNMS, or...</li>
+                  <li>
+                    You will be given a link to return to OpenNMS which will automatically save this token in OpenNMS for you. Note, you
+                    may need to open a separate tab, log into OpenNMS, then copy that link into that same browser tab for this to work.
+                  </li>
+                </ul>
+              </div>
+            </template>
+          </FeatherExpansionPanel>
+
           <div class="spacer"></div>
           <div>
             <div>
               <FeatherInput
-                label="Zenith Base URL"
+                label="Zenith Connect URL"
                 @update:modelValue="(val: any) => zenithUrl = String(val)"
                 :modelValue="zenithUrl"
                 class="input"
@@ -43,32 +51,33 @@
             </div>
             <div>
               <FeatherInput
-                label="Meridian System ID"
-                @update:modelValue="(val: any) => systemId = String(val)"
+                label="OpenNMS System ID"
+                :disabled="true"
                 :modelValue="systemId"
                 class="input"
               />
             </div>
             <div>
               <FeatherInput
-                label="Meridian Display Name"
+                label="OpenNMS System Display Name"
                 @update:modelValue="(val: any) => displayName = String(val)"
                 :modelValue="displayName"
                 class="input"
               />
             </div>
-            <div class="spacer"></div>
-            <div>
-              <div>
-                You will be redirected to Zenith's <strong>Zenith Connect</strong> where you will need to enter your Zenith password
-                for the Meridian user associated with Zenith.
-              </div>
-              <div class="spacer"></div>
+            <div class="btns">
               <FeatherButton
                 primary
                 @click="onRegisterWithZenith"
               >
                   Register with Zenith
+              </FeatherButton>
+
+              <FeatherButton
+                secondary
+                @click="onViewRegistrations"
+              >
+                  View Registrations
               </FeatherButton>
             </div>
           </div>
@@ -80,20 +89,24 @@
 
 <script setup lang="ts">
 import { FeatherButton } from '@featherds/button'
+import { FeatherExpansionPanel } from '@featherds/expansion'
 import { FeatherInput } from '@featherds/input'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import useSnackbar from '@/composables/useSnackbar'
 import { useMenuStore } from '@/stores/menuStore'
 import { useMonitoringSystemStore } from '@/stores/monitoringSystemStore'
 import { BreadCrumb } from '@/types'
 
 const menuStore = useMenuStore()
 const monitoringSystemStore = useMonitoringSystemStore()
+const router = useRouter()
+const { showSnackBar } = useSnackbar()
 
 const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 const baseHref = computed<string>(() => menuStore.mainMenu.baseHref)
 const zenithConnectBaseUrl = computed<string>(() => menuStore.mainMenu.zenithConnectBaseUrl)
 const zenithConnectRelativeUrl = computed<string>(() => menuStore.mainMenu.zenithConnectRelativeUrl)
-const zenithUrl = computed<string>(() => `${zenithConnectBaseUrl.value}${zenithConnectRelativeUrl.value}`)
+const zenithUrl = ref<string>(`${zenithConnectBaseUrl.value}${zenithConnectRelativeUrl.value}`)
 const systemId = computed(() => monitoringSystemStore.mainMonitoringSystem?.id ?? '')
 const systemLabel = computed(() => monitoringSystemStore.mainMonitoringSystem?.label ?? '')
 const displayName = ref(systemLabel.value)
@@ -106,8 +119,43 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
   ]
 })
 
+const validateRegistration = () => {
+  const fields = []
+
+  if (!zenithUrl.value) {
+    fields.push('Zenith Connect URL')
+  }
+
+  if (!systemId.value) {
+    fields.push('OpenNMS System ID')
+  }
+
+  if (!displayName.value) {
+    fields.push('OpenNMS Display Name')
+  }
+
+  return fields
+}
+
+const onViewRegistrations = () => {
+  router.push('/zenith-connect')
+}
+
 const onRegisterWithZenith = () => {
-  // Example callbackUrl: http://localhost:8980/opennms/ui/index.html#/zenith-connect/register
+  const fields = validateRegistration()
+
+  if (fields.length > 0) {
+      const msg = fields.join(', ')
+
+      showSnackBar({
+        msg: `The following fields are required: ${msg}`,
+        error: true
+      })
+
+      return
+  }
+
+  // Example callbackUrl: http://localhost:8980/opennms/ui/index.html#/zenith-connect/register-result
   const callbackUrl = `${baseHref.value}ui/index.html#/zenith-connect/register-result`
 
   const queryString = `?systemId=${encodeURIComponent(systemId.value)}&displayName=${encodeURIComponent(displayName.value)}&callbackUrl=${encodeURIComponent(callbackUrl)}`
@@ -117,14 +165,22 @@ const onRegisterWithZenith = () => {
   window.location.assign(url)
 }
 
-onMounted(async () => {
+const fetchZenithUrls = async () => {
   if (!homeUrl.value || !baseHref.value) {
-    menuStore.getMainMenu()
+    await menuStore.getMainMenu()
+    zenithUrl.value = `${zenithConnectBaseUrl.value}${zenithConnectRelativeUrl.value}`
   }
+}
 
+const fetchDisplayName = async () => {
   if (!monitoringSystemStore.mainMonitoringSystem) {
-    monitoringSystemStore.getMainMonitoringSystem()
+    await monitoringSystemStore.getMainMonitoringSystem()
+    displayName.value = systemLabel.value
   }
+}
+
+onMounted(async () => {
+  await Promise.allSettled([fetchZenithUrls(), fetchDisplayName()])
 })
 </script>
 
@@ -137,6 +193,10 @@ onMounted(async () => {
 
   .zc-container {
     display: flex;
+
+    .zc-register-steps-expansion-panel {
+      width: 50%;
+    }
 
     .content-container {
       width: 35rem;
@@ -154,7 +214,7 @@ onMounted(async () => {
       }
 
       .instructions {
-        width: 70%;
+        width: 95%;
       }
 
       .input {
@@ -163,6 +223,11 @@ onMounted(async () => {
 
       .spacer {
         margin-bottom: 1rem;
+      }
+
+      .btns {
+        display: flex;
+        flex-direction: row;
       }
     }
   }

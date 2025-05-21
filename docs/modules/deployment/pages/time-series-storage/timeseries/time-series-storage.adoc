@@ -3,7 +3,7 @@
 = Time Series Database
 :description: Overview of OpenNMS time series database options: JRobin, RRDtool, and Newts. Plugins and parallel series writes.
 
-{page-component-title} stores performance data in a time series database (JRobin by default).
+{page-component-title} stores performance data in a time series database (RRDTool by default).
 For different scenarios you may want to use a different time series database.
 The following implementations are installed by default:
 
