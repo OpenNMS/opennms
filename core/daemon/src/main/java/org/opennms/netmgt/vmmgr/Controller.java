@@ -45,6 +45,7 @@ import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
 import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.utils.ScvUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -178,14 +179,14 @@ public class Controller {
 
                 String opennmsHome = System.getProperty("opennms.home");
                 if (opennmsHome != null && !opennmsHome.isEmpty()) {
-                    Properties scvProps = SecureCredentialsVault.loadScvProperties(opennmsHome);
+                    Properties scvProps = ScvUtils.loadScvProperties(opennmsHome);
                     final Class clazz = Class.forName("org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault");
                     final Constructor constructor = clazz.getConstructor(String.class, String.class, String.class);
                     final String keyStoreKeyProperty = (String) clazz.getField("KEYSTORE_KEY_PROPERTY").get(null);
                     final String defaultKeyStoreKey = (String) clazz.getField("DEFAULT_KEYSTORE_KEY").get(null);
                     secureCredentialsVault = (SecureCredentialsVault) constructor.newInstance(
                             Paths.get(opennmsHome, "etc", "scv.jce").toString(),
-                            System.getProperty(keyStoreKeyProperty, defaultKeyStoreKey), scvProps.getProperty(SecureCredentialsVault.SCV_KEYSTORE_TYPE_PROPERTY)
+                            System.getProperty(keyStoreKeyProperty, defaultKeyStoreKey), scvProps.getProperty(ScvUtils.SCV_KEYSTORE_TYPE_PROPERTY)
                     );
                 }
             } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException |

@@ -56,6 +56,7 @@ import org.opennms.core.fileutils.FileUpdateCallback;
 import org.opennms.core.fileutils.FileUpdateWatcher;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.utils.ScvUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +71,8 @@ import com.google.common.collect.Sets;
 public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, FileUpdateCallback {
 
     public static final Logger LOG = LoggerFactory.getLogger(JCEKSSecureCredentialsVault.class);
-
+    public static final String KEYSTORE_KEY_PROPERTY = "org.opennms.features.scv.jceks.key";
+    public static final String DEFAULT_KEYSTORE_KEY = "QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw";
     private final KeyStore m_keystore;
     private final File m_keystoreFile;
     private final char[] m_password;
@@ -290,8 +292,8 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
        Should be mostly used for read-only access, short-lived and instantiate for each access.
      */
     public static JCEKSSecureCredentialsVault defaultScv() {
-        Properties properties = SecureCredentialsVault.loadScvProperties(System.getProperty("opennms.home"));
-        return new JCEKSSecureCredentialsVault(getKeystoreFilename(), getKeystorePassword(), properties.getProperty(SCV_KEYSTORE_TYPE_PROPERTY));
+        Properties properties = ScvUtils.loadScvProperties(System.getProperty("opennms.home"));
+        return new JCEKSSecureCredentialsVault(getKeystoreFilename(), getKeystorePassword(), properties.getProperty(ScvUtils.SCV_KEYSTORE_TYPE_PROPERTY));
     }
 
     @Override
