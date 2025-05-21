@@ -1040,6 +1040,11 @@
       <artifactId>org.opennms.features.ticketing.inmemory</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.elastic</groupId>
+      <artifactId>org.opennms.features.elastic.client</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <!-- GraphML dependencies -->
     <dependency>

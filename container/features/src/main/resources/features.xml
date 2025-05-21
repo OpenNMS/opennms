@@ -2079,4 +2079,11 @@
         <bundle>mvn:org.opennms.features.zenith-connect/org.opennms.features.zenith-connect.persistence/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.zenith-connect/org.opennms.features.zenith-connect.rest/${project.version}</bundle>
     </feature>
+
+    <feature name="opennms-elastic-client" description="OpenNMS :: Elastic Client" version="${project.version}">
+        <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
+        <bundle>wrap:mvn:org.elasticsearch.client/elasticsearch-rest-client/${elasticsearchClientVersion}</bundle>
+        <bundle>mvn:org.opennms.features.elastic/org.opennms.features.elastic.client/${project.version}</bundle>
+    </feature>
+
 </features>
