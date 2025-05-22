@@ -50,6 +50,7 @@ import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
 
 import com.google.common.collect.Sets;
+import org.opennms.features.scv.utils.ScvUtils;
 
 public class PKCS12SecureCredentialVaultTest{
 
@@ -61,7 +62,7 @@ public class PKCS12SecureCredentialVaultTest{
     @Before
     public void setUp() {
         System.setProperty("karaf.etc", tempFolder.getRoot().getAbsolutePath());
-        System.setProperty(SecureCredentialsVault.SCV_KEYSTORE_PROPERTY, SCV_KEYSTORE_TYPE);
+        System.setProperty(ScvUtils.SCV_KEYSTORE_TYPE_PROPERTY, SCV_KEYSTORE_TYPE);
     }
 
     @Test

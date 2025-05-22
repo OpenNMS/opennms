@@ -38,6 +38,7 @@ import org.opennms.features.scv.cli.commands.ListCommand;
 import org.opennms.features.scv.cli.commands.SetCommand;
 import org.opennms.features.scv.cli.commands.DeleteCommand;
 import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
+import org.opennms.features.scv.utils.ScvUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,20 +76,27 @@ public class ScvCli {
 
     public SecureCredentialsVault getSecureCredentialsVault() {
         if (secureCredentialsVault == null) {
-            secureCredentialsVault = new JCEKSSecureCredentialsVault(this.keystore, this.password, lookupKeyStoreType());
+            String keystoreType = lookupKeyStoreType();
+            secureCredentialsVault = new JCEKSSecureCredentialsVault(this.keystore, this.password, keystoreType);
         }
 
         return secureCredentialsVault;
     }
 
     private  String lookupKeyStoreType() {
-        String keyStoreType = SecureCredentialsVault.KeyStoreType.JCEKS.name();
+        String keyStoreType = SecureCredentialsVault.KeyStoreType.JCEKS.toString();
+
         Properties properties = new Properties();
         try {
             properties.load(ScvCli.class.getResourceAsStream("/scvcli-filtered.properties"));
             String opennmsHome = properties.getProperty("install.dir");
-            Properties scvProps = SecureCredentialsVault.loadScvProperties(opennmsHome);
-            keyStoreType = scvProps.getProperty(SecureCredentialsVault.SCV_KEYSTORE_PROPERTY);
+            Properties scvProps = ScvUtils.loadScvProperties(opennmsHome);
+            keyStoreType = scvProps.getProperty(ScvUtils.SCV_KEYSTORE_TYPE_PROPERTY);
+
+            if(this.password==null || this.password.isEmpty()){
+                password = scvProps.getProperty(JCEKSSecureCredentialsVault.KEYSTORE_KEY_PROPERTY);
+            }
+
         } catch (Exception e) {
             LOG.error("WARNING: unable to load properties files");
         }
