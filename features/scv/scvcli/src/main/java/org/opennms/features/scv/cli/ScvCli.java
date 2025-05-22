@@ -85,7 +85,6 @@ public class ScvCli {
 
     private  String lookupKeyStoreType() {
         String keyStoreType = SecureCredentialsVault.KeyStoreType.JCEKS.toString();
-
         Properties properties = new Properties();
         try {
             properties.load(ScvCli.class.getResourceAsStream("/scvcli-filtered.properties"));
