@@ -36,6 +36,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.opennms.features.elastic.client.DefaultElasticRestClient;
 import org.opennms.netmgt.flows.elastic.NetflowVersion;
 import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.smoketest.utils.RestClient;
@@ -46,11 +47,9 @@ import com.google.gson.Gson;
 
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
-import io.searchbox.client.JestResult;
 import io.searchbox.client.config.HttpClientConfig;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
-import io.searchbox.indices.template.GetTemplate;
 
 /**
  * Simple helper which sends a defined set of {@link FlowPacket}s to OpenNMS or Minion and afterwards verifies
@@ -90,6 +89,7 @@ public class FlowTester {
 
     private final InetSocketAddress elasticRestAddress;
     private final int totalFlowCount;
+    private DefaultElasticRestClient elasticRestClient;
 
     private JestClient client;
 
@@ -140,6 +140,8 @@ public class FlowTester {
                 .readTimeout(10000)
                 .multiThreaded(true).build());
 
+        elasticRestClient = new DefaultElasticRestClient(elasticRestUrl, null, null);
+        elasticRestClient.connect();
         try {
             client = factory.getObject();
             runBefore.forEach(rb -> rb.accept(this));
@@ -192,14 +194,18 @@ public class FlowTester {
 
             LOG.info("Ensuring that the index template was created...");
             verify(() -> {
-                final JestResult result = client.execute(new GetTemplate.Builder(TEMPLATE_NAME).build());
-                return result.isSucceeded() && result.getJsonObject().get(TEMPLATE_NAME) != null;
+                Map<String, String> indexTemplates = elasticRestClient.listTemplates();
+                return indexTemplates.keySet().stream()
+                        .anyMatch(name -> name.contains(TEMPLATE_NAME));
             });
 
             runAfter.forEach(ra -> ra.accept(this));
         } finally {
             if (client != null) {
                 client.close();
+            }
+            if (elasticRestClient != null) {
+                elasticRestClient.close();
             }
         }
     }
