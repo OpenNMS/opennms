@@ -36,6 +36,7 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.google.gson.JsonObject;
 import org.opennms.netmgt.flows.elastic.NetflowVersion;
 import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.smoketest.utils.RestClient;
@@ -192,8 +193,17 @@ public class FlowTester {
 
             LOG.info("Ensuring that the index template was created...");
             verify(() -> {
-                final JestResult result = client.execute(new GetTemplate.Builder(TEMPLATE_NAME).build());
-                return result.isSucceeded() && result.getJsonObject().get(TEMPLATE_NAME) != null;
+                final JestResult result = client.execute(new GetTemplate.Builder("*").build());
+                if (!result.isSucceeded()) {
+                    return false;
+                }
+                JsonObject templates = result.getJsonObject();
+                for (String key : templates.keySet()) {
+                    if (key.contains(TEMPLATE_NAME)) {
+                        return true;
+                    }
+                }
+                return false;
             });
 
             runAfter.forEach(ra -> ra.accept(this));
