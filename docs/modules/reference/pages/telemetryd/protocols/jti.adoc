@@ -7,7 +7,7 @@ The Junos Telemetry Interface (JTI) lets you push operational statistics asynchr
 Data is generated as Google protocol buffers (GPB) structured messages over UDP.
 For detailed information about JTI, see the https://www.juniper.net/documentation/en_US/junos/topics/concept/junos-telemetry-interface-oveview.html[Juniper Documentation].
 
-To enable support for JTI, edit `$OPENNMS_HOME/etc/telemetryd-configuration.xml` and set `enabled=true` for JTI protocol.
+To enable support for JTI, edit `$\{OPENNMS_HOME}/etc/telemetryd-configuration.xml` and set `enabled=true` for JTI protocol.
 
 .Enable JTI protocol in telemetryd-configuration.xml
 [source, xml]
@@ -120,7 +120,7 @@ The following globals will be passed to the script:
 === Steps to Increase Log Character Size
 By default, the log message size is limited to 500 characters with karaf logs. However, in some cases, such as when viewing detailed proto object logs, you may need to increase the character size to capture the full log details.
 
-Locate file `org.ops4j.pax.logging.cfg`  in the `${OPENNMS_HOME}/etc/` directory.
+Locate file `org.ops4j.pax.logging.cfg`  in the `$\{OPENNMS_HOME}/etc/` directory.
 
 Locate the `log4j2.pattern` property in the file. By default, it is set to limit log messages to 500 characters  see `%encode{%.-500m}`
 
