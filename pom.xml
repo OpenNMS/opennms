@@ -1974,7 +1974,7 @@
     <xmlApisExtVersion>1.3.04</xmlApisExtVersion>
     <xmlgraphicsCommonsVersion>2.9</xmlgraphicsCommonsVersion>
     <xmlsecVersion>2.3.4</xmlsecVersion>
-    <xstreamVersion>1.4.20</xstreamVersion>
+    <xstreamVersion>1.4.21</xstreamVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
     <wsmanVersion>1.2.3</wsmanVersion>
     <zookeeperVersion>3.7.2</zookeeperVersion>
