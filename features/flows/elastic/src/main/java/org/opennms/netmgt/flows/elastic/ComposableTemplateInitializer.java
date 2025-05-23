@@ -115,7 +115,6 @@ public class ComposableTemplateInitializer implements TemplateInitializer {
 
     private int doInitialize() throws IOException {
         int count = 0;
-        elasticRestClient.connect();
         File templatesDir = new File(templatesPath);
 
         if (templatesDir.exists() && templatesDir.isDirectory()) {

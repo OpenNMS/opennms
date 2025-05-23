@@ -76,10 +76,6 @@ public class TemplateCommand implements Action {
     @Override
     public Object execute() throws Exception {
         try {
-            if (!elasticRestClient.isConnected()) {
-                System.out.println("Connecting to Elasticsearch...");
-                elasticRestClient.connect();
-            }
 
 
             if (applyAll && directory != null) {

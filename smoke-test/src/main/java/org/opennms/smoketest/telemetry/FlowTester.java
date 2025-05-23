@@ -141,7 +141,6 @@ public class FlowTester {
                 .multiThreaded(true).build());
 
         elasticRestClient = new DefaultElasticRestClient(elasticRestUrl, null, null);
-        elasticRestClient.connect();
         try {
             client = factory.getObject();
             runBefore.forEach(rb -> rb.accept(this));

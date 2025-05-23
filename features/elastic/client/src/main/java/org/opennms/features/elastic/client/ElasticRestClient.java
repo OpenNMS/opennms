@@ -31,11 +31,12 @@ import java.util.Map;
 public interface ElasticRestClient {
 
     /**
-     * Connects to the Elasticsearch cluster.
+     * Gets the health status of the Elasticsearch cluster.
      *
+     * @return cluster health status string (e.g., "green", "yellow", "red")
      * @throws IOException if a connection error occurs
      */
-    void connect() throws IOException;
+    String health() throws IOException;
 
     /**
      * Lists all templates currently registered in the Elasticsearch cluster.
@@ -44,13 +45,6 @@ public interface ElasticRestClient {
      * @throws IOException if a connection error occurs
      */
     Map<String, String> listTemplates() throws IOException;
-
-    /**
-     * Checks if the client is connected to the Elasticsearch cluster.
-     *
-     * @return true if connected, false otherwise
-     */
-    boolean isConnected();
 
 
     /**
