@@ -11,10 +11,10 @@
 The default time series storage strategy is now by default RRDTool.
 
 IMPORTANT: If you use JRobin, make sure you set the property.
-You can easily verify it by checking the file extension created in the directory  `${OPENNMS_HOME}/share/rrd/snmp`. The extension .jrb indicates JRobin and .rrd indicates RRDtool.
+You can easily verify it by checking the file extension created in the directory  `$\{OPENNMS_HOME}/share/rrd/snmp`. The extension .jrb indicates JRobin and .rrd indicates RRDtool.
 If you miss this setting, all your timeseries files will be newely created as .rrd files and you won't have access to your JRobin files with your history.
 
-IMPORTANT: When you have .jrb files, ensure after upgrading to Horizon 34 you explicitly configure JRobin in a file like `${OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`.
+IMPORTANT: When you have .jrb files, ensure after upgrading to Horizon 34 you explicitly configure JRobin in a file like `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`.
 
 .Configure explicitly JRobin for Horizon 34.x if required
 [source, console]
