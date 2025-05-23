@@ -980,6 +980,12 @@
       <version>${okhttpVersion}</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.opennms.features.elastic</groupId>
+      <artifactId>org.opennms.features.elastic.client</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
   </dependencies>
 
   <distributionManagement>

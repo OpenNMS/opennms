@@ -26,4 +26,8 @@ public interface TemplateInitializer {
     void initialize();
 
     boolean isInitialized();
+
+    default boolean isComposableTemplate() {
+        return false;
+    }
 }

@@ -111,11 +111,11 @@ public class FlowQueryIT {
     public ElasticSearchRule elasticSearchRule = new ElasticSearchRule(new ElasticSearchServerConfig()
             .withPlugins(DriftPlugin.class, PainlessPlugin.class));
 
-    private ElasticFlowRepository flowRepository;
+    protected ElasticFlowRepository flowRepository;
 
-    private DocumentEnricherImpl documentEnricher;
+    protected DocumentEnricherImpl documentEnricher;
 
-    private SmartQueryService smartQueryService;
+    protected SmartQueryService smartQueryService;
 
     @Before
     public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {

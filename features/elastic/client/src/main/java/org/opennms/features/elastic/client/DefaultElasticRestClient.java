@@ -33,7 +33,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Stream;
 
 import com.google.gson.JsonArray;
@@ -61,7 +60,6 @@ public class DefaultElasticRestClient implements ElasticRestClient {
     private final String username;
     private final String password;
     private RestClient restClient;
-    private final AtomicBoolean connected = new AtomicBoolean(false);
 
     public RestClient getRestClient() {
         return restClient;
@@ -131,13 +129,8 @@ public class DefaultElasticRestClient implements ElasticRestClient {
     }
 
     @Override
-    public void connect() throws IOException {
-        if (connected.get()) {
-            LOG.info("Already connected to Elasticsearch cluster");
-            return;
-        }
-
-        LOG.info("Connecting to Elasticsearch cluster at {}", Arrays.toString(hosts));
+    public String health() throws IOException {
+        LOG.debug("Checking Elasticsearch cluster health at {}", Arrays.toString(hosts));
         Request healthRequest = new Request("GET", "/_cluster/health");
         Response healthResponse = restClient.performRequest(healthRequest);
         int statusCode = healthResponse.getStatusLine().getStatusCode();
@@ -145,23 +138,17 @@ public class DefaultElasticRestClient implements ElasticRestClient {
         if (statusCode >= 200 && statusCode < 300) {
             String responseBody = EntityUtils.toString(healthResponse.getEntity());
             JsonObject healthJson = JsonParser.parseReader(new StringReader(responseBody)).getAsJsonObject();
-            String clusterName = healthJson.get("cluster_name").getAsString();
             String status = healthJson.get("status").getAsString();
-
-            LOG.info("Connected to Elasticsearch cluster '{}' with status: {}", clusterName, status);
-            connected.set(true);
+            LOG.debug("Elasticsearch cluster health: {}", status);
+            return status;
         } else {
-            throw new IOException("Failed to connect to Elasticsearch: HTTP " + statusCode);
+            throw new IOException("Failed to get cluster health: HTTP " + statusCode);
         }
     }
 
 
     @Override
     public Map<String, String> listTemplates() throws IOException {
-        if (!connected.get()) {
-            throw new IllegalStateException("Not connected to Elasticsearch cluster");
-        }
-
         Map<String, String> templates = new HashMap<>();
 
         try {
@@ -189,10 +176,6 @@ public class DefaultElasticRestClient implements ElasticRestClient {
     }
 
 
-    @Override
-    public boolean isConnected() {
-        return connected.get();
-    }
 
 
     @Override
@@ -200,16 +183,11 @@ public class DefaultElasticRestClient implements ElasticRestClient {
         if (restClient != null) {
             LOG.info("Closing Elasticsearch client");
             restClient.close();
-            connected.set(false);
         }
     }
 
     @Override
     public boolean applyILMPolicy(String policyName, String policyBody) throws IOException {
-        if (!connected.get()) {
-            throw new IllegalStateException("Not connected to Elasticsearch cluster");
-        }
-
         LOG.info("Applying ILM policy '{}' to Elasticsearch cluster", policyName);
 
         try {
@@ -235,10 +213,6 @@ public class DefaultElasticRestClient implements ElasticRestClient {
 
     @Override
     public boolean applyComponentTemplate(String componentName, String componentBody) throws IOException {
-        if (!connected.get()) {
-            throw new IllegalStateException("Not connected to Elasticsearch cluster");
-        }
-
         LOG.info("Applying component template '{}' to Elasticsearch cluster", componentName);
         LOG.debug("Component template body: {}", componentBody);
 
@@ -267,10 +241,6 @@ public class DefaultElasticRestClient implements ElasticRestClient {
 
     @Override
     public boolean applyComposableIndexTemplate(String templateName, String templateBody) throws IOException {
-        if (!connected.get()) {
-            throw new IllegalStateException("Not connected to Elasticsearch cluster");
-        }
-
         LOG.info("Applying composable index template '{}' to Elasticsearch cluster", templateName);
 
         try {
@@ -296,10 +266,6 @@ public class DefaultElasticRestClient implements ElasticRestClient {
 
     @Override
     public int applyAllTemplatesFromDirectory(String templateDirectory) throws IOException {
-        if (!connected.get()) {
-            throw new IllegalStateException("Not connected to Elasticsearch cluster");
-        }
-
         int appliedCount = 0;
 
         File directory = new File(templateDirectory);
