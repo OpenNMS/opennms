@@ -1671,7 +1671,7 @@
     <mock.db.driver>org.postgresql.Driver</mock.db.driver>
     <mock.db.url>jdbc:postgresql://localhost:5432/</mock.db.url>
     <mock.db.adminUser>postgres</mock.db.adminUser>
-    <mock.db.adminPassword/>
+    <mock.db.adminPassword>postgres</mock.db.adminPassword>
     <mock.runSnmpTests>false</mock.runSnmpTests>
     <mock.snmpHost>localhost</mock.snmpHost>
     <product.name>horizon</product.name>
