@@ -37,6 +37,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.google.gson.JsonObject;
+import org.opennms.features.elastic.client.DefaultElasticRestClient;
 import org.opennms.netmgt.flows.elastic.NetflowVersion;
 import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.smoketest.utils.RestClient;
@@ -52,6 +53,8 @@ import io.searchbox.client.config.HttpClientConfig;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
 import io.searchbox.indices.template.GetTemplate;
+
+import javax.validation.groups.Default;
 
 /**
  * Simple helper which sends a defined set of {@link FlowPacket}s to OpenNMS or Minion and afterwards verifies
@@ -93,6 +96,8 @@ public class FlowTester {
     private final int totalFlowCount;
 
     private JestClient client;
+
+    private DefaultElasticRestClient elasticRestClient;
 
     public FlowTester(InetSocketAddress elasticAddress, InetSocketAddress opennmsWebAddress, List<Delivery> deliveries) {
         this.elasticRestAddress = Objects.requireNonNull(elasticAddress);
@@ -140,6 +145,8 @@ public class FlowTester {
                 .connTimeout(5000)
                 .readTimeout(10000)
                 .multiThreaded(true).build());
+
+        elasticRestClient = new DefaultElasticRestClient(elasticRestUrl, null, null);
 
         try {
             client = factory.getObject();
@@ -193,17 +200,9 @@ public class FlowTester {
 
             LOG.info("Ensuring that the index template was created...");
             verify(() -> {
-                final JestResult result = client.execute(new GetTemplate.Builder("*").build());
-                if (!result.isSucceeded()) {
-                    return false;
-                }
-                JsonObject templates = result.getJsonObject();
-                for (String key : templates.keySet()) {
-                    if (key.contains(TEMPLATE_NAME)) {
-                        return true;
-                    }
-                }
-                return false;
+                Map<String, String> indexTemplates = elasticRestClient.listTemplates();
+                return indexTemplates.keySet().stream()
+                        .anyMatch(name -> name.contains(TEMPLATE_NAME));
             });
 
             runAfter.forEach(ra -> ra.accept(this));
