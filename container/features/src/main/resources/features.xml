@@ -1150,6 +1150,7 @@
         <feature>opennms-dnsresolver-api</feature>
         <feature>opennms-kafka</feature>
         <feature>opennms-mate-impl</feature>
+        <feature>opennms-elastic-client</feature>
         <feature>rate-limited-logger</feature>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>
@@ -2084,6 +2085,10 @@
         <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
         <bundle>wrap:mvn:org.elasticsearch.client/elasticsearch-rest-client/${elasticsearchClientVersion}</bundle>
         <bundle>mvn:org.opennms.features.elastic/org.opennms.features.elastic.client/${project.version}</bundle>
+        <bundle>wrap:mvn:org.apache.httpcomponents/httpcore-nio/${httpcoreVersion}</bundle>
+        <bundle>mvn:org.apache.httpcomponents/httpcore-osgi/${httpcoreVersion}</bundle>
+        <bundle>mvn:org.apache.httpcomponents/httpclient-osgi/${httpclientVersion}</bundle>
+        <bundle>mvn:org.apache.httpcomponents/httpasyncclient-osgi/${httpasyncclientVersion}</bundle>
     </feature>
 
 </features>
