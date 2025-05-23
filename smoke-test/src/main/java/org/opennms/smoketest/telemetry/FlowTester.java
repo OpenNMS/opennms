@@ -36,6 +36,8 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import io.searchbox.client.JestResult;
+import io.searchbox.indices.template.GetTemplate;
 import org.opennms.features.elastic.client.DefaultElasticRestClient;
 import org.opennms.netmgt.flows.elastic.NetflowVersion;
 import org.opennms.features.jest.client.SearchResultUtils;
@@ -194,8 +196,14 @@ public class FlowTester {
             LOG.info("Ensuring that the index template was created...");
             verify(() -> {
                 Map<String, String> indexTemplates = elasticRestClient.listTemplates();
-                return indexTemplates.keySet().stream()
+                boolean hasIndexTemplate = indexTemplates.keySet().stream()
                         .anyMatch(name -> name.contains(TEMPLATE_NAME));
+                if (!hasIndexTemplate) {
+                    final JestResult result = client.execute(new GetTemplate.Builder(TEMPLATE_NAME).build());
+                    return result.isSucceeded() && result.getJsonObject().get(TEMPLATE_NAME) != null;
+                } else {
+                    return true;
+                }
             });
 
             runAfter.forEach(ra -> ra.accept(this));
