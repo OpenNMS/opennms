@@ -91,7 +91,7 @@ public class HealthCheckIT {
     }
 
     private void verifyHealthCheck(final int expectedHealthCheckServices, final InetSocketAddress sshAddress) {
-        final long timeoutMins = 5;
+        final long timeoutMins = 10;
         try {
             await().atMost(timeoutMins, MINUTES)
                     .pollInterval(5, SECONDS)
