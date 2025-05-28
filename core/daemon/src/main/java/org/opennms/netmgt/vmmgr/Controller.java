@@ -27,6 +27,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.MalformedURLException;
 import java.nio.file.Paths;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.management.InstanceNotFoundException;
 import javax.management.MBeanException;
@@ -44,6 +45,7 @@ import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
 import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.utils.ScvUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,7 +72,7 @@ public class Controller {
      * The system property used to determine the JMX management agent URI for the
      * JVM that we are attaching to. This is used for getting status information from a
      * running OpenNMS instance.
-     * 
+     *
      * @see https://docs.oracle.com/javase/8/docs/technotes/guides/management/agent.html
      */
     public static final String CONNECTOR_ADDRESS = "com.sun.management.jmxremote.localConnectorAddress";
@@ -174,14 +176,19 @@ public class Controller {
     static void interpolateSystemProperties() {
         if (secureCredentialsVault == null) {
             try {
-                final Class clazz = Class.forName("org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault");
-                final Constructor constructor = clazz.getConstructor(String.class, String.class);
-                final String keyStoreKeyProperty = (String) clazz.getField("KEYSTORE_KEY_PROPERTY").get(null);
-                final String defaultKeyStoreKey = (String) clazz.getField("DEFAULT_KEYSTORE_KEY").get(null);
-                secureCredentialsVault = (SecureCredentialsVault) constructor.newInstance(
-                        Paths.get(System.getProperty("opennms.home"), "etc", "scv.jce").toString(),
-                        System.getProperty(keyStoreKeyProperty, defaultKeyStoreKey)
-                );
+
+                String opennmsHome = System.getProperty("opennms.home");
+                if (opennmsHome != null && !opennmsHome.isEmpty()) {
+                    Properties scvProps = ScvUtils.loadScvProperties(opennmsHome);
+                    final Class clazz = Class.forName("org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault");
+                    final Constructor constructor = clazz.getConstructor(String.class, String.class, String.class);
+                    final String keyStoreKeyProperty = (String) clazz.getField("KEYSTORE_KEY_PROPERTY").get(null);
+                    final String defaultKeyStoreKey = (String) clazz.getField("DEFAULT_KEYSTORE_KEY").get(null);
+                    secureCredentialsVault = (SecureCredentialsVault) constructor.newInstance(
+                            Paths.get(opennmsHome, "etc", "scv.jce").toString(),
+                            System.getProperty(keyStoreKeyProperty, defaultKeyStoreKey), scvProps.getProperty(ScvUtils.SCV_KEYSTORE_TYPE_PROPERTY)
+                    );
+                }
             } catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException |
                      InvocationTargetException | NoSuchFieldException e) {
                 LOG.warn("Error instantiating JCEKSSecureCredentialsVault: {}", e.getMessage());
