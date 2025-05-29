@@ -21,6 +21,7 @@
  */
 package org.opennms.smoketest.minion;
 
+
 import org.junit.ClassRule;
 import org.junit.experimental.categories.Category;
 import org.opennms.smoketest.junit.MinionTests;
@@ -30,19 +31,19 @@ import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
 
 
-
-
 @Category(MinionTests.class)
-public class KafkaCompressionSnappyIT  extends AbstractKafkaCompressionIT {
+public class KafkaCompressionSnappyIT extends AbstractKafkaCompressionRpcIT {
     @ClassRule
-    public static OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()
-            .withMinion()
-            .withIpcStrategy(IpcStrategy.KAFKA)
-            .withKafkaCompressionStrategy(KafkaCompressionStrategy.SNAPPY)
-            .build());
+    public static final OpenNMSStack stack =
+            OpenNMSStack.withModel(StackModel.newBuilder()
+                    .withMinion()
+                    .withIpcStrategy(IpcStrategy.KAFKA)
+                    .withKafkaCompressionStrategy(KafkaCompressionStrategy.SNAPPY)
+                    .build());
 
-    public KafkaCompressionSnappyIT() {
-        super(stack);
+    @Override
+    protected OpenNMSStack stack() {
+        return stack;
     }
 
 }

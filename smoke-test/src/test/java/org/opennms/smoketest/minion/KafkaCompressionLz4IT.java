@@ -30,15 +30,17 @@ import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
 
 @Category(MinionTests.class)
-public class KafkaCompressionLz4IT extends AbstractKafkaCompressionIT {
+public class KafkaCompressionLz4IT extends AbstractKafkaCompressionRpcIT {
     @ClassRule
-    public static OpenNMSStack stack = OpenNMSStack.withModel(StackModel.newBuilder()
-            .withMinion()
-            .withIpcStrategy(IpcStrategy.KAFKA)
-            .withKafkaCompressionStrategy(KafkaCompressionStrategy.LZ4)
-            .build());
+    public static final OpenNMSStack stack =
+            OpenNMSStack.withModel(StackModel.newBuilder()
+                    .withMinion()
+                    .withIpcStrategy(IpcStrategy.KAFKA)
+                    .withKafkaCompressionStrategy(KafkaCompressionStrategy.LZ4)
+                    .build());
 
-    public KafkaCompressionLz4IT() {
-        super(stack);
+    @Override
+    protected OpenNMSStack stack() {
+        return stack;
     }
 }
