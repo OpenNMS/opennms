@@ -27,33 +27,28 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 
-import org.json.simple.JSONArray;
+import java.util.List;
+
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
 import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
-import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
-import org.opennms.features.jest.client.RestClientFactory;
-import org.opennms.features.jest.client.SearchResultUtils;
+import org.opennms.features.elastic.client.ElasticRestClient;
+import org.opennms.features.elastic.client.ElasticRestClientFactory;
+import org.opennms.features.elastic.client.model.SearchRequest;
+import org.opennms.features.elastic.client.model.SearchResponse;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.integration.api.v1.flows.Flow;
 import org.opennms.integration.api.v1.flows.FlowRepository;
-import org.opennms.netmgt.dao.mock.AbstractMockDao;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.flows.processing.enrichment.EnrichedFlow;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
-
-import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
-import io.searchbox.core.Search;
-import io.searchbox.core.SearchResult;
 
 public class DefaultDirectionIT {
     private static Logger LOG = LoggerFactory.getLogger(DefaultDirectionIT.class);
@@ -82,34 +77,34 @@ public class DefaultDirectionIT {
         // start ES
         elasticSearchRule.startServer();
 
-        final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
-        final EventForwarder eventForwarder = new AbstractMockDao.NullEventForwarder();
-        try (JestClientWithCircuitBreaker jestClient = restClientFactory.createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
-                CircuitBreakerConfig.custom().build()).circuitBreaker(ElasticFlowRepositoryRetryIT.class.getName()), eventForwarder)) {
+        final ElasticRestClientFactory elasticRestClientFactory = new ElasticRestClientFactory(elasticSearchRule.getUrl(), null, null);
+        final ElasticRestClient elasticRestClient = elasticRestClientFactory.createClient();
+        try {
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
-                    new ElasticFlowRepository(new MetricRegistry(), jestClient, IndexStrategy.MONTHLY,
-                            new MockIdentity(), new MockTracerRegistry(), new IndexSettings()), jestClient);
+                    new ElasticFlowRepository(new MetricRegistry(), elasticRestClient, IndexStrategy.MONTHLY,
+                            new MockIdentity(), new MockTracerRegistry(), new IndexSettings()), elasticRestClient);
             // persist data
             elasticFlowRepository.persist(Lists.newArrayList(getMockFlowWithoutDirection()));
 
             // wait for entries to show up
             with().pollInterval(5, SECONDS).await().atMost(1, MINUTES).until(() -> {
-                final SearchResult searchResult = jestClient.execute(new Search.Builder("").addIndex("netflow-*").build());
-                LOG.info("Response: {} {} ", searchResult.isSucceeded() ? "Success" : "Failure", SearchResultUtils.getTotal(searchResult));
-                return SearchResultUtils.getTotal(searchResult) > 0;
+                final SearchResponse searchResponse = elasticRestClient.search(SearchRequest.forIndices(List.of("netflow-*"), "{\"query\": {\"match_all\": {}}}"));
+                LOG.info("Response: {} documents", searchResponse.getHits().getTotalHits());
+                return searchResponse.getHits().getTotalHits() > 0;
             });
 
-            final SearchResult searchResult = jestClient.execute(new Search.Builder("").addIndex("netflow-*").build());
-            assertNotEquals(0L, SearchResultUtils.getTotal(searchResult));
+            final SearchResponse searchResponse = elasticRestClient.search(SearchRequest.forIndices(List.of("netflow-*"), "{\"query\": {\"match_all\": {}}}"));
+            assertNotEquals(0L, searchResponse.getHits().getTotalHits());
 
             // check whether the default value is applied
+            final SearchResponse.SearchHit firstHit = searchResponse.getHits().getHits().get(0);
             final JSONParser parser = new JSONParser();
-            final JSONObject responseJsonObject = (JSONObject) parser.parse(searchResult.getJsonString());
-            final JSONArray hitsJsonArray = (JSONArray) ((JSONObject) responseJsonObject.get("hits")).get("hits");
-            final JSONObject sourceJsonObject = (JSONObject) ((JSONObject) hitsJsonArray.get(0)).get("_source");
+            final JSONObject sourceJsonObject = (JSONObject) parser.parse(firstHit.getSource().toString());
 
             LOG.info("Direction value is: " + sourceJsonObject.get("netflow.direction"));
             assertEquals("unknown", sourceJsonObject.get("netflow.direction"));
+        } finally {
+            elasticRestClient.close();
         }
 
         // stop ES

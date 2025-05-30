@@ -37,7 +37,6 @@ import org.opennms.integration.api.v1.flows.FlowRepository;
 import org.opennms.netmgt.flows.api.UnrecoverableFlowException;
 import org.osgi.framework.BundleContext;
 
-import io.searchbox.client.JestClient;
 
 /**
  * This {@link FlowRepository} wrapper will ensure that the repository has
@@ -52,20 +51,19 @@ public class InitializingFlowRepository implements FlowRepository {
 
     public InitializingFlowRepository(final BundleContext bundleContext,
                                       final FlowRepository delegate,
-                                      final JestClient client,
+                                      final ElasticRestClient elasticRestClient,
                                       final IndexSettings rawIndexSettings,
                                       final IndexSettings aggIndexSettings,
-                                      final ElasticRestClient elasticRestClient,
                                       final boolean useComposableTemplates,
                                       final String templatesPath) {
 
-        this(delegate, new RawIndexInitializer(bundleContext, client, rawIndexSettings),
-                new AggregateIndexInitializer(bundleContext, client, aggIndexSettings),
+        this(delegate, new RawIndexInitializer(bundleContext, elasticRestClient, rawIndexSettings),
+                new AggregateIndexInitializer(bundleContext, elasticRestClient, aggIndexSettings),
                 new ComposableTemplateInitializer(elasticRestClient, templatesPath, useComposableTemplates));
         this.useComposableTemplates = useComposableTemplates;
     }
 
-    protected InitializingFlowRepository(final FlowRepository delegate, final JestClient client) {
+    protected InitializingFlowRepository(final FlowRepository delegate, final ElasticRestClient client) {
         this(delegate, new RawIndexInitializer(client), new AggregateIndexInitializer(client));
     }
 

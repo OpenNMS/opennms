@@ -24,23 +24,17 @@ package org.opennms.netmgt.flows.elastic;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import org.junit.Before;
 import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.features.elastic.client.ElasticRestClient;
 import org.opennms.features.elastic.client.ElasticRestClientFactory;
-import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
-import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.index.IndexSelector;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
-import org.opennms.netmgt.dao.mock.AbstractMockDao;
 import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockIpInterfaceDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
@@ -68,19 +62,15 @@ public class ComposableFlowQueryIT extends FlowQueryIT {
         final MetricRegistry metricRegistry = new MetricRegistry();
         final ElasticRestClientFactory elasticRestClientFactory = new ElasticRestClientFactory(elasticSearchRule.getUrl(), null, null);
         final ElasticRestClient elasticRestClient = elasticRestClientFactory.createClient();
-        final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
-        final EventForwarder eventForwarder = new AbstractMockDao.NullEventForwarder();
-        final JestClientWithCircuitBreaker client = restClientFactory.createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
-                CircuitBreakerConfig.custom().build()).circuitBreaker(FlowQueryIT.class.getName()), eventForwarder);
         // No specific Index settings should be applied for composable templates, they should be in component settings
         final IndexSettings settings = new IndexSettings();
         final IndexSelector rawIndexSelector = new IndexSelector(settings, RawFlowQueryService.INDEX_NAME,
                 IndexStrategy.MONTHLY, 120000);
-        final RawFlowQueryService rawFlowRepository = new RawFlowQueryService(client, rawIndexSelector);
+        final RawFlowQueryService rawFlowRepository = new RawFlowQueryService(elasticRestClient, rawIndexSelector);
         final AggregatedFlowQueryService aggFlowRepository = mock(AggregatedFlowQueryService.class);
         smartQueryService = new SmartQueryService(metricRegistry, rawFlowRepository, aggFlowRepository);
         smartQueryService.setAlwaysUseRawForQueries(true); // Always use RAW values for these tests
-        flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY,
+        flowRepository = new ElasticFlowRepository(metricRegistry, elasticRestClient, IndexStrategy.MONTHLY,
                 new MockIdentity(), new MockTracerRegistry(), settings, 0, 0);
 
         final var classificationEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(
