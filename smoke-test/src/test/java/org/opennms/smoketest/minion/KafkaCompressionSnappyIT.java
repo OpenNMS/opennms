@@ -33,6 +33,7 @@ import org.opennms.smoketest.stacks.StackModel;
 
 @Category(MinionTests.class)
 public class KafkaCompressionSnappyIT extends AbstractKafkaCompressionRpcIT {
+
     @ClassRule
     public static final OpenNMSStack stack =
             OpenNMSStack.withModel(StackModel.newBuilder()
