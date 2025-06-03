@@ -23,22 +23,20 @@ package org.opennms.smoketest.minion;
 
 import org.junit.ClassRule;
 import org.junit.experimental.categories.Category;
-
 import org.opennms.smoketest.junit.MinionTests;
 import org.opennms.smoketest.stacks.IpcStrategy;
 import org.opennms.smoketest.stacks.KafkaCompressionStrategy;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.stacks.StackModel;
 
-
 @Category(MinionTests.class)
-public class KafkaCompressionZSTDRpcIT extends AbstractKafkaCompressionRpcIT {
+public class KafkaCompressionLz4IT extends AbstractKafkaCompressionRpcIT {
     @ClassRule
     public static final OpenNMSStack stack =
             OpenNMSStack.withModel(StackModel.newBuilder()
                     .withMinion()
                     .withIpcStrategy(IpcStrategy.KAFKA)
-                    .withKafkaCompressionStrategy(KafkaCompressionStrategy.ZSTD)
+                    .withKafkaCompressionStrategy(KafkaCompressionStrategy.LZ4)
                     .build());
 
     @Override
