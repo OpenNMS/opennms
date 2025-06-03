@@ -3,24 +3,21 @@ commands:
     steps:
       - run:
           name: Download and analyze Trivy scan results
-          command: >
+          command: |
             echo "Downloading Trivy scan artifacts..."
   
             download-artifacts.pl --workflow="${CIRCLE_WORKFLOW_ID}"
             --match="*.json" json "${CIRCLE_BRANCH}" "/tmp"
-  
-  
+ 
             echo "Checking downloaded files:"
   
             ls -l /tmp
-  
-  
+
             if [[ ! -f /tmp/report.json ]]; then
               echo "Error: /tmp/report.json not found!"
               exit 1
             fi
-  
-  
+
             echo "Analyzing Trivy scan results..."
   
             python3 .circleci/pyscripts/analyze_trivy_report.py /tmp/report.json
@@ -32,15 +29,13 @@ commands:
           destination: report.csv
       - run:
           name: Run Python script to analyze filtered vulnerabilities
-          command: >
+          command: |
             if [[ ! -f /tmp/filtered_vulnerabilities.json ]]; then
               echo "Error: /tmp/filtered_vulnerabilities.json not found!"
               exit 1
             fi
-  
-  
+
             echo "Analyzing filtered vulnerabilities..."
-  
             python3 .circleci/pyscripts/analyze_trivy_report.py
             /tmp/filtered_vulnerabilities.json
       - store_artifacts:
@@ -53,11 +48,11 @@ commands:
           name: Create Jira Issues
           context: Jira-secrets
           command: |
-            if [[ ! -f report.txt ]]; then
-              echo "No report.txt found. Skipping Jira issue creation."
+            if [[ ! -f filtered_vulnerabilities.txt ]]; then
+              echo "No filtered_vulnerabilities.txt found. Skipping Jira issue creation."
               exit 0
             fi
   
-            echo "Creating Jira Issues from report.txt..."
+            echo "Creating Jira Issues from filtered_vulnerabilities.txt..."
             python3 .circleci/pyscripts/create_jira_issues.py
   
