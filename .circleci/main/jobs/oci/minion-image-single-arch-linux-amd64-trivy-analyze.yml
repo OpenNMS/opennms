@@ -1,5 +1,5 @@
 jobs:
-  minion-image-single-arch-linux-amd64-trivy:
+  minion-image-single-arch-linux-amd64-trivy-analyze:
     executor: base-executor
     resource_class: medium
     steps:
