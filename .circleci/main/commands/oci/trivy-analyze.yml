@@ -5,12 +5,9 @@ commands:
           name: Download and analyze Trivy scan results
           command: |
             echo "Downloading Trivy scan artifacts..."
-  
-            download-artifacts.pl --workflow="${CIRCLE_WORKFLOW_ID}"
-            --match="*.json" json "${CIRCLE_BRANCH}" "/tmp"
- 
+            download-artifacts.pl --workflow="${CIRCLE_WORKFLOW_ID}" --match="*.json" json "${CIRCLE_BRANCH}" "/tmp"
+            
             echo "Checking downloaded files:"
-  
             ls -l /tmp
 
             if [[ ! -f /tmp/report.json ]]; then
@@ -19,7 +16,6 @@ commands:
             fi
 
             echo "Analyzing Trivy scan results..."
-  
             python3 .circleci/pyscripts/analyze_trivy_report.py /tmp/report.json
       - store_artifacts:
           path: report.txt
@@ -36,8 +32,7 @@ commands:
             fi
 
             echo "Analyzing filtered vulnerabilities..."
-            python3 .circleci/pyscripts/analyze_trivy_report.py
-            /tmp/filtered_vulnerabilities.json
+            python3 .circleci/pyscripts/analyze_trivy_report.py /tmp/filtered_vulnerabilities.json
       - store_artifacts:
           path: filtered_vulnerabilities.txt
           destination: filtered_vulnerabilities.txt
@@ -55,4 +50,3 @@ commands:
   
             echo "Creating Jira Issues from filtered_vulnerabilities.txt..."
             python3 .circleci/pyscripts/create_jira_issues.py
-  
