@@ -111,7 +111,7 @@
         },
         "trivy-analyze": { 
             "extends": [
-                "trivy-scan"
+                "horizon-image-single-arch-linux-amd64-trivy-analyze"
             ]
         },
         "experimental": {
@@ -289,6 +289,15 @@
             ],
             "requires": [
                 "tarball-assembly-only"
+            ]
+        },        
+        "horizon-image-single-arch-linux-amd64-trivy-analyze": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "horizon-image-single-arch-linux-amd64-trivy"
             ]
         },        
         "sentinel-image-single-arch-linux-amd64": {

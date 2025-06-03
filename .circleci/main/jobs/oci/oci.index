@@ -8,5 +8,6 @@
   #jobs:oci/minion-image-single-arch-linux-amd64-trivy#
   #jobs:oci/horizon-image-single-arch-linux-amd64#
   #jobs:oci/horizon-image-single-arch-linux-amd64-trivy#
+  #jobs:oci/horizon-image-single-arch-linux-amd64-trivy-analyze#
   #jobs:oci/sentinel-image-single-arch-linux-amd64#
   #jobs:oci/sentinel-image-single-arch-linux-amd64-trivy#
