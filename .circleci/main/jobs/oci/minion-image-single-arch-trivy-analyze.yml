@@ -1,0 +1,9 @@
+jobs:
+  minion-image-single-arch-trivy:
+    executor: base-executor
+    resource_class: medium
+    parameters:
+      architecture:
+        type: string
+    steps:
+      - trivy-analyze

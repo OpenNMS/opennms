@@ -273,6 +273,15 @@
                 "tarball-assembly-only"
             ]
         },        
+        "minion-image-single-arch-linux-amd64-trivy-analyze": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "minion-image-single-arch-linux-amd64-trivy"
+            ]
+        },        
         "horizon-image-single-arch-linux-amd64": {
             "context": [
                 "CircleCI",
@@ -318,6 +327,15 @@
                 "tarball-assembly-only"
             ]
         },        
+        "sentinel-image-single-arch-linux-amd64-trivy-analyze": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "sentinel-image-single-arch-linux-amd64-trivy"
+            ]
+        },        
         "minion-image-single-arch": {
             "context": [
                 "CircleCI",
@@ -344,6 +362,18 @@
                 "tarball-assembly-only"
             ]
         },        
+        "minion-image-single-arch-trivy-analyze": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "variations": [
+                "linux/arm64"
+            ],
+            "requires": [
+                "minion-image-single-arch-trivy"
+            ]
+        },        
         "horizon-image-single-arch-trivy":{
             "context": [
                 "CircleCI",
@@ -354,6 +384,18 @@
             ],
             "requires": [
                 "tarball-assembly-only"
+            ]
+        },
+        "horizon-image-single-arch-trivy-analyze":{
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "variations": [
+                "linux/arm64"
+            ],
+            "requires": [
+                "horizon-image-single-arch-trivy"
             ]
         },
         "horizon-image-single-arch": {
@@ -380,6 +422,18 @@
             ],
             "requires": [
                 "tarball-assembly-only"
+            ]
+        },
+        "sentinel-image-single-arch-trivy-analyze": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "variations": [
+                "linux/arm64"
+            ],
+            "requires": [
+                "sentinel-image-single-arch-trivy"
             ]
         },
         "sentinel-image-single-arch": {

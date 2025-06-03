@@ -12,4 +12,3 @@ jobs:
           container_dir: minion
           tarball_match: minion
           tarball_path: /opennms-assemblies/minion/target
-      - trivy-analyze
