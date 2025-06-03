@@ -58,6 +58,7 @@ commands:
 
   trivy-analyze:
     steps:
+      - download-download-artifacts
       - run:
           name: Download and analyze Trivy scan results
           command: |
