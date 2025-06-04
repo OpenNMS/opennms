@@ -58,8 +58,8 @@ commands:
             cp /tmp/report.json "/tmp/artifacts/${JOB_NAME_SANITIZED}_report.json"
             cp /tmp/filtered_vulnerabilities.json "/tmp/artifacts/${JOB_NAME_SANITIZED}_filtered_vulnerabilities.json"
       - store_artifacts:
-          path: /tmp/*_report.json
-          destination: .
+          path: /tmp/artifacts
+          destination: trivy-reports
       - store_artifacts:
           path: /tmp/*_filtered_vulnerabilities.json
           destination: .
