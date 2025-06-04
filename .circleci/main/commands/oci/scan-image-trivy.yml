@@ -52,8 +52,11 @@ commands:
 
             # Rename files to include job name
             JOB_NAME_SANITIZED=$(echo "${CIRCLE_JOB}" | tr / -)
-            cp /tmp/report.json "/tmp/${JOB_NAME_SANITIZED}_report.json"
-            cp /tmp/filtered_vulnerabilities.json "/tmp/${JOB_NAME_SANITIZED}_filtered_vulnerabilities.json"
+            mkdir -p /tmp/artifacts
+            echo "Checking files:"
+            ls -l /tmp
+            cp /tmp/report.json "/tmp/artifacts/${JOB_NAME_SANITIZED}_report.json"
+            cp /tmp/filtered_vulnerabilities.json "/tmp/artifacts/${JOB_NAME_SANITIZED}_filtered_vulnerabilities.json"
       - store_artifacts:
           path: /tmp/*_report.json
           destination: .
