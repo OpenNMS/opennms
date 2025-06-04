@@ -70,16 +70,16 @@ commands:
             SANITIZED_SCAN_JOB_NAME=$(echo "${SCAN_JOB_NAME}" | tr / -)
             
             echo "Downloading Trivy scan artifacts for ${SCAN_JOB_NAME}..."
-            download-artifacts.pl --workflow="${CIRCLE_WORKFLOW_ID}" --match="${SANITIZED_SCAN_JOB_NAME}_*.json" json "${CIRCLE_BRANCH}" "/tmp"
+            download-artifacts.pl --workflow="${CIRCLE_WORKFLOW_ID}" --match="${SANITIZED_SCAN_JOB_NAME}_*.json" json "${CIRCLE_BRANCH}" "/tmp/artifacts"
             
             echo "Checking downloaded files:"
-            ls -l /tmp
+            ls -l /tmp/artifacts
 
             # Create symlink for backward compatibility
-            if [[ -f "/tmp/${SANITIZED_SCAN_JOB_NAME}_report.json" ]]; then
-              ln -s "/tmp/${SANITIZED_SCAN_JOB_NAME}_report.json" "/tmp/report.json"
+            if [[ -f "/tmp/artifacts/${SANITIZED_SCAN_JOB_NAME}_report.json" ]]; then
+              ln -s "/tmp/artifacts/${SANITIZED_SCAN_JOB_NAME}_report.json" "/tmp/report.json"
             else
-              echo "Error: /tmp/${SANITIZED_SCAN_JOB_NAME}_report.json not found!"
+              echo "Error: /tmp/artifacts/${SANITIZED_SCAN_JOB_NAME}_report.json not found!"
               exit 1
             fi
 
