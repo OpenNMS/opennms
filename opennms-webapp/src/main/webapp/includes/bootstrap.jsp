@@ -76,6 +76,7 @@
 
 <%
   final String __baseHref = Util.calculateUrlBase( request );
+  final String oldMenuValue = request.getParameter("oldmenu");
 %>
 <%-- The <html> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
@@ -198,6 +199,8 @@
     </style>
   </c:if>
 
+  <%-- Vue side menu --%>
+  <link rel="stylesheet" href="/opennms/ui-components/assets/index.css" media="screen" />
 </head>
 
 <%-- The <body> tag is unmatched in this file (its matching tag is in the
@@ -228,7 +231,10 @@
     <!-- No visual header is being displayed -->
   </c:when>
   <c:otherwise>
-    <jsp:include page="/navBar.htm" flush="false" />
+    <%-- Only display old menu when user has 'oldmenu=true' in query string --%>
+    <% if (oldMenuValue != null && oldMenuValue.equals("true")) { %>
+      <jsp:include page="/navBar.htm" flush="false" />
+    <% } %>
   </c:otherwise>
 </c:choose>
 <!-- End bootstrap header -->
@@ -246,6 +252,13 @@
       <jsp:param name="asset" value="onms-default-apps" />
     </jsp:include>
     <%= "<div id=\"content\" class=\"container-fluid\">" %>
+
+    <%-- Vue menus --%>
+    <% if (oldMenuValue == null || !oldMenuValue.equals("true")) { %>
+        <%-- Vue menus --%>
+        <div id="opennms-sidemenu-container"></div>
+        <script type="module" src="/opennms/ui-components/assets/index.js"></script>
+    <% } %>
   </c:otherwise>
 </c:choose>
 <c:if test='${((not __bs_flags.contains("nonavbar")) && (!empty pageContext.request.remoteUser)) && (not __bs_flags.contains("nobreadcrumbs"))}'>

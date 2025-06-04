@@ -102,6 +102,7 @@
     <module>tests</module>
     <module>integration-tests</module>
     <module>ui</module>
+    <module>ui-components</module>
 
     <!-- old structure -->
     <module>opennms-util</module>

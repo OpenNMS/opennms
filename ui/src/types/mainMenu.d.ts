@@ -8,7 +8,9 @@ export interface MenuItem {
   iconType: string | null
   isIconOnly: boolean | null
   isVueLink: boolean | null
-  roles: string[] | null
+  roles: string[] | null,
+  // not in Rest API, used for menu creation
+  onClick?: () => void
 }
 
 export interface TopMenuItem extends MenuItem {
@@ -57,6 +59,7 @@ export interface MainMenu {
 
 export interface NoticeStatusDisplay {
   icon: string
+  iconComponent: object | null
   colorClass: string
   title: string
 }
