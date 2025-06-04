@@ -49,12 +49,17 @@ commands:
             export TAG="<< parameters.container_name >>-${ARCH}"
             /tmp/bin/trivy image --severity HIGH,CRITICAL --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/filtered_vulnerabilities.json --no-progress opennms/${TAG}
             /tmp/bin/trivy image --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/report.json --no-progress opennms/${TAG}
+
+            # Rename files to include job name
+            JOB_NAME_SANITIZED=$(echo "${CIRCLE_JOB}" | tr / -)
+            cp /tmp/report.json "/tmp/${JOB_NAME_SANITIZED}_report.json"
+            cp /tmp/filtered_vulnerabilities.json "/tmp/${JOB_NAME_SANITIZED}_filtered_vulnerabilities.json"
       - store_artifacts:
-          path: /tmp/report.json
-          destination: report.json
+          path: /tmp/*_report.json
+          destination: .
       - store_artifacts:
-          path: /tmp/filtered_vulnerabilities.json
-          destination: filtered_vulnerabilities.json
+          path: /tmp/*_filtered_vulnerabilities.json
+          destination: .
 
   trivy-analyze:
     steps:
