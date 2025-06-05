@@ -67,9 +67,9 @@
               <artifactItems>
                 <artifactItem>
                   <groupId>org.opennms</groupId>
-                  <artifactId>org.opennms.ui-components</artifactId>
+                  <artifactId>org.opennms.ui</artifactId>
                   <version>${project.version}</version>
-                  <classifier>dist</classifier>
+                  <classifier>dist-menu</classifier>
                   <overWrite>true</overWrite>
                   <outputDirectory>target/opennms-webapp-${project.version}/ui-components</outputDirectory>
                 </artifactItem>
@@ -440,9 +440,9 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>org.opennms.ui-components</artifactId>
+      <artifactId>org.opennms.ui</artifactId>
       <version>${project.version}</version>
-      <classifier>dist</classifier>
+      <classifier>dist-menu</classifier>
       <scope>provided</scope>
     </dependency>
 

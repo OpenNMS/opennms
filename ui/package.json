@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build --base=/opennms/ui/",
+    "build:menu": "vue-tsc --noEmit && vite build --config ./vite.config.menu.ts --base=/opennms/ui/",
     "build:dev": "vue-tsc --noEmit && vite build --base=/opennms/ui/ --minify false",
     "watch": "vue-tsc --noEmit && vite build --base=/opennms/ui/ --watch",
     "watch:dev": "vue-tsc --noEmit && vite build --base=/opennms/ui/ --minify false --watch",
@@ -49,10 +50,6 @@
     "@featherds/textarea": "0.12.38",
     "@featherds/tooltip": "0.12.38",
     "@featherds/utils": "0.12.38",
-    "@fortawesome/fontawesome-svg-core": "^6.4.2",
-    "@fortawesome/free-regular-svg-icons": "^6.5.1",
-    "@fortawesome/free-solid-svg-icons": "^6.4.2",
-    "@fortawesome/vue-fontawesome": "^3.0.6",
     "@vueuse/core": "^9.13.0",
     "ace-builds": "^1.32.6",
     "axios": "^0.28.0",

@@ -6,8 +6,8 @@
 <script setup lang="ts">
 
 import { onMounted } from 'vue'
-import Menubar from './components/Menubar.vue'
-import SideMenu from './components/SideMenu.vue'
+import Menubar from '@/components/Menu/Menubar.vue'
+import SideMenu from '@/components/Menu/SideMenu.vue'
 
 import { useMenuStore } from '@/stores/menuStore'
 
