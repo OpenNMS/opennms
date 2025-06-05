@@ -24,12 +24,10 @@ package org.opennms.netmgt.flows.elastic;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 import org.junit.Before;
 import org.opennms.core.cache.CacheConfigBuilder;
+import org.opennms.features.elastic.client.ElasticRestClient;
 import org.opennms.features.elastic.client.ElasticRestClientFactory;
-import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
 import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.index.IndexSelector;
 import org.opennms.features.jest.client.index.IndexStrategy;
@@ -64,27 +62,24 @@ public class ComposableAggFlowQueryIT extends  AggregatedFlowQueryIT {
     public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {
         final MetricRegistry metricRegistry = new MetricRegistry();
         final ElasticRestClientFactory elasticRestClientFactory = new ElasticRestClientFactory(elasticSearchRule.getUrl(), null, null);
-        final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
-        final EventForwarder eventForwarder = new AbstractMockDao.NullEventForwarder();
-        final JestClientWithCircuitBreaker client = restClientFactory.createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
-                CircuitBreakerConfig.custom().build()).circuitBreaker(AggregatedFlowQueryIT.class.getName()), eventForwarder);
+        final ElasticRestClient elasticRestClient = elasticRestClientFactory.createClient();
         final IndexSettings rawIndexSettings = new IndexSettings();
         final IndexSettings aggIndexSettings = new IndexSettings();
 
 
         final IndexSelector rawIndexSelector = new IndexSelector(rawIndexSettings, RawFlowQueryService.INDEX_NAME,
                 IndexStrategy.MONTHLY, 120000);
-        rawFlowQueryService = new RawFlowQueryService(client, rawIndexSelector);
+        rawFlowQueryService = new RawFlowQueryService(elasticRestClient, rawIndexSelector);
 
         // Use composable templates
         String pathToTemplates = Path.of(relativePathToEtc, "netflow-templates").toString();
-        final ComposableTemplateInitializer initializer = new ComposableTemplateInitializer(elasticRestClientFactory.createClient(),
+        final ComposableTemplateInitializer initializer = new ComposableTemplateInitializer(elasticRestClient,
                 pathToTemplates, true);
         initializer.initialize();
 
         final IndexSelector aggIndexSelector = new IndexSelector(aggIndexSettings, AggregatedFlowQueryService.INDEX_NAME,
                 IndexStrategy.MONTHLY, 120000);
-        aggFlowQueryService = new AggregatedFlowQueryService(client, aggIndexSelector);
+        aggFlowQueryService = new AggregatedFlowQueryService(elasticRestClient, aggIndexSelector);
 
         smartQueryService = new SmartQueryService(metricRegistry, rawFlowQueryService, aggFlowQueryService);
         // Prefer aggregated queries, but fallback to raw when unsupported by agg.
@@ -92,7 +87,7 @@ public class ComposableAggFlowQueryIT extends  AggregatedFlowQueryIT {
         smartQueryService.setAlwaysUseRawForQueries(false);
         smartQueryService.setTimeRangeDurationAggregateThresholdMs(1);
 
-        flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY,
+        flowRepository = new ElasticFlowRepository(metricRegistry, elasticRestClient, IndexStrategy.MONTHLY,
                 new MockIdentity(), new MockTracerRegistry(), rawIndexSettings, 0, 0);
 
         final var classificationEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(

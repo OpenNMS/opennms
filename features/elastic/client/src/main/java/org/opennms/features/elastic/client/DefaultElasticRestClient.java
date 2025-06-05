@@ -32,11 +32,18 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.ArrayList;
 
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Stream;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
+import com.google.gson.Gson;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -51,15 +58,77 @@ import org.slf4j.LoggerFactory;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import org.opennms.features.elastic.client.model.BulkRequest;
+import org.opennms.features.elastic.client.model.BulkResponse;
+import org.opennms.features.elastic.client.model.BulkOperation;
+import org.opennms.features.elastic.client.model.SearchRequest;
+import org.opennms.features.elastic.client.model.SearchResponse;
+
 
 public class DefaultElasticRestClient implements ElasticRestClient {
 
     private static final Logger LOG = LoggerFactory.getLogger(DefaultElasticRestClient.class);
+    private static final long[] RETRY_SLEEP_MULTIPLIERS = new long[]{1, 2, 10, 20, 60, 120};
+
+    private int bulkRetryCount;
+    private int connTimeout;
+    private int readTimeout;
+    private int retryCooldown;
+
+    private final AtomicInteger threadCountForBulk = new AtomicInteger(1);
+    private final ThreadFactory bulkExecuteThreadFactory = runnable -> {
+        Thread thread = new Thread(runnable);
+        thread.setName("elastic-client-async-bulk-execute-" + threadCountForBulk.getAndIncrement());
+        return thread;
+    };
+    private final ExecutorService executor = Executors.newCachedThreadPool(bulkExecuteThreadFactory);
+
+    private final AtomicInteger threadCountForSearch = new AtomicInteger(1);
+    private final ThreadFactory bulkSearchThreadFactory = runnable -> {
+        Thread thread = new Thread(runnable);
+        thread.setName("elastic-client-search-async-" + threadCountForSearch.getAndIncrement());
+        return thread;
+    };
+
+    private final ExecutorService searchExecutor = Executors.newCachedThreadPool(bulkSearchThreadFactory);
 
     private final String[] hosts;
     private final String username;
     private final String password;
     private RestClient restClient;
+    private final Gson gson = new Gson();
+
+    public void setBulkRetryCount(int bulkRetryCount) {
+        this.bulkRetryCount = bulkRetryCount;
+    }
+
+    public int getBulkRetryCount() {
+        return bulkRetryCount;
+    }
+
+    public void setConnTimeout(int connTimeout) {
+        this.connTimeout = connTimeout;
+    }
+
+    public int getConnTimeout() {
+        return connTimeout;
+    }
+
+    public void setReadTimeout(int readTimeout) {
+        this.readTimeout = readTimeout;
+    }
+
+    public int getReadTimeout() {
+        return readTimeout;
+    }
+
+    public void setRetryCooldown(int retryCooldown) {
+        this.retryCooldown = retryCooldown;
+    }
+
+    public int getRetryCooldown() {
+        return retryCooldown;
+    }
 
     public RestClient getRestClient() {
         return restClient;
@@ -113,6 +182,7 @@ public class DefaultElasticRestClient implements ElasticRestClient {
                     }
                 }).toArray(HttpHost[]::new);
 
+
         // Create the low-level client
         if (username != null && password != null) {
             final CredentialsProvider credentialsProvider = new BasicCredentialsProvider();
@@ -120,17 +190,25 @@ public class DefaultElasticRestClient implements ElasticRestClient {
                     AuthScope.ANY, new UsernamePasswordCredentials(username, password));
 
             restClient = RestClient.builder(httpHosts)
+                    .setRequestConfigCallback(requestConfigBuilder ->
+                            requestConfigBuilder
+                                    .setConnectTimeout(connTimeout)
+                                    .setSocketTimeout(readTimeout))
                     .setHttpClientConfigCallback(httpClientBuilder ->
                             httpClientBuilder.setDefaultCredentialsProvider(credentialsProvider))
                     .build();
         } else {
-            restClient = RestClient.builder(httpHosts).build();
+            restClient = RestClient.builder(httpHosts)
+                    .setRequestConfigCallback(requestConfigBuilder ->
+                            requestConfigBuilder
+                                    .setConnectTimeout(connTimeout)
+                                    .setSocketTimeout(readTimeout))
+                    .build();
         }
     }
 
     @Override
     public String health() throws IOException {
-        LOG.debug("Checking Elasticsearch cluster health at {}", Arrays.toString(hosts));
         Request healthRequest = new Request("GET", "/_cluster/health");
         Response healthResponse = restClient.performRequest(healthRequest);
         int statusCode = healthResponse.getStatusLine().getStatusCode();
@@ -176,10 +254,10 @@ public class DefaultElasticRestClient implements ElasticRestClient {
     }
 
 
-
-
     @Override
     public void close() throws IOException {
+        executor.shutdown();
+        searchExecutor.shutdown();
         if (restClient != null) {
             LOG.info("Closing Elasticsearch client");
             restClient.close();
@@ -299,13 +377,13 @@ public class DefaultElasticRestClient implements ElasticRestClient {
         java.util.List<File> ilmPolicyFiles = new java.util.ArrayList<>();
         java.util.List<File> componentTemplateFiles = new java.util.ArrayList<>();
         java.util.List<File> indexTemplateFiles = new java.util.ArrayList<>();
-        
+
         for (File file : jsonFiles) {
             String fileName = file.getName().toLowerCase();
             if (fileName.contains("ilm") || fileName.contains("policy") || fileName.contains("lifecycle")) {
                 ilmPolicyFiles.add(file);
             } else if (fileName.contains("component") || fileName.contains("setting") ||
-                       fileName.contains("mapping") || fileName.contains("alias")) {
+                    fileName.contains("mapping") || fileName.contains("alias")) {
                 componentTemplateFiles.add(file);
             } else if (fileName.contains("composable") || fileName.contains("index")) {
                 indexTemplateFiles.add(file);
@@ -313,7 +391,7 @@ public class DefaultElasticRestClient implements ElasticRestClient {
                 LOG.warn("Unknown template type for file: {}", fileName);
             }
         }
-        
+
         // Apply templates in the correct order: ILM policies first
         LOG.info("Processing {} ILM policy files", ilmPolicyFiles.size());
         for (File policyFile : ilmPolicyFiles) {
@@ -330,7 +408,7 @@ public class DefaultElasticRestClient implements ElasticRestClient {
                 LOG.error("Error applying ILM policy from file {}: {}", policyFile.getName(), e.getMessage(), e);
             }
         }
-        
+
         // Component templates second
         LOG.info("Processing {} component template files", componentTemplateFiles.size());
         for (File componentFile : componentTemplateFiles) {
@@ -347,7 +425,7 @@ public class DefaultElasticRestClient implements ElasticRestClient {
                 LOG.error("Error applying component template from file {}: {}", componentFile.getName(), e.getMessage(), e);
             }
         }
-        
+
         // Index templates last
         LOG.info("Processing {} index template files", indexTemplateFiles.size());
         for (File templateFile : indexTemplateFiles) {
@@ -367,5 +445,316 @@ public class DefaultElasticRestClient implements ElasticRestClient {
 
         LOG.info("Successfully applied {} templates/policies from {}", appliedCount, templateDirectory);
         return appliedCount;
+    }
+
+    @Override
+    public BulkResponse executeBulk(BulkRequest bulkRequest) throws IOException {
+        if (bulkRequest.isEmpty()) {
+            return new BulkResponse(false, new ArrayList<>(), 0);
+        }
+
+        LOG.debug("Executing bulk request with {} operations", bulkRequest.size());
+
+        // Build the bulk request body
+        String bulkBody = buildBulkRequestBody(bulkRequest);
+
+        // Execute with retry logic
+        BulkResponse response = null;
+        IOException lastException = null;
+
+        for (int retry = 0; retry <= bulkRetryCount; retry++) {
+            try {
+                response = executeBulkRequest(bulkBody, bulkRequest.getRefresh());
+
+                // If successful or no retries allowed for errors, return
+                if (!response.hasErrors() || bulkRetryCount == 0) {
+                    return response;
+                }
+
+                // Check if all items failed with retriable errors
+                if (hasRetriableErrors(response) && retry < bulkRetryCount) {
+                    LOG.warn("Bulk request had errors, retrying... (attempt {} of {})", retry + 1, bulkRetryCount + 1);
+                    waitBeforeRetrying(retry);
+                    continue;
+                }
+
+                // Some errors are not retriable, return the response
+                return response;
+
+            } catch (IOException e) {
+                lastException = e;
+                if (retry < bulkRetryCount) {
+                    LOG.warn("Bulk request failed, retrying... (attempt {} of {})", retry + 1, bulkRetryCount + 1, e);
+                    waitBeforeRetrying(retry);
+                } else {
+                    throw e;
+                }
+            }
+        }
+
+        // Should not reach here, but handle it just in case
+        if (lastException != null) {
+            throw lastException;
+        }
+        return response;
+    }
+
+    private String buildBulkRequestBody(BulkRequest bulkRequest) {
+        StringBuilder bulkBody = new StringBuilder();
+        for (BulkOperation operation : bulkRequest.getOperations()) {
+            // Add action line
+            JsonObject actionObject = new JsonObject();
+            JsonObject actionParams = new JsonObject();
+            actionParams.addProperty("_index", operation.getIndex());
+            if (operation.getId() != null) {
+                actionParams.addProperty("_id", operation.getId());
+            }
+
+            String actionName = operation.getType().name().toLowerCase();
+            actionObject.add(actionName, actionParams);
+            bulkBody.append(gson.toJson(actionObject)).append("\n");
+
+            // Add source line (except for delete operations)
+            if (operation.getType() != BulkOperation.Type.DELETE && operation.getSource() != null) {
+                if (operation.getType() == BulkOperation.Type.UPDATE) {
+                    // For updates, wrap the source in a "doc" object
+                    JsonObject updateDoc = new JsonObject();
+                    if (operation.getSource() instanceof String) {
+                        updateDoc.add("doc", JsonParser.parseString((String) operation.getSource()));
+                    } else {
+                        updateDoc.add("doc", gson.toJsonTree(operation.getSource()));
+                    }
+                    updateDoc.addProperty("doc_as_upsert", true);
+                    bulkBody.append(gson.toJson(updateDoc)).append("\n");
+                } else {
+                    // For index operations, add source directly
+                    if (operation.getSource() instanceof String) {
+                        bulkBody.append(operation.getSource()).append("\n");
+                    } else {
+                        bulkBody.append(gson.toJson(operation.getSource())).append("\n");
+                    }
+                }
+            }
+        }
+        return bulkBody.toString();
+    }
+
+    private BulkResponse executeBulkRequest(String bulkBody, String refresh) throws IOException {
+        Request request = new Request("POST", "/_bulk");
+        if (refresh != null) {
+            request.addParameter("refresh", refresh);
+        }
+        request.setJsonEntity(bulkBody);
+
+        long startTime = System.currentTimeMillis();
+        Response response = restClient.performRequest(request);
+        long tookInMillis = System.currentTimeMillis() - startTime;
+
+        if (response.getStatusLine().getStatusCode() != 200) {
+            throw new IOException("Bulk request failed with status: " +
+                    response.getStatusLine().getStatusCode());
+        }
+        return parseBulkResponse(response, tookInMillis);
+    }
+
+    private boolean hasRetriableErrors(BulkResponse response) {
+        if (!response.hasErrors()) {
+            return false;
+        }
+
+        // Check if any of the errors are retriable (e.g., 429 Too Many Requests, 503 Service Unavailable)
+        for (BulkResponse.BulkItemResponse item : response.getItems()) {
+            if (item.getError() != null) {
+                int status = item.getStatus();
+                // Retry on rate limiting or temporary unavailability
+                if (status != 429 && status != 503 && status != 504) {
+                    // Found a non-retriable error
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    private void waitBeforeRetrying(int retryCount) {
+        try {
+            long sleepTime = getSleepTime(retryCount);
+            if (sleepTime > 0) {
+                LOG.debug("Waiting {} ms before retrying", sleepTime);
+                Thread.sleep(sleepTime);
+            }
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            LOG.warn("Interrupted while waiting for retry");
+        }
+    }
+
+    private long getSleepTime(int retry) {
+        int index = Math.min(retry, RETRY_SLEEP_MULTIPLIERS.length - 1);
+        return retryCooldown * RETRY_SLEEP_MULTIPLIERS[index];
+    }
+
+    @Override
+    public CompletableFuture<BulkResponse> executeBulkAsync(BulkRequest bulkRequest) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return executeBulk(bulkRequest);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to execute bulk request", e);
+            }
+        }, executor);
+    }
+
+    private BulkResponse parseBulkResponse(Response response, long tookInMillis) throws IOException {
+        if (response.getEntity() == null) {
+            throw new IOException("Empty response from Elasticsearch");
+        }
+        String responseBody = EntityUtils.toString(response.getEntity());
+        JsonObject responseJson = JsonParser.parseReader(new StringReader(responseBody)).getAsJsonObject();
+
+        boolean hasErrors = responseJson.has("errors") && responseJson.get("errors").getAsBoolean();
+        List<BulkResponse.BulkItemResponse> items = new ArrayList<>();
+
+        if (responseJson.has("items")) {
+            JsonArray itemsArray = responseJson.getAsJsonArray("items");
+            for (JsonElement itemElement : itemsArray) {
+                JsonObject item = itemElement.getAsJsonObject();
+
+                // Find the operation type (index, update, delete)
+                Map.Entry<String, JsonElement> entry = item.entrySet().iterator().next();
+                JsonObject opResult = entry.getValue().getAsJsonObject();
+                String index = opResult.has("_index") ? opResult.get("_index").getAsString() : null;
+                String id = opResult.has("_id") ? opResult.get("_id").getAsString() : null;
+                int status = opResult.has("status") ? opResult.get("status").getAsInt() : 200;
+                String error = null;
+
+                if (opResult.has("error")) {
+                    JsonElement errorElement = opResult.get("error");
+                    if (errorElement.isJsonObject()) {
+                        error = errorElement.getAsJsonObject().toString();
+                    } else {
+                        error = errorElement.getAsString();
+                    }
+                }
+                items.add(new BulkResponse.BulkItemResponse(index, id, status, error));
+            }
+        }
+
+        return new BulkResponse(hasErrors, items, tookInMillis);
+    }
+
+    @Override
+    public SearchResponse search(SearchRequest searchRequest) throws IOException {
+        String indexPath = String.join(",", searchRequest.getIndices());
+        Request request = new Request("POST", "/" + indexPath + "/_search");
+
+        // Add query parameters
+        for (Map.Entry<String, String> param : searchRequest.getParameters().entrySet()) {
+            request.addParameter(param.getKey(), param.getValue());
+        }
+
+        request.setJsonEntity(searchRequest.getQuery());
+
+        long startTime = System.currentTimeMillis();
+        Response response = restClient.performRequest(request);
+        long tookInMillis = System.currentTimeMillis() - startTime;
+
+        return parseSearchResponse(response, tookInMillis);
+    }
+
+    @Override
+    public CompletableFuture<SearchResponse> searchAsync(SearchRequest searchRequest) {
+        return CompletableFuture.supplyAsync(() -> {
+            try {
+                return search(searchRequest);
+            } catch (IOException e) {
+                throw new RuntimeException("Failed to execute search request", e);
+            }
+        }, searchExecutor);
+    }
+
+    private SearchResponse parseSearchResponse(Response response, long tookInMillis) throws IOException {
+        String responseBody = EntityUtils.toString(response.getEntity());
+        JsonObject responseJson = JsonParser.parseReader(new StringReader(responseBody)).getAsJsonObject();
+
+        boolean timedOut = responseJson.has("timed_out") && responseJson.get("timed_out").getAsBoolean();
+        JsonObject shards = responseJson.has("_shards") ? responseJson.getAsJsonObject("_shards") : new JsonObject();
+        JsonObject aggregations = responseJson.has("aggregations") ? responseJson.getAsJsonObject("aggregations") : null;
+        String scrollId = responseJson.has("_scroll_id") ? responseJson.get("_scroll_id").getAsString() : null;
+
+        SearchResponse.SearchHits hits = null;
+        if (responseJson.has("hits")) {
+            hits = parseSearchHits(responseJson.getAsJsonObject("hits"));
+        }
+
+        return new SearchResponse(tookInMillis, timedOut, shards, hits, aggregations, scrollId);
+    }
+
+    private SearchResponse.SearchHits parseSearchHits(JsonObject hitsObject) {
+        long totalHits = 0;
+        String totalHitsRelation = "eq";
+
+        if (hitsObject.has("total")) {
+            JsonElement totalElement = hitsObject.get("total");
+            if (totalElement.isJsonObject()) {
+                JsonObject totalObject = totalElement.getAsJsonObject();
+                totalHits = totalObject.has("value") ? totalObject.get("value").getAsLong() : 0;
+                totalHitsRelation = totalObject.has("relation") ? totalObject.get("relation").getAsString() : "eq";
+            } else {
+                totalHits = totalElement.getAsLong();
+            }
+        }
+
+        double maxScore = hitsObject.has("max_score") && !hitsObject.get("max_score").isJsonNull()
+                ? hitsObject.get("max_score").getAsDouble() : 0.0;
+
+        List<SearchResponse.SearchHit> hits = new ArrayList<>();
+        if (hitsObject.has("hits")) {
+            JsonArray hitsArray = hitsObject.getAsJsonArray("hits");
+            for (JsonElement hitElement : hitsArray) {
+                JsonObject hit = hitElement.getAsJsonObject();
+                String index = hit.has("_index") ? hit.get("_index").getAsString() : null;
+                String id = hit.has("_id") ? hit.get("_id").getAsString() : null;
+                double score = hit.has("_score") && !hit.get("_score").isJsonNull()
+                        ? hit.get("_score").getAsDouble() : 0.0;
+                JsonObject source = hit.has("_source") ? hit.getAsJsonObject("_source") : new JsonObject();
+
+                hits.add(new SearchResponse.SearchHit(index, id, score, source));
+            }
+        }
+
+        return new SearchResponse.SearchHits(totalHits, totalHitsRelation, maxScore, hits);
+    }
+
+
+    @Override
+    public boolean applyLegacyIndexTemplate(String templateName, String templateBody) throws IOException {
+        Request request = new Request("PUT", "/_template/" + templateName);
+        request.setJsonEntity(templateBody);
+
+        Response response = restClient.performRequest(request);
+        if (response.getStatusLine().getStatusCode() == 200 || response.getStatusLine().getStatusCode() == 201) {
+            LOG.info("Successfully applied legacy template: {}", templateName);
+            return true;
+        } else {
+            LOG.error("Failed to apply legacy template: {}, status: {}", templateName, response.getStatusLine().getStatusCode());
+            return false;
+        }
+    }
+
+    @Override
+    public String getServerVersion() throws IOException {
+        Request request = new Request("GET", "/");
+        Response response = restClient.performRequest(request);
+
+        String responseBody = EntityUtils.toString(response.getEntity());
+        JsonObject json = JsonParser.parseString(responseBody).getAsJsonObject();
+
+        JsonObject version = json.getAsJsonObject("version");
+        if (version != null && version.has("number")) {
+            return version.get("number").getAsString();
+        }
+
+        throw new IOException("Could not retrieve server version from response: " + responseBody);
     }
 }
