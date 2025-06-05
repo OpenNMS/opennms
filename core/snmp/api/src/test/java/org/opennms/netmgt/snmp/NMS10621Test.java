@@ -26,7 +26,7 @@ import static org.hamcrest.Matchers.equalTo;
 
 import org.junit.Test;
 
-public class SnmpObjIdTest {
+public class NMS10621Test {
 
     /**
      * Used to validate {@link SnmpObjId#isSuccessorOf(SnmpObjId)}.
