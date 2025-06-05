@@ -23,8 +23,8 @@ package org.opennms.netmgt.flows.elastic;
 
 import java.io.IOException;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -34,10 +34,10 @@ import java.util.concurrent.locks.ReentrantLock;
 import org.opennms.core.tracing.api.TracerConstants;
 import org.opennms.core.tracing.api.TracerRegistry;
 import org.opennms.distributed.core.api.Identity;
-import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
-import org.opennms.features.jest.client.bulk.BulkException;
-import org.opennms.features.jest.client.bulk.BulkRequest;
-import org.opennms.features.jest.client.bulk.BulkWrapper;
+import org.opennms.features.elastic.client.ElasticRestClient;
+import org.opennms.features.elastic.client.model.BulkRequest;
+import org.opennms.features.elastic.client.model.BulkResponse;
+import org.opennms.features.jest.client.bulk.FailedItem;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.integration.api.v1.flows.Flow;
@@ -55,8 +55,6 @@ import com.google.common.collect.Maps;
 import io.opentracing.Scope;
 import io.opentracing.Tracer;
 import io.opentracing.util.GlobalTracer;
-import io.searchbox.core.Bulk;
-import io.searchbox.core.Index;
 
 public class ElasticFlowRepository implements FlowRepository {
 
@@ -66,7 +64,7 @@ public class ElasticFlowRepository implements FlowRepository {
 
     private static final String INDEX_NAME = "netflow";
 
-    private final JestClientWithCircuitBreaker client;
+    private final ElasticRestClient client;
 
     private final IndexStrategy indexStrategy;
 
@@ -87,7 +85,6 @@ public class ElasticFlowRepository implements FlowRepository {
     private final IndexSettings indexSettings;
 
     private int bulkSize = 1000;
-    private int bulkRetryCount = 5;
     private int bulkFlushMs = 500;
 
     private class FlowBulk {
@@ -106,12 +103,12 @@ public class ElasticFlowRepository implements FlowRepository {
     private java.util.Timer flushTimer;
 
     public ElasticFlowRepository(final MetricRegistry metricRegistry,
-                                 final JestClientWithCircuitBreaker jestClient,
+                                 final ElasticRestClient elasticRestClient,
                                  final IndexStrategy indexStrategy,
                                  final Identity identity,
                                  final TracerRegistry tracerRegistry,
                                  final IndexSettings indexSettings) {
-        this.client = Objects.requireNonNull(jestClient);
+        this.client = Objects.requireNonNull(elasticRestClient);
         this.indexStrategy = Objects.requireNonNull(indexStrategy);
         this.identity = identity;
         this.tracerRegistry = tracerRegistry;
@@ -124,14 +121,14 @@ public class ElasticFlowRepository implements FlowRepository {
     }
 
     public ElasticFlowRepository(final MetricRegistry metricRegistry,
-                                 final JestClientWithCircuitBreaker jestClient,
+                                 final ElasticRestClient elasticRestClient,
                                  final IndexStrategy indexStrategy,
                                  final Identity identity,
                                  final TracerRegistry tracerRegistry,
                                  final IndexSettings indexSettings,
                                  final int bulkSize,
                                  final int bulkFlushMs) {
-        this(metricRegistry, jestClient, indexStrategy, identity, tracerRegistry, indexSettings);
+        this(metricRegistry, elasticRestClient, indexStrategy, identity, tracerRegistry, indexSettings);
         this.bulkSize = bulkSize;
         this.bulkFlushMs = bulkFlushMs;
     }
@@ -203,33 +200,52 @@ public class ElasticFlowRepository implements FlowRepository {
              Scope scope = tracer.buildSpan(TRACER_FLOW_MODULE).startActive(true)) {
             // Add location and source address tags to span.
             scope.span().setTag(TracerConstants.TAG_THREAD, Thread.currentThread().getName());
-            final BulkRequest<FlowDocument> bulkRequest = new BulkRequest<>(client, bulk, (documents) -> {
-                final Bulk.Builder bulkBuilder = new Bulk.Builder();
-                for (FlowDocument flowDocument : documents) {
-                    final String index = indexStrategy.getIndex(indexSettings, INDEX_NAME, Instant.ofEpochMilli(flowDocument.getTimestamp()));
-                    final Index.Builder indexBuilder = new Index.Builder(flowDocument)
-                            .index(index);
-                    bulkBuilder.addAction(indexBuilder.build());
-                }
-                return new BulkWrapper(bulkBuilder);
-            }, bulkRetryCount);
+
+            final BulkRequest bulkRequest = new BulkRequest();
+            for (FlowDocument flowDocument : bulk) {
+                final String index = indexStrategy.getIndex(indexSettings, INDEX_NAME, Instant.ofEpochMilli(flowDocument.getTimestamp()));
+                // Add bulk operation without specifying ID
+                bulkRequest.index(index, null, flowDocument);
+            }
             try {
-                // the bulk request considers retries
-                bulkRequest.execute();
-            } catch (BulkException ex) {
-                if (ex.getBulkResult() != null) {
-                    throw new PersistenceException(ex.getMessage(), ex.getBulkResult().getFailedItems());
-                } else {
-                    throw new PersistenceException(ex.getMessage(), Collections.emptyList());
+                // Execute bulk request - retries are handled internally by the client
+                BulkResponse response = client.executeBulk(bulkRequest);
+                
+                if (response.hasErrors()) {
+                    // Convert BulkResponse errors to PersistenceException format
+                    List<FailedItem<FlowDocument>> failedItems = getFailedItems(response);
+
+                    throw new PersistenceException(response.getErrors(), failedItems);
                 }
+                
             } catch (IOException ex) {
                 LOG.error("An error occurred while executing the given request: {}", ex.getMessage(), ex);
                 throw new FlowException(ex.getMessage(), ex);
             }
+            
             flowsPersistedMeter.mark(bulk.size());
-
             bulk.clear();
         }
+    }
+
+    private static List<FailedItem<FlowDocument>> getFailedItems(BulkResponse response) {
+        List<FailedItem<FlowDocument>> failedItems = new ArrayList<>();
+        List<BulkResponse.BulkItemResponse> bulkFailedItems = response.getFailedItems();
+
+        // We don't have the original FlowDocument objects in the response,
+        // so we'll create simplified FailedItem entries
+        for (int i = 0; i < bulkFailedItems.size(); i++) {
+            BulkResponse.BulkItemResponse item = bulkFailedItems.get(i);
+            // Create a minimal FlowDocument for error reporting
+            FlowDocument doc = new FlowDocument();
+            doc.setConvoKey("unknown-" + i); // We don't have the original convoKey
+
+            FailedItem<FlowDocument> failedItem = new FailedItem<>(i, doc,
+                    new Exception(item.getError() != null ? item.getError() : "Unknown error")
+            );
+            failedItems.add(failedItem);
+        }
+        return failedItems;
     }
 
     public Identity getIdentity() {
@@ -270,13 +286,6 @@ public class ElasticFlowRepository implements FlowRepository {
         this.bulkSize = bulkSize;
     }
 
-    public int getBulkRetryCount() {
-        return bulkRetryCount;
-    }
-
-    public void setBulkRetryCount(int bulkRetryCount) {
-        this.bulkRetryCount = bulkRetryCount;
-    }
 
     public int getBulkFlushMs() {
         return bulkFlushMs;

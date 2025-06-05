@@ -60,8 +60,8 @@ import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.elasticsearch.plugin.DriftPlugin;
-import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
-import org.opennms.features.jest.client.RestClientFactory;
+import org.opennms.features.elastic.client.ElasticRestClient;
+import org.opennms.features.elastic.client.ElasticRestClientFactory;
 import org.opennms.features.jest.client.index.IndexSelector;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
@@ -70,12 +70,10 @@ import org.opennms.nephron.NephronOptions;
 import org.opennms.nephron.Pipeline;
 import org.opennms.nephron.UnalignedFixedWindows;
 import org.opennms.nephron.coders.FlowDocumentProtobufCoder;
-import org.opennms.netmgt.dao.mock.AbstractMockDao;
 import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockIpInterfaceDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Flow;
@@ -101,9 +99,6 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 
-import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
-
 /**
  * Similar to {@link FlowQueryIT}, but adapted for aggregated queries.
  */
@@ -125,10 +120,8 @@ public class AggregatedFlowQueryIT {
     @Before
     public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {
         final MetricRegistry metricRegistry = new MetricRegistry();
-        final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
-        final EventForwarder eventForwarder = new AbstractMockDao.NullEventForwarder();
-        final JestClientWithCircuitBreaker client = restClientFactory.createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
-                CircuitBreakerConfig.custom().build()).circuitBreaker(AggregatedFlowQueryIT.class.getName()), eventForwarder);
+        final ElasticRestClientFactory elasticRestClientFactory = new ElasticRestClientFactory(elasticSearchRule.getUrl(), null, null);
+        final ElasticRestClient elasticRestClient = elasticRestClientFactory.createClient();
         final IndexSettings rawIndexSettings = new IndexSettings();
         rawIndexSettings.setIndexPrefix("flows");
         final IndexSettings aggIndexSettings = new IndexSettings();
@@ -138,19 +131,19 @@ public class AggregatedFlowQueryIT {
 
         // Here we load the flows by building the documents ourselves,
         // so we must initialize the repository manually
-        final RawIndexInitializer initializer = new RawIndexInitializer(client, rawIndexSettings);
+        final RawIndexInitializer initializer = new RawIndexInitializer(elasticRestClient, rawIndexSettings);
         initializer.initialize();
 
         final IndexSelector rawIndexSelector = new IndexSelector(rawIndexSettings, RawFlowQueryService.INDEX_NAME,
                 IndexStrategy.MONTHLY, 120000);
-        rawFlowQueryService = new RawFlowQueryService(client, rawIndexSelector);
+        rawFlowQueryService = new RawFlowQueryService(elasticRestClient, rawIndexSelector);
 
-        final AggregateIndexInitializer aggIndexInitializer = new AggregateIndexInitializer(client, aggIndexSettings);
+        final AggregateIndexInitializer aggIndexInitializer = new AggregateIndexInitializer(elasticRestClient, aggIndexSettings);
         aggIndexInitializer.initialize();
 
         final IndexSelector aggIndexSelector = new IndexSelector(aggIndexSettings, AggregatedFlowQueryService.INDEX_NAME,
                 IndexStrategy.MONTHLY, 120000);
-        aggFlowQueryService = new AggregatedFlowQueryService(client, aggIndexSelector);
+        aggFlowQueryService = new AggregatedFlowQueryService(elasticRestClient, aggIndexSelector);
 
         smartQueryService = new SmartQueryService(metricRegistry, rawFlowQueryService, aggFlowQueryService);
         // Prefer aggregated queries, but fallback to raw when unsupported by agg.
@@ -158,7 +151,7 @@ public class AggregatedFlowQueryIT {
         smartQueryService.setAlwaysUseRawForQueries(false);
         smartQueryService.setTimeRangeDurationAggregateThresholdMs(1);
 
-        flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY,
+        flowRepository = new ElasticFlowRepository(metricRegistry, elasticRestClient, IndexStrategy.MONTHLY,
             new MockIdentity(), new MockTracerRegistry(), rawIndexSettings, 0, 0);
 
         final var classificationEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(

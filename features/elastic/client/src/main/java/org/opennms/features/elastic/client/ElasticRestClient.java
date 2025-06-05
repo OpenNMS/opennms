@@ -23,10 +23,15 @@ package org.opennms.features.elastic.client;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+
+import org.opennms.features.elastic.client.model.BulkRequest;
+import org.opennms.features.elastic.client.model.BulkResponse;
+import org.opennms.features.elastic.client.model.SearchRequest;
+import org.opennms.features.elastic.client.model.SearchResponse;
 
 /**
  * Interface for an Elasticsearch client that can connect to ElasticSearch
- * and apply composable templates dynamically.
  */
 public interface ElasticRestClient {
 
@@ -73,4 +78,63 @@ public interface ElasticRestClient {
      * Loads and applies all templates from configured directories.
      */
     int applyAllTemplatesFromDirectory(String templateDirectory) throws IOException;
+
+    // Bulk Operations
+    
+    /**
+     * Executes a bulk request with retry logic.
+     *
+     * @param bulkRequest the bulk request to execute
+     * @return the bulk response
+     * @throws IOException if an error occurs during execution
+     */
+    BulkResponse executeBulk(BulkRequest bulkRequest) throws IOException;
+
+    /**
+     * Executes a bulk request asynchronously.
+     *
+     * @param bulkRequest the bulk request to execute
+     * @return a CompletableFuture containing the bulk response
+     */
+    CompletableFuture<BulkResponse> executeBulkAsync(BulkRequest bulkRequest);
+
+    // Search Operations
+    
+    /**
+     * Executes a search request.
+     *
+     * @param searchRequest the search request to execute
+     * @return the search response
+     * @throws IOException if an error occurs during search
+     */
+    SearchResponse search(SearchRequest searchRequest) throws IOException;
+
+    /**
+     * Executes a search request asynchronously.
+     *
+     * @param searchRequest the search request to execute
+     * @return a CompletableFuture containing the search response
+     */
+    CompletableFuture<SearchResponse> searchAsync(SearchRequest searchRequest);
+    
+    // Legacy Template Support
+    
+    /**
+     * Applies a legacy index template to Elasticsearch.
+     * This is for backward compatibility with old template format.
+     *
+     * @param templateName the name of the template
+     * @param templateBody the template body as JSON
+     * @return true if successful
+     * @throws IOException if an error occurs during template creation
+     */
+    boolean applyLegacyIndexTemplate(String templateName, String templateBody) throws IOException;
+    
+    /**
+     * Gets server version information.
+     *
+     * @return version string (e.g., "8.11.0")
+     * @throws IOException if an error occurs during version retrieval
+     */
+    String getServerVersion() throws IOException;
 }
