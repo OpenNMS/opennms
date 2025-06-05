@@ -29,8 +29,10 @@ import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.opennms.integration.api.v1.flows.Flow.Direction;
+import static org.opennms.netmgt.flows.elastic.FlowQueryIT.relativePathToEtc;
 
 import java.net.MalformedURLException;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,6 +62,7 @@ import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.elasticsearch.plugin.DriftPlugin;
+import org.opennms.features.elastic.client.ComposableTemplateInitializer;
 import org.opennms.features.elastic.client.ElasticRestClient;
 import org.opennms.features.elastic.client.ElasticRestClientFactory;
 import org.opennms.features.jest.client.index.IndexSelector;
@@ -123,23 +126,21 @@ public class AggregatedFlowQueryIT {
         final ElasticRestClientFactory elasticRestClientFactory = new ElasticRestClientFactory(elasticSearchRule.getUrl(), null, null);
         final ElasticRestClient elasticRestClient = elasticRestClientFactory.createClient();
         final IndexSettings rawIndexSettings = new IndexSettings();
-        rawIndexSettings.setIndexPrefix("flows");
         final IndexSettings aggIndexSettings = new IndexSettings();
-        // Although this works fine, we want to use templates from etc directly for composable templates.
-        // So In order to work for both test cases, we commented out this.
-        //aggIndexSettings.setIndexPrefix("aggflows");
 
-        // Here we load the flows by building the documents ourselves,
-        // so we must initialize the repository manually
-        final RawIndexInitializer initializer = new RawIndexInitializer(elasticRestClient, rawIndexSettings);
-        initializer.initialize();
 
         final IndexSelector rawIndexSelector = new IndexSelector(rawIndexSettings, RawFlowQueryService.INDEX_NAME,
                 IndexStrategy.MONTHLY, 120000);
         rawFlowQueryService = new RawFlowQueryService(elasticRestClient, rawIndexSelector);
-
-        final AggregateIndexInitializer aggIndexInitializer = new AggregateIndexInitializer(elasticRestClient, aggIndexSettings);
-        aggIndexInitializer.initialize();
+        String pathToRawTemplates = Path.of(relativePathToEtc, "elastic" , "flows", "default").toString();
+        String pathToAggTemplates = Path.of(relativePathToEtc, "elastic" , "flows", "aggregate").toString();
+        // Use composable templates for both default and aggregate
+        final org.opennms.features.elastic.client.ComposableTemplateInitializer defaultInitializer =
+                new org.opennms.features.elastic.client.ComposableTemplateInitializer(elasticRestClient, "flows/default", pathToRawTemplates);
+        final org.opennms.features.elastic.client.ComposableTemplateInitializer aggregateInitializer =
+                new ComposableTemplateInitializer(elasticRestClient, "flows/aggregate", pathToAggTemplates);
+        defaultInitializer.initialize();
+        aggregateInitializer.initialize();
 
         final IndexSelector aggIndexSelector = new IndexSelector(aggIndexSettings, AggregatedFlowQueryService.INDEX_NAME,
                 IndexStrategy.MONTHLY, 120000);
@@ -152,27 +153,27 @@ public class AggregatedFlowQueryIT {
         smartQueryService.setTimeRangeDurationAggregateThresholdMs(1);
 
         flowRepository = new ElasticFlowRepository(metricRegistry, elasticRestClient, IndexStrategy.MONTHLY,
-            new MockIdentity(), new MockTracerRegistry(), rawIndexSettings, 0, 0);
+                new MockIdentity(), new MockTracerRegistry(), rawIndexSettings, 0, 0);
 
         final var classificationEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(
                 new RuleBuilder().withName("http").withDstPort("80").withProtocol("tcp,udp").build(),
                 new RuleBuilder().withName("https").withDstPort("443").withProtocol("tcp,udp").build(),
                 new RuleBuilder().withName("http").withSrcPort("80").withProtocol("tcp,udp").build(),
                 new RuleBuilder().withName("https").withSrcPort("443").withProtocol("tcp,udp").build()),
-                                                                         FilterService.NOOP);
+                FilterService.NOOP);
 
         documentEnricher = new DocumentEnricherImpl(metricRegistry,
-                                                    new MockNodeDao(),
-                                                    new MockIpInterfaceDao(),
-                                                    new MockInterfaceToNodeCache(),
-                                                    new MockSessionUtils(),
-                                                    classificationEngine,
-                                                    new CacheConfigBuilder()
-                                                        .withName("flows.node")
-                                                        .withMaximumSize(1000)
-                                                        .withExpireAfterWrite(300)
-                                                        .build(), 0,
-                                                    new DocumentMangler(new ScriptEngineManager()));
+                new MockNodeDao(),
+                new MockIpInterfaceDao(),
+                new MockInterfaceToNodeCache(),
+                new MockSessionUtils(),
+                classificationEngine,
+                new CacheConfigBuilder()
+                        .withName("flows.node")
+                        .withMaximumSize(1000)
+                        .withExpireAfterWrite(300)
+                        .build(), 0,
+                new DocumentMangler(new ScriptEngineManager()));
 
         // The repository should be empty
         assertThat(smartQueryService.getFlowCount(Collections.singletonList(new TimeRangeFilter(0, System.currentTimeMillis()))).get(), equalTo(0L));

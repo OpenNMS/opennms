@@ -26,7 +26,9 @@ import static java.util.concurrent.TimeUnit.MINUTES;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
+import static org.opennms.netmgt.flows.elastic.FlowQueryIT.relativePathToEtc;
 
+import java.nio.file.Path;
 import java.util.List;
 
 import org.json.simple.JSONObject;
@@ -79,10 +81,11 @@ public class DefaultDirectionIT {
 
         final ElasticRestClientFactory elasticRestClientFactory = new ElasticRestClientFactory(elasticSearchRule.getUrl(), null, null);
         final ElasticRestClient elasticRestClient = elasticRestClientFactory.createClient();
+        final String pathToTemplates = Path.of(relativePathToEtc, "elastic" , "flows", "default").toString();
         try {
             final FlowRepository elasticFlowRepository = new InitializingFlowRepository(
                     new ElasticFlowRepository(new MetricRegistry(), elasticRestClient, IndexStrategy.MONTHLY,
-                            new MockIdentity(), new MockTracerRegistry(), new IndexSettings()), elasticRestClient);
+                            new MockIdentity(), new MockTracerRegistry(), new IndexSettings()), elasticRestClient, pathToTemplates);
             // persist data
             elasticFlowRepository.persist(Lists.newArrayList(getMockFlowWithoutDirection()));
 

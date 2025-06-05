@@ -27,8 +27,7 @@
             <cm:property name="readTimeout" value="30000" /> <!-- 30 second timeout for Elasticsearch socket reads -->
             <cm:property name="retries" value="0" /> <!-- Disable retries by default -->
             <cm:property name="skipElasticsearchPersistence" value="false"/> <!-- Set to true to disable persisting flows to ES. -->
-            <cm:property name="useComposableTemplates" value="false"/>
-            <cm:property name="templatesPath" value="${karaf.etc}/netflow-templates"/>
+            <cm:property name="templatesPath" value="${karaf.etc}/elastic"/>
 
             <!-- Bulk Action settings -->
             <cm:property name="bulkSize" value="1000" /> <!-- Number of flow document collected into a bulk operation -->
@@ -215,12 +214,8 @@
 
     <!-- Proxy it, to ensure initialization on first call of any method -->
     <bean id="initializingElasticFlowRepository" class="org.opennms.netmgt.flows.elastic.InitializingFlowRepository">
-        <argument ref="blueprintBundleContext" />
         <argument ref="elasticFlowRepository" />
         <argument ref="elasticRestClient" />
-        <argument ref="rawIndexSettings" />
-        <argument ref="aggIndexSettings" />
-        <argument value="${useComposableTemplates}" />
         <argument value="${templatesPath}" />
     </bean>
     <bean id="switchedElasticFlowRepository" class="org.opennms.netmgt.flows.processing.persisting.SwitchedFlowRepository">

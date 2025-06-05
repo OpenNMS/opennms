@@ -35,6 +35,7 @@ import static org.mockito.Mockito.mock;
 import static org.opennms.integration.api.v1.flows.Flow.Direction;
 
 import java.net.MalformedURLException;
+import java.nio.file.Path;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -65,6 +66,7 @@ import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.elasticsearch.plugin.DriftPlugin;
+import org.opennms.features.elastic.client.ComposableTemplateInitializer;
 import org.opennms.features.elastic.client.ElasticRestClient;
 import org.opennms.features.elastic.client.ElasticRestClientFactory;
 import org.opennms.features.jest.client.index.IndexSelector;
@@ -106,6 +108,9 @@ public class FlowQueryIT {
     public ElasticSearchRule elasticSearchRule = new ElasticSearchRule(new ElasticSearchServerConfig()
             .withPlugins(DriftPlugin.class, PainlessPlugin.class));
 
+
+    public  static String relativePathToEtc = Path.of("../../../opennms-base-assembly/src/main/filtered/etc/").toString();
+
     protected ElasticFlowRepository flowRepository;
 
     protected DocumentEnricherImpl documentEnricher;
@@ -113,12 +118,12 @@ public class FlowQueryIT {
     protected SmartQueryService smartQueryService;
 
     @Before
-    public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {
+    public void setUp() throws ExecutionException, InterruptedException {
         final MetricRegistry metricRegistry = new MetricRegistry();
         final ElasticRestClientFactory elasticRestClientFactory = new ElasticRestClientFactory(elasticSearchRule.getUrl(), null, null);
         final ElasticRestClient elasticRestClient = elasticRestClientFactory.createClient();
+        // No specific Index settings should be applied for composable templates, they should be in component settings
         final IndexSettings settings = new IndexSettings();
-        settings.setIndexPrefix("flows");
         final IndexSelector rawIndexSelector = new IndexSelector(settings, RawFlowQueryService.INDEX_NAME,
                 IndexStrategy.MONTHLY, 120000);
         final RawFlowQueryService rawFlowRepository = new RawFlowQueryService(elasticRestClient, rawIndexSelector);
@@ -133,22 +138,23 @@ public class FlowQueryIT {
                 new RuleBuilder().withName("https").withDstPort("443").withProtocol("tcp,udp").build(),
                 new RuleBuilder().withName("http").withSrcPort("80").withProtocol("tcp,udp").build(),
                 new RuleBuilder().withName("https").withSrcPort("443").withProtocol("tcp,udp").build()),
-                                                                         FilterService.NOOP);
+                FilterService.NOOP);
 
         documentEnricher = new DocumentEnricherImpl(metricRegistry,
-                                                    new MockNodeDao(),
-                                                    new MockIpInterfaceDao(),
-                                                    new MockInterfaceToNodeCache(),
-                                                    new MockSessionUtils(),
-                                                    classificationEngine,
-                                                    new CacheConfigBuilder()
-                                                                  .withName("flows.node")
-                                                                  .withMaximumSize(1000)
-                                                                  .withExpireAfterWrite(300)
-                                                                  .build(), 0,
-                                                    new DocumentMangler(new ScriptEngineManager()));
-
-        final RawIndexInitializer initializer = new RawIndexInitializer(elasticRestClient, settings);
+                new MockNodeDao(),
+                new MockIpInterfaceDao(),
+                new MockInterfaceToNodeCache(),
+                new MockSessionUtils(),
+                classificationEngine,
+                new CacheConfigBuilder()
+                        .withName("flows.node")
+                        .withMaximumSize(1000)
+                        .withExpireAfterWrite(300)
+                        .build(), 0,
+                new DocumentMangler(new ScriptEngineManager()));
+        String pathToTemplates = Path.of(relativePathToEtc, "elastic" , "flows", "default").toString();
+        final org.opennms.features.elastic.client.ComposableTemplateInitializer initializer =
+                new ComposableTemplateInitializer(elasticRestClient, "flows/default", pathToTemplates);
 
         // Here we load the flows by building the documents ourselves,
         // so we must initialize the repository manually

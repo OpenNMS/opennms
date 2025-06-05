@@ -25,7 +25,9 @@ import static org.awaitility.Awaitility.with;
 import static java.util.concurrent.TimeUnit.MILLISECONDS;
 import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.junit.Assert.assertTrue;
+import static org.opennms.netmgt.flows.elastic.FlowQueryIT.relativePathToEtc;
 
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -81,7 +83,8 @@ public class BulkingIT {
                 IndexStrategy.MONTHLY, new MockIdentity(), new MockTracerRegistry(), new IndexSettings());
         elasticFlowRepository.setBulkSize(bulkSize);
         elasticFlowRepository.setBulkFlushMs(bulkFlushMs);
-        return new InitializingFlowRepository(elasticFlowRepository, elasticRestClient);
+        String pathToTemplates = Path.of(relativePathToEtc, "elastic" , "flows", "default").toString();
+        return new InitializingFlowRepository(elasticFlowRepository, elasticRestClient, pathToTemplates);
     }
 
     /**
