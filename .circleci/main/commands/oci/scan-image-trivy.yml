@@ -14,6 +14,10 @@ commands:
     steps:
       - setup_remote_docker:
           docker_layer_caching: false
+      - persist_to_workspace:
+          root: ~/project
+          paths:
+            - artifacts/*
       - cached-checkout
       - download-download-artifacts
       - run:
@@ -47,21 +51,22 @@ commands:
             docker image load -i ~/project/opennms-container/*/images/*.oci
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"
-            /tmp/bin/trivy image --severity HIGH,CRITICAL --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/filtered_vulnerabilities.json --no-progress opennms/${TAG}
-            /tmp/bin/trivy image --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/report.json --no-progress opennms/${TAG}
+            
+            #Create artifacts directory in the workspace
+            mkdir -p ~/project/artifacts
 
-            # Rename files to include job name
-            JOB_NAME_SANITIZED=$(echo "${CIRCLE_JOB}" | tr / -)
-            mkdir -p /tmp/artifacts
-            cp /tmp/report.json "/tmp/artifacts/${JOB_NAME_SANITIZED}_report.json"
-            cp /tmp/filtered_vulnerabilities.json "/tmp/artifacts/${JOB_NAME_SANITIZED}_filtered_vulnerabilities.json"
+            /tmp/bin/trivy image --severity HIGH,CRITICAL --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o "~/project/artifacts/${CIRCLE_JOB}_filtered_vulnerabilities.json" --no-progress opennms/${TAG}
+            /tmp/bin/trivy image --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o "~/project/artifacts/${CIRCLE_JOB}_report.json" --no-progress opennms/${TAG}
+
       - store_artifacts:
-          path: /tmp/artifacts
+          path: ~/project/artifacts
           destination: trivy-reports
 
   trivy-analyze:
     steps:
       - download-download-artifacts
+      - attach_workspace:
+          at: ~/project
       - run:
           name: Download and analyze Trivy scan results
           command: |
@@ -69,17 +74,21 @@ commands:
             SCAN_JOB_NAME="${CIRCLE_JOB%-analyze}"
             SANITIZED_SCAN_JOB_NAME=$(echo "${SCAN_JOB_NAME}" | tr / -)
             
+            # Create artifacts directory
+            mkdir -p ~/project/artifacts
+            
             echo "Downloading Trivy scan artifacts for ${SCAN_JOB_NAME}"
-            download-artifacts.pl --workflow="${CIRCLE_WORKFLOW_ID}" --match="${SANITIZED_SCAN_JOB_NAME}_*.json" json "${CIRCLE_BRANCH}" "/tmp/artifacts"
+            download-artifacts.pl --workflow="${CIRCLE_WORKFLOW_ID}" --match="${SANITIZED_SCAN_JOB_NAME}_*.json" json "${CIRCLE_BRANCH}" "~/project/artifacts"
             
             echo "Checking downloaded files:"
-            ls -l /tmp/artifacts
-            ls -l /tmp/trivy-reports
+            ls -la ~/project/artifacts/
 
-            if [[ -f "/tmp/artifacts/${SANITIZED_SCAN_JOB_NAME}_report.json" ]]; then
-              ln -s "/tmp/artifacts/${SANITIZED_SCAN_JOB_NAME}_report.json" "/tmp/report.json"
+            if [[ -f "~/project/artifacts/${SANITIZED_SCAN_JOB_NAME}_report.json" ]]; then
+              cp "~/project/artifacts/${SANITIZED_SCAN_JOB_NAME}_report.json" "/tmp/report.json"
             else
-              echo "Error: /tmp/artifacts/${SANITIZED_SCAN_JOB_NAME}_report.json not found!"
+              echo "Error: Report file not found!"
+              echo "Available files:"
+              find ~/project/artifacts -type f
               exit 1
             fi
 
