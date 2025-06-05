@@ -29,6 +29,10 @@ An enhanced node list has been introduced with options for sorting and filtering
 
 == Breaking changes
 
+=== OpenNMS Minion environment variables changes
+The OpenNMS Minion Docker container no longer uses the KAFKA_SINK, KAFKA_RPC and KAFKA_TWIN prefixes to configure Kafka.
+Instead, only the KAFKA_IPC prefix is used, which ensures that all Kafka-related settings are set correctly for all features and that ActiveMQ is no longer installed incorrectly.
+
 === Passive Status Monitor
 The Passive Status Monitor previously used the time of the event's arrival as the timestamp of the status.
 As this is too imprecise for some use cases, the time field of the event is now also evaluated.
