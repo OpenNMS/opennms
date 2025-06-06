@@ -583,6 +583,13 @@ public class ThresholdController extends AbstractController implements Initializ
         else {
             baseDef.setDsLabel(dsLabel);
         }
+        String exprLabel = request.getParameter("exprLabel");
+        if (exprLabel == null || "".equals(exprLabel)) {
+            baseDef.setExprLabel(null);
+        }
+        else {
+            baseDef.setExprLabel(exprLabel);
+        }
 
         String description = request.getParameter("description");
         if (description == null || "".equals(description)) {

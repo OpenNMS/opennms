@@ -56,6 +56,7 @@
         	<th>Expression</th>
         	<th>Datasource type</th>
         	<th>Datasource label</th>
+        	<th>Expression label</th>
         </tr>
         	<tr>
                 <td>
@@ -89,6 +90,7 @@
         				</c:forEach>
         			</select></td>
                 <td><input type="text" name="dsLabel" class="form-control" size="30" value="${expression.dsLabel.orElse(null)}"/></td>
+                <td><input type="text" name="exprLabel" class="form-control" size="30" value="${expression.exprLabel.orElse(null)}"/></td>
         	</tr>
         </table>
         <table class="table table-sm">
@@ -215,6 +217,7 @@
         <b>Expression</b>: A  mathematical expression involving datasource names which will be evaluated and compared to the threshold values<br/>
         <b>Data source type</b>: Node for "node-level" data items, and "interface" for interface-level items.  <br/>
         <b>Datasource label</b>: The name of the collected "string" type data item to use as a label when reporting this threshold<br/>
+        <b>Expression label</b>: A human-readable description of the threshold expression<br/>
         <b>Value</b>: Use depends on the type of threshold<br/>
         <b>Re-arm</b>: Use depends on the type of threshold; it is unused/ignored for relativeChange thresholds<br/>
         <b>Trigger</b>: The number of times the threshold must be "exceeded" in a row before the threshold will be triggered.  Not used for relativeChange thresholds.<br/>
