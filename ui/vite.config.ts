@@ -64,6 +64,7 @@ export default defineConfig({
     'process.env': process.env
   },
   test: {
+    dir: './tests',
     globals: true,
     environment: 'happy-dom',
     css: {
