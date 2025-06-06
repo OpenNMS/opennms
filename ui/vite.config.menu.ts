@@ -61,7 +61,6 @@ export default defineConfig({
     emptyOutDir: true,
     outDir: './dist-menu',
     target: 'esnext',
-    minify: false,
     copyPublicDir: false,
     rollupOptions: {
       output: {
