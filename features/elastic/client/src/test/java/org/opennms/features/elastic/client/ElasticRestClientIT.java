@@ -64,7 +64,7 @@ import eu.rekawek.toxiproxy.Proxy;
 import eu.rekawek.toxiproxy.ToxiproxyClient;
 
 
-public class ElasticRestClientIT {
+    public class ElasticRestClientIT {
 
     private static final String ELASTICSEARCH_IMAGE = "docker.elastic.co/elasticsearch/elasticsearch:7.17.9";
 
@@ -99,6 +99,13 @@ public class ElasticRestClientIT {
         try {
             Request deleteRequest = new Request("DELETE", "/netflow-*");
             client.getRestClient().performRequest(deleteRequest);
+        } catch (Exception e) {
+            // Ignore errors during cleanup
+        }
+        
+        // Also clean up test indices from deleteIndex tests
+        try {
+            client.deleteIndex("test-delete-*");
         } catch (Exception e) {
             // Ignore errors during cleanup
         }
@@ -501,4 +508,79 @@ public class ElasticRestClientIT {
         doc.put("field2", 42);
         return doc;
     }
+
+        @Test
+        public void testDeleteIndex() throws Exception {
+            // Create a test index
+            String testIndex = "test-delete-index";
+            Request createRequest = new Request("PUT", "/" + testIndex);
+            createRequest.setJsonEntity("{\"settings\": {\"number_of_shards\": 1, \"number_of_replicas\": 0}}");
+
+            Response createResponse = client.getRestClient().performRequest(createRequest);
+            assertEquals(200, createResponse.getStatusLine().getStatusCode());
+            System.out.println("Created test index: " + testIndex);
+
+            // Verify index exists
+            Request existsRequest = new Request("HEAD", "/" + testIndex);
+            Response existsResponse = client.getRestClient().performRequest(existsRequest);
+            assertEquals(200, existsResponse.getStatusLine().getStatusCode());
+            System.out.println("Confirmed index exists before deletion");
+
+            // Delete the index
+            boolean deleted = client.deleteIndex(testIndex);
+            assertTrue("Index should be successfully deleted", deleted);
+
+            // Verify index no longer exists
+            try {
+                Response checkResponse = client.getRestClient().performRequest(existsRequest);
+                int statusCode = checkResponse.getStatusLine().getStatusCode();
+                if (statusCode == 404) {
+                    System.out.println("Index successfully deleted - HEAD request returns 404 as expected");
+                } else {
+                    System.out.println("Index still exists after deletion! Status: " + statusCode);
+                    Assert.fail("Index should not exist after deletion");
+                }
+            } catch (Exception e) {
+                System.out.println("Confirmed index no longer exists after deletion: " + e.getMessage());
+            }
+        }
+
+        @Test
+        public void testDeleteIndexWithWildcard() throws Exception {
+            // Create multiple test indices
+            String indexPrefix = "test-delete-wildcard-";
+            for (int i = 0; i < 3; i++) {
+                String index = indexPrefix + i;
+                Request createRequest = new Request("PUT", "/" + index);
+                createRequest.setJsonEntity("{\"settings\": {\"number_of_shards\": 1, \"number_of_replicas\": 0}}");
+
+                Response createResponse = client.getRestClient().performRequest(createRequest);
+                assertEquals(200, createResponse.getStatusLine().getStatusCode());
+                LOG.info("Created test index: {}", index);
+            }
+
+            // Delete all indices with wildcard
+            boolean deleted = client.deleteIndex(indexPrefix + "*");
+            assertTrue("Indices should be successfully deleted", deleted);
+
+            // Verify all indices no longer exist
+            for (int i = 0; i < 3; i++) {
+                String index = indexPrefix + i;
+                Request existsRequest = new Request("HEAD", "/" + index);
+                try {
+                    Response checkResponse = client.getRestClient().performRequest(existsRequest);
+                    int statusCode = checkResponse.getStatusLine().getStatusCode();
+                    if (statusCode == 404) {
+                        // Good! Index was deleted successfully
+                        System.out.println("Index " + index + " successfully deleted - HEAD request returns 404 as expected");
+                    } else {
+                        System.out.println("Index " + index + " still exists after deletion! Status: " + statusCode);
+                        Assert.fail("Index " + index + " should not exist after deletion");
+                    }
+                } catch (Exception e) {
+                    System.out.println("Confirmed index " + index + " no longer exists after deletion: " + e.getMessage());
+                }
+            }
+        }
+
 }
