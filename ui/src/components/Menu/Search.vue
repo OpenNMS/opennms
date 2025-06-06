@@ -1,8 +1,15 @@
 <template>
   <div class="dropdown-wrapper">
     <div class="onms-search-icon-wrapper">
-      <font-awesome-icon color="rgb(73, 80, 87)" class="onms-search-icon" icon="fa fa-search" />
-      <FeatherInput @update:modelValue="search" label="Search..." :modelValue="searchState.currentSearch" />
+      <FeatherInput
+        label="Search..."
+        @update:modelValue="search"
+        :modelValue="searchState.currentSearch"
+      >
+        <template v-slot:post>
+          <FeatherIcon :icon="SearchIcon" />
+        </template>
+      </FeatherInput>
     </div>
     <div class="dropdown">
       <FeatherDropdown v-model="searchState.dropdownOpen">
@@ -33,6 +40,8 @@
   lang="ts"
 >
 import { reactive } from 'vue'
+import { FeatherIcon } from '@featherds/icon'
+import SearchIcon from '@featherds/icon/action/Search'
 import { FeatherInput } from '@featherds/input'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import SearchHeader from './SearchHeader.vue'
@@ -125,7 +134,8 @@ watchEffect(() => {
 
     :deep(.feather-menu-dropdown) {
       min-width: 100%;
-      max-width: 278px;
+      /* width for text in search result labels, so text does not get cut off */
+      max-width: 30em;
       position: absolute !important;
       bottom: unset !important;
       left: unset !important;
@@ -134,6 +144,14 @@ watchEffect(() => {
       width: auto !important;
       transform: translateY(-20px);
     }
+  }
+
+  :deep(.feather-input-wrapper-container .feather-input-border .pre-border) {
+    border-radius: 0;
+  }
+
+  :deep(.feather-input-wrapper-container .feather-input-border .post-border) {
+    border-radius: 0;
   }
 
   :deep(.feather-input-border) {
@@ -184,6 +202,7 @@ watchEffect(() => {
   position:relative;
   align-items:center;
   width:100%;
+
   .onms-search-icon {
     left:18px;
     position: absolute;

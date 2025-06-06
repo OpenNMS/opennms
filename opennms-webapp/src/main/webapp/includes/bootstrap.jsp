@@ -253,12 +253,18 @@
     </jsp:include>
     <%= "<div id=\"content\" class=\"container-fluid\">" %>
 
-    <%-- Vue menus --%>
-    <% if (oldMenuValue == null || !oldMenuValue.equals("true")) { %>
-        <%-- Vue menus --%>
-        <div id="opennms-sidemenu-container"></div>
-        <script type="module" src="/opennms/ui-components/assets/index.js"></script>
-    <% } %>
+    <%-- Vue menus: do not display if 'quiet' is true, or if 'oldmenu' query string param is true --%>
+    <c:choose>
+      <c:when test='${param.quiet == "true"}'>
+        <!-- 'quiet' mode, not displaying Vue menus -->
+      </c:when>
+      <c:otherwise>
+        <% if (oldMenuValue == null || !oldMenuValue.equals("true")) { %>
+          <div id="opennms-sidemenu-container"></div>
+          <script type="module" src="/opennms/ui-components/assets/index.js"></script>
+        <% } %>
+      </c:otherwise>
+    </c:choose>
   </c:otherwise>
 </c:choose>
 <c:if test='${((not __bs_flags.contains("nonavbar")) && (!empty pageContext.request.remoteUser)) && (not __bs_flags.contains("nobreadcrumbs"))}'>

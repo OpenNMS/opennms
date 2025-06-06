@@ -23,9 +23,9 @@
     <FeatherDropdownItem v-for="item in mainMenu.userNotificationMenu?.items?.filter(i => i.id === 'user')"
       :key="item.name || ''" @click="onMenuItemClick(item.url || '', item.isVueLink)">
       <div class="menubar-dropdown-item-content">
-        <a :href="computeLink(item.url || '')" class="dropdown-menu-link dropdown-menu-wrapper">
+        <a :href="computeLink(item.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
           <template v-if="item.icon">
-            <FeatherIcon :icon="Person" />
+            <FeatherIcon :icon="Person" class="user-notifications-icon" />
           </template>
           <span class="left-margin-small">
             {{ notificationSummary.userUnacknowledgedCount ?? 0 }} notices assigned to you
@@ -77,10 +77,10 @@
         <a :href="computeLink(item.url || '')"
           class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
           <template v-if="item.icon && item.id === 'team'">
-            <font-awesome-icon icon="fa-solid fa-users"></font-awesome-icon>
+            <FeatherIcon :icon="Person" class="user-notifications-icon" />
           </template>
           <template v-if="item.icon && item.id === 'oncall'">
-            <font-awesome-icon icon="fa-solid fa-calendar"></font-awesome-icon>
+            <FeatherIcon :icon="Calendar" class="user-notifications-icon" />
           </template>
           <span class="left-margin-small">
             <template v-if="item.id === 'team'">
@@ -99,7 +99,9 @@
 
 <script setup lang="ts">
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
+import { FeatherIcon } from '@featherds/icon'
 import ArrowDropDown from '@featherds/icon/navigation/ArrowDropDown'
+import Calendar from '@featherds/icon/action/Calendar'
 import Person from '@featherds/icon/action/Person'
 import { useMenuStore } from '@/stores/menuStore'
 import {
@@ -242,6 +244,10 @@ const onNotificationItemClick = (item: OnmsNotification) => {
   padding-left: 1.25rem;
   font-size: 0.875rem;
   font-weight: 400;
+
+  .user-notifications-icon {
+    font-size: 1.25rem;
+  }
 }
 
 .menubar-dropdown-item-content.menubar-padding {

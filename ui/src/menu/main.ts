@@ -20,21 +20,17 @@
 /// License.
 ///
 
-import { ref } from 'vue'
-import { defineStore } from 'pinia'
-import API from '@/services'
-import { Plugin } from '@/types'
+import { createApp, h } from 'vue'
+import { createPinia } from 'pinia'
+import '@featherds/styles'
+import '@featherds/styles/themes/open-light.css'
+import App from './App.vue'
 
-export const usePluginStore = defineStore('pluginStore', () => {
-  const plugins = ref([] as Plugin[])
+// id of div to mount this Vue app onto, expected to exist in the embedding web application
+const appMountId = import.meta.env.VITE_MENU_APP_MOUNT_ID?.toString() || 'opennms-sidemenu-container'
 
-  const getPlugins = async () => {
-    const resp = await API.getPlugins()
-    plugins.value = resp
-  }
-
-  return {
-    plugins,
-    getPlugins
-  }
+createApp({
+  render: () => h(App)
 })
+  .use(createPinia())
+  .mount(`#${appMountId}`)

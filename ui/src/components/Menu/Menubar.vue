@@ -15,7 +15,7 @@
             primary
             v-if="mainMenu.provisionMenu"
             @click="onAddNode"
-          >Add Node</FeatherButton>
+          >Add a Node</FeatherButton>
         </div>
 
         <UserNotificationsMenuItem :ref="userNotificationsMenu" />
@@ -231,7 +231,7 @@ onMounted(async () => {
 }
 
 .search-left-margin {
-  margin-left: 60px;
+  margin-left: 1em;
 }
 
 .notifications-icon-wrapper {
@@ -292,6 +292,7 @@ body {
 .header .header-content {
   padding-left: 1rem;
   padding-right: 1rem;
+  max-width: 100%;
 }
 
 .banner .header {

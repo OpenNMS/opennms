@@ -42,18 +42,11 @@ export default defineConfig({
     dedupe: ['vue']
   },
   plugins: [
-    vue({
-      template: {
-        compilerOptions: {
-          isCustomElement: (tag) => tag.includes('rapi-doc')
-        }
-      }
-    }),
+    vue(),
     svgLoader(),
-
     // https://github.com/antfu/unplugin-auto-import
     AutoImport({
-      imports: ['vue', 'vue-router', '@vueuse/core'],
+      imports: ['vue', '@vueuse/core'],
       eslintrc: {
         enabled: true,
         filepath: './.eslintrc-auto-import.json'
@@ -63,27 +56,18 @@ export default defineConfig({
   define: {
     'process.env': process.env
   },
-  test: {
-    dir: './tests',
-    globals: true,
-    environment: 'happy-dom',
-    css: {
-      include: /.+/
-    },
-    server: {
-      deps: {
-        // prevents this issue. Note deps.inline is deprecated, but unclear what the new configuration would be
-        // https://github.com/vitest-dev/vitest/issues/3862
-        inline: [
-          /@featherds\/\w+/
-        ]
-      }
-    }
-  },
-  root: './src/main',
+  root: './src/menu',
   build: {
     emptyOutDir: true,
-    outDir: './dist',
-    target: 'esnext'
+    outDir: './dist-menu',
+    target: 'esnext',
+    copyPublicDir: false,
+    rollupOptions: {
+      output: {
+        entryFileNames: `assets/[name].js`,
+        chunkFileNames: `assets/[name].js`,
+        assetFileNames: `assets/[name].[ext]`
+      }
+    }
   }
 })
