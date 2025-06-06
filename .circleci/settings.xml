@@ -6,8 +6,9 @@
    <mirrorOf>central</mirrorOf>
   </mirror>
   <mirror>
-   <id>mirror-opennms-everything</id>
-   <url>https://maven.opennms.org/repository/everything/</url>
+   <id>mvn.cdn.useast1.opennms.com-cache</id>
+   <name>🇺🇸 Maven CDN in US East 1</name>
+   <url>https://mvn.cdn.useast1.opennms.com/cache</url>
    <mirrorOf>*</mirrorOf>
   </mirror>
  </mirrors>
