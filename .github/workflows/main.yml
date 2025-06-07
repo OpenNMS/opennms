@@ -95,8 +95,12 @@ jobs:
         - X64
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: tarball-core
+          path: opennms-full-assembly/target
       - name: Build Core Debian packages
-        run: make core-deb-pkg
+        run: make core-pkg-deb
       - name: Persist Core debian package artifacts
         uses: actions/upload-artifact@v4
         with:

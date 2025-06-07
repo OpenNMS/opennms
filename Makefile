@@ -12,7 +12,6 @@ MAVEN_ARGS            := --batch-mode -DupdatePolicy=never -Djava.awt.headless=t
 export MAVEN_OPTS     := -Xms8g -Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation -XX:TieredStopAtLevel=1 -XX:-UseGCOverheadLimit -XX:-MaxFDLimit -Djdk.util.zip.disableZip64ExtraFieldValidation=true -Dmaven.wagon.http.retryHandler.count=3
 
 GIT_BRANCH            := $(shell git branch | grep \* | cut -d' ' -f2)
-OPENNMS_HOME          := /opt/opennms
 OPENNMS_VERSION       := $(shell mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:evaluate -Dexpression=project.version -q -DforceStdout)
 VERSION               := $(shell echo ${OPENNMS_VERSION} | sed -e 's,-SNAPSHOT,,')
 RELEASE_BUILD_KEY     := onms
@@ -20,6 +19,7 @@ RELEASE_BRANCH        := $(shell echo ${GIT_BRANCH} | sed -e 's,/,-,g')
 ifndef CIRCLE_BUILD_NUM
 override RELEASE_BUILD_NUM = 0
 endif
+
 RELEASE_BUILD_NUM     ?= ${CIRCLE_BUILD_NUM}
 RELEASE_BUILDNAME     := ${RELEASE_BRANCH}
 RELEASE_COMMIT        := $(shell git rev-parse --short HEAD)
@@ -43,11 +43,17 @@ SKIP                := "[ ⏭️ ]"
 JAVA_MAJOR_VERSION  := 17
 
 # Package requirements
+OPENNMS_HOME          := /opt/opennms
+OPENNMS_ETC           := /etc/opennms
+OPENNMS_RRD_DATA      := /var/lib/opennms/rrd
+OPENNMS_REPORTS_DATA  := /var/lib/opennms/reports
+OPENNMS_LOGS_DATA     := /var/log/opennms
+BUILD_ROOT            := $(ARTIFACTS_DIR)/buildroot
 OPA_VERSION           := $(shell grep '<opennmsApiVersion>' pom.xml | sed -E 's/.*<opennmsApiVersion>([[:digit:]]+(\.[[:digit:]]+)+).*/\1/')
 EXTRA_INFO            := $(GIT_BRANCH)
 EXTRA_INFO2           := $(RELEASE_COMMIT)
-DEB_PKG_RELEASE       := $(RELEASE_BUILD_NUM)
-DEBEMAIL              ?= cicd@bluebirdlabs.tech
+PKG_RELEASE           := $(RELEASE_BUILD_NUM)
+MAINTAINER_EMAIL      ?= maintainer@bluebirdops.org
 
 INSTALL_VERSION       := ${VERSION}-0.${RELEASE_MINOR_VERSION}.${RELEASE_MICRO_VERSION}.${RELEASE_COMMIT}
 DEPLOY_BASE_IMAGE     := quay.io/bluebird/deploy-base:2.0.2.b21
@@ -83,7 +89,8 @@ help:
 	@echo "  quick-build:           Runs a quick compile and quick assemble for development"
 	@echo "  quick-compile:         Quick compile to get fast feedback for development"
 	@echo "  quick-assemble:        Quick assemble to run on a build local system"
-	@echo "  core-deb-pkg:          Build Core Debian packages"
+	@echo "  core-pkg-deb:          Build Core Debian packages"
+	@echo "  core-pkg-rpm:          Build Core RPM packages"
 	@echo "  minion-deb-pkg:        Build Minion Debian packages"
 	@echo "  sentinel-deb-pkg:      Build Sentinel Debian packages"
 	@echo ""
@@ -169,11 +176,11 @@ deps-build:
 	@if [ "$(shell ulimit -n)" -lt "$(OPEN_FILES_LIMIT)" ]; then echo -n "$(FAIL) "; echo "Increase your open file limit with: ulimit -n $(OPEN_FILES_LIMIT)"; exit 1; fi >/dev/null
 	@echo $(OK)
 
-.PHONY: deps-deb-packages
-deps-deb-packages:
-	@echo "Check dependencies to build Debian packages"
-	command -v dch
-	command -v dpkg-buildpackage
+.PHONY: deps-packages
+deps-packages:
+	@echo "Check dependencies to build packages"
+	command -v fpm
+	command -v rpmbuild
 
 .PHONY: deps-docs
 deps-docs:
@@ -438,21 +445,86 @@ code-coverage: deps-sonar
                            -Dsonar.java.test.binaries=\"$(shell cat $(ARTIFACTS_DIR)/code-coverage/test-class-folders.txt | paste -s -d, -)\" \
                            -Dsonar.java.test.libraries=\"${HOME}/.m2/repository/**/*.jar,**/*.jar\""
 
-.PHONY: core-deb-pkg
-core-deb-pkg: deps-deb-packages
-	@echo "==== Building Debian Core ===="
+.PHONY: core-pkg-buildroot
+core-pkg-buildroot:
+ifeq (,$(wildcard ./opennms-full-assembly/target/opennms-full-assembly-*-core.tar.gz))
+	@echo "Can't build the Core container image, the build artifact"
+	@echo "./opennms-full-assembly/target/opennms-full-assembly-$(OPENNMS_VERSION)-core.tar.gz doesn't exist."
+	@echo ""
+	@echo "You can create the artifact with:"
+	@echo ""
+	@echo "  make quick-compile && make quick-assemble"
+	@echo ""
+	@exit 1
+endif
+	mkdir -p "$(BUILD_ROOT)/core/opt/opennms"
+	tar xzf "./opennms-full-assembly/target/opennms-full-assembly-$(OPENNMS_VERSION)-core.tar.gz" -C "$(BUILD_ROOT)/core/opt/opennms"
+	rm -rf "$(BUILD_ROOT)/core/opt/opennms/logs" \
+           "$(BUILD_ROOT)/core/opt/opennms/share/rrd" \
+           "$(BUILD_ROOT)/core/opt/opennms/share/reports"
+	mkdir -p "$(BUILD_ROOT)/core$(OPENNMS_RRD_DATA)" \
+             "$(BUILD_ROOT)/core$(OPENNMS_REPORTS_DATA)" \
+             "$(BUILD_ROOT)/core$(OPENNMS_LOGS_DATA)" \
+             "$(BUILD_ROOT)/core/usr/lib/systemd/system"
+	cp "$(BUILD_ROOT)/core/opt/opennms/etc/opennms.service" "$(BUILD_ROOT)/core/usr/lib/systemd/system"
+	mv "$(BUILD_ROOT)/core/opt/opennms/etc" "$(BUILD_ROOT)/core$(OPENNMS_ETC)"
+
+.PHONY: core-pkg-deb
+core-pkg-deb: deps-packages core-pkg-buildroot
+	@echo "==== Building Debian Core Packages ===="
 	@echo
 	@echo "Version:     " $(OPENNMS_VERSION)
-	@echo "Release:     " $(DEB_PKG_RELEASE)
+	@echo "Release:     " $(PKG_RELEASE)
 	@echo "OPA VERSION: " $(OPA_VERSION)
-	@echo "DEBEMAIL:    " $(DEBEMAIL)
 	@echo
-	@sed -i='' "s/OPA_VERSION/$(OPA_VERSION)/g" debian/control
-	@echo "- adding auto-generated changelog entry"
-	export DEBEMAIL="$(DEBEMAIL)"; dch -b -v "$(OPENNMS_VERSION)-$(DEB_PKG_RELEASE)" "$(EXTRA_INFO)$(EXTRA_INFO2)"
-	dpkg-buildpackage -us -uc -Zgzip
-	mkdir -p $(ARTIFACTS_DIR)/debian/core
-	mv ../*.deb ../*.dsc ../*.tar.gz ../*.buildinfo ../*.changes $(ARTIFACTS_DIR)/debian/core
+	fpm -s dir -t deb \
+		-n "bbo-core" \
+		-v "$(OPENNMS_VERSION)-$(PKG_RELEASE)" \
+		--config-files /opt/opennms/etc \
+		--description "BluebirdOps Network Management Platform" \
+		--url "https://github.com/bluebird-community/opennms" \
+		--maintainer "Maintainer <$(MAINTAINER_EMAIL)>" \
+		--depends adduser \
+		--depends jicmp \
+		--depends jicmp6 \
+		--depends jrrd2 \
+		--deb-recommends openjdk-17-jdk-headless \
+		--deb-suggests postgresql (>= 13.0) \
+		--deb-suggests iplike-pgsql13 \
+		--deb-suggests iplike-pgsql14 \
+		--deb-suggests iplike-pgsql15 \
+		--deb-suggests iplike-pgsql16 \
+		--deb-suggests iplike-pgsql17 \
+		--after-install packages/pkg-postinst-core.sh \
+		-C "$(BUILD_ROOT)/core"
+
+.PHONY: core-pkg-rpm
+core-pkg-rpm: deps-packages core-pkg-buildroot
+	@echo "==== Building RPM Core Packages ===="
+	@echo
+	@echo "Version:     " $(OPENNMS_VERSION)
+	@echo "Release:     " $(PKG_RELEASE)
+	@echo "OPA VERSION: " $(OPA_VERSION)
+	@echo
+	fpm -s dir -t rpm \
+	    -n "bbo-core" \
+		-v "$(OPENNMS_VERSION)_$(PKG_RELEASE)" \
+		--config-files /opt/opennms/etc \
+		--description "BluebirdOps Network Management Platform" \
+		--url "https://github.com/bluebird-community/opennms" \
+		--maintainer "Maintainer <$(MAINTAINER_EMAIL)>" \
+		--depends jicmp \
+		--depends jicmp6 \
+		--depends jrrd2 \
+		--rpm-tag "Recommends: java-17-openjdk-devel" \
+		--rpm-tag "Suggests: postgresql-server >= 13.0" \
+		--rpm-tag "Suggests: iplike-pgsql13" \
+		--rpm-tag "Suggests: iplike-pgsql14" \
+		--rpm-tag "Suggests: iplike-pgsql15" \
+		--rpm-tag "Suggests: iplike-pgsql16" \
+		--rpm-tag "Suggests: iplike-pgsql17" \
+		--after-install packages/pkg-postinst-core.sh \
+		-C "$(BUILD_ROOT)/core"
 
 .PHONY: minion-deb-pkg
 minion-deb-pkg: compile assemble
@@ -674,3 +746,4 @@ release: deps-build
   	else \
   		echo "Push commits and tag:           $(SKIP)"; \
   	fi;
+
