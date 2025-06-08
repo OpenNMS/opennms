@@ -50,12 +50,12 @@ PKG_CORE_LOGS         := /var/log/opennms
 PKG_CORE_DEPLOY       := /var/lib/opennms/deploy
 
 PKG_MINION_HOME       := /opt/minion
-PKG_MINION_LOGS       := /var/lib/minion/log
+PKG_MINION_LOGS       := /var/log/minion
 PKG_MINION_DEPLOY     := /var/lib/minion/deploy
 
 PKG_SENTINEL_HOME     := /opt/sentinel
-PKG_SENTINEL_LOGS     := /opt/sentinel/data/log
-PKG_SENTINEL_DEPLOY   := /opt/sentinel/deploy
+PKG_SENTINEL_LOGS     := /var/log/sentinel
+PKG_SENTINEL_DEPLOY   := /var/lib/sentinel/deploy
 
 BUILD_ROOT            := $(ARTIFACTS_DIR)/buildroot
 OPA_VERSION           := $(shell grep '<opennmsApiVersion>' pom.xml | sed -E 's/.*<opennmsApiVersion>([[:digit:]]+(\.[[:digit:]]+)+).*/\1/')
@@ -100,8 +100,10 @@ help:
 	@echo "  quick-assemble:        Quick assemble to run on a build local system"
 	@echo "  core-pkg-deb:          Build Core Debian packages"
 	@echo "  core-pkg-rpm:          Build Core RPM packages"
-	@echo "  minion-deb-pkg:        Build Minion Debian packages"
-	@echo "  sentinel-deb-pkg:      Build Sentinel Debian packages"
+	@echo "  minion-pkg-deb:        Build Minion Debian packages"
+	@echo "  minion-pkg-rpm:        Build Minion RPM packages"
+	@echo "  sentinel-pkg-deb:      Build Sentinel Debian packages"
+	@echo "  sentinel-pkg-rpm:      Build Sentinel RPM packages"
 	@echo ""
 	@echo "Container Images:"
 	@echo "  core-oci:              Build container image for Horizon Core, tag: opennms/horizon:latest"
@@ -140,6 +142,8 @@ help:
 	@echo "  clean-m2:              Remove just OpenNMS build artifacts from Maven local repository"
 	@echo "  clean-assembly:        Run mvn clean on assemblies, equivalent to clean.pl"
 	@echo "  clean-docs:            Clean all docs build artifacts"
+	@echo "  clean-buildroot:       Clean all package build root directories for Core, Minion, Sentinel in $(BUILD_ROOT)"
+	@echo "  clean-packages:        Clean all Debian and RPM package artifacts in $(ARTIFACTS_DIR)/packages"
 	@echo "  collect-artifacts:     Fetch and collect build artifacts in $(ARTIFACTS_DIR)"
 	@echo "  collect-testresults:   Fetch test results from tests in $(ARTIFACTS_DIR)/tests"
 	@echo "  spinup-postgres:       Spinup a PostgreSQL container to run integration tests used by integration tests"
@@ -395,7 +399,7 @@ sentinel-e2e: deps-oci test-lists sentinel-oci minion-oci core-oci
 # Otherwise we run the full test suite
 .PHONY: unit-tests
 unit-tests: test-lists spinup-postgres
-	$(eval U_TESTS ?= $(shell grep -Fxv -f ./.cicd-assets/_skipTests.txt ./target/artifacts/tests/unit_tests_classnames | paste -s -d, -))
+	$(eval U_TESTS ?= $(shell grep -Fxv -f ./.cicd-assets/_skipTests.txt $(ARTIFACTS_DIR)/tests/unit_tests_classnames | paste -s -d, -))
 	$(eval TESTS_PROJECTS ?= $(shell cat ${ARTIFACTS_DIR}/tests/test_modules | paste -s -d, -))
 	# Parallel compiling with -T 1C works, but it doesn't for tests
 	$(MAVEN_BIN) install $(MAVEN_ARGS) -T 1C -DskipTests=true -DskipITs=true -Dbuild.profile=default -Droot.dir=$(WORKING_DIRECTORY) -Dfailsafe.skipAfterFailureCount=1 -P!checkstyle -P!production -Pbuild-bamboo -Dbuild.skip.tarball=true -Dmaven.test.skip.exec=true --fail-fast --also-make --projects "$(TESTS_PROJECTS)" 2>&1 | tee $(ARTIFACTS_DIR)/mvn.tests.compile.log
@@ -403,7 +407,7 @@ unit-tests: test-lists spinup-postgres
 
 .PHONY: integration-tests
 integration-tests: test-lists spinup-postgres
-	$(eval I_TESTS ?= $(shell grep -Fxv -f ./.cicd-assets/_skipIntegrationTests.txt ./target/artifacts/tests/integration_tests_classnames | paste -s -d, -))
+	$(eval I_TESTS ?= $(shell grep -Fxv -f ./.cicd-assets/_skipIntegrationTests.txt $(ARTIFACTS_DIR)/tests/integration_tests_classnames | paste -s -d, -))
 	$(eval TESTS_PROJECTS ?= $(shell cat $(ARTIFACTS_DIR)/tests/test_modules | paste -s -d, -))
 	# Parallel compiling with -T 1C works, but it doesn't for tests
 	$(MAVEN_BIN) install $(MAVEN_ARGS) -T 1C -DskipTests=true -DskipITs=true -Dbuild.profile=default -Droot.dir=$(WORKING_DIRECTORY) -Dfailsafe.skipAfterFailureCount=1 -P!checkstyle -P!production -Pbuild-bamboo -Dbuild.skip.tarball=true -Dmaven.test.skip.exec=true --fail-fast --also-make --projects "$(TESTS_PROJECTS)" 2>&1 | tee $(ARTIFACTS_DIR)/mvn.tests.compile.log
@@ -467,6 +471,7 @@ ifeq (,$(wildcard ./opennms-full-assembly/target/opennms-full-assembly-*-core.ta
 	@exit 1
 endif
 	mkdir -p "$(BUILD_ROOT)/core/opt/opennms"
+	mkdir -p "$(ARTIFACTS_DIR)/packages/core"
 	tar xzf "./opennms-full-assembly/target/opennms-full-assembly-$(OPENNMS_VERSION)-core.tar.gz" -C "$(BUILD_ROOT)/core/opt/opennms"
 	rm -rf "$(BUILD_ROOT)/core/opt/opennms/logs" \
            "$(BUILD_ROOT)/core/opt/opennms/share/rrd" \
@@ -487,11 +492,11 @@ core-pkg-deb: deps-packages core-pkg-buildroot
 	@echo "Release:     " $(PKG_RELEASE)
 	@echo "OPA VERSION: " $(OPA_VERSION)
 	@echo
-	fpm -s dir -t deb \
+	fpm -s dir -t deb -p $(ARTIFACTS_DIR)/packages/core/NAME_VERSION_ARCH_$(PKG_RELEASE).deb \
 		-n "bbo-core" \
 		-v "$(OPENNMS_VERSION)-$(PKG_RELEASE)" \
 		--config-files /opt/opennms/etc \
-		--description "BluebirdOps Network Management Platform" \
+		--description "BluebirdOps Core services" \
 		--url "https://github.com/bluebird-community/opennms" \
 		--maintainer "Maintainer <$(MAINTAINER_EMAIL)>" \
 		--depends jicmp \
@@ -515,7 +520,7 @@ core-pkg-rpm: deps-packages core-pkg-buildroot
 	@echo "Release:     " $(PKG_RELEASE)
 	@echo "OPA VERSION: " $(OPA_VERSION)
 	@echo
-	fpm -s dir -t rpm \
+	fpm -s dir -t rpm -p $(ARTIFACTS_DIR)/packages/core/NAME_VERSION_ARCH_$(PKG_RELEASE).rpm \
 	    -n "bbo-core" \
 		-v "$(OPENNMS_VERSION)_$(PKG_RELEASE)" \
 		--config-files /opt/opennms/etc \
@@ -548,6 +553,7 @@ ifeq (,$(wildcard ./opennms-assemblies/minion/target/org.opennms.assemblies.mini
 	@exit 1
 endif
 	mkdir -p "$(BUILD_ROOT)/minion/opt/minion"
+	mkdir -p "$(ARTIFACTS_DIR)/packages/minion"
 	tar xzf "./opennms-assemblies/minion/target/org.opennms.assemblies.minion-$(OPENNMS_VERSION)-minion.tar.gz" --strip-component 1 -C "$(BUILD_ROOT)/minion/opt/minion"
 	rm -rf "$(BUILD_ROOT)/minion/data/log" \
            "$(BUILD_ROOT)/minion/deploy"
@@ -565,7 +571,7 @@ minion-pkg-deb: deps-packages minion-pkg-buildroot
 	@echo "Release:     " $(DEB_PKG_RELEASE)
 	@echo "OPA VERSION: " $(OPA_VERSION)
 	@echo
-	fpm -s dir -t deb \
+	fpm -s dir -t deb -p $(ARTIFACTS_DIR)/packages/minion/NAME_VERSION_ARCH_$(PKG_RELEASE).deb \
 		-n "bbo-minion" \
 		-v "$(OPENNMS_VERSION)-$(PKG_RELEASE)" \
 		--config-files /opt/minion/etc \
@@ -586,7 +592,7 @@ minion-pkg-rpm: deps-packages minion-pkg-buildroot
 	@echo "Release:     " $(DEB_PKG_RELEASE)
 	@echo "OPA VERSION: " $(OPA_VERSION)
 	@echo
-	fpm -s dir -t rpm \
+	fpm -s dir -t rpm -p $(ARTIFACTS_DIR)/packages/minion/NAME_VERSION_ARCH_$(PKG_RELEASE).rpm \
 		-n "bbo-minion" \
 		-v "$(OPENNMS_VERSION)_$(PKG_RELEASE)" \
 		--config-files /opt/minion/etc \
@@ -599,25 +605,66 @@ minion-pkg-rpm: deps-packages minion-pkg-buildroot
 		--after-install packages/pkg-postinst-minion.sh \
 		-C "$(BUILD_ROOT)/minion"
 
-.PHONY: sentinel-deb-pkg
-sentinel-deb-pkg: compile assemble
-	@echo "==== Building Debian Sentinel ===="
+.PHONY: sentinel-pkg-buildroot
+sentinel-pkg-buildroot:
+ifeq (,$(wildcard ./opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz))
+	@echo "Can't build the Sentinel build root directory structure"
+	@echo "./opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-$(OPENNMS_VERSION)-sentinel.tar.gz doesn't exist."
+	@echo ""
+	@echo "You can create the artifact with:"
+	@echo ""
+	@echo "  make quick-compile && make quick-assemble"
+	@echo ""
+	@exit 1
+endif
+	mkdir -p "$(BUILD_ROOT)/sentinel/opt/sentinel"
+	mkdir -p "$(ARTIFACTS_DIR)/packages/sentinel"
+	tar xzf "./opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-$(OPENNMS_VERSION)-sentinel.tar.gz" --strip-component 1 -C "$(BUILD_ROOT)/sentinel/opt/sentinel"
+	rm -rf "$(BUILD_ROOT)/sentinel/data/log" \
+           "$(BUILD_ROOT)/sentinel/deploy"
+	mkdir -p "$(BUILD_ROOT)/sentinel$(PKG_SENTINEL)" \
+             "$(BUILD_ROOT)/sentinel$(PKG_SENTINEL_LOGS)" \
+             "$(BUILD_ROOT)/sentinel$(PKG_SENTINEL_DEPLOY)" \
+             "$(BUILD_ROOT)/sentinel/usr/lib/systemd/system"
+	cp "$(BUILD_ROOT)/sentinel/opt/sentinel/etc/sentinel.service" "$(BUILD_ROOT)/sentinel/usr/lib/systemd/system"
+
+.PHONY: sentinel-pkg-deb
+sentinel-pkg-deb: deps-packages sentinel-pkg-buildroot
+	@echo "==== Building Debian Sentinel Packages ===="
 	@echo
 	@echo "Version:     " $(OPENNMS_VERSION)
 	@echo "Release:     " $(DEB_PKG_RELEASE)
 	@echo "OPA VERSION: " $(OPA_VERSION)
-	@echo "DEBEMAIL:    " $(DEBEMAIL)
 	@echo
-	@echo "- adding auto-generated changelog entry"
-	@cp opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz "target/opennms-sentinel_$(OPENNMS_VERSION).orig.tar.gz"
-	@cp opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz "target/opennms-sentinel_$(OPENNMS_VERSION).tar.gz"
-	@tar xzf "target/opennms-sentinel_$(OPENNMS_VERSION).tar.gz" -C target
-	@sed -i='' "s/OPA_VERSION/$(OPA_VERSION)/g" target/sentinel-$(OPENNMS_VERSION)/debian/control
-	cd target/sentinel-$(OPENNMS_VERSION); \
-	export DEBEMAIL="$(DEBEMAIL)"; dch -b -v "$(OPENNMS_VERSION)-$(DEB_PKG_RELEASE)" "$(EXTRA_INFO)$(EXTRA_INFO2)"; \
-	dpkg-buildpackage -us -uc -Zgzip
-	mkdir -p $(ARTIFACTS_DIR)/debian/sentinel
-	mv target/*.deb target/*.dsc target/*.debian.tar.gz target/*.buildinfo target/*.changes $(ARTIFACTS_DIR)/debian/sentinel
+	fpm -s dir -t deb -p $(ARTIFACTS_DIR)/packages/sentinel/NAME_VERSION_ARCH_$(PKG_RELEASE).deb \
+		-n "bbo-sentinel" \
+		-v "$(OPENNMS_VERSION)-$(PKG_RELEASE)" \
+		--config-files /opt/sentinel/etc \
+		--description "BluebirdOps services to horizontally scale backend workloads" \
+		--url "https://github.com/bluebird-community/opennms" \
+		--maintainer "Maintainer <$(MAINTAINER_EMAIL)>" \
+		--deb-recommends openjdk-17-jdk-headless \
+		--after-install packages/pkg-postinst-sentinel.sh \
+		-C "$(BUILD_ROOT)/sentinel"
+
+.PHONY: sentinel-pkg-rpm
+sentinel-pkg-rpm: deps-packages sentinel-pkg-buildroot
+	@echo "==== Building RPM Sentinel Packages ===="
+	@echo
+	@echo "Version:     " $(OPENNMS_VERSION)
+	@echo "Release:     " $(DEB_PKG_RELEASE)
+	@echo "OPA VERSION: " $(OPA_VERSION)
+	@echo
+	fpm -s dir -t rpm -p $(ARTIFACTS_DIR)/packages/sentinel/NAME_VERSION_ARCH_$(PKG_RELEASE).rpm \
+		-n "bbo-sentinel" \
+		-v "$(OPENNMS_VERSION)_$(PKG_RELEASE)" \
+		--config-files /opt/sentinel/etc \
+		--description "BluebirdOps services to horizontally scale backend workloads" \
+		--url "https://github.com/bluebird-community/opennms" \
+		--maintainer "Maintainer <$(MAINTAINER_EMAIL)>" \
+		--rpm-tag "Recommends: java-17-openjdk-devel" \
+		--after-install packages/pkg-postinst-sentinel.sh \
+		-C "$(BUILD_ROOT)/sentinel"
 
 .PHONY: javadocs
 javadocs: deps-build show-info
@@ -640,7 +687,7 @@ uninstall-core:
 	rm -rf "$(PKG_CORE_HOME)/*"
 
 .PHONY: clean-all
-clean-all: clean-docs clean-assembly clean-m2 clean-git
+clean-all: clean-m2 clean-git
 
 .PHONY: clean-git
 clean-git:
@@ -660,6 +707,16 @@ clean-docs:
 	@rm -rf build public
 	@echo "Clean Antora cache for git repositories and UI components ..."
 	@rm -rf .cache
+
+.PHONY: clean-buildroot
+clean-buildroot:
+	@echo "Delete build root content for package builds ..."
+	@rm -rf $(BUILD_ROOT)
+
+.PHONY: clean-packages
+clean-packages:
+	@echo "Delete RPM and Debian package artifacts ..."
+	@rm -rf $(ARTIFACTS_DIR)/packages
 
 .PHONY: clean
 clean: clean-assembly clean-docs

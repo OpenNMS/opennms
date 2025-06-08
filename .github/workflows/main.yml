@@ -1,6 +1,6 @@
 ---
 name: main
-run-name: Build and run test suites for BluebirdOps components
+run-name: Build tarballs, oci and packages with test suites
 on:
   push:
   workflow_dispatch:
@@ -83,16 +83,13 @@ jobs:
           path: |
             target/artifacts/logs/libyear.log        
 
-  core-debian-package:
-    if: "!contains(github.event.commits[0].message, '[skip core-debian-package]')"
+  core-packages:
+    if: "!contains(github.event.commits[0].message, '[skip core-packages]')"
     needs:
       - quick-build
-    runs-on:
-      group: Default
-      labels:
-        - self-hosted
-        - Linux
-        - X64
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/bluebird/java-builder:ubuntu.0.1.5.jdk-17.b21
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -100,55 +97,63 @@ jobs:
           name: tarball-core
           path: opennms-full-assembly/target
       - name: Build Core Debian packages
-        run: make core-pkg-deb
-      - name: Persist Core debian package artifacts
+        run: make core-pkg-deb PKG_RELEASE=${{ github.run_number }}
+      - name: Build Core RPM packages
+        run: make core-pkg-rpm PKG_RELEASE=${{ github.run_number }}
+      - name: Persist Core package artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: core-deb-pkgs
+          name: core-pkgs
           path: |
-            target/artifacts/debian/core
+            target/artifacts/packages/core
 
-  minion-debian-package:
-    if: "!contains(github.event.commits[0].message, '[skip minion-debian-package]')"
+  minion-packages:
+    if: "!contains(github.event.commits[0].message, '[skip minion-packages]')"
     needs:
       - quick-build
-    runs-on:
-      group: Default
-      labels:
-        - self-hosted
-        - Linux
-        - X64
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/bluebird/java-builder:ubuntu.0.1.5.jdk-17.b21
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: tarball-minion
+          path: opennms-assemblies/minion/target
       - name: Build Minion Debian packages
-        run: make minion-pkg-deb
-      - name: Persist Minion debian package artifacts
+        run: make minion-pkg-deb PKG_RELEASE=${{ github.run_number }}
+      - name: Build Minion RPM packages
+        run: make minion-pkg-rpm PKG_RELEASE=${{ github.run_number }}
+      - name: Persist Minion package artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: minion-deb-pkgs
+          name: minion-pkgs
           path: |
-            target/artifacts/debian/minion
+            target/artifacts/packages/minion
 
-  sentinel-debian-package:
-    if: "!contains(github.event.commits[0].message, '[skip sentinel-debian-package]')"
+  sentinel-packages:
+    if: "!contains(github.event.commits[0].message, '[skip sentinel-packages]')"
     needs:
       - quick-build
-    runs-on:
-      group: Default
-      labels:
-        - self-hosted
-        - Linux
-        - X64
+    runs-on: ubuntu-latest
+    container:
+      image: quay.io/bluebird/java-builder:ubuntu.0.1.5.jdk-17.b21
     steps:
       - uses: actions/checkout@v4
+      - uses: actions/download-artifact@v4
+        with:
+          name: tarball-sentinel
+          path: opennms-assemblies/sentinel/target
       - name: Build Sentinel Debian packages
-        run: make sentinel-deb-pkg
-      - name: Persist Sentinel debian package artifacts
+        run: make sentinel-pkg-deb PKG_RELEASE=${{ github.run_number }}
+      - name: Build Sentinel RPM packages
+        run: make sentinel-pkg-rpm PKG_RELEASE=${{ github.run_number }}
+      - name: Persist Sentinel package artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: sentinel-deb-pkgs
+          name: sentinel-pkgs
           path: |
-            target/artifacts/debian/sentinel
+            target/artifacts/packages/sentinel
 
   core-oci:
     if: "!contains(github.event.commits[0].message, '[skip core-oci]')"
@@ -468,9 +473,11 @@ jobs:
             target/artifacts/recordings
             target/artifacts/smoke-test-*.tar.gz
 
-  publish-core-debian-package:
+  publish-packages:
     needs:
-      - core-debian-package
+      - core-packages
+      - minion-packages
+      - sentinel-packages
     if: github.ref == 'refs/heads/develop'
     runs-on: ubuntu-latest
     container:
@@ -478,52 +485,27 @@ jobs:
     steps:
       - uses: actions/download-artifact@v4
         with:
-          name: core-deb-pkgs
-          path: target/artifacts/debian/core
-      - name: Publish Core Debian packages to Cloudsmith
+          name: core-pkgs
+          path: target/artifacts/packages/core
+      - uses: actions/download-artifact@v4
+        with:
+          name: minion-pkgs
+          path: target/artifacts/packages/minion
+      - uses: actions/download-artifact@v4
+        with:
+          name: sentinel-pkgs
+          path: target/artifacts/packages/sentinel
+      - name: Publish Debian packages to Cloudsmith
         shell: bash
         run: |
           export CLOUDSMITH_API_KEY=${{ secrets.CLOUDSMITH_API_KEY }}
-          for deb in $(ls target/artifacts/debian/core/*.deb); do
+          for deb in $(find target/artifacts/packages -name deb -type f); do
             cloudsmith push deb --republish bluebird/develop/any-distro/any-version ${deb};
           done;
-
-  publish-minion-debian-package:
-    needs:
-      - minion-debian-package
-    if: github.ref == 'refs/heads/develop'
-    runs-on: ubuntu-latest
-    container:
-      image: quay.io/bluebird/base-builder:ubuntu.0.1.7.b18
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: minion-deb-pkgs
-          path: target/artifacts/debian/minion
-      - name: Publish Minion Debian packages to Cloudsmith
+      - name: Publish RPM packages to Cloudsmith
         shell: bash
         run: |
           export CLOUDSMITH_API_KEY=${{ secrets.CLOUDSMITH_API_KEY }}
-          for deb in $(ls target/artifacts/debian/minion/*.deb); do
-            cloudsmith push deb --republish bluebird/develop/any-distro/any-version ${deb};
-          done;
-
-  publish-sentinel-debian-package:
-    needs:
-      - sentinel-debian-package
-    if: github.ref == 'refs/heads/develop'
-    runs-on: ubuntu-latest
-    container:
-      image: quay.io/bluebird/base-builder:ubuntu.0.1.7.b18
-    steps:
-      - uses: actions/download-artifact@v4
-        with:
-          name: sentinel-deb-pkgs
-          path: target/artifacts/debian/sentinel
-      - name: Publish Sentinel Debian packages to Cloudsmith
-        shell: bash
-        run: |
-          export CLOUDSMITH_API_KEY=${{ secrets.CLOUDSMITH_API_KEY }}
-          for deb in $(ls target/artifacts/debian/sentinel/*.deb); do
-            cloudsmith push deb --republish bluebird/develop/any-distro/any-version ${deb};
+          for rpm in $(find target/artifacts/packages -name rpm -type f); do
+            cloudsmith push rpm --republish bluebird/develop/any-distro/any-version ${rpm};
           done;
