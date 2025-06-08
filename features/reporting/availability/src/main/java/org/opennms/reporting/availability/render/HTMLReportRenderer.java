@@ -32,6 +32,7 @@ import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.Callable;
 
+import javax.xml.XMLConstants;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerFactory;
@@ -212,6 +213,10 @@ public class HTMLReportRenderer implements ReportRenderer {
     public void render(final Reader in, final OutputStream out, final Reader xslt) throws ReportRenderException {
         try {
             TransformerFactory tfact = TransformerFactory.newInstance();
+
+            // see NMS-16414
+            tfact.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
+
             Transformer transformer = tfact.newTransformer(new StreamSource(xslt));
             transformer.setOutputProperty(OutputKeys.ENCODING, StandardCharsets.UTF_8.name());
             transformer.transform(new StreamSource(in), new StreamResult(out));

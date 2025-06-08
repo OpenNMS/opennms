@@ -183,6 +183,7 @@
     <module>perspectivepoller</module>
     <module>openconfig</module>
     <module>device-config</module>
+    <module>zenith-connect</module>
     <module>ui-extension</module>
     <!-- Configuration Manager -->
     <module>config</module>
@@ -193,5 +194,6 @@
     <module>inmemory-timeseries-plugin</module>
     
     <module>grpc</module>
+    <module>elastic</module>
   </modules>
 </project>

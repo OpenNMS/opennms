@@ -34,7 +34,7 @@ public interface TemporaryDatabase extends DataSource, XADataSource {
     public static final String DEFAULT_DRIVER = "org.postgresql.Driver";
     public static final String DEFAULT_URL = "jdbc:postgresql://localhost:5432/";
     public static final String DEFAULT_ADMIN_USER = "postgres";
-    public static final String DEFAULT_ADMIN_PASSWORD = "";
+    public static final String DEFAULT_ADMIN_PASSWORD = "postgres";
 
     public void setPopulateSchema(boolean populate);
     public void setPlpgsqlIplike(boolean plpgsqlIplike);

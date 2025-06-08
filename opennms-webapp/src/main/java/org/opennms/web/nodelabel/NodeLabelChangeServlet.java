@@ -22,6 +22,7 @@
 package org.opennms.web.nodelabel;
 
 import java.io.IOException;
+import java.net.URLEncoder;
 import java.sql.SQLException;
 
 import javax.servlet.ServletException;
@@ -134,7 +135,7 @@ public class NodeLabelChangeServlet extends HttpServlet {
             this.sendLabelChangeEvent(nodeId, oldLabel, newLabel);
 
             if (managedByProvisiond) {
-                response.sendRedirect(Util.calculateUrlBase(request, "admin/nodelabelProvisioned.jsp?node=" + nodeIdString + "&foreignSource=" + node.getForeignSource()));
+                response.sendRedirect(Util.calculateUrlBase(request, "admin/ng-requisitions/index.jsp#/requisitions/" + URLEncoder.encode(node.getForeignSource()) + "/nodes/" + URLEncoder.encode(node.getForeignId())));
             } else {
                 final WebApplicationContext context = WebApplicationContextUtils.getWebApplicationContext(getServletContext());
                 final TransactionTemplate transactionTemplate = context.getBean(TransactionTemplate.class);

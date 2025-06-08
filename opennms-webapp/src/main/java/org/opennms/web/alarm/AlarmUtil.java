@@ -72,6 +72,7 @@ import org.opennms.web.alarm.filter.ServiceOrFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
 import org.opennms.web.alarm.filter.SeverityOrFilter;
 import org.opennms.web.alarm.filter.SituationFilter;
+import org.opennms.web.filter.ConditionalFilter;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.utils.filter.CheckboxFilterUtils;
 import org.opennms.web.utils.filter.FilterTokenizeUtils;
@@ -206,6 +207,16 @@ public abstract class AlarmUtil extends Object {
     }
 
     /**
+     * Checks if a string represents an integer.
+     *
+     * @param str The string to check.
+     * @return True if the string is an integer, false otherwise.
+     */
+    public static boolean isInteger(String str) {
+        return str != null && !str.isEmpty() && str.chars().allMatch(Character::isDigit);
+    }
+
+    /**
      * <p>getFilter</p>
      *
      * @param allFilters a {@link java.lang.String}[] object holding all filter Strings
@@ -240,6 +251,30 @@ public abstract class AlarmUtil extends Object {
             }
         } else if (type.equals(InterfaceFilter.TYPE)) {
             filter = new InterfaceFilter(InetAddressUtils.addr(value));
+        } else if (type.equals(ConditionalFilter.TYPE)) {
+            String cleanedValue = value.substring(1, value.length() - 1); // Remove surrounding brackets
+            String[] ids = cleanedValue.split(ARRAY_DELIMITER);
+            boolean hasInteger = false;
+
+            List<Integer> serviceIdsList = new ArrayList<>();
+            List<OnmsSeverity> severitiesList = new ArrayList<>();
+
+            for (String id : ids) {
+                String trimmedId = id.trim();
+                if (isInteger(trimmedId)) {
+                    hasInteger = true;
+                    serviceIdsList.add(WebSecurityUtils.safeParseInt(trimmedId));
+                } else {
+                    severitiesList.add(OnmsSeverity.get(trimmedId));
+                }
+            }
+            if (hasInteger) {
+                Integer[] serviceIds = serviceIdsList.toArray(new Integer[0]);
+                filter = new ServiceOrFilter(serviceIds, servletContext);
+            } else {
+                OnmsSeverity[] severities = severitiesList.toArray(new OnmsSeverity[0]);
+                filter = new SeverityOrFilter(severities);
+            }
         } else if (type.equals(ServiceFilter.TYPE)) {
             String[] ids = value.split(ARRAY_DELIMITER);
             Integer[] serviceIds = new Integer[ids.length];

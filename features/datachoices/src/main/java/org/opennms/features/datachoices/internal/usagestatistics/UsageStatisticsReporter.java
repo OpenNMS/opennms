@@ -25,8 +25,10 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -34,6 +36,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.Collections;
+import java.util.concurrent.ExecutionException;
 import java.util.stream.Collectors;
 
 import javax.management.AttributeNotFoundException;
@@ -83,11 +87,16 @@ import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.api.OutageDao;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
+import org.opennms.netmgt.flows.api.FlowQueryService;
+import org.opennms.netmgt.flows.filter.api.Filter;
+import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 import org.opennms.netmgt.provision.persist.foreignsource.ForeignSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import oshi.SystemInfo;
+import oshi.hardware.CentralProcessor;
 
 public class UsageStatisticsReporter implements StateChangeHandler {
     private static final Logger LOG = LoggerFactory.getLogger(UsageStatisticsReporter.class);
@@ -113,6 +122,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     public static final String APPLIANCE_VIRTUAL_OID = ".1.3.6.1.4.1.5813.42.5.1";
     public static final String APPLIANCE_MINI_OID = ".1.3.6.1.4.1.5813.42.5.2";
     public static final String APPLIANCE_1U_OID = ".1.3.6.1.4.1.5813.42.5.3";
+
+    //could be made configurable in future
+    public static final int DEFAULT_ALERTS_LAST_HOURS = 24;
+    public static final int DEFAULT_EVENTS_LAST_HOURS = 24;
 
     private String m_url;
 
@@ -165,6 +178,9 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private OutageDao m_outageDao;
 
     private NotificationDao m_notificationDao;
+
+
+    private FlowQueryService flowQueryService;
 
     public synchronized void init() {
         if (m_timer != null) {
@@ -254,6 +270,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
             LOG.warn("An error occurred while retrieving the system id. " +
                         "The usage report will be submitted with a null system id.", e);
         }
+
+        usageStatisticsReport.setFlowCountPerSecond(getFlowCount());
         // Operating System
         usageStatisticsReport.setOsName(System.getProperty("os.name"));
         usageStatisticsReport.setOsArch(System.getProperty("os.arch"));
@@ -268,7 +286,9 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         usageStatisticsReport.setSnmpInterfacesWithFlows(m_snmpInterfaceDao.getNumInterfacesWithFlows());
         usageStatisticsReport.setMonitoredServices(m_monitoredServiceDao.countAll());
         usageStatisticsReport.setEvents(m_eventDao.countAll());
+        usageStatisticsReport.setEventsLastHours(m_eventDao.getNumEventsLastHours(DEFAULT_EVENTS_LAST_HOURS));
         usageStatisticsReport.setAlarms(m_alarmDao.countAll());
+        usageStatisticsReport.setAlarmsLastHours(m_alarmDao.getNumAlarmsLastHours(DEFAULT_ALERTS_LAST_HOURS));
         usageStatisticsReport.setSituations(m_alarmDao.getNumSituations());
         usageStatisticsReport.setMonitoringLocations(m_monitoringLocationDao.countAll());
         usageStatisticsReport.setMinions(m_monitoringSystemDao.getNumMonitoringSystems(OnmsMonitoringSystem.TYPE_MINION));
@@ -309,10 +329,34 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         return usageStatisticsReport;
     }
 
+    private long getFlowCount() {
+
+        long flowCount = 0;
+
+        if(flowQueryService != null) {
+            try {
+                final long currentTime = System.currentTimeMillis();
+                final long twentyFourHoursAgo = currentTime - Duration.ofHours(24).toMillis();
+                final List<Filter> filters = Collections.singletonList(new TimeRangeFilter(twentyFourHoursAgo, currentTime));
+                flowCount = flowQueryService.getFlowCount(filters).get();
+
+            } catch (InterruptedException | ExecutionException e) {
+                LOG.warn("An error occurred while retrieving the flow count. ", e);
+            }
+        }
+
+        return flowCount;
+    }
+
     private boolean isContainerized() {
+        // this will detect podman even in custom container builds
         final boolean inPodman = new File("/run/.containerenv").exists();
+        // this will detect docker even in custom container builds
         final boolean inDocker = new File("/.dockerenv").exists();
-        return inPodman || inDocker;
+        // this will detect in any case if our unmodified container is run, since this file was created in our Dockerfile
+        final boolean containerRunning = "container".equals(System.getenv("OPENNMS_EXECUTION_ENVIRONMENT"));
+
+        return inPodman || inDocker || containerRunning;
     }
 
     private void setJmxAttributes(UsageStatisticsReportDTO usageStatisticsReport) {
@@ -332,6 +376,28 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         Object availableProcessorsObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_AVAILABLE_PROCESSORS);
         if (availableProcessorsObj != null) {
             usageStatisticsReport.setAvailableProcessors((int) availableProcessorsObj);
+        }
+
+        //populating current system cpu utilization
+        SystemInfo systemInfo = new SystemInfo();
+        CentralProcessor processor = systemInfo.getHardware().getProcessor();
+
+        double cpuLoad =  processor.getSystemCpuLoad(1000) * 100;
+        usageStatisticsReport.setCpuUtilization(String.format("%.2f%%", cpuLoad));
+
+        Object totalPhysicalMemorySizeObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE);
+        if (totalPhysicalMemorySizeObj != null) {
+            long totalMemory = (long)totalPhysicalMemorySizeObj;
+            if (totalMemory == 0) {
+                usageStatisticsReport.setMemoryUtilization("0%");
+            } else {
+                Object freePhysicalMemorySizeObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_FREE_PHYSICAL_MEMORY_SIZE);
+                if (freePhysicalMemorySizeObj != null) {
+                    long freeMemory = (long) freePhysicalMemorySizeObj;
+                    double utilizedMemory = ((double) (totalMemory - freeMemory) / totalMemory) * 100;
+                    usageStatisticsReport.setMemoryUtilization(String.format("%.2f%%", utilizedMemory));
+                }
+            }
         }
     }
 
@@ -638,6 +704,11 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     public void setDeviceConfigDao(DeviceConfigDao deviceConfigDao) {
         this.m_deviceConfigDao = deviceConfigDao;
     }
+
+    public void setFlowQueryService(FlowQueryService flowQueryService) {
+        this.flowQueryService = flowQueryService;
+    }
+
 
     private int getDestinationPathCount(){
         try {

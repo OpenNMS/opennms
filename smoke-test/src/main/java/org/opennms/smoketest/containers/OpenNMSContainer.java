@@ -278,6 +278,8 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
             writeProps(etc.resolve("org.opennms.features.flows.persistence.elastic.cfg"),
                     ImmutableMap.<String,String>builder()
                             .put("elasticUrl", "http://" + ELASTIC_ALIAS + ":9200")
+                            // Try to use composable templates on OpenNMS
+                            .put("useComposableTemplates", "true")
                             .build());
 
             writeProps(etc.resolve("org.opennms.plugin.elasticsearch.rest.forwarder.cfg"),
@@ -372,6 +374,10 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
 
     public Properties getSystemProperties() {
         final Properties props = new Properties();
+
+        if (!IpcStrategy.JMS.equals(model.getIpcStrategy())) {
+            props.put("org.opennms.activemq.broker.disable", "true");
+        }
 
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
             props.put("org.opennms.core.ipc.strategy", "kafka");

@@ -559,10 +559,10 @@
                 <br />
             </c:if>
             <c:if test="<%= alarms[i].getStickyMemo() != null && alarms[i].getStickyMemo().getId() != null%>">
-                <i class="fa fa-comment-o" title="<%=alarms[i].getStickyMemo().getBody() %>"></i>
+                <i class="fa fa-comment-o" title="<%=WebSecurityUtils.sanitizeString(alarms[i].getStickyMemo().getBody()) %>"></i>
             </c:if>
             <c:if test="<%= alarms[i].getReductionKeyMemo() != null && alarms[i].getReductionKeyMemo().getId() != null%>">
-                <i class="fa fa-sticky-note-o" title="<%=alarms[i].getReductionKeyMemo().getBody() %>"></i>
+                <i class="fa fa-sticky-note-o" title="<%=WebSecurityUtils.sanitizeString(alarms[i].getReductionKeyMemo().getBody()) %>"></i>
             </c:if>
 
           <c:if test="${param.display == 'long'}">
@@ -920,9 +920,9 @@
         // If a new alarm is received the variable is updated
         String soundStr="<script type=\"text/javascript\"> playSound(); </script>";
 
-        Integer highest = (Integer)session.getAttribute("opennms.alarmlist.HIGHEST");
-        Integer latest = 0;
-        Integer lastId = 0;
+        Long highest = (Long) session.getAttribute("opennms.alarmlist.HIGHEST");
+        Long latest = 0L;
+        Long lastId = 0L;
 
         // To have every new unique alarm trigger, use getId.  To have every new
         // alarm and every increment of Count, use last event Id.
@@ -930,17 +930,17 @@
             OnmsEvent lastEvent=onmsAlarm.getLastEvent();
             if(lastEvent!=null && lastEvent.getId()!=null) lastId = lastEvent.getId();
         } else {
-            lastId=onmsAlarm.getId();
+            lastId = (long) onmsAlarm.getId();
         }
 
         if(highest==null) {
             if (lastId!=null) {
-                highest = new Integer(lastId);
-                session.setAttribute("opennms.alarmlist.HIGHEST", new Integer(highest));
+                highest = lastId;
+                session.setAttribute("opennms.alarmlist.HIGHEST", highest);
                 return soundStr;
             }
         } else {
-            latest = new Integer(lastId);
+            latest = lastId;
             if (latest > highest) {
                 highest = latest;
                 session.setAttribute("opennms.alarmlist.HIGHEST", highest);

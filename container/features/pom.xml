@@ -216,7 +216,7 @@
                       <goal>verify</goal>
                   </goals>
                   <configuration>
-                      <javase>11</javase>
+                      <javase>17</javase>
                       <descriptors>
                           <descriptor>file:${project.build.directory}/classes/features.xml</descriptor>
                           <descriptor>file:${project.build.directory}/classes/features-core.xml</descriptor>
@@ -943,6 +943,18 @@
       <artifactId>org.opennms.features.device-config.retrieval</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.zenith-connect</groupId>
+      <artifactId>org.opennms.features.zenith-connect.persistence</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.zenith-connect</groupId>
+      <artifactId>org.opennms.features.zenith-connect.rest</artifactId>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
     <dependency>

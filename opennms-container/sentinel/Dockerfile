@@ -23,9 +23,9 @@
 ##
 # Use Java base image and setup required RPMs as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.5.2.b283-jre-17"
+ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.5.3.b286-jre-17"
 
-FROM ${BASE_IMAGE} as sentinel-tarball
+FROM ${BASE_IMAGE} AS sentinel-tarball
 
 ADD --chown=10001:0 ./tarball-root/ /opt/usr-share/sentinel/
 RUN chmod -R g-w /opt/usr-share/sentinel && \
@@ -42,7 +42,7 @@ RUN chmod -R g-w /opt/usr-share/sentinel && \
         /opt/usr-share/sentinel/repositories \
         -type d -print0 | xargs -0 chmod 2775
 
-FROM ${BASE_IMAGE} as sentinel-base
+FROM ${BASE_IMAGE} AS sentinel-base
 
 ARG REQUIRED_RPMS="hostname uuid"
 

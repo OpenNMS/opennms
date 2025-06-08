@@ -82,6 +82,9 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
     }
 
     @Override
+    public boolean isVisible() { return true; }
+
+    @Override
     public void begin() {
         super.begin();
         try {
@@ -95,7 +98,7 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
 
     @Override
     public void write(final SystemReportPlugin plugin) {
-        final String name = plugin.getName() + ".txt";
+        final String name = plugin.getName() + plugin.defaultFormat();
         try {
             createDirectory("");
         } catch (final Exception e) {
@@ -110,7 +113,12 @@ public class ZipSystemReportFormatter extends AbstractSystemReportFormatter impl
                 LOG.error("Unable to create entry '{}'", name, e);
                 return;
             }
-            final AbstractSystemReportFormatter formatter = new TextSystemReportFormatter();
+
+            AbstractSystemReportFormatter formatter = new TextSystemReportFormatter();
+            if (".csv".equals(plugin.defaultFormat())) {
+                formatter = new CsvSystemReportFormatter();
+            }
+
             formatter.setOutputStream(m_zipOutputStream);
             formatter.begin();
             formatter.write(plugin);

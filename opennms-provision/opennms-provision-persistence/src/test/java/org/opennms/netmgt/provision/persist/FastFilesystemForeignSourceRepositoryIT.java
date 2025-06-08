@@ -60,7 +60,7 @@ public class FastFilesystemForeignSourceRepositoryIT extends ForeignSourceReposi
         m_requisitionDirectory = new File("target/opennms-home/etc/imports/pending");
         m_requisitionDirectory.mkdirs();
 
-        m_defaultForeignSourceName = "imported:";
+        m_defaultForeignSourceName = "imported-";
         m_foreignSourceRepository.clear();
         m_foreignSourceRepository.flush();
 

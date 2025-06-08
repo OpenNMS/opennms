@@ -1223,7 +1223,7 @@
                  <version>[3.5,)</version>
                </requireMavenVersion>
                <requireJavaVersion>
-                 <version>[11,18)</version>
+                 <version>[17,18)</version>
                </requireJavaVersion>
              </rules>
            </configuration>
@@ -1373,8 +1373,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven.compiler.plugin.version}</version>
         <configuration>
-          <source>11</source>
-          <target>11</target>
+          <source>17</source>
+          <target>17</target>
           <encoding>UTF-8</encoding>
           <optimize>true</optimize>
         </configuration>
@@ -1658,7 +1658,7 @@
     <!-- other plugin versions -->
     <maven.antrun.plugin.version>1.8</maven.antrun.plugin.version> <!-- see smoke-test/pom.xml -->
     <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
-    <maven.install.plugin.version>3.1.1</maven.install.plugin.version>
+    <maven.install.plugin.version>3.1.3</maven.install.plugin.version>
     <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
     <maven.bundle.plugin.version>5.1.9</maven.bundle.plugin.version>
 
@@ -1671,7 +1671,7 @@
     <mock.db.driver>org.postgresql.Driver</mock.db.driver>
     <mock.db.url>jdbc:postgresql://localhost:5432/</mock.db.url>
     <mock.db.adminUser>postgres</mock.db.adminUser>
-    <mock.db.adminPassword/>
+    <mock.db.adminPassword>postgres</mock.db.adminPassword>
     <mock.runSnmpTests>false</mock.runSnmpTests>
     <mock.snmpHost>localhost</mock.snmpHost>
     <product.name>horizon</product.name>
@@ -1722,6 +1722,7 @@
     <rpm.database.name>opennms</rpm.database.name>
     <rpm.database.password>opennms</rpm.database.password>
 
+    <testcontainers.version>1.19.6</testcontainers.version>
     <test.keystore>${project.build.directory}/test-keystore.jks</test.keystore>
     <test.storepass>opennms</test.storepass>
     <test.keyalias>opennms-keystore-key</test.keyalias>
@@ -1783,7 +1784,7 @@
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.5</c3p0Version>
     <curatorVersion>5.6.0</curatorVersion>
-    <cxfVersion>3.6.3</cxfVersion>
+    <cxfVersion>3.6.6</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <serviceMixDnsjavaVersion>3.5.3_1</serviceMixDnsjavaVersion>
@@ -1797,8 +1798,9 @@
     <elasticsearchNettyVersion>${netty4Version}</elasticsearchNettyVersion>
     <elasticsearchDriftPluginVersion>2.0.5</elasticsearchDriftPluginVersion>
     <elasticsearchTargetVersion>7.17.9</elasticsearchTargetVersion>
+    <elasticsearchClientVersion>8.18.1</elasticsearchClientVersion>
     <errorProneAnnotationsVersion>2.25.0</errorProneAnnotationsVersion>
-    <esapiVersion>2.3.0.0</esapiVersion>
+    <esapiVersion>2.4.0.0</esapiVersion>
     <felixBridgeVersion>4.1.6</felixBridgeVersion>
     <felixProxyVersion>3.0.6</felixProxyVersion>
     <fopVersion>2.10</fopVersion>
@@ -1810,12 +1812,12 @@
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
     <groovyVersion>3.0.21</groovyVersion>
-    <grpcVersion>1.66.0</grpcVersion>
+    <grpcVersion>1.71.0</grpcVersion>
     <gsonVersion>2.9.1</gsonVersion>
     <guavaVersion>31.1-jre</guavaVersion>
     <guava32Version>32.1.3-jre</guava32Version>
     <guavaOsgiVersion>31.1</guavaOsgiVersion>
-    <guavagRPCVersion>30.1-jre</guavagRPCVersion>
+    <guavagRPCVersion>33.3.1-jre</guavagRPCVersion>
     <gwtVersion>2.9.0</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
@@ -1853,8 +1855,8 @@
     <jcommonVersion>1.0.24</jcommonVersion>
     <jdom2Version>2.0.6.1</jdom2Version>
     <jettisonVersion>1.5.4</jettisonVersion>
-    <jettyVersion>9.4.53.v20231009</jettyVersion>
-    <jettyOsgiVersion>9.4.53</jettyOsgiVersion>
+    <jettyVersion>9.4.57.v20241219</jettyVersion>
+    <jettyOsgiVersion>9.4.57</jettyOsgiVersion>
     <jestVersion>5.3.4</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
     <jfreechartVersion>1.5.4</jfreechartVersion>
@@ -1864,7 +1866,7 @@
     <jldapVersion>4.3</jldapVersion>
     <jmhVersion>1.37</jmhVersion>
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
-    <jnaVersion>5.12.1</jnaVersion>
+    <jnaVersion>5.16.0</jnaVersion>
     <jnrVersion>3.1.17</jnrVersion>
     <jodaTimeVersion>2.12.5</jodaTimeVersion>
     <jolokiaVersion>1.7.2</jolokiaVersion>
@@ -1906,7 +1908,7 @@
     <paxWebVersion>7.3.29</paxWebVersion>
     <slingJohnzonVersion>1.2.16</slingJohnzonVersion>
     <!-- END: versions must match versions provided by embedded Karaf -->
-    <kafkaBundleVersion>3.5.1_1</kafkaBundleVersion>
+    <kafkaBundleVersion>3.6.2_1</kafkaBundleVersion>
     <kafkaVersion>3.6.2</kafkaVersion>
     <kotlinVersion>1.9.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
@@ -1916,7 +1918,7 @@
     <mapstructVersion>1.5.2.Final</mapstructVersion>
     <mavenApiVersion>3.9.6</mavenApiVersion>
     <mavenResolverApiVersion>2.0.1</mavenResolverApiVersion>
-    <minaVersion>2.2.3</minaVersion>
+    <minaVersion>2.2.4</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
     <netty4Version>4.1.100.Final</netty4Version>
@@ -1941,7 +1943,7 @@
     <osgiEnterpriseVersion>7.0.0</osgiEnterpriseVersion>
     <osgiServiceJdbcVersion>1.0.1</osgiServiceJdbcVersion>
     <owaspEncoderVersion>1.2.3</owaspEncoderVersion>
-    <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
+    <owaspHtmlSanitizerVersion>20211018.2</owaspHtmlSanitizerVersion>
     <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
     <osMavenPluginVersion>1.7.1</osMavenPluginVersion>
     <opencsvVersion>2.3</opencsvVersion>
@@ -1985,9 +1987,9 @@
     <xmlSchemaVersion>2.3.1</xmlSchemaVersion>
     <xmlgraphicsCommonsVersion>2.9</xmlgraphicsCommonsVersion>
     <xmlsecVersion>2.3.4</xmlsecVersion>
-    <xstreamVersion>1.4.20</xstreamVersion>
+    <xstreamVersion>1.4.21</xstreamVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
-    <wsmanVersion>1.3.0</wsmanVersion>
+    <wsmanVersion>1.3.2</wsmanVersion>
     <zookeeperVersion>3.7.2</zookeeperVersion>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
     <minaSshdVersion>2.12.1</minaSshdVersion>
@@ -2029,6 +2031,7 @@
     <!-- CI Settings -->
     <!-- Limit ITs to 30 minutes by default -->
     <test.fork.timeout>1800</test.fork.timeout>
+    <oshi.core.version>6.7.1</oshi.core.version>
   </properties>
 
   <profiles>

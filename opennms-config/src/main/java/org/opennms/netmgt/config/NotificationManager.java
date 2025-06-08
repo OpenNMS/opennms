@@ -590,7 +590,7 @@ public abstract class NotificationManager {
             ResultSet results = statement.executeQuery();
             dbUtils.watch(results);
             if (results != null && results.next()) {
-                int eventID = results.getInt(1);
+                long eventID = results.getLong(1);
                 notifIDs = doAcknowledgeNotificationsFromEvent(connection, dbUtils, eventID);
             } else {
                 LOG.debug("No matching DOWN eventID found");
@@ -693,14 +693,14 @@ public abstract class NotificationManager {
      * @throws java.sql.SQLException if any.
      * @throws java.io.IOException if any.
      */
-    private List<Integer> doAcknowledgeNotificationsFromEvent(final Connection connection, final DBUtils dbUtils, int eventID) 
+    private List<Integer> doAcknowledgeNotificationsFromEvent(final Connection connection, final DBUtils dbUtils, long eventID)
             throws SQLException, IOException {
         List<Integer> notifIDs = new LinkedList<>();
         LOG.debug("EventID for notice(s) to be acked: {}", eventID);
 
         PreparedStatement statement = connection.prepareStatement("SELECT notifyid, answeredby, respondtime FROM notifications WHERE eventID=?");
         dbUtils.watch(statement);
-        statement.setInt(1, eventID);
+        statement.setLong(1, eventID);
 
         ResultSet results = statement.executeQuery();
         boolean wasAcked = false;
@@ -1275,7 +1275,7 @@ public abstract class NotificationManager {
 
             @Override
             public void processRow(ResultSet rs) throws SQLException {
-                event.setDbid(rs.getInt("eventid"));
+                event.setDbid(rs.getLong("eventid"));
                 event.setUei(rs.getString("eventuei"));
                 event.setNodeid(rs.getLong("nodeid"));
                 event.setTime(rs.getDate("eventtime"));

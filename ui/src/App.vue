@@ -32,11 +32,13 @@ import { useAuthStore } from '@/stores/authStore'
 import { useInfoStore } from '@/stores/infoStore'
 import { usePluginStore } from '@/stores/pluginStore'
 import { useMenuStore } from '@/stores/menuStore'
+import { useMonitoringSystemStore } from '@/stores/monitoringSystemStore'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 
 const authStore = useAuthStore()
 const infoStore = useInfoStore()
 const menuStore = useMenuStore()
+const monitoringSystemStore = useMonitoringSystemStore()
 const nodeStructureStore = useNodeStructureStore()
 const pluginStore = usePluginStore()
 
@@ -45,6 +47,7 @@ onMounted(() => {
   infoStore.getInfo()
   menuStore.getMainMenu()
   menuStore.getNotificationSummary()
+  monitoringSystemStore.getMainMonitoringSystem()
   nodeStructureStore.getCategories()
   nodeStructureStore.getMonitoringLocations()
   pluginStore.getPlugins()

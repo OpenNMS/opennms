@@ -1250,10 +1250,10 @@ public class PollerQueryManagerDaoIT implements TemporaryDatabaseAware<MockDatab
 					.getTimestamp("ifRegainedService"));
 		}
 
-		private Integer getRegainedEventId() {
+		private Long getRegainedEventId() {
 			if (m_regainedSvcEvent == null)
 				return null;
-			return Integer.valueOf(m_regainedSvcEvent.getDbid());
+			return m_regainedSvcEvent.getDbid();
 		}
 	}
 

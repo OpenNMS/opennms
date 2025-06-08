@@ -252,7 +252,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         m_provisioner.start();
 
         m_foreignSource = new ForeignSource();
-        m_foreignSource.setName("imported:");
+        m_foreignSource.setName("imported-");
         m_foreignSource.setScanInterval(Duration.standardDays(1));
 
         final PluginConfig policy = new PluginConfig("setCategory", NodeCategorySettingPolicy.class.getName());
@@ -375,6 +375,35 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         // Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());
 
+    }
+
+    @Test(timeout = 300000)
+    // 192.0.2.0/24 reserved by IANA for testing purposes
+    @JUnitSnmpAgent(host = "192.0.2.123", resource = "classpath:NMS-6452-brocade.properties")
+    public void testNMS6452() throws Exception {
+        importFromResource("classpath:/NMS-6452-brocade.xml", Boolean.TRUE.toString());
+        OnmsNode node = getNodeDao().findByForeignId("empty", "123");
+        assertEquals(1, getNodeDao().countAll());
+        //Verify ip interface count
+        assertEquals(1, getInterfaceDao().countAll());
+        //Verify if services count
+        assertEquals(3, getMonitoredServiceDao().countAll());
+        //Verify service count
+        assertEquals(3, getServiceTypeDao().countAll());
+        //Verify snmpInterface count
+        assertEquals(0, getSnmpInterfaceDao().countAll());
+
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation(), null);
+        runScan(scan);
+        assertEquals(1, getNodeDao().countAll());
+        //Verify ip interface count
+        assertEquals(2, getInterfaceDao().countAll());
+        //Verify if services count
+        assertEquals(3, getMonitoredServiceDao().countAll());
+        //Verify service count
+        assertEquals(3, getServiceTypeDao().countAll());
+        //Verify snmpInterface count
+        assertEquals(30, getSnmpInterfaceDao().countAll());
     }
 
     /**

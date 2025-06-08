@@ -119,7 +119,7 @@ public class QueryManagerDaoImpl implements QueryManager {
 
     /** {@inheritDoc} */
     @Override
-    public void updateOpenOutageWithEventId(int outageId, int lostEventId) {
+    public void updateOpenOutageWithEventId(int outageId, long lostEventId) {
         LOG.info("updating open outage {} with event id {}", outageId, lostEventId);
 
         final OnmsEvent event = m_eventDao.get(lostEventId);
@@ -159,7 +159,7 @@ public class QueryManagerDaoImpl implements QueryManager {
 
     /** {@inheritDoc} */
     @Override
-    public void updateResolvedOutageWithEventId(int outageId, int regainedEventId) {
+    public void updateResolvedOutageWithEventId(int outageId, long regainedEventId) {
         LOG.info("updating resolved outage {} with event id {}", outageId, regainedEventId);
 
         final OnmsEvent event = m_eventDao.get(regainedEventId);
@@ -243,7 +243,7 @@ public class QueryManagerDaoImpl implements QueryManager {
      * @param nodeId a int.
      */
     @Override
-    public void closeOutagesForNode(Date closeDate, int eventId, int nodeId) {
+    public void closeOutagesForNode(Date closeDate, long eventId, int nodeId) {
         Criteria criteria = new Criteria(OnmsOutage.class);
         criteria.addRestriction(new NullRestriction("perspective"));
         criteria.setAliases(Arrays.asList(new Alias[] {
@@ -270,7 +270,7 @@ public class QueryManagerDaoImpl implements QueryManager {
      * @param ipAddr a {@link java.lang.String} object.
      */
     @Override
-    public void closeOutagesForInterface(Date closeDate, int eventId, int nodeId, String ipAddr) {
+    public void closeOutagesForInterface(Date closeDate, long eventId, int nodeId, String ipAddr) {
         Criteria criteria = new Criteria(OnmsOutage.class);
         criteria.addRestriction(new NullRestriction("perspective"));
         criteria.setAliases(Arrays.asList(new Alias[] {
@@ -299,7 +299,7 @@ public class QueryManagerDaoImpl implements QueryManager {
      * @param serviceName a {@link java.lang.String} object.
      */
     @Override
-    public void closeOutagesForService(Date closeDate, int eventId, int nodeId, String ipAddr, String serviceName) {
+    public void closeOutagesForService(Date closeDate, long eventId, int nodeId, String ipAddr, String serviceName) {
         Criteria criteria = new Criteria(OnmsOutage.class);
         criteria.addRestriction(new NullRestriction("perspective"));
         criteria.setAliases(Arrays.asList(new Alias[] {

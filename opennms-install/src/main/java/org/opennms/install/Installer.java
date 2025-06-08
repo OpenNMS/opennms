@@ -403,6 +403,8 @@ public class Installer {
             m_import_dir = m_opennms_home + File.separator + "etc" + File.separator + "imports";
         }
 
+        System.setProperty("opennms.home", m_opennms_home);
+
         //        final String pg_lib_dir = m_properties.getProperty("install.postgresql.dir");
         //
         //        if (pg_lib_dir != null) {
@@ -1119,6 +1121,14 @@ public class Installer {
             for (final String entry : defaults) {
                 searchPaths.add(entry);
             }
+        }
+
+        if (Files.exists(Paths.get("/usr/lib64"))) {
+            searchPaths.add("/usr/lib64");
+        }
+
+        if (Files.exists(Paths.get("/usr/lib/jni"))) {
+            searchPaths.add("/usr/lib/jni");
         }
 
         System.out.println("- searching for " + fullname + ":");

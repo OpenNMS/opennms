@@ -149,7 +149,7 @@ public class NoticeFactory {
      *            the unique id of the event from the notice
      * @return true if the event is display, false if log only
      */
-    public static boolean canDisplayEvent(int eventId) {
+    public static boolean canDisplayEvent(long eventId) {
         boolean display = false;
 
         final DBUtils d = new DBUtils(NoticeFactory.class);
@@ -160,7 +160,7 @@ public class NoticeFactory {
 
             PreparedStatement statement = connection.prepareStatement("SELECT eventDisplay FROM events WHERE eventid=?");
             d.watch(statement);
-            statement.setInt(1, eventId);
+            statement.setLong(1, eventId);
 
             ResultSet results = statement.executeQuery();
             d.watch(results);

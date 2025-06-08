@@ -111,6 +111,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.elastic</groupId>
+      <artifactId>org.opennms.features.elastic.client</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.jest</groupId>
       <artifactId>jest-complete-osgi</artifactId>
       <version>${project.version}</version>

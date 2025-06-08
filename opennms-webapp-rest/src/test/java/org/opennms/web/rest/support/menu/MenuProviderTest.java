@@ -26,8 +26,19 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.List;
 import java.util.Optional;
+
+import com.google.common.base.Strings;
 import org.junit.Assert;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import org.junit.Test;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsInAnyOrder;
+import static org.hamcrest.Matchers.startsWith;
+
 import org.opennms.web.rest.support.menu.xml.MenuXml;
 
 public class MenuProviderTest {
@@ -36,6 +47,8 @@ public class MenuProviderTest {
     @Test
     public void testParseBeansXml() {
         MenuProvider provider = new MenuProvider(getResourcePath());
+        provider.setMenuRequestContext(new TestMenuRequestContext(true));
+
         MenuXml.BeansElement xBeansElem = null;
 
         try (var inputStream = new FileInputStream(getResourcePath())) {
@@ -44,7 +57,7 @@ public class MenuProviderTest {
             Assert.fail("Could not open file resource: " + e.getMessage());
         }
 
-        Assert.assertNotNull(xBeansElem);
+        assertNotNull(xBeansElem);
 
         List<MenuXml.BeanElement> topLevelBeans = xBeansElem.getBeans();
 
@@ -52,9 +65,9 @@ public class MenuProviderTest {
             .filter(e -> e.getId() != null && e.getId().equals("navBarEntries"))
             .findFirst();
 
-        if (navBarBean.isPresent()) {
-            List<TopMenuEntry> topMenuEntries = null;
+        List<TopMenuEntry> topMenuEntries = null;
 
+        if (navBarBean.isPresent()) {
             try {
                 topMenuEntries = provider.parseXmlToMenuEntries(xBeansElem);
             } catch (Exception e) {
@@ -62,20 +75,109 @@ public class MenuProviderTest {
             }
         }
 
-        Assert.assertTrue(topLevelBeans.size() > 0);
+        assertNotNull(topMenuEntries);
+        assertFalse(topLevelBeans.isEmpty());
     }
 
     @Test
     public void testParseMainMenu() {
         MainMenu mainMenu = null;
-        MenuRequestContext context = new TestMenuRequestContext();
 
         try {
             MenuProvider provider = new MenuProvider(getResourcePath());
-            mainMenu = provider.getMainMenu(context);
+            provider.setMenuRequestContext(new TestMenuRequestContext(true));
+            mainMenu = provider.getMainMenu();
         } catch (Exception e) {
             Assert.fail("Error in MenuProvider.getMainMenu: " + e.getMessage());
         }
+
+        assertNotNull(mainMenu);
+
+        assertEquals("/opennms/", mainMenu.baseHref);
+        assertEquals("/opennms/index.jsp", mainMenu.homeUrl);
+        assertEquals("2025-03-01T20:30:00.000Z", mainMenu.formattedTime);
+        assertEquals("On", mainMenu.noticeStatus);
+        assertEquals("admin1", mainMenu.username);
+        assertEquals("element/node.jsp?node=", mainMenu.baseNodeUrl);
+        assertTrue(mainMenu.zenithConnectEnabled);
+        assertEquals("https://zenith.opennms.com", mainMenu.zenithConnectBaseUrl);
+        assertEquals("/zenith-connect", mainMenu.zenithConnectRelativeUrl);
+        // version should be "2002-CURRENT_DATE_YEAR"
+        assertThat(mainMenu.copyrightDates, startsWith("2002-2"));
+        // not testing mainMenu.version, it's probably null in test environment
+
+        // Check top level menus and names
+        assertNotNull(mainMenu.menus);
+        assertEquals(6, mainMenu.menus.size());
+
+        List<String> menuNames = mainMenu.menus.stream().map(m -> m.name).toList();
+
+        final String[] expectedMenuNames = new String[] {
+            "Search", "Info", "Status", "Reports", "Dashboards", "Maps"
+        };
+        assertThat(menuNames, containsInAnyOrder(expectedMenuNames));
+
+        assertNotNull(mainMenu.configurationMenu);
+        assertNotNull(mainMenu.flowsMenu);
+        assertNotNull(mainMenu.helpMenu);
+        assertNotNull(mainMenu.provisionMenu);
+        assertNotNull(mainMenu.selfServiceMenu);
+        assertNotNull(mainMenu.userNotificationMenu);
+
+        // Check names in sub-menus under the Info menu
+        Optional<TopMenuEntry> infoMenuOpt = mainMenu.menus.stream().filter(m -> m.name.equals("Info")).findFirst();
+        assertTrue(infoMenuOpt.isPresent());
+
+        TopMenuEntry infoMenu = infoMenuOpt.get();
+
+        assertEquals("Info", infoMenu.name);
+
+        List<String> infoEntryNames = infoMenu.items.stream().map(m -> m.name).toList();
+        assertEquals(10, infoEntryNames.size());
+
+        final String[] expectedInfoNames = new String[] {
+                "Nodes", "Assets", "Path Outages", "Device Configs", "External Requisitions",
+                "File Editor", "Logs", "Endpoints", "Secure Credentials Vault", "Connect to Zenith"
+        };
+        assertThat(infoEntryNames, containsInAnyOrder(expectedInfoNames));
+
+        // Check Roles on Device Config entry
+        Optional<MenuEntry> deviceConfigMenuOpt = infoMenu.items.stream().filter(m -> m.name.equals("Device Configs")).findFirst();
+        assertTrue(deviceConfigMenuOpt.isPresent());
+        assertEquals("ROLE_ADMIN,ROLE_REST,ROLE_DEVICE_CONFIG_BACKUP", deviceConfigMenuOpt.get().roles);
+    }
+
+    @Test
+    public void testParseMainMenuZenithConnectDisabled() {
+        MainMenu mainMenu = null;
+
+        try {
+            MenuProvider provider = new MenuProvider(getResourcePath());
+            provider.setMenuRequestContext(new TestMenuRequestContext(false));
+            mainMenu = provider.getMainMenu();
+        } catch (Exception e) {
+            Assert.fail("Error in MenuProvider.getMainMenu: " + e.getMessage());
+        }
+
+        assertNotNull(mainMenu);
+
+        // Check names in sub-menus under the Info menu
+        Optional<TopMenuEntry> infoMenuOpt = mainMenu.menus.stream().filter(m -> m.name.equals("Info")).findFirst();
+        assertTrue(infoMenuOpt.isPresent());
+
+        TopMenuEntry infoMenu = infoMenuOpt.get();
+
+        assertEquals("Info", infoMenu.name);
+
+        List<String> infoEntryNames = infoMenu.items.stream().map(m -> m.name).toList();
+        assertEquals(9, infoEntryNames.size());
+
+        final String[] expectedInfoNames = new String[] {
+                "Nodes", "Assets", "Path Outages", "Device Configs", "External Requisitions",
+                "File Editor", "Logs", "Endpoints", "Secure Credentials Vault"
+        };
+
+        assertThat(infoEntryNames, containsInAnyOrder(expectedInfoNames));
     }
 
     private String getResourcePath() {
@@ -84,12 +186,18 @@ public class MenuProviderTest {
     }
 
     public static class TestMenuRequestContext implements MenuRequestContext {
+        public TestMenuRequestContext(boolean isZenithConnectEnabled) {
+            this.isZenithConnectEnabled = isZenithConnectEnabled;
+        }
+
+        final private boolean isZenithConnectEnabled;
+
         public String getRemoteUser() {
             return "admin1";
         }
 
         public String calculateUrlBase() {
-            return "opennms/";
+            return "/opennms/";
         }
 
         public boolean isUserInRole(String role) {
@@ -97,11 +205,27 @@ public class MenuProviderTest {
         }
 
         public String getFormattedTime() {
-            return "2022-10-11T20:30:00.000Z";
+            return "2025-03-01T20:30:00.000Z";
         }
 
         public String getNoticeStatus() {
             return "On";
+        }
+
+        public String getSystemProperty(String name, String def) {
+            switch (name) {
+                case MenuProvider.ZENITH_CONNECT_ENABLED_KEY -> {
+                    return this.isZenithConnectEnabled ? "true": "false";
+                }
+                case MenuProvider.ZENITH_CONNECT_BASE_URL_KEY -> {
+                    return "https://zenith.opennms.com";
+                }
+                case MenuProvider.ZENITH_CONNECT_RELATIVE_URL_KEY -> {
+                    return "/zenith-connect";
+                }
+            }
+
+            return Strings.nullToEmpty(System.getProperty(name, def));
         }
     }
 }

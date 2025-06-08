@@ -23,9 +23,9 @@
 ##
 # Use Java base image and setup required RPMs as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.5.2.b283-jre-17"
+ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.5.3.b286-jre-17"
 
-FROM ${BASE_IMAGE} as core-tarball
+FROM ${BASE_IMAGE} AS core-tarball
 
 ADD --chown=10001:0 ./tarball-root/ /opt/usr-share/opennms/
 RUN chmod -R g-w /opt/usr-share/opennms && \
@@ -47,13 +47,13 @@ RUN chmod -R g-w /opt/usr-share/opennms && \
 ##
 # Download plugins
 ##
-FROM ${BASE_IMAGE} as core-plugins
+FROM ${BASE_IMAGE} AS core-plugins
 
 COPY plugins.sh /tmp/plugins.sh 
 RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
 
 
-FROM ${BASE_IMAGE} as core-base
+FROM ${BASE_IMAGE} AS core-base
 
 ARG REQUIRED_RPMS="diffutils hostname jrrd2 jq rrdtool"
 
@@ -162,6 +162,8 @@ CMD [ "-h" ]
 
 ### Runtime information and not relevant at build time
 ENV JAVA_OPTS="-Xmx1024m -XX:MaxMetaspaceSize=512m"
+# Allow OpenNMS to detect whether it is run in a container
+ENV OPENNMS_EXECUTION_ENVIRONMENT=container
 
 # Volumes for storing data outside of the container
 VOLUME [ "/opt/opennms/etc", "/opt/opennms-etc-overlay", "/opennms-data" ]

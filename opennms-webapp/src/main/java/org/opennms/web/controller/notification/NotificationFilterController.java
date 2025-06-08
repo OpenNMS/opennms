@@ -168,7 +168,7 @@ public class NotificationFilterController extends AbstractController implements 
         int noticeCount = m_webNotificationRepository.countMatchingNotifications(countCriteria);
         final Map<Integer,String[]> nodeLabels = new HashMap<Integer,String[]>();
         final Map<Integer,String[]> nodeLocations = new HashMap<Integer,String[]>();
-        Set<Integer> eventIds = new TreeSet<>();
+        Set<Long> eventIds = new TreeSet<>();
 
         // really inefficient, is there a better way to do this?
         for (Notification notice : notices) {
@@ -186,7 +186,7 @@ public class NotificationFilterController extends AbstractController implements 
                             labels = new String[] { "&lt;No Node Label&gt;", "&lt;No Node Label&gt;" };
                         } else {
                             if ( longLabel.length() > 32 ) {
-                                String shortLabel = longLabel.substring( 0, 31 ) + "&hellip;";
+                                String shortLabel = longLabel.substring( 0, 31 );
                                 labels = new String[] { shortLabel, longLabel };
                             } else {
                                 labels = new String[] { longLabel, longLabel };
@@ -213,7 +213,7 @@ public class NotificationFilterController extends AbstractController implements 
             }
         }
 
-        Map<Integer,Event> events = new HashMap<Integer,Event>();
+        Map<Long, Event> events = new HashMap<Long, Event>();
         if (eventIds.size() > 0) {
             for (Event e : m_webEventRepository.getMatchingEvents(new EventCriteria(new EventIdListFilter(eventIds)))) {
                 events.put(e.getId(), e);
