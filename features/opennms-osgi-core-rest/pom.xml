@@ -56,8 +56,9 @@
     </dependencies>
     <repositories>
         <repository>
-            <id>bluebird-bbo-third-party</id>
-            <url>https://dl.cloudsmith.io/public/bluebird/bbo-third-party/maven/</url>
+            <id>bluebird-releases</id>
+            <name>🚀 Maven Bluebird</name>
+            <url>https://repo.maven.bluebirdops.org/releases</url>
         </repository>
     </repositories>
 </project>

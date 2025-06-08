@@ -67,4 +67,11 @@
       <version>2.0.0</version>
     </dependency>
   </dependencies>
+  <repositories>
+    <repository>
+      <id>bluebird-releases</id>
+      <name>🚀 Maven Bluebird</name>
+      <url>https://repo.maven.bluebirdops.org/releases</url>
+    </repository>
+  </repositories>
 </project>

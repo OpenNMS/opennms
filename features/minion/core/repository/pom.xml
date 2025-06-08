@@ -159,5 +159,16 @@
             <type>xml</type>
         </dependency>
     </dependencies>
-
+    <repositories>
+        <repository>
+            <id>bluebird-releases</id>
+            <name>🚀 Maven Bluebird</name>
+            <url>https://repo.maven.bluebirdops.org/releases</url>
+        </repository>
+        <repository>
+	    <id>opennms-3rdparty</id>
+	    <name>OpenNMS 3rd Party</name>
+	    <url>https://archive.opennms.com/repo-maven/3rdparty/</url>
+        </repository>
+    </repositories>
 </project>

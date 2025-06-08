@@ -39,9 +39,10 @@
         </dependency>
     </dependencies>
     <repositories>
-        <repository>
-            <id>opennms-repo</id>
-            <url>https://archive.opennms.com/repo-maven/maven2/</url>
+	<repository>
+	    <id>bluebird-releases</id>
+            <name>🚀 Maven Bluebird</name>
+	    <url>https://repo.maven.bluebirdops.org/releases</url>
         </repository>
     </repositories>
 </project>

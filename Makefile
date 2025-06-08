@@ -44,7 +44,6 @@ JAVA_MAJOR_VERSION  := 17
 
 # Package requirements
 OPENNMS_HOME          := /opt/opennms
-OPENNMS_ETC           := /etc/opennms
 OPENNMS_RRD_DATA      := /var/lib/opennms/rrd
 OPENNMS_REPORTS_DATA  := /var/lib/opennms/reports
 OPENNMS_LOGS_DATA     := /var/log/opennms
@@ -467,7 +466,6 @@ endif
              "$(BUILD_ROOT)/core$(OPENNMS_LOGS_DATA)" \
              "$(BUILD_ROOT)/core/usr/lib/systemd/system"
 	cp "$(BUILD_ROOT)/core/opt/opennms/etc/opennms.service" "$(BUILD_ROOT)/core/usr/lib/systemd/system"
-	mv "$(BUILD_ROOT)/core/opt/opennms/etc" "$(BUILD_ROOT)/core$(OPENNMS_ETC)"
 
 .PHONY: core-pkg-deb
 core-pkg-deb: deps-packages core-pkg-buildroot
@@ -489,7 +487,7 @@ core-pkg-deb: deps-packages core-pkg-buildroot
 		--depends jicmp6 \
 		--depends jrrd2 \
 		--deb-recommends openjdk-17-jdk-headless \
-		--deb-suggests postgresql (>= 13.0) \
+		--deb-suggests "postgresql (>= 13.0)" \
 		--deb-suggests iplike-pgsql13 \
 		--deb-suggests iplike-pgsql14 \
 		--deb-suggests iplike-pgsql15 \
