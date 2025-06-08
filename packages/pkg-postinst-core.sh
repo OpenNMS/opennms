@@ -17,9 +17,8 @@ fi
 ln -s /var/log/opennms /opt/opennms/logs
 ln -s /var/lib/opennms/rrd /opt/opennms/share/rrd
 ln -s /var/lib/opennms/reports /opt/opennms/share/reports
-ln -s /etc/opennms /opt/opennms/etc
+ln -s /var/lib/opennms/deploy /opt/opennms/deploy
 chown -R opennms:opennms /opt/opennms
 chown -R opennms:opennms /var/log/opennms
 chown -R opennms:opennms /var/lib/opennms
-chown -R opennms:opennms /etc/opennms
 systemctl daemon-reload

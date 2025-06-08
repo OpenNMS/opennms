@@ -43,10 +43,20 @@ SKIP                := "[ ⏭️ ]"
 JAVA_MAJOR_VERSION  := 17
 
 # Package requirements
-OPENNMS_HOME          := /opt/opennms
-OPENNMS_RRD_DATA      := /var/lib/opennms/rrd
-OPENNMS_REPORTS_DATA  := /var/lib/opennms/reports
-OPENNMS_LOGS_DATA     := /var/log/opennms
+PKG_CORE_HOME         := /opt/opennms
+PKG_CORE_RRD          := /var/lib/opennms/rrd
+PKG_CORE_REPORTS      := /var/lib/opennms/reports
+PKG_CORE_LOGS         := /var/log/opennms
+PKG_CORE_DEPLOY       := /var/lib/opennms/deploy
+
+PKG_MINION_HOME       := /opt/minion
+PKG_MINION_LOGS       := /var/lib/minion/log
+PKG_MINION_DEPLOY     := /var/lib/minion/deploy
+
+PKG_SENTINEL_HOME     := /opt/sentinel
+PKG_SENTINEL_LOGS     := /opt/sentinel/data/log
+PKG_SENTINEL_DEPLOY   := /opt/sentinel/deploy
+
 BUILD_ROOT            := $(ARTIFACTS_DIR)/buildroot
 OPA_VERSION           := $(shell grep '<opennmsApiVersion>' pom.xml | sed -E 's/.*<opennmsApiVersion>([[:digit:]]+(\.[[:digit:]]+)+).*/\1/')
 EXTRA_INFO            := $(GIT_BRANCH)
@@ -122,8 +132,8 @@ help:
 	@echo "                           I_TESTS=org.opennms.netmgt.snmpinterfacepoller.SnmpPollerIT TEST_PROJECTS=org.opennms:opennms-services"
 	@echo "  javadocs:              Generate Java docs"
 	@echo "  docs:                  Build Antora docs with a local install Antora, default target"
-	@echo "  install-core:          Install OpenNMS assembly to OPENMS_HOME to $(OPENNMS_HOME)"
-	@echo "  uninstall-core:        Remove the installed version in OPENNMS_HOME from $(OPENNMS_HOME)"
+	@echo "  install-core:          Install OpenNMS assembly to PKG_CORE_HOME to $(PKG_CORE_HOME)"
+	@echo "  uninstall-core:        Remove the installed version in PKG_CORE_HOME from $(PKG_CORE_HOME)"
 	@echo "  clean:                 Clean assembly and docs and mostly used to recompile or rebuild from source"
 	@echo "  clean-all:             Clean git repository with untracked files, docs, M2 opennms artifacts and build assemblies"
 	@echo "  clean-git:             DELETE *all* untracked files from local git repository"
@@ -244,7 +254,7 @@ compile-ui:
 
 .PHONY: assemble
 assemble: deps-build show-info
-	$(MAVEN_BIN) install $(MAVEN_ARGS) -DskipTests=true -Dbuild.profile=default -Droot.dir=$(WORKING_DIRECTORY) -Dopennms.home=$(OPENNMS_HOME) -Dinstall.version=$(INSTALL_VERSION) -Pbuild-bamboo -Prun-expensive-tasks -Dbuild.skip.tarball=false -Denable.license=true -Dbuild.type=production --file opennms-full-assembly/pom.xml 2>&1 | tee $(ARTIFACTS_DIR)/mvn.assemble.log
+	$(MAVEN_BIN) install $(MAVEN_ARGS) -DskipTests=true -Dbuild.profile=default -Droot.dir=$(WORKING_DIRECTORY) -Dopennms.home=$(PKG_CORE_HOME) -Dinstall.version=$(INSTALL_VERSION) -Pbuild-bamboo -Prun-expensive-tasks -Dbuild.skip.tarball=false -Denable.license=true -Dbuild.type=production --file opennms-full-assembly/pom.xml 2>&1 | tee $(ARTIFACTS_DIR)/mvn.assemble.log
 
 .PHONY: quick-build
 quick-build: quick-compile quick-assemble
@@ -255,7 +265,7 @@ quick-compile: maven-structure-graph
 
 .PHONY: quick-assemble
 quick-assemble: deps-build show-info
-	$(MAVEN_BIN) install $(MAVEN_ARGS) -DskipTests=true -Dbuild.profile=default -Droot.dir=$(WORKING_DIRECTORY) -Dopennms.home=$(OPENNMS_HOME) -Dinstall.version=$(INSTALL_VERSION) --file opennms-full-assembly/pom.xml 2>&1 | tee $(ARTIFACTS_DIR)/mvn.quick-assemble.log
+	$(MAVEN_BIN) install $(MAVEN_ARGS) -DskipTests=true -Dbuild.profile=default -Droot.dir=$(WORKING_DIRECTORY) -Dopennms.home=$(PKG_CORE_HOME) -Dinstall.version=$(INSTALL_VERSION) --file opennms-full-assembly/pom.xml 2>&1 | tee $(ARTIFACTS_DIR)/mvn.quick-assemble.log
 
 .PHONY: core-oci
 core-oci:
@@ -447,7 +457,7 @@ code-coverage: deps-sonar
 .PHONY: core-pkg-buildroot
 core-pkg-buildroot:
 ifeq (,$(wildcard ./opennms-full-assembly/target/opennms-full-assembly-*-core.tar.gz))
-	@echo "Can't build the Core container image, the build artifact"
+	@echo "Can't build the Core build root directory structure"
 	@echo "./opennms-full-assembly/target/opennms-full-assembly-$(OPENNMS_VERSION)-core.tar.gz doesn't exist."
 	@echo ""
 	@echo "You can create the artifact with:"
@@ -460,10 +470,12 @@ endif
 	tar xzf "./opennms-full-assembly/target/opennms-full-assembly-$(OPENNMS_VERSION)-core.tar.gz" -C "$(BUILD_ROOT)/core/opt/opennms"
 	rm -rf "$(BUILD_ROOT)/core/opt/opennms/logs" \
            "$(BUILD_ROOT)/core/opt/opennms/share/rrd" \
-           "$(BUILD_ROOT)/core/opt/opennms/share/reports"
-	mkdir -p "$(BUILD_ROOT)/core$(OPENNMS_RRD_DATA)" \
-             "$(BUILD_ROOT)/core$(OPENNMS_REPORTS_DATA)" \
-             "$(BUILD_ROOT)/core$(OPENNMS_LOGS_DATA)" \
+           "$(BUILD_ROOT)/core/opt/opennms/share/reports" \
+           "$(BUILD_ROOT)/core/opt/opennms/deploy"
+	mkdir -p "$(BUILD_ROOT)/core$(PKG_CORE_RRD)" \
+             "$(BUILD_ROOT)/core$(PKG_CORE_REPORTS)" \
+             "$(BUILD_ROOT)/core$(PKG_CORE_LOGS)" \
+             "$(BUILD_ROOT)/core$(PKG_CORE_DEPLOY)" \
              "$(BUILD_ROOT)/core/usr/lib/systemd/system"
 	cp "$(BUILD_ROOT)/core/opt/opennms/etc/opennms.service" "$(BUILD_ROOT)/core/usr/lib/systemd/system"
 
@@ -482,7 +494,6 @@ core-pkg-deb: deps-packages core-pkg-buildroot
 		--description "BluebirdOps Network Management Platform" \
 		--url "https://github.com/bluebird-community/opennms" \
 		--maintainer "Maintainer <$(MAINTAINER_EMAIL)>" \
-		--depends adduser \
 		--depends jicmp \
 		--depends jicmp6 \
 		--depends jrrd2 \
@@ -508,7 +519,7 @@ core-pkg-rpm: deps-packages core-pkg-buildroot
 	    -n "bbo-core" \
 		-v "$(OPENNMS_VERSION)_$(PKG_RELEASE)" \
 		--config-files /opt/opennms/etc \
-		--description "BluebirdOps Network Management Platform" \
+		--description "BluebirdOps Core services" \
 		--url "https://github.com/bluebird-community/opennms" \
 		--maintainer "Maintainer <$(MAINTAINER_EMAIL)>" \
 		--depends jicmp \
@@ -524,25 +535,69 @@ core-pkg-rpm: deps-packages core-pkg-buildroot
 		--after-install packages/pkg-postinst-core.sh \
 		-C "$(BUILD_ROOT)/core"
 
-.PHONY: minion-deb-pkg
-minion-deb-pkg: compile assemble
-	@echo "==== Building Debian Minion ===="
+.PHONY: minion-pkg-buildroot
+minion-pkg-buildroot:
+ifeq (,$(wildcard ./opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz))
+	@echo "Can't build the Minion build root directory structure"
+	@echo "./opennms-assemblies/minion/target/org.opennms.assemblies.minion-$(OPENNMS_VERSION)-minion.tar.gz doesn't exist."
+	@echo ""
+	@echo "You can create the artifact with:"
+	@echo ""
+	@echo "  make quick-compile && make quick-assemble"
+	@echo ""
+	@exit 1
+endif
+	mkdir -p "$(BUILD_ROOT)/minion/opt/minion"
+	tar xzf "./opennms-assemblies/minion/target/org.opennms.assemblies.minion-$(OPENNMS_VERSION)-minion.tar.gz" --strip-component 1 -C "$(BUILD_ROOT)/minion/opt/minion"
+	rm -rf "$(BUILD_ROOT)/minion/data/log" \
+           "$(BUILD_ROOT)/minion/deploy"
+	mkdir -p "$(BUILD_ROOT)/minion$(PKG_MINION)" \
+             "$(BUILD_ROOT)/minion$(PKG_MINION_LOGS)" \
+             "$(BUILD_ROOT)/minion$(PKG_MINION_DEPLOY)" \
+             "$(BUILD_ROOT)/minion/usr/lib/systemd/system"
+	cp "$(BUILD_ROOT)/minion/opt/minion/etc/minion.service" "$(BUILD_ROOT)/minion/usr/lib/systemd/system"
+
+.PHONY: minion-pkg-deb
+minion-pkg-deb: deps-packages minion-pkg-buildroot
+	@echo "==== Building Debian Minion Packages ===="
 	@echo
 	@echo "Version:     " $(OPENNMS_VERSION)
 	@echo "Release:     " $(DEB_PKG_RELEASE)
 	@echo "OPA VERSION: " $(OPA_VERSION)
-	@echo "DEBEMAIL:    " $(DEBEMAIL)
 	@echo
-	@echo "- adding auto-generated changelog entry"
-	@cp opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz "target/opennms-minion_$(OPENNMS_VERSION).orig.tar.gz"
-	@cp opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz "target/opennms-minion_$(OPENNMS_VERSION).tar.gz"
-	@tar xzf "target/opennms-minion_$(OPENNMS_VERSION).tar.gz" -C target
-	@sed -i='' "s/OPA_VERSION/$(OPA_VERSION)/g" target/minion-$(OPENNMS_VERSION)/debian/control
-	cd target/minion-$(OPENNMS_VERSION); \
-	export DEBEMAIL="$(DEBEMAIL)"; dch -b -v "$(OPENNMS_VERSION)-$(DEB_PKG_RELEASE)" "$(EXTRA_INFO)$(EXTRA_INFO2)"; \
-	dpkg-buildpackage -us -uc -Zgzip
-	mkdir -p $(ARTIFACTS_DIR)/debian/minion
-	mv target/*.deb target/*.dsc target/*.debian.tar.gz target/*.buildinfo target/*.changes $(ARTIFACTS_DIR)/debian/minion
+	fpm -s dir -t deb \
+		-n "bbo-minion" \
+		-v "$(OPENNMS_VERSION)-$(PKG_RELEASE)" \
+		--config-files /opt/minion/etc \
+		--description "BluebirdOps monitoring proxy service" \
+		--url "https://github.com/bluebird-community/opennms" \
+		--maintainer "Maintainer <$(MAINTAINER_EMAIL)>" \
+		--depends jicmp \
+		--depends jicmp6 \
+		--deb-recommends openjdk-17-jdk-headless \
+		--after-install packages/pkg-postinst-minion.sh \
+		-C "$(BUILD_ROOT)/minion"
+
+.PHONY: minion-pkg-rpm
+minion-pkg-rpm: deps-packages minion-pkg-buildroot
+	@echo "==== Building RPM Minion Packages ===="
+	@echo
+	@echo "Version:     " $(OPENNMS_VERSION)
+	@echo "Release:     " $(DEB_PKG_RELEASE)
+	@echo "OPA VERSION: " $(OPA_VERSION)
+	@echo
+	fpm -s dir -t rpm \
+		-n "bbo-minion" \
+		-v "$(OPENNMS_VERSION)_$(PKG_RELEASE)" \
+		--config-files /opt/minion/etc \
+		--description "BluebirdOps monitoring proxy service" \
+		--url "https://github.com/bluebird-community/opennms" \
+		--maintainer "Maintainer <$(MAINTAINER_EMAIL)>" \
+		--depends jicmp \
+		--depends jicmp6 \
+		--rpm-tag "Recommends: java-17-openjdk-devel" \
+		--after-install packages/pkg-postinst-minion.sh \
+		-C "$(BUILD_ROOT)/minion"
 
 .PHONY: sentinel-deb-pkg
 sentinel-deb-pkg: compile assemble
@@ -575,14 +630,14 @@ docs: deps-docs
 
 .PHONY: install-core
 install-core: quick-compile quick-assemble
-	@echo "Install OpenNMS Horizon Core to $(OPENNMS_HOME)"
-	mkdir -p $(OPENNMS_HOME)
-	tar xzf ./target/opennms-$(OPENNMS_VERSION).tar.gz -C $(OPENNMS_HOME)
+	@echo "Install OpenNMS Horizon Core to $(PKG_CORE_HOME)"
+	mkdir -p $(PKG_CORE_HOME)
+	tar xzf ./target/opennms-$(OPENNMS_VERSION).tar.gz -C $(PKG_CORE_HOME)
 
 .PHONY: uninstall-core
 uninstall-core:
-	@echo "Uninstall OpenNMS Horizon Core from $(OPENNMS_HOME)"
-	rm -rf "$(OPENNMS_HOME)/*"
+	@echo "Uninstall OpenNMS Horizon Core from $(PKG_CORE_HOME)"
+	rm -rf "$(PKG_CORE_HOME)/*"
 
 .PHONY: clean-all
 clean-all: clean-docs clean-assembly clean-m2 clean-git

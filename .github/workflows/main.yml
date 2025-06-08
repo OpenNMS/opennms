@@ -1,6 +1,6 @@
 ---
-name: opennms-build
-run-name: Build and run test suites
+name: main
+run-name: Build and run test suites for BluebirdOps components
 on:
   push:
   workflow_dispatch:
@@ -121,7 +121,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Build Minion Debian packages
-        run: make minion-deb-pkg
+        run: make minion-pkg-deb
       - name: Persist Minion debian package artifacts
         uses: actions/upload-artifact@v4
         with:
