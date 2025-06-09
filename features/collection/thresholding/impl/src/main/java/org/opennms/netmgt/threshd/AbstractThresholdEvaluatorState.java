@@ -394,6 +394,9 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
         String dsLabelValue = resource.getFieldValue(resource.getDsLabel());
         if (dsLabelValue == null) dsLabelValue = UNKNOWN;
 
+        String exprLabelValue = getThresholdConfig().getExprLabel().orElse(null);
+        if (exprLabelValue == null) exprLabelValue = "";
+
         // create the event to be sent
         EventBuilder bldr = new EventBuilder(uei, "OpenNMS.Threshd." + getThresholdConfig().getDatasourceExpression(), date);
 
@@ -424,6 +427,9 @@ public abstract class AbstractThresholdEvaluatorState<T extends AbstractThreshol
 
         // Set resource label
         bldr.addParam("label", dsLabelValue);
+
+        // Set resource label
+        bldr.addParam("expressionLabel", exprLabelValue);
 
         // Set event host
         bldr.setHost(InetAddressUtils.getLocalHostName());

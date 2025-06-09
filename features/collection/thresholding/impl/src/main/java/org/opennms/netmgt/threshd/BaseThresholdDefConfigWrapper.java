@@ -101,6 +101,15 @@ public abstract class BaseThresholdDefConfigWrapper {
     public Optional<String> getDsLabel() {
         return m_baseDef.getDsLabel();
     }
+
+    /**
+     * <p>getDsLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public Optional<String> getExprLabel() {
+        return m_baseDef.getExprLabel();
+    }
     
     /**
      * <p>getRearm</p>
