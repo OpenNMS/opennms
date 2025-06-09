@@ -205,7 +205,7 @@
       </div>
       <div class="card-body">
         <p>
-        <b>Description</b>: An optional description for the threshold expression, to help identify what is their purpose.<br/>
+        <b>Description</b>: An optional full-text description for the threshold expression, to help identify what is their purpose.<br/>
         <b>Type</b>:<br/>
         &nbsp;&nbsp;<b>high</b>: Triggers when the value of the data source equals or exceeds the "value", and is re-armed when it drops below the "re-arm" value.<br/>
         &nbsp;&nbsp;<b>low</b>: Triggers when the value of the data source drops to or below the "value", and is re-armed when it equals or exceeds the "re-arm" value.<br/>
@@ -217,7 +217,7 @@
         <b>Expression</b>: A  mathematical expression involving datasource names which will be evaluated and compared to the threshold values<br/>
         <b>Data source type</b>: Node for "node-level" data items, and "interface" for interface-level items.  <br/>
         <b>Datasource label</b>: The name of the collected "string" type data item to use as a label when reporting this threshold<br/>
-        <b>Expression label</b>: A human-readable description of the threshold expression<br/>
+        <b>Expression label</b>: A short human-readable description of the threshold expression<br/>
         <b>Value</b>: Use depends on the type of threshold<br/>
         <b>Re-arm</b>: Use depends on the type of threshold; it is unused/ignored for relativeChange thresholds<br/>
         <b>Trigger</b>: The number of times the threshold must be "exceeded" in a row before the threshold will be triggered.  Not used for relativeChange thresholds.<br/>
