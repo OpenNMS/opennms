@@ -46,6 +46,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Properties;
 
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -284,7 +285,8 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
     }
 
     private static String getKeystorePassword() {
-        return System.getProperty(KEYSTORE_KEY_PROPERTY, DEFAULT_KEYSTORE_KEY);
+        Properties properties = ScvUtils.loadScvProperties(System.getProperty("opennms.home"));
+        return properties.getProperty(ScvUtils.KEYSTORE_KEY_PROPERTY, DEFAULT_KEYSTORE_KEY);
     }
 
     /*
