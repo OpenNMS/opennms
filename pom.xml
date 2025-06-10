@@ -1762,7 +1762,7 @@
     <commonsDbcpVersion>1.4</commonsDbcpVersion>
     <commonsDigesterVersion>2.1</commonsDigesterVersion>
     <commonsExecVersion>1.4.0</commonsExecVersion>
-    <commonsFileuploadVersion>1.6.0</commonsFileuploadVersion>
+    <commonsFileuploadVersion>1.5</commonsFileuploadVersion>
     <commonsJexlVersion>2.1.1</commonsJexlVersion>
     <commonsJexl3Version>3.3</commonsJexl3Version>
     <commonsJxpathVersion>1.3</commonsJxpathVersion>
@@ -1779,7 +1779,7 @@
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.5</c3p0Version>
     <curatorVersion>5.6.0</curatorVersion>
-    <cxfVersion>3.6.8</cxfVersion>
+    <cxfVersion>3.6.6</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <serviceMixDnsjavaVersion>3.5.3_1</serviceMixDnsjavaVersion>
@@ -1795,7 +1795,7 @@
     <elasticsearchTargetVersion>7.17.9</elasticsearchTargetVersion>
     <elasticsearchClientVersion>8.18.1</elasticsearchClientVersion>
     <errorProneAnnotationsVersion>2.25.0</errorProneAnnotationsVersion>
-    <esapiVersion>2.5.2.0</esapiVersion>
+    <esapiVersion>2.4.0.0</esapiVersion>
     <felixBridgeVersion>4.1.6</felixBridgeVersion>
     <felixProxyVersion>3.0.6</felixProxyVersion>
     <fopVersion>2.10</fopVersion>
@@ -1807,10 +1807,9 @@
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
     <groovyVersion>3.0.21</groovyVersion>
-    <grpcVersion>1.75.0</grpcVersion>
+    <grpcVersion>1.71.0</grpcVersion>
     <gsonVersion>2.9.1</gsonVersion>
     <guavaVersion>31.1-jre</guavaVersion>
-    <guavaFailureaccessVersion>1.0.1</guavaFailureaccessVersion>
     <guava32Version>32.1.3-jre</guava32Version>
     <guavaOsgiVersion>31.1</guavaOsgiVersion>
     <guavagRPCVersion>33.3.1-jre</guavagRPCVersion>
@@ -1917,7 +1916,7 @@
     <minaVersion>2.2.4</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
-    <netty4Version>4.1.128.Final</netty4Version>
+    <netty4Version>4.1.100.Final</netty4Version>
     <newtsVersion>3.0.0</newtsVersion>
     <newtsOsgiVersion>3.0.0</newtsOsgiVersion>
     <paxCdiVersion>1.1.4</paxCdiVersion>
@@ -1928,8 +1927,8 @@
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>3.6.0</okioVersion>
-    <okhttp3Version>4.9.2</okhttp3Version>
-    <okioGrafanaVersion>2.8.0</okioGrafanaVersion>
+    <okhttp3Version>3.10.0</okhttp3Version>
+    <okioGrafanaVersion>1.14.0</okioGrafanaVersion>
     <openid4javaVersion>0.9.6</openid4javaVersion>
     <opennmsApiVersion>1.6.1</opennmsApiVersion>
     <opennmsApiVersionOsgi>1.6.1</opennmsApiVersionOsgi>
@@ -1959,8 +1958,8 @@
     <slf4jVersion>1.7.36</slf4jVersion>
     <smackVersion>4.0.6</smackVersion>
     <snappyJavaVersion>1.1.10.5</snappyJavaVersion>
-    <snmp4jVersion>2.8.15</snmp4jVersion>
-    <snmp4jagentVersion>2.7.9</snmp4jagentVersion>
+    <snmp4jVersion>2.5.5</snmp4jVersion>
+    <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
     <sonarVersion>3.9.1.2184</sonarVersion>
     <spiflyVersion>1.3.6</spiflyVersion>
     <spockVersion>2.3-groovy-2.5</spockVersion>
@@ -2016,7 +2015,8 @@
     <!-- nodejs development -->
     <frontendPluginVersion>1.14.2</frontendPluginVersion>
     <nodeVersion>v18.20.2</nodeVersion>
-    <pnpmVersion>10.24.0</pnpmVersion>
+    <npmVersion>9.8.1</npmVersion>
+    <yarnVersion>v1.22.19</yarnVersion>
 
     <!-- configuration manager -->
     <xmlschemaVersion>2.3.1</xmlschemaVersion>
@@ -2174,81 +2174,6 @@
           <value>true</value>
         </property>
       </activation>
-      <!--
-        Whether to enable pulling snapshot dependencies from remote maven.
-
-        This should match <repositories> in the default reactor, *plus*
-        add the `opennms-snapshots` repo. (We skip the eclipse repository
-        as it's a special case.)
-      -->
-      <repositories>
-        <repository>
-          <id>central</id>
-          <name>Maven Central</name>
-          <url>https://repo1.maven.org/maven2/</url>
-          <releases>
-            <enabled>true</enabled>
-            <updatePolicy>never</updatePolicy>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-            <updatePolicy>${updatePolicy}</updatePolicy>
-          </snapshots>
-        </repository>
-        <repository>
-          <id>opennms-snapshots</id>
-          <name>OpenNMS Snapshot Maven Mega-Repository</name>
-          <url>https://maven.opennms.org/repository/everything/</url>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-            <updatePolicy>${updatePolicy}</updatePolicy>
-          </snapshots>
-        </repository>
-        <repository>
-          <id>central-portal</id>
-          <url>https://central.sonatype.com/repository/maven-snapshots</url>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-            <updatePolicy>${updatePolicy}</updatePolicy>
-          </snapshots>
-        </repository>
-      </repositories>
-      <!--
-        Whether to enable pulling snapshot plugin dependencies from remote maven.
-      -->
-      <pluginRepositories>
-        <pluginRepository>
-          <id>central</id>
-          <name>Maven Central</name>
-          <url>https://repo1.maven.org/maven2/</url>
-          <releases>
-            <enabled>true</enabled>
-            <updatePolicy>never</updatePolicy>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-            <updatePolicy>${updatePolicy}</updatePolicy>
-          </snapshots>
-        </pluginRepository>
-        <pluginRepository>
-          <id>opennms-snapshots</id>
-          <name>OpenNMS Snapshot Maven Mega-Repository</name>
-          <url>https://maven.opennms.org/repository/everything/</url>
-          <releases>
-            <enabled>false</enabled>
-          </releases>
-          <snapshots>
-            <enabled>true</enabled>
-            <updatePolicy>${updatePolicy}</updatePolicy>
-          </snapshots>
-        </pluginRepository>
-      </pluginRepositories>
     </profile>
     <profile>
       <id>release</id>
@@ -3556,11 +3481,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-rrd-util</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
         <artifactId>opennms-rrdtool-api</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -3572,11 +3492,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-rrd-jrobin</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-rrd-rrdtool</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -5614,24 +5529,10 @@
     </pluginRepository>
   </pluginRepositories>
   <repositories>
-    <!--
-      This is required to override the effective POM's definition of Maven Central.
-      Versions of Maven *prior* to 3.2.3 will access Maven Central via HTTP.
-      In 3.2.3 (and newer), HTTPS is used.
-      Refer to: http://maven.apache.org/docs/3.2.3/release-notes.html
-    -->
     <repository>
       <id>central</id>
       <name>Maven Central</name>
       <url>https://repo1.maven.org/maven2/</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>opennms-repo</id>
-      <name>OpenNMS Mega-Repository</name>
-      <url>https://maven.opennms.org/repository/everything/</url>
       <snapshots>
         <enabled>false</enabled>
       </snapshots>
@@ -5647,6 +5548,12 @@
       </snapshots>
     </repository>
   </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>opennms-3rdparty</id>
+      <url>https://archive.opennms.com/repo-maven/3rdparty/</url>
+    </pluginRepository>
+  </pluginRepositories>
   <distributionManagement>
     <snapshotRepository>
       <id>central-portal</id>
