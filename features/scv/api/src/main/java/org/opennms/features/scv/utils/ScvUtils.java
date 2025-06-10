@@ -52,13 +52,21 @@ public class ScvUtils {
 
         final Properties onmsProperties = new Properties();
         String keyStoreType = System.getProperty(SCV_KEYSTORE_TYPE_PROPERTY);
-        if (keyStoreType !=null && !keyStoreType.isEmpty()) {
+        String keyStoreKey = System.getProperty(KEYSTORE_KEY_PROPERTY);
+        if (keyStoreType != null && !keyStoreType.isEmpty()) {
             onmsProperties.setProperty(SCV_KEYSTORE_TYPE_PROPERTY, keyStoreType);
-        } else if (opennmsHome != null && !opennmsHome.isEmpty()) {
-            loadProperties(Path.of(opennmsHome, "etc", OPENNMS_PROPERTIES_D_NAME).toString(), onmsProperties);
-            loadProperties(Path.of(opennmsHome, "etc", OPENNMS_PROPERTIES_NAME).toString(), onmsProperties);
         }
-
+        if (keyStoreKey != null && !keyStoreKey.isEmpty()) {
+            onmsProperties.setProperty(KEYSTORE_KEY_PROPERTY, keyStoreKey);
+        }
+        // Only load properties from files if both system properties are not set
+        if ((keyStoreType == null || keyStoreType.isEmpty()) ||
+                (keyStoreKey == null || keyStoreKey.isEmpty())) {
+            if (opennmsHome != null && !opennmsHome.isEmpty()) {
+                loadProperties(Path.of(opennmsHome, "etc", OPENNMS_PROPERTIES_D_NAME).toString(), onmsProperties);
+                loadProperties(Path.of(opennmsHome, "etc", OPENNMS_PROPERTIES_NAME).toString(), onmsProperties);
+            }
+        }
         return onmsProperties;
     }
 
