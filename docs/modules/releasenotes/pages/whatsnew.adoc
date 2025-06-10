@@ -9,6 +9,10 @@
 
 == New features and important changes
 
+=== `install.sh` script clears data directory and restores Karaf-related configuration files
+To overcome common upgrading problems, the data directory ist automatically pruned when invoking the `install.sh` script.
+Furthermore, all Karaf-related configuration files are restored to their pristine state.
+
 === OpenNMS Plugin API
 
 The OpenNMS Plugin API has been updated to version 1.6.0, which includes some new APIs ported over from the Horizon codebase to simplify plugin development, as well as cleanups to dependencies.
