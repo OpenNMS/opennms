@@ -987,43 +987,6 @@
     </dependency>
 
   </dependencies>
-  <repositories>
-    <repository>
-      <id>central</id>
-      <name>Maven Central</name>
-      <url>https://repo1.maven.org/maven2/</url>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>opennms-repo</id>
-      <name>OpenNMS Mega-Repository</name>
-      <url>https://maven.opennms.org/repository/everything/</url>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>opennms-snapshots</id>
-      <name>OpenNMS Snapshot Maven Mega-Repository</name>
-      <url>https://maven.opennms.org/repository/everything/</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <distributionManagement>
     <snapshotRepository>
