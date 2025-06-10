@@ -39,6 +39,8 @@ import org.opennms.features.scv.cli.commands.SetCommand;
 import org.opennms.features.scv.cli.commands.DeleteCommand;
 import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.features.scv.utils.ScvUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ScvCli {
 
