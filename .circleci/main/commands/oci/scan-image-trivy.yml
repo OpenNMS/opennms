@@ -76,16 +76,34 @@ commands:
       - run:
           name: Verify Python script exists
           command: |
+            echo "Current directory: $(pwd)"
+            echo "Workspace contents:"
+            find ~/project -name analyze_trivy_report.py || true
+
             if [[ ! -f ~/project/.circleci/pyscripts/analyze_trivy_report.py ]]; then
-              echo "Error: Python script not found!"
-              exit 1
+              echo "Error: Python script not found at ~/project/.circleci/pyscripts/analyze_trivy_report.py"
+              echo "Trying to locate script..."
+              PY_SCRIPT=$(find ~/project -name analyze_trivy_report.py | head -1)
+              if [[ -n "$PY_SCRIPT" ]]; then
+                echo "Found script at: $PY_SCRIPT"
+                mkdir -p ~/project/.circleci/pyscripts/
+                cp "$PY_SCRIPT" ~/project/.circleci/pyscripts/
+              else
+                echo "Error: Could not find analyze_trivy_report.py anywhere in workspace!"
+                exit 1
+              fi
             fi
+
+            echo "Script verification passed - proceeding with analysis"
       - run:
           name: Prepare Trivy reports
           command: |
             # Remove '-analyze' from job name to match artifact
             SCAN_JOB_NAME="${CIRCLE_JOB%-analyze}"
             SANITIZED_SCAN_JOB_NAME=$(echo "${SCAN_JOB_NAME}" | tr / -)
+
+            echo "Workspace artifacts contents:"
+            ls -la ~/project/artifacts/
             
             # Verify artifacts exist
             if [[ ! -f ~/project/artifacts/${SANITIZED_SCAN_JOB_NAME}_report.json ]]; then
