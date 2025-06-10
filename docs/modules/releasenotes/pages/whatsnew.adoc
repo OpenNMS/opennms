@@ -10,7 +10,7 @@
 == New features and important changes
 
 === `install.sh` script clears data directory and restores Karaf-related configuration files
-To overcome common upgrading problems, the data directory ist automatically pruned when invoking the `install.sh` script.
+To overcome common upgrading problems, the data directory is automatically pruned when invoking the `install.sh` script.
 Furthermore, all Karaf-related configuration files are restored to their pristine state.
 
 === OpenNMS Plugin API
