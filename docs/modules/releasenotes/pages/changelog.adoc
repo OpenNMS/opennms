@@ -16,11 +16,11 @@ The codename for Horizon 33.1.7 is https://wikipedia.org/wiki/$$Amur_Maple$$[_Am
 * Update org.eclipse.jetty:jetty-server Library (Issue https://opennms.atlassian.net/browse/NMS-17912[NMS-17912])
 * Horizon 33.1.6 changes KAFKA configuration environment variables (Issue https://opennms.atlassian.net/browse/NMS-17920[NMS-17920])
 * Duplicate Class Definitions for org.opennms.netmgt.snmp.SnmpObjIdTest (Issue https://opennms.atlassian.net/browse/NMS-17921[NMS-17921])
+* SCV doesn't work with custom key in the Installer (Issue https://opennms.atlassian.net/browse/NMS-17989[NMS-17989])
 
 === Enhancement
 
-* Enable use of PKCS12 for SCV (Issue https://opennms.atlassian.net/browse/NMS-17871[NMS-17871])
-* Please add support for "snappy" and "lz4" compression types for communication between OpenNMS <-> Minion (Issue https://opennms.atlassian.net/browse/NMS-17948[NMS-17948])
+* Add support for "snappy" and "lz4" compression types for communication between OpenNMS <-> Minion (Issue https://opennms.atlassian.net/browse/NMS-17948[NMS-17948])
 
 === Task
 
