@@ -13,10 +13,10 @@
     <name>OpenNMS :: Features :: Flows :: Integration Tests</name>
     <properties>
         <skipITs>true</skipITs>
-        <nephronVersion>0.3.1</nephronVersion>
+        <nephronVersion>0.3.3-SNAPSHOT</nephronVersion>
         <jsonSimpleVersion>1.1.1</jsonSimpleVersion>
-        <elasticsearchTargetVersion>7.17.9</elasticsearchTargetVersion>
-        <elasticsearchDriftPluginVersion>2.0.5</elasticsearchDriftPluginVersion>
+        <elasticsearchTargetVersion>8.18.2</elasticsearchTargetVersion>
+        <elasticsearchDriftPluginVersion>2.0.5-SNAPSHOT</elasticsearchDriftPluginVersion>
     </properties>
     <build>
         <plugins>

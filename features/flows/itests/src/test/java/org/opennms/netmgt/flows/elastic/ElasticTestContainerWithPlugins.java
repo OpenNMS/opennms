@@ -73,6 +73,8 @@ public class ElasticTestContainerWithPlugins extends GenericContainer<ElasticTes
         withEnv("discovery.type", "single-node");
         withEnv("xpack.security.enabled", "false");
         withEnv("ES_JAVA_OPTS", "-Xms512m -Xmx512m");
+        // Allow wildcard deletion for testing
+        withEnv("action.destructive_requires_name", "false");
         
         withCreateContainerCmdModifier(cmd -> {
             List<Ulimit> ulimits = new ArrayList<>();
@@ -238,8 +240,11 @@ public class ElasticTestContainerWithPlugins extends GenericContainer<ElasticTes
                 // Extract the plugin into the plugin-specific subdirectory
                 builder.run("unzip", "-q", "-o", pluginPath, "-d", "/usr/share/elasticsearch/plugins/drift/");
                 
-                // Set permissions
-                builder.run("chown", "-R", "elasticsearch:elasticsearch", "/usr/share/elasticsearch/plugins/");
+                // Set permissions - For ES 8.x, we need to use UID 1000
+                builder.user("root");
+                builder.run("chown", "-R", "1000:0", "/usr/share/elasticsearch/plugins/");
+                builder.run("chmod", "-R", "755", "/usr/share/elasticsearch/plugins/");
+                builder.user("elasticsearch");
                 
                 // Check what was installed (but don't fail if the command fails)
                 builder.run("ls", "-la", "/usr/share/elasticsearch/plugins/");
