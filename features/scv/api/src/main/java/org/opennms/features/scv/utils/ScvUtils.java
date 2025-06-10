@@ -34,8 +34,9 @@ import java.util.Properties;
 import java.util.stream.Stream;
 
 public class ScvUtils {
-    public final static String SCV_KEYSTORE_TYPE_PROPERTY = "org.opennms.features.scv.keystore.type";
     public static final Logger LOG = LoggerFactory.getLogger(ScvUtils.class);
+    public final static String SCV_KEYSTORE_TYPE_PROPERTY = "org.opennms.features.scv.keystore.type";
+    public static final String KEYSTORE_KEY_PROPERTY = "org.opennms.features.scv.jceks.key";
     public static final String OPENNMS_PROPERTIES_D_NAME = "opennms.properties.d";
     public static final String OPENNMS_PROPERTIES_NAME = "opennms.properties";
 

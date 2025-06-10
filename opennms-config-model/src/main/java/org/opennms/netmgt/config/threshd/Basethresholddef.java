@@ -118,6 +118,12 @@ public abstract class Basethresholddef implements Serializable {
     @XmlAttribute(name = "ds-label")
     private String m_dsLabel;
 
+     /**
+     * An optional, human-readable label for an expression
+     */
+    @XmlAttribute(name = "expr-label")
+    private String m_exprLabel;
+
     /**
      * The UEI to send when this threshold is triggered. If not
      *  specified, defaults to standard threshold UEIs
@@ -213,6 +219,14 @@ public abstract class Basethresholddef implements Serializable {
         m_dsLabel = ConfigUtils.normalizeString(dsLabel);
     }
 
+    public Optional<String> getExprLabel() {
+        return Optional.ofNullable(m_exprLabel);
+    }
+
+    public void setExprLabel(final String exprLabel) {
+        m_exprLabel = ConfigUtils.normalizeString(exprLabel);
+    }
+
     public Optional<String> getTriggeredUEI() {
         return Optional.ofNullable(m_triggeredUEI);
     }
@@ -272,6 +286,7 @@ public abstract class Basethresholddef implements Serializable {
                             m_rearm, 
                             m_trigger, 
                             m_dsLabel, 
+                            m_exprLabel, 
                             m_triggeredUEI, 
                             m_rearmedUEI, 
                             m_filterOperator, 
@@ -300,6 +315,7 @@ public abstract class Basethresholddef implements Serializable {
                     && Objects.equals(this.m_rearm, that.m_rearm)
                     && Objects.equals(this.m_trigger, that.m_trigger)
                     && Objects.equals(this.m_dsLabel, that.m_dsLabel)
+                    && Objects.equals(this.m_exprLabel, that.m_exprLabel)
                     && Objects.equals(this.m_triggeredUEI, that.m_triggeredUEI)
                     && Objects.equals(this.m_rearmedUEI, that.m_rearmedUEI)
                     && Objects.equals(this.m_filterOperator, that.m_filterOperator)
