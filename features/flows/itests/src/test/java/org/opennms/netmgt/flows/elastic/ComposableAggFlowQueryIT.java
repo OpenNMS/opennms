@@ -25,6 +25,7 @@ package org.opennms.netmgt.flows.elastic;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.features.elastic.client.ElasticRestClient;
 import org.opennms.features.elastic.client.ElasticRestClientFactory;
@@ -55,6 +56,7 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.opennms.netmgt.flows.elastic.ComposableFlowQueryIT.relativePathToEtc;
 
+@Ignore(" Deprecating nephron, will deprecate aggregated flows feature.")
 public class ComposableAggFlowQueryIT extends  AggregatedFlowQueryIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(ComposableAggFlowQueryIT.class);

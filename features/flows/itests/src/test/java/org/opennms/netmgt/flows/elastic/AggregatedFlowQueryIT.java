@@ -55,6 +55,7 @@ import org.hamcrest.number.IsCloseTo;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.core.cache.CacheConfigBuilder;
@@ -102,6 +103,7 @@ import org.slf4j.LoggerFactory;
 /**
  * Similar to {@link FlowQueryIT}, but adapted for aggregated queries.
  */
+@Ignore(" Deprecating nephron, will deprecate aggregated flows feature.")
 public class AggregatedFlowQueryIT {
 
     private static final Logger LOG = LoggerFactory.getLogger(AggregatedFlowQueryIT.class);
@@ -111,8 +113,8 @@ public class AggregatedFlowQueryIT {
 
 
     // Elasticsearch version used for testing
-    private static final String ES_VERSION = "7.17.9";
-    private static final String DRIFT_PLUGIN_VERSION = "2.0.5";
+    private static final String ES_VERSION = "8.18.2";
+    private static final String DRIFT_PLUGIN_VERSION = "2.0.7";
 
     protected ElasticFlowRepository flowRepository;
     protected SmartQueryService smartQueryService;

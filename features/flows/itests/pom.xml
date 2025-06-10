@@ -15,8 +15,8 @@
         <skipITs>true</skipITs>
         <nephronVersion>0.3.1</nephronVersion>
         <jsonSimpleVersion>1.1.1</jsonSimpleVersion>
-        <elasticsearchTargetVersion>7.17.9</elasticsearchTargetVersion>
-        <elasticsearchDriftPluginVersion>2.0.5</elasticsearchDriftPluginVersion>
+        <elasticsearchTargetVersion>8.18.2</elasticsearchTargetVersion>
+        <elasticsearchDriftPluginVersion>2.0.7</elasticsearchDriftPluginVersion>
     </properties>
     <build>
         <plugins>
