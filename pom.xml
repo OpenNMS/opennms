@@ -5527,8 +5527,8 @@
   </repositories>
   <pluginRepositories>
     <pluginRepository>
-      <id>opennms-repo</id>
-      <url>https://archive.opennms.com/repo-maven/maven2/</url>
+      <id>opennms-3rdparty</id>
+      <url>https://archive.opennms.com/repo-maven/3rdparty/</url>
     </pluginRepository>
   </pluginRepositories>
   <distributionManagement>
