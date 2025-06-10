@@ -34,7 +34,7 @@ import java.util.Properties;
 import java.util.stream.Stream;
 
 public class ScvUtils {
-    public final static String SCV_KEYSTORE_TYPE_PROPERTY = "org.opennms.features.scv.keystore.type";
+    public static final String KEYSTORE_KEY_PROPERTY = "org.opennms.features.scv.jceks.key";
     public static final Logger LOG = LoggerFactory.getLogger(ScvUtils.class);
     public static final String OPENNMS_PROPERTIES_D_NAME = "opennms.properties.d";
     public static final String OPENNMS_PROPERTIES_NAME = "opennms.properties";
@@ -50,9 +50,9 @@ public class ScvUtils {
     public static Properties loadScvProperties(String opennmsHome) {
 
         final Properties onmsProperties = new Properties();
-        String keyStoreType = System.getProperty(SCV_KEYSTORE_TYPE_PROPERTY);
-        if (keyStoreType !=null && !keyStoreType.isEmpty()) {
-            onmsProperties.setProperty(SCV_KEYSTORE_TYPE_PROPERTY, keyStoreType);
+        String keyStoreKey = System.getProperty(KEYSTORE_KEY_PROPERTY);
+        if (keyStoreKey !=null && !keyStoreKey.isEmpty()) {
+            onmsProperties.setProperty(KEYSTORE_KEY_PROPERTY, keyStoreKey);
         } else if (opennmsHome != null && !opennmsHome.isEmpty()) {
             loadProperties(Path.of(opennmsHome, "etc", OPENNMS_PROPERTIES_D_NAME).toString(), onmsProperties);
             loadProperties(Path.of(opennmsHome, "etc", OPENNMS_PROPERTIES_NAME).toString(), onmsProperties);
