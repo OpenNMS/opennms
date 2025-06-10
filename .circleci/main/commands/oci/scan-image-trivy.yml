@@ -51,11 +51,13 @@ commands:
             #Create artifacts directory in the workspace
             mkdir -p "${HOME}/project/artifacts"
 
-            /tmp/bin/trivy image --severity HIGH,CRITICAL --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o "${HOME}/project/artifacts/${CIRCLE_JOB}_filtered_vulnerabilities.json" --no-progress opennms/${TAG}
-            /tmp/bin/trivy image --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o "${HOME}/project/artifacts/${CIRCLE_JOB}_report.json" --no-progress opennms/${TAG}
+            /tmp/bin/trivy image --severity HIGH,CRITICAL --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/filtered_vulnerabilities.json --no-progress opennms/${TAG}
+            /tmp/bin/trivy image --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/report.json --no-progress opennms/${TAG}
 
-            # Verify files were created
-            ls -la "${HOME}/project/artifacts/"
+            # Copy to artifacts with job-specific names
+            JOB_NAME_SANITIZED=$(echo "${CIRCLE_JOB}" | tr / -)
+            cp /tmp/report.json ~/project/artifacts/${JOB_NAME_SANITIZED}_report.json
+            cp /tmp/filtered_vulnerabilities.json ~/project/artifacts/${JOB_NAME_SANITIZED}_filtered_vulnerabilities.json
 
       - persist_to_workspace:
           root: ~/project
@@ -72,50 +74,45 @@ commands:
       - attach_workspace:
           at: ~/project
       - run:
-          name: Download and analyze Trivy scan results
+          name: Verify Python script exists
+          command: |
+            if [[ ! -f ~/project/.circleci/pyscripts/analyze_trivy_report.py ]]; then
+              echo "Error: Python script not found!"
+              exit 1
+            fi
+      - run:
+          name: Prepare Trivy reports
           command: |
             # Remove '-analyze' from job name to match artifact
             SCAN_JOB_NAME="${CIRCLE_JOB%-analyze}"
             SANITIZED_SCAN_JOB_NAME=$(echo "${SCAN_JOB_NAME}" | tr / -)
             
-            echo "Checking workspace contents:"
-            ls -la "${HOME}/project/artifacts/"
-
-            if [[ -f "${HOME}/project/artifacts/${SANITIZED_SCAN_JOB_NAME}_report.json" ]]; then
-              cp "${HOME}/project/artifacts/${SANITIZED_SCAN_JOB_NAME}_report.json" "/tmp/report.json"
-            else
+            # Verify artifacts exist
+            if [[ ! -f ~/project/artifacts/${SANITIZED_SCAN_JOB_NAME}_report.json ]]; then
               echo "Error: Report file not found!"
-              echo "Available files:"
-              find "${HOME}/project/artifacts" -type f
               exit 1
             fi
 
-            echo "Analyzing Trivy scan results"
-            python3 .circleci/pyscripts/analyze_trivy_report.py /tmp/report.json
-            
+            # Create required symlinks
+            ln -sf ~/project/artifacts/${SANITIZED_SCAN_JOB_NAME}_report.json /tmp/report.json
+            ln -sf ~/project/artifacts/${SANITIZED_SCAN_JOB_NAME}_filtered_vulnerabilities.json /tmp/filtered_vulnerabilities.json
+
+      - run:
+          name: Analyze trivy scan
+          command: |
+            cd ~/project
+            python3 .circleci/pyscripts/analyze_trivy_report.py /tmp/report.json            
       - store_artifacts:
           path: report.txt
           destination: report.txt
       - store_artifacts:
           path: report.csv
           destination: report.csv
+      
       - run:
-          name: Run Python script to analyze filtered vulnerabilities
+          name: Analyze filtered vulnerabilities
           command: |
-            # Remove '-analyze' from job name to match artifact
-            SCAN_JOB_NAME="${CIRCLE_JOB%-analyze}"
-            SANITIZED_SCAN_JOB_NAME=$(echo "${SCAN_JOB_NAME}" | tr / -)
-            
-            echo "Checking for filtered vulnerabilities file..."
-            if [[ -f "/tmp/${SANITIZED_SCAN_JOB_NAME}_filtered_vulnerabilities.json" ]]; then
-              # Create symlink for backward compatibility
-              ln -s "/tmp/${SANITIZED_SCAN_JOB_NAME}_filtered_vulnerabilities.json" "/tmp/filtered_vulnerabilities.json"
-            else
-              echo "Error: /tmp/${SANITIZED_SCAN_JOB_NAME}_filtered_vulnerabilities.json not found!"
-              exit 1
-            fi
-
-            echo "Analyzing filtered vulnerabilities..."
+            cd ~/project
             python3 .circleci/pyscripts/analyze_trivy_report.py /tmp/filtered_vulnerabilities.json
       - store_artifacts:
           path: filtered_vulnerabilities.txt
@@ -123,6 +120,7 @@ commands:
       - store_artifacts:
           path: filtered_vulnerabilities.csv
           destination: filtered_vulnerabilities.csv
+
       - run:
           name: Create Jira Issues
           context: Jira-secrets
