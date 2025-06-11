@@ -77,7 +77,6 @@ commands:
       - run:
           name: Verify Python script exists
           command: |
-            echo "Current directory: $(pwd)"
             echo "Workspace contents:"
             ls -la /home/circleci/project/.circleci/pyscripts/
             find /home/circleci/project -name analyze_trivy_report.py || true
@@ -104,18 +103,6 @@ commands:
             # Remove '-analyze' from job name to match artifact
             SCAN_JOB_NAME=$(echo "${CIRCLE_JOB}" | sed 's/-analyze//g')
             SANITIZED_SCAN_JOB_NAME=$(echo "${SCAN_JOB_NAME}" | tr / -)
-
-            echo "Original Job Name: ${CIRCLE_JOB}"
-            echo "Sanitized Job Name: ${SANITIZED_SCAN_JOB_NAME}"
-
-            echo "Workspace artifacts contents:"
-            ls -la ~/project/artifacts/
-            
-            # Verify artifacts exist
-            if [[ ! -f ~/project/artifacts/${SANITIZED_SCAN_JOB_NAME}_report.json ]]; then
-              echo "Error: Report file not found!"
-              exit 1
-            fi
 
             # Create required symlinks
             ln -sf ~/project/artifacts/${SANITIZED_SCAN_JOB_NAME}_report.json /tmp/report.json
