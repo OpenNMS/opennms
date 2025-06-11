@@ -556,7 +556,7 @@
         <version>1.9.1</version>
       </plugin>
       <plugin>
-        <groupId>com.jolira</groupId>
+        <groupId>org.dstovall</groupId>
         <artifactId>onejar-maven-plugin</artifactId>
         <version>1.4.4</version>
         <executions>
@@ -2065,8 +2065,8 @@
       <repositories>
         <!-- Disable snapshots for our own artifacts for release builds -->
         <repository>
-          <id>opennms-ossrh</id>
-          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+          <id>central-portal</id>
+          <url>https://central.sonatype.com/repository/maven-snapshots</url>
           <releases>
             <enabled>true</enabled>
             <updatePolicy>never</updatePolicy>
@@ -2179,6 +2179,79 @@
           <value>true</value>
         </property>
       </activation>
+      <!--
+        Whether to enable pulling snapshot dependencies from remote maven.
+
+        This should match <repositories> in the default reactor, *plus*
+        add the `opennms-snapshots` repo. (We skip the eclipse repository
+        as it's a special case.)
+      -->
+      <repositories>
+        <repository>
+          <id>maven-central</id>
+          <name>Maven Central</name>
+          <url>https://repo.maven.apache.org/maven2/</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>${updatePolicy}</updatePolicy>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>opennms-snapshots</id>
+          <url>https://archive.opennms.com/repo-maven/snapshots/</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>${updatePolicy}</updatePolicy>
+          </snapshots>
+        </repository>
+        <repository>
+          <id>central-portal</id>
+          <url>https://central.sonatype.com/repository/maven-snapshots/</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>${updatePolicy}</updatePolicy>
+          </snapshots>
+        </repository>
+      </repositories>
+      <!--
+        Whether to enable pulling snapshot plugin dependencies from remote maven.
+      -->
+      <pluginRepositories>
+        <pluginRepository>
+          <id>maven-central</id>
+          <name>Maven Central</name>
+          <url>https://repo.maven.apache.org/maven2/</url>
+          <releases>
+            <enabled>true</enabled>
+            <updatePolicy>never</updatePolicy>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>${updatePolicy}</updatePolicy>
+          </snapshots>
+        </pluginRepository>
+        <pluginRepository>
+          <id>opennms-snapshots</id>
+          <url>https://archive.opennms.com/repo-maven/snapshots/</url>
+          <releases>
+            <enabled>false</enabled>
+          </releases>
+          <snapshots>
+            <enabled>true</enabled>
+            <updatePolicy>${updatePolicy}</updatePolicy>
+          </snapshots>
+        </pluginRepository>
+      </pluginRepositories>
     </profile>
     <profile>
       <id>release</id>
@@ -5533,12 +5606,12 @@
   </pluginRepositories>
   <distributionManagement>
     <snapshotRepository>
-      <id>opennms-ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <id>central-portal</id>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
     </snapshotRepository>
     <repository>
-      <id>opennms-ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+      <id>central-portal</id>
+      <url>https://central.sonatype.com/repository/maven-releases//</url>
     </repository>
   </distributionManagement>
 </project>
