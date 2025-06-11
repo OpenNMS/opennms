@@ -104,6 +104,7 @@ help:
 	@echo "  minion-pkg-rpm:        Build Minion RPM packages"
 	@echo "  sentinel-pkg-deb:      Build Sentinel Debian packages"
 	@echo "  sentinel-pkg-rpm:      Build Sentinel RPM packages"
+	@echo "  all-pkgs:              Build all packages"
 	@echo ""
 	@echo "Container Images:"
 	@echo "  core-oci:              Build container image for Horizon Core, tag: opennms/horizon:latest"
@@ -665,6 +666,9 @@ sentinel-pkg-rpm: deps-packages sentinel-pkg-buildroot
 		--rpm-tag "Recommends: java-17-openjdk-devel" \
 		--after-install packages/pkg-postinst-sentinel.sh \
 		-C "$(BUILD_ROOT)/sentinel"
+
+.PHON: all-pkgs
+all-pkgs: core-pkg-deb core-pkg-rpm minion-pkg-deb minion-pkg-rpm sentinel-pkg-deb sentinel-pkg-rpm
 
 .PHONY: javadocs
 javadocs: deps-build show-info

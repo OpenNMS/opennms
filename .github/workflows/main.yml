@@ -499,13 +499,13 @@ jobs:
         shell: bash
         run: |
           export CLOUDSMITH_API_KEY=${{ secrets.CLOUDSMITH_API_KEY }}
-          for deb in $(find target/artifacts/packages -name deb -type f); do
+          for deb in $(find target/artifacts/packages -name "*.deb" -type f); do
             cloudsmith push deb --republish bluebird/develop/any-distro/any-version ${deb};
           done;
       - name: Publish RPM packages to Cloudsmith
         shell: bash
         run: |
           export CLOUDSMITH_API_KEY=${{ secrets.CLOUDSMITH_API_KEY }}
-          for rpm in $(find target/artifacts/packages -name rpm -type f); do
+          for rpm in $(find target/artifacts/packages -name "*.rpm" -type f); do
             cloudsmith push rpm --republish bluebird/develop/any-distro/any-version ${rpm};
           done;

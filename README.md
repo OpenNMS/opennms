@@ -48,7 +48,7 @@ Building from source requires the following components:
 * OpenJDK 17 Development Kit
 * Maven
 * Docker if you run tests
-* NodeJS 16
+* NodeJS 18
 * NPM
 * Yarn
 * Docker with Docker Compose plugin
@@ -66,21 +66,46 @@ The build artifacts are located in
 * Sentinel: opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-{pom-version}-sentinel.tar.gz
 
 Compile and assemble the tarballs with `make`.
+
+### 🐳 Build container images
+
+You need to run `make` before you can build container images.
 The tarballs are required to build the container images.
 
 ```console
-cd opennms-container/core
-docker build -t core .
+make core-oci minion-oci sentinel-oci
 ```
 
-```console
-cd opennms-container/minion
-docker build -t minion .
-```
+The images are available in your local Docker context.
 
 ```console
-cd opennms-container/sentinel
-docker build -t sentinel .
+docker images
+
+REPOSITORY                      TAG                       IMAGE ID       CREATED          SIZE
+opennms/sentinel                latest                    f34397bb99b0   33 seconds ago   1.17GB
+opennms/minion                  latest                    c4aff35467f7   40 seconds ago   1.32GB
+opennms/horizon                 latest                    0539bff17aa0   51 seconds ago   2.19GB
+```
+
+
+### 📦 RPM and DEB Packages
+
+You need to run `make` before you can create RPM and DEB packages.
+All DEB and RPM packages for Core, Minion and Sentinel can be created with the shortcut.
+
+```console
+make all-pkgs
+```
+
+If you want to build individual packages you can use the following make goals:
+
+```console
+make core-pkg-deb \
+     core-pkg-rpm \
+     minion-pkg-deb \
+     minion-pkg-rpm \
+     sentinel-pkg-deb \
+     sentinel-pkg-rpm
 ```
 
 ## 🌈 Support
