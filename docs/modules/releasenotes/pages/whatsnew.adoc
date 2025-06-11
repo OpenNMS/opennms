@@ -1,8 +1,5 @@
 [[releasenotes-34]]
 
-<<<<<<< HEAD
-= What's New in OpenNMS Horizon 34
-=======
 = What's New in OpenNMS Horizon 33
 
 == System requirements
@@ -33,7 +30,6 @@ Support for `confd` has been added to the Sentinel container.
 === UI: structured node list
 
 An enhanced node list has been introduced with options for sorting and filtering.
->>>>>>> origin/release-33.x
 
 == Breaking changes
 The default time series storage strategy is now by default RRDTool.
