@@ -71,6 +71,7 @@ commands:
   trivy-analyze:
     steps:
       - download-download-artifacts
+      - cached-checkout
       - attach_workspace:
           at: ~/project
       - run:
@@ -78,6 +79,8 @@ commands:
           command: |
             echo "Current directory: $(pwd)"
             echo "Workspace contents:"
+            ls -la /home/circleci/project/.circleci/pyscripts/
+            find /home/circleci/project -name analyze_trivy_report.py || true
             find ~/project -name analyze_trivy_report.py || true
 
             if [[ ! -f ~/project/.circleci/pyscripts/analyze_trivy_report.py ]]; then
