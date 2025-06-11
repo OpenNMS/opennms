@@ -16,6 +16,7 @@ fi
 
 ln -s /var/lib/minion/deploy /opt/minion/deploy
 ln -s /var/log/minion /opt/minion/data/log
+chown -R minion:minion /opt/minion
 chown -R minion:minion /var/lib/minion
 chown -R minion:minion /var/log/minion
 systemctl daemon-reload

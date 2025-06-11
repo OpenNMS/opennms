@@ -556,8 +556,8 @@ endif
 	mkdir -p "$(BUILD_ROOT)/minion/opt/minion"
 	mkdir -p "$(ARTIFACTS_DIR)/packages/minion"
 	tar xzf "./opennms-assemblies/minion/target/org.opennms.assemblies.minion-$(OPENNMS_VERSION)-minion.tar.gz" --strip-component 1 -C "$(BUILD_ROOT)/minion/opt/minion"
-	rm -rf "$(BUILD_ROOT)/minion/data/log" \
-           "$(BUILD_ROOT)/minion/deploy"
+	rm -rf "$(BUILD_ROOT)/minion/opt/minion/data/log" \
+           "$(BUILD_ROOT)/minion/opt/minion/deploy"
 	mkdir -p "$(BUILD_ROOT)/minion$(PKG_MINION)" \
              "$(BUILD_ROOT)/minion$(PKG_MINION_LOGS)" \
              "$(BUILD_ROOT)/minion$(PKG_MINION_DEPLOY)" \
@@ -621,8 +621,8 @@ endif
 	mkdir -p "$(BUILD_ROOT)/sentinel/opt/sentinel"
 	mkdir -p "$(ARTIFACTS_DIR)/packages/sentinel"
 	tar xzf "./opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-$(OPENNMS_VERSION)-sentinel.tar.gz" --strip-component 1 -C "$(BUILD_ROOT)/sentinel/opt/sentinel"
-	rm -rf "$(BUILD_ROOT)/sentinel/data/log" \
-           "$(BUILD_ROOT)/sentinel/deploy"
+	rm -rf "$(BUILD_ROOT)/sentinel/opt/sentinel/data/log" \
+           "$(BUILD_ROOT)/sentinel/opt/sentinel/deploy"
 	mkdir -p "$(BUILD_ROOT)/sentinel$(PKG_SENTINEL)" \
              "$(BUILD_ROOT)/sentinel$(PKG_SENTINEL_LOGS)" \
              "$(BUILD_ROOT)/sentinel$(PKG_SENTINEL_DEPLOY)" \
