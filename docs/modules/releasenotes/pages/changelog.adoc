@@ -1,9 +1,33 @@
 [[release-33-changelog]]
 
-== Changelog
-[[releasenotes-changelog-33.1.6]]
+= Changelog
 
-== Release 33.1.6
+[[releasenotes-changelog-33.1.7]]
+
+== Release 33.1.7
+
+Release 33.1.7 contains bug fixes, security updates and enhancements.
+
+The codename for Horizon 33.1.7 is https://wikipedia.org/wiki/$$Amur_Maple$$[_Amur Maple_].
+
+=== Bug
+
+* Update com.thoughtworks.xstream:xstream Library (Issue https://opennms.atlassian.net/browse/NMS-17056[NMS-17056])
+* Cannot Successfully Send an Email using "Send to Email Addresses" Field (Issue https://opennms.atlassian.net/browse/NMS-17911[NMS-17911])
+* Update org.eclipse.jetty:jetty-server Library (Issue https://opennms.atlassian.net/browse/NMS-17912[NMS-17912])
+* Horizon 33.1.6 changes KAFKA configuration environment variables (Issue https://opennms.atlassian.net/browse/NMS-17920[NMS-17920])
+* Duplicate Class Definitions for org.opennms.netmgt.snmp.SnmpObjIdTest (Issue https://opennms.atlassian.net/browse/NMS-17921[NMS-17921])
+* SCV doesn't work with custom key in the Installer (Issue https://opennms.atlassian.net/browse/NMS-17989[NMS-17989])
+
+=== Enhancement
+
+* Add support for "snappy" and "lz4" compression types for communication between OpenNMS <-> Minion (Issue https://opennms.atlassian.net/browse/NMS-17948[NMS-17948])
+
+=== Task
+
+* Move to latest WS-Man Client (Issue https://opennms.atlassian.net/browse/NMS-17988[NMS-17988])
+
+[[releasenotes-changelog-33.1.6]]
 
 Release 33.1.6 contains bug fixes, security updates and enhancements.
 
