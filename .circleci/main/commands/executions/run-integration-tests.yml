@@ -19,6 +19,7 @@ commands:
             export CCI_RERUN_FAILTEST=<< parameters.rerun-failtest-count >>
             export CCI_FAILURE_OPTION=<< parameters.failure-option >>
             export CCI_CHANGES_ONLY=<< parameters.changes-only >>
+            cp .circleci/settings.xml ${HOME}/.m2
             .circleci/scripts/itest.sh
       - run:
           name: Gather test results

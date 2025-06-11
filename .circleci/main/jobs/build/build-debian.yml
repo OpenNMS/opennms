@@ -12,6 +12,7 @@ jobs:
             export MAVEN_OPTS="-Xmx5g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
             export DEBEMAIL="opennms@opennms.org"
             export DEBFULLNAME="OpenNMS Build Account"
+            cp .circleci/settings.xml ${HOME}/.m2
             .circleci/scripts/makedeb.sh opennms
             .circleci/scripts/makedeb.sh minion
             .circleci/scripts/makedeb.sh sentinel
