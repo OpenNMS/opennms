@@ -376,7 +376,8 @@
                 "linux/arm64"
             ],
             "requires": [
-                "minion-image-single-arch-trivy"
+                "minion-image-single-arch-trivy",
+                "minion-image-single-arch-linux-amd64-trivy-analyze"
             ]
         },        
         "horizon-image-single-arch-trivy":{
@@ -400,7 +401,8 @@
                 "linux/arm64"
             ],
             "requires": [
-                "horizon-image-single-arch-trivy"
+                "horizon-image-single-arch-trivy",
+                "horizon-image-single-arch-linux-amd64-trivy-analyze"
             ]
         },
         "horizon-image-single-arch": {
@@ -438,7 +440,8 @@
                 "linux/arm64"
             ],
             "requires": [
-                "sentinel-image-single-arch-trivy"
+                "sentinel-image-single-arch-trivy",
+                "sentinel-image-single-arch-linux-amd64-trivy-analyze"
             ]
         },
         "sentinel-image-single-arch": {
