@@ -1,4 +1,4 @@
-[![opennms-build](https://github.com/Bluebird-Community/opennms/actions/workflows/opennms-build.yml/badge.svg)](https://github.com/Bluebird-Community/opennms/actions/workflows/opennms-build.yml) [![Hosted By: Cloudsmith](https://img.shields.io/badge/OSS%20hosting%20by-cloudsmith-blue?logo=cloudsmith&style=flat-square)](https://cloudsmith.com)
+[![main](https://github.com/Bluebird-Community/opennms/actions/workflows/main.yml/badge.svg)](https://github.com/Bluebird-Community/opennms/actions/workflows/main.yml) [![Hosted By: Cloudsmith](https://img.shields.io/badge/OSS%20hosting%20by-cloudsmith-blue?logo=cloudsmith&style=flat-square)](https://cloudsmith.com)
 
 This is an open-source network monitoring platform that helps you visualize and monitor everything on your local and distributed networks.
 BluebirdOps offers comprehensive fault, performance, and traffic monitoring with alarm generation in one place.
