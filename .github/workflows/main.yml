@@ -2,8 +2,14 @@
 name: main
 run-name: Build tarballs, oci and packages with test suites
 on:
-  push:
   workflow_dispatch:
+  pull_request:
+    types: [ opened, synchronize, reopened ]
+  push:
+    branches:
+      - '*'
+    tags:
+      - 'v*'  # Only version tags like v1.0.0
 
 jobs:
   quick-build:
@@ -160,10 +166,6 @@ jobs:
     needs: quick-build
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare
-        run: |
-          platform=${{ matrix.platform }}
-          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
       - uses: actions/checkout@v4
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -185,23 +187,36 @@ jobs:
         run: |
           mkdir -p opennms-container/core/tarball-root
           tar xzf opennms-full-assembly/target/opennms-full-assembly-*-core.tar.gz -C opennms-container/core/tarball-root
+      - name: Get the release version for the OCI tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          echo "TARGET=core" >> ${GITHUB_ENV}
+          REF_NAME=${{ github.ref_name }}
+          VERSION=${REF_NAME#v}  # Remove 'v' prefix
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+      - name: Prepare
+        run: |
+          echo "OCI_REPOSITORY=${TARGET:-core-snapshot}" >> ${GITHUB_ENV}
+          echo "SHORT_GIT_SHA=$(git rev-parse --short HEAD)" >> ${GITHUB_ENV}
+          echo "BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> ${GITHUB_ENV}
+          echo "TAG=${VERSION:-$(git rev-parse --short HEAD)}" >> ${GITHUB_ENV}
       - name: Build and push Core container image
         uses: docker/build-push-action@v5
         with:
           context: ./opennms-container/core
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: quay.io/bluebird/core-snapshot:${{ github.sha }},quay.io/bluebird/core-snapshot:latest
+          build-args: |
+            BUILD_DATE=${{ env.BUILD_DATE }}
+            VERSION=${{ env.VERSION }}
+            REVISION=${{ env.SHORT_GIT_SHA }}
+          tags: quay.io/bluebird/${{ env.OCI_REPOSITORY }}:${{ env.TAG }},quay.io/bluebird/${{ env.OCI_REPOSITORY }}:latest
 
   minion-oci:
     if: "!contains(github.event.commits[0].message, '[skip minion-oci]')"
     needs: quick-build
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare
-        run: |
-          platform=${{ matrix.platform }}
-          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
       - uses: actions/checkout@v4
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -230,23 +245,36 @@ jobs:
           -e 's,@REVISION@,${{ github.sha }},' \
           -e 's,@BRANCH@,${{ github.ref_name }},' \
           -e 's,@BUILD_NUMBER@,${{ github.run_id }},' > minion-config-schema.yml
+      - name: Get the release version for the OCI tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          echo "TARGET=minion" >> ${GITHUB_ENV}
+          REF_NAME=${{ github.ref_name }}
+          VERSION=${REF_NAME#v}  # Remove 'v' prefix
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+      - name: Prepare
+        run: |
+          echo "OCI_REPOSITORY=${TARGET:-minion-snapshot}" >> ${GITHUB_ENV}
+          echo "SHORT_GIT_SHA=$(git rev-parse --short HEAD)" >> ${GITHUB_ENV}
+          echo "BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> ${GITHUB_ENV}
+          echo "TAG=${VERSION:-$(git rev-parse --short HEAD)}" >> ${GITHUB_ENV}
       - name: Build and push Minion container image
         uses: docker/build-push-action@v5
         with:
           context: ./opennms-container/minion
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: quay.io/bluebird/minion-snapshot:${{ github.sha }},quay.io/bluebird/minion-snapshot:latest
+          build-args: |
+            BUILD_DATE=${{ env.BUILD_DATE }}
+            VERSION=${{ env.VERSION }}
+            REVISION=${{ env.SHORT_GIT_SHA }}
+          tags: quay.io/bluebird/${{ env.OCI_REPOSITORY }}:${{ env.TAG }},quay.io/bluebird/${{ env.OCI_REPOSITORY }}:latest
 
   sentinel-oci:
     if: "!contains(github.event.commits[0].message, '[skip sentinel-oci]')"
     needs: quick-build
     runs-on: ubuntu-latest
     steps:
-      - name: Prepare
-        run: |
-          platform=${{ matrix.platform }}
-          echo "PLATFORM_PAIR=${platform//\//-}" >> $GITHUB_ENV
       - uses: actions/checkout@v4
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -268,13 +296,30 @@ jobs:
         run: |
           mkdir -p opennms-container/sentinel/tarball-root
           tar xzf opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz --strip-component 1 -C opennms-container/sentinel/tarball-root
+      - name: Get the release version for the OCI tag
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          echo "TARGET=sentinel" >> ${GITHUB_ENV}
+          REF_NAME=${{ github.ref_name }}
+          VERSION=${REF_NAME#v}  # Remove 'v' prefix
+          echo "VERSION=${VERSION}" >> $GITHUB_ENV
+      - name: Prepare
+        run: |
+          echo "OCI_REPOSITORY=${TARGET:-sentinel-snapshot}" >> ${GITHUB_ENV}
+          echo "SHORT_GIT_SHA=$(git rev-parse --short HEAD)" >> ${GITHUB_ENV}
+          echo "BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> ${GITHUB_ENV}
+          echo "TAG=${VERSION:-$(git rev-parse --short HEAD)}" >> ${GITHUB_ENV}
       - name: Build and push Sentinel container image
         uses: docker/build-push-action@v5
         with:
           context: ./opennms-container/sentinel
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: quay.io/bluebird/sentinel-snapshot:${{ github.sha }},quay.io/bluebird/sentinel-snapshot:latest
+          build-args: |
+            BUILD_DATE=${{ env.BUILD_DATE }}
+            VERSION=${{ env.VERSION }}
+            REVISION=${{ env.SHORT_GIT_SHA }}
+          tags: quay.io/bluebird/${{ env.OCI_REPOSITORY }}:${{ env.TAG }},quay.io/bluebird/${{ env.OCI_REPOSITORY }}:latest
 
   unit-tests:
     if: "!contains(github.event.commits[0].message, '[skip unit-tests]')"
@@ -478,11 +523,18 @@ jobs:
       - core-packages
       - minion-packages
       - sentinel-packages
-    if: github.ref == 'refs/heads/develop'
+    if: github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     container:
-      image: quay.io/bluebird/base-builder:ubuntu.0.1.7.b18
+      image: quay.io/bluebird/base-builder:ubuntu.0.1.8.b19
     steps:
+      - name: Set a release package repository to stable
+        if: startsWith(github.ref, 'refs/tags/v')
+        run: |
+          echo "TARGET=stable" >> ${GITHUB_ENV}
+      - name: Set package repository
+        run: |
+          echo "PKG_REPOSITORY=${TARGET:-develop}" >> ${GITHUB_ENV}
       - uses: actions/download-artifact@v4
         with:
           name: core-pkgs
@@ -500,12 +552,12 @@ jobs:
         run: |
           export CLOUDSMITH_API_KEY=${{ secrets.CLOUDSMITH_API_KEY }}
           for deb in $(find target/artifacts/packages -name "*.deb" -type f); do
-            cloudsmith push deb --republish bluebird/develop/any-distro/any-version ${deb};
+            cloudsmith push deb --republish bluebird/${{ env.PKG_REPOSITORY }}/any-distro/any-version ${deb};
           done;
       - name: Publish RPM packages to Cloudsmith
         shell: bash
         run: |
           export CLOUDSMITH_API_KEY=${{ secrets.CLOUDSMITH_API_KEY }}
           for rpm in $(find target/artifacts/packages -name "*.rpm" -type f); do
-            cloudsmith push rpm --republish bluebird/develop/any-distro/any-version ${rpm};
+            cloudsmith push rpm --republish bluebird/${{ env.PKG_REPOSITORY }}/any-distro/any-version ${rpm};
           done;

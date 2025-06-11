@@ -14,19 +14,14 @@ export MAVEN_OPTS     := -Xms8g -Xmx8g -XX:ReservedCodeCacheSize=1g -XX:+TieredC
 GIT_BRANCH            := $(shell git branch | grep \* | cut -d' ' -f2)
 OPENNMS_VERSION       := $(shell mvn org.apache.maven.plugins:maven-help-plugin:3.5.1:evaluate -Dexpression=project.version -q -DforceStdout)
 VERSION               := $(shell echo ${OPENNMS_VERSION} | sed -e 's,-SNAPSHOT,,')
-RELEASE_BUILD_KEY     := onms
 RELEASE_BRANCH        := $(shell echo ${GIT_BRANCH} | sed -e 's,/,-,g')
 ifndef CIRCLE_BUILD_NUM
 override RELEASE_BUILD_NUM = 0
 endif
 
 RELEASE_BUILD_NUM     ?= ${CIRCLE_BUILD_NUM}
-RELEASE_BUILDNAME     := ${RELEASE_BRANCH}
 RELEASE_COMMIT        := $(shell git rev-parse --short HEAD)
-RELEASE_MINOR_VERSION := $(shell git log --pretty="format:%cd" --date=short -1 | sed -e "s,^Date: *,," -e "s,-,,g" )
-RELEASE_MICRO_VERSION := ${RELEASE_BUILD_KEY}.${RELEASE_BUILDNAME}.${RELEASE_BUILD_NUM}
 OPEN_FILES_LIMIT      := 20000
-
 RELEASE_VERSION     := UNSET.0.0
 RELEASE_BRANCH      := develop
 PUSH_RELEASE        := false
@@ -34,9 +29,6 @@ MAJOR_VERSION       := $(shell echo $(RELEASE_VERSION) | cut -d. -f1)
 MINOR_VERSION       := $(shell echo $(RELEASE_VERSION) | cut -d. -f2)
 PATCH_VERSION       := $(shell echo $(RELEASE_VERSION) | cut -d. -f3)
 SNAPSHOT_VERSION    := $(MAJOR_VERSION).$(MINOR_VERSION).$(shell expr $(PATCH_VERSION) + 1)-SNAPSHOT
-MAVEN_REPO          := bluebird-snapshots
-MAVEN_USERNAME      := ""
-MAVEN_PASSWORD      := ""
 RELEASE_LOG         := target/release.log
 OK                  := "[ 👍 ]"
 SKIP                := "[ ⏭️ ]"
@@ -58,16 +50,13 @@ PKG_SENTINEL_LOGS     := /var/log/sentinel
 PKG_SENTINEL_DEPLOY   := /var/lib/sentinel/deploy
 
 BUILD_ROOT            := $(ARTIFACTS_DIR)/buildroot
-OPA_VERSION           := $(shell grep '<opennmsApiVersion>' pom.xml | sed -E 's/.*<opennmsApiVersion>([[:digit:]]+(\.[[:digit:]]+)+).*/\1/')
-EXTRA_INFO            := $(GIT_BRANCH)
-EXTRA_INFO2           := $(RELEASE_COMMIT)
 PKG_RELEASE           := $(RELEASE_BUILD_NUM)
 MAINTAINER_EMAIL      ?= maintainer@bluebirdops.org
 
-INSTALL_VERSION       := ${VERSION}-0.${RELEASE_MINOR_VERSION}.${RELEASE_MICRO_VERSION}.${RELEASE_COMMIT}
+INSTALL_VERSION       := ${OPENNMS_VERSION}-${RELEASE_COMMIT}
 DEPLOY_BASE_IMAGE     := quay.io/bluebird/deploy-base:2.0.2.b21
 BUILD_DATE            := $(shell date '+%Y%m%d')
-DOCKER_ARCH           := linux/amd64
+OCI_PLATFORM          := linux/amd64
 OCI_REGISTRY          ?= quay.io
 OCI_REGISTRY_USER     ?= changeme
 OCI_REGISTRY_PASSWORD ?= changeme
@@ -287,6 +276,7 @@ endif
 	mkdir -p opennms-container/core/tarball-root && \
 	tar xzf opennms-full-assembly/target/opennms-full-assembly-*-core.tar.gz -C opennms-container/core/tarball-root && \
 	cd opennms-container/core && \
+	echo "$(INSTALL_VERSION)" > tarball-root/etc/version.info && \
     docker build --build-arg DEPLOY_BASE_IMAGE=$(DEPLOY_BASE_IMAGE) \
 		 --build-arg BUILD_DATE=$(BUILD_DATE) \
 		 --build-arg VERSION=$(OPENNMS_VERSION) \
@@ -308,6 +298,7 @@ endif
 	mkdir -p opennms-container/minion/tarball-root && \
 	tar xzf opennms-assemblies/minion/target/org.opennms.assemblies.minion-*-minion.tar.gz --strip-component 1 -C opennms-container/minion/tarball-root && \
 	cd opennms-container/minion && \
+	echo "$(INSTALL_VERSION)" > tarball-root/etc/version.info && \
 	cat minion-config-schema.yml.in | sed -e 's,@VERSION@,$(OPENNMS_VERSION),' \
 		-e 's,@REVISION@,$(RELEASE_COMMIT),' \
 		-e 's,@BRANCH@,$(GIT_BRANCH),' \
@@ -333,6 +324,7 @@ endif
 	mkdir -p opennms-container/sentinel/tarball-root && \
 	tar xzf opennms-assemblies/sentinel/target/org.opennms.assemblies.sentinel-*-sentinel.tar.gz --strip-component 1 -C opennms-container/sentinel/tarball-root
 	cd opennms-container/sentinel && \
+	echo "$(INSTALL_VERSION)" > tarball-root/etc/version.info && \
     docker build --build-arg DEPLOY_BASE_IMAGE=$(DEPLOY_BASE_IMAGE) \
          --build-arg BUILD_DATE=$(BUILD_DATE) \
          --build-arg VERSION=$(OPENNMS_VERSION) \
@@ -491,7 +483,6 @@ core-pkg-deb: deps-packages core-pkg-buildroot
 	@echo
 	@echo "Version:     " $(OPENNMS_VERSION)
 	@echo "Release:     " $(PKG_RELEASE)
-	@echo "OPA VERSION: " $(OPA_VERSION)
 	@echo
 	fpm -s dir -t deb -p $(ARTIFACTS_DIR)/packages/core/NAME_VERSION_ARCH_$(PKG_RELEASE).deb \
 		-n "bbo-core" \
@@ -519,7 +510,6 @@ core-pkg-rpm: deps-packages core-pkg-buildroot
 	@echo
 	@echo "Version:     " $(OPENNMS_VERSION)
 	@echo "Release:     " $(PKG_RELEASE)
-	@echo "OPA VERSION: " $(OPA_VERSION)
 	@echo
 	fpm -s dir -t rpm -p $(ARTIFACTS_DIR)/packages/core/NAME_VERSION_ARCH_$(PKG_RELEASE).rpm \
 	    -n "bbo-core" \
@@ -570,7 +560,6 @@ minion-pkg-deb: deps-packages minion-pkg-buildroot
 	@echo
 	@echo "Version:     " $(OPENNMS_VERSION)
 	@echo "Release:     " $(DEB_PKG_RELEASE)
-	@echo "OPA VERSION: " $(OPA_VERSION)
 	@echo
 	fpm -s dir -t deb -p $(ARTIFACTS_DIR)/packages/minion/NAME_VERSION_ARCH_$(PKG_RELEASE).deb \
 		-n "bbo-minion" \
@@ -591,7 +580,6 @@ minion-pkg-rpm: deps-packages minion-pkg-buildroot
 	@echo
 	@echo "Version:     " $(OPENNMS_VERSION)
 	@echo "Release:     " $(DEB_PKG_RELEASE)
-	@echo "OPA VERSION: " $(OPA_VERSION)
 	@echo
 	fpm -s dir -t rpm -p $(ARTIFACTS_DIR)/packages/minion/NAME_VERSION_ARCH_$(PKG_RELEASE).rpm \
 		-n "bbo-minion" \
@@ -635,7 +623,6 @@ sentinel-pkg-deb: deps-packages sentinel-pkg-buildroot
 	@echo
 	@echo "Version:     " $(OPENNMS_VERSION)
 	@echo "Release:     " $(DEB_PKG_RELEASE)
-	@echo "OPA VERSION: " $(OPA_VERSION)
 	@echo
 	fpm -s dir -t deb -p $(ARTIFACTS_DIR)/packages/sentinel/NAME_VERSION_ARCH_$(PKG_RELEASE).deb \
 		-n "bbo-sentinel" \
@@ -654,7 +641,6 @@ sentinel-pkg-rpm: deps-packages sentinel-pkg-buildroot
 	@echo
 	@echo "Version:     " $(OPENNMS_VERSION)
 	@echo "Release:     " $(DEB_PKG_RELEASE)
-	@echo "OPA VERSION: " $(OPA_VERSION)
 	@echo
 	fpm -s dir -t rpm -p $(ARTIFACTS_DIR)/packages/sentinel/NAME_VERSION_ARCH_$(PKG_RELEASE).rpm \
 		-n "bbo-sentinel" \
