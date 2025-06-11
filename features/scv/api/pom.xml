@@ -4,8 +4,14 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.scv</artifactId>
-        <version>33.1.6</version>
+        <version>33.1.7</version>
     </parent>
+    <dependencies>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+        </dependency>
+    </dependencies>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.scv</groupId>
     <artifactId>org.opennms.features.scv.api</artifactId>
