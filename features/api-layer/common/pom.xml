@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.api-layer</artifactId>
-        <version>33.1.7</version>
+        <version>33.1.8-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.api-layer</groupId>

@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>nrtg</artifactId>
-    <version>33.1.7</version>
+    <version>33.1.8-SNAPSHOT</version>
   </parent>
   <groupId>org.opennms.features.nrtg</groupId>
   <artifactId>nrtg-nrtbroker-jms</artifactId>
