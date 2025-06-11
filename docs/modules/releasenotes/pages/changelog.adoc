@@ -29,6 +29,8 @@ The codename for Horizon 33.1.7 is https://wikipedia.org/wiki/$$Amur_Maple$$[_Am
 
 [[releasenotes-changelog-33.1.6]]
 
+== Release 33.1.6
+
 Release 33.1.6 contains bug fixes, security updates and enhancements.
 
 The codename for Horizon 33.1.6 is https://wikipedia.org/wiki/$$Basswood$$[_Basswood_].
