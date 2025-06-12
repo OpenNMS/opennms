@@ -96,6 +96,7 @@
   <bean id="defaultGlobalReportRepository" class="org.opennms.features.reporting.repository.global.DefaultGlobalReportRepository">
     <constructor-arg name="remoteRepositoryConfigDao" ref="defaultRemoteRepositoryConfigDao"/>
     <constructor-arg name="localReportRepository" ref="legacyLocalReportRepository"/>
+    <property name="secureCredentialsVault" ref="jceksSecureCredentialsVault"/>
   </bean>
   <bean id="foreignSourceAndRequisitionAccessService" class="org.opennms.web.svclayer.support.DefaultRequisitionAccessService"></bean>
   <bean id="snmpConfigAccessService" class="org.opennms.netmgt.config.SnmpConfigAccessService" />

@@ -65,7 +65,7 @@ public abstract class VmwareRequisitionTool {
             System.exit(1);
         }
 
-        final SecureCredentialsVault secureCredentialsVault = BeanUtils.getBean("jceksScvContext", "jceksSecureCredentialsVault", SecureCredentialsVault.class);
+        final SecureCredentialsVault secureCredentialsVault = BeanUtils.getBean("daoContext", "jceksSecureCredentialsVault", SecureCredentialsVault.class);
 
         String urlString = arguments.remove(0).replaceFirst("vmware", "http"); // Internal trick to avoid confusions.
         URL url = new URL(urlString);

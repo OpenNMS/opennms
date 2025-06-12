@@ -160,7 +160,7 @@ public class VmwareRequisitionUrlConnection extends GenericURLConnection {
 
     private static SecureCredentialsVault getSecureCredentialsVault() {
         if (s_secureCredentialsVault == null) {
-            s_secureCredentialsVault = BeanUtils.getBean("jceksScvContext", "jceksSecureCredentialsVault", SecureCredentialsVault.class);
+            s_secureCredentialsVault = BeanUtils.getBean("daoContext", "jceksSecureCredentialsVault", SecureCredentialsVault.class);
         }
         return s_secureCredentialsVault;
     }

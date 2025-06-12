@@ -26,6 +26,7 @@ import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
 import org.opennms.features.reporting.repository.ReportRepository;
 import org.opennms.features.reporting.repository.remote.DefaultRemoteRepository;
+import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.Assert;
@@ -75,6 +76,11 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
      * JasperReports version number.
      */
     private String m_jasperReportVersion;
+
+    /**
+     * Secure credentials vault for remote repositories.
+     */
+    private SecureCredentialsVault m_secureCredentialsVault;
 
 
     /**
@@ -317,7 +323,11 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
         //TODO tak: This is tricky to test and to mock, we have to refactor this
         try {
             for (RemoteRepositoryDefinition repositoryDefinition : m_remoteRepositoryConfigDao.getActiveRepositories()) {
-                this.m_repositoryList.add(new DefaultRemoteRepository(repositoryDefinition, m_jasperReportVersion));
+                if (m_secureCredentialsVault != null) {
+                    this.m_repositoryList.add(new DefaultRemoteRepository(repositoryDefinition, m_jasperReportVersion, m_secureCredentialsVault));
+                } else {
+                    this.m_repositoryList.add(new DefaultRemoteRepository(repositoryDefinition, m_jasperReportVersion));
+                }
             }
         } catch (Exception e) {
             logger.error("Could not add configured remote repositories in default global report repository. Error message: '{}'", e.getMessage());
@@ -343,5 +353,23 @@ public class DefaultGlobalReportRepository implements GlobalReportRepository {
         } catch (Exception e) {
             logger.error("Could not reload configuration on repositories: '{}'", e.getMessage());
         }
+    }
+
+    /**
+     * Set the secure credentials vault for remote repositories.
+     *
+     * @param secureCredentialsVault the secure credentials vault
+     */
+    public void setSecureCredentialsVault(SecureCredentialsVault secureCredentialsVault) {
+        this.m_secureCredentialsVault = secureCredentialsVault;
+    }
+
+    /**
+     * Get the secure credentials vault.
+     *
+     * @return the secure credentials vault
+     */
+    public SecureCredentialsVault getSecureCredentialsVault() {
+        return m_secureCredentialsVault;
     }
 }

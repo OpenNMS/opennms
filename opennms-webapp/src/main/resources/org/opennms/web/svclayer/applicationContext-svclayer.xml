@@ -240,6 +240,7 @@ xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.sprin
   <bean id="defaultGlobalReportRepository" class="org.opennms.features.reporting.repository.global.DefaultGlobalReportRepository">
     <constructor-arg name="remoteRepositoryConfigDao" ref="defaultRemoteRepositoryConfigDao"/>
     <constructor-arg name="localReportRepository" ref="legacyLocalReportRepository"/>
+    <property name="secureCredentialsVault" ref="jceksSecureCredentialsVault"/>
   </bean>
   <bean id="foreignSourceAndRequisitionAccessService" class="org.opennms.web.svclayer.support.DefaultRequisitionAccessService"></bean>
   <onmsgi:service interface="org.opennms.web.svclayer.api.RequisitionAccessService" ref="foreignSourceAndRequisitionAccessService" />

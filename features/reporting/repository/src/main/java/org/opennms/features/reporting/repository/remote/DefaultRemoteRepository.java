@@ -74,6 +74,7 @@ public class DefaultRemoteRepository implements ReportRepository {
 
     final String m_authorizationHeader;
 
+
     /**
      * Default constructor to initialize the ReST HTTP client
      *
@@ -83,7 +84,7 @@ public class DefaultRemoteRepository implements ReportRepository {
     public DefaultRemoteRepository(
             final RemoteRepositoryDefinition remoteRepositoryDefinition,
             final String jasperReportsVersion) {
-        this(remoteRepositoryDefinition, jasperReportsVersion, org.opennms.core.spring.BeanUtils.getBean("jceksScvContext", "jceksSecureCredentialsVault", SecureCredentialsVault.class));
+        this(remoteRepositoryDefinition, jasperReportsVersion, org.opennms.core.spring.BeanUtils.getBean("daoContext", "jceksSecureCredentialsVault", SecureCredentialsVault.class));
     }
 
     public DefaultRemoteRepository(
