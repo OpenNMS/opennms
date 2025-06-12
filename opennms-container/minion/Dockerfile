@@ -68,7 +68,7 @@ ARG BUILD_URL
 ARG RELEASE_BRANCH
 
 LABEL org.opencontainers.image.created="${BUILD_DATE}" \
-      org.opencontainers.image.title="BluebirdOps ${VERSION}" \
+      org.opencontainers.image.title="BluebirdOps Minion ${VERSION}" \
       org.opencontainers.image.source="${SOURCE}" \
       org.opencontainers.image.revision="${REVISION}" \
       org.opencontainers.image.version="${VERSION}" \
@@ -77,7 +77,6 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.licenses="AGPL-3.0" \
       org.opennms.image.base="${DEPLOY_BASE_IMAGE}" \
       org.opennms.cicd.jobid="${BUILD_JOB_ID}" \
-      org.opennms.cicd.buildnumber="${RELEASE_BUILD_NUM}" \
       org.opennms.cicd.buildurl="${BUILD_URL}" \
       org.opennms.cicd.branch="${RELEASE_BRANCH}"
 

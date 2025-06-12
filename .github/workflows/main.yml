@@ -198,6 +198,7 @@ jobs:
         run: |
           echo "OCI_REPOSITORY=${TARGET:-core-snapshot}" >> ${GITHUB_ENV}
           echo "SHORT_GIT_SHA=$(git rev-parse --short HEAD)" >> ${GITHUB_ENV}
+          echo "GIT_SHA=$(git rev-parse HEAD)" >> ${GITHUB_ENV}
           echo "BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> ${GITHUB_ENV}
           echo "TAG=${VERSION:-$(git rev-parse --short HEAD)}" >> ${GITHUB_ENV}
       - name: Build and push Core container image
@@ -207,9 +208,13 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           build-args: |
+            RELEASE_BRANCH=${{ github.ref_name }}
             BUILD_DATE=${{ env.BUILD_DATE }}
-            VERSION=${{ env.VERSION }}
-            REVISION=${{ env.SHORT_GIT_SHA }}
+            VERSION=${{ env.TAG }}
+            REVISION=${{ env.GIT_SHA }}
+            SOURCE=https://github.com/Bluebird-Community/opennms/tree/${{ env.GIT_SHA }}/opennms-container/core
+            BUILD_URL=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            BUILD_JOB_ID=${{ github.run_id }}
           tags: quay.io/bluebird/${{ env.OCI_REPOSITORY }}:${{ env.TAG }},quay.io/bluebird/${{ env.OCI_REPOSITORY }}:latest
 
   minion-oci:
@@ -256,6 +261,7 @@ jobs:
         run: |
           echo "OCI_REPOSITORY=${TARGET:-minion-snapshot}" >> ${GITHUB_ENV}
           echo "SHORT_GIT_SHA=$(git rev-parse --short HEAD)" >> ${GITHUB_ENV}
+          echo "GIT_SHA=$(git rev-parse HEAD)" >> ${GITHUB_ENV}
           echo "BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> ${GITHUB_ENV}
           echo "TAG=${VERSION:-$(git rev-parse --short HEAD)}" >> ${GITHUB_ENV}
       - name: Build and push Minion container image
@@ -265,9 +271,13 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           build-args: |
+            RELEASE_BRANCH=${{ github.ref_name }}
             BUILD_DATE=${{ env.BUILD_DATE }}
-            VERSION=${{ env.VERSION }}
-            REVISION=${{ env.SHORT_GIT_SHA }}
+            VERSION=${{ env.TAG }}
+            REVISION=${{ env.GIT_SHA }}
+            SOURCE=https://github.com/Bluebird-Community/opennms/tree/${{ env.GIT_SHA }}/opennms-container/minion
+            BUILD_URL=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            BUILD_JOB_ID=${{ github.run_id }}
           tags: quay.io/bluebird/${{ env.OCI_REPOSITORY }}:${{ env.TAG }},quay.io/bluebird/${{ env.OCI_REPOSITORY }}:latest
 
   sentinel-oci:
@@ -307,6 +317,7 @@ jobs:
         run: |
           echo "OCI_REPOSITORY=${TARGET:-sentinel-snapshot}" >> ${GITHUB_ENV}
           echo "SHORT_GIT_SHA=$(git rev-parse --short HEAD)" >> ${GITHUB_ENV}
+          echo "GIT_SHA=$(git rev-parse HEAD)" >> ${GITHUB_ENV}
           echo "BUILD_DATE=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> ${GITHUB_ENV}
           echo "TAG=${VERSION:-$(git rev-parse --short HEAD)}" >> ${GITHUB_ENV}
       - name: Build and push Sentinel container image
@@ -316,9 +327,13 @@ jobs:
           platforms: linux/amd64,linux/arm64
           push: true
           build-args: |
+            RELEASE_BRANCH=${{ github.ref_name }}
             BUILD_DATE=${{ env.BUILD_DATE }}
-            VERSION=${{ env.VERSION }}
-            REVISION=${{ env.SHORT_GIT_SHA }}
+            VERSION=${{ env.TAG }}
+            REVISION=${{ env.GIT_SHA }}
+            SOURCE=https://github.com/Bluebird-Community/opennms/tree/${{ env.GIT_SHA }}/opennms-container/sentinel
+            BUILD_URL=${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+            BUILD_JOB_ID=${{ github.run_id }}
           tags: quay.io/bluebird/${{ env.OCI_REPOSITORY }}:${{ env.TAG }},quay.io/bluebird/${{ env.OCI_REPOSITORY }}:latest
 
   unit-tests:

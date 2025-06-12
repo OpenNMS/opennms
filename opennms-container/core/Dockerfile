@@ -85,7 +85,6 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opencontainers.image.licenses="AGPL-3.0" \
       org.opennms.image.base="${DEPLOY_BASE_IMAGE}" \
       org.opennms.cicd.jobid="${BUILD_JOB_ID}" \
-      org.opennms.cicd.buildnumber="${RELEASE_BUILD_NUM}" \
       org.opennms.cicd.buildurl="${BUILD_URL}" \
       org.opennms.cicd.branch="${RELEASE_BRANCH}"
 
