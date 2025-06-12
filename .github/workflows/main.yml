@@ -576,3 +576,51 @@ jobs:
           for rpm in $(find target/artifacts/packages -name "*.rpm" -type f); do
             cloudsmith push rpm --republish bluebird/${{ env.PKG_REPOSITORY }}/any-distro/any-version ${rpm};
           done;
+
+  create-github-release:
+    needs:
+      - core-packages
+      - minion-packages
+      - sentinel-packages
+    runs-on: ubuntu-latest
+    if: startsWith(github.ref, 'refs/tags/v')
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          name: tarball-core
+          path: opennms-full-assembly/target
+      - uses: actions/download-artifact@v4
+        with:
+          name: tarball-minion
+          path: opennms-assemblies/minion/target
+      - uses: actions/download-artifact@v4
+        with:
+          name: tarball-sentinel
+          path: opennms-assemblies/sentinel/target
+      - uses: actions/download-artifact@v4
+        with:
+          name: core-pkgs
+          path: target/artifacts/packages/core
+      - uses: actions/download-artifact@v4
+        with:
+          name: minion-pkgs
+          path: target/artifacts/packages/minion
+      - uses: actions/download-artifact@v4
+        with:
+          name: sentinel-pkgs
+          path: target/artifacts/packages/sentinel
+      - name: Release ${{ github.ref_name }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            opennms-full-assembly/target/*.tar.gz
+            opennms-assemblies/minion/target/*.tar.gz
+            opennms-assemblies/sentinel/target/*.tar.gz
+            target/artifacts/packages/core/*.deb
+            target/artifacts/packages/core/*.rpm
+            target/artifacts/packages/minion/*.deb
+            target/artifacts/packages/minion/*.rpm
+            target/artifacts/packages/sentinel/*.deb
+            target/artifacts/packages/sentinel/*.rpm
