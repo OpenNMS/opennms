@@ -52,7 +52,7 @@ commands:
 
             # Filter out packages with 0 vulnerabilities
             jq 'del(.Results[] | select(.Vulnerabilities == null or .Vulnerabilities == []))' /tmp/raw_report.json > /tmp/report.json 
-            /tmp/bin/trivy image --input /tmp/report.json --format table --output /tmp/report.txt --no-progress
+            /tmp/bin/trivy format --input /tmp/report.json --format table --output /tmp/report.txt --scanners vuln
       - store_artifacts:
           path: /tmp/report.json
           destination: report.json
