@@ -14,8 +14,8 @@ if ! getent passwd sentinel >/dev/null 2>&1; then
           sentinel
 fi
 
-ln -s /var/lib/sentinel/deploy /opt/sentinel/deploy
-ln -s /var/log/sentinel /opt/sentinel/data/log
+[ ! -e /opt/sentinel/deploy ] && ln -s /var/lib/sentinel/deploy /opt/sentinel/deploy
+[ ! -e /opt/sentinel/data/log ] && ln -s /var/log/sentinel /opt/sentinel/data/log
 chown -R sentinel:sentinel /opt/sentinel
 chown -R sentinel:sentinel /var/lib/sentinel
 chown -R sentinel:sentinel /var/log/sentinel
