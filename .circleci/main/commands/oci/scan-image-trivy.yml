@@ -53,10 +53,12 @@ commands:
 
             /tmp/bin/trivy image --severity HIGH,CRITICAL --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/filtered_vulnerabilities.json --no-progress opennms/${TAG}
             /tmp/bin/trivy image --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/report.json --no-progress opennms/${TAG}
+            /tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 -o /tmp/report.txt --no-progress opennms/${TAG}
 
             # Copy to artifacts with job-specific names
             JOB_NAME_SANITIZED=$(echo "${CIRCLE_JOB}" | tr / -)
             cp /tmp/report.json ~/project/artifacts/${JOB_NAME_SANITIZED}_report.json
+            cp /tmp/report.txt ~/project/artifacts/${JOB_NAME_SANITIZED}_report.txt
             cp /tmp/filtered_vulnerabilities.json ~/project/artifacts/${JOB_NAME_SANITIZED}_filtered_vulnerabilities.json
 
       - persist_to_workspace:
