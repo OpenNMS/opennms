@@ -12,8 +12,8 @@ on:
       - 'v*'  # Only version tags like v1.0.0
 
 jobs:
-  quick-build:
-    if: "!contains(github.event.commits[0].message, '[skip quick-build]')"
+  build-with-smoke-test:
+    if: "!contains(github.event.commits[0].message, '[skip build-with-smoke-test]')"
     runs-on:
       group: Default
       labels:
@@ -47,7 +47,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: quick-build-logs
+          name: build-with-smoke-test-logs
           path: target/artifacts/mvn.*.log
       - name: Persist tarball Core
         uses: actions/upload-artifact@v4
@@ -92,7 +92,10 @@ jobs:
   core-packages:
     if: "!contains(github.event.commits[0].message, '[skip core-packages]')"
     needs:
-      - quick-build
+      - integration-tests
+      - e2e-tests-core
+      - e2e-tests-minion
+      - e2e-tests-sentinel
     runs-on: ubuntu-latest
     container:
       image: quay.io/bluebird/java-builder:ubuntu.0.1.5.jdk-17.b21
@@ -116,7 +119,10 @@ jobs:
   minion-packages:
     if: "!contains(github.event.commits[0].message, '[skip minion-packages]')"
     needs:
-      - quick-build
+      - integration-tests
+      - e2e-tests-core
+      - e2e-tests-minion
+      - e2e-tests-sentinel
     runs-on: ubuntu-latest
     container:
       image: quay.io/bluebird/java-builder:ubuntu.0.1.5.jdk-17.b21
@@ -140,7 +146,10 @@ jobs:
   sentinel-packages:
     if: "!contains(github.event.commits[0].message, '[skip sentinel-packages]')"
     needs:
-      - quick-build
+      - integration-tests
+      - e2e-tests-core
+      - e2e-tests-minion
+      - e2e-tests-sentinel
     runs-on: ubuntu-latest
     container:
       image: quay.io/bluebird/java-builder:ubuntu.0.1.5.jdk-17.b21
@@ -163,7 +172,11 @@ jobs:
 
   core-oci:
     if: "!contains(github.event.commits[0].message, '[skip core-oci]')"
-    needs: quick-build
+    needs:
+      - integration-tests
+      - e2e-tests-core
+      - e2e-tests-minion
+      - e2e-tests-sentinel
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -219,7 +232,11 @@ jobs:
 
   minion-oci:
     if: "!contains(github.event.commits[0].message, '[skip minion-oci]')"
-    needs: quick-build
+    needs:
+      - integration-tests
+      - e2e-tests-core
+      - e2e-tests-minion
+      - e2e-tests-sentinel
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -282,7 +299,11 @@ jobs:
 
   sentinel-oci:
     if: "!contains(github.event.commits[0].message, '[skip sentinel-oci]')"
-    needs: quick-build
+    needs:
+      - integration-tests
+      - e2e-tests-core
+      - e2e-tests-minion
+      - e2e-tests-sentinel
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -338,8 +359,6 @@ jobs:
 
   unit-tests:
     if: "!contains(github.event.commits[0].message, '[skip unit-tests]')"
-    needs:
-      - quick-build
     runs-on:
       group: Default
       labels:
@@ -378,6 +397,7 @@ jobs:
     if: "!contains(github.event.commits[0].message, '[skip integration-tests]')"
     needs:
       - unit-tests
+      - build-with-smoke-test
     runs-on:
       group: Default
       labels:
@@ -417,6 +437,7 @@ jobs:
     if: "!contains(github.event.commits[0].message, '[skip e2e-tests-core]')"
     needs:
       - unit-tests
+      - build-with-smoke-test
     runs-on:
       group: Default
       labels:
@@ -457,6 +478,7 @@ jobs:
     if: "!contains(github.event.commits[0].message, '[skip e2e-tests-minion]')"
     needs:
       - unit-tests
+      - build-with-smoke-test
     runs-on:
       group: Default
       labels:
@@ -497,6 +519,7 @@ jobs:
     if: "!contains(github.event.commits[0].message, '[skip e2e-tests-sentinel]')"
     needs:
       - unit-tests
+      - build-with-smoke-test
     runs-on:
       group: Default
       labels:
