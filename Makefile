@@ -552,7 +552,8 @@ endif
              "$(BUILD_ROOT)/minion$(PKG_MINION_LOGS)" \
              "$(BUILD_ROOT)/minion$(PKG_MINION_DEPLOY)" \
              "$(BUILD_ROOT)/minion/usr/lib/systemd/system"
-	cp "$(BUILD_ROOT)/minion/opt/minion/etc/minion.service" "$(BUILD_ROOT)/minion/usr/lib/systemd/system"
+	mv "$(BUILD_ROOT)/minion/opt/minion/etc/minion.service" "$(BUILD_ROOT)/minion/usr/lib/systemd/system"
+	mv "$(BUILD_ROOT)/minion/opt/minion/etc/minion.init" "$(BUILD_ROOT)/minion/opt/minion/bin/minion"
 
 .PHONY: minion-pkg-deb
 minion-pkg-deb: deps-packages minion-pkg-buildroot
@@ -615,7 +616,8 @@ endif
              "$(BUILD_ROOT)/sentinel$(PKG_SENTINEL_LOGS)" \
              "$(BUILD_ROOT)/sentinel$(PKG_SENTINEL_DEPLOY)" \
              "$(BUILD_ROOT)/sentinel/usr/lib/systemd/system"
-	cp "$(BUILD_ROOT)/sentinel/opt/sentinel/etc/sentinel.service" "$(BUILD_ROOT)/sentinel/usr/lib/systemd/system"
+	mv "$(BUILD_ROOT)/sentinel/opt/sentinel/etc/sentinel.service" "$(BUILD_ROOT)/sentinel/usr/lib/systemd/system"
+	mv "$(BUILD_ROOT)/sentinel/opt/sentinel/etc/sentinel.init" "$(BUILD_ROOT)/sentinel/opt/sentinel/bin/sentinel"
 
 .PHONY: sentinel-pkg-deb
 sentinel-pkg-deb: deps-packages sentinel-pkg-buildroot
