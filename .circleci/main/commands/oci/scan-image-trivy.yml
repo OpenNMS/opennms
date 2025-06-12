@@ -48,8 +48,11 @@ commands:
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"
             # Table result includes only package filenames. Use '--format json' option to get the full path to the package file.
-            /tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 --format json -o /tmp/report.json --no-progress opennms/${TAG}
-            /tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 -o /tmp/report.txt --no-progress opennms/${TAG}
+            /tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 --format json -o /tmp/raw_report.json --no-progress opennms/${TAG}
+
+            # Filter out packages with 0 vulnerabilities
+            jq 'del(.Results[] | select(.Vulnerabilities == null or .Vulnerabilities == []))' /tmp/raw_report.json > /tmp/report.json 
+            /tmp/bin/trivy image --input /tmp/report.json --format table --output /tmp/report.txt --no-progress
       - store_artifacts:
           path: /tmp/report.json
           destination: report.json
