@@ -101,6 +101,9 @@
                         <feature>opennms-bridge-http-service</feature>
                         <feature>opennms-http-whiteboard</feature>
 
+                        <feature>jetty9.4.52.v20230823</feature>
+                        <feature>pax-jetty/9.4.52.v20230823</feature>
+
                         <feature>jetty/9.4.43.v20210629</feature>
                         <feature>pax-jetty/9.4.43.v20210629</feature>
                         <feature>ssh/${karafVersion}</feature>
