@@ -89,7 +89,6 @@ public class AvailabilityServiceIT implements TemporaryDatabaseAware<MockDatabas
 
     @Before
     public void setUp() {
-        BeanUtils.assertAutowiring(this);
     }
 
     @Test

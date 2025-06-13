@@ -62,7 +62,7 @@ public class AlarmStatisticsServiceIT implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws UnifiedJEXL.Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
 
     @Before

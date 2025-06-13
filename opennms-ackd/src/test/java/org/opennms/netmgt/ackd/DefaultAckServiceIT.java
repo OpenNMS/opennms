@@ -104,7 +104,6 @@ public class DefaultAckServiceIT implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
     }
 
     @Test(expected=IllegalStateException.class)

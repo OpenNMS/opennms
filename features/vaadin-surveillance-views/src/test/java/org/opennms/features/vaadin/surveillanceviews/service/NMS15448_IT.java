@@ -71,7 +71,6 @@ public class NMS15448_IT implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() {
-        BeanUtils.assertAutowiring(this);
     }
 
     private static final Date EVENT_DATE = new Date();

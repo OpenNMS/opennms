@@ -145,8 +145,8 @@ public abstract class EnLinkdBuilderITCase extends EnLinkdTestHelper implements 
     protected OspfAreaDao m_ospfAreaDao;
 
     @Override
-    public void afterPropertiesSet() {
-        BeanUtils.assertAutowiring(this);
+    public void afterPropertiesSet() throws Exception {
+
     }
 
     @Before

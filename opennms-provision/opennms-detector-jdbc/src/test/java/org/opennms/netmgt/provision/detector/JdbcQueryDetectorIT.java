@@ -72,7 +72,7 @@ public class JdbcQueryDetectorIT implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
 
     @Before

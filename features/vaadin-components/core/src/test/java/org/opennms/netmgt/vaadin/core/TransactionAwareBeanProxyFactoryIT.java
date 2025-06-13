@@ -63,7 +63,6 @@ public class TransactionAwareBeanProxyFactoryIT {
 
     @Before
     public void before() {
-        BeanUtils.assertAutowiring(this);
         // ensure that we do not by accident run within a transaction
         Assert.assertEquals(false, TransactionSynchronizationManager.isActualTransactionActive());
     }

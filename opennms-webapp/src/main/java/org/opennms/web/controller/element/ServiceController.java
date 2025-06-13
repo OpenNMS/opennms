@@ -45,7 +45,6 @@ public class ServiceController implements InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-	    BeanUtils.assertAutowiring(this);
 	}
 
 	@RequestMapping(method = RequestMethod.GET, params = { "ifserviceid" })

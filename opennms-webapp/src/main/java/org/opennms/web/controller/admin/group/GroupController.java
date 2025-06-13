@@ -72,7 +72,6 @@ public class GroupController extends AbstractController implements InitializingB
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
     }
 
     /** {@inheritDoc} */

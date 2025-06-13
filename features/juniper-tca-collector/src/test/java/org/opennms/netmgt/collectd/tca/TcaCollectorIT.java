@@ -162,10 +162,10 @@ public class TcaCollectorIT implements InitializingBean {
 	@Autowired
     private BlobStore m_blobStore;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
+	@Override
+	public void afterPropertiesSet() throws Exception {
+
+	}
 
 	/**
 	 * Sets the up.

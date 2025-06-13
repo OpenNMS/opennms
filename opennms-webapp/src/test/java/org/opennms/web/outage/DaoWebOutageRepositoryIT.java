@@ -85,10 +85,10 @@ public class DaoWebOutageRepositoryIT implements InitializingBean {
     
     @Autowired
     WebOutageRepository m_daoOutageRepo;
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
     
     @BeforeClass

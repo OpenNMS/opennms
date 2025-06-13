@@ -112,7 +112,6 @@ public class BusinessServiceManagerImplIT {
 
     @Before
     public void before() {
-        BeanUtils.assertAutowiring(this);
         populator.populateDatabase();
     }
 

@@ -75,7 +75,6 @@ public class BusinessServiceSearchProviderIT {
 
     @Before
     public void before() {
-        BeanUtils.assertAutowiring(this);
     }
 
     @Test

@@ -70,7 +70,6 @@ public class BusinessServiceChildEdgeIT {
 
     @Before
     public void setUp() {
-        BeanUtils.assertAutowiring(this);
         m_databasePopulator.populateDatabase();
     }
 

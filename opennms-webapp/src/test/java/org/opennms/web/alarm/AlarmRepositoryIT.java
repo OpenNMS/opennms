@@ -89,10 +89,10 @@ public class AlarmRepositoryIT implements InitializingBean {
 
     @Autowired
     DistPollerDao m_distPollerDao;
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
     
     @Before

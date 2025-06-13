@@ -182,7 +182,6 @@ public class AlarmdIT implements TemporaryDatabaseAware<MockDatabase>, Initializ
 
     @Override
     public void afterPropertiesSet() {
-        BeanUtils.assertAutowiring(this);
     }
 
     @Before

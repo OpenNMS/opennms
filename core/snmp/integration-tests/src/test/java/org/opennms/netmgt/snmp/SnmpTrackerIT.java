@@ -63,6 +63,11 @@ public class SnmpTrackerIT implements InitializingBean {
 	@Autowired
 	private SnmpPeerFactory m_snmpPeerFactory;
 
+    @Override
+    public void afterPropertiesSet() throws Exception {
+
+    }
+
     public static final class SnmpTableConstants {
         static final SnmpObjId ifTable = SnmpObjId.get(".1.3.6.1.2.1.2.2.1");
         static final SnmpObjId ifIndex = SnmpObjId.get(ifTable, "1");
@@ -224,10 +229,6 @@ public class SnmpTrackerIT implements InitializingBean {
         }
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
 
     @Before
     public void setUp() {

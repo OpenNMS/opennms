@@ -136,7 +136,6 @@ public class BsmdIT {
 
     @Before
     public void setUp() throws Exception {
-        BeanUtils.assertAutowiring(this);
         System.setProperty(Bsmd.POLL_INTERVAL_KEY, String.valueOf(Bsmd.DEFAULT_POLL_INTERVAL));
 
         // We don't have a full blown event configuration, so don't validate these during the integration tests

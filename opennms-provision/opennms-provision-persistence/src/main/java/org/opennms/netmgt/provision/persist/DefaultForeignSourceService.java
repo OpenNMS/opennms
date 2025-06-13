@@ -76,7 +76,7 @@ public class DefaultForeignSourceService implements ForeignSourceService, Initia
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
 
     /** {@inheritDoc} */

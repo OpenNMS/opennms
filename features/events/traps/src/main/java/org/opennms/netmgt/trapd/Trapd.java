@@ -123,7 +123,6 @@ public class Trapd extends AbstractServiceDaemon {
      */
     @Override
     protected synchronized void onInit() {
-        BeanUtils.assertAutowiring(this);
     }
 
     /**

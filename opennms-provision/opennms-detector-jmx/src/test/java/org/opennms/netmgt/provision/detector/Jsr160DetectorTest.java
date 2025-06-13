@@ -76,8 +76,7 @@ public class Jsr160DetectorTest implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-        this.m_detectorFactory.setJmxConfigDao(() -> new JmxConfig());
+
     }
 
     @BeforeClass

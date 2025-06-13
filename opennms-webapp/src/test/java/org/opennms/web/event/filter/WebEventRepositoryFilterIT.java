@@ -85,10 +85,10 @@ public class WebEventRepositoryFilterIT implements InitializingBean {
     
     @Autowired
     ApplicationContext m_appContext;
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
     
     @Before

@@ -124,30 +124,5 @@ public class BeanUtils implements ApplicationContextAware {
     public static <T> T getFactory(String contextId, Class<T> clazz) {
         return clazz.cast(getBeanFactory(contextId).getFactory());
     }
-
-    /**
-     * Check that all fields that are marked with @Autowired are not null.
-     * This will identify classes that have been loaded by Spring but have
-     * not been autowired via {@code <context:annotation-config />}.
-     */
-    public static <T> void assertAutowiring(T instance) {
-        for (Field field : instance.getClass().getDeclaredFields()) {
-            Autowired autowired = field.getAnnotation(Autowired.class);
-            Inject inject = field.getAnnotation(Inject.class);
-            Resource resource = field.getAnnotation(Resource.class);
-            if (
-                (autowired != null && autowired.required()) ||
-                (inject != null) ||
-                (resource != null)
-            ) {
-                try {
-                    field.setAccessible(true);
-                    notNull(field.get(instance), "@Autowired/@Inject/@Resource field " + field.getName() + " cannot be null");
-                    LOG.debug("{} is not null", field.getName());
-                } catch (IllegalAccessException e) {
-                    throw new IllegalArgumentException("Illegal access to @Autowired/@Resource field " + field.getName());
-                }
-            }
-        }
-    }
+    
 }

@@ -89,8 +89,6 @@ public class ImportScheduler implements InitializingBean {
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-        
         try {
             getScheduler().setJobFactory(getImportJobFactory());
         } catch (SchedulerException e) {

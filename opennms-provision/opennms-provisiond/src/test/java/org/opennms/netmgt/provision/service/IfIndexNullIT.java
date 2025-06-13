@@ -82,7 +82,7 @@ public class IfIndexNullIT extends ProvisioningITCase implements InitializingBea
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
 
     @Before

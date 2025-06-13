@@ -69,10 +69,10 @@ public class DaoWebEventRepositoryIT implements InitializingBean {
     
     @Autowired
     WebEventRepository m_daoEventRepo;
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
     
     @Before

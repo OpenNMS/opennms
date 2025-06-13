@@ -83,7 +83,7 @@ public class WebOutageRepositoryFilterIT implements InitializingBean {
     
     @Autowired
     ApplicationContext m_appContext;
-    
+
     @BeforeClass
     public static void setupLogging(){
         Properties props = new Properties();
@@ -105,12 +105,12 @@ public class WebOutageRepositoryFilterIT implements InitializingBean {
         m_dbPopulator.getOutageDao().save(unresolved2);
         m_dbPopulator.getOutageDao().flush();
     }
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
-    
+
     @Test
     @JUnitTemporaryDatabase // Relies on specific IDs so we need a fresh database
     public void testOutageIdFilter(){

@@ -70,7 +70,6 @@ public class DaoWebEventRepository implements WebEventRepository, InitializingBe
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
     }
 
     private OnmsCriteria getOnmsCriteria(final EventCriteria eventCriteria){

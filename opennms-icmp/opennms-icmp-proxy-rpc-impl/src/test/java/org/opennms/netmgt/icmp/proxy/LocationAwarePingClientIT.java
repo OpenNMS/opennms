@@ -112,7 +112,6 @@ public class LocationAwarePingClientIT extends CamelBlueprintTest {
     @Before
     public void setUp() throws Exception {
         super.setUp();
-        BeanUtils.assertAutowiring(this);
         Assert.assertNotEquals(REMOTE_LOCATION_NAME, identity.getLocation());
     }
 

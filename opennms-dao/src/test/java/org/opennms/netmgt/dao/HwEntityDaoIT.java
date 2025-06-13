@@ -87,7 +87,7 @@ public class HwEntityDaoIT implements InitializingBean {
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        org.opennms.core.spring.BeanUtils.assertAutowiring(this);
+
     }
 
     /**

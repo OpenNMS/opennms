@@ -115,7 +115,6 @@ public class DefaultBusinessServiceStateMachineIT {
 
     @Before
     public void before() {
-        BeanUtils.assertAutowiring(this);
         populator.populateDatabase();
     }
 

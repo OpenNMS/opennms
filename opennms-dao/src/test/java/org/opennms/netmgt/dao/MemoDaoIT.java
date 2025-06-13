@@ -83,8 +83,6 @@ public class MemoDaoIT implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        //TODO fix BeanUtils import
-        //BeanUtils.assertAutowiring(this);
     }
 
     @BeforeTransaction

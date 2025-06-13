@@ -124,10 +124,10 @@ public class SnmpNodeScannerTest implements InitializingBean {
 
     private InetAddress m_agentAddress;
     private MockScanContext m_scanContext;
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
 
     @Before

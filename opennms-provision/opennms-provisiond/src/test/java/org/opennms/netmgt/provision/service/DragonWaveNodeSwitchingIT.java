@@ -106,10 +106,6 @@ public class DragonWaveNodeSwitchingIT extends ProvisioningITCase implements Ini
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-
-        // Override the SnmpPeerFactory with an instance that directs all requests to the temporary JUnit SNMP agent
-        SnmpPeerFactory.setInstance(m_snmpPeerFactory);
         assertTrue(m_snmpPeerFactory instanceof ProxySnmpAgentConfigFactory);
     }
 

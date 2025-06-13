@@ -61,7 +61,6 @@ public class TrendConfigurationIT {
 
     @Before
     public void setUp() throws Exception {
-        BeanUtils.assertAutowiring(this);
         m_databasePopulator.populateDatabase();
     }
 

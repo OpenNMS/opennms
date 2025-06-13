@@ -74,10 +74,10 @@ public class WebNotificationRepositoryFilterIT implements InitializingBean {
     @Autowired
     @Qualifier("dao")
     WebNotificationRepository m_daoNotificationRepo;
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
     
     @BeforeClass

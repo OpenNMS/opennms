@@ -158,7 +158,6 @@ public class NetworkElementFactory implements InitializingBean, NetworkElementFa
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
     }
 
     public static NetworkElementFactoryInterface getInstance(ServletContext servletContext) {

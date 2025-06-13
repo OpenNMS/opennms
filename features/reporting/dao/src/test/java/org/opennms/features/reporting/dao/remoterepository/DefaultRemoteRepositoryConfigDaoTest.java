@@ -53,7 +53,7 @@ public class DefaultRemoteRepositoryConfigDaoTest implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
 
     /**

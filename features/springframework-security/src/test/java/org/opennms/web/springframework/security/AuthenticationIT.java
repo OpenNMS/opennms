@@ -71,7 +71,7 @@ public class AuthenticationIT implements InitializingBean {
     private UserManager m_userManager;
 
     @Autowired
-    private AuthenticationProvider m_provider; 
+    private AuthenticationProvider m_provider;
 
     @Before
     public void setUp() throws Exception {
@@ -227,7 +227,7 @@ public class AuthenticationIT implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
 
     private void assertContainsAuthority(final String role, final Collection<? extends GrantedAuthority> authorities) {

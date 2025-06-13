@@ -208,10 +208,6 @@ public class DefaultGroupService implements InitializingBean, GroupService {
         return false; // group or user does not exist.
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
 
     private boolean hasUser(final String userName) {
         if (userName != null) {
@@ -235,6 +231,11 @@ public class DefaultGroupService implements InitializingBean, GroupService {
                 category.getAuthorizedGroups().add(groupName);
             }
         }
+
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
 
     }
 }

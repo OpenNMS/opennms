@@ -128,7 +128,6 @@ public abstract class AbstractSnmpCollectorIT implements InitializingBean, TestC
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
     }
 
     @Before

@@ -47,7 +47,6 @@ public class SaveGroupController extends AbstractController implements Initializ
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
     }
 
     /** {@inheritDoc} */

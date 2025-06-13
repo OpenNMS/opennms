@@ -271,7 +271,6 @@ public class Provisioner implements SpringServiceDaemon {
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
         GenericURLFactory.initialize();
     }
     

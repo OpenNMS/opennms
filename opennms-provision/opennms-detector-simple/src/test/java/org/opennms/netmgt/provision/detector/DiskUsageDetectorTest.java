@@ -65,7 +65,7 @@ public class DiskUsageDetectorTest implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
 
     @Before

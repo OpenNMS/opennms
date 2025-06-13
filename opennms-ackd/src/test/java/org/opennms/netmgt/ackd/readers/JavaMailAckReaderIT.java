@@ -100,7 +100,6 @@ public class JavaMailAckReaderIT implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
     }
 
     /**

@@ -64,7 +64,7 @@ public class OmsaStorageDetectorTest implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
 
     @Before

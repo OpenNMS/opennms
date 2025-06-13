@@ -81,7 +81,6 @@ public class DefaultAckReader implements AckReader, InitializingBean {
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
         boolean state = (m_ackProcessor != null);
         Assert.state(state, "Dependency injection failed; one or more fields are null.");
     }

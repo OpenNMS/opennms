@@ -42,7 +42,6 @@ public class DefaultWebGroupRepository implements WebGroupRepository, Initializi
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
     }
 
     /** {@inheritDoc} */

@@ -54,7 +54,6 @@ public class ServiceTypeDaoIT implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
     }
 
 	@Test

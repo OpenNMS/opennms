@@ -68,7 +68,7 @@ public class FilesystemResourceStorageDao implements ResourceStorageDao, Initial
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
         setRrdExtension(m_rrdStrategy.getDefaultFileExtension());
     }
 

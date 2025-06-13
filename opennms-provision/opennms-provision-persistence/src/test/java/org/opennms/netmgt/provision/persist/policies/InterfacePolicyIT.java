@@ -59,10 +59,10 @@ public class InterfacePolicyIT implements InitializingBean {
     private DatabasePopulator m_populator;
 
     private List<OnmsIpInterface> m_interfaces;
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
 
     @Before

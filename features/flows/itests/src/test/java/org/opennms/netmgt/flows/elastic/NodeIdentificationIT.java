@@ -96,7 +96,6 @@ public class NodeIdentificationIT {
 
     @Before
     public void before() {
-        BeanUtils.assertAutowiring(this);
         this.databasePopulator.populateDatabase();
 
         nodeAId = this.databasePopulator.getNodeDao().save(buildNodeA());

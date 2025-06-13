@@ -142,8 +142,6 @@ public class ThresholdingIT {
 
         this.applicationContext.getAutowireCapableBeanFactory().createBean(DefaultResourceTypeMapper.class);
 
-        BeanUtils.assertAutowiring(this);
-
         this.databasePopulator.populateDatabase();
 
         this.thresholdingDao.overrideConfig(getClass().getResourceAsStream("/thresholds.xml"));

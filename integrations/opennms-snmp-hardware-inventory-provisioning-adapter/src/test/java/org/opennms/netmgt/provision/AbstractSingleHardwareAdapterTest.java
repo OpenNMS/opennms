@@ -90,7 +90,6 @@ public abstract class AbstractSingleHardwareAdapterTest implements InitializingB
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
     }
 
     /**

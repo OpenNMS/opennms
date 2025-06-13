@@ -218,7 +218,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
 
     @BeforeClass

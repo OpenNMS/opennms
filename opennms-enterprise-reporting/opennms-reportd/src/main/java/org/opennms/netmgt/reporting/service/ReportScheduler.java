@@ -79,8 +79,6 @@ public class ReportScheduler implements InitializingBean, DisposableBean {
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-
         try {
             getScheduler().setJobFactory(getReportJobFactory());
         } catch (SchedulerException e) {

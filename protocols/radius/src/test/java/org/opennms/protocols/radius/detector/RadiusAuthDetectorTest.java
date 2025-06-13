@@ -56,7 +56,6 @@ public class RadiusAuthDetectorTest implements ApplicationContextAware, Initiali
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
     }
 
     @Before

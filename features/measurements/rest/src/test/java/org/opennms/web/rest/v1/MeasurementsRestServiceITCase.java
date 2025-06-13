@@ -83,7 +83,6 @@ public abstract class MeasurementsRestServiceITCase {
     protected FilesystemResourceStorageDao m_resourceStorageDao;
 
     public void setUp() {
-        BeanUtils.assertAutowiring(this);
 
         OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
         node.setId(1);

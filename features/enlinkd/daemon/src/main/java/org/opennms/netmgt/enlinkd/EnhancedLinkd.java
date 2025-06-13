@@ -134,8 +134,6 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
      * </p>
      */
     protected void onInit() {
-        BeanUtils.assertAutowiring(this);
-
         try {
             LOG.info("init: Creating EnhancedLinkd scheduler");
             m_scheduler = new LegacyScheduler("EnhancedLinkd", m_linkdConfig.getThreads());

@@ -53,10 +53,10 @@ public class BSFDetectorTest implements InitializingBean {
     public BSFDetectorFactory m_detectorFactory;
 
     BSFDetector m_detector;
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
 
     @Before

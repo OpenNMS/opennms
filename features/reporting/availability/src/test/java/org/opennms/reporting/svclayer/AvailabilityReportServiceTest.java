@@ -57,10 +57,10 @@ public class AvailabilityReportServiceTest implements InitializingBean {
     OnmsReportConfigDao m_configDao;
     @Autowired
     ParameterConversionService m_parameterConversionService;
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
 
     @After

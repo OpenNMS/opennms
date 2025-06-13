@@ -107,7 +107,6 @@ public class BusinessServiceDaoIT {
 
     @Before
     public void setUp() {
-        BeanUtils.assertAutowiring(this);
         m_databasePopulator.populateDatabase();
         m_highestSeverity = new HighestSeverityEntity();
         m_ignore = new IgnoreEntity();

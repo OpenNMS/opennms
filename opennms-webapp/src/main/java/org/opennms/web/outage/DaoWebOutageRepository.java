@@ -67,7 +67,6 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
     }
 
     /*

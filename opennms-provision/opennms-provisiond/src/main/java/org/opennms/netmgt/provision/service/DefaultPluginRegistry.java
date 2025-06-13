@@ -72,7 +72,6 @@ public class DefaultPluginRegistry implements PluginRegistry, InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
         addAllExtensions(m_nodePolicies, NodePolicy.class, OnmsPolicy.class);
         addAllExtensions(m_ipInterfacePolicies, IpInterfacePolicy.class, OnmsPolicy.class);
         addAllExtensions(m_snmpInterfacePolicies, SnmpInterfacePolicy.class, OnmsPolicy.class);

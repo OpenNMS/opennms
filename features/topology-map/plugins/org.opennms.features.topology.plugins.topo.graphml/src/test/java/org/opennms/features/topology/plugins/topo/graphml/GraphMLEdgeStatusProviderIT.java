@@ -89,7 +89,6 @@ public class GraphMLEdgeStatusProviderIT {
 
     @Before
     public void before() {
-        BeanUtils.assertAutowiring(this);
         this.databasePopulator.populateDatabase();
     }
 

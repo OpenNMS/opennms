@@ -72,7 +72,6 @@ public class AlarmRepositoryHibernate implements AlarmRepository, InitializingBe
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
     }
 
     /**

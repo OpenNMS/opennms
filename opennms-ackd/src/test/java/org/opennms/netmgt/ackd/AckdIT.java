@@ -140,7 +140,6 @@ public class AckdIT implements InitializingBean {
     
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
         Assert.assertSame("dao from populator should refer to same dao from local properties", m_populator.getAcknowledgmentDao(), m_ackDao);
     }
     

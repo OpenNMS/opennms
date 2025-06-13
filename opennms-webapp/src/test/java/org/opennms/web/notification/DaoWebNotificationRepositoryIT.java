@@ -70,12 +70,12 @@ public class DaoWebNotificationRepositoryIT implements InitializingBean {
     public void setUp(){
         m_dbPopulator.populateDatabase();
     }
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
     }
-    
+
+
     @Test
     @Transactional
     public void testNotificationCount(){

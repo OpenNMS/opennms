@@ -102,7 +102,6 @@ public class DefaultSchedulerServiceIT {
 
     @Before
     public void resetReportService() throws SchedulerException {
-        BeanUtils.assertAutowiring(this);
 
         m_scheduler = m_schedulerFactory.getScheduler();
 

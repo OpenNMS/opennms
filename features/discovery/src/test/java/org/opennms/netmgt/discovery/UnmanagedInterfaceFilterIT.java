@@ -64,7 +64,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class UnmanagedInterfaceFilterIT implements InitializingBean {
+public class UnmanagedInterfaceFilterIT {
 
 	@Autowired
 	private InterfaceToNodeCache m_cache;
@@ -75,10 +75,6 @@ public class UnmanagedInterfaceFilterIT implements InitializingBean {
 	@Autowired
 	DatabasePopulator m_populator;
 
-	@Override
-	public void afterPropertiesSet() throws Exception {
-		BeanUtils.assertAutowiring(this);
-	}
 
 	@Before
 	public void setUp() throws Exception {

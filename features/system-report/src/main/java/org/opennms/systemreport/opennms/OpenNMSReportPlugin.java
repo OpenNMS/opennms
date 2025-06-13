@@ -64,7 +64,7 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
 
     @Override

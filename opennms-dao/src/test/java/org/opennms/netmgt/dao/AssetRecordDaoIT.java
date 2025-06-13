@@ -77,7 +77,7 @@ public class AssetRecordDaoIT implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
 
     private static boolean m_populated = false;

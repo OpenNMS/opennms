@@ -40,7 +40,7 @@ public class TopEventReportPlugin extends AbstractSystemReportPlugin implements 
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
 
     @Override

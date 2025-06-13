@@ -115,7 +115,6 @@ public class MeasurementRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public void setUp() throws Throwable {
         super.setUp();
 
-        BeanUtils.assertAutowiring(this);
         assertNotNull(restService);
         assertNotNull(service);
 

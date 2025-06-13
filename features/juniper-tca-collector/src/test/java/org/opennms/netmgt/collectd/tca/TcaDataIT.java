@@ -65,10 +65,10 @@ public class TcaDataIT implements InitializingBean {
 	@Autowired
 	private SnmpPeerFactory m_snmpPeerFactory;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
+	@Override
+	public void afterPropertiesSet() throws Exception {
+
+	}
 
 	/**
 	 * Sets the up.

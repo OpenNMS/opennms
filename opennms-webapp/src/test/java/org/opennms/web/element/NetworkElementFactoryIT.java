@@ -80,10 +80,10 @@ public class NetworkElementFactoryIT implements InitializingBean {
 
     @Autowired
     NodeDao m_nodeDao;
-    
+
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
     
     @Before

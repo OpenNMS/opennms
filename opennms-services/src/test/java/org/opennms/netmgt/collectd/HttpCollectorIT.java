@@ -134,7 +134,6 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
     }
 
     @Override

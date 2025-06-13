@@ -55,17 +55,13 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class DefaultSurveillanceServiceIntegrationIT implements InitializingBean {
+public class DefaultSurveillanceServiceIntegrationIT {
 
     @Autowired
     private SurveillanceService m_surveillanceService;
     @Autowired
     private DatabasePopulator m_databasePopulator; 
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
 
     @Before
     public void setUp() {

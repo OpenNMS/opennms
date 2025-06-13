@@ -76,7 +76,6 @@ public class SnmpProtocolCollectorTest implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
         protocolCollector.setNodeDao(new MockNodeDao());
     }
 

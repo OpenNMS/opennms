@@ -53,7 +53,7 @@ public class DefaultUpsertService implements UpsertService, InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
+
     }
 
     @Override

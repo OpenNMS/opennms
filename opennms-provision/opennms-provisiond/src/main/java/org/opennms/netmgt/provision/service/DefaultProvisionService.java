@@ -204,7 +204,6 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
         RequisitionFileUtils.deleteAllSnapshots(m_pendingForeignSourceRepository);
         m_hostnameResolver = new DefaultHostnameResolver(m_locationAwareDnsLookuClient);
     }

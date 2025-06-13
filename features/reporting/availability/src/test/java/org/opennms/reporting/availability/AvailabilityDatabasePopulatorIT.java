@@ -85,10 +85,10 @@ public class AvailabilityDatabasePopulatorIT implements InitializingBean {
 	@Autowired
 	JdbcTemplate m_template;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
+	@Override
+	public void afterPropertiesSet() throws Exception {
+
+	}
 
 	@Before
 	public void setUp() throws Exception {

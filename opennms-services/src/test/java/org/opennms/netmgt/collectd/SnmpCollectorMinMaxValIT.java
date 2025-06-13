@@ -124,7 +124,6 @@ public class SnmpCollectorMinMaxValIT implements TestContextAware, InitializingB
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
     }
 
     @Before

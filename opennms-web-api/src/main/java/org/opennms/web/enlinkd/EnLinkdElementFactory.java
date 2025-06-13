@@ -142,10 +142,6 @@ public class EnLinkdElementFactory implements InitializingBean,
     @Autowired
     private IsIsLinkDao m_isisLinkDao;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
 
     public static EnLinkdElementFactoryInterface getInstance(
             ServletContext servletContext) {
@@ -1011,6 +1007,11 @@ public class EnLinkdElementFactory implements InitializingBean,
         sb.append(")");
         return sb.toString();
         
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+
     }
 
     /**

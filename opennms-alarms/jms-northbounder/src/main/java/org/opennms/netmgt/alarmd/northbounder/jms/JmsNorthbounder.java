@@ -130,7 +130,6 @@ public class JmsNorthbounder extends AbstractNorthbounder implements Initializin
      */
     @Override
     public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
         LOG.debug("creating new JmsTemplate with connection to {}",m_jmsDestination.getJmsDestination());
         m_template = new JmsTemplate(m_jmsNorthbounderConnectionFactory);
         if (m_jmsDestination.getDestinationType().equals(DestinationType.TOPIC)) {

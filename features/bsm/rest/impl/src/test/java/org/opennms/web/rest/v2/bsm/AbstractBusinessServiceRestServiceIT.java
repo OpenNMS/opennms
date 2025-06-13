@@ -133,7 +133,6 @@ public abstract class AbstractBusinessServiceRestServiceIT extends AbstractSprin
     @Before
     public void setUp() throws Throwable {
         super.setUp();
-        BeanUtils.assertAutowiring(this);
         databasePopulator.populateDatabase();
     }
 

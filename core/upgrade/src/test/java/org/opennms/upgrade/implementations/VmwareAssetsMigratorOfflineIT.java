@@ -66,7 +66,6 @@ public class VmwareAssetsMigratorOfflineIT implements TemporaryDatabaseAware<Tem
 
     @Before
     public void before() {
-        BeanUtils.assertAutowiring(this);
         this.databasePopulator.populateDatabase();
     }
 

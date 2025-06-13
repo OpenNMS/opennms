@@ -96,10 +96,6 @@ public class EventdIT implements InitializingBean {
     @Autowired
     private DatabasePopulator m_databasePopulator;
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        BeanUtils.assertAutowiring(this);
-    }
 
     @Before
     public void setUp() {
@@ -252,5 +248,10 @@ public class EventdIT implements InitializingBean {
 
     protected DatabasePopulator getDatabasePopulator() {
         return m_databasePopulator;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+
     }
 }
