@@ -95,7 +95,7 @@ jobs:
               -Pproduction \
               -Prelease \
               --batch-mode \
-              -DnexusUrl="https://oss.sonatype.org/" \
+              -DnexusUrl="https://central.sonatype.com/" \
               -DserverId="central-portal" \
               -DautoReleaseAfterClose=true \
               install \
