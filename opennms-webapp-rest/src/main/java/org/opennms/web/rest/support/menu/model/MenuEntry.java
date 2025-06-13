@@ -19,21 +19,37 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.web.rest.support.menu;
+package org.opennms.web.rest.support.menu.model;
+
+import java.util.ArrayList;
+import java.util.List;
 
 // Similar to org.opennms.web.navigate.MenuEntry
 public class MenuEntry {
     public String id;
-    public String className;
     public String name;
     public String url;
     public String locationMatch;
-    public String icon;
-    /** The icon type, "fa" for font-awesome, "feather" for FeatherDS */
-    public String iconType;  // "fa" or "feather"
-    /** If true, display an icon only, no name/title. */
-    public Boolean isIconOnly;
-    public Boolean isVueLink;
-    /** Comma-separated list of roles. If present, user must have at least one of these roles to display */
-    public String roles;
+    /** If present, user must have at least one of these roles to display */
+    public List<String> roles;
+
+    /*
+     * If present, the system properties must exist and have the given value.
+     */
+    public List<RequiredSystemProperty> requiredSystemProperties = new ArrayList<>();
+
+    public List<MenuEntry> items;
+
+    public void addItem(MenuEntry menuEntry) {
+        if (items == null) {
+            items = new ArrayList<>();
+        }
+
+        items.add(menuEntry);
+    }
+
+    public static class RequiredSystemProperty {
+        public String name;
+        public String value;
+    }
 }

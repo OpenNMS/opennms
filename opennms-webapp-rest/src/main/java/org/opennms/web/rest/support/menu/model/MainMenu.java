@@ -19,20 +19,35 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.web.rest.support.menu;
+package org.opennms.web.rest.support.menu.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
-// Similar to org.opennms.web.navigate.MenuEntry
-public class TopMenuEntry extends MenuEntry {
-    public List<MenuEntry> items;
+public class MainMenu {
+    public String baseHref;
+    public String homeUrl;
+    public String formattedTime;
+    public String noticeStatus;
+    public String username;
+    public String baseNodeUrl;
+    public Boolean zenithConnectEnabled;
+    public String zenithConnectBaseUrl;
+    public String zenithConnectRelativeUrl;
+    public String copyrightDates;
+    public String version;
 
-    public void addItem(MenuEntry menuEntry) {
-        if (items == null) {
-            items = new ArrayList<>();
-        }
+    final public List<TileProviderItem> userTileProviders = new ArrayList<>();
 
-        items.add(menuEntry);
+    final public List<MenuEntry> menus = new ArrayList<>();
+    public MenuEntry helpMenu;
+    public MenuEntry selfServiceMenu;
+    public MenuEntry userNotificationMenu;
+    public MenuEntry provisionMenu;
+    public MenuEntry flowsMenu;
+    public MenuEntry configurationMenu; // aka admin menu, the "cogs"
+
+    public void addTopMenu(MenuEntry entry) {
+        this.menus.add(entry);
     }
 }

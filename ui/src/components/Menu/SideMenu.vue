@@ -8,12 +8,12 @@
       menuHeader
       menuFooter
     />
-    <form ref="sidemenuLogoutForm" name="vueSidemenuLogoutForm" :action="computeLogoutFormLink()" method="post"></form>
   </div>
 </template>
 
 <script setup lang="ts">
-import { DefineComponent, markRaw, onMounted } from 'vue'
+import axios from 'axios'
+import { DefineComponent, markRaw } from 'vue'
 import { FeatherSidebar } from '@featherds/sidebar'
 import { FeatherMenuList, MenuListEntry } from '@featherds/menu'
 import { FeatherIcon } from '@featherds/icon'
@@ -33,7 +33,7 @@ import IconSearch from '@featherds/icon/action/Search'
 import { useMenuStore } from '@/stores/menuStore'
 import { usePluginStore } from '@/stores/pluginStore'
 import { Plugin } from '@/types'
-import { MainMenu, MenuItem, TopMenuItem } from '@/types/mainMenu'
+import { MainMenu, MenuItem } from '@/types/mainMenu'
 import { computePluginRelLink, createFakePlugin, createMenuItem, createTopMenuItem } from './utils'
 
 const menuStore = useMenuStore()
@@ -41,7 +41,6 @@ const pluginStore = usePluginStore()
 
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 const plugins = computed<Plugin[]>(() => pluginStore.plugins)
-const sidemenuLogoutForm = ref()
 
 const getMenuLink = (url?: string | null) => {
   if (mainMenu.value?.baseHref && url) {
@@ -51,33 +50,29 @@ const getMenuLink = (url?: string | null) => {
   return '#'
 }
 
-const createTopMenuIcon = (menuItem: TopMenuItem) => {
+const createTopMenuIcon = (menuItem: MenuItem) => {
   let icon: DefineComponent | null = null
 
-  if (menuItem.id) {
-    if (menuItem.id === 'self-service') {
-      icon = IconPerson
-    } else if (menuItem.id === 'logout') {
-      icon = IconLogout
-    }
-  }
-
-  switch (menuItem.name) {
-    case 'Search':
+  switch (menuItem.id) {
+    case 'selfServiceMenu':
+      icon = IconPerson; break
+    case 'logout':
+      icon = IconLogout; break
+    case 'searchMenu':
       icon = IconSearch; break
-    case 'Info':
+    case 'info':
       icon = IconInfo; break
-    case 'Status':
+    case 'statusMenu':
       icon = IconFeedback; break
-    case 'Reports':
+    case 'reportsMenu':
       icon = IconReporting; break
-    case 'Dashboards':
+    case 'dashboardsMenu':
       icon = IconDashboard; break
-    case 'Maps':
+    case 'mapsMenu':
       icon = IconLocation; break
-    case 'Plugins':
+    case 'plugins':
       icon = IconInstances; break
-    case 'Help':
+    case 'helpMenu':
       icon = IconHelp; break
   }
 
@@ -94,7 +89,7 @@ const createMenuListEntry = (menuItem: MenuItem) => {
   } as MenuListEntry
 }
 
-const createPanel = (topMenuItem: TopMenuItem) => {
+const createPanel = (topMenuItem: MenuItem) => {
   return {
     id: topMenuItem.id ?? topMenuItem.name,
     title: topMenuItem.name,
@@ -108,18 +103,11 @@ const createPanel = (topMenuItem: TopMenuItem) => {
 }
 
 // TODO: Add this to the Menu Rest service
-const createFakeSearchMenu = (searchMenu: TopMenuItem) => {
+const createFakeSearchMenu = (searchMenu: MenuItem) => {
   return {
     ...createMenuItem('search', 'Search'),
     url: searchMenu.url
   }
-}
-
-const computeLogoutFormLink = () => {
-  const logoutMenu = mainMenu.value.selfServiceMenu?.items?.find(x => x.id === 'logout')
-  const baseLink = logoutMenu?.url || 'j_spring_security_logout'
-
-  return getMenuLink(baseLink)
 }
 
 const createPluginsMenu = (useFake: boolean) => {
@@ -159,10 +147,27 @@ const createAdministrationMenu = () => {
   return createTopMenuItem('administration', 'Administration', [adminMenuItem])
 }
 
+const onLogout = async () => {
+  const submitter = axios.create({
+    baseURL: mainMenu.value.baseHref,
+    withCredentials: true
+  })
+
+  try {
+    await submitter.post('j_spring_security_logout')
+  } catch (e) {
+    console.error('Error attempting logout: ', e)
+    return
+  }
+
+  // For the Vue SPA app, this is needed to replace the full page
+  window.location.assign(mainMenu.value.baseHref)
+}
+
 const createSelfServiceMenu = () => {
   const logoutMenuItem = {
     ...createMenuItem('logout', 'Logout'),
-    onClick: () => sidemenuLogoutForm.value.submit()
+    onClick: onLogout
   }
 
   const otherItems = mainMenu.value?.selfServiceMenu?.items?.filter(i => i.id !== 'logout') || []
@@ -215,55 +220,46 @@ const topPanels = computed<Panel[]>(() => {
 
   return allMenus.map(i => createPanel(i) as Panel)
 })
-
-onMounted(async () => {
-  console.log('SideMenu onMounted')
-})
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
 @import "@featherds/dropdown/scss/mixins";
 @import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/themes/variables";
 
 #opennms-sidemenu-vue-container {
-  .feather-app-rail, .feather-app-rail-expanded {
-    top: 3.5rem;
-  }
-
-  .feather-panel-bar-details {
-    .feather-icon {
-      color: var(--feather-surface);
-    }
-  }
-
-  #opennms-sidebar-control {
-    // background-color: var(--feather-surface-dark);
+  :deep(.feather-dock) {
     background-color: midnightblue;
-    // keep it above legacy content
     z-index: 1;
+  }
 
+  :deep(.feather-panel-bar-header) {
+    background-color: midnightblue;
+    color: white;
+  }
 
-    /*
-    :deep(.feather-dock) {
-      background: var(--feather-surface-dark);
-    }
-    */
+  :deep(.feather-panel-bar-content) {
+    background-color: midnightblue;
+    color: white;
 
-    /*
-    #opennms-sidebar-control-panel-bar {
-      :deep(.feather-panel-bar .feather-panel-bar-details .feather-panel-bar-summary) {
-        color: var(--feather-state-text-color-on-surface)
+    a.feather-list-item {
+      color: white;
+
+      &:visited {
+        color: white;
       }
     }
-    */
   }
-}
-</style>
 
-<style scoped>
-.spacer {
-  margin-top: 1em;
+  :deep(.feather-panel-bar-details) {
+    background-color: midnightblue;
+    color: white;
+  }
+
+  :deep(.feather-panel-bar-summary) {
+    background-color: midnightblue;
+    color: white;
+  }
 }
 </style>

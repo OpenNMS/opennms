@@ -21,9 +21,10 @@
  */
 package org.opennms.web.rest.support.menu;
 
-import java.io.FileInputStream;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -31,7 +32,6 @@ import com.google.common.base.Strings;
 import org.junit.Assert;
 
 import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 import org.junit.Test;
@@ -39,58 +39,22 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.startsWith;
 
-import org.opennms.web.rest.support.menu.xml.MenuXml;
+import org.opennms.web.rest.support.menu.model.MainMenu;
+import org.opennms.web.rest.support.menu.model.MenuEntry;
 
 public class MenuProviderTest {
     final static String RESOURCE_PATH = "src/test/resources/dispatcher-servlet.xml";
+    final static String MENU_TEMPLATE_PATH = "src/test/resources/menu-template.json";
 
-    @Test
-    public void testParseBeansXml() {
-        MenuProvider provider = new MenuProvider(getResourcePath());
-        provider.setMenuRequestContext(new TestMenuRequestContext(true));
+    final static String[] ADMIN_ROLES = new String[] { "ROLE_ADMIN", "ROLE_FLOW_MANAGER" };
 
-        MenuXml.BeansElement xBeansElem = null;
+    final static String[] USER_ROLES = new String[] { "ROLE_USER" };
 
-        try (var inputStream = new FileInputStream(getResourcePath())) {
-            xBeansElem = provider.parseDispatcherServletXml(inputStream);
-        } catch (Exception e) {
-            Assert.fail("Could not open file resource: " + e.getMessage());
-        }
-
-        assertNotNull(xBeansElem);
-
-        List<MenuXml.BeanElement> topLevelBeans = xBeansElem.getBeans();
-
-        Optional<MenuXml.BeanElement> navBarBean = topLevelBeans.stream()
-            .filter(e -> e.getId() != null && e.getId().equals("navBarEntries"))
-            .findFirst();
-
-        List<TopMenuEntry> topMenuEntries = null;
-
-        if (navBarBean.isPresent()) {
-            try {
-                topMenuEntries = provider.parseXmlToMenuEntries(xBeansElem);
-            } catch (Exception e) {
-                Assert.fail("Error parsing XML to MenuEntries: " + e.getMessage());
-            }
-        }
-
-        assertNotNull(topMenuEntries);
-        assertFalse(topLevelBeans.isEmpty());
-    }
+    final static String[] FILESYSTEM_EDITOR_ROLES = new String[] { "ROLE_FILESYSTEM_EDITOR" };
 
     @Test
     public void testParseMainMenu() {
-        MainMenu mainMenu = null;
-
-        try {
-            MenuProvider provider = new MenuProvider(getResourcePath());
-            provider.setMenuRequestContext(new TestMenuRequestContext(true));
-            mainMenu = provider.getMainMenu();
-        } catch (Exception e) {
-            Assert.fail("Error in MenuProvider.getMainMenu: " + e.getMessage());
-        }
-
+        MainMenu mainMenu = parseMainMenu(true, ADMIN_ROLES);
         assertNotNull(mainMenu);
 
         assertEquals("/opennms/", mainMenu.baseHref);
@@ -125,59 +89,79 @@ public class MenuProviderTest {
         assertNotNull(mainMenu.userNotificationMenu);
 
         // Check names in sub-menus under the Info menu
-        Optional<TopMenuEntry> infoMenuOpt = mainMenu.menus.stream().filter(m -> m.name.equals("Info")).findFirst();
-        assertTrue(infoMenuOpt.isPresent());
+        MenuEntry infoMenu = getMenuEntry(mainMenu.menus, "Info");
 
-        TopMenuEntry infoMenu = infoMenuOpt.get();
-
-        assertEquals("Info", infoMenu.name);
-
-        List<String> infoEntryNames = infoMenu.items.stream().map(m -> m.name).toList();
-        assertEquals(10, infoEntryNames.size());
-
-        final String[] expectedInfoNames = new String[] {
-                "Nodes", "Assets", "Path Outages", "Device Configs", "External Requisitions",
-                "File Editor", "Logs", "Endpoints", "Secure Credentials Vault", "Connect to Zenith"
+        final String[] expectedNames = new String[] {
+                "Nodes", "Structured Node List", "Assets", "Path Outages", "Device Configs", "External Requisitions",
+                "Logs", "Secure Credentials Vault", "Connect to Zenith"
         };
-        assertThat(infoEntryNames, containsInAnyOrder(expectedInfoNames));
+        List<String> actualNames = getMenuNames(infoMenu);
+        assertEquals(expectedNames.length, actualNames.size());
+        assertThat(actualNames, containsInAnyOrder(expectedNames));
 
         // Check Roles on Device Config entry
-        Optional<MenuEntry> deviceConfigMenuOpt = infoMenu.items.stream().filter(m -> m.name.equals("Device Configs")).findFirst();
-        assertTrue(deviceConfigMenuOpt.isPresent());
-        assertEquals("ROLE_ADMIN,ROLE_REST,ROLE_DEVICE_CONFIG_BACKUP", deviceConfigMenuOpt.get().roles);
+        MenuEntry dcbMenu = getMenuEntry(infoMenu.items, "Device Configs");
+
+        final String[] expectedDeviceConfigRoles = new String[] {
+                "ROLE_ADMIN",
+                "ROLE_REST",
+                "ROLE_DEVICE_CONFIG_BACKUP"
+        };
+        assertThat(dcbMenu.roles, containsInAnyOrder(expectedDeviceConfigRoles));
     }
 
     @Test
     public void testParseMainMenuZenithConnectDisabled() {
-        MainMenu mainMenu = null;
-
-        try {
-            MenuProvider provider = new MenuProvider(getResourcePath());
-            provider.setMenuRequestContext(new TestMenuRequestContext(false));
-            mainMenu = provider.getMainMenu();
-        } catch (Exception e) {
-            Assert.fail("Error in MenuProvider.getMainMenu: " + e.getMessage());
-        }
-
+        MainMenu mainMenu = parseMainMenu(false, ADMIN_ROLES);
         assertNotNull(mainMenu);
 
         // Check names in sub-menus under the Info menu
-        Optional<TopMenuEntry> infoMenuOpt = mainMenu.menus.stream().filter(m -> m.name.equals("Info")).findFirst();
-        assertTrue(infoMenuOpt.isPresent());
+        MenuEntry infoMenu = getMenuEntry(mainMenu.menus, "Info");
 
-        TopMenuEntry infoMenu = infoMenuOpt.get();
-
-        assertEquals("Info", infoMenu.name);
-
-        List<String> infoEntryNames = infoMenu.items.stream().map(m -> m.name).toList();
-        assertEquals(9, infoEntryNames.size());
-
-        final String[] expectedInfoNames = new String[] {
-                "Nodes", "Assets", "Path Outages", "Device Configs", "External Requisitions",
-                "File Editor", "Logs", "Endpoints", "Secure Credentials Vault"
+        final String[] expectedNames = new String[] {
+                "Nodes", "Structured Node List", "Assets", "Path Outages", "Device Configs", "External Requisitions",
+                "Logs", "Secure Credentials Vault"
         };
 
-        assertThat(infoEntryNames, containsInAnyOrder(expectedInfoNames));
+        List<String> actualNames = getMenuNames(infoMenu);
+        assertEquals(expectedNames.length, actualNames.size());
+        assertThat(actualNames, containsInAnyOrder(expectedNames));
+    }
+
+    @Test
+    public void testParseMainMenuWithUserRole() {
+        MainMenu mainMenu = parseMainMenu(false, USER_ROLES);
+        assertNotNull(mainMenu);
+
+        // Check names in sub-menus under the Info menu
+        MenuEntry infoMenu = getMenuEntry(mainMenu.menus, "Info");
+
+        // Should not have any admin-only roles
+        final String[] expectedNames = new String[] {
+            "Nodes", "Structured Node List", "Assets", "Path Outages"
+        };
+
+        List<String> actualNames = getMenuNames(infoMenu);
+        assertEquals(expectedNames.length, actualNames.size());
+        assertThat(actualNames, containsInAnyOrder(expectedNames));
+    }
+
+    @Test
+    public void testParseMainMenuWithFileSystemEditorRole() {
+        MainMenu mainMenu = parseMainMenu(false, FILESYSTEM_EDITOR_ROLES);
+        assertNotNull(mainMenu);
+
+        // Check names in sub-menus under the Info menu
+        MenuEntry infoMenu = getMenuEntry(mainMenu.menus, "Info");
+
+        // Should not have any admin-only roles, but should have file system manager roles
+        final String[] expectedNames = new String[] {
+            "Nodes", "Structured Node List", "Assets", "Path Outages", "File Editor"
+        };
+
+        List<String> actualNames = getMenuNames(infoMenu);
+        assertEquals(expectedNames.length, actualNames.size());
+        assertThat(actualNames, containsInAnyOrder(expectedNames));
     }
 
     private String getResourcePath() {
@@ -185,12 +169,49 @@ public class MenuProviderTest {
         return p.toFile().getAbsolutePath();
     }
 
+    private MainMenu parseMainMenu(boolean isZenithConnectEnabled, String[] roles) {
+        MainMenu mainMenu = null;
+        List<String> roleList = Arrays.stream(roles).toList();
+
+        try {
+            MenuProvider provider = new MenuProvider(getResourcePath(), MENU_TEMPLATE_PATH);
+
+            provider.setMenuRequestContext(
+                    new MenuProviderTest.TestMenuRequestContext(isZenithConnectEnabled, roleList));
+            mainMenu = provider.getMainMenu();
+        } catch (Exception e) {
+            Assert.fail("Error in MenuProvider.getMainMenu: " + e.getMessage());
+        }
+
+        return mainMenu;
+    }
+
+    private MenuEntry getMenuEntry(List<MenuEntry> menus, String menuName) {
+        Optional<MenuEntry> menuOpt = menus.stream().filter(m -> m.name.equals(menuName)).findFirst();
+        assertTrue(menuOpt.isPresent());
+
+        MenuEntry menuEntry = menuOpt.get();
+        assertEquals(menuName, menuEntry.name);
+
+        return menuEntry;
+    }
+
+    private List<String> getMenuNames(MenuEntry menu) {
+        return menu.items.stream().map(m -> m.name).toList();
+    }
+
     public static class TestMenuRequestContext implements MenuRequestContext {
-        public TestMenuRequestContext(boolean isZenithConnectEnabled) {
+        public TestMenuRequestContext(boolean isZenithConnectEnabled, List<String> roles) {
             this.isZenithConnectEnabled = isZenithConnectEnabled;
+
+            if (roles != null && !roles.isEmpty()) {
+                this.userRoles.addAll(roles);
+            }
         }
 
         final private boolean isZenithConnectEnabled;
+
+        final private List<String> userRoles = new ArrayList<>();
 
         public String getRemoteUser() {
             return "admin1";
@@ -201,7 +222,15 @@ public class MenuProviderTest {
         }
 
         public boolean isUserInRole(String role) {
-            return true;
+            return userRoles.isEmpty() || userRoles.stream().anyMatch(r -> r.equals(role));
+        }
+
+        public boolean isUserInAnyRole(List<String> roles) {
+            if (userRoles.isEmpty()) {
+                return true;
+            }
+
+            return userRoles.stream().anyMatch(userRole -> roles.stream().anyMatch(r -> r.equals(userRole)));
         }
 
         public String getFormattedTime() {

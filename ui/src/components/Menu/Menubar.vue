@@ -145,8 +145,8 @@ const toggleDarkLightMode = (savedTheme: string | null) => {
   appStore.setTheme(theme.value)
 }
 
-const computeLink = (url: string, isVueLink?: boolean | null) => {
-  const baseLink = (isVueLink ? import.meta.env.VITE_VUE_BASE_URL : (mainMenu.value?.baseHref || import.meta.env.VITE_BASE_URL)) || ''
+const computeLink = (url: string) => {
+  const baseLink = mainMenu.value?.baseHref || import.meta.env.VITE_BASE_URL || ''
   return `${baseLink}${url}`
 }
 

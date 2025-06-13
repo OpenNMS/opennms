@@ -1,28 +1,14 @@
 export interface MenuItem {
   id: string | null
-  className: string | null
   name: string | null
   url: string | null
   locationMatch: string | null
-  icon: string | null
-  iconType: string | null
-  isIconOnly: boolean | null
-  isVueLink: boolean | null
-  roles: string[] | null,
+  roles: string[] | null
+  items?: MenuItem[] | null
+  requiredSystemProperties?: [{ name: string, value: string }] | null
+
   // not in Rest API, used for menu creation
   onClick?: () => void
-}
-
-export interface TopMenuItem extends MenuItem {
-  items: MenuItem[] | null | undefined
-}
-
-export interface Notices {
-  countUser: number | null
-  countNonUser: number | null
-  linkUser: string | null
-  linkNonUser: string | null
-  status: string | null
 }
 
 export interface TileProviderItem {
@@ -47,14 +33,13 @@ export interface MainMenu {
   zenithConnectRelativeUrl: string
   userTileProviders?: TileProviderItem[]
   
-  menus: TopMenuItem[]
-  helpMenu: TopMenuItem | null
-  selfServiceMenu: TopMenuItem | null
-  userNotificationMenu: TopMenuItem | null
-  provisionMenu: TopMenuItem | null
-  flowsMenu: TopMenuItem | null
-  configurationMenu: TopMenuItem | null
-  notices: Notices | null
+  menus: MenuItem[]
+  helpMenu: MenuItem | null
+  selfServiceMenu: MenuItem | null
+  userNotificationMenu: MenuItem | null
+  provisionMenu: MenuItem | null
+  flowsMenu: MenuItem | null
+  configurationMenu: MenuItem | null
 }
 
 export interface NoticeStatusDisplay {

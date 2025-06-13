@@ -20,13 +20,11 @@
       </div>
     </template>
 
-    <FeatherDropdownItem v-for="item in mainMenu.userNotificationMenu?.items?.filter(i => i.id === 'user')"
-      :key="item.name || ''" @click="onMenuItemClick(item.url || '', item.isVueLink)">
+    <FeatherDropdownItem v-for="item in mainMenu.userNotificationMenu?.items?.filter(i => i.id === 'userNotificationUser')"
+      :key="item.name || ''" @click="onMenuItemClick(item.url || '')">
       <div class="menubar-dropdown-item-content">
         <a :href="computeLink(item.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
-          <template v-if="item.icon">
-            <FeatherIcon :icon="Person" class="user-notifications-icon" />
-          </template>
+          <FeatherIcon :icon="Person" class="user-notifications-icon" />
           <span class="left-margin-small">
             {{ notificationSummary.userUnacknowledgedCount ?? 0 }} notices assigned to you
           </span>
@@ -71,23 +69,23 @@
       </div>
     </FeatherDropdownItem>
     <!-- Team and On-Call links -->
-    <FeatherDropdownItem v-for="item in mainMenu.userNotificationMenu?.items?.filter(i => i.id !== 'user')"
-      :key="item.name || ''" @click="onMenuItemClick(item.url || '', item.isVueLink)">
+    <FeatherDropdownItem v-for="item in mainMenu.userNotificationMenu?.items?.filter(i => i.id !== 'userNotificationUser')"
+      :key="item.name || ''" @click="onMenuItemClick(item.url || '')">
       <div class="menubar-dropdown-item-content">
         <a :href="computeLink(item.url || '')"
           class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
-          <template v-if="item.icon && item.id === 'team'">
+          <template v-if="item.id === 'userNotificationTeam'">
             <FeatherIcon :icon="Person" class="user-notifications-icon" />
           </template>
-          <template v-if="item.icon && item.id === 'oncall'">
+          <template v-if="item.id === 'userNotificationOnCall'">
             <FeatherIcon :icon="Calendar" class="user-notifications-icon" />
           </template>
           <span class="left-margin-small">
-            <template v-if="item.id === 'team'">
+            <template v-if="item.id === 'userNotificationTeam'">
               {{ notificationSummary.teamUnacknowledgedCount ?? 0 }} of {{ notificationSummary.totalUnacknowledgedCount ?? 0
               }} assigned to anyone but you
             </template>
-            <template v-if="item.id === 'oncall'">
+            <template v-if="item.id === 'userNotificationOnCall'">
               {{ item.name }}
             </template>
           </span>
@@ -161,16 +159,16 @@ const teamNotificationBadgeClass = computed<string>(() =>
 )
 
 const notificationsShowMoreLink = computed<string>(() =>
-  mainMenu.value.userNotificationMenu?.items?.filter(item => item.id === 'user')[0].url || ''
+  mainMenu.value.userNotificationMenu?.items?.filter(item => item.id === 'userNotificationUser')[0].url || ''
 )
 
-const computeLink = (url: string, isVueLink?: boolean | null) => {
-  const baseLink = (isVueLink ? import.meta.env.VITE_VUE_BASE_URL : (mainMenu.value?.baseHref || import.meta.env.VITE_BASE_URL)) || ''
+const computeLink = (url: string) => {
+  const baseLink = mainMenu.value?.baseHref || import.meta.env.VITE_BASE_URL || ''
   return `${baseLink}${url}`
 }
 
-const onMenuItemClick = (url: string, isVueLink?: boolean | null) => {
-  const link = computeLink(url, isVueLink)
+const onMenuItemClick = (url: string) => {
+  const link = computeLink(url)
   window.location.assign(link)
 }
 
