@@ -1,7 +1,7 @@
 <settings>
   <servers>
     <server>
-      <id>opennms-ossrh</id>
+      <id>central-portal</id>
       <username>${env.OPENNMS_OSSRH_USERNAME}</username>
       <password>${env.OPENNMS_OSSRH_PASSWORD}</password>
     </server>

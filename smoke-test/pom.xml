@@ -987,52 +987,15 @@
     </dependency>
 
   </dependencies>
-  <repositories>
-    <repository>
-      <id>central</id>
-      <name>Maven Central</name>
-      <url>https://repo1.maven.org/maven2/</url>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>opennms-repo</id>
-      <name>OpenNMS Mega-Repository</name>
-      <url>https://maven.opennms.org/repository/everything/</url>
-      <releases>
-        <enabled>true</enabled>
-        <updatePolicy>never</updatePolicy>
-      </releases>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>opennms-snapshots</id>
-      <name>OpenNMS Snapshot Maven Mega-Repository</name>
-      <url>https://maven.opennms.org/repository/everything/</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-    </repository>
-  </repositories>
 
   <distributionManagement>
     <snapshotRepository>
-      <id>opennms-ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <id>central-portal</id>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
     </snapshotRepository>
     <repository>
-      <id>opennms-ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+      <id>central-portal</id>
+      <url>https://central.sonatype.com/repository/maven-releases/</url>
     </repository>
   </distributionManagement>
 </project>

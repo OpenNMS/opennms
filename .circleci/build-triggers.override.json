@@ -1,0 +1,14 @@
+{
+    "build-deploy": false,
+    "coverage": true,
+    "docs": true,
+    "ui": true,
+    "integration": true,
+    "smoke": true,
+    "rpms": true,
+    "debs": true,
+    "oci": true,
+    "build-publish": false,
+    "trivy-scan": true,
+    "experimental": false
+}

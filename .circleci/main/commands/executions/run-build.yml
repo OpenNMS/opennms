@@ -32,7 +32,7 @@ commands:
             export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
             << parameters.node-memory >>
             export MAVEN_OPTS="-Xmx12g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
-            MAVEN_ARGS="install"
+            MAVEN_ARGS="--settings .circleci/settings.xml install"
             mkdir -p target/artifacts
             case "${CIRCLE_BRANCH}" in
               "master-"*|"release-"*|"develop")

@@ -139,3 +139,24 @@ The configuration file is located in `target/opennms-$\{ONMS_RELEASE}/etc/opennm
 ----
 ./target/opennms-"${ONMS_RELEASE}"/bin/opennms stop
 ----
+
+== Troubleshooting
+
+=== Slow Maven downloads or connection timeouts
+
+When you build OpenNMS the first time, your `${HOME}/.m2` local repository is populated from public Maven repositories.
+If you get slow downloads or connection timeouts, we provide a Maven caching server located in US East location.
+You can use that public caching server by using a settings.xml in your Maven home directory.
+
+.Copy a pre-configured settings.xml to your Maven home
+[source, console]
+----
+cp .circleci/settings.xml ${HOME}/.m2
+----
+
+Maven will now globally use the mirror fetching the Maven dependencies.
+
+=== Self-hosting an internal Maven cache
+
+If you are in an environment where you have specific security requirements, you can set up your own internal Maven cache server.
+You can find a pre-configured Docker based Maven cache server in the public link:https://github.com/opennms-forge/maven-cache[GitHub repository].

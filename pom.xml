@@ -2065,8 +2065,8 @@
       <repositories>
         <!-- Disable snapshots for our own artifacts for release builds -->
         <repository>
-          <id>opennms-ossrh</id>
-          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+          <id>central-portal</id>
+          <url>https://central.sonatype.com/repository/maven-snapshots</url>
           <releases>
             <enabled>true</enabled>
             <updatePolicy>never</updatePolicy>
@@ -2188,9 +2188,9 @@
       -->
       <repositories>
         <repository>
-          <id>central</id>
+          <id>maven-central</id>
           <name>Maven Central</name>
-          <url>https://repo1.maven.org/maven2/</url>
+          <url>https://repo.maven.apache.org/maven2/</url>
           <releases>
             <enabled>true</enabled>
             <updatePolicy>never</updatePolicy>
@@ -2202,8 +2202,7 @@
         </repository>
         <repository>
           <id>opennms-snapshots</id>
-          <name>OpenNMS Snapshot Maven Mega-Repository</name>
-          <url>https://maven.opennms.org/repository/everything/</url>
+          <url>https://archive.opennms.com/repo-maven/snapshots/</url>
           <releases>
             <enabled>false</enabled>
           </releases>
@@ -2213,8 +2212,8 @@
           </snapshots>
         </repository>
         <repository>
-          <id>opennms-ossrh</id>
-          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+          <id>central-portal</id>
+          <url>https://central.sonatype.com/repository/maven-snapshots/</url>
           <releases>
             <enabled>false</enabled>
           </releases>
@@ -2229,9 +2228,9 @@
       -->
       <pluginRepositories>
         <pluginRepository>
-          <id>central</id>
+          <id>maven-central</id>
           <name>Maven Central</name>
-          <url>https://repo1.maven.org/maven2/</url>
+          <url>https://repo.maven.apache.org/maven2/</url>
           <releases>
             <enabled>true</enabled>
             <updatePolicy>never</updatePolicy>
@@ -2243,8 +2242,7 @@
         </pluginRepository>
         <pluginRepository>
           <id>opennms-snapshots</id>
-          <name>OpenNMS Snapshot Maven Mega-Repository</name>
-          <url>https://maven.opennms.org/repository/everything/</url>
+          <url>https://archive.opennms.com/repo-maven/snapshots/</url>
           <releases>
             <enabled>false</enabled>
           </releases>
@@ -5590,66 +5588,30 @@
       </dependency>
     </dependencies>
   </dependencyManagement>
-  <pluginRepositories>
-    <pluginRepository>
-      <id>central</id>
-      <name>Maven Central</name>
-      <url>https://repo1.maven.org/maven2/</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </pluginRepository>
-    <pluginRepository>
-      <id>opennms-repo</id>
-      <name>OpenNMS Mega-Repository</name>
-      <url>https://maven.opennms.org/repository/everything/</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </pluginRepository>
-  </pluginRepositories>
   <repositories>
-    <!--
-      This is required to override the effective POM's definition of Maven Central.
-      Versions of Maven *prior* to 3.2.3 will access Maven Central via HTTP.
-      In 3.2.3 (and newer), HTTPS is used.
-      Refer to: http://maven.apache.org/docs/3.2.3/release-notes.html
-    -->
     <repository>
-      <id>central</id>
+      <id>maven-central</id>
       <name>Maven Central</name>
-      <url>https://repo1.maven.org/maven2/</url>
+      <url>https://repo.maven.apache.org/maven2/</url>
       <snapshots>
         <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>opennms-repo</id>
-      <name>OpenNMS Mega-Repository</name>
-      <url>https://maven.opennms.org/repository/everything/</url>
-      <snapshots>
-        <enabled>false</enabled>
-      </snapshots>
-    </repository>
-    <repository>
-      <id>opennms-ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-      <snapshots>
-        <enabled>true</enabled>
       </snapshots>
     </repository>
   </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>opennms-3rdparty</id>
+      <url>https://archive.opennms.com/repo-maven/3rdparty/</url>
+    </pluginRepository>
+  </pluginRepositories>
   <distributionManagement>
     <snapshotRepository>
-      <id>opennms-ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <id>central-portal</id>
+      <url>https://central.sonatype.com/repository/maven-snapshots/</url>
     </snapshotRepository>
     <repository>
-      <id>opennms-ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+      <id>central-portal</id>
+      <url>https://central.sonatype.com/repository/maven-releases//</url>
     </repository>
   </distributionManagement>
 </project>

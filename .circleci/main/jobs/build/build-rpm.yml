@@ -10,6 +10,7 @@ jobs:
             export NODE_OPTIONS=--max_old_space_size=1024
             export CCI_MAXCPU=2
             export MAVEN_OPTS="-Xmx5g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            cp .circleci/settings.xml ${HOME}/.m2
             .circleci/scripts/makerpm.sh tools/packages/opennms/opennms.spec
             .circleci/scripts/makerpm.sh tools/packages/minion/minion.spec
             .circleci/scripts/makerpm.sh tools/packages/sentinel/sentinel.spec
