@@ -30,7 +30,11 @@ package org.opennms.web.services;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
@@ -65,11 +69,41 @@ public class FilterFavoriteService {
     public OnmsFilterFavorite getFavorite(String favoriteId, String username, String filterString) {
         OnmsFilterFavorite favorite = getFavorite(favoriteId, username);
         if (favorite == null) return null;
-        if (favorite.getFilter().equals(unescapeAndDecode(filterString))) {
+
+        List<String> filters = extractFilters(unescapeAndDecode(filterString));
+        String result = filters.stream()
+                .filter(filter -> !filter.startsWith("display=") && !filter.startsWith("favoriteId="))
+                .map(filter -> "filter=" + filter)
+                .collect(Collectors.joining("&"));
+        if (unescapeAndDecode(result).equals(unescapeAndDecode(favorite.getFilter()))) {
             return favorite;
         }
+
         return null;
     }
+
+    /**
+     * Extracts filters from the input string.
+     *
+     * @param input The input string containing filters.
+     * @return A list of key-value filter strings.
+     */
+    private static List<String> extractFilters(String input) {
+        List<String> filters = new ArrayList<>();
+        String regex = "filter=([^=]+)=([^&]*)";
+
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(input);
+
+        while (matcher.find()) {
+            String key = matcher.group(1);
+            String value = matcher.group(2);
+            filters.add(key + "=" + value);
+        }
+
+        return filters;
+    }
+
 
     /**
      * Deletes the given favorite, but only if the given username is allowed to delete.

@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
+ * Copyright (C) 2025 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2025 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,7 +25,6 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.netmgt.telemetry.protocols.jti.adapter.proto;
 
 public final class FirewallOuterClass {
@@ -70,6 +69,7 @@ public final class FirewallOuterClass {
   }
   /**
    * <pre>
+   *
    * Top-level message
    * </pre>
    *
@@ -95,11 +95,6 @@ public final class FirewallOuterClass {
       return new Firewall();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.internal_static_Firewall_descriptor;
@@ -114,6 +109,7 @@ public final class FirewallOuterClass {
     }
 
     public static final int FIREWALL_STATS_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.FirewallStats> firewallStats_;
     /**
      * <code>repeated .FirewallStats firewall_stats = 1;</code>
@@ -270,11 +266,13 @@ public final class FirewallOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.Firewall parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.Firewall parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -318,6 +316,7 @@ public final class FirewallOuterClass {
     }
     /**
      * <pre>
+     *
      * Top-level message
      * </pre>
      *
@@ -353,6 +352,7 @@ public final class FirewallOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (firewallStatsBuilder_ == null) {
           firewallStats_ = java.util.Collections.emptyList();
         } else {
@@ -386,7 +386,13 @@ public final class FirewallOuterClass {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.Firewall buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.Firewall result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.Firewall(this);
-        int from_bitField0_ = bitField0_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.Firewall result) {
         if (firewallStatsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             firewallStats_ = java.util.Collections.unmodifiableList(firewallStats_);
@@ -396,8 +402,10 @@ public final class FirewallOuterClass {
         } else {
           result.firewallStats_ = firewallStatsBuilder_.build();
         }
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.Firewall result) {
+        int from_bitField0_ = bitField0_;
       }
 
       @java.lang.Override
@@ -976,6 +984,7 @@ public final class FirewallOuterClass {
   }
   /**
    * <pre>
+   *
    * Firewall filter statistics
    * </pre>
    *
@@ -1005,11 +1014,6 @@ public final class FirewallOuterClass {
       return new FirewallStats();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.internal_static_FirewallStats_descriptor;
@@ -1025,7 +1029,8 @@ public final class FirewallOuterClass {
 
     private int bitField0_;
     public static final int FILTER_NAME_FIELD_NUMBER = 1;
-    private volatile java.lang.Object filterName_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object filterName_ = "";
     /**
      * <code>required string filter_name = 1 [(.telemetry_options) = { ... }</code>
      * @return Whether the filterName field is set.
@@ -1073,7 +1078,7 @@ public final class FirewallOuterClass {
     }
 
     public static final int TIMESTAMP_FIELD_NUMBER = 2;
-    private long timestamp_;
+    private long timestamp_ = 0L;
     /**
      * <pre>
      * The Unix timestamp (seconds since 00:00:00 UTC 1970-01-01) of
@@ -1104,6 +1109,7 @@ public final class FirewallOuterClass {
     }
 
     public static final int MEMORY_USAGE_FIELD_NUMBER = 3;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.MemoryUsage> memoryUsage_;
     /**
      * <code>repeated .MemoryUsage memory_usage = 3;</code>
@@ -1144,6 +1150,7 @@ public final class FirewallOuterClass {
     }
 
     public static final int COUNTER_STATS_FIELD_NUMBER = 4;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.CounterStats> counterStats_;
     /**
      * <code>repeated .CounterStats counter_stats = 4;</code>
@@ -1184,6 +1191,7 @@ public final class FirewallOuterClass {
     }
 
     public static final int POLICER_STATS_FIELD_NUMBER = 5;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.PolicerStats> policerStats_;
     /**
      * <code>repeated .PolicerStats policer_stats = 5;</code>
@@ -1224,6 +1232,7 @@ public final class FirewallOuterClass {
     }
 
     public static final int HIERARCHICAL_POLICER_STATS_FIELD_NUMBER = 6;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.HierarchicalPolicerStats> hierarchicalPolicerStats_;
     /**
      * <code>repeated .HierarchicalPolicerStats hierarchical_policer_stats = 6;</code>
@@ -1473,11 +1482,13 @@ public final class FirewallOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.FirewallStats parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.FirewallStats parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1521,6 +1532,7 @@ public final class FirewallOuterClass {
     }
     /**
      * <pre>
+     *
      * Firewall filter statistics
      * </pre>
      *
@@ -1556,10 +1568,9 @@ public final class FirewallOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         filterName_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         timestamp_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000002);
         if (memoryUsageBuilder_ == null) {
           memoryUsage_ = java.util.Collections.emptyList();
         } else {
@@ -1614,16 +1625,13 @@ public final class FirewallOuterClass {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.FirewallStats buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.FirewallStats result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.FirewallStats(this);
-        int from_bitField0_ = bitField0_;
-        int to_bitField0_ = 0;
-        if (((from_bitField0_ & 0x00000001) != 0)) {
-          to_bitField0_ |= 0x00000001;
-        }
-        result.filterName_ = filterName_;
-        if (((from_bitField0_ & 0x00000002) != 0)) {
-          result.timestamp_ = timestamp_;
-          to_bitField0_ |= 0x00000002;
-        }
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.FirewallStats result) {
         if (memoryUsageBuilder_ == null) {
           if (((bitField0_ & 0x00000004) != 0)) {
             memoryUsage_ = java.util.Collections.unmodifiableList(memoryUsage_);
@@ -1660,9 +1668,20 @@ public final class FirewallOuterClass {
         } else {
           result.hierarchicalPolicerStats_ = hierarchicalPolicerStatsBuilder_.build();
         }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.FirewallStats result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.filterName_ = filterName_;
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.timestamp_ = timestamp_;
+          to_bitField0_ |= 0x00000002;
+        }
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -1710,8 +1729,8 @@ public final class FirewallOuterClass {
       public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.FirewallStats other) {
         if (other == org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.FirewallStats.getDefaultInstance()) return this;
         if (other.hasFilterName()) {
-          bitField0_ |= 0x00000001;
           filterName_ = other.filterName_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.hasTimestamp()) {
@@ -1999,11 +2018,9 @@ public final class FirewallOuterClass {
        */
       public Builder setFilterName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         filterName_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2012,8 +2029,8 @@ public final class FirewallOuterClass {
        * @return This builder for chaining.
        */
       public Builder clearFilterName() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         filterName_ = getDefaultInstance().getFilterName();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -2024,11 +2041,9 @@ public final class FirewallOuterClass {
        */
       public Builder setFilterNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         filterName_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2074,8 +2089,9 @@ public final class FirewallOuterClass {
        * @return This builder for chaining.
        */
       public Builder setTimestamp(long value) {
-        bitField0_ |= 0x00000002;
+
         timestamp_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -3182,6 +3198,7 @@ public final class FirewallOuterClass {
   }
   /**
    * <pre>
+   *
    * Memory usage
    * </pre>
    *
@@ -3207,11 +3224,6 @@ public final class FirewallOuterClass {
       return new MemoryUsage();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.internal_static_MemoryUsage_descriptor;
@@ -3227,7 +3239,8 @@ public final class FirewallOuterClass {
 
     private int bitField0_;
     public static final int NAME_FIELD_NUMBER = 1;
-    private volatile java.lang.Object name_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object name_ = "";
     /**
      * <pre>
      * The router has typically several types of memories (e.g. CPU's memory,
@@ -3296,7 +3309,7 @@ public final class FirewallOuterClass {
     }
 
     public static final int ALLOCATED_FIELD_NUMBER = 2;
-    private long allocated_;
+    private long allocated_ = 0L;
     /**
      * <pre>
      * The amount of the memory allocated in bytes to the filter
@@ -3456,11 +3469,13 @@ public final class FirewallOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.MemoryUsage parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.MemoryUsage parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3504,6 +3519,7 @@ public final class FirewallOuterClass {
     }
     /**
      * <pre>
+     *
      * Memory usage
      * </pre>
      *
@@ -3539,10 +3555,9 @@ public final class FirewallOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         name_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         allocated_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -3569,19 +3584,23 @@ public final class FirewallOuterClass {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.MemoryUsage buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.MemoryUsage result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.MemoryUsage(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.MemoryUsage result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.name_ = name_;
           to_bitField0_ |= 0x00000001;
         }
-        result.name_ = name_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.allocated_ = allocated_;
           to_bitField0_ |= 0x00000002;
         }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -3629,8 +3648,8 @@ public final class FirewallOuterClass {
       public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.MemoryUsage other) {
         if (other == org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.MemoryUsage.getDefaultInstance()) return this;
         if (other.hasName()) {
-          bitField0_ |= 0x00000001;
           name_ = other.name_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.hasAllocated()) {
@@ -3770,11 +3789,9 @@ public final class FirewallOuterClass {
        */
       public Builder setName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -3790,8 +3807,8 @@ public final class FirewallOuterClass {
        * @return This builder for chaining.
        */
       public Builder clearName() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         name_ = getDefaultInstance().getName();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -3809,11 +3826,9 @@ public final class FirewallOuterClass {
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -3853,8 +3868,9 @@ public final class FirewallOuterClass {
        * @return This builder for chaining.
        */
       public Builder setAllocated(long value) {
-        bitField0_ |= 0x00000002;
+
         allocated_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -4009,6 +4025,7 @@ public final class FirewallOuterClass {
   }
   /**
    * <pre>
+   *
    * Counter statistics
    * </pre>
    *
@@ -4034,11 +4051,6 @@ public final class FirewallOuterClass {
       return new CounterStats();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.internal_static_CounterStats_descriptor;
@@ -4054,7 +4066,8 @@ public final class FirewallOuterClass {
 
     private int bitField0_;
     public static final int NAME_FIELD_NUMBER = 1;
-    private volatile java.lang.Object name_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object name_ = "";
     /**
      * <pre>
      * Counter name
@@ -4114,7 +4127,7 @@ public final class FirewallOuterClass {
     }
 
     public static final int PACKETS_FIELD_NUMBER = 2;
-    private long packets_;
+    private long packets_ = 0L;
     /**
      * <pre>
      * The total number of packets seen by the counter
@@ -4141,7 +4154,7 @@ public final class FirewallOuterClass {
     }
 
     public static final int BYTES_FIELD_NUMBER = 3;
-    private long bytes_;
+    private long bytes_ = 0L;
     /**
      * <pre>
      * The total number of bytes seen by the counter
@@ -4318,11 +4331,13 @@ public final class FirewallOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.CounterStats parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.CounterStats parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4366,6 +4381,7 @@ public final class FirewallOuterClass {
     }
     /**
      * <pre>
+     *
      * Counter statistics
      * </pre>
      *
@@ -4401,12 +4417,10 @@ public final class FirewallOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         name_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         packets_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000002);
         bytes_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -4433,12 +4447,18 @@ public final class FirewallOuterClass {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.CounterStats buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.CounterStats result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.CounterStats(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.CounterStats result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.name_ = name_;
           to_bitField0_ |= 0x00000001;
         }
-        result.name_ = name_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.packets_ = packets_;
           to_bitField0_ |= 0x00000002;
@@ -4447,9 +4467,7 @@ public final class FirewallOuterClass {
           result.bytes_ = bytes_;
           to_bitField0_ |= 0x00000004;
         }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -4497,8 +4515,8 @@ public final class FirewallOuterClass {
       public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.CounterStats other) {
         if (other == org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.CounterStats.getDefaultInstance()) return this;
         if (other.hasName()) {
-          bitField0_ |= 0x00000001;
           name_ = other.name_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.hasPackets()) {
@@ -4634,11 +4652,9 @@ public final class FirewallOuterClass {
        */
       public Builder setName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -4651,8 +4667,8 @@ public final class FirewallOuterClass {
        * @return This builder for chaining.
        */
       public Builder clearName() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         name_ = getDefaultInstance().getName();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -4667,11 +4683,9 @@ public final class FirewallOuterClass {
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -4711,8 +4725,9 @@ public final class FirewallOuterClass {
        * @return This builder for chaining.
        */
       public Builder setPackets(long value) {
-        bitField0_ |= 0x00000002;
+
         packets_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -4766,8 +4781,9 @@ public final class FirewallOuterClass {
        * @return This builder for chaining.
        */
       public Builder setBytes(long value) {
-        bitField0_ |= 0x00000004;
+
         bytes_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -4949,6 +4965,7 @@ public final class FirewallOuterClass {
   }
   /**
    * <pre>
+   *
    * Policer statistics
    * </pre>
    *
@@ -4974,11 +4991,6 @@ public final class FirewallOuterClass {
       return new PolicerStats();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.internal_static_PolicerStats_descriptor;
@@ -4994,7 +5006,8 @@ public final class FirewallOuterClass {
 
     private int bitField0_;
     public static final int NAME_FIELD_NUMBER = 1;
-    private volatile java.lang.Object name_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object name_ = "";
     /**
      * <pre>
      * Policer instance name
@@ -5054,7 +5067,7 @@ public final class FirewallOuterClass {
     }
 
     public static final int OUT_OF_SPEC_PACKETS_FIELD_NUMBER = 2;
-    private long outOfSpecPackets_;
+    private long outOfSpecPackets_ = 0L;
     /**
      * <pre>
      * The total number of packets marked out-of-specification by the policer
@@ -5081,7 +5094,7 @@ public final class FirewallOuterClass {
     }
 
     public static final int OUT_OF_SPEC_BYTES_FIELD_NUMBER = 3;
-    private long outOfSpecBytes_;
+    private long outOfSpecBytes_ = 0L;
     /**
      * <pre>
      * The total number of bytes marked out-of-specification by the policer
@@ -5312,11 +5325,13 @@ public final class FirewallOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.PolicerStats parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.PolicerStats parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5360,6 +5375,7 @@ public final class FirewallOuterClass {
     }
     /**
      * <pre>
+     *
      * Policer statistics
      * </pre>
      *
@@ -5401,18 +5417,15 @@ public final class FirewallOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         name_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         outOfSpecPackets_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000002);
         outOfSpecBytes_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000004);
-        if (extendedPolicerStatsBuilder_ == null) {
-          extendedPolicerStats_ = null;
-        } else {
-          extendedPolicerStatsBuilder_.clear();
+        extendedPolicerStats_ = null;
+        if (extendedPolicerStatsBuilder_ != null) {
+          extendedPolicerStatsBuilder_.dispose();
+          extendedPolicerStatsBuilder_ = null;
         }
-        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -5439,12 +5452,18 @@ public final class FirewallOuterClass {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.PolicerStats buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.PolicerStats result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.PolicerStats(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.PolicerStats result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.name_ = name_;
           to_bitField0_ |= 0x00000001;
         }
-        result.name_ = name_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.outOfSpecPackets_ = outOfSpecPackets_;
           to_bitField0_ |= 0x00000002;
@@ -5454,16 +5473,12 @@ public final class FirewallOuterClass {
           to_bitField0_ |= 0x00000004;
         }
         if (((from_bitField0_ & 0x00000008) != 0)) {
-          if (extendedPolicerStatsBuilder_ == null) {
-            result.extendedPolicerStats_ = extendedPolicerStats_;
-          } else {
-            result.extendedPolicerStats_ = extendedPolicerStatsBuilder_.build();
-          }
+          result.extendedPolicerStats_ = extendedPolicerStatsBuilder_ == null
+              ? extendedPolicerStats_
+              : extendedPolicerStatsBuilder_.build();
           to_bitField0_ |= 0x00000008;
         }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -5511,8 +5526,8 @@ public final class FirewallOuterClass {
       public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.PolicerStats other) {
         if (other == org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.PolicerStats.getDefaultInstance()) return this;
         if (other.hasName()) {
-          bitField0_ |= 0x00000001;
           name_ = other.name_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.hasOutOfSpecPackets()) {
@@ -5658,11 +5673,9 @@ public final class FirewallOuterClass {
        */
       public Builder setName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -5675,8 +5688,8 @@ public final class FirewallOuterClass {
        * @return This builder for chaining.
        */
       public Builder clearName() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         name_ = getDefaultInstance().getName();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -5691,11 +5704,9 @@ public final class FirewallOuterClass {
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -5735,8 +5746,9 @@ public final class FirewallOuterClass {
        * @return This builder for chaining.
        */
       public Builder setOutOfSpecPackets(long value) {
-        bitField0_ |= 0x00000002;
+
         outOfSpecPackets_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -5790,8 +5802,9 @@ public final class FirewallOuterClass {
        * @return This builder for chaining.
        */
       public Builder setOutOfSpecBytes(long value) {
-        bitField0_ |= 0x00000004;
+
         outOfSpecBytes_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -5852,11 +5865,11 @@ public final class FirewallOuterClass {
             throw new NullPointerException();
           }
           extendedPolicerStats_ = value;
-          onChanged();
         } else {
           extendedPolicerStatsBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000008;
+        onChanged();
         return this;
       }
       /**
@@ -5870,11 +5883,11 @@ public final class FirewallOuterClass {
           org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.ExtendedPolicerStats.Builder builderForValue) {
         if (extendedPolicerStatsBuilder_ == null) {
           extendedPolicerStats_ = builderForValue.build();
-          onChanged();
         } else {
           extendedPolicerStatsBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000008;
+        onChanged();
         return this;
       }
       /**
@@ -5887,18 +5900,19 @@ public final class FirewallOuterClass {
       public Builder mergeExtendedPolicerStats(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.ExtendedPolicerStats value) {
         if (extendedPolicerStatsBuilder_ == null) {
           if (((bitField0_ & 0x00000008) != 0) &&
-              extendedPolicerStats_ != null &&
-              extendedPolicerStats_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.ExtendedPolicerStats.getDefaultInstance()) {
-            extendedPolicerStats_ =
-              org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.ExtendedPolicerStats.newBuilder(extendedPolicerStats_).mergeFrom(value).buildPartial();
+            extendedPolicerStats_ != null &&
+            extendedPolicerStats_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.ExtendedPolicerStats.getDefaultInstance()) {
+            getExtendedPolicerStatsBuilder().mergeFrom(value);
           } else {
             extendedPolicerStats_ = value;
           }
-          onChanged();
         } else {
           extendedPolicerStatsBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000008;
+        if (extendedPolicerStats_ != null) {
+          bitField0_ |= 0x00000008;
+          onChanged();
+        }
         return this;
       }
       /**
@@ -5909,13 +5923,13 @@ public final class FirewallOuterClass {
        * <code>optional .ExtendedPolicerStats extended_policer_stats = 4;</code>
        */
       public Builder clearExtendedPolicerStats() {
-        if (extendedPolicerStatsBuilder_ == null) {
-          extendedPolicerStats_ = null;
-          onChanged();
-        } else {
-          extendedPolicerStatsBuilder_.clear();
-        }
         bitField0_ = (bitField0_ & ~0x00000008);
+        extendedPolicerStats_ = null;
+        if (extendedPolicerStatsBuilder_ != null) {
+          extendedPolicerStatsBuilder_.dispose();
+          extendedPolicerStatsBuilder_ = null;
+        }
+        onChanged();
         return this;
       }
       /**
@@ -6111,6 +6125,7 @@ public final class FirewallOuterClass {
   }
   /**
    * <pre>
+   *
    * Extended policer statistics when enhanced policer statistics are available
    * </pre>
    *
@@ -6135,11 +6150,6 @@ public final class FirewallOuterClass {
       return new ExtendedPolicerStats();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.internal_static_ExtendedPolicerStats_descriptor;
@@ -6155,7 +6165,7 @@ public final class FirewallOuterClass {
 
     private int bitField0_;
     public static final int OFFERED_PACKETS_FIELD_NUMBER = 1;
-    private long offeredPackets_;
+    private long offeredPackets_ = 0L;
     /**
      * <pre>
      * The total number of packets subjected to policing
@@ -6182,7 +6192,7 @@ public final class FirewallOuterClass {
     }
 
     public static final int OFFERED_BYTES_FIELD_NUMBER = 2;
-    private long offeredBytes_;
+    private long offeredBytes_ = 0L;
     /**
      * <pre>
      * The total number of bytes subjected to policing
@@ -6209,7 +6219,7 @@ public final class FirewallOuterClass {
     }
 
     public static final int TRANSMITTED_PACKETS_FIELD_NUMBER = 3;
-    private long transmittedPackets_;
+    private long transmittedPackets_ = 0L;
     /**
      * <pre>
      * The total number of packets not discarded by the policer
@@ -6236,7 +6246,7 @@ public final class FirewallOuterClass {
     }
 
     public static final int TRANSMITTED_BYTES_FIELD_NUMBER = 4;
-    private long transmittedBytes_;
+    private long transmittedBytes_ = 0L;
     /**
      * <pre>
      * The total number of bytes not discarded by the policer
@@ -6428,11 +6438,13 @@ public final class FirewallOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.ExtendedPolicerStats parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.ExtendedPolicerStats parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -6476,6 +6488,7 @@ public final class FirewallOuterClass {
     }
     /**
      * <pre>
+     *
      * Extended policer statistics when enhanced policer statistics are available
      * </pre>
      *
@@ -6511,14 +6524,11 @@ public final class FirewallOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         offeredPackets_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000001);
         offeredBytes_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000002);
         transmittedPackets_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000004);
         transmittedBytes_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -6545,6 +6555,12 @@ public final class FirewallOuterClass {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.ExtendedPolicerStats buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.ExtendedPolicerStats result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.ExtendedPolicerStats(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.ExtendedPolicerStats result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
@@ -6563,9 +6579,7 @@ public final class FirewallOuterClass {
           result.transmittedBytes_ = transmittedBytes_;
           to_bitField0_ |= 0x00000008;
         }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -6722,8 +6736,9 @@ public final class FirewallOuterClass {
        * @return This builder for chaining.
        */
       public Builder setOfferedPackets(long value) {
-        bitField0_ |= 0x00000001;
+
         offeredPackets_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -6777,8 +6792,9 @@ public final class FirewallOuterClass {
        * @return This builder for chaining.
        */
       public Builder setOfferedBytes(long value) {
-        bitField0_ |= 0x00000002;
+
         offeredBytes_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -6832,8 +6848,9 @@ public final class FirewallOuterClass {
        * @return This builder for chaining.
        */
       public Builder setTransmittedPackets(long value) {
-        bitField0_ |= 0x00000004;
+
         transmittedPackets_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -6887,8 +6904,9 @@ public final class FirewallOuterClass {
        * @return This builder for chaining.
        */
       public Builder setTransmittedBytes(long value) {
-        bitField0_ |= 0x00000008;
+
         transmittedBytes_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -7089,6 +7107,7 @@ public final class FirewallOuterClass {
   }
   /**
    * <pre>
+   *
    * Hierarchical policer statistics
    * </pre>
    *
@@ -7114,11 +7133,6 @@ public final class FirewallOuterClass {
       return new HierarchicalPolicerStats();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.internal_static_HierarchicalPolicerStats_descriptor;
@@ -7134,7 +7148,8 @@ public final class FirewallOuterClass {
 
     private int bitField0_;
     public static final int NAME_FIELD_NUMBER = 1;
-    private volatile java.lang.Object name_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object name_ = "";
     /**
      * <pre>
      * Hierarchical policer instance name
@@ -7194,7 +7209,7 @@ public final class FirewallOuterClass {
     }
 
     public static final int PREMIUM_PACKETS_FIELD_NUMBER = 2;
-    private long premiumPackets_;
+    private long premiumPackets_ = 0L;
     /**
      * <pre>
      * The total number of packets marked out-of-specification by
@@ -7223,7 +7238,7 @@ public final class FirewallOuterClass {
     }
 
     public static final int PREMIUM_BYTES_FIELD_NUMBER = 3;
-    private long premiumBytes_;
+    private long premiumBytes_ = 0L;
     /**
      * <pre>
      * The total number of bytes marked out-of-specification by
@@ -7252,7 +7267,7 @@ public final class FirewallOuterClass {
     }
 
     public static final int AGGREGATE_PACKETS_FIELD_NUMBER = 4;
-    private long aggregatePackets_;
+    private long aggregatePackets_ = 0L;
     /**
      * <pre>
      * The total number of packets marked out-of-specification by
@@ -7281,7 +7296,7 @@ public final class FirewallOuterClass {
     }
 
     public static final int AGGREGATE_BYTES_FIELD_NUMBER = 5;
-    private long aggregateBytes_;
+    private long aggregateBytes_ = 0L;
     /**
      * <pre>
      * The total number of bytes marked out-of-specification by
@@ -7494,11 +7509,13 @@ public final class FirewallOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.HierarchicalPolicerStats parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.HierarchicalPolicerStats parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -7542,6 +7559,7 @@ public final class FirewallOuterClass {
     }
     /**
      * <pre>
+     *
      * Hierarchical policer statistics
      * </pre>
      *
@@ -7577,16 +7595,12 @@ public final class FirewallOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         name_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         premiumPackets_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000002);
         premiumBytes_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000004);
         aggregatePackets_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000008);
         aggregateBytes_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000010);
         return this;
       }
 
@@ -7613,12 +7627,18 @@ public final class FirewallOuterClass {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.HierarchicalPolicerStats buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.HierarchicalPolicerStats result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.HierarchicalPolicerStats(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.HierarchicalPolicerStats result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.name_ = name_;
           to_bitField0_ |= 0x00000001;
         }
-        result.name_ = name_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.premiumPackets_ = premiumPackets_;
           to_bitField0_ |= 0x00000002;
@@ -7635,9 +7655,7 @@ public final class FirewallOuterClass {
           result.aggregateBytes_ = aggregateBytes_;
           to_bitField0_ |= 0x00000010;
         }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -7685,8 +7703,8 @@ public final class FirewallOuterClass {
       public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.HierarchicalPolicerStats other) {
         if (other == org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.FirewallOuterClass.HierarchicalPolicerStats.getDefaultInstance()) return this;
         if (other.hasName()) {
-          bitField0_ |= 0x00000001;
           name_ = other.name_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.hasPremiumPackets()) {
@@ -7838,11 +7856,9 @@ public final class FirewallOuterClass {
        */
       public Builder setName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -7855,8 +7871,8 @@ public final class FirewallOuterClass {
        * @return This builder for chaining.
        */
       public Builder clearName() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         name_ = getDefaultInstance().getName();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -7871,11 +7887,9 @@ public final class FirewallOuterClass {
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -7918,8 +7932,9 @@ public final class FirewallOuterClass {
        * @return This builder for chaining.
        */
       public Builder setPremiumPackets(long value) {
-        bitField0_ |= 0x00000002;
+
         premiumPackets_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -7977,8 +7992,9 @@ public final class FirewallOuterClass {
        * @return This builder for chaining.
        */
       public Builder setPremiumBytes(long value) {
-        bitField0_ |= 0x00000004;
+
         premiumBytes_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -8036,8 +8052,9 @@ public final class FirewallOuterClass {
        * @return This builder for chaining.
        */
       public Builder setAggregatePackets(long value) {
-        bitField0_ |= 0x00000008;
+
         aggregatePackets_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -8095,8 +8112,9 @@ public final class FirewallOuterClass {
        * @return This builder for chaining.
        */
       public Builder setAggregateBytes(long value) {
-        bitField0_ |= 0x00000010;
+
         aggregateBytes_ = value;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }

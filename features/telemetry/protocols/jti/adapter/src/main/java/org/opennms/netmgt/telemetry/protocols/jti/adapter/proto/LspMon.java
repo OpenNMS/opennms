@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
+ * Copyright (C) 2025 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2025 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,7 +25,6 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.netmgt.telemetry.protocols.jti.adapter.proto;
 
 public final class LspMon {
@@ -531,11 +530,6 @@ public final class LspMon {
       return new key();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.internal_static_key_descriptor;
@@ -551,7 +545,8 @@ public final class LspMon {
 
     private int bitField0_;
     public static final int NAME_FIELD_NUMBER = 1;
-    private volatile java.lang.Object name_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object name_ = "";
     /**
      * <code>required string name = 1;</code>
      * @return Whether the name field is set.
@@ -599,7 +594,7 @@ public final class LspMon {
     }
 
     public static final int INSTANCE_IDENTIFIER_FIELD_NUMBER = 2;
-    private int instanceIdentifier_;
+    private int instanceIdentifier_ = 0;
     /**
      * <code>required int32 instance_identifier = 2;</code>
      * @return Whether the instanceIdentifier field is set.
@@ -618,7 +613,7 @@ public final class LspMon {
     }
 
     public static final int TIME_STAMPG_FIELD_NUMBER = 3;
-    private long timeStampg_;
+    private long timeStampg_ = 0L;
     /**
      * <code>required uint64 time_stampg = 3;</code>
      * @return Whether the timeStampg field is set.
@@ -794,11 +789,13 @@ public final class LspMon {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.key parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.key parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -877,12 +874,10 @@ public final class LspMon {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         name_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         instanceIdentifier_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000002);
         timeStampg_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -909,12 +904,18 @@ public final class LspMon {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.key buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.key result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.key(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.key result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.name_ = name_;
           to_bitField0_ |= 0x00000001;
         }
-        result.name_ = name_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.instanceIdentifier_ = instanceIdentifier_;
           to_bitField0_ |= 0x00000002;
@@ -923,9 +924,7 @@ public final class LspMon {
           result.timeStampg_ = timeStampg_;
           to_bitField0_ |= 0x00000004;
         }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -973,8 +972,8 @@ public final class LspMon {
       public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.key other) {
         if (other == org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.key.getDefaultInstance()) return this;
         if (other.hasName()) {
-          bitField0_ |= 0x00000001;
           name_ = other.name_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.hasInstanceIdentifier()) {
@@ -1100,11 +1099,9 @@ public final class LspMon {
        */
       public Builder setName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1113,8 +1110,8 @@ public final class LspMon {
        * @return This builder for chaining.
        */
       public Builder clearName() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         name_ = getDefaultInstance().getName();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -1125,11 +1122,9 @@ public final class LspMon {
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1157,8 +1152,9 @@ public final class LspMon {
        * @return This builder for chaining.
        */
       public Builder setInstanceIdentifier(int value) {
-        bitField0_ |= 0x00000002;
+
         instanceIdentifier_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -1196,8 +1192,9 @@ public final class LspMon {
        * @return This builder for chaining.
        */
       public Builder setTimeStampg(long value) {
-        bitField0_ |= 0x00000004;
+
         timeStampg_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -1329,11 +1326,6 @@ public final class LspMon {
       return new lsp_monitor_data_event();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.internal_static_lsp_monitor_data_event_descriptor;
@@ -1349,7 +1341,7 @@ public final class LspMon {
 
     private int bitField0_;
     public static final int EVENT_IDENTIFIER_FIELD_NUMBER = 1;
-    private int eventIdentifier_;
+    private int eventIdentifier_ = 0;
     /**
      * <code>required .lsp_event event_identifier = 1;</code>
      * @return Whether the eventIdentifier field is set.
@@ -1362,13 +1354,12 @@ public final class LspMon {
      * @return The eventIdentifier.
      */
     @java.lang.Override public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_event getEventIdentifier() {
-      @SuppressWarnings("deprecation")
-      org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_event result = org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_event.valueOf(eventIdentifier_);
+      org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_event result = org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_event.forNumber(eventIdentifier_);
       return result == null ? org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_event.INITIATED : result;
     }
 
     public static final int SUBCODE_FIELD_NUMBER = 2;
-    private int subcode_;
+    private int subcode_ = 1;
     /**
      * <code>optional .event_subcode subcode = 2;</code>
      * @return Whether the subcode field is set.
@@ -1381,8 +1372,7 @@ public final class LspMon {
      * @return The subcode.
      */
     @java.lang.Override public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.event_subcode getSubcode() {
-      @SuppressWarnings("deprecation")
-      org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.event_subcode result = org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.event_subcode.valueOf(subcode_);
+      org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.event_subcode result = org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.event_subcode.forNumber(subcode_);
       return result == null ? org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.event_subcode.ADMISSION_CONTROL_FAILURE : result;
     }
 
@@ -1518,11 +1508,13 @@ public final class LspMon {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_event parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_event parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1601,10 +1593,9 @@ public final class LspMon {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         eventIdentifier_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000001);
         subcode_ = 1;
-        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -1631,19 +1622,23 @@ public final class LspMon {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_event buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_event result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_event(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_event result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.eventIdentifier_ = eventIdentifier_;
           to_bitField0_ |= 0x00000001;
         }
-        result.eventIdentifier_ = eventIdentifier_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.subcode_ = subcode_;
           to_bitField0_ |= 0x00000002;
         }
-        result.subcode_ = subcode_;
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -1780,8 +1775,7 @@ public final class LspMon {
        */
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_event getEventIdentifier() {
-        @SuppressWarnings("deprecation")
-        org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_event result = org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_event.valueOf(eventIdentifier_);
+        org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_event result = org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_event.forNumber(eventIdentifier_);
         return result == null ? org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_event.INITIATED : result;
       }
       /**
@@ -1823,8 +1817,7 @@ public final class LspMon {
        */
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.event_subcode getSubcode() {
-        @SuppressWarnings("deprecation")
-        org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.event_subcode result = org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.event_subcode.valueOf(subcode_);
+        org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.event_subcode result = org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.event_subcode.forNumber(subcode_);
         return result == null ? org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.event_subcode.ADMISSION_CONTROL_FAILURE : result;
       }
       /**
@@ -1970,11 +1963,6 @@ public final class LspMon {
       return new ero_type_entry();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.internal_static_ero_type_entry_descriptor;
@@ -1990,7 +1978,7 @@ public final class LspMon {
 
     private int bitField0_;
     public static final int IP_FIELD_NUMBER = 1;
-    private int ip_;
+    private int ip_ = 0;
     /**
      * <code>required uint32 ip = 1;</code>
      * @return Whether the ip field is set.
@@ -2009,7 +1997,8 @@ public final class LspMon {
     }
 
     public static final int FLAGS_FIELD_NUMBER = 2;
-    private volatile java.lang.Object flags_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object flags_ = "";
     /**
      * <code>optional string flags = 2;</code>
      * @return Whether the flags field is set.
@@ -2189,11 +2178,13 @@ public final class LspMon {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_type_entry parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_type_entry parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2268,10 +2259,9 @@ public final class LspMon {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         ip_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000001);
         flags_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
         return this;
       }
 
@@ -2298,6 +2288,12 @@ public final class LspMon {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_type_entry buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_type_entry result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_type_entry(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_type_entry result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
@@ -2305,12 +2301,10 @@ public final class LspMon {
           to_bitField0_ |= 0x00000001;
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.flags_ = flags_;
           to_bitField0_ |= 0x00000002;
         }
-        result.flags_ = flags_;
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -2361,8 +2355,8 @@ public final class LspMon {
           setIp(other.getIp());
         }
         if (other.hasFlags()) {
-          bitField0_ |= 0x00000002;
           flags_ = other.flags_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         this.mergeUnknownFields(other.getUnknownFields());
@@ -2444,8 +2438,9 @@ public final class LspMon {
        * @return This builder for chaining.
        */
       public Builder setIp(int value) {
-        bitField0_ |= 0x00000001;
+
         ip_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2510,11 +2505,9 @@ public final class LspMon {
        */
       public Builder setFlags(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+        if (value == null) { throw new NullPointerException(); }
         flags_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2523,8 +2516,8 @@ public final class LspMon {
        * @return This builder for chaining.
        */
       public Builder clearFlags() {
-        bitField0_ = (bitField0_ & ~0x00000002);
         flags_ = getDefaultInstance().getFlags();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -2535,11 +2528,9 @@ public final class LspMon {
        */
       public Builder setFlagsBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+        if (value == null) { throw new NullPointerException(); }
         flags_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2658,11 +2649,6 @@ public final class LspMon {
       return new ero_ipv4_type();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.internal_static_ero_ipv4_type_descriptor;
@@ -2677,6 +2663,7 @@ public final class LspMon {
     }
 
     public static final int ENTRY_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_type_entry> entry_;
     /**
      * <code>repeated .ero_type_entry entry = 1;</code>
@@ -2833,11 +2820,13 @@ public final class LspMon {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_ipv4_type parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_ipv4_type parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2912,6 +2901,7 @@ public final class LspMon {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (entryBuilder_ == null) {
           entry_ = java.util.Collections.emptyList();
         } else {
@@ -2945,7 +2935,13 @@ public final class LspMon {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_ipv4_type buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_ipv4_type result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_ipv4_type(this);
-        int from_bitField0_ = bitField0_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_ipv4_type result) {
         if (entryBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             entry_ = java.util.Collections.unmodifiableList(entry_);
@@ -2955,8 +2951,10 @@ public final class LspMon {
         } else {
           result.entry_ = entryBuilder_.build();
         }
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_ipv4_type result) {
+        int from_bitField0_ = bitField0_;
       }
 
       @java.lang.Override
@@ -3495,11 +3493,6 @@ public final class LspMon {
       return new rro_type_entry();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.internal_static_rro_type_entry_descriptor;
@@ -3515,7 +3508,7 @@ public final class LspMon {
 
     private int bitField0_;
     public static final int NODEID_FIELD_NUMBER = 1;
-    private int nodeid_;
+    private int nodeid_ = 0;
     /**
      * <pre>
      * node-id or loopback
@@ -3542,7 +3535,7 @@ public final class LspMon {
     }
 
     public static final int FLAGS_FIELD_NUMBER = 2;
-    private int flags_;
+    private int flags_ = 0;
     /**
      * <pre>
      * contains flags
@@ -3569,7 +3562,7 @@ public final class LspMon {
     }
 
     public static final int INTF_ADDR_FIELD_NUMBER = 3;
-    private int intfAddr_;
+    private int intfAddr_ = 0;
     /**
      * <pre>
      * interface-ip
@@ -3596,7 +3589,7 @@ public final class LspMon {
     }
 
     public static final int LABEL_FIELD_NUMBER = 4;
-    private int label_;
+    private int label_ = 0;
     /**
      * <pre>
      * may be using PHP
@@ -3784,11 +3777,13 @@ public final class LspMon {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_type_entry parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_type_entry parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3863,14 +3858,11 @@ public final class LspMon {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         nodeid_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000001);
         flags_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000002);
         intfAddr_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000004);
         label_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -3897,6 +3889,12 @@ public final class LspMon {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_type_entry buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_type_entry result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_type_entry(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_type_entry result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
@@ -3915,9 +3913,7 @@ public final class LspMon {
           result.label_ = label_;
           to_bitField0_ |= 0x00000008;
         }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -4074,8 +4070,9 @@ public final class LspMon {
        * @return This builder for chaining.
        */
       public Builder setNodeid(int value) {
-        bitField0_ |= 0x00000001;
+
         nodeid_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -4129,8 +4126,9 @@ public final class LspMon {
        * @return This builder for chaining.
        */
       public Builder setFlags(int value) {
-        bitField0_ |= 0x00000002;
+
         flags_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -4184,8 +4182,9 @@ public final class LspMon {
        * @return This builder for chaining.
        */
       public Builder setIntfAddr(int value) {
-        bitField0_ |= 0x00000004;
+
         intfAddr_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -4239,8 +4238,9 @@ public final class LspMon {
        * @return This builder for chaining.
        */
       public Builder setLabel(int value) {
-        bitField0_ |= 0x00000008;
+
         label_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -4373,11 +4373,6 @@ public final class LspMon {
       return new rro_ipv4_type();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.internal_static_rro_ipv4_type_descriptor;
@@ -4392,6 +4387,7 @@ public final class LspMon {
     }
 
     public static final int RRO_ENTRY_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_type_entry> rroEntry_;
     /**
      * <code>repeated .rro_type_entry rro_entry = 1;</code>
@@ -4542,11 +4538,13 @@ public final class LspMon {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_ipv4_type parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_ipv4_type parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4621,6 +4619,7 @@ public final class LspMon {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (rroEntryBuilder_ == null) {
           rroEntry_ = java.util.Collections.emptyList();
         } else {
@@ -4654,7 +4653,13 @@ public final class LspMon {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_ipv4_type buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_ipv4_type result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_ipv4_type(this);
-        int from_bitField0_ = bitField0_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_ipv4_type result) {
         if (rroEntryBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             rroEntry_ = java.util.Collections.unmodifiableList(rroEntry_);
@@ -4664,8 +4669,10 @@ public final class LspMon {
         } else {
           result.rroEntry_ = rroEntryBuilder_.build();
         }
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_ipv4_type result) {
+        int from_bitField0_ = bitField0_;
       }
 
       @java.lang.Override
@@ -5208,11 +5215,6 @@ public final class LspMon {
       return new lsp_monitor_data_property();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.internal_static_lsp_monitor_data_property_descriptor;
@@ -5228,7 +5230,7 @@ public final class LspMon {
 
     private int bitField0_;
     public static final int BANDWIDTH_FIELD_NUMBER = 1;
-    private long bandwidth_;
+    private long bandwidth_ = 0L;
     /**
      * <code>optional uint64 bandwidth = 1;</code>
      * @return Whether the bandwidth field is set.
@@ -5247,7 +5249,8 @@ public final class LspMon {
     }
 
     public static final int PATH_NAME_FIELD_NUMBER = 2;
-    private volatile java.lang.Object pathName_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object pathName_ = "";
     /**
      * <code>optional string path_name = 2;</code>
      * @return Whether the pathName field is set.
@@ -5295,7 +5298,7 @@ public final class LspMon {
     }
 
     public static final int METRIC_FIELD_NUMBER = 3;
-    private int metric_;
+    private int metric_ = 0;
     /**
      * <code>optional int32 metric = 3;</code>
      * @return Whether the metric field is set.
@@ -5314,7 +5317,7 @@ public final class LspMon {
     }
 
     public static final int MAX_AVG_BW_FIELD_NUMBER = 4;
-    private float maxAvgBw_;
+    private float maxAvgBw_ = 0F;
     /**
      * <code>optional float max_avg_bw = 4;</code>
      * @return Whether the maxAvgBw field is set.
@@ -5586,11 +5589,13 @@ public final class LspMon {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_property parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_property parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5676,26 +5681,21 @@ public final class LspMon {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         bandwidth_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000001);
         pathName_ = "";
-        bitField0_ = (bitField0_ & ~0x00000002);
         metric_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000004);
         maxAvgBw_ = 0F;
-        bitField0_ = (bitField0_ & ~0x00000008);
-        if (eroBuilder_ == null) {
-          ero_ = null;
-        } else {
-          eroBuilder_.clear();
+        ero_ = null;
+        if (eroBuilder_ != null) {
+          eroBuilder_.dispose();
+          eroBuilder_ = null;
         }
-        bitField0_ = (bitField0_ & ~0x00000010);
-        if (rroBuilder_ == null) {
-          rro_ = null;
-        } else {
-          rroBuilder_.clear();
+        rro_ = null;
+        if (rroBuilder_ != null) {
+          rroBuilder_.dispose();
+          rroBuilder_ = null;
         }
-        bitField0_ = (bitField0_ & ~0x00000020);
         return this;
       }
 
@@ -5722,6 +5722,12 @@ public final class LspMon {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_property buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_property result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_property(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_property result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
@@ -5729,9 +5735,9 @@ public final class LspMon {
           to_bitField0_ |= 0x00000001;
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.pathName_ = pathName_;
           to_bitField0_ |= 0x00000002;
         }
-        result.pathName_ = pathName_;
         if (((from_bitField0_ & 0x00000004) != 0)) {
           result.metric_ = metric_;
           to_bitField0_ |= 0x00000004;
@@ -5741,24 +5747,18 @@ public final class LspMon {
           to_bitField0_ |= 0x00000008;
         }
         if (((from_bitField0_ & 0x00000010) != 0)) {
-          if (eroBuilder_ == null) {
-            result.ero_ = ero_;
-          } else {
-            result.ero_ = eroBuilder_.build();
-          }
+          result.ero_ = eroBuilder_ == null
+              ? ero_
+              : eroBuilder_.build();
           to_bitField0_ |= 0x00000010;
         }
         if (((from_bitField0_ & 0x00000020) != 0)) {
-          if (rroBuilder_ == null) {
-            result.rro_ = rro_;
-          } else {
-            result.rro_ = rroBuilder_.build();
-          }
+          result.rro_ = rroBuilder_ == null
+              ? rro_
+              : rroBuilder_.build();
           to_bitField0_ |= 0x00000020;
         }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -5809,8 +5809,8 @@ public final class LspMon {
           setBandwidth(other.getBandwidth());
         }
         if (other.hasPathName()) {
-          bitField0_ |= 0x00000002;
           pathName_ = other.pathName_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         if (other.hasMetric()) {
@@ -5930,8 +5930,9 @@ public final class LspMon {
        * @return This builder for chaining.
        */
       public Builder setBandwidth(long value) {
-        bitField0_ |= 0x00000001;
+
         bandwidth_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -5996,11 +5997,9 @@ public final class LspMon {
        */
       public Builder setPathName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+        if (value == null) { throw new NullPointerException(); }
         pathName_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -6009,8 +6008,8 @@ public final class LspMon {
        * @return This builder for chaining.
        */
       public Builder clearPathName() {
-        bitField0_ = (bitField0_ & ~0x00000002);
         pathName_ = getDefaultInstance().getPathName();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -6021,11 +6020,9 @@ public final class LspMon {
        */
       public Builder setPathNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000002;
+        if (value == null) { throw new NullPointerException(); }
         pathName_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -6053,8 +6050,9 @@ public final class LspMon {
        * @return This builder for chaining.
        */
       public Builder setMetric(int value) {
-        bitField0_ |= 0x00000004;
+
         metric_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -6092,8 +6090,9 @@ public final class LspMon {
        * @return This builder for chaining.
        */
       public Builder setMaxAvgBw(float value) {
-        bitField0_ |= 0x00000008;
+
         maxAvgBw_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -6138,11 +6137,11 @@ public final class LspMon {
             throw new NullPointerException();
           }
           ero_ = value;
-          onChanged();
         } else {
           eroBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000010;
+        onChanged();
         return this;
       }
       /**
@@ -6152,11 +6151,11 @@ public final class LspMon {
           org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_ipv4_type.Builder builderForValue) {
         if (eroBuilder_ == null) {
           ero_ = builderForValue.build();
-          onChanged();
         } else {
           eroBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000010;
+        onChanged();
         return this;
       }
       /**
@@ -6165,31 +6164,32 @@ public final class LspMon {
       public Builder mergeEro(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_ipv4_type value) {
         if (eroBuilder_ == null) {
           if (((bitField0_ & 0x00000010) != 0) &&
-              ero_ != null &&
-              ero_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_ipv4_type.getDefaultInstance()) {
-            ero_ =
-              org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_ipv4_type.newBuilder(ero_).mergeFrom(value).buildPartial();
+            ero_ != null &&
+            ero_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.ero_ipv4_type.getDefaultInstance()) {
+            getEroBuilder().mergeFrom(value);
           } else {
             ero_ = value;
           }
-          onChanged();
         } else {
           eroBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000010;
+        if (ero_ != null) {
+          bitField0_ |= 0x00000010;
+          onChanged();
+        }
         return this;
       }
       /**
        * <code>optional .ero_ipv4_type ero = 5;</code>
        */
       public Builder clearEro() {
-        if (eroBuilder_ == null) {
-          ero_ = null;
-          onChanged();
-        } else {
-          eroBuilder_.clear();
-        }
         bitField0_ = (bitField0_ & ~0x00000010);
+        ero_ = null;
+        if (eroBuilder_ != null) {
+          eroBuilder_.dispose();
+          eroBuilder_ = null;
+        }
+        onChanged();
         return this;
       }
       /**
@@ -6258,11 +6258,11 @@ public final class LspMon {
             throw new NullPointerException();
           }
           rro_ = value;
-          onChanged();
         } else {
           rroBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000020;
+        onChanged();
         return this;
       }
       /**
@@ -6272,11 +6272,11 @@ public final class LspMon {
           org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_ipv4_type.Builder builderForValue) {
         if (rroBuilder_ == null) {
           rro_ = builderForValue.build();
-          onChanged();
         } else {
           rroBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000020;
+        onChanged();
         return this;
       }
       /**
@@ -6285,31 +6285,32 @@ public final class LspMon {
       public Builder mergeRro(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_ipv4_type value) {
         if (rroBuilder_ == null) {
           if (((bitField0_ & 0x00000020) != 0) &&
-              rro_ != null &&
-              rro_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_ipv4_type.getDefaultInstance()) {
-            rro_ =
-              org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_ipv4_type.newBuilder(rro_).mergeFrom(value).buildPartial();
+            rro_ != null &&
+            rro_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.rro_ipv4_type.getDefaultInstance()) {
+            getRroBuilder().mergeFrom(value);
           } else {
             rro_ = value;
           }
-          onChanged();
         } else {
           rroBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000020;
+        if (rro_ != null) {
+          bitField0_ |= 0x00000020;
+          onChanged();
+        }
         return this;
       }
       /**
        * <code>optional .rro_ipv4_type rro = 6;</code>
        */
       public Builder clearRro() {
-        if (rroBuilder_ == null) {
-          rro_ = null;
-          onChanged();
-        } else {
-          rroBuilder_.clear();
-        }
         bitField0_ = (bitField0_ & ~0x00000020);
+        rro_ = null;
+        if (rroBuilder_ != null) {
+          rroBuilder_.dispose();
+          rroBuilder_ = null;
+        }
+        onChanged();
         return this;
       }
       /**
@@ -6482,11 +6483,6 @@ public final class LspMon {
       return new lsp_mon();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.internal_static_lsp_mon_descriptor;
@@ -6745,11 +6741,13 @@ public final class LspMon {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_mon parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_mon parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -6832,24 +6830,22 @@ public final class LspMon {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (keyFieldBuilder_ == null) {
-          keyField_ = null;
-        } else {
-          keyFieldBuilder_.clear();
+        bitField0_ = 0;
+        keyField_ = null;
+        if (keyFieldBuilder_ != null) {
+          keyFieldBuilder_.dispose();
+          keyFieldBuilder_ = null;
         }
-        bitField0_ = (bitField0_ & ~0x00000001);
-        if (eventFieldBuilder_ == null) {
-          eventField_ = null;
-        } else {
-          eventFieldBuilder_.clear();
+        eventField_ = null;
+        if (eventFieldBuilder_ != null) {
+          eventFieldBuilder_.dispose();
+          eventFieldBuilder_ = null;
         }
-        bitField0_ = (bitField0_ & ~0x00000002);
-        if (propertyFieldBuilder_ == null) {
-          propertyField_ = null;
-        } else {
-          propertyFieldBuilder_.clear();
+        propertyField_ = null;
+        if (propertyFieldBuilder_ != null) {
+          propertyFieldBuilder_.dispose();
+          propertyFieldBuilder_ = null;
         }
-        bitField0_ = (bitField0_ & ~0x00000004);
         return this;
       }
 
@@ -6876,35 +6872,33 @@ public final class LspMon {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_mon buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_mon result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_mon(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_mon result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
-          if (keyFieldBuilder_ == null) {
-            result.keyField_ = keyField_;
-          } else {
-            result.keyField_ = keyFieldBuilder_.build();
-          }
+          result.keyField_ = keyFieldBuilder_ == null
+              ? keyField_
+              : keyFieldBuilder_.build();
           to_bitField0_ |= 0x00000001;
         }
         if (((from_bitField0_ & 0x00000002) != 0)) {
-          if (eventFieldBuilder_ == null) {
-            result.eventField_ = eventField_;
-          } else {
-            result.eventField_ = eventFieldBuilder_.build();
-          }
+          result.eventField_ = eventFieldBuilder_ == null
+              ? eventField_
+              : eventFieldBuilder_.build();
           to_bitField0_ |= 0x00000002;
         }
         if (((from_bitField0_ & 0x00000004) != 0)) {
-          if (propertyFieldBuilder_ == null) {
-            result.propertyField_ = propertyField_;
-          } else {
-            result.propertyField_ = propertyFieldBuilder_.build();
-          }
+          result.propertyField_ = propertyFieldBuilder_ == null
+              ? propertyField_
+              : propertyFieldBuilder_.build();
           to_bitField0_ |= 0x00000004;
         }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -7070,11 +7064,11 @@ public final class LspMon {
             throw new NullPointerException();
           }
           keyField_ = value;
-          onChanged();
         } else {
           keyFieldBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -7084,11 +7078,11 @@ public final class LspMon {
           org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.key.Builder builderForValue) {
         if (keyFieldBuilder_ == null) {
           keyField_ = builderForValue.build();
-          onChanged();
         } else {
           keyFieldBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -7097,31 +7091,32 @@ public final class LspMon {
       public Builder mergeKeyField(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.key value) {
         if (keyFieldBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0) &&
-              keyField_ != null &&
-              keyField_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.key.getDefaultInstance()) {
-            keyField_ =
-              org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.key.newBuilder(keyField_).mergeFrom(value).buildPartial();
+            keyField_ != null &&
+            keyField_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.key.getDefaultInstance()) {
+            getKeyFieldBuilder().mergeFrom(value);
           } else {
             keyField_ = value;
           }
-          onChanged();
         } else {
           keyFieldBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000001;
+        if (keyField_ != null) {
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
         return this;
       }
       /**
        * <code>required .key key_field = 1;</code>
        */
       public Builder clearKeyField() {
-        if (keyFieldBuilder_ == null) {
-          keyField_ = null;
-          onChanged();
-        } else {
-          keyFieldBuilder_.clear();
-        }
         bitField0_ = (bitField0_ & ~0x00000001);
+        keyField_ = null;
+        if (keyFieldBuilder_ != null) {
+          keyFieldBuilder_.dispose();
+          keyFieldBuilder_ = null;
+        }
+        onChanged();
         return this;
       }
       /**
@@ -7190,11 +7185,11 @@ public final class LspMon {
             throw new NullPointerException();
           }
           eventField_ = value;
-          onChanged();
         } else {
           eventFieldBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
@@ -7204,11 +7199,11 @@ public final class LspMon {
           org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_event.Builder builderForValue) {
         if (eventFieldBuilder_ == null) {
           eventField_ = builderForValue.build();
-          onChanged();
         } else {
           eventFieldBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000002;
+        onChanged();
         return this;
       }
       /**
@@ -7217,31 +7212,32 @@ public final class LspMon {
       public Builder mergeEventField(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_event value) {
         if (eventFieldBuilder_ == null) {
           if (((bitField0_ & 0x00000002) != 0) &&
-              eventField_ != null &&
-              eventField_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_event.getDefaultInstance()) {
-            eventField_ =
-              org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_event.newBuilder(eventField_).mergeFrom(value).buildPartial();
+            eventField_ != null &&
+            eventField_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_event.getDefaultInstance()) {
+            getEventFieldBuilder().mergeFrom(value);
           } else {
             eventField_ = value;
           }
-          onChanged();
         } else {
           eventFieldBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000002;
+        if (eventField_ != null) {
+          bitField0_ |= 0x00000002;
+          onChanged();
+        }
         return this;
       }
       /**
        * <code>optional .lsp_monitor_data_event event_field = 2;</code>
        */
       public Builder clearEventField() {
-        if (eventFieldBuilder_ == null) {
-          eventField_ = null;
-          onChanged();
-        } else {
-          eventFieldBuilder_.clear();
-        }
         bitField0_ = (bitField0_ & ~0x00000002);
+        eventField_ = null;
+        if (eventFieldBuilder_ != null) {
+          eventFieldBuilder_.dispose();
+          eventFieldBuilder_ = null;
+        }
+        onChanged();
         return this;
       }
       /**
@@ -7310,11 +7306,11 @@ public final class LspMon {
             throw new NullPointerException();
           }
           propertyField_ = value;
-          onChanged();
         } else {
           propertyFieldBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000004;
+        onChanged();
         return this;
       }
       /**
@@ -7324,11 +7320,11 @@ public final class LspMon {
           org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_property.Builder builderForValue) {
         if (propertyFieldBuilder_ == null) {
           propertyField_ = builderForValue.build();
-          onChanged();
         } else {
           propertyFieldBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000004;
+        onChanged();
         return this;
       }
       /**
@@ -7337,31 +7333,32 @@ public final class LspMon {
       public Builder mergePropertyField(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_property value) {
         if (propertyFieldBuilder_ == null) {
           if (((bitField0_ & 0x00000004) != 0) &&
-              propertyField_ != null &&
-              propertyField_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_property.getDefaultInstance()) {
-            propertyField_ =
-              org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_property.newBuilder(propertyField_).mergeFrom(value).buildPartial();
+            propertyField_ != null &&
+            propertyField_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspMon.lsp_monitor_data_property.getDefaultInstance()) {
+            getPropertyFieldBuilder().mergeFrom(value);
           } else {
             propertyField_ = value;
           }
-          onChanged();
         } else {
           propertyFieldBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000004;
+        if (propertyField_ != null) {
+          bitField0_ |= 0x00000004;
+          onChanged();
+        }
         return this;
       }
       /**
        * <code>optional .lsp_monitor_data_property property_field = 3;</code>
        */
       public Builder clearPropertyField() {
-        if (propertyFieldBuilder_ == null) {
-          propertyField_ = null;
-          onChanged();
-        } else {
-          propertyFieldBuilder_.clear();
-        }
         bitField0_ = (bitField0_ & ~0x00000004);
+        propertyField_ = null;
+        if (propertyFieldBuilder_ != null) {
+          propertyFieldBuilder_.dispose();
+          propertyFieldBuilder_ = null;
+        }
+        onChanged();
         return this;
       }
       /**

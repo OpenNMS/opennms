@@ -21,13 +21,13 @@
   </bean>
 
   <bean id="identity" class="org.opennms.features.distributed.identity.impl.OpenNMSIdentityImpl"/>
+
+  <!-- Disabled tracing/metrics for grpc due to class loader issues, see NMS-17732 -->
   <bean id="localTwinSubscriber" class="org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl">
     <constructor-arg ref="identity"/>
-    <constructor-arg ref="tracerRegistry"/>
-    <constructor-arg ref="twinMetricRegistry"/>
   </bean>
 
-  <onmsgi:service interface="org.opennms.core.ipc.twin.common.LocalTwinSubscriber" ref="localTwinSubscriber">
+  <onmsgi:service interface="org.opennms.core.ipc.twin.api.LocalTwinSubscriber" ref="localTwinSubscriber">
     <onmsgi:service-properties>
       <entry key="registration.export" value="true" />
     </onmsgi:service-properties>
@@ -59,35 +59,5 @@
     </onmsgi:service-properties>
   </onmsgi:service>
 
-  <!-- Twin Metrics -->
-
-  <bean id="twinMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
-
-  <onmsgi:service ref="twinMetricRegistry" interface="com.codahale.metrics.MetricSet" >
-    <onmsgi:service-properties>
-      <entry>
-        <key><value>name</value></key>
-        <value>Grpc Twin metrics</value>
-      </entry>
-      <entry>
-        <key><value>description</value></key>
-        <value>Grpc Twin metrics on OpenNMS</value>
-      </entry>
-    </onmsgi:service-properties>
-  </onmsgi:service>
-
-  <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
-    <constructor-arg ref="twinMetricRegistry"/>
-  </bean>
-
-  <bean id="metricRegistryDomainedJmxReporterBuilder" factory-bean="metricRegistryJmxReporterBuilder" factory-method="inDomain">
-    <constructor-arg value="org.opennms.core.ipc.twin.publisher"/>
-  </bean>
-
-  <bean id="metricRegistryJmxReporter"
-        factory-bean="metricRegistryJmxReporterBuilder"
-        factory-method="build"
-        init-method="start"
-        destroy-method="stop" />
 
 </beans>

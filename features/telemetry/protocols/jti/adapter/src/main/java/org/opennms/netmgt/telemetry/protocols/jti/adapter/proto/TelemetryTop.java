@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
+ * Copyright (C) 2025 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2025 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,10 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.netmgt.telemetry.protocols.jti.adapter.proto;
-
-import com.google.protobuf.GeneratedMessage;
 
 public final class TelemetryTop {
   private TelemetryTop() {}
@@ -113,11 +110,6 @@ public final class TelemetryTop {
       return new TelemetryFieldOptions();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.internal_static_TelemetryFieldOptions_descriptor;
@@ -133,7 +125,7 @@ public final class TelemetryTop {
 
     private int bitField0_;
     public static final int IS_KEY_FIELD_NUMBER = 1;
-    private boolean isKey_;
+    private boolean isKey_ = false;
     /**
      * <code>optional bool is_key = 1;</code>
      * @return Whether the isKey field is set.
@@ -152,7 +144,7 @@ public final class TelemetryTop {
     }
 
     public static final int IS_TIMESTAMP_FIELD_NUMBER = 2;
-    private boolean isTimestamp_;
+    private boolean isTimestamp_ = false;
     /**
      * <code>optional bool is_timestamp = 2;</code>
      * @return Whether the isTimestamp field is set.
@@ -171,7 +163,7 @@ public final class TelemetryTop {
     }
 
     public static final int IS_COUNTER_FIELD_NUMBER = 3;
-    private boolean isCounter_;
+    private boolean isCounter_ = false;
     /**
      * <code>optional bool is_counter = 3;</code>
      * @return Whether the isCounter field is set.
@@ -190,7 +182,7 @@ public final class TelemetryTop {
     }
 
     public static final int IS_GAUGE_FIELD_NUMBER = 4;
-    private boolean isGauge_;
+    private boolean isGauge_ = false;
     /**
      * <code>optional bool is_gauge = 4;</code>
      * @return Whether the isGauge field is set.
@@ -374,11 +366,13 @@ public final class TelemetryTop {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.TelemetryFieldOptions parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.TelemetryFieldOptions parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -453,14 +447,11 @@ public final class TelemetryTop {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         isKey_ = false;
-        bitField0_ = (bitField0_ & ~0x00000001);
         isTimestamp_ = false;
-        bitField0_ = (bitField0_ & ~0x00000002);
         isCounter_ = false;
-        bitField0_ = (bitField0_ & ~0x00000004);
         isGauge_ = false;
-        bitField0_ = (bitField0_ & ~0x00000008);
         return this;
       }
 
@@ -487,6 +478,12 @@ public final class TelemetryTop {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.TelemetryFieldOptions buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.TelemetryFieldOptions result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.TelemetryFieldOptions(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.TelemetryFieldOptions result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
@@ -505,9 +502,7 @@ public final class TelemetryTop {
           result.isGauge_ = isGauge_;
           to_bitField0_ |= 0x00000008;
         }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -652,8 +647,9 @@ public final class TelemetryTop {
        * @return This builder for chaining.
        */
       public Builder setIsKey(boolean value) {
-        bitField0_ |= 0x00000001;
+
         isKey_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -691,8 +687,9 @@ public final class TelemetryTop {
        * @return This builder for chaining.
        */
       public Builder setIsTimestamp(boolean value) {
-        bitField0_ |= 0x00000002;
+
         isTimestamp_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -730,8 +727,9 @@ public final class TelemetryTop {
        * @return This builder for chaining.
        */
       public Builder setIsCounter(boolean value) {
-        bitField0_ |= 0x00000004;
+
         isCounter_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -769,8 +767,9 @@ public final class TelemetryTop {
        * @return This builder for chaining.
        */
       public Builder setIsGauge(boolean value) {
-        bitField0_ |= 0x00000008;
+
         isGauge_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -1080,11 +1079,6 @@ public final class TelemetryTop {
       return new TelemetryStream();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.internal_static_TelemetryStream_descriptor;
@@ -1100,7 +1094,8 @@ public final class TelemetryTop {
 
     private int bitField0_;
     public static final int SYSTEM_ID_FIELD_NUMBER = 1;
-    private volatile java.lang.Object systemId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object systemId_ = "";
     /**
      * <pre>
      * router name or export IP address
@@ -1160,7 +1155,7 @@ public final class TelemetryTop {
     }
 
     public static final int COMPONENT_ID_FIELD_NUMBER = 2;
-    private int componentId_;
+    private int componentId_ = 0;
     /**
      * <pre>
      * line card / RE (slot number)
@@ -1187,7 +1182,7 @@ public final class TelemetryTop {
     }
 
     public static final int SUB_COMPONENT_ID_FIELD_NUMBER = 3;
-    private int subComponentId_;
+    private int subComponentId_ = 0;
     /**
      * <pre>
      * PFE (if applicable)
@@ -1214,7 +1209,8 @@ public final class TelemetryTop {
     }
 
     public static final int SENSOR_NAME_FIELD_NUMBER = 4;
-    private volatile java.lang.Object sensorName_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object sensorName_ = "";
     /**
      * <pre>
      * configured sensor name
@@ -1274,7 +1270,7 @@ public final class TelemetryTop {
     }
 
     public static final int SEQUENCE_NUMBER_FIELD_NUMBER = 5;
-    private int sequenceNumber_;
+    private int sequenceNumber_ = 0;
     /**
      * <pre>
      * sequence number, monotonically increasesing for each
@@ -1303,7 +1299,7 @@ public final class TelemetryTop {
     }
 
     public static final int TIMESTAMP_FIELD_NUMBER = 6;
-    private long timestamp_;
+    private long timestamp_ = 0L;
     /**
      * <pre>
      * timestamp (milliseconds since 00:00:00 UTC 1/1/1970)
@@ -1330,7 +1326,7 @@ public final class TelemetryTop {
     }
 
     public static final int VERSION_MAJOR_FIELD_NUMBER = 7;
-    private int versionMajor_;
+    private int versionMajor_ = 0;
     /**
      * <pre>
      * major version
@@ -1357,7 +1353,7 @@ public final class TelemetryTop {
     }
 
     public static final int VERSION_MINOR_FIELD_NUMBER = 8;
-    private int versionMinor_;
+    private int versionMinor_ = 0;
     /**
      * <pre>
      * minor version
@@ -1708,11 +1704,13 @@ public final class TelemetryTop {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.TelemetryStream parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.TelemetryStream parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1794,34 +1792,25 @@ public final class TelemetryTop {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         systemId_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         componentId_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000002);
         subComponentId_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000004);
         sensorName_ = "";
-        bitField0_ = (bitField0_ & ~0x00000008);
         sequenceNumber_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000010);
         timestamp_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000020);
         versionMajor_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000040);
         versionMinor_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000080);
-        if (ietfBuilder_ == null) {
-          ietf_ = null;
-        } else {
-          ietfBuilder_.clear();
+        ietf_ = null;
+        if (ietfBuilder_ != null) {
+          ietfBuilder_.dispose();
+          ietfBuilder_ = null;
         }
-        bitField0_ = (bitField0_ & ~0x00000100);
-        if (enterpriseBuilder_ == null) {
-          enterprise_ = null;
-        } else {
-          enterpriseBuilder_.clear();
+        enterprise_ = null;
+        if (enterpriseBuilder_ != null) {
+          enterpriseBuilder_.dispose();
+          enterpriseBuilder_ = null;
         }
-        bitField0_ = (bitField0_ & ~0x00000200);
         return this;
       }
 
@@ -1848,12 +1837,18 @@ public final class TelemetryTop {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.TelemetryStream buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.TelemetryStream result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.TelemetryStream(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.TelemetryStream result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.systemId_ = systemId_;
           to_bitField0_ |= 0x00000001;
         }
-        result.systemId_ = systemId_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.componentId_ = componentId_;
           to_bitField0_ |= 0x00000002;
@@ -1863,9 +1858,9 @@ public final class TelemetryTop {
           to_bitField0_ |= 0x00000004;
         }
         if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.sensorName_ = sensorName_;
           to_bitField0_ |= 0x00000008;
         }
-        result.sensorName_ = sensorName_;
         if (((from_bitField0_ & 0x00000010) != 0)) {
           result.sequenceNumber_ = sequenceNumber_;
           to_bitField0_ |= 0x00000010;
@@ -1883,24 +1878,18 @@ public final class TelemetryTop {
           to_bitField0_ |= 0x00000080;
         }
         if (((from_bitField0_ & 0x00000100) != 0)) {
-          if (ietfBuilder_ == null) {
-            result.ietf_ = ietf_;
-          } else {
-            result.ietf_ = ietfBuilder_.build();
-          }
+          result.ietf_ = ietfBuilder_ == null
+              ? ietf_
+              : ietfBuilder_.build();
           to_bitField0_ |= 0x00000100;
         }
         if (((from_bitField0_ & 0x00000200) != 0)) {
-          if (enterpriseBuilder_ == null) {
-            result.enterprise_ = enterprise_;
-          } else {
-            result.enterprise_ = enterpriseBuilder_.build();
-          }
+          result.enterprise_ = enterpriseBuilder_ == null
+              ? enterprise_
+              : enterpriseBuilder_.build();
           to_bitField0_ |= 0x00000200;
         }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -1948,8 +1937,8 @@ public final class TelemetryTop {
       public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.TelemetryStream other) {
         if (other == org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.TelemetryStream.getDefaultInstance()) return this;
         if (other.hasSystemId()) {
-          bitField0_ |= 0x00000001;
           systemId_ = other.systemId_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.hasComponentId()) {
@@ -1959,8 +1948,8 @@ public final class TelemetryTop {
           setSubComponentId(other.getSubComponentId());
         }
         if (other.hasSensorName()) {
-          bitField0_ |= 0x00000008;
           sensorName_ = other.sensorName_;
+          bitField0_ |= 0x00000008;
           onChanged();
         }
         if (other.hasSequenceNumber()) {
@@ -2157,11 +2146,9 @@ public final class TelemetryTop {
        */
       public Builder setSystemId(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         systemId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2174,8 +2161,8 @@ public final class TelemetryTop {
        * @return This builder for chaining.
        */
       public Builder clearSystemId() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         systemId_ = getDefaultInstance().getSystemId();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -2190,11 +2177,9 @@ public final class TelemetryTop {
        */
       public Builder setSystemIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         systemId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2234,8 +2219,9 @@ public final class TelemetryTop {
        * @return This builder for chaining.
        */
       public Builder setComponentId(int value) {
-        bitField0_ |= 0x00000002;
+
         componentId_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2289,8 +2275,9 @@ public final class TelemetryTop {
        * @return This builder for chaining.
        */
       public Builder setSubComponentId(int value) {
-        bitField0_ |= 0x00000004;
+
         subComponentId_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -2375,11 +2362,9 @@ public final class TelemetryTop {
        */
       public Builder setSensorName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
+        if (value == null) { throw new NullPointerException(); }
         sensorName_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -2392,8 +2377,8 @@ public final class TelemetryTop {
        * @return This builder for chaining.
        */
       public Builder clearSensorName() {
-        bitField0_ = (bitField0_ & ~0x00000008);
         sensorName_ = getDefaultInstance().getSensorName();
+        bitField0_ = (bitField0_ & ~0x00000008);
         onChanged();
         return this;
       }
@@ -2408,11 +2393,9 @@ public final class TelemetryTop {
        */
       public Builder setSensorNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000008;
+        if (value == null) { throw new NullPointerException(); }
         sensorName_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -2455,8 +2438,9 @@ public final class TelemetryTop {
        * @return This builder for chaining.
        */
       public Builder setSequenceNumber(int value) {
-        bitField0_ |= 0x00000010;
+
         sequenceNumber_ = value;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -2511,8 +2495,9 @@ public final class TelemetryTop {
        * @return This builder for chaining.
        */
       public Builder setTimestamp(long value) {
-        bitField0_ |= 0x00000020;
+
         timestamp_ = value;
+        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -2566,8 +2551,9 @@ public final class TelemetryTop {
        * @return This builder for chaining.
        */
       public Builder setVersionMajor(int value) {
-        bitField0_ |= 0x00000040;
+
         versionMajor_ = value;
+        bitField0_ |= 0x00000040;
         onChanged();
         return this;
       }
@@ -2621,8 +2607,9 @@ public final class TelemetryTop {
        * @return This builder for chaining.
        */
       public Builder setVersionMinor(int value) {
-        bitField0_ |= 0x00000080;
+
         versionMinor_ = value;
+        bitField0_ |= 0x00000080;
         onChanged();
         return this;
       }
@@ -2671,11 +2658,11 @@ public final class TelemetryTop {
             throw new NullPointerException();
           }
           ietf_ = value;
-          onChanged();
         } else {
           ietfBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000100;
+        onChanged();
         return this;
       }
       /**
@@ -2685,11 +2672,11 @@ public final class TelemetryTop {
           org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.IETFSensors.Builder builderForValue) {
         if (ietfBuilder_ == null) {
           ietf_ = builderForValue.build();
-          onChanged();
         } else {
           ietfBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000100;
+        onChanged();
         return this;
       }
       /**
@@ -2698,31 +2685,32 @@ public final class TelemetryTop {
       public Builder mergeIetf(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.IETFSensors value) {
         if (ietfBuilder_ == null) {
           if (((bitField0_ & 0x00000100) != 0) &&
-              ietf_ != null &&
-              ietf_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.IETFSensors.getDefaultInstance()) {
-            ietf_ =
-              org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.IETFSensors.newBuilder(ietf_).mergeFrom(value).buildPartial();
+            ietf_ != null &&
+            ietf_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.IETFSensors.getDefaultInstance()) {
+            getIetfBuilder().mergeFrom(value);
           } else {
             ietf_ = value;
           }
-          onChanged();
         } else {
           ietfBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000100;
+        if (ietf_ != null) {
+          bitField0_ |= 0x00000100;
+          onChanged();
+        }
         return this;
       }
       /**
        * <code>optional .IETFSensors ietf = 100;</code>
        */
       public Builder clearIetf() {
-        if (ietfBuilder_ == null) {
-          ietf_ = null;
-          onChanged();
-        } else {
-          ietfBuilder_.clear();
-        }
         bitField0_ = (bitField0_ & ~0x00000100);
+        ietf_ = null;
+        if (ietfBuilder_ != null) {
+          ietfBuilder_.dispose();
+          ietfBuilder_ = null;
+        }
+        onChanged();
         return this;
       }
       /**
@@ -2791,11 +2779,11 @@ public final class TelemetryTop {
             throw new NullPointerException();
           }
           enterprise_ = value;
-          onChanged();
         } else {
           enterpriseBuilder_.setMessage(value);
         }
         bitField0_ |= 0x00000200;
+        onChanged();
         return this;
       }
       /**
@@ -2805,11 +2793,11 @@ public final class TelemetryTop {
           org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.EnterpriseSensors.Builder builderForValue) {
         if (enterpriseBuilder_ == null) {
           enterprise_ = builderForValue.build();
-          onChanged();
         } else {
           enterpriseBuilder_.setMessage(builderForValue.build());
         }
         bitField0_ |= 0x00000200;
+        onChanged();
         return this;
       }
       /**
@@ -2818,31 +2806,32 @@ public final class TelemetryTop {
       public Builder mergeEnterprise(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.EnterpriseSensors value) {
         if (enterpriseBuilder_ == null) {
           if (((bitField0_ & 0x00000200) != 0) &&
-              enterprise_ != null &&
-              enterprise_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.EnterpriseSensors.getDefaultInstance()) {
-            enterprise_ =
-              org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.EnterpriseSensors.newBuilder(enterprise_).mergeFrom(value).buildPartial();
+            enterprise_ != null &&
+            enterprise_ != org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.EnterpriseSensors.getDefaultInstance()) {
+            getEnterpriseBuilder().mergeFrom(value);
           } else {
             enterprise_ = value;
           }
-          onChanged();
         } else {
           enterpriseBuilder_.mergeFrom(value);
         }
-        bitField0_ |= 0x00000200;
+        if (enterprise_ != null) {
+          bitField0_ |= 0x00000200;
+          onChanged();
+        }
         return this;
       }
       /**
        * <code>optional .EnterpriseSensors enterprise = 101;</code>
        */
       public Builder clearEnterprise() {
-        if (enterpriseBuilder_ == null) {
-          enterprise_ = null;
-          onChanged();
-        } else {
-          enterpriseBuilder_.clear();
-        }
         bitField0_ = (bitField0_ & ~0x00000200);
+        enterprise_ = null;
+        if (enterpriseBuilder_ != null) {
+          enterpriseBuilder_.dispose();
+          enterpriseBuilder_ = null;
+        }
+        onChanged();
         return this;
       }
       /**
@@ -2972,11 +2961,6 @@ public final class TelemetryTop {
       return new IETFSensors();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.internal_static_IETFSensors_descriptor;
@@ -3100,11 +3084,13 @@ public final class TelemetryTop {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.IETFSensors parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.IETFSensors parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3263,12 +3249,12 @@ public final class TelemetryTop {
           Type value) {
         return super.addExtension(extension, value);
       }
-
-      @Override
-      public <T> Builder clearExtension(GeneratedMessage.GeneratedExtension<IETFSensors, T> extension) {
+      @java.lang.Override
+      public <T> Builder clearExtension(
+          com.google.protobuf.GeneratedMessage.GeneratedExtension<
+              org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.IETFSensors, T> extension) {
         return super.clearExtension(extension);
       }
-
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.IETFSensors) {
@@ -3418,11 +3404,6 @@ public final class TelemetryTop {
       return new EnterpriseSensors();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.internal_static_EnterpriseSensors_descriptor;
@@ -3546,11 +3527,13 @@ public final class TelemetryTop {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.EnterpriseSensors parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.EnterpriseSensors parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3709,11 +3692,12 @@ public final class TelemetryTop {
           Type value) {
         return super.addExtension(extension, value);
       }
-      @Override
-      public <T> Builder clearExtension(GeneratedMessage.GeneratedExtension<EnterpriseSensors, T> extension) {
+      @java.lang.Override
+      public <T> Builder clearExtension(
+          com.google.protobuf.GeneratedMessage.GeneratedExtension<
+              org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.EnterpriseSensors, T> extension) {
         return super.clearExtension(extension);
       }
-
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.EnterpriseSensors) {
@@ -3863,11 +3847,6 @@ public final class TelemetryTop {
       return new JuniperNetworksSensors();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.internal_static_JuniperNetworksSensors_descriptor;
@@ -3991,11 +3970,13 @@ public final class TelemetryTop {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.JuniperNetworksSensors parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.JuniperNetworksSensors parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4154,12 +4135,12 @@ public final class TelemetryTop {
           Type value) {
         return super.addExtension(extension, value);
       }
-
-      @Override
-      public <T> Builder clearExtension(GeneratedMessage.GeneratedExtension<JuniperNetworksSensors, T> extension) {
+      @java.lang.Override
+      public <T> Builder clearExtension(
+          com.google.protobuf.GeneratedMessage.GeneratedExtension<
+              org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.JuniperNetworksSensors, T> extension) {
         return super.clearExtension(extension);
       }
-
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.TelemetryTop.JuniperNetworksSensors) {

@@ -28,6 +28,11 @@
             <phase>package</phase>
             <configuration>
               <createDependencyReducedPom>true</createDependencyReducedPom>
+              <!-- This pulls in META-INF/services files from the dependencies otherwise we run into strange error
+               like  Address types of NameResolver 'unix' for 'localhost:8990' not supported by transport on grpc client -->
+              <transformers>
+                <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+              </transformers>
             </configuration>
           </execution>
         </executions>

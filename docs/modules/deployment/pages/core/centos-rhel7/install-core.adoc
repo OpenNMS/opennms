@@ -7,7 +7,7 @@ include::../../repos/rhel-centos/meridian-rhel7.adoc[]
 endif::[]
 
 .Install {page-component-title} with all built-in dependencies
-[source, console]
+[source, console, subs="attributes"]
 ----
 sudo yum -y install {package-prefix}
 ----

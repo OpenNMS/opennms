@@ -1,0 +1,334 @@
+syntax = "proto3";
+
+option java_package = "org.opennms.netmgt.telemetry.protocols.bmp.transport";
+option java_outer_classname = "Transport";
+
+import public "google/protobuf/empty.proto";
+import public "google/protobuf/timestamp.proto";
+
+message IpAddress {
+    oneof address {
+        bytes v4 = 1;
+        bytes v6 = 2;
+    }
+}
+
+message Peer {
+    enum Type {
+        GLOBAL_INSTANCE = 0;
+        RD_INSTANCE = 1;
+        LOCAL_INSTANCE = 2;
+        LOC_RIB_INSTANCE = 3;
+    }
+
+    message LocRibFlags {
+        bool filtered = 1;
+    }
+
+    message PeerFlags {
+        enum IpVersion {
+            IP_V4 = 0;
+            IP_V6 = 1;
+        }
+
+        enum Policy {
+            PRE_POLICY = 0;
+            POST_POLICY = 1;
+        }
+
+        IpVersion ip_version = 1;
+        Policy policy = 2;
+        bool legacy_as_path = 3;
+        bool adjIn = 4;
+    }
+
+    Type type = 1;
+
+    oneof flags {
+        PeerFlags peerFlags = 2;
+        LocRibFlags locRibFlags = 3;
+    }
+
+    fixed64 distinguisher = 4;
+    IpAddress address = 5;
+    fixed32 as = 6;
+    IpAddress id = 7;
+
+    google.protobuf.Timestamp timestamp = 8;
+
+    string hostname = 15;
+}
+
+message InitiationPacket {
+    string sys_name = 1;
+    repeated string sys_desc = 2;
+    repeated string message = 3;
+    repeated string admin_label = 4;
+    IpAddress bgpId = 65531;
+
+    string hostname = 65535;
+}
+
+message TerminationPacket {
+    repeated string message = 1;
+    uint32 reason = 2;
+    google.protobuf.Empty unknown = 3;
+}
+
+
+
+message PeerUpPacket {
+    message Capability {
+        uint32 code = 1;
+        uint32 length = 2;
+        bytes value = 3;
+    }
+
+    message CapabilityList {
+        repeated Capability capability = 1;
+    }
+
+    message OpenMessage {
+        uint32 version = 1;
+        fixed32 as = 2;
+        uint32 hold_time = 3;
+        IpAddress id = 4;
+        CapabilityList capabilities = 5;
+    }
+
+    Peer peer = 1;
+
+    IpAddress local_address = 2;
+    uint32 local_port = 3;
+    uint32 remote_port = 4;
+
+    OpenMessage send_msg = 5;
+    OpenMessage recv_msg = 6;
+
+    string sys_name = 7;
+    string sys_desc = 8;
+    string message = 9;
+    string table_name = 10;
+}
+
+message PeerDownPacket {
+    Peer peer = 1;
+
+    message Code {
+        uint32 code = 1;
+        uint32 subcode = 2;
+    }
+
+    oneof reason {
+        Code local_bgp_notification = 2;
+        uint32 local_no_notification = 3;
+        Code remote_bgp_notification = 4;
+        google.protobuf.Empty remote_no_notification = 5;
+        google.protobuf.Empty unknown = 6;
+    }
+}
+
+message RouteMonitoringPacket {
+    message Route {
+        IpAddress prefix = 1;
+        uint32 length = 2;
+        uint64 pathId = 3;
+        string labels = 4;
+    }
+
+    message PathAttribute {
+        enum Origin {
+            IGP = 0;
+            EGP = 1;
+            INCOMPLETE = 2;
+        }
+
+        message AsPath {
+            message Segment {
+                enum Type {
+                    AS_SET = 0;
+                    AS_SEQUENCE = 1;
+                }
+
+                Type type = 1;
+                repeated fixed32 paths = 2;
+            }
+
+            repeated Segment segments = 1;
+        }
+
+        message NextHop {
+            IpAddress address = 1;
+        }
+
+        message MultiExitDisc {
+            uint32 discriminator = 1;
+        }
+
+        message LocalPref {
+            uint32 preference = 1;
+        }
+
+        message AtomicAggregate {
+        }
+
+        message Aggregator {
+            fixed32 as = 1;
+            IpAddress address = 2;
+        }
+
+        message ClusterList {
+            repeated IpAddress cluster_id = 1;
+        }
+
+        message ExtendedCommunities {
+            repeated ExtendedCommunity extended_communities = 1;
+        }
+
+        message ExtendedV6Communities {
+            repeated ExtendedCommunity extended_communities = 1;
+        }
+
+        message ExtendedCommunity {
+            uint32 high_type = 1;
+            uint32 low_type = 2;
+
+            bool authoritative = 3;
+            bool transitive = 4;
+
+            string type = 5;
+            string value = 6;
+        }
+
+        message AsPathLimit {
+            fixed32 upper_bound = 1;
+            uint32 as = 2;
+        }
+
+        message LargeCommunities {
+            repeated LargeCommunity large_communities = 1;
+        }
+
+        message LargeCommunity {
+            uint32 global_administrator = 1;
+            uint32 local_data_part_1 = 2;
+            uint32 local_data_part_2 = 3;
+        }
+
+        message AttrSet {
+            uint32 origin_as = 1;
+            repeated PathAttribute path_attributes = 2;
+        }
+
+        message MultiprotocolReachableNrli {
+            uint32 afi = 1;
+            uint32 safi = 2;
+            IpAddress nextHop = 3;
+            repeated Route advertised = 4;
+            repeated Route vpnAdvertised = 5;
+        }
+
+        message MultiprotocolUnreachableNrli {
+            uint32 afi = 1;
+            uint32 safi = 2;
+            repeated Route withdrawn = 3;
+            repeated Route vpnWithdrawn = 4;
+        }
+
+        bool optional = 1;
+        bool transitive = 2;
+        bool partial = 3;
+        bool extended = 4;
+
+        oneof value {
+            Origin origin = 5;
+            AsPath as_path = 6;
+            NextHop next_hop = 7;
+            MultiExitDisc multi_exit_disc = 8;
+            LocalPref local_pref = 9;
+            AtomicAggregate atomic_aggregate = 10;
+            Aggregator aggregator = 11;
+            uint32 community = 12;
+            uint32 originator_id = 13;
+            ClusterList cluster_list = 14;
+            ExtendedCommunities extended_communities = 15;
+            fixed32 connector = 16;
+            AsPathLimit as_path_limit = 17;
+            LargeCommunities large_communities = 18;
+            AttrSet attr_set = 19;
+            ExtendedV6Communities extended_v6_communities = 20;
+            MultiprotocolReachableNrli mpReachNrli = 21;
+            MultiprotocolUnreachableNrli mpUnreachNrli = 22;
+        }
+    }
+
+    Peer peer = 1;
+
+    repeated Route withdraws = 2;
+    repeated Route reachables = 3;
+
+    repeated PathAttribute attributes = 4;
+}
+
+message StatisticsReportPacket {
+    message Gauge {
+        uint64 value = 1;
+    }
+
+    message Counter {
+        uint32 count = 1;
+    }
+
+    Peer peer = 1;
+
+    Counter rejected = 100;
+    Counter duplicate_prefix = 101;
+    Counter duplicate_withdraw = 102;
+    Counter invalid_update_due_to_as_confed_loop = 103;
+    Counter invalid_update_due_to_as_path_loop = 104;
+    Counter invalid_update_due_to_cluster_list_loop = 105;
+    Counter invalid_update_due_to_originator_id = 106;
+    Gauge adj_rib_in = 107;
+    Gauge adj_rib_out = 108;
+    map<string, Gauge> per_afi_adj_rib_in = 109;
+    map<string, Gauge> per_afi_local_rib = 110;
+    Counter update_treat_as_withdraw = 111;
+    Counter prefix_treat_as_withdraw = 112;
+    Counter duplicate_update = 113;
+    Gauge local_rib = 114;
+    Gauge export_rib = 115;
+    map<string, Gauge> per_afi_adj_rib_out = 116;
+    map<string, Gauge> per_afi_export_rib = 117;
+}
+
+message Heartbeat {
+    enum Mode {
+        STARTED = 0;
+        CHANGE = 1;
+        PERIODIC = 2;
+        STOPPED = 3;
+    }
+
+    Mode mode = 1;
+
+    repeated IpAddress routers = 2;
+}
+
+message Message {
+    uint32 version = 1;
+    IpAddress bgpId = 2;
+    reserved 3, 4;
+
+    oneof packet {
+        InitiationPacket initiation = 5;
+        TerminationPacket termination = 6;
+        PeerUpPacket peer_up = 7;
+        PeerDownPacket peer_down = 8;
+        RouteMonitoringPacket route_monitoring = 9;
+        StatisticsReportPacket statistics_report = 10;
+
+        Heartbeat heartbeat = 15;
+    }
+
+    reserved 11, 12, 13, 14;
+}

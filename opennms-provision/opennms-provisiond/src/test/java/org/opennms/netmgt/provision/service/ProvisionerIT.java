@@ -44,6 +44,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
@@ -76,6 +77,7 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.RequisitionedCategoryAssociationDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
@@ -98,6 +100,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.RequisitionedCategoryAssociation;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.NodeLabelChangedEventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
@@ -184,6 +187,9 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
 
     @Autowired
     private CategoryDao m_categoryDao;
+
+    @Autowired
+    private RequisitionedCategoryAssociationDao m_categoryAssociationDao;
 
     @Autowired
     private MonitoringLocationDao m_locationDao;
@@ -376,6 +382,35 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         // Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());
 
+    }
+
+    @Test(timeout = 300000)
+    // 192.0.2.0/24 reserved by IANA for testing purposes
+    @JUnitSnmpAgent(host = "192.0.2.123", resource = "classpath:NMS-6452-brocade.properties")
+    public void testNMS6452() throws Exception {
+        importFromResource("classpath:/NMS-6452-brocade.xml", Boolean.TRUE.toString());
+        OnmsNode node = getNodeDao().findByForeignId("empty", "123");
+        assertEquals(1, getNodeDao().countAll());
+        //Verify ip interface count
+        assertEquals(1, getInterfaceDao().countAll());
+        //Verify if services count
+        assertEquals(3, getMonitoredServiceDao().countAll());
+        //Verify service count
+        assertEquals(3, getServiceTypeDao().countAll());
+        //Verify snmpInterface count
+        assertEquals(0, getSnmpInterfaceDao().countAll());
+
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation(), null);
+        runScan(scan);
+        assertEquals(1, getNodeDao().countAll());
+        //Verify ip interface count
+        assertEquals(2, getInterfaceDao().countAll());
+        //Verify if services count
+        assertEquals(3, getMonitoredServiceDao().countAll());
+        //Verify service count
+        assertEquals(3, getServiceTypeDao().countAll());
+        //Verify snmpInterface count
+        assertEquals(30, getSnmpInterfaceDao().countAll());
     }
 
     /**
@@ -1795,6 +1830,45 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         n = getNodeDao().get(nextNodeId);
 
         assertEquals(0, n.getCategories().size());
+    }
+
+    @Test(timeout = 300000)
+    public void testRequisitionedCategoriesThenRemoveCategoryByApi() throws Exception {
+        final int nextNodeId = m_nodeDao.getNextNodeId();
+
+        importFromResource("classpath:/provisioner-testCategories-ThreeCategories.xml", Boolean.TRUE.toString());
+
+        OnmsNode n = getNodeDao().get(nextNodeId);
+        assertEquals(3, n.getCategories().size());
+        assertTrue(n.hasCategory("NMS-16536"));
+
+        runPendingScans();
+
+        assertEquals(3, m_categoryAssociationDao.findAll().size());
+
+        OnmsCategory deleteCategory = n.getCategories().stream()
+                .filter(cat -> cat.getName().equals("NMS-16536")).findFirst().orElse(null);
+        m_categoryDao.delete(deleteCategory);
+        m_categoryDao.flush();
+
+        assertEquals(2, m_categoryDao.findAll().size());
+
+        RequisitionedCategoryAssociation deleteCategoryAssociation = m_categoryAssociationDao.findAll().stream()
+                .filter(cat -> cat.getCategory().getName().equals("NMS-16536")).findFirst().orElse(null);
+        m_categoryAssociationDao.delete(deleteCategoryAssociation);
+        m_categoryAssociationDao.flush();
+
+        assertEquals(2, m_categoryAssociationDao.findAll().size());
+
+        importFromResource("classpath:/provisioner-testCategories-ThreeCategories-oneDeleted.xml", Boolean.TRUE.toString());
+
+        m_provisionService.updateNodeAttributes(n);
+
+        assertEquals(2, m_categoryAssociationDao.findAll().size());
+
+        assertTrue(m_categoryAssociationDao.findByNodeId(n.getId()).stream().
+                noneMatch(cat ->
+                        cat.getCategory().getName().equals(Objects.requireNonNull(deleteCategory).getName())));
     }
 
     @Test(timeout = 300000)

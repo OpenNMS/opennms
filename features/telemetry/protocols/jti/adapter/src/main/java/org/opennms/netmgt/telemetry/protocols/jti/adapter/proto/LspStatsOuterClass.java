@@ -1,8 +1,8 @@
 /*******************************************************************************
  * This file is part of OpenNMS(R).
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2024 The OpenNMS Group, Inc.
+ * Copyright (C) 2025 The OpenNMS Group, Inc.
+ * OpenNMS(R) is Copyright (C) 1999-2025 The OpenNMS Group, Inc.
  *
  * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
  *
@@ -25,7 +25,6 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-
 package org.opennms.netmgt.telemetry.protocols.jti.adapter.proto;
 
 public final class LspStatsOuterClass {
@@ -90,6 +89,7 @@ public final class LspStatsOuterClass {
   }
   /**
    * <pre>
+   *
    * Top-level message
    * </pre>
    *
@@ -115,11 +115,6 @@ public final class LspStatsOuterClass {
       return new LspStats();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.internal_static_LspStats_descriptor;
@@ -134,6 +129,7 @@ public final class LspStatsOuterClass {
     }
 
     public static final int LSP_STATS_RECORDS_FIELD_NUMBER = 1;
+    @SuppressWarnings("serial")
     private java.util.List<org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.LspStatsRecord> lspStatsRecords_;
     /**
      * <pre>
@@ -310,11 +306,13 @@ public final class LspStatsOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.LspStats parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.LspStats parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -358,6 +356,7 @@ public final class LspStatsOuterClass {
     }
     /**
      * <pre>
+     *
      * Top-level message
      * </pre>
      *
@@ -393,6 +392,7 @@ public final class LspStatsOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         if (lspStatsRecordsBuilder_ == null) {
           lspStatsRecords_ = java.util.Collections.emptyList();
         } else {
@@ -426,7 +426,13 @@ public final class LspStatsOuterClass {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.LspStats buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.LspStats result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.LspStats(this);
-        int from_bitField0_ = bitField0_;
+        buildPartialRepeatedFields(result);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartialRepeatedFields(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.LspStats result) {
         if (lspStatsRecordsBuilder_ == null) {
           if (((bitField0_ & 0x00000001) != 0)) {
             lspStatsRecords_ = java.util.Collections.unmodifiableList(lspStatsRecords_);
@@ -436,8 +442,10 @@ public final class LspStatsOuterClass {
         } else {
           result.lspStatsRecords_ = lspStatsRecordsBuilder_.build();
         }
-        onBuilt();
-        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.LspStats result) {
+        int from_bitField0_ = bitField0_;
       }
 
       @java.lang.Override
@@ -1111,6 +1119,7 @@ public final class LspStatsOuterClass {
   }
   /**
    * <pre>
+   *
    * LSP statistics record
    * </pre>
    *
@@ -1137,11 +1146,6 @@ public final class LspStatsOuterClass {
       return new LspStatsRecord();
     }
 
-    @java.lang.Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.internal_static_LspStatsRecord_descriptor;
@@ -1157,7 +1161,8 @@ public final class LspStatsOuterClass {
 
     private int bitField0_;
     public static final int NAME_FIELD_NUMBER = 1;
-    private volatile java.lang.Object name_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object name_ = "";
     /**
      * <pre>
      * Name of the LSP
@@ -1217,7 +1222,7 @@ public final class LspStatsOuterClass {
     }
 
     public static final int INSTANCE_IDENTIFIER_FIELD_NUMBER = 2;
-    private int instanceIdentifier_;
+    private int instanceIdentifier_ = 0;
     /**
      * <pre>
      * Instance Identifier for cases when RPD creates multiple instances
@@ -1244,7 +1249,8 @@ public final class LspStatsOuterClass {
     }
 
     public static final int COUNTER_NAME_FIELD_NUMBER = 3;
-    private volatile java.lang.Object counterName_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object counterName_ = "";
     /**
      * <pre>
      * Name of the counter. This is useful when an LSP has multiple counters.
@@ -1310,7 +1316,7 @@ public final class LspStatsOuterClass {
     }
 
     public static final int PACKETS_FIELD_NUMBER = 4;
-    private long packets_;
+    private long packets_ = 0L;
     /**
      * <pre>
      * The total number of packets
@@ -1337,7 +1343,7 @@ public final class LspStatsOuterClass {
     }
 
     public static final int BYTES_FIELD_NUMBER = 5;
-    private long bytes_;
+    private long bytes_ = 0L;
     /**
      * <pre>
      * The total number of bytes
@@ -1364,7 +1370,7 @@ public final class LspStatsOuterClass {
     }
 
     public static final int PACKET_RATE_FIELD_NUMBER = 6;
-    private long packetRate_;
+    private long packetRate_ = 0L;
     /**
      * <pre>
      * Packet rate computed over the most recent 3 second interval
@@ -1391,7 +1397,7 @@ public final class LspStatsOuterClass {
     }
 
     public static final int BYTE_RATE_FIELD_NUMBER = 7;
-    private long byteRate_;
+    private long byteRate_ = 0L;
     /**
      * <pre>
      * Byte rate computed over the most recent 3 second interval
@@ -1641,11 +1647,13 @@ public final class LspStatsOuterClass {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.LspStatsRecord parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.LspStatsRecord parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1689,6 +1697,7 @@ public final class LspStatsOuterClass {
     }
     /**
      * <pre>
+     *
      * LSP statistics record
      * </pre>
      *
@@ -1724,20 +1733,14 @@ public final class LspStatsOuterClass {
       @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         name_ = "";
-        bitField0_ = (bitField0_ & ~0x00000001);
         instanceIdentifier_ = 0;
-        bitField0_ = (bitField0_ & ~0x00000002);
         counterName_ = "";
-        bitField0_ = (bitField0_ & ~0x00000004);
         packets_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000008);
         bytes_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000010);
         packetRate_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000020);
         byteRate_ = 0L;
-        bitField0_ = (bitField0_ & ~0x00000040);
         return this;
       }
 
@@ -1764,20 +1767,26 @@ public final class LspStatsOuterClass {
       @java.lang.Override
       public org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.LspStatsRecord buildPartial() {
         org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.LspStatsRecord result = new org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.LspStatsRecord(this);
+        if (bitField0_ != 0) { buildPartial0(result); }
+        onBuilt();
+        return result;
+      }
+
+      private void buildPartial0(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.LspStatsRecord result) {
         int from_bitField0_ = bitField0_;
         int to_bitField0_ = 0;
         if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.name_ = name_;
           to_bitField0_ |= 0x00000001;
         }
-        result.name_ = name_;
         if (((from_bitField0_ & 0x00000002) != 0)) {
           result.instanceIdentifier_ = instanceIdentifier_;
           to_bitField0_ |= 0x00000002;
         }
         if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.counterName_ = counterName_;
           to_bitField0_ |= 0x00000004;
         }
-        result.counterName_ = counterName_;
         if (((from_bitField0_ & 0x00000008) != 0)) {
           result.packets_ = packets_;
           to_bitField0_ |= 0x00000008;
@@ -1794,9 +1803,7 @@ public final class LspStatsOuterClass {
           result.byteRate_ = byteRate_;
           to_bitField0_ |= 0x00000040;
         }
-        result.bitField0_ = to_bitField0_;
-        onBuilt();
-        return result;
+        result.bitField0_ |= to_bitField0_;
       }
 
       @java.lang.Override
@@ -1844,16 +1851,16 @@ public final class LspStatsOuterClass {
       public Builder mergeFrom(org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.LspStatsRecord other) {
         if (other == org.opennms.netmgt.telemetry.protocols.jti.adapter.proto.LspStatsOuterClass.LspStatsRecord.getDefaultInstance()) return this;
         if (other.hasName()) {
-          bitField0_ |= 0x00000001;
           name_ = other.name_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (other.hasInstanceIdentifier()) {
           setInstanceIdentifier(other.getInstanceIdentifier());
         }
         if (other.hasCounterName()) {
-          bitField0_ |= 0x00000004;
           counterName_ = other.counterName_;
+          bitField0_ |= 0x00000004;
           onChanged();
         }
         if (other.hasPackets()) {
@@ -2021,11 +2028,9 @@ public final class LspStatsOuterClass {
        */
       public Builder setName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2038,8 +2043,8 @@ public final class LspStatsOuterClass {
        * @return This builder for chaining.
        */
       public Builder clearName() {
-        bitField0_ = (bitField0_ & ~0x00000001);
         name_ = getDefaultInstance().getName();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -2054,11 +2059,9 @@ public final class LspStatsOuterClass {
        */
       public Builder setNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000001;
+        if (value == null) { throw new NullPointerException(); }
         name_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -2098,8 +2101,9 @@ public final class LspStatsOuterClass {
        * @return This builder for chaining.
        */
       public Builder setInstanceIdentifier(int value) {
-        bitField0_ |= 0x00000002;
+
         instanceIdentifier_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2192,11 +2196,9 @@ public final class LspStatsOuterClass {
        */
       public Builder setCounterName(
           java.lang.String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
+        if (value == null) { throw new NullPointerException(); }
         counterName_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -2211,8 +2213,8 @@ public final class LspStatsOuterClass {
        * @return This builder for chaining.
        */
       public Builder clearCounterName() {
-        bitField0_ = (bitField0_ & ~0x00000004);
         counterName_ = getDefaultInstance().getCounterName();
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
@@ -2229,11 +2231,9 @@ public final class LspStatsOuterClass {
        */
       public Builder setCounterNameBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  bitField0_ |= 0x00000004;
+        if (value == null) { throw new NullPointerException(); }
         counterName_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -2273,8 +2273,9 @@ public final class LspStatsOuterClass {
        * @return This builder for chaining.
        */
       public Builder setPackets(long value) {
-        bitField0_ |= 0x00000008;
+
         packets_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -2328,8 +2329,9 @@ public final class LspStatsOuterClass {
        * @return This builder for chaining.
        */
       public Builder setBytes(long value) {
-        bitField0_ |= 0x00000010;
+
         bytes_ = value;
+        bitField0_ |= 0x00000010;
         onChanged();
         return this;
       }
@@ -2383,8 +2385,9 @@ public final class LspStatsOuterClass {
        * @return This builder for chaining.
        */
       public Builder setPacketRate(long value) {
-        bitField0_ |= 0x00000020;
+
         packetRate_ = value;
+        bitField0_ |= 0x00000020;
         onChanged();
         return this;
       }
@@ -2438,8 +2441,9 @@ public final class LspStatsOuterClass {
        * @return This builder for chaining.
        */
       public Builder setByteRate(long value) {
-        bitField0_ |= 0x00000040;
+
         byteRate_ = value;
+        bitField0_ |= 0x00000040;
         onChanged();
         return this;
       }
