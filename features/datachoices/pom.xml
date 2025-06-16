@@ -26,6 +26,13 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Karaf-Commands>*</Karaf-Commands>
+
+                        <Import-Package>
+                            org.opennms.netmgt.flows.api;resolution:=optional,
+                            org.opennms.netmgt.flows.filter.api;resolution:=optional,
+                            *
+                        </Import-Package>
+
                     </instructions>
                 </configuration>
             </plugin>
