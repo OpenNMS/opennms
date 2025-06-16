@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.core.mate.model;
 
 import static org.hamcrest.MatcherAssert.assertThat;
@@ -43,6 +36,7 @@ import org.opennms.core.mate.api.ContextKey;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
@@ -57,6 +51,8 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
+import com.google.common.collect.Lists;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -144,6 +140,7 @@ public class EntityScopeProviderIT {
         assertThat(scope.get(new ContextKey("interface", "if-index")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE, "1"))));
         assertThat(scope.get(new ContextKey("interface", "if-alias")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE, "Initial ifAlias value"))));
         assertThat(scope.get(new ContextKey("interface", "if-description")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE, "ATM0"))));
+        assertThat(scope.get(new ContextKey("interface", "if-name")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE, "atm0"))));
         assertThat(scope.get(new ContextKey("interface", "phy-addr")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.INTERFACE, "34E45604BB69"))));
     }
 
@@ -175,5 +172,29 @@ public class EntityScopeProviderIT {
         Assert.assertEquals(interpolatedAttributes.get("username"), "horizon");
         Assert.assertEquals(interpolatedAttributes.get("password"), "OpenNMS@30");
 
+    }
+
+    @Test
+    public final void testScopeProviders() {
+        // set meta-data of node
+        final OnmsNode node = this.populator.getNode1();
+        OnmsMetaData metaData = new OnmsMetaData("context", "key", "value1");
+        node.getMetaData().add(metaData);
+        this.populator.getNodeDao().saveOrUpdate(node);
+
+        // get an scope provider
+        final ScopeProvider scope = this.provider.getScopeProviderForNode(this.populator.getNode1().getId());
+
+        // this will retrieve the meta-data set before
+        assertThat(scope.getScope().get(new ContextKey("context", "key")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE, "value1"))));
+
+        // now update the meta-data
+        node.getMetaData().removeAll(Lists.newArrayList(metaData));
+        metaData = new OnmsMetaData("context", "key", "value2");
+        node.getMetaData().add(metaData);
+        this.populator.getNodeDao().saveOrUpdate(node);
+
+        // the provider will again retrieve the current meta-data
+        assertThat(scope.getScope().get(new ContextKey("context", "key")), Matchers.is(Optional.of(new Scope.ScopeValue(Scope.ScopeName.NODE, "value2"))));
     }
 }

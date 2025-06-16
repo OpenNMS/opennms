@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.smoketest.stacks;
 
 import java.net.MalformedURLException;
@@ -33,6 +26,8 @@ import java.net.URL;
 import java.nio.file.Path;
 import java.nio.file.attribute.PosixFilePermission;
 import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
@@ -58,12 +53,14 @@ public class OpenNMSProfile {
     private final boolean kafkaProducerEnabled;
     private final List<OverlayFile> files;
     private final Function<OpenNMSContainer, WaitStrategy> waitStrategy;
+    private final HashMap<String, Path> installFeatures;
 
     private OpenNMSProfile(Builder builder) {
         jvmDebuggingEnabled = builder.jvmDebuggingEnabled;
         kafkaProducerEnabled = builder.kafkaProducerEnabled;
         files = Collections.unmodifiableList(builder.files);
         waitStrategy = Objects.requireNonNull(builder.waitStrategy);
+        installFeatures = Objects.requireNonNull(builder.installFeatures);
     }
 
     public static Builder newBuilder() {
@@ -75,6 +72,7 @@ public class OpenNMSProfile {
         private boolean kafkaProducerEnabled = false;
         private List<OverlayFile> files = new LinkedList<>();
         private Function<OpenNMSContainer, WaitStrategy> waitStrategy = OpenNMSContainer.WaitForOpenNMS::new;
+        private HashMap<String, Path> installFeatures = new LinkedHashMap<>();
 
         /**
          * Enable/disable JVM debugging.
@@ -171,6 +169,25 @@ public class OpenNMSProfile {
             return this;
         }
 
+        public Builder withInstallFeature(final String feature) {
+            return withInstallFeature(feature, null, null);
+        }
+        public Builder withInstallFeature(final String feature, final String waitForKar) {
+            return withInstallFeature(feature, waitForKar, null);
+        }
+        public Builder withInstallFeature(final String feature, final String waitForKar, final Path karFile) {
+            if (waitForKar != null) {
+                installFeatures.put(String.format("%s wait-for-kar=%s", feature, waitForKar), karFile);
+            } else {
+                installFeatures.put(feature, karFile);
+            }
+            return this;
+        }
+
+        public Builder withDisableFeature(final String feature) {
+            return withInstallFeature(String.format("!%s", feature), null, null);
+        }
+
         /**
          * Build the profile.
          *
@@ -196,5 +213,9 @@ public class OpenNMSProfile {
 
     public Function<OpenNMSContainer, WaitStrategy> getWaitStrategy() {
         return waitStrategy;
+    }
+
+    public HashMap<String, Path> getInstallFeatures() {
+        return installFeatures;
     }
 }

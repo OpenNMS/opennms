@@ -14,20 +14,21 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import { FeatherInput } from '@featherds/input'
 import { FeatherButton } from '@featherds/button'
+import { useFileEditorStore } from '@/stores/fileEditorStore'
 import { UpdateModelFunction } from '@/types'
 
-const store = useStore()
+const fileEditorStore = useFileEditorStore()
 
-const contentModified = computed(() => store.state.fileEditorModule.contentModified)
-const hasSelectedFile = computed(() => store.state.fileEditorModule.selectedFileName !== '')
-const searchValue = computed(() => store.state.fileEditorModule.searchValue)
+const contentModified = computed(() => fileEditorStore.contentModified)
+const hasSelectedFile = computed(() => fileEditorStore.selectedFileName !== '')
+const searchValue = computed(() => fileEditorStore.searchValue)
 const disableBtn = computed(() => !contentModified.value || !hasSelectedFile.value)
-const search: UpdateModelFunction = (val: string) => store.dispatch('fileEditorModule/setSearchValue', val || '')
-const reset = () => store.dispatch('fileEditorModule/triggerFileReset')
-const save = () => store.dispatch('fileEditorModule/saveModifiedFile')
+
+const search: UpdateModelFunction = (val: string) => fileEditorStore.setSearchValue(val || '')
+const reset = () => fileEditorStore.triggerFileReset()
+const save = () => fileEditorStore.saveModifiedFile()
 </script>
 
 <style scoped lang="scss">

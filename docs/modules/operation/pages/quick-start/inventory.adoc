@@ -49,6 +49,9 @@ image::provisioning/SNMP_Config.png["SNMP community name configuration page with
 These settings are automatically optimized into `snmp-config.xml`.
 For an example of the resulting XML configuration, see <<deep-dive/provisioning/xml-samples.adoc#SNMP-community-xml, Configure SNMP community names>> in the Deep Dive section.
 
+NOTE: It is possible to use metadata expressions in the fields Security Name, Read Community, Write Community, Auth Passphrase, and Privacy Passphrase to reference credentials stored in the Secure Credentials Vault.
+Please note that only the global scope is available here.
+
 [[requisition-create]]
 == Create a requisition
 

@@ -1,0 +1,11 @@
+jobs:
+  sentinel-image-single-arch-linux-amd64-trivy:
+    executor: base-executor
+    resource_class: medium
+    steps:
+      - scan-image-trivy:
+          architecture: linux/amd64
+          container_name: sentinel
+          container_dir: sentinel
+          tarball_match: sentinel
+          tarball_path: /opennms-assemblies/sentinel/target

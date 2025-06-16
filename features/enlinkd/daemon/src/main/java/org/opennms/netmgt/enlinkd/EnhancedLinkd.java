@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.enlinkd;
 
 
@@ -116,10 +109,14 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     private IsisOnmsTopologyUpdater m_isisTopologyUpdater;
     @Autowired
     private OspfOnmsTopologyUpdater m_ospfTopologyUpdater;
-    @Autowired    
+    @Autowired
+    private OspfAreaOnmsTopologyUpdater m_ospfAreaTopologyUpdater;
+    @Autowired
     private DiscoveryBridgeDomains m_discoveryBridgeDomains;
     @Autowired
     private UserDefinedLinkTopologyUpdater m_userDefinedLinkTopologyUpdater;
+    @Autowired
+    private NetworkRouterTopologyUpdater m_networkRouterTopologyUpdater;
 
     private final List<SchedulableNodeCollectorGroup> m_groups = new ArrayList<>();
     /**
@@ -164,6 +161,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     private void schedule(boolean init) {
         if (init) {
             scheduleAndRegisterOnmsTopologyUpdater(m_nodesTopologyUpdater);
+            scheduleAndRegisterOnmsTopologyUpdater(m_networkRouterTopologyUpdater);
             scheduleAndRegisterOnmsTopologyUpdater(m_userDefinedLinkTopologyUpdater);
         }
 
@@ -203,6 +201,7 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             nodeCollectionGroupOspf.schedule();
             m_groups.add(nodeCollectionGroupOspf);
             scheduleAndRegisterOnmsTopologyUpdater(m_ospfTopologyUpdater);
+            scheduleAndRegisterOnmsTopologyUpdater(m_ospfAreaTopologyUpdater);
         } else {
             m_ospfTopologyService.deletePersistedData();
         }
@@ -301,6 +300,21 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
         return true;
     }
 
+    public boolean runSingleSnmpCollection(final String nodeId, String proto) {
+        final Node node = m_queryMgr.getSnmpNode(nodeId);
+        if (node == null) {
+            return false;
+        }
+        boolean runned = false;
+        for (SchedulableNodeCollectorGroup group: m_groups) {
+            if (group.getProtocolSupported().name().equalsIgnoreCase(proto)) {
+                group.getNodeCollector(node, 0).collect();
+                runned = true;
+            }
+        }
+        return runned;
+    }
+
     public boolean runSingleSnmpCollection(final int nodeId) {
         final Node node = m_queryMgr.getSnmpNode(nodeId);
         if (node == null) {
@@ -335,7 +349,13 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
                 m_isisTopologyUpdater.forceRun();
             }
             break;
-        
+
+        case OSPFAREA:
+            if (m_linkdConfig.useOspfDiscovery()) {
+                m_ospfAreaTopologyUpdater.forceRun();
+            }
+            break;
+
         case OSPF:
             if (m_linkdConfig.useOspfDiscovery()) {
                 m_ospfTopologyUpdater.forceRun();
@@ -354,6 +374,10 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
 
         case USERDEFINED:
             m_userDefinedLinkTopologyUpdater.forceRun();
+            break;
+
+        case NETWORKROUTER:
+            m_networkRouterTopologyUpdater.forceRun();
             break;
 
         default:
@@ -388,7 +412,13 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
                     m_ospfTopologyUpdater.runSchedulable();
                 }
                 break;
-            
+
+            case OSPFAREA:
+                if (m_linkdConfig.useOspfDiscovery()) {
+                    m_ospfAreaTopologyUpdater.runSchedulable();
+                }
+                break;
+
             case BRIDGE:
                 if (m_linkdConfig.useBridgeDiscovery()) {
                     m_bridgeTopologyUpdater.runSchedulable();
@@ -403,9 +433,12 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
                 m_userDefinedLinkTopologyUpdater.runSchedulable();
                 break;
 
+            case NETWORKROUTER:
+                m_networkRouterTopologyUpdater.runSchedulable();
+                break;
+
             default:
                 break;
-            
         }
     }
 
@@ -507,6 +540,9 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     public NodesOnmsTopologyUpdater getNodesTopologyUpdater() {
         return m_nodesTopologyUpdater;
     }
+    public NetworkRouterTopologyUpdater getNetworkRouterTopologyUpdater() {
+        return m_networkRouterTopologyUpdater;
+    }
     public CdpOnmsTopologyUpdater getCdpTopologyUpdater() {
         return m_cdpTopologyUpdater;
     }
@@ -522,7 +558,11 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
     public OspfOnmsTopologyUpdater getOspfTopologyUpdater() {
         return m_ospfTopologyUpdater;
     }
+    public OspfAreaOnmsTopologyUpdater getOspfAreaTopologyUpdater() {
+        return m_ospfAreaTopologyUpdater;
+    }
 
+    @Override
     public void reload() {
         LOG.info("reload: reload enlinkd daemon service");
 
@@ -533,6 +573,12 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
             m_ospfTopologyUpdater.unschedule();
             m_ospfTopologyUpdater.unregister();
             m_ospfTopologyUpdater = OspfOnmsTopologyUpdater.clone(m_ospfTopologyUpdater);
+        }
+
+        if (m_ospfAreaTopologyUpdater.isRegistered()) {
+                m_ospfAreaTopologyUpdater.unschedule();
+                m_ospfAreaTopologyUpdater.unregister();
+                m_ospfAreaTopologyUpdater = OspfAreaOnmsTopologyUpdater.clone(m_ospfAreaTopologyUpdater);
         }
 
         if (m_lldpTopologyUpdater.isRegistered()) {
@@ -563,16 +609,18 @@ public class EnhancedLinkd extends AbstractServiceDaemon implements ReloadableTo
 
         schedule(false);
     }
-    
-    public void reloadConfig() {
-        LOG.info("reloadConfig: reload enlinkd configuration file");
+
+    @Override
+    public boolean reloadConfig() {
+        LOG.info("reloadConfig: reload enlinkd configuration file and daemon service");
         try {
             m_linkdConfig.reload();
         } catch (IOException e) {
             LOG.error("reloadConfig: cannot reload config: {}", e.getMessage());
-            return;
+            return false;
         }
         reload();
+        return true;
     }
 
     @Override

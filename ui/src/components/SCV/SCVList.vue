@@ -15,16 +15,16 @@
 
 <script setup lang="ts">
 import { FeatherList, FeatherListHeader, FeatherListItem } from '@featherds/list'
-import { useStore } from 'vuex'
+import { useScvStore } from '@/stores/scvStore'
 
-const store = useStore()
+const scvStore = useScvStore()
 const selectedAlias = ref()
-const aliases = computed<string[]>(() => store.state.scvModule.aliases)
-const isEditing = computed<boolean>(() => store.state.scvModule.isEditing)
+const aliases = computed<string[]>(() => scvStore.aliases)
+const isEditing = computed<boolean>(() => scvStore.isEditing)
 
 const onAliasClick = (alias: string) => {
   selectedAlias.value = alias
-  store.dispatch('scvModule/getCredentialsByAlias', alias)
+  scvStore.getCredentialsByAlias(alias)
 }
 </script>
 

@@ -15,15 +15,17 @@
 </template>
   
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import ResourceList from '@/components/Resources/ResourceList.vue'
 import NodeResourceList from '@/components/Resources/NodeResourceList.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { useMenuStore } from '@/stores/menuStore'
+import { useResourceStore } from '@/stores/resourceStore'
 import { BreadCrumb } from '@/types'
 
-const store = useStore()
+const menuStore = useMenuStore()
+const resourceStore = useResourceStore()
 
-const homeUrl = computed<string>(() => store.state.menuModule.mainMenu?.homeUrl)
+const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
@@ -33,6 +35,6 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 })
 
 onMounted(() => {
-  store.dispatch('resourceModule/getResources')
+  resourceStore.getResources()
 })
 </script>

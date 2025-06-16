@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.telemetry</groupId>
     <artifactId>org.opennms.features.telemetry.protocols</artifactId>
-    <version>31.0.3-SNAPSHOT</version>
+    <version>33.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.telemetry.protocols</groupId>
@@ -71,6 +71,11 @@
     <dependency>
       <groupId>org.opennms.core</groupId>
       <artifactId>org.opennms.core.sysprops</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.fileutils</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

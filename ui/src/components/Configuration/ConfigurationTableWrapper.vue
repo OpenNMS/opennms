@@ -54,11 +54,11 @@
   lang="ts"
   setup
 >
-import { useStore } from 'vuex'
+import { useConfigurationStore } from '@/stores/configurationStore'
 
 import { FeatherButton } from '@featherds/button'
 
-import { populateProvisionD, putProvisionDService } from '@/services/configurationService'
+import { putProvisionDService } from '@/services/configurationService'
 import { useProvisionD } from './hooks'
 import useSnackbar from '@/composables/useSnackbar'
 import { ConfigurationHelper } from './ConfigurationHelper'
@@ -69,7 +69,7 @@ import ConfigurationDrawer from './ConfigurationDrawer.vue'
 import ConfigurationDoubleCheckModal from './ConfigurationDoubleCheckModal.vue'
 import { RequisitionData } from './copy/requisitionTypes'
 
-const store = useStore()
+const configurationStore = useConfigurationStore()
 
 /**
  * Local State
@@ -191,7 +191,7 @@ const saveCurrentState = async () => {
     forSending[activeIndex.index] = readyForServ
 
     //Get Existing Full State (including thread pools)
-    let updatedProvisionDData = store?.state?.configuration?.provisionDService
+    let updatedProvisionDData = configurationStore.provisionDService
 
     if (!updatedProvisionDData) {
       updatedProvisionDData = {}
@@ -209,7 +209,7 @@ const saveCurrentState = async () => {
     try {
       //Actually Update the Server
       await putProvisionDService(updatedProvisionDData)
-      await populateProvisionD(store)
+      await configurationStore.getProvisionDService()
 
       closeConfigurationDrawer()
 
@@ -243,7 +243,7 @@ const doubleCheckSelected = async (selection: boolean) => {
     copiedList.splice(doubleCheck.index, 1)
 
     // Get a copy of the existing state.
-    const updatedProvisionDData = store?.state?.configuration?.provisionDService
+    const updatedProvisionDData = configurationStore.provisionDService
 
     // Remove the entry from the existing state.
     updatedProvisionDData['requisition-def'] = ConfigurationHelper.stripOriginalIndexes(copiedList)
@@ -262,9 +262,10 @@ const doubleCheckSelected = async (selection: boolean) => {
         error: true
       })
     }
-    populateProvisionD(store)
 
+    await configurationStore.getProvisionDService()
   }
+
   doubleCheck.active = false
   doubleCheck.index = -1
 }

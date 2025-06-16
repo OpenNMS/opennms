@@ -143,6 +143,9 @@ Here is an example with several definitions:
 </wsman-config>
 ----
 
+NOTE: Metadata expressions can also be used in attributes of the `wsman-config.xml` configuration file.
+This allows the user to also reference credentials stored in the secure credentials vault.
+
 .Collector configuration attributes
 [options="header"]
 [cols="1,3,2"]

@@ -65,6 +65,7 @@
       <property name="topologyEntityCache" ref="topologyEntityCache" />
       <property name="ospfLinkDao" ref="ospfLinkDao" />
       <property name="ospfElementDao" ref="ospfElementDao" />
+      <property name="ospfAreaDao" ref="ospfAreaDao" />
    </bean>
     <onmsgi:service interface="org.opennms.netmgt.enlinkd.service.api.OspfTopologyService" ref="ospfTopologyService" />
    

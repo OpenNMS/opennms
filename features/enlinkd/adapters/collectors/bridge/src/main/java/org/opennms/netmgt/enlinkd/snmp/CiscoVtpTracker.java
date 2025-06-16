@@ -1,42 +1,37 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.enlinkd.snmp;
 
-import org.opennms.netmgt.snmp.AggregateTracker;
+import java.util.Objects;
+
 import org.opennms.netmgt.snmp.ErrorStatusException;
 import org.opennms.netmgt.snmp.NamedSnmpVar;
+import org.opennms.netmgt.snmp.AggregateTracker;
 import org.opennms.netmgt.snmp.SnmpResult;
 import org.opennms.netmgt.snmp.SnmpStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public final class CiscoVtpTracker extends AggregateTracker
+public class CiscoVtpTracker extends AggregateTracker
 {
 	private static final Logger LOG = LoggerFactory.getLogger(CiscoVtpTracker.class);
     /**
@@ -45,8 +40,32 @@ public final class CiscoVtpTracker extends AggregateTracker
 	//
 	// Lookup strings for specific table entries
 	//
-	public final static	String	VTP_VERSION	= "vtpVersion";
-	
+	public final static	String CISCO_VTP_VERSION	= "vtpVersion";
+    public final static	String CISCO_VTP_VERSION_OID	= ".1.3.6.1.4.1.9.9.46.1.1.1";
+
+    public enum VtpVersion {
+        one(1), two(2), none(3), three(4);
+
+        private final Integer value;
+
+        VtpVersion(Integer value) {
+            this.value = value;
+        }
+
+        public Integer getValue() {
+            return value;
+        }
+
+        public static VtpVersion getByValue(Integer vtpVersion) {
+            for (VtpVersion version: values()) {
+                if (Objects.equals(version.getValue(), vtpVersion)) {
+                    return version;
+                }
+            }
+            return null;
+        }
+    }
+
 	public final static NamedSnmpVar[] ms_elemList = new NamedSnmpVar[] {
 		/*
 		 * vtpVersion OBJECT-TYPE
@@ -64,7 +83,7 @@ public final class CiscoVtpTracker extends AggregateTracker
          *	version in use on the device. If the device does not support
          *	vtp, the version is none(3)."
 		 */
-		new NamedSnmpVar(NamedSnmpVar.SNMPINT32,VTP_VERSION,".1.3.6.1.4.1.9.9.46.1.1.1")
+		new NamedSnmpVar(NamedSnmpVar.SNMPINT32, CISCO_VTP_VERSION,CISCO_VTP_VERSION_OID)
 	};
 
     private final SnmpStore m_store;
@@ -108,7 +127,15 @@ public final class CiscoVtpTracker extends AggregateTracker
      * @return a {@link Integer} object.
      */
     public Integer getVtpVersion() {
-        return m_store.getInt32(VTP_VERSION);
+        return m_store.getInt32(CISCO_VTP_VERSION);
     }
-            
+
+    public VtpVersion decodeVtpVersion() {
+        return VtpVersion.getByValue(m_store.getInt32(CISCO_VTP_VERSION));
+    }
+
+    @Override
+    public void printSnmpData() {
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", CISCO_VTP_VERSION_OID, CISCO_VTP_VERSION, getVtpVersion(), decodeVtpVersion());
+    }
 }

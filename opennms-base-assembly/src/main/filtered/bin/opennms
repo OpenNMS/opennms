@@ -38,7 +38,7 @@ STOP_TIMEOUT=36
 JAVA_INITIAL_HEAP_SIZE=""
 
 # Maximum heap size (-Xmx) in megabytes
-JAVA_HEAP_SIZE="2048"
+JAVA_HEAP_SIZE=4096
 
 # Additional options passed to Java when starting OpenNMS.
 # ADDITIONAL_MANAGER_OPTIONS=()
@@ -84,6 +84,8 @@ ADDITIONAL_CONTROLLER_OPTIONS=""
 ADDITIONAL_MANAGER_OPTIONS=""
 APP_PARMS_CONTROLLER=""
 APP_PARMS_AFTER=""
+
+export OPENNMS_EXECUTION_ENVIRONMENT="${OPENNMS_EXECUTION_ENVIRONMENT:-bareMetalOrVm}"
 
 #### ------------> DO NOT CHANGE VARIABLES IN THIS FILE <------------- ####
 #### Create $OPENNMS_HOME/etc/opennms.conf and put overrides in there. ####
@@ -775,12 +777,25 @@ MANAGER_OPTIONS+=("-Dopennms.home=$OPENNMS_HOME")
 #MANAGER_OPTIONS+=("-Djcifs.properties=$OPENNMS_HOME/etc/jcifs.properties")
 MANAGER_OPTIONS+=("-XX:+HeapDumpOnOutOfMemoryError")
 
-if [ -n "$JAVA_INITIAL_HEAP_SIZE" ] && [ "$JAVA_INITIAL_HEAP_SIZE" -gt 0 ]; then
-	MANAGER_OPTIONS+=("-Xms${JAVA_INITIAL_HEAP_SIZE}m")
+
+if [ -n "$JAVA_INITIAL_HEAP_SIZE" ];then
+ if [[ "$JAVA_INITIAL_HEAP_SIZE" =~ [0-9] ]];then
+    if [ "$JAVA_INITIAL_HEAP_SIZE" -gt 0 ];then
+      MANAGER_OPTIONS+=("-Xms${JAVA_INITIAL_HEAP_SIZE}m")
+    fi
+ else
+      MANAGER_OPTIONS+=("-Xms${JAVA_INITIAL_HEAP_SIZE}")
+ fi
 fi
 
-if [ -n "$JAVA_HEAP_SIZE" ] && [ "$JAVA_HEAP_SIZE" -gt 0 ]; then
-	MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}m")
+
+#if [ -z "$JAVA_HEAP_SIZE" ]; then
+#  JAVA_HEAP_SIZE=4096
+#fi
+if [[ "$JAVA_HEAP_SIZE" =~ ^[0-9]+$ ]]; then
+   MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}m")
+ else
+   MANAGER_OPTIONS+=("-Xmx${JAVA_HEAP_SIZE}")
 fi
 
 # https://pyroscope.io/docs/java-tracing/#running-as-otel-java-instrumentation-extension
@@ -797,37 +812,13 @@ if [ -n "$JACOCO_AGENT_ENABLED" ] && [ "$JACOCO_AGENT_ENABLED" -gt 0 ]; then
 fi
 
 JAVA_VERSION="$("$OPENNMS_HOME/bin/runjava" -p -f 2> /dev/null)"
-JAVA_SHORT_VERSION="$(echo "$JAVA_VERSION" | cut -d. -f1)"
+JAVA_SHORT_VERSION="$(echo "$JAVA_VERSION" | cut -d. -f1 | cut -d- -f1)"
 if [ -z "$JAVA_SHORT_VERSION" ]; then
 	JAVA_SHORT_VERSION=0
 fi
 
-JAVA_MODULES=(
-	java.base \
-	java.compiler \
-	java.datatransfer \
-	java.desktop \
-	java.instrument \
-	java.logging \
-	java.management \
-	java.management.rmi \
-	java.naming \
-	java.prefs \
-	java.rmi \
-	java.scripting \
-	java.security.jgss \
-	java.security.sasl \
-	java.sql \
-	java.sql.rowset \
-	java.xml \
-	jdk.attach \
-	jdk.httpserver \
-	jdk.jdi \
-	jdk.sctp \
-	jdk.security.auth \
-	jdk.xml.dom \
-)
 
+KARAF_HOME="${OPENNMS_HOME}"
 JPDA_ADDRESS="*:8001"
 JPDA_SUSPEND="n"
 if [ "$JAVA_SHORT_VERSION" -lt 9 ]; then
@@ -836,11 +827,11 @@ if [ "$JAVA_SHORT_VERSION" -lt 9 ]; then
 	JPDA_ADDRESS="8001"
 else
 	# Java 9+, add required modules
-	OIFS="$IFS"
-	IFS=","
-	ADD_MODULES="--add-modules=${JAVA_MODULES[*]}"
-	IFS="$OIFS"
-	JAVA_CMD=("${JAVA_CMD[@]}" "$ADD_MODULES")
+	JAVA_CMD=("${JAVA_CMD[@]}" $("${OPENNMS_HOME}/bin/_module_opts.sh"))
+
+	# extra options that aren't shared with Minion and Sentinel
+	JAVA_CMD+=("--add-exports" "org.apache.karaf.specs/org.apache.karaf.specs.locator=java.xml,ALL-UNNAMED")
+
 	# see NMS-12261 -- use backwards-compatible locale provider by default
 	JAVA_CMD+=("-Djava.locale.providers=CLDR,COMPAT")
 fi

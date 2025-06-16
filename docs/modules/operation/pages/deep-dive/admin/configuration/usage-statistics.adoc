@@ -1,0 +1,112 @@
+
+= Usage Statistics
+
+By default, the Usage Statistics module collects anonymous usage statistics.
+It publishes them to an aggregated list of statistics from all participating users (https://stats.opennms.com/[OpenNMS Usage Report]) when {page-component-title} starts, and every 24 hours after.
+
+(For information on usage statistics collection and user consent, see xref:deployment:core/getting-started.adoc#usage-statistics[usage statistics].)
+
+{page-component-title} collects and publishes a number of data points, including the following:
+
+* System ID (a randomly generated, universally unique identifier (UUID)).
+* {page-component-title} release.
+* {page-component-title} version.
+* OS architecture.
+* OS name.
+* OS version.
+* Number of available processors (CPU).
+* Amount of free physical memory.
+* Total amount of physical memory.
+* Number of alarms in the `alarms` table.
+* Number of situations in the `alarms` table.
+* Number of events in the `events` table.
+* Number of IP interfaces in the `ipinterface` table.
+* Number of nodes in the `node` table.
+* Number of nodes, grouped by system OID.
+* Number of locations.
+* Number of Minions.
+* Number of provisiond requisitions, by scheme.
+* Provisiond thread pool sizes.
+* List of enabled and disabled services.
+* List of installed features in Karaf.
+* Global notification enablement status.
+* Number of destination paths.
+* Number of on-call roles.
+* Relational Database Management System (RDBMS) name.
+* RDBMS version.
+* Number of pollerd tasks completed.
+* Number of event logs processed.
+* Number of core flows persisted.
+* Number of Newts samples inserted.
+* Number of queued updates completed.
+* Number of virtual appliances, Mini appliances, and 1U appliances that are connected to the system.
+* Whether {page-component-title} is running inside a containerized environment like Docker or Podman.
+
+[[view-data-points]]
+== View collected data points
+
+To view the full list of data points, follow these steps:
+
+. Sign in to {page-component-title}.
+. Click the *gear* symbol at the top-right of the page.
+. Under Additional Tools, click *Usage Statistics Sharing*.
+. Scroll through the list.
+. Click *Copy JSON* to copy a JSON representation of collected data points to your clipboard.
+
+[[disable-data-collection]]
+== Enable or disable usage statistics sharing
+
+Admin users can enable or disable usage statistics sharing at any time.
+Statistics will still be collected and you can view them locally, which is useful for troubleshooting.
+
+To enable or disable usage statistics sharing, follow these steps:
+
+. Click the *gear* symbol at the top-right of the page.
+. Under Additional Tools, click *Usage Statistics Sharing*.
+. Select either *Enable* or *Disable*, as desired.
+
+The usage statistics collection settings are updated.
+
+[[uninstall-data-collection]]
+== Uninstall or block usage statistics collection
+
+While we encourage users who are concerned about usage statistics collection to simply <<disable-data-collection, disable>> statistics sharing, we recognize that some organizations may want to remove the usage statistics collection feature entirely.
+
+Opting out preserves the usage statistics for local consumption and troubleshooting purposes, but removes the sharing aspect of usage statistics collection.
+
+IMPORTANT: Uninstalling or blocking this feature eliminates the possibility of viewing the collected usage statistics locally.
+These statistics tend to be extremely helpful when seeking support.
+
+=== Uninstall usage statistics feature
+
+In the Karaf shell, use `feature:uninstall datachoices` to uninstall the usage statistics feature (`datachoices`):
+
+[source, karaf]
+----
+admin@opennms()> feature:list | grep datachoices
+datachoices                                 │ 2023.1.2         │ x        │ Started     │ opennms-2023.1.2                  │ OpenNMS :: Features :: Data Choices
+admin@opennms()> feature:uninstall datachoices
+admin@opennms()> feature:list | grep datachoices
+datachoices                                 │ 2023.1.2         │          │ Uninstalled │ opennms-2023.1.2                  │ OpenNMS :: Features :: Data Choices
+----
+
+=== Block usage statistics feature
+
+To block the usage statistics feature from loading on future start ups, do the following:
+
+In the core's `etc/featuresBoot.d` directory, create a file `disable_datachoices.boot` that contains the string `!datachoices` on a line by itself.
+
+
+[[disable-product-update-enrollment]]
+== Disable product update enrollment
+
+A related feature is Product Update Enrollment.
+On initial usage, a dialog will display allowing the user to enter some information in order to receive product update information from OpenNMS.
+The user can opt out by clicking "Opt Out".
+To disable the feature entirely, create a file in the `etc/opennms.properties.d` folder and add the following line.
+This will prevent the dialog from displaying and prevent any data being sent to OpenNMS.
+
+[source]
+----
+opennms.productUpdateEnrollment.show=false
+----

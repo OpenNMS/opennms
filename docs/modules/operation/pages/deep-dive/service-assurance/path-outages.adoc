@@ -8,6 +8,15 @@ You can use path outages to suppress notifications based on how nodes depend on 
 The critical path must be configured from the network perspective of the monitoring system.
 By default, the path outage feature is disabled and must be enabled in `poller-configuration.xml`.
 
+== Enable path outages
+
+By default, the path outage feature is disabled and has to be enabled for pollerd to check if notifications should be suppresed for an outage.
+Edit the `$\{OPENNMS_HOME}/etc/poller-configuration.xml` file to set `pathOutageEnabled` to `true` at the top of the file.
+A service restart is required after changing this setting.
+
+
+== Example: Configure parent nodes
+
 The following image shows a sample network topology:
 
 .Example network topology diagram
@@ -18,9 +27,12 @@ If `default-gw-01` is down, it is not possible to reach any node in the two netw
 In this case, an administrator should receive only one notification for `default-gw-01`; notifications for the other nodes behind it should not be generated.
 Building this configuration in {page-component-title} requires the following information:
 
-* *Parent Foreign Source:* the foreign source where the parent node is defined.
-* *Parent Foreign ID:* the foreign ID of the parent node this node depends on.
-* *IP Interface:* the primary IP interface is used as the critical IP.
+Parent Foreign Source:: The foreign source where the parent node is defined.
+If the parent node is in the same requisition as the child node, this field can be left blank.
+Parent Foreign ID:: The foreign ID of the parent node this node depends on.
+It is possible to define the parent node based on the label, though using the ID is more reliable in case the node label changes in the future.
+IP Interface:: The primary IP interface is used as the critical IP.
+While you do not need to provide the IP interface when configuring the path on the node in a requisition, it is important to make sure the node has the correct IP interface set as the primary for the path calculation.
 
 In this example, we have created all nodes in a requisition named `Network-ACME` and we use the node label value as the foreign ID:
 

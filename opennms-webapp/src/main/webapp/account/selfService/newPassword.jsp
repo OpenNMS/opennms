@@ -1,39 +1,34 @@
 <%--
-/*******************************************************************************
- * This file is part of OpenNMS(R).
- *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
+
+    Licensed to The OpenNMS Group, Inc (TOG) under one or more
+    contributor license agreements.  See the LICENSE.md file
+    distributed with this work for additional information
+    regarding copyright ownership.
+
+    TOG licenses this file to You under the GNU Affero General
+    Public License Version 3 (the "License") or (at your option)
+    any later version.  You may not use this file except in
+    compliance with the License.  You may obtain a copy of the
+    License at:
+
+         https://www.gnu.org/licenses/agpl-3.0.txt
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+    either express or implied.  See the License for the specific
+    language governing permissions and limitations under the
+    License.
 
 --%>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
 <%@page language="java"
 	contentType="text/html"
 	session="true"
 %>
 
+<%@ page import="org.opennms.web.account.selfService.NewPasswordActionServlet" %>
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
           .headTitle("Change Password")
@@ -44,30 +39,28 @@
 <jsp:directive.include file="/includes/bootstrap.jsp" />
 
 <script type="text/javascript">
-  function verifyGoForm()
-  {
-    if (document.goForm.pass1.value == document.goForm.pass2.value)
-    {
-      let newPassword=document.goForm.pass1.value
-      const passwordRegex= /((?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#$%&.*+-]).{12,128})/;
-      const sameCharacterRegex= /(.)\1{5}/;
+  function verifyGoForm() {
+    if (document.goForm.pass1.value == document.goForm.pass2.value) {
+      let newPassword = document.goForm.pass1.value
+      const passwordRegex = /${fn:escapeXml(NewPasswordActionServlet.PASSWORD_REGEX)}/;
+      const sameCharacterRegex = /${fn:escapeXml(NewPasswordActionServlet.SAME_CHARACTER_REGEX)}/;
 
-      if(newPassword.match(passwordRegex) && !newPassword.match(sameCharacterRegex) )
-      {
-        document.goForm.currentPassword.value=document.goForm.oldpass.value;
-        document.goForm.newPassword.value=document.goForm.pass1.value;
+      if (newPassword.match(passwordRegex) && !newPassword.match(sameCharacterRegex)) {
+        document.goForm.currentPassword.value = document.goForm.oldpass.value;
+        document.goForm.newPassword.value = document.goForm.pass1.value;
         return true;
       } else {
         alert("Password complexity is not correct! Please use at least 12 characters, consisting of 1 special character, 1 upper case letter, 1 lower case letter and 1 number. Identical strings with more than 6 characters in a row are also not allowed.");
+        return false;
       }
     }
     else
     {
       alert("The two new password fields do not match!");
+      return false;
     }
   }
 </script>
-
 
 <div class="row">
   <div class="col-md-4">

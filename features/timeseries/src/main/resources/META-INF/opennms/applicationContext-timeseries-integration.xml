@@ -29,7 +29,7 @@
 
   <bean id="timeseriesMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
 
-  <bean id="timeseriesMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+  <bean id="timeseriesMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.jmx.JmxReporter" factory-method="forRegistry">
       <constructor-arg ref="timeseriesMetricRegistry"/>
   </bean>
 

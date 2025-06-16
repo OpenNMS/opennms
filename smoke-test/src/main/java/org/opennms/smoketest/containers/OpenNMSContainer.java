@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2019-2023 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.smoketest.containers;
 
 import static java.util.concurrent.TimeUnit.MINUTES;
@@ -33,7 +26,6 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.notNullValue;
-import static org.opennms.smoketest.utils.KarafShellUtils.awaitHealthCheckSucceeded;
 import static org.opennms.smoketest.utils.OverlayUtils.writeFeaturesBoot;
 import static org.opennms.smoketest.utils.OverlayUtils.writeProps;
 
@@ -47,6 +39,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -55,6 +48,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Properties;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.concurrent.atomic.AtomicReference;
 
 import org.opennms.smoketest.stacks.InternetProtocol;
 import org.opennms.smoketest.stacks.IpcStrategy;
@@ -66,6 +60,7 @@ import org.opennms.smoketest.utils.DevDebugUtils;
 import org.opennms.smoketest.utils.KarafShellUtils;
 import org.opennms.smoketest.utils.OverlayUtils;
 import org.opennms.smoketest.utils.RestClient;
+import org.opennms.smoketest.utils.RestHealthClient;
 import org.opennms.smoketest.utils.SshClient;
 import org.opennms.smoketest.utils.TestContainerUtils;
 import org.slf4j.Logger;
@@ -116,6 +111,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
     private static final int OPENNMS_GRPC_PORT = 8990;
     private static final int OPENNMS_BMP_PORT = 11019;
     private static final int OPENNMS_TFTP_PORT = 6969;
+    private static final int GRAFANA_PORT =3000;
 
     private static final boolean COLLECT_COVERAGE = "true".equals(System.getProperty("coverage", "false"));
 
@@ -132,13 +128,15 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
             .put(NetworkProtocol.GRPC, OPENNMS_GRPC_PORT)
             .put(NetworkProtocol.BMP, OPENNMS_BMP_PORT)
             .put(NetworkProtocol.TFTP, OPENNMS_TFTP_PORT)
+            .put(NetworkProtocol.GRAFANA,GRAFANA_PORT)
             .build();
 
     private final StackModel model;
     private final OpenNMSProfile profile;
     private final Path overlay;
     private int generatedUserId = -1;
-    private boolean afterTestCalled = false;
+    private Exception afterTestCalled = null;
+    private Exception waitUntilReadyException = null;
 
     public OpenNMSContainer(StackModel model, OpenNMSProfile profile) {
         super(IMAGE);
@@ -211,9 +209,18 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                 .withNetwork(Network.SHARED)
                 .withNetworkAliases(ALIAS)
                 .withCommand(containerCommand)
-                .waitingFor(Objects.requireNonNull(profile.getWaitStrategy()).apply(this))
-                .addFileSystemBind(overlay.toString(),
+                .waitingFor(Objects.requireNonNull(profile.getWaitStrategy()).apply(this));
+
+        addFileSystemBind(overlay.toString(),
                         "/opt/opennms-overlay", BindMode.READ_ONLY, SelinuxContext.SINGLE);
+
+        for (var installFeature : profile.getInstallFeatures().entrySet()) {
+            if (installFeature.getValue() != null) {
+                addFileSystemBind(installFeature.getValue().toString(),
+                        "/opt/opennms/deploy/" + installFeature.getValue().getFileName(),
+                        BindMode.READ_ONLY, SelinuxContext.SINGLE);
+            }
+        }
 
         // Help make development/debugging easier
         DevDebugUtils.setupMavenRepoBind(this, "/root/.m2/repository");
@@ -328,6 +335,10 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         }
     }
 
+    public URL getWebUrl() {
+        return getBaseUrlExternal();
+    }
+
     public RestClient getRestClient() {
         try {
             return new RestClient(new URL(getBaseUrlExternal() + "opennms"));
@@ -361,11 +372,17 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
 
     public Properties getSystemProperties() {
         final Properties props = new Properties();
+
+        if (!IpcStrategy.JMS.equals(model.getIpcStrategy())) {
+            props.put("org.opennms.activemq.broker.disable", "true");
+        }
+
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
             props.put("org.opennms.core.ipc.strategy", "kafka");
             props.put("org.opennms.core.ipc.kafka.bootstrap.servers", KAFKA_ALIAS + ":9092");
             props.put("org.opennms.core.ipc.kafka.compression.type", model.getKafkaCompressionStrategy().getCodec());
         }
+
         if (IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
             props.put("org.opennms.core.ipc.strategy", "osgi");
         }
@@ -388,6 +405,9 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
             props.put("JAEGER_ENDPOINT", JaegerContainer.getThriftHttpURL());
         }
 
+        // disable Product Update Enrollment
+        props.put("opennms.productUpdateEnrollment.show", "false");
+
         // output Karaf logs to the console to help in debugging intermittent container startup failures
         props.put("karaf.log.console", "INFO");
         return props;
@@ -395,6 +415,11 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
 
     public List<String> getFeaturesOnBoot() {
         final List<String> featuresOnBoot = new ArrayList<>();
+
+        for (var installFeature : profile.getInstallFeatures().entrySet()) {
+            featuresOnBoot.add(installFeature.getKey());
+        }
+
         if(IpcStrategy.GRPC.equals(model.getIpcStrategy())) {
             featuresOnBoot.add("opennms-core-ipc-grpc-server");
         }
@@ -491,16 +516,21 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                             containsString("Starter: Startup complete"));
             LOG.info("OpenNMS has started.");
 
-            // Defer the health-check (if we do run it) until the system has completely started
+            // Defer the health-check until the system has completely started
             // in order to give all the health checks a chance to load.
-            // Only wait for the health-check if Elasticsearch is enabled, since it's
-            // currently required to pass.
-            if (container.getModel().isElasticsearchEnabled()) {
-                LOG.info("Waiting for OpenNMS health check...");
-                awaitHealthCheckSucceeded(container);
-                LOG.info("Health check passed.");
-            }
+            LOG.info("Waiting for OpenNMS health check...");
+            RestHealthClient client = new RestHealthClient(container.getWebUrl(), Optional.of(ALIAS));
+            await("waiting for good health check probe")
+                    .atMost(5, MINUTES)
+                    .pollInterval(10, SECONDS)
+                    .failFast("container is no longer running", () -> !container.isRunning())
+                    .ignoreExceptionsMatching((e) -> { return e.getCause() != null && e.getCause() instanceof SocketException; })
+                    .until(client::getProbeHealthResponse, containsString(client.getProbeSuccessMessage()));
+            LOG.info("Health check passed.");
+
+            container.assertNoKarafDestroy(Paths.get("/opt", ALIAS, "logs", "karaf.log"));
         }
+
     }
 
     public int getGeneratedUserId() {
@@ -509,11 +539,13 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
 
     @Override
     public void afterTest(final TestDescription description, final Optional<Throwable> throwable) {
-        if (afterTestCalled) {
-            LOG.warn("afterTest has already been called, not running on subsequent calls");
+        var pid = ProcessHandle.current().pid();
+        if (afterTestCalled != null) {
+            LOG.warn("afterTest has already been called, not running on subsequent calls. My PID {}.", pid, new Exception("exception placeholder for stacktrace -- subsequent call location of afterTest"));
+            LOG.warn("original call location of afterTest", afterTestCalled);
             return;
         }
-        afterTestCalled = true;
+        afterTestCalled = new Exception("exception placeholder for stacktrace -- original call location of afterTest; PID: " + pid);
         if (COLLECT_COVERAGE) {
             KarafShellUtils.saveCoverage(this, description.getFilesystemFriendlyName(), ALIAS);
         }
@@ -531,6 +563,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                 "manager.log",
                 "poller.log",
                 "provisiond.log",
+                "telemetryd.log",
                 "trapd.log",
                 "web.log"
         );
@@ -538,7 +571,12 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         Path targetLogFolder = Paths.get("target", "logs", prefix, ALIAS);
         DevDebugUtils.clearLogs(targetLogFolder);
 
-        final var threadDump = DevDebugUtils.gatherThreadDump(this, targetLogFolder, null);
+        AtomicReference<Path> threadDump = new AtomicReference<>();
+        await("calling gatherThreadDump")
+                .atMost(Duration.ofSeconds(120))
+                .untilAsserted(
+                        () -> { threadDump.set(DevDebugUtils.gatherThreadDump(this, targetLogFolder, null)); }
+                );
 
         LOG.info("Gathering logs...");
         DevDebugUtils.copyLogs(this,
@@ -552,8 +590,8 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
         LOG.info("Log directory: {}", targetLogFolder.toUri());
         LOG.info("Console log: {}", targetLogFolder.resolve(DevDebugUtils.CONTAINER_STDOUT_STDERR).toUri());
         LOG.info("Output log: {}", targetLogFolder.resolve("output.log").toUri());
-        if (threadDump != null) {
-            LOG.info("Thread dump: {}", threadDump.toUri());
+        if (threadDump.get() != null) {
+            LOG.info("Thread dump: {}", threadDump.get().toUri());
         }
     }
 }

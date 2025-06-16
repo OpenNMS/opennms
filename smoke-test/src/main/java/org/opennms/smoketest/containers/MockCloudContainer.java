@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2019-2025 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2025 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.smoketest.containers;
 
 import static java.lang.String.format;
@@ -51,7 +44,7 @@ public class MockCloudContainer extends GenericContainer<MockCloudContainer> {
     private static final Path CLOUD_MOCK_PATH_CONTAINER = Path.of("/").resolve(CLOUD_MOCK_PATH_HOST.getFileName());
     private static final String CLOUD_MOCK_MAIN = "org.opennms.plugins.cloud.ittest.MockCloudMain";
     public MockCloudContainer() {
-        super(DockerImageName.parse("opennms/deploy-base:ubuntu-3.4.0.b268-jre-11"));
+        super(DockerImageName.parse("opennms/deploy-base:ubi9-3.5.3.b286-jre-17"));
         withCopyFileToContainer(MountableFile.forHostPath(CLOUD_MOCK_PATH_HOST), CLOUD_MOCK_PATH_CONTAINER.toString())
                 .withCommand("/usr/bin/java", "-cp", CLOUD_MOCK_PATH_CONTAINER.toString(), CLOUD_MOCK_MAIN)
                 .withExposedPorts(PORT)

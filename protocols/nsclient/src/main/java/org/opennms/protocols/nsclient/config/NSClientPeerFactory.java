@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.protocols.nsclient.config;
 
 import java.io.File;
@@ -48,6 +41,11 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
+import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.IPLike;
 import org.opennms.core.utils.InetAddressComparator;
@@ -59,6 +57,7 @@ import org.opennms.netmgt.config.nsclient.Range;
 import org.opennms.protocols.nsclient.NSClientAgentConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.FatalBeanException;
 import org.springframework.core.io.FileSystemResource;
 
 /**
@@ -101,6 +100,8 @@ public class NSClientPeerFactory {
      */
     private static boolean m_loaded = false;
 
+    private Scope secureCredentialsVaultScope = null;
+
     /**
      * Private constructor
      * 
@@ -129,6 +130,29 @@ public class NSClientPeerFactory {
 
     public Lock getWriteLock() {
         return m_writeLock;
+    }
+
+    private synchronized Scope getSecureCredentialsScope() {
+        if (secureCredentialsVaultScope == null) {
+            try {
+                final EntityScopeProvider entityScopeProvider = BeanUtils.getBean("daoContext", "entityScopeProvider", EntityScopeProvider.class);
+
+                if (entityScopeProvider != null) {
+                    secureCredentialsVaultScope = entityScopeProvider.getScopeForScv();
+                } else {
+                    LOG.warn("NSClientPeerFactory: EntityScopeProvider is null, SecureCredentialsVault not available for metadata interpolation");
+                }
+            } catch (FatalBeanException e) {
+                e.printStackTrace();
+                LOG.warn("NSClientPeerFactory: Error retrieving EntityScopeProvider bean");
+            }
+        }
+
+        return secureCredentialsVaultScope;
+    }
+
+    public void setSecureCredentialsVaultScope(final Scope secureCredentialsVaultScope) {
+        this.secureCredentialsVaultScope = secureCredentialsVaultScope;
     }
 
     /**
@@ -465,7 +489,7 @@ public class NSClientPeerFactory {
      * @return
      */
     private String determinePassword(final Definition def) {
-        return (def.getPassword() == null ? (m_config.getPassword() == null ? NSClientAgentConfig.DEFAULT_PASSWORD :m_config.getPassword()) : def.getPassword());
+        return Interpolator.interpolate((def.getPassword() == null ? (m_config.getPassword() == null ? NSClientAgentConfig.DEFAULT_PASSWORD :m_config.getPassword()) : def.getPassword()), getSecureCredentialsScope()).output;
     }
 
     /**

@@ -15,20 +15,21 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import ChevronRight from '@featherds/icon/navigation/ChevronRight'
+import { useFileEditorStore } from '@/stores/fileEditorStore'
 
-const store = useStore()
+const fileEditorStore = useFileEditorStore()
 
-const filename = computed(() => store.state.fileEditorModule.selectedFileName)
-const contentModified = computed(() => store.state.fileEditorModule.contentModified)
-const hasSelectedFile = computed(() => store.state.fileEditorModule.selectedFileName !== '')
+const filename = computed(() => fileEditorStore.selectedFileName)
+const contentModified = computed(() => fileEditorStore.contentModified)
+const hasSelectedFile = computed(() => fileEditorStore.selectedFileName !== '')
 const disableBtn = computed(() => !contentModified.value || !hasSelectedFile.value)
-const reset = () => store.dispatch('fileEditorModule/triggerFileReset')
-const save = () => store.dispatch('fileEditorModule/saveModifiedFile')
-const triggerHelp = () => store.dispatch('fileEditorModule/setIsHelpOpen', false)
+
+const reset = () => fileEditorStore.triggerFileReset()
+const save = () => fileEditorStore.saveModifiedFile()
+const triggerHelp = () => fileEditorStore.setIsHelpOpen(false)
 </script>
 
 <style scoped lang="scss">

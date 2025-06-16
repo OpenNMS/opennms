@@ -1,35 +1,29 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.enlinkd.snmp;
 
-import static org.opennms.core.utils.InetAddressUtils.normalizeMacAddress;
 import static org.opennms.core.utils.InetAddressUtils.isValidBridgeAddress;
+import static org.opennms.core.utils.InetAddressUtils.normalizeMacAddress;
+import static org.opennms.core.utils.InetAddressUtils.str;
 
 import java.net.InetAddress;
 
@@ -65,14 +59,18 @@ public class IpNetToMediaTableTracker extends TableTracker
      * <P>The TABLE_OID is the object identifier that represents
      * the root of the IP Address table in the MIB forest.</P>
      */
-    public static final SnmpObjId  IPNETTOMEDIA_TABLE_ENTRY   = SnmpObjId.get(".1.3.6.1.2.1.4.22.1");    // start of table (GETNEXT)
+    public static final SnmpObjId IPNETTOMEDIA_TABLE_ENTRY_OID = SnmpObjId.get(".1.3.6.1.2.1.4.22.1");    // start of table (GETNEXT)
 	// Lookup strings for specific table entries
 	//
-	public final static	SnmpObjId	IPNETTOMEDIA_TABLE_IFINDEX	= SnmpObjId.get(IPNETTOMEDIA_TABLE_ENTRY, "1");
-	public final static	SnmpObjId	IPNETTOMEDIA_TABLE_PHYSADDR	= SnmpObjId.get(IPNETTOMEDIA_TABLE_ENTRY, "2");
-	public final static	SnmpObjId	IPNETTOMEDIA_TABLE_NETADDR	= SnmpObjId.get(IPNETTOMEDIA_TABLE_ENTRY, "3");
-	public final static	SnmpObjId	IPNETTOMEDIA_TABLE_TYPE		= SnmpObjId.get(IPNETTOMEDIA_TABLE_ENTRY, "4");
+	public final static	SnmpObjId IPNETTOMEDIA_TABLE_IFINDEX_OID = SnmpObjId.get(IPNETTOMEDIA_TABLE_ENTRY_OID, "1");
+	public final static	SnmpObjId IPNETTOMEDIA_TABLE_PHYSADDR_OID = SnmpObjId.get(IPNETTOMEDIA_TABLE_ENTRY_OID, "2");
+	public final static	SnmpObjId IPNETTOMEDIA_TABLE_NETADDR_OID = SnmpObjId.get(IPNETTOMEDIA_TABLE_ENTRY_OID, "3");
+	public final static	SnmpObjId IPNETTOMEDIA_TABLE_TYPE_OID = SnmpObjId.get(IPNETTOMEDIA_TABLE_ENTRY_OID, "4");
 
+	public final static String IPNETTOMEDIA_TABLE_IFINDEX = "ipNetToMediaIfIndex";
+	public final static String IPNETTOMEDIA_TABLE_PHYSADDR = "ipNetToMediaPhysAddress";
+	public final static String IPNETTOMEDIA_TABLE_NETADDR = "ipNetToMediaNetAddress";
+	public final static String IPNETTOMEDIA_TABLE_TYPE = "ipNetToMediaType";
 	/**
 	 * <P>The keys that will be supported by default from the 
 	 * TreeMap base class. Each of the elements in the list
@@ -81,17 +79,17 @@ public class IpNetToMediaTableTracker extends TableTracker
 	 * this class.</P>
 	 */
 	public static SnmpObjId[] ms_elemList = new SnmpObjId[] {
-		IPNETTOMEDIA_TABLE_IFINDEX,
+			IPNETTOMEDIA_TABLE_IFINDEX_OID,
 		/*
          * The media-dependent `physical' address. 
          */
-		IPNETTOMEDIA_TABLE_PHYSADDR,
+			IPNETTOMEDIA_TABLE_PHYSADDR_OID,
 
 		/*
          * The IpAddress corresponding to the media-
          * dependent `physical' address.
          */
-		IPNETTOMEDIA_TABLE_NETADDR,
+			IPNETTOMEDIA_TABLE_NETADDR_OID,
         
 		/*
 		 * ipNetToMediaType OBJECT-TYPE
@@ -117,7 +115,7 @@ public class IpNetToMediaTableTracker extends TableTracker
          *   use.  Proper interpretation of such entries requires
          *   examination of the relevant ipNetToMediaType object."         
          */
-		IPNETTOMEDIA_TABLE_TYPE
+			IPNETTOMEDIA_TABLE_TYPE_OID
 		};
 
 	public static class IpNetToMediaRow extends SnmpRowResult {
@@ -127,7 +125,7 @@ public class IpNetToMediaTableTracker extends TableTracker
 		}
 		
 		public String getIpNetToMediaPhysAddress(){
-		    SnmpValue mac = getValue(IPNETTOMEDIA_TABLE_PHYSADDR);
+		    SnmpValue mac = getValue(IPNETTOMEDIA_TABLE_PHYSADDR_OID);
 		    if ( mac == null ) {
 		        return null;
 		    }
@@ -164,7 +162,7 @@ public class IpNetToMediaTableTracker extends TableTracker
 		 * @return a {@link java.net.InetAddress} object.
 		 */
 		public InetAddress getIpNetToMediaNetAddress(){
-		    SnmpValue value = getValue(IPNETTOMEDIA_TABLE_NETADDR);
+		    SnmpValue value = getValue(IPNETTOMEDIA_TABLE_NETADDR_OID);
                     if (value == null) {
                         return null;
                     }		    
@@ -177,7 +175,7 @@ public class IpNetToMediaTableTracker extends TableTracker
 		 * @return a int.
 		 */
 		public Integer getIpNetToMediatype(){
-		    SnmpValue value = getValue(IPNETTOMEDIA_TABLE_TYPE);
+		    SnmpValue value = getValue(IPNETTOMEDIA_TABLE_TYPE_OID);
 		    if (value == null) {
 		        return null;
 		    }
@@ -185,7 +183,7 @@ public class IpNetToMediaTableTracker extends TableTracker
 		}
 		
 		public Integer getIpNetToMediaIfIndex() {
-		    SnmpValue value = getValue(IPNETTOMEDIA_TABLE_IFINDEX);
+		    SnmpValue value = getValue(IPNETTOMEDIA_TABLE_IFINDEX_OID);
                     if (value == null) {
                         return null;
                     }
@@ -234,6 +232,11 @@ public class IpNetToMediaTableTracker extends TableTracker
      * @param row a {@link org.opennms.netmgt.enlinkd.snmp.IpNetToMediaTableTracker.IpNetToMediaRow} object.
      */
     public void processIpNetToMediaRow(final IpNetToMediaRow row) {
-    }
+		System.out.printf("\t\t%s (%s)= %s \n", IPNETTOMEDIA_TABLE_IFINDEX_OID + "." + row.getInstance().toString(), IPNETTOMEDIA_TABLE_IFINDEX, row.getIpNetToMediaIfIndex());
+		System.out.printf("\t\t%s (%s)= %s \n", IPNETTOMEDIA_TABLE_PHYSADDR_OID + "." + row.getInstance().toString(), IPNETTOMEDIA_TABLE_PHYSADDR, row.getIpNetToMediaPhysAddress());
+		System.out.printf("\t\t%s (%s)= %s \n", IPNETTOMEDIA_TABLE_NETADDR_OID + "." + row.getInstance().toString(), IPNETTOMEDIA_TABLE_NETADDR, str(row.getIpNetToMediaNetAddress()));
+		System.out.printf("\t\t%s (%s)= %s (%s)\n", IPNETTOMEDIA_TABLE_TYPE_OID + "." + row.getInstance().toString(), IPNETTOMEDIA_TABLE_TYPE, row.getIpNetToMediatype(), IpNetToMediaType.get(row.getIpNetToMediatype()) );
+
+	}
 
 }   

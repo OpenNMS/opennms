@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.reporting</artifactId>
-    <version>31.0.3-SNAPSHOT</version>
+    <version>33.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.reporting</groupId>
@@ -85,11 +85,6 @@
     <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-javamail-api</artifactId>
-      <scope>compile</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-rws</artifactId>
       <scope>compile</scope>
     </dependency>
     <dependency>

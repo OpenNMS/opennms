@@ -8,16 +8,21 @@
          <rra>RRA:MIN:0.5:288:366</rra>
       </rrd>
       <queries>
-         <query name="opennmsQuery" recheckInterval="0" ifType="ignore">
+         <query name="opennmsEventQuery" recheckInterval="0" ifType="ignore">
             <statement>
-               <queryString>SELECT COUNT(eventid) as EventCount
-FROM events
-WHERE eventtime
-BETWEEN (CURRENT_TIMESTAMP - INTERVAL '1 day')
-AND CURRENT_TIMESTAMP;</queryString>
+               <queryString>SELECT COUNT(eventid) as EventCount, (SELECT reltuples AS estimate FROM pg_class WHERE relname = 'events') FROM events WHERE eventtime BETWEEN (CURRENT_TIMESTAMP - INTERVAL '1 day') AND CURRENT_TIMESTAMP;</queryString>
             </statement>
             <columns>
                <column name="eventCount" data-source-name="EventCount" type="gauge" alias="OnmsEventCount"/>
+               <column name="eventEstimate" data-source-name="estimate" type="gauge" alias="OnmsEventEstimate"/>
+            </columns>
+         </query>
+         <query name="opennmsAlarmQuery" recheckInterval="0" ifType="ignore">
+            <statement>
+               <queryString>SELECT COUNT(alarmid) as AlarmCount FROM alarms;</queryString>
+            </statement>
+            <columns>
+               <column name="alarmCount" data-source-name="AlarmCount" type="gauge" alias="OnmsAlarmCount"/>
             </columns>
          </query>
          <query name="opennmsNodeQuery" recheckInterval="0" ifType="ignore">

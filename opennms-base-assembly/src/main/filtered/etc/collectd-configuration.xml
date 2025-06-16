@@ -2,194 +2,168 @@
    <package name="cassandra-via-jmx" remote="false">
       <filter>IPADDR != '0.0.0.0'</filter>
       <service name="JMX-Cassandra" interval="300000" user-defined="false" status="on">
-         <parameter key="port" value="7199"/>
-         <parameter key="retry" value="2"/>
-         <parameter key="timeout" value="3000"/>
-         <parameter key="protocol" value="rmi"/>
-         <parameter key="urlPath" value="/jmxrmi"/>
-         <parameter key="collection" value="jmx-cassandra30x"/>
-         <parameter key="friendly-name" value="cassandra"/>
-         <parameter key="thresholding-enabled" value="true"/>
-         <parameter key="factory" value="PASSWORD-CLEAR"/>
-         <parameter key="username" value="cassandra-username"/>
-         <parameter key="password" value="cassandra-password"/>
+         <parameter key="port" value="${requisition:port|detector:port|7199}" />
+         <parameter key="retry" value="${requisition:collector-retry|requisition:retry|detector:retry|2}" />
+         <parameter key="timeout" value="${requisition:collector-timeout|requisition:timeout|detector:timeout|3000}" />
+         <parameter key="protocol" value="${requisition:protocol|detector:protocol|rmi}" />
+         <parameter key="urlPath" value="${requisition:urlPath|detector:urlPath|/jmxrmi}" />
+         <parameter key="collection" value="${requisition:collection|detector:collection|jmx-cassandra30x}" />
+         <parameter key="friendly-name" value="${requisition:friendly-name|detector:friendly-name|cassandra}" />
+         <parameter key="thresholding-enabled" value="true" />
+         <parameter key="factory" value="${requisition:factory|detector:factory|PASSWORD_CLEAR}" />
+         <parameter key="username" value="${requisition:cassandra-user|cassandra-username}" />
+         <parameter key="password" value="${requisition:cassandra-pass|cassandra-password}" />
       </service>
       <service name="JMX-Cassandra-Newts" interval="300000" user-defined="false" status="on">
-         <parameter key="port" value="7199"/>
-         <parameter key="retry" value="2"/>
-         <parameter key="timeout" value="3000"/>
-         <parameter key="protocol" value="rmi"/>
-         <parameter key="urlPath" value="/jmxrmi"/>
-         <parameter key="collection" value="jmx-cassandra30x-newts"/>
-         <parameter key="friendly-name" value="cassandra-newts"/>
-         <parameter key="thresholding-enabled" value="true"/>
-         <parameter key="factory" value="PASSWORD-CLEAR"/>
-         <parameter key="username" value="cassandra-username"/>
-         <parameter key="password" value="cassandra-password"/>
-      </service>
-   </package>
-   <package name="vmware3" remote="false">
-      <filter>(IPADDR != '0.0.0.0') &amp; (categoryName == 'VMware3')</filter>
-      <service name="VMware-VirtualMachine" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="default-VirtualMachine3"/>
-         <parameter key="thresholding-enabled" value="true"/>
-      </service>
-      <service name="VMware-HostSystem" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="default-HostSystem3"/>
-         <parameter key="thresholding-enabled" value="true"/>
-      </service>
-      <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="default-ESX-HostSystem"/>
-         <parameter key="thresholding-enabled" value="true"/>
-      </service>
-   </package>
-   <package name="vmware4" remote="false">
-      <filter>(IPADDR != '0.0.0.0') &amp; (categoryName == 'VMware4')</filter>
-      <service name="VMware-VirtualMachine" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="default-VirtualMachine4"/>
-         <parameter key="thresholding-enabled" value="true"/>
-      </service>
-      <service name="VMware-HostSystem" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="default-HostSystem4"/>
-         <parameter key="thresholding-enabled" value="true"/>
-      </service>
-      <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="default-ESX-HostSystem"/>
-         <parameter key="thresholding-enabled" value="true"/>
-      </service>
-   </package>
-   <package name="vmware5" remote="false">
-      <filter>(IPADDR != '0.0.0.0') &amp; (categoryName == 'VMware5')</filter>
-      <service name="VMware-VirtualMachine" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="default-VirtualMachine5"/>
-         <parameter key="thresholding-enabled" value="true"/>
-      </service>
-      <service name="VMware-HostSystem" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="default-HostSystem5"/>
-         <parameter key="thresholding-enabled" value="true"/>
-      </service>
-      <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="default-ESX-HostSystem"/>
-         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="port" value="${requisition:port|detector:port|7199}" />
+         <parameter key="retry" value="${requisition:collector-retry|requisition:retry|detector:retry|2}" />
+         <parameter key="timeout" value="${requisition:collector-timeout|requisition:timeout|detector:timeout|3000}" />
+         <parameter key="protocol" value="${requisition:protocol|detector:protocol|rmi}" />
+         <parameter key="urlPath" value="${requisition:urlPath|detector:urlPath|/jmxrmi}" />
+         <parameter key="collection" value="${requisition:collection|detector:collection|jmx-cassandra30x-newts}" />
+         <parameter key="friendly-name" value="${requisition:friendly-name|detector:friendly-name|cassandra-newts}" />
+         <parameter key="thresholding-enabled" value="true" />
+         <parameter key="factory" value="${requisition:factory|detector:factory|PASSWORD_CLEAR}" />
+         <parameter key="username" value="${requisition:cassandra-user|cassandra-username}" />
+         <parameter key="password" value="${requisition:cassandra-pass|cassandra-password}" />
       </service>
    </package>
    <package name="vmware6" remote="false">
       <filter>(IPADDR != '0.0.0.0') &amp; (categoryName == 'VMware6')</filter>
       <service name="VMware-VirtualMachine" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="default-VirtualMachine6"/>
-         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="collection" value="${requisition:collection|detector:collection|default-VirtualMachine6}" />
+         <parameter key="thresholding-enabled" value="true" />
       </service>
       <service name="VMware-HostSystem" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="default-HostSystem6"/>
-         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="collection" value="${requisition:collection|detector:collection|default-HostSystem6}" />
+         <parameter key="thresholding-enabled" value="true" />
       </service>
       <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="default-ESX-HostSystem"/>
-         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="collection" value="${requisition:collection|detector:collection|default-ESX-HostSystem}" />
+         <parameter key="thresholding-enabled" value="true" />
       </service>
    </package>
    <package name="vmware7" remote="false">
       <filter>(IPADDR != '0.0.0.0') &amp; (categoryName == 'VMware7')</filter>
       <service name="VMware-VirtualMachine" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="default-VirtualMachine7"/>
-         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="collection" value="${requisition:collection|detector:collection|default-VirtualMachine7}" />
+         <parameter key="thresholding-enabled" value="true" />
       </service>
       <service name="VMware-HostSystem" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="default-HostSystem7"/>
-         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="collection" value="${requisition:collection|detector:collection|default-HostSystem7}" />
+         <parameter key="thresholding-enabled" value="true" />
       </service>
       <service name="VMwareCim-HostSystem" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="default-ESX-HostSystem"/>
-         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="collection" value="${requisition:collection|detector:collection|default-ESX-HostSystem}" />
+         <parameter key="thresholding-enabled" value="true" />
+      </service>
+   </package>
+   <package name="opennms" remote="false">
+      <filter>IPADDR != '0.0.0.0'</filter>
+      <include-range begin="1.1.1.1" end="254.254.254.254" />
+      <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
+      <service name="OpenNMS-JVM" interval="300000" user-defined="false" status="on">
+         <parameter key="port" value="${requisition:port|detector:port|18980}" />
+         <parameter key="retry" value="${requisition:collector-retry|requisition:retry|detector:retry|2}" />
+         <parameter key="timeout" value="${requisition:collector-timeout|requisition:timeout|detector:timeout|3000}" />
+         <parameter key="rrd-base-name" value="java" />
+         <parameter key="collection" value="${requisition:collection|detector:collection|jsr160}" />
+         <parameter key="thresholding-enabled" value="true" />
+         <parameter key="ds-name" value="opennms-jvm" />
+         <parameter key="friendly-name" value="${requisition:friendly-name|detector:friendly-name|opennms-jvm}" />
+      </service>
+      <service name="JMX-Minion" interval="300000" user-defined="false" status="on">
+         <parameter key="port" value="${requisition:port|detector:port|18980}" />
+         <parameter key="retry" value="${requisition:collector-retry|requisition:retry|detector:retry|2}" />
+         <parameter key="timeout" value="${requisition:collector-timeout|requisition:timeout|detector:timeout|3000}" />
+         <parameter key="rrd-base-name" value="java" />
+         <parameter key="collection" value="${requisition:collection|detector:collection|jmx-minion}" />
+         <parameter key="thresholding-enabled" value="true" />
+         <parameter key="ds-name" value="jmx-minion" />
+         <parameter key="friendly-name" value="${requisition:friendly-name|detector:friendly-name|jmx-minion}" />
+         <parameter key="use-foreign-id-as-system-id" value="${requisition:use-foreign-id-as-system-id|detector:use-foreign-id-as-system-id|true}" />
+      </service>
+      <service name="JMX-Kafka" interval="300000" user-defined="false" status="on">
+         <parameter key="port" value="${requisition:kafka-port|9999}" />
+         <parameter key="retry" value="${requisition:collector-retry|requisition:retry|detector:retry|2}" />
+         <parameter key="timeout" value="${requisition:collector-timeout|requisition:timeout|detector:timeout|3000}" />
+         <parameter key="rrd-base-name" value="java" />
+         <parameter key="collection" value="${requisition:collection|detector:collection|jmx-kafka}" />
+         <parameter key="thresholding-enabled" value="true" />
+         <parameter key="ds-name" value="jmx-kafka" />
+         <parameter key="friendly-name" value="${requisition:friendly-name|detector:friendly-name|jmx-kafka}" />
+      </service>
+      <service name="OpenNMS-DB" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="${requisition:collection|detector:collection|default}" />
+         <parameter key="thresholding-enabled" value="true" />
+         <parameter key="driver" value="${requisition:driver|detector:driver|org.postgresql.Driver}" />
+         <parameter key="data-source" value="${requisition:data-source|detector:data-source|opennms}" />
+      </service>
+      <service name="OpenNMS-DB-Stats" interval="300000" user-defined="false" status="on">
+         <parameter key="collection" value="${requisition:collection|detector:collection|PostgreSQL}" />
+         <parameter key="thresholding-enabled" value="true" />
+         <parameter key="driver" value="${requisition:driver|detector:driver|org.postgresql.Driver}" />
+         <parameter key="data-source" value="${requisition:data-source|detector:data-source|opennms-monitor}" />
       </service>
    </package>
    <package name="example1" remote="false">
       <filter>IPADDR != '0.0.0.0'</filter>
-      <include-range begin="1.1.1.1" end="254.254.254.254"/>
-      <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+      <include-range begin="1.1.1.1" end="254.254.254.254" />
+      <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff" />
       <service name="SNMP" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="default"/>
-         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="collection" value="${requisition:collection|detector:collection|default}" />
+         <parameter key="thresholding-enabled" value="true" />
       </service>
       <service name="WMI" interval="300000" user-defined="false" status="off">
-         <parameter key="collection" value="default"/>
-         <parameter key="thresholding-enabled" value="true"/>
+         <parameter key="collection" value="${requisition:collection|detector:collection|default}" />
+         <parameter key="thresholding-enabled" value="true" />
       </service>
       <service name="WS-Man" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="default"/>
-         <parameter key="thresholding-enabled" value="true"/>
-      </service>
-      <service name="OpenNMS-JVM" interval="300000" user-defined="false" status="on">
-         <parameter key="port" value="18980"/>
-         <parameter key="retry" value="2"/>
-         <parameter key="timeout" value="3000"/>
-         <parameter key="rrd-base-name" value="java"/>
-         <parameter key="collection" value="jsr160"/>
-         <parameter key="thresholding-enabled" value="true"/>
-         <parameter key="ds-name" value="opennms-jvm"/>
-         <parameter key="friendly-name" value="opennms-jvm"/>
-      </service>
-      <service name="JMX-Minion" interval="300000" user-defined="false" status="on">
-         <parameter key="port" value="18980"/>
-         <parameter key="retry" value="2"/>
-         <parameter key="timeout" value="3000"/>
-         <parameter key="rrd-base-name" value="java"/>
-         <parameter key="collection" value="jmx-minion"/>
-         <parameter key="thresholding-enabled" value="true"/>
-         <parameter key="ds-name" value="jmx-minion"/>
-         <parameter key="friendly-name" value="jmx-minion"/>
-         <parameter key="use-foreign-id-as-system-id" value="true"/>
-      </service>
-      <service name="JMX-Kafka" interval="300000" user-defined="false" status="on">
-         <parameter key="port" value="9999"/>
-         <parameter key="retry" value="2"/>
-         <parameter key="timeout" value="3000"/>
-         <parameter key="rrd-base-name" value="java"/>
-         <parameter key="collection" value="jmx-kafka"/>
-         <parameter key="thresholding-enabled" value="true"/>
-         <parameter key="ds-name" value="jmx-kafka"/>
-         <parameter key="friendly-name" value="jmx-kafka"/>
+         <parameter key="collection" value="${requisition:collection|detector:collection|default}" />
+         <parameter key="thresholding-enabled" value="true" />
       </service>
       <service name="PostgreSQL" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="PostgreSQL"/>
-         <parameter key="thresholding-enabled" value="true"/>
-         <parameter key="driver" value="org.postgresql.Driver"/>
-         <parameter key="user" value="postgres"/>
-         <parameter key="password" value="postgres"/>
-         <parameter key="url" value="jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms"/>
+         <parameter key="collection" value="${requisition:collection|detector:collection|PostgreSQL}" />
+         <parameter key="thresholding-enabled" value="true" />
+         <parameter key="driver" value="${requisition:driver|detector:driver|org.postgresql.Driver}" />
+         <parameter key="user" value="${requisition:pg-user|postgres}" />
+         <parameter key="password" value="${requisition:pg-pass|postgres}" />
+         <parameter key="url" value="${requisition:url|detector:url|jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms}" />
       </service>
       <service name="Elasticsearch" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="xml-elasticsearch-cluster-stats"/>
-         <parameter key="handler-class" value="org.opennms.protocols.json.collector.DefaultJsonCollectionHandler"/>
+         <parameter key="collection" value="${requisition:collection|detector:collection|xml-elasticsearch-cluster-stats}" />
+         <parameter key="handler-class" value="${requisition:handler-class|detector:handler-class|org.opennms.protocols.json.collector.DefaultJsonCollectionHandler}" />
       </service>
       <service name="Windows-Exporter" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="windows-exporter"/>
-         <parameter key="thresholding-enabled" value="true"/>
-         <parameter key="url" value="http://INTERFACE_ADDRESS:9182/metrics"/>
-         <parameter key="timeout" value="3000"/>
-         <parameter key="retry" value="2"/>
+         <parameter key="collection" value="${requisition:collection|detector:collection|windows-exporter}" />
+         <parameter key="thresholding-enabled" value="true" />
+         <parameter key="url" value="${requisition:url|detector:url|http://INTERFACE_ADDRESS:9182/metrics}" />
+         <parameter key="timeout" value="${requisition:collector-timeout|requisition:timeout|detector:timeout|3000}" />
+         <parameter key="retry" value="${requisition:collector-retry|requisition:retry|detector:retry|2}" />
       </service>
       <service name="Node-Exporter" interval="300000" user-defined="false" status="on">
-         <parameter key="collection" value="node-exporter"/>
-         <parameter key="thresholding-enabled" value="true"/>
-         <parameter key="url" value="http://INTERFACE_ADDRESS:9100/metrics"/>
-         <parameter key="timeout" value="3000"/>
-         <parameter key="retry" value="2"/>
+         <parameter key="collection" value="${requisition:collection|detector:collection|node-exporter}" />
+         <parameter key="thresholding-enabled" value="true" />
+         <parameter key="url" value="${requisition:url|detector:url|http://INTERFACE_ADDRESS:9100/metrics}" />
+         <parameter key="timeout" value="${requisition:collector-timeout|requisition:timeout|detector:timeout|3000}" />
+         <parameter key="retry" value="${requisition:collector-retry|requisition:retry|detector:retry|2}" />
       </service>
    </package>
-   <collector service="Windows-Exporter" class-name="org.opennms.netmgt.collectd.prometheus.PrometheusCollector"/>
-   <collector service="Node-Exporter" class-name="org.opennms.netmgt.collectd.prometheus.PrometheusCollector"/>
-   <collector service="Elasticsearch" class-name="org.opennms.protocols.xml.collector.XmlCollector"/>
-   <collector service="PostgreSQL" class-name="org.opennms.netmgt.collectd.JdbcCollector"/>
-   <collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector"/>
-   <collector service="WMI" class-name="org.opennms.netmgt.collectd.WmiCollector"/>
-   <collector service="WS-Man" class-name="org.opennms.netmgt.collectd.WsManCollector"/>
-   <collector service="VMware-VirtualMachine" class-name="org.opennms.netmgt.collectd.VmwareCollector"/>
-   <collector service="VMware-HostSystem" class-name="org.opennms.netmgt.collectd.VmwareCollector"/>
-   <collector service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.collectd.VmwareCimCollector"/>
-   <collector service="OpenNMS-JVM" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
-   <collector service="JMX-Minion" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
-   <collector service="JMX-Cassandra" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
-   <collector service="JMX-Cassandra-Newts" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
-   <collector service="JMX-Kafka" class-name="org.opennms.netmgt.collectd.Jsr160Collector"/>
+   <collector service="Windows-Exporter" class-name="org.opennms.netmgt.collectd.prometheus.PrometheusCollector" />
+   <collector service="Node-Exporter" class-name="org.opennms.netmgt.collectd.prometheus.PrometheusCollector" />
+   <collector service="Elasticsearch" class-name="org.opennms.protocols.xml.collector.XmlCollector" />
+   <collector service="PostgreSQL" class-name="org.opennms.netmgt.collectd.JdbcCollector" />
+   <collector service="SNMP" class-name="org.opennms.netmgt.collectd.SnmpCollector" />
+   <collector service="WMI" class-name="org.opennms.netmgt.collectd.WmiCollector" />
+   <collector service="WS-Man" class-name="org.opennms.netmgt.collectd.WsManCollector" />
+   <collector service="VMware-VirtualMachine" class-name="org.opennms.netmgt.collectd.VmwareCollector" />
+   <collector service="VMware-HostSystem" class-name="org.opennms.netmgt.collectd.VmwareCollector" />
+   <collector service="VMwareCim-HostSystem" class-name="org.opennms.netmgt.collectd.VmwareCimCollector" />
+   <collector service="OpenNMS-JVM" class-name="org.opennms.netmgt.collectd.Jsr160Collector" />
+   <collector service="JMX-Minion" class-name="org.opennms.netmgt.collectd.Jsr160Collector" />
+   <collector service="JMX-Cassandra" class-name="org.opennms.netmgt.collectd.Jsr160Collector" />
+   <collector service="JMX-Cassandra-Newts" class-name="org.opennms.netmgt.collectd.Jsr160Collector" />
+   <collector service="JMX-Kafka" class-name="org.opennms.netmgt.collectd.Jsr160Collector" />
+   <collector service="OpenNMS-DB" class-name="org.opennms.netmgt.collectd.JdbcCollector" />
+   <collector service="OpenNMS-DB-Stats" class-name="org.opennms.netmgt.collectd.JdbcCollector" />
 </collectd-configuration>

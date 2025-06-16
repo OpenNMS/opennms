@@ -1,0 +1,26 @@
+<foreign-source xmlns="http://xmlns.opennms.org/xsd/config/foreign-source" name="selfmonitor">
+   <scan-interval>1d</scan-interval>
+   <detectors>
+      <detector name="ICMP" class="org.opennms.netmgt.provision.detector.icmp.IcmpDetector"/>
+      <detector name="SNMP" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector"/>
+      <detector name="OpenNMS-JVM" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
+         <parameter key="factory" value="PASSWORD_CLEAR"/>
+         <parameter key="username" value="admin"/>
+         <parameter key="ipMatch" value="127.0.0.1"/>
+         <parameter key="port" value="18980"/>
+         <parameter key="password" value="admin"/>
+         <parameter key="urlPath" value="/jmxrmi"/>
+         <parameter key="retries" value="2"/>
+         <parameter key="type" value="default"/>
+         <parameter key="protocol" value="rmi"/>
+         <parameter key="timeout" value="3000"/>
+      </detector>
+      <detector name="OpenNMS-DB" class="org.opennms.netmgt.provision.detector.loop.LoopDetector">
+         <parameter key="ipMatch" value="127.0.0.1"/>
+      </detector>
+      <detector name="OpenNMS-DB-Stats" class="org.opennms.netmgt.provision.detector.loop.LoopDetector">
+         <parameter key="ipMatch" value="127.0.0.1"/>
+      </detector>
+   </detectors>
+   <policies/>
+</foreign-source>

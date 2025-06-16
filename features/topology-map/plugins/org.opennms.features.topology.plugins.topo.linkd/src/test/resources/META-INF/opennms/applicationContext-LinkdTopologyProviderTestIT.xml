@@ -177,7 +177,12 @@
 		<constructor-arg ref="nodeTopologyService" />
 	</bean>
 
-	<bean id ="cdpOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.CdpOnmsTopologyUpdater">
+    <bean id ="networkRouterTopologyUpdater" class="org.opennms.netmgt.enlinkd.NetworkRouterTopologyUpdater">
+        <constructor-arg ref="onmsTopologyDao" />
+        <constructor-arg ref="nodeTopologyService" />
+    </bean>
+
+    <bean id ="cdpOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.CdpOnmsTopologyUpdater">
 		<constructor-arg ref="onmsTopologyDao" />
 		<constructor-arg ref="cdpTopologyService" />
 		<constructor-arg ref="nodeTopologyService" />

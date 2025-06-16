@@ -181,6 +181,7 @@ message Node {
   HwEntity hw_inventory = 13;
 }
 
+/* NOTE: if you change this, you must also update ALEC's copy as well */
 message TopologyRef {
   string id = 1;
   enum Protocol {
@@ -190,6 +191,9 @@ message TopologyRef {
     BRIDGE = 3;
     CDP = 4;
     USERDEFINED = 5;
+    NODES = 6;
+    OSPFAREA = 7;
+    NETWORKROUTER = 8;
   }
   Protocol protocol = 2;
 }

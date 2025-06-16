@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>31.0.3-SNAPSHOT</version>
+    <version>33.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -460,11 +460,6 @@
     </dependency>
     <dependency>
       <groupId>org.opennms</groupId>
-      <artifactId>opennms-reporting</artifactId>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
       <artifactId>opennms-provision-persistence</artifactId>
       <scope>${onmsLibScope}</scope>
     </dependency>
@@ -526,12 +521,6 @@
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
       <artifactId>felix-dependencies</artifactId>
-      <type>pom</type>
-      <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
-      <artifactId>rancid-dependencies</artifactId>
       <type>pom</type>
       <scope>${onmsLibScope}</scope>
     </dependency>

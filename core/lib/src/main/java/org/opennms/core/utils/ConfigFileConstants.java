@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.core.utils;
 
 import org.slf4j.Logger;
@@ -386,17 +379,6 @@ public abstract class ConfigFileConstants {
     public static final int WMI_CONFIG_FILE_NAME;
 
     /**
-     * The RWS (RestFul Web Service) configuration file
-     * used to access Rancid
-     */
-    public static final int RWS_CONFIG_FILE_NAME;   
-
-    /**
-     * The Rancid Provisioning Adapter configuration file
-     */
-    public static final int RANCID_CONFIG_FILE_NAME;
-
-    /**
      * The SNMP Asset Provisioning Adapter configuration file
      */
     public static final int SNMP_ASSET_ADAPTER_CONFIG_FILE_NAME;
@@ -528,12 +510,6 @@ public abstract class ConfigFileConstants {
         
         OPENNMS_DATASOURCE_CONFIG_FILE_NAME = 69;
         
-        RWS_CONFIG_FILE_NAME = 70;
-
-        // XMP_COLLECTION_CONFIG_FILE_NAME = 71;
-        
-        // XMP_CONFIG_FILE_NAME = 72;
-
         SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME = 73;
         
         ASTERISK_CONFIG_FILE_NAME = 74;
@@ -541,8 +517,6 @@ public abstract class ConfigFileConstants {
         AMI_CONFIG_FILE_NAME = 75;
         
         MAPS_ADAPTER_CONFIG_FILE_NAME = 76;
-        
-        RANCID_CONFIG_FILE_NAME = 77;
         
         MICROBLOG_CONFIG_FILE_NAME = 78;
         
@@ -633,8 +607,6 @@ public abstract class ConfigFileConstants {
         FILE_ID_TO_NAME[WMI_CONFIG_FILE_NAME] = "wmi-config.xml";
         FILE_ID_TO_NAME[WMI_COLLECTION_CONFIG_FILE_NAME] = "wmi-datacollection-config.xml";
         FILE_ID_TO_NAME[OPENNMS_DATASOURCE_CONFIG_FILE_NAME] = "opennms-datasources.xml";
-        FILE_ID_TO_NAME[RWS_CONFIG_FILE_NAME] = "rws-configuration.xml";
-        FILE_ID_TO_NAME[RANCID_CONFIG_FILE_NAME] = "rancid-configuration.xml";
         FILE_ID_TO_NAME[SNMP_INTERFACE_POLLER_CONFIG_FILE_NAME] = "snmp-interface-poller-configuration.xml";
         FILE_ID_TO_NAME[ASTERISK_CONFIG_FILE_NAME] = "asterisk-configuration.properties";
         FILE_ID_TO_NAME[AMI_CONFIG_FILE_NAME] = "ami-config.xml";

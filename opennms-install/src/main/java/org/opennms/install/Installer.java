@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2004-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.install;
 
 import java.io.BufferedReader;
@@ -281,6 +274,16 @@ public class Installer {
         }
 
         System.out.println();
+        System.out.println("*** Thanks for using OpenNMS!");
+        System.out.println("***");
+        System.out.println("*** Consider joining our active and supportive online community through");
+        System.out.println("***");
+        System.out.println("*** https://www.opennms.com/participate/");
+        System.out.println("***");
+        System.out.println("*** To connect with users, testers, experts, and contributors.");
+        System.out.println("***");
+        System.out.println("*** Or email us directly at contactus@opennms.com to learn more.");
+        System.out.println();
         System.out.println("Installer completed successfully!");
 
         if (!m_skip_upgrade_tools) {
@@ -399,7 +402,7 @@ public class Installer {
         } catch (Exception e) {
             m_import_dir = m_opennms_home + File.separator + "etc" + File.separator + "imports";
         }
-
+        System.setProperty("opennms.home", m_opennms_home);
         //        final String pg_lib_dir = m_properties.getProperty("install.postgresql.dir");
         //
         //        if (pg_lib_dir != null) {

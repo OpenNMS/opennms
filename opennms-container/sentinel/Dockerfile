@@ -1,7 +1,29 @@
+#
+# Licensed to The OpenNMS Group, Inc (TOG) under one or more
+# contributor license agreements.  See the LICENSE.md file
+# distributed with this work for additional information
+# regarding copyright ownership.
+#
+# TOG licenses this file to You under the GNU Affero General
+# Public License Version 3 (the "License") or (at your option)
+# any later version.  You may not use this file except in
+# compliance with the License.  You may obtain a copy of the
+# License at:
+#
+#      https://www.gnu.org/licenses/agpl-3.0.txt
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+# either express or implied.  See the License for the specific
+# language governing permissions and limitations under the
+# License.
+#
+
 ##
-# Use Java base image and setup required DEBS as cacheable image.
+# Use Java base image and setup required RPMs as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubuntu-3.4.0.b268-jre-11"
+ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.5.3.b286-jre-17"
 
 FROM ${BASE_IMAGE} AS sentinel-tarball
 
@@ -22,39 +44,16 @@ RUN chmod -R g-w /opt/usr-share/sentinel && \
 
 FROM ${BASE_IMAGE} AS sentinel-base
 
-ARG REQUIRED_DEBS="hostname wget gettext openssh-client uuid-runtime rsync"
-
-ARG REPO_KEY_URL="https://debian.opennms.org/OPENNMS-GPG-KEY"
+ARG REQUIRED_RPMS="hostname uuid"
 
 SHELL ["/bin/bash", "-c"]
 
-# Prevent prompts
-ENV DEBIAN_FRONTEND=noninteractive
-
 # Collect generic steps in a layer for caching
-# import keys & install required debs
-RUN apt-get update && \
-    apt-get --no-install-recommends install -yq gnupg ca-certificates && \
-    curl -fsSL ${REPO_KEY_URL} | apt-key add && \
-    apt-get --no-install-recommends install -yq ${REQUIRED_DEBS} && \
-    apt-get -y autoclean && \
-    apt-get -y clean && \
-    rm -rf /var/cache/apt
 
-# get any security updates for the base system
-RUN grep security /etc/apt/sources.list > /etc/apt/security.sources.list && \
-    apt update -o Dir::Etc::SourceList=/etc/apt/security.sources.list && \
-    apt -y -u -o Dir::Etc::SourceList=/etc/apt/security.sources.list full-upgrade && \
-    apt clean && \
-    rm -rf /var/cache/apt /etc/apt/security.sources.list
+# install required RPMs
+RUN microdnf -y install ${REQUIRED_RPMS} && \
+    rm -rf /var/cache/yum
 
-##
-# Download plugins
-##
-FROM ${BASE_IMAGE} AS sentinel-plugins
-
-COPY plugins.sh /tmp/plugins.sh 
-RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
 
 ##
 # Install and setup OpenNMS Sentinel
@@ -64,8 +63,6 @@ FROM sentinel-base
 # If you copy from /usr/share/sentinel to /usr/share/sentinel the permissions are not preserved
 # We would have 755 for sentinel:root instead of 775 and prevents writing lock files in /usr/share/sentinel
 COPY --chown=10001:0 --from=sentinel-tarball /opt/usr-share /usr/share
-
-COPY --chown=10001:0 --from=sentinel-plugins /opt/usr-plugins /usr/share/opennms/deploy
 
 SHELL ["/bin/bash", "-c"]
 
@@ -101,11 +98,6 @@ RUN install -d -o 10001 -g 0 -m 775 \
 # Install entrypoint wrapper and health check script
 COPY container-fs/entrypoint.sh /
 COPY container-fs/health.sh /
-
-# Allow to send ICMP messages as non-root user
-RUN setcap cap_net_raw+ep ${JAVA_HOME}/bin/java && \
-    echo ${JAVA_HOME}/lib/jli > /etc/ld.so.conf.d/java-latest.conf && \
-    ldconfig
 
 # Install confd.io configuration files and scripts and ensure they are executable
 COPY ./container-fs/confd/ /opt/sentinel/confd/

@@ -13,6 +13,7 @@
     <reference id="nodeDao"                     interface="org.opennms.netmgt.dao.api.NodeDao"                      availability="mandatory"/>
     <reference id="serviceTypeDao"              interface="org.opennms.netmgt.dao.api.ServiceTypeDao"               availability="mandatory"/>
     <reference id="monitoringLocationDao"       interface="org.opennms.netmgt.dao.api.MonitoringLocationDao"        availability="mandatory"/>
+    <reference id="alarmDao"                    interface="org.opennms.netmgt.dao.api.AlarmDao"                     availability="mandatory"/>
     <reference id="genericPersistenceAccessor"  interface="org.opennms.netmgt.dao.api.GenericPersistenceAccessor"   availability="mandatory"/>
     <reference id="kscReportService"            interface="org.opennms.web.svclayer.api.KscReportService"           availability="mandatory"/>
     <reference id="requisitionAccessService"    interface="org.opennms.web.svclayer.api.RequisitionAccessService"   availability="mandatory"/>
@@ -37,6 +38,13 @@
         <argument ref="entityScopeProvider" />
     </bean>
     <service ref="nodeCategorySearchProvider" interface="org.opennms.netmgt.search.api.SearchProvider" />
+
+    <bean id="nodeAlarmSearchProvider" class="org.opennms.netmgt.search.providers.node.NodeAlarmSearchProvider">
+        <argument ref="nodeDao" />
+        <argument ref="alarmDao" />
+        <argument ref="entityScopeProvider" />
+    </bean>
+    <service ref="nodeAlarmSearchProvider" interface="org.opennms.netmgt.search.api.SearchProvider" />
 
     <bean id="nodeLocationSearchProvider" class="org.opennms.netmgt.search.providers.node.NodeLocationSearchProvider">
         <argument ref="nodeDao" />

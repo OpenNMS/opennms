@@ -35,9 +35,31 @@
             <cm:property name="settings.index.refresh_interval" value="" />
             <cm:property name="settings.index.routing_partition_size" value="" />
             <cm:property name="indexPrefix" value="" />
+
+            <!-- CircuitBreaker settings -->
+            <cm:property name="circuitbreaker.failure_rate_threshold_in_percent" value="99"/>
+            <cm:property name="circuitbreaker.wait_in_open_state_milliseconds" value="60000"/>
+            <cm:property name="circuitbreaker.ring_buffer_size_in_closed.state" value="100"/>
+            <cm:property name="circuitbreaker.ring_buffer_size_in_half_open_state" value="10"/>
+            
         </cm:default-properties>
     </cm:property-placeholder>
 
+    <reference id="eventForwarder" interface="org.opennms.netmgt.events.api.EventForwarder" availability="mandatory"/>
+
+    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao"/>
+    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao"/>
+    <reference id="monitoredServiceDao" interface="org.opennms.netmgt.dao.api.MonitoredServiceDao"/>
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils"/>
+    <reference id="secureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault" availability="mandatory"/>
+
+    <bean id="entityScopeProvider" class="org.opennms.core.mate.model.EntityScopeProviderImpl">
+        <property name="nodeDao" ref="nodeDao"/>
+        <property name="ipInterfaceDao" ref="ipInterfaceDao"/>
+        <property name="monitoredServiceDao" ref="monitoredServiceDao"/>
+        <property name="sessionUtils" ref="sessionUtils"/>
+        <property name="scv" ref="secureCredentialsVault"/>
+    </bean>
 
     <!-- Used to define credentials in a properties file and enforcing the bundle to reload when credentials change -->
     <bean id="credentialsProvider" class="org.opennms.features.jest.client.credentials.DefaultCredentialsProvider">
@@ -48,10 +70,12 @@
     <bean id="requestExecutorFactory" class="org.opennms.features.jest.client.executors.DefaultRequestExecutor">
         <argument value="${retryCooldown}"/>
     </bean>
+
     <bean id="clientFactory" class="org.opennms.features.jest.client.RestClientFactory">
         <argument value="${elasticUrl}"/>
         <argument value="${globalElasticUser}"/>
         <argument value="${globalElasticPassword}"/>
+        <property name="entityScopeProvider" ref="entityScopeProvider"/>
         <property name="defaultMaxTotalConnectionPerRoute" value="${defaultMaxTotalConnectionPerRoute}"/>
         <property name="maxTotalConnection" value="${maxTotalConnection}"/>
         <property name="discovery" value="${nodeDiscovery}" />
@@ -67,6 +91,26 @@
 
     <bean id="jestClient" factory-ref="clientFactory" factory-method="createClient" destroy-method="shutdownClient"/>
 
+    <bean id="circuitBreakerProvider"
+          class="org.opennms.features.jest.client.CircuitBreakerProvider">
+        <property name="failureRateThreshold" value="${circuitbreaker.failure_rate_threshold_in_percent}"/>
+        <property name="waitDurationInOpenStateInMills" value="${circuitbreaker.wait_in_open_state_milliseconds}"/>
+        <property name="ringBufferSizeInClosedState" value="${circuitbreaker.ring_buffer_size_in_closed.state}"/>
+        <property name="ringBufferSizeInHalfOpenState" value="${circuitbreaker.ring_buffer_size_in_half_open_state}"/>
+    </bean>
+
+    <bean id="circuitBreaker"
+          factory-ref="circuitBreakerProvider"
+          factory-method="getCircuitBreaker">
+        <argument value="Feedback"/>
+    </bean>
+
+    <bean id="jestClientWithCircuitBreaker" class="org.opennms.features.jest.client.JestClientWithCircuitBreaker" init-method="init">
+        <argument ref="jestClient"/>
+        <argument ref="circuitBreaker"/>
+        <property name="eventForwarder" ref="eventForwarder"/>
+    </bean>
+
     <bean id="indexStrategy" class="org.opennms.features.jest.client.index.IndexStrategyFactory" factory-method="createIndexStrategy">
         <argument value="${elasticIndexStrategy}"/>
     </bean>
@@ -81,12 +125,12 @@
 
 	<bean id="elasticFeedbackRepositoryInitializer" class="org.opennms.features.situationfeedback.elastic.ElasticFeedbackRepositoryInitializer">
 		<argument ref="blueprintBundleContext" />
-		<argument ref="jestClient" />
+		<argument ref="jestClientWithCircuitBreaker" />
 		<argument ref="indexSettings" />
 	</bean>
 	
     <bean id="elasticFeedbackRepository" class="org.opennms.features.situationfeedback.elastic.ElasticFeedbackRepository">
-		<argument ref="jestClient" />
+		<argument ref="jestClientWithCircuitBreaker" />
 		<argument ref="indexStrategy"/>
 		<argument value="${bulkRetryCount}" />
 		<argument ref="elasticFeedbackRepositoryInitializer" />
@@ -100,7 +144,7 @@
     <!-- Health Check -->
     <service interface="org.opennms.core.health.api.HealthCheck">
         <bean class="org.opennms.features.jest.client.ElasticHealthCheck" >
-            <argument ref="jestClient"/>
+            <argument ref="jestClientWithCircuitBreaker"/>
             <argument value="Situation Feedback"/>
         </bean>
     </service>

@@ -74,7 +74,7 @@
     <!-- Metrics -->
     <bean id="classificationMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
 
-    <bean id="classificationMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+    <bean id="classificationMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.jmx.JmxReporter" factory-method="forRegistry">
         <argument ref="classificationMetricRegistry"/>
     </bean>
     <bean id="classificationMetricRegistryDomainedJmxReporterBuilder" factory-ref="classificationMetricRegistryJmxReporterBuilder" factory-method="inDomain">

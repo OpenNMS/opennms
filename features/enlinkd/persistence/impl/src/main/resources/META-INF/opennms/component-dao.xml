@@ -33,6 +33,11 @@
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.LldpElementDao" ref="lldpElementDao" />
 
+    <bean id="ospfAreaDao" class="org.opennms.netmgt.enlinkd.persistence.impl.OspfAreaDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+    <onmsgi:service interface="org.opennms.netmgt.enlinkd.persistence.api.OspfAreaDao" ref="ospfAreaDao" />
+
     <bean id="ospfLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.OspfLinkDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>

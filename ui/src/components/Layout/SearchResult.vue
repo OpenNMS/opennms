@@ -27,7 +27,9 @@ import SubdirectoryArrowLeft from '@featherds/icon/navigation/SubdirectoryArrowL
 import { SearchResultItem } from '@/types'
 
 defineProps({
-  item: { type: Object as PropType<SearchResultItem>, default: () => { return } },
+  // TODO: SearchResult:item in components/Layout/Search.vue should be a SearchResultItem but may not be,
+  // that's why we are using "| any" here. Need to make sure we are passing correct objects and types
+  item: { type: Object as PropType<SearchResultItem | any>, default: () => { return } },
   itemClicked: { type: Function as PropType<(item: SearchResultItem) => void>, default: () => { return } },
   iconClass: { type: String, default: '' }
 })

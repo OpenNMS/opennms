@@ -13,6 +13,7 @@ commands:
   #commands:login/login.index#
   #commands:executions/executions.index#
   #commands:oci/oci#
+  #commands:oci/scan-image-trivy#
   #commands:generic/generic#
 
 #workflows#
@@ -20,8 +21,6 @@ commands:
 jobs:
   #jobs:build/build.index#
   #jobs:tarball-assembly-only#
-  #jobs:rpms/rpms.index#
-  #jobs:debian packages/deb.index#
   #jobs:oci/oci.index#
   #jobs:tests/integration/integration.index#
   #jobs:code-coverage#

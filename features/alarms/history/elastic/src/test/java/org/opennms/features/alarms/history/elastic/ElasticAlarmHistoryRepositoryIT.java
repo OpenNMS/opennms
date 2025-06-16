@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.features.alarms.history.elastic;
 
 import static org.awaitility.Awaitility.await;
@@ -37,12 +30,13 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.core.IsEqual.equalTo;
 
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 
-import org.elasticsearch.index.reindex.ReindexPlugin;
 import org.elasticsearch.painless.PainlessPlugin;
+import org.elasticsearch.reindex.ReindexPlugin;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -50,23 +44,28 @@ import org.opennms.core.test.elastic.ElasticSearchRule;
 import org.opennms.core.test.elastic.ElasticSearchServerConfig;
 import org.opennms.core.time.PseudoClock;
 import org.opennms.features.alarms.history.api.AlarmState;
-import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
 import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.netmgt.dao.mock.AbstractMockDao;
+import org.opennms.netmgt.events.api.EventForwarder;
+import org.opennms.netmgt.model.OnmsAlarm;
+import org.opennms.netmgt.model.OnmsEvent;
 
 import com.codahale.metrics.MetricRegistry;
 import org.awaitility.Awaitility;
 
-import io.searchbox.client.JestClient;
+import io.github.resilience4j.circuitbreaker.CircuitBreaker;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
+import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
 
 public class ElasticAlarmHistoryRepositoryIT {
 
-    private JestClient jestClient;
+    private JestClientWithCircuitBreaker jestClient;
     private ElasticAlarmHistoryRepository repo;
     private ElasticAlarmIndexer indexer;
-
+    private CircuitBreaker circuitBreaker;
     @Rule
     public ElasticSearchRule elasticSearchRule = new ElasticSearchRule(new ElasticSearchServerConfig()
             .withPlugins(PainlessPlugin.class, ReindexPlugin.class)
@@ -74,8 +73,11 @@ public class ElasticAlarmHistoryRepositoryIT {
 
     @Before
     public void setUp() throws IOException {
-        RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
-        jestClient = restClientFactory.createClient();
+        final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
+        final EventForwarder eventForwarder = new AbstractMockDao.NullEventForwarder();
+        final JestClientWithCircuitBreaker jestClient = restClientFactory.createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
+                CircuitBreakerConfig.custom().waitDurationInOpenState(Duration.ofDays(1000)).build()
+        ).circuitBreaker(ElasticAlarmHistoryRepositoryIT.class.getName()), eventForwarder);
         repo = new ElasticAlarmHistoryRepository(jestClient, IndexStrategy.MONTHLY, new IndexSettings());
 
         TemplateInitializerForAlarms templateInitializer = new TemplateInitializerForAlarms(jestClient);

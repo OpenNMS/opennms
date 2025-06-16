@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.enlinkd.model;
 
 import java.io.Serializable;
@@ -66,7 +59,8 @@ public class LldpLink implements Serializable {
 	private OnmsNode m_node;
 	
 	private LldpPortIdSubType m_lldpPortIdSubType;
-	private Integer m_lldpLocalPortNum;
+	private Integer m_lldpRemLocalPortNum;
+	private Integer m_lldpRemIndex;
 	private Integer m_lldpPortIfindex;
 	private String m_lldpPortId;
 	private String m_lldpPortDescr;
@@ -83,11 +77,12 @@ public class LldpLink implements Serializable {
 	public LldpLink() {
 	}
 
-    public LldpLink(OnmsNode node, Integer localPortNum, Integer portIfIndex, String portId,
+    public LldpLink(OnmsNode node, Integer lldpRemIndex, Integer lldpRemLocalPortNum, Integer portIfIndex, String portId,
                     String portDescr, LldpPortIdSubType portIdSubType, String remChassisId, String remSysname, LldpChassisIdSubType remChassisIdSubType,
                     String remPortId, LldpPortIdSubType remPortIdSubType, String remPortDescr) {
         setNode(node);
-        setLldpLocalPortNum(localPortNum);
+        setLldpRemIndex(lldpRemIndex);
+		setLldpRemLocalPortNum(lldpRemLocalPortNum);
         setLldpPortIfindex(portIfIndex);
         setLldpPortId(portId);
         setLldpPortDescr(portDescr);
@@ -126,16 +121,23 @@ public class LldpLink implements Serializable {
 		m_node = node;
 	}
 
-    @Column(name="lldpLocalPortNum", nullable = false)
-	public Integer getLldpLocalPortNum() {
-		return m_lldpLocalPortNum;
+    @Column(name="lldpRemLocalPortNum", nullable = false)
+	public Integer getLldpRemLocalPortNum() {
+		return m_lldpRemLocalPortNum;
 	}
 
-	public void setLldpLocalPortNum(Integer lldpLocalPortNum) {
-		m_lldpLocalPortNum = lldpLocalPortNum;
+	public void setLldpRemLocalPortNum(Integer lldpRemLocalPortNum) {
+		m_lldpRemLocalPortNum = lldpRemLocalPortNum;
 	}
 
+	@Column(name="lldpRemIndex", nullable = false)
+	public Integer getLldpRemIndex() {
+		return m_lldpRemIndex;
+	}
 
+	public void setLldpRemIndex(Integer lldpRemIndex) {
+		m_lldpRemIndex = lldpRemIndex;
+	}
 
     @Column(name="lldpPortIdSubType", nullable = false)
     @Type(type="org.opennms.netmgt.enlinkd.model.LldpPortIdSubTypeUserType")
@@ -298,8 +300,10 @@ public class LldpLink implements Serializable {
 
 		return "lldplink: nodeid:[" +
 				getNode().getId() +
-				"]. portnum:[ " +
-				getLldpLocalPortNum() +
+				"]. remLocalPortNum:[ " +
+				getLldpRemLocalPortNum() +
+				"]. remIndex:[ " +
+				getLldpRemIndex() +
 				"], ifindex:[" +
 				getLldpPortIfindex() +
 				"], port type/id:[" +

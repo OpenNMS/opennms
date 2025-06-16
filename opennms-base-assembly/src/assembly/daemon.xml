@@ -32,32 +32,12 @@
       <outputDirectory>etc/report-templates</outputDirectory>
     </fileSet>
     <fileSet>
-      <directory>${project.build.outputDirectory}/contrib</directory>
-      <includes>
-        <include>**/*.pl</include>
-        <include>**/*.py</include>
-        <include>**/*.sh</include>
-      </includes>
-      <outputDirectory>contrib</outputDirectory>
-      <!-- Mark scripts in contrib as executable -->
-      <fileMode>0755</fileMode>
-    </fileSet>
-    <fileSet>
-      <directory>${project.build.outputDirectory}/contrib</directory>
-      <excludes>
-        <exclude>**/*.pl</exclude>
-        <exclude>**/*.py</exclude>
-        <exclude>**/*.sh</exclude>
-      </excludes>
-      <outputDirectory>contrib</outputDirectory>
-    </fileSet>
-    <fileSet>
       <directory>${project.build.outputDirectory}/logs</directory>
       <outputDirectory>logs</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>${project.build.directory}/jasperstudio-extension</directory>
-      <outputDirectory>contrib/jasperstudio-extension</outputDirectory>
+      <outputDirectory>bin</outputDirectory>
     </fileSet>
     <fileSet>
       <directory>${project.build.outputDirectory}/share</directory>

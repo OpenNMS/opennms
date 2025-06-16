@@ -18,7 +18,7 @@ It also provides reference documentation for Newts:
 == Cassandra documentation
 
 Cassandra cluster design, setup, sizing, tuning, and operation are out of scope for this documentation.
-To install and set up a Cassandra cluster, please follow the link:http://cassandra.apache.org/download[Cassandra installation instructions].
+To install and set up a Cassandra cluster, please follow the link:https://cassandra.apache.org/_/download.html[Cassandra installation instructions].
 For further information, see link:https://cassandra.apache.org/doc/latest/getting_started/index.html[Cassandra Getting Started Guide].
 
 TIP: To avoid unwanted updates, disable the Cassandra repository on DNF/YUM-based distributions or use `apt-mark hold cassandra` on APT based distributions.

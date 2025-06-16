@@ -3,7 +3,7 @@
     <div class="config-header">
       <div class="config-column">
         <div>Devices:</div>
-        <div class="config-number">{{ totalCountOfDeviceConfigBackups }}</div>
+        <div class="config-number">{{ deviceStore.deviceConfigTotal || 'N/A' }}</div>
       </div>
       <div class="divider"></div>
       <div class="config-column">
@@ -132,7 +132,7 @@
       </thead>
       <tbody>
         <tr
-          v-for="config in deviceConfigBackups"
+          v-for="config in deviceStore.deviceConfigBackups"
           :key="config.id"
         >
           <td>
@@ -220,7 +220,6 @@
   setup
   lang="ts"
 >
-import { useStore } from 'vuex'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { FeatherSortObject } from '@/types'
 import { FeatherCheckbox } from '@featherds/checkbox'
@@ -238,6 +237,8 @@ import DCBModalViewHistoryContentVue from './DCBModalViewHistoryContent.vue'
 import DCBModalConfigDiffContent from './DCBModalConfigDiffContent.vue'
 import { DeviceConfigBackup, DeviceConfigQueryParams } from '@/types/deviceConfig'
 import DCBTableStatusDropdown from './DCBTableStatusDropdown.vue'
+import { useDeviceStore } from '@/stores/deviceStore'
+import { useMenuStore } from '@/stores/menuStore'
 import { MainMenu } from '@/types/mainMenu'
 
 enum DCBModalContentComponentNames {
@@ -246,8 +247,9 @@ enum DCBModalContentComponentNames {
   DCBModalConfigDiffContent = 'DCBModalConfigDiffContent'
 }
 
-const store = useStore()
-const mainMenu = computed<MainMenu>(() => store.state.menuModule.mainMenu)
+const deviceStore = useDeviceStore()
+const menuStore = useMenuStore()
+const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 const dcbModalVisible = ref(false)
 const dcbModalContentComponentName = ref('')
 const all = ref(false)
@@ -261,7 +263,7 @@ const sortStates: Record<string, SORT> = reactive({
   lastBackup: SORT.NONE,
   lastUpdated: SORT.NONE
 })
-const { arrivedState, directions } = useScroll(tableWrap, {
+const { arrivedState, directions } = useScroll(tableWrap.value as HTMLElement, {
   offset: { bottom: 300 }
 })
 
@@ -279,9 +281,6 @@ watch(() => directions.bottom, () => {
   }
 })
 
-const deviceConfigBackups = computed<DeviceConfigBackup[]>(() => store.state.deviceModule.deviceConfigBackups)
-const totalCountOfDeviceConfigBackups = computed(() => store.state.deviceModule.deviceConfigTotal)
-const deviceConfigBackupQueryParams = computed<DeviceConfigQueryParams>(() => store.state.deviceModule.deviceConfigBackupQueryParams)
 const selectedDeviceConfigIds = computed<number[]>(() => {
   return Object.keys(selectedDeviceConfigBackups.value)
     .filter((id) => selectedDeviceConfigBackups.value[id])
@@ -290,17 +289,17 @@ const selectedDeviceConfigIds = computed<number[]>(() => {
 
 const numberOfSelectedDevices = computed<number>(() => {
   if (all.value) {
-    return totalCountOfDeviceConfigBackups.value
+    return deviceStore.deviceConfigTotal
   }
 
   return selectedDeviceConfigIds.value.length
 })
 
 // for enabling / disabling table buttons (history, backup, d/l, compare...)
-const noConfigsSelected = computed<boolean>(() => (selectedDeviceConfigIds.value.length === 0 && !all.value) || (all.value && !deviceConfigBackups.value.length))
-const singleConfigSelected = computed<boolean>(() => (!all.value && selectedDeviceConfigIds.value.length === 1) || (all.value && deviceConfigBackups.value.length === 1))
+const noConfigsSelected = computed<boolean>(() => (selectedDeviceConfigIds.value.length === 0 && !all.value) || (all.value && !deviceStore.deviceConfigBackups.length))
+const singleConfigSelected = computed<boolean>(() => (!all.value && selectedDeviceConfigIds.value.length === 1) || (all.value && deviceStore.deviceConfigBackups.length === 1))
 const singleConfigSelectedHasNoServiceName = computed<boolean>(() => singleConfigSelected.value && !getDeviceConfigBackupById(selectedDeviceConfigIds.value[0]).serviceName)
-const getDeviceConfigBackupById = (id: number) => deviceConfigBackups.value.filter((backup) => backup.id === id)[0]
+const getDeviceConfigBackupById = (id: number) => deviceStore.deviceConfigBackups.filter((backup) => backup.id === id)[0]
 
 const sortByColumnHandler = (sortObj: FeatherSortObject) => {
   for (const key in sortStates) {
@@ -316,13 +315,13 @@ const sortByColumnHandler = (sortObj: FeatherSortObject) => {
     orderBy: sortObj.property
   }
 
-  store.dispatch('deviceModule/updateDeviceConfigBackupQueryParams', newQueryParams)
-  store.dispatch('deviceModule/getDeviceConfigBackups')
+  deviceStore.updateDeviceConfigBackupQueryParams(newQueryParams)
+  deviceStore.getDeviceConfigBackups()
 }
 
 const selectAll = () => {
   if (all.value) {
-    store.dispatch('deviceModule/setSelectedIds', 'all')
+    deviceStore.setSelectedIds('all')
   } else {
     clearAllSelectedDevices()
   }
@@ -330,16 +329,16 @@ const selectAll = () => {
 
 const clearAllSelectedDevices = () => {
   selectedDeviceConfigBackups.value = {}
-  store.dispatch('deviceModule/setSelectedIds', selectedDeviceConfigIds.value)
+  deviceStore.setSelectedIds(selectedDeviceConfigIds.value)
 }
 
 const selectCheckbox = (config: DeviceConfigBackup) => {
   selectedDeviceConfigBackups.value[config.id] = !selectedDeviceConfigBackups.value[config.id]
-  store.dispatch('deviceModule/setSelectedIds', selectedDeviceConfigIds.value)
+  deviceStore.setSelectedIds(selectedDeviceConfigIds.value)
 }
 
-const onDownload = () => store.dispatch('deviceModule/downloadSelectedDevices')
-const onBackupNow = () => store.dispatch('deviceModule/backupSelectedDevices')
+const onDownload = () => deviceStore.downloadSelectedDevices()
+const onBackupNow = () => deviceStore.backupSelectedDevices()
 
 const onViewHistory = () => {
   dcbModalContentComponentName.value = DCBModalContentComponentNames.DCBModalViewHistoryContent
@@ -352,19 +351,19 @@ const onCompare = () => {
 }
 
 const onLastBackupDateClick = (config: DeviceConfigBackup) => {
-  store.dispatch('deviceModule/setModalDeviceConfigBackup', config)
+  deviceStore.setModalDeviceConfigBackup(config)
   dcbModalContentComponentName.value = DCBModalContentComponentNames.DCBModalLastBackupContent
   dcbModalVisible.value = true
 }
 
 const getMoreDeviceConfigBackups = () => {
   const newQueryParams: DeviceConfigQueryParams = {
-    limit: (deviceConfigBackupQueryParams.value.limit || 0) + defaultQuerySize,
-    offset: (deviceConfigBackupQueryParams.value.offset || 0) + defaultQuerySize
+    limit: (deviceStore.deviceConfigBackupQueryParams.limit || 0) + defaultQuerySize,
+    offset: (deviceStore.deviceConfigBackupQueryParams.offset || 0) + defaultQuerySize
   }
 
-  store.dispatch('deviceModule/updateDeviceConfigBackupQueryParams', newQueryParams)
-  store.dispatch('deviceModule/getAndMergeDeviceConfigBackups')
+  deviceStore.updateDeviceConfigBackupQueryParams(newQueryParams)
+  deviceStore.getAndMergeDeviceConfigBackups()
 }
 
 onMounted(() => {
@@ -479,4 +478,3 @@ a:visited {
   }
 }
 </style>
-

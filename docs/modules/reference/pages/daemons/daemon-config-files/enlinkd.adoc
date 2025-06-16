@@ -8,7 +8,7 @@ The daemon essentially asks each device the following question: "What is the net
 
 The enlinkd discovery process tries to discover bridge domain links using the data coming from all collected bridge forwarding tables.
 
-The enlinkd updaters correlate all collected topology data and use it to generate a global topology map of your network.
+The enlinkd topology updaters correlate all collected topology data and use it to generate a global topology map of your network.
 
 == How it works
 
@@ -42,6 +42,10 @@ If multiple link discovery protocols are enabled, links will be discovered for e
 The xref:operation:deep-dive/topology/topology.adoc[topology map] visualizes links for each discovery protocol.
 For example, if you start both the CDP and LLDP discovery protocols, the web UI visualizes a CDP link and an LLDP link.
 
+Enhanced linkd supports a priority executor to collect SNMP data from devices.
+Data collection is scheduled for each node and protocol and put into a priority executor running queue.
+The data collection is performed according to the priority assigned.
+
 Restart enlinkd or {page-component-title} to apply configuration changes.
 
 .enlinkd-configuration.xml parameters
@@ -54,32 +58,76 @@ Restart enlinkd or {page-component-title} to apply configuration changes.
 3+| *Integer*
 
 | threads
-| Number of parallel threads for enlinkd collector, updater, and discovery tasks.
+| Number of parallel threads used by schedulables.
+| 3
+
+| executor-queue-size
+| The initial queue size of the priority executor.
+| 100
+
+| executor-threads
+| Number of parallel threads used by priority executor.
 | 5
 
 | initial_sleep_time
 | Amount of time (in milliseconds) to wait before starting collectors after {page-component-title} is launched.
 | 60000
 
-| rescan_interval
-| Rescan interval (in milliseconds) for collectors.
+| cdp_rescan_interval
+| Interval (in milliseconds) for Cisco Discovery Protocol (CDP) links discovery.
+| 86400000
+
+| lldp_rescan_interval
+| Interval (in milliseconds) for Link Layer Discovery Protocol (LLDP) links discovery.
+| 86400000
+
+| bridge_rescan_interval
+| Interval (in milliseconds) for Bridge Protocol data collection.
+| 86400000
+
+| ospf_rescan_interval
+| Interval (in milliseconds) for Open Shortest Path First (OSPF) links discovery.
+| 86400000
+
+| isis_rescan_interval
+| Interval (in milliseconds) for Intermediate System to Intermediate System (IS-IS) links discovery.
 | 86400000
 
 | topology_interval
-| Interval (in milliseconds) for the updaters.
+| Interval (in milliseconds) for the topology updaters.
 | 30000
 
 | bridge_topology_interval
-| Interval (in milliseconds) for the discovery process.
+| Interval (in milliseconds) for the bridge link discovery.
 | 300000
+
+| discovery-bridge-threads
+| Number of threads used for running bridge link discovery.
+| 1
 
 | max_bft
 | Maximum number of bridge forwarding tables (BFTs) that can be stored in memory for discovery.
 | 100
 
-| discovery-bridge-threads
-| Number of threads used for discovery.
-| 1
+| cdp-priority
+| The priority for running CDP link discovery.
+| 1000
+
+| lldp-priority
+| The priority for running LLDP link discovery.
+| 2000
+
+| bridge-priority
+| The priority for running Bridge data collection.
+| 10000
+
+| ospf-priority
+| The priority for running OSPF link discovery.
+| 3000
+
+| isis-priority
+| The priority for running IS-IS link discovery.
+| 4000
 
 3+| *Boolean*
 
@@ -102,7 +150,13 @@ Restart enlinkd or {page-component-title} to apply configuration changes.
 | use-isis-discovery
 | Enable or disable IS-IS discovery protocol.
 | true
+
+| disable-bridge-vlan-discovery
+| Enable or disable discovery of VLANs.
+| false
 |===
+
+WARNING: Specifying "false" with a `use-\{protocol}-discovery` attribute deletes persisted protocol data.
 
 The first run of the bridge discovery process is scheduled for `initial_sleep_time + bridge_topology_interval`.
 The first run of the updaters is scheduled for `0L`.

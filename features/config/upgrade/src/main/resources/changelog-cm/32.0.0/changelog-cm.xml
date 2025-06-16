@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:cm="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd
+    http://www.liquibase.org/xml/ns/dbchangelog-ext http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-ext.xsd">
+
+    <changeSet author="stheleman" id="32.0.0-update-schema-datachoices">
+        <cm:changeSchema schemaId="org.opennms.features.datachoices">
+            <cm:put name="initialNoticeAcknowledged" type="boolean" default="false"/>
+            <cm:put name="initialNoticeAcknowledgedAt" type="string"/>
+            <cm:put name="initialNoticeAcknowledgedBy" type="string"/>
+        </cm:changeSchema>
+    </changeSet>
+
+    <changeSet author="stheleman" id="32.0.0-cm-enable-usage-statistics-sharing-by-default-if-not-disabled" runAlways="true">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="1">
+                SELECT COUNT(*)
+                FROM kvstore_jsonb
+                WHERE context = 'CM_CONFIG'
+                AND key = 'org.opennms.features.datachoices'
+                AND (value -> 'configs' -> 'default' ->> 'enabled') IS NULL;
+            </sqlCheck>
+        </preConditions>
+        <sql>
+            UPDATE kvstore_jsonb
+            SET value = jsonb_set(value, '{configs, default, enabled}', 'true')
+            WHERE context = 'CM_CONFIG'
+            AND key = 'org.opennms.features.datachoices'
+        </sql>
+    </changeSet>
+</databaseChangeLog>

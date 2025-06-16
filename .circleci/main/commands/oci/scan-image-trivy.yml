@@ -1,0 +1,58 @@
+commands:
+  scan-image-trivy:
+    parameters:
+      architecture:
+        type: string
+      container_name:
+        type: string
+      container_dir:
+        type: string
+      tarball_match:
+        type: string
+      tarball_path:
+        type: string
+    steps:
+      - setup_remote_docker:
+          docker_layer_caching: false
+      - cached-checkout
+      - download-download-artifacts
+      - run:
+          name: download tarball dependency to << parameters.tarball_path >>
+          command: download-artifacts.pl --include-failed --workflow="${CIRCLE_WORKFLOW_ID}" --match="<< parameters.tarball_match >>" tar.gz "${CIRCLE_BRANCH}" "$(pwd)/<< parameters.tarball_path >>"
+      - run:
+          name: build << parameters.container_name >>=<< parameters.architecture >> container image
+          command: |
+            # set up multi-arch
+            docker container prune -f
+            docker run --rm --privileged tonistiigi/binfmt:latest --install "<< parameters.architecture >>"
+
+            export DOCKER_CONTENT_TRUST=1
+            cd opennms-container/<< parameters.container_dir >>
+            export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
+            export TAG="<< parameters.container_name >>-${ARCH}"
+            make DOCKER_ARCH="<< parameters.architecture >>" \
+                 DOCKER_OCI="images/${TAG}.oci" \
+                 DOCKER_TAG="opennms/${TAG}" \
+                 BUILD_NUMBER="${CIRCLE_BUILD_NUM}" \
+                 BUILD_URL="${CIRCLE_BUILD_URL}" \
+                 BUILD_BRANCH="${CIRCLE_BRANCH}" \
+                 oci
+      - run:
+          name: Install trivy
+          command: |
+            curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /tmp/bin
+      - run:
+          name: Scan the local image with trivy
+          command: |
+            docker image load -i ~/project/opennms-container/*/images/*.oci
+            export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
+            export TAG="<< parameters.container_name >>-${ARCH}"
+            # Table result includes only package filenames. Use '--format json' option to get the full path to the package file.
+            /tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 --format json -o /tmp/report.json --no-progress opennms/${TAG}
+            /tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 -o /tmp/report.txt --no-progress opennms/${TAG}
+      - store_artifacts:
+          path: /tmp/report.json
+          destination: report.json
+      - store_artifacts:
+          path: /tmp/report.txt
+          destination: report.txt

@@ -2,8 +2,8 @@
 = Step 1: First-Time Sign In
 :description: Step 1 to set up {page-component-title}: usage statistics, creating a user, default admin and rtc accounts.
 
-As part of the installation process, we recommend logging in using the default `admin` account.
-If you have not already done so, sign in for the first time, opt in or out of usage statistics data collection, and change the `admin` account password to a secure one (see xref:deployment:core/getting-started.adoc#ga-data-choices[First-time sign in and data choices]).
+As part of the installation process, we recommend signing in using the default `admin` account.
+If you have not already done so, sign in for the first time and change the `admin` account password to a secure one (see xref:deployment:core/getting-started.adoc#ga-data-choices[First-time sign in and usage statistics]).
 
 This section describes how to create a personal user account.
 We recommend that you do not use the default `admin` user account for day-to-day activities, but instead xref:deep-dive/user-management/user-config.adoc[create specific users] with the Admin role and other permissions, as appropriate.

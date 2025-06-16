@@ -30,7 +30,6 @@
 </template>
   
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import GraphContainer from './GraphContainer.vue'
 import TimeControls from './TimeControls.vue'
 import { sub, getUnixTime } from 'date-fns'
@@ -39,12 +38,18 @@ import { FeatherInput } from '@featherds/input'
 import useSpinner from '@/composables/useSpinner'
 import { UpdateModelFunction } from '@/types'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { GraphDefinition, useGraphStore } from '@/stores/graphStore'
+import { useMenuStore } from '@/stores/menuStore'
+import { useResourceStore } from '@/stores/resourceStore'
 import { BreadCrumb } from '@/types'
 
 const el = document.getElementById('card')
 const { arrivedState } = useScroll(el, { offset: { bottom: 100 } })
 const definitionsToDisplay = ref<string[]>([])
-const store = useStore()
+
+const graphStore = useGraphStore()
+const menuStore = useMenuStore()
+const resourceStore = useResourceStore()
 const router = useRouter()
 const { startSpinner, stopSpinner } = useSpinner()
 const now = new Date()
@@ -63,7 +68,7 @@ const props = defineProps({
   }
 })
 
-const homeUrl = computed<string>(() => store.state.menuModule.mainMenu?.homeUrl)
+const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
@@ -74,11 +79,11 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 })
 
 const resources = props.singleGraphResourceId ?
-  ref([{ id: props.singleGraphResourceId, definitions: [props.singleGraphDefinition as string], label: props.label as string }]) :
-  computed<{ id: string, definitions: string[], label: string }[]>(() => store.state.graphModule.definitions)
+  ref([{ id: props.singleGraphResourceId, definitions: [props.singleGraphDefinition as string], label: props.label as string } as GraphDefinition]) :
+  computed<GraphDefinition[]>(() => graphStore.definitions)
 
-const definitionsList = computed<string[]>(() => store.state.graphModule.definitionsList)
-let definitionsListCopy: string[] = JSON.parse(JSON.stringify(store.state.graphModule.definitionsList))
+const definitionsList = computed<string[]>(() => graphStore.definitionsList)
+let definitionsListCopy: string[] = JSON.parse(JSON.stringify(graphStore.definitionsList))
 
 const time = reactive<StartEndTime>({
   startTime: getUnixTime(sub(now, { hours: 24 })),
@@ -142,12 +147,12 @@ onMounted(() => {
 })
 
 onBeforeMount(() => {
-  if (props.singleGraphDefinition) return
+  if (props.singleGraphDefinition) {
+    return
+  }
 
   // if no resources, route to resource selection
-  const resources = store.state.resourceModule.resources
-
-  if (!resources.length) {
+  if (!resourceStore.resources.length) {
     router.push('/resource-graphs')
   }
 })
@@ -165,4 +170,3 @@ onBeforeMount(() => {
   }
 }
 </style>
-  

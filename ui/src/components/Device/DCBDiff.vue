@@ -5,10 +5,10 @@
 <script setup lang="ts">
 import { DeviceConfigBackup } from '@/types/deviceConfig'
 import { PropType } from 'vue'
-import { useStore } from 'vuex'
+import { useAppStore } from '@/stores/appStore'
 type Mode = 'split' | 'unified'
 
-const store = useStore()
+const appStore = useAppStore()
 
 defineProps({
   config1: {
@@ -26,8 +26,12 @@ defineProps({
 })
 
 const theme = computed(() => {
-  const theme = store.state.appModule.theme
-  if (theme === 'open-dark') return 'dark'
+  const theme = appStore.theme
+
+  if (theme === 'open-dark') {
+    return 'dark'
+  }
+
   return 'light'
 })
 </script>

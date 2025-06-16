@@ -1,0 +1,18 @@
+
+= Notification Shell Commands
+
+The following shell commands can help you to administer and debug Notifd.
+
+== opennms:destination-path-trigger
+
+Use the `destination-path-trigger` command to test the notification targets and commands associated with a destination path.
+Use to verify that commands are properly configured and that notifications get sent to the recipients.
+
+[source, console]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> opennms:destination-path-trigger Email-Admin 
+Triggering command='javaEmail' for target='Admin'.
+Done triggering targets and commands. See notifd.log for details.
+----

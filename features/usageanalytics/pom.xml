@@ -5,7 +5,7 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>31.0.3-SNAPSHOT</version>
+        <version>33.0.3-SNAPSHOT</version>
     </parent>
 
     <groupId>org.opennms.features</groupId>
@@ -14,7 +14,6 @@
     <description>The Usage Analytics package will be used to store and provide with access to usage analytics data.</description>
 
     <modelVersion>4.0.0</modelVersion>
-    <version>31.0.3-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <modules>

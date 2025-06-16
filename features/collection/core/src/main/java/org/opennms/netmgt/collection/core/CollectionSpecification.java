@@ -1,33 +1,27 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2006-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.collection.core;
 
+import java.net.InetAddress;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -35,6 +29,12 @@ import java.util.Objects;
 import java.util.TreeMap;
 import java.util.concurrent.ExecutionException;
 
+import org.opennms.core.mate.api.EmptyScope;
+import org.opennms.core.mate.api.EmptyScopeProvider;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.ScopeProvider;
 import org.opennms.core.rpc.api.RpcExceptionHandler;
 import org.opennms.core.rpc.api.RpcExceptionUtils;
 import org.opennms.netmgt.collection.api.CollectionAgent;
@@ -59,6 +59,8 @@ import org.opennms.netmgt.rrd.RrdRepository;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.introspect.TypeResolutionContext;
+
 /**
  * <p>CollectionSpecification class.</p>
  *
@@ -78,8 +80,9 @@ public class CollectionSpecification {
     private final LocationAwareCollectorClient m_locationAwareCollectorClient;
     private final ReadablePollOutagesDao m_pollOutagesDao;
     private final String collectorImplClassName;
+    private final ScopeProvider scopeProvider;
 
-    public CollectionSpecification(Package wpkg, String svcName, ServiceCollector collector, CollectionInstrumentation instrumentation, LocationAwareCollectorClient locationAwareCollectorClient, ReadablePollOutagesDao pollOutagesDao, String collectorImplClassName) {
+    public CollectionSpecification(Package wpkg, String svcName, ServiceCollector collector, CollectionInstrumentation instrumentation, LocationAwareCollectorClient locationAwareCollectorClient, ReadablePollOutagesDao pollOutagesDao, String collectorImplClassName, final ScopeProvider scopeProvider) {
         m_package = Objects.requireNonNull(wpkg);
         m_svcName = Objects.requireNonNull(svcName);
         m_collector = Objects.requireNonNull(collector);
@@ -87,7 +90,12 @@ public class CollectionSpecification {
         m_locationAwareCollectorClient = Objects.requireNonNull(locationAwareCollectorClient);
         m_pollOutagesDao = Objects.requireNonNull(pollOutagesDao);
         this.collectorImplClassName = collectorImplClassName;
+        this.scopeProvider = scopeProvider;
         initializeParameters();
+    }
+
+    public CollectionSpecification(Package wpkg, String svcName, ServiceCollector collector, CollectionInstrumentation instrumentation, LocationAwareCollectorClient locationAwareCollectorClient, ReadablePollOutagesDao pollOutagesDao, String collectorImplClassName) {
+        this(wpkg, svcName, collector, instrumentation, locationAwareCollectorClient,pollOutagesDao,collectorImplClassName, EmptyScopeProvider.EMPTY);
     }
 
     /**
@@ -171,7 +179,7 @@ public class CollectionSpecification {
      * @return A read only Map instance
      */
     public ServiceParameters getServiceParameters() {
-        return new ServiceParameters(Collections.unmodifiableMap(m_parameters));
+        return new ServiceParameters(Collections.unmodifiableMap(Interpolator.interpolateObjects(m_parameters, scopeProvider.getScope())));
     }
 
     private boolean isTrue(String stg) {

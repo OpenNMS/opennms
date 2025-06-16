@@ -1,34 +1,26 @@
 <%--
-/*******************************************************************************
- * This file is part of OpenNMS(R).
- *
- * Copyright (C) 2012-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
+
+    Licensed to The OpenNMS Group, Inc (TOG) under one or more
+    contributor license agreements.  See the LICENSE.md file
+    distributed with this work for additional information
+    regarding copyright ownership.
+
+    TOG licenses this file to You under the GNU Affero General
+    Public License Version 3 (the "License") or (at your option)
+    any later version.  You may not use this file except in
+    compliance with the License.  You may obtain a copy of the
+    License at:
+
+         https://www.gnu.org/licenses/agpl-3.0.txt
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+    either express or implied.  See the License for the specific
+    language governing permissions and limitations under the
+    License.
 
 --%>
-
 <%@page language="java"
         contentType="text/html"
         session="true"
@@ -620,28 +612,6 @@
                 <input type="hidden" name="alarm" value="<%=alarm.getId()%>"/>
                 <input type="hidden" name="redirect" value="<%="/alarm/detail.htm" + "?" + request.getQueryString()%>" />
                 <form:input class="form-control btn btn-secondary" type="submit" value="Create Ticket" disabled="<%=((alarm.getTTicketState() != null) && (alarm.getTTicketState() != TroubleTicketState.CREATE_FAILED)) ? true : false %>" />
-                <%-- Remedy Specific TroubleTicket - Start --%>
-                <% if ("org.opennms.netmgt.ticketer.remedy.RemedyTicketerPlugin".equalsIgnoreCase(Vault.getProperty("opennms.ticketer.plugin")) && (alarm.getTTicketState() == null || alarm.getTTicketState().toString().equals("CREATE_FAILED") )) { %>
-                  <input type="hidden" name="nodelabel" value="<%=alarm.getNodeLabel()%>"/>
-                  <input class="form-control" type="text" name="remedy.user.comment" value="Add a Comment here"/>
-                  <select class="form-control" name="remedy.urgency">
-                    <option value="1-Critical">1-Critical</option>
-                    <option value="2-High">2-High</option>
-                    <option value="3-Medium">3-Medium</option>
-                    <option value="4-Low" selected="selected">4-Low</option>
-                  </select>
-                  <select class="form-control" name="remedy.assignedgroup">
-                    <% String propsFile = new String(Vault.getProperty("opennms.home") + "/etc/remedy.properties");
-                       Configuration remedyConfig = null;
-                       try {
-                         remedyConfig = new PropertiesConfiguration(propsFile);
-                       } catch (final ConfigurationException e) {}
-                       for (String group: remedyConfig.getString("remedy.targetgroups").split(":")) { %>
-                         <option value="<%=group%>"><%=group%></option>
-                    <% }  %>
-                  </select>
-                <% } %>
-                <%-- Remedy Specific TroubleTicket - End --%>
             </form>
 
             <form class="form-inline mr-1" method="post" action="alarm/ticket/update.htm">

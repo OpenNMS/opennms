@@ -8,6 +8,7 @@
          <doNotOverride>script</doNotOverride>
       </security>
    </global>
+   <!-- Custom event configs go here -->
    <event-file>events/opennms.snmp.trap.translator.events.xml</event-file>
    <event-file>events/opennms.ackd.events.xml</event-file>
    <event-file>events/opennms.alarm.events.xml</event-file>

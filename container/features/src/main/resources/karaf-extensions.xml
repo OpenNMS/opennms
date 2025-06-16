@@ -4,6 +4,7 @@
 
     <feature name="karaf-extender" start-level="${earlyStartLevel}" description="Karaf Extender" version="${project.version}">
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
+        <feature version="${project.version}">health-api</feature>
         <bundle>mvn:org.opennms.container/extender/${project.version}</bundle>
     </feature>
 </features>

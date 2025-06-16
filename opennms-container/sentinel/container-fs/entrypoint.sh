@@ -14,6 +14,8 @@ set -e
 
 umask 002
 export SENTINEL_HOME="/opt/sentinel"
+export KARAF_HOME="${SENTINEL_HOME}"
+
 SENTINEL_OVERLAY_ETC="/opt/sentinel-etc-overlay"
 SENTINEL_OVERLAY="/opt/sentinel-overlay"
 CONFD_KEY_STORE="${SENTINEL_HOME}/sentinel-config.yaml"
@@ -21,7 +23,10 @@ CONFD_CONFIG_DIR="${SENTINEL_HOME}/confd"
 CONFD_BIN="/usr/bin/confd"
 CONFD_CONFIG_FILE="${CONFD_CONFIG_DIR}/confd.toml"
 
-export KARAF_OPTS="-Djava.locale.providers=CLDR,COMPAT -Djdk.util.zip.disableZip64ExtraFieldValidation=true"
+export JAVA_OPTS="$JAVA_OPTS -Djava.locale.providers=CLDR,COMPAT"
+export JAVA_OPTS="$JAVA_OPTS $("${SENTINEL_HOME}/bin/_module_opts.sh")"
+export JAVA_OPTS="$JAVA_OPTS -Dopennms.home=${SENTINEL_HOME}"
+export JAVA_OPTS="$JAVA_OPTS -Djdk.util.zip.disableZip64ExtraFieldValidation=true"
 
 # Error codes
 E_ILLEGAL_ARGS=126

@@ -1,32 +1,27 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.core.criteria;
+
+import java.util.Objects;
 
 import org.opennms.core.criteria.restrictions.Restriction;
 
@@ -90,13 +85,7 @@ public class Alias {
 
     @Override
     public int hashCode() {
-        final int prime = 31;
-        int result = 1;
-        result = prime * result + ((m_alias == null) ? 0 : m_alias.hashCode());
-        result = prime * result + ((m_associationPath == null) ? 0 : m_associationPath.hashCode());
-        result = prime * result + ((m_type == null) ? 0 : m_type.hashCode());
-        result = prime * result + ((m_joinCondition == null) ? 0 : m_joinCondition.hashCode());
-        return result;
+        return Objects.hash(m_alias, m_associationPath, m_type, m_joinCondition);
     }
 
     @Override
@@ -104,22 +93,11 @@ public class Alias {
         if (this == obj) return true;
         if (obj == null) return false;
         if (!(obj instanceof Alias)) return false;
-        final Alias other = (Alias) obj;
-        if (m_alias == null) {
-            if (other.m_alias != null) return false;
-        } else if (!m_alias.equals(other.m_alias)) {
-            return false;
-        }
-        if (m_associationPath == null) {
-            if (other.m_associationPath != null) return false;
-        } else if (!m_associationPath.equals(other.m_associationPath)) {
-            return false;
-        }
-        if (m_type != other.m_type) return false;
-        if (m_joinCondition == null && other.m_joinCondition != null) return false;
-        if (m_joinCondition != null && other.m_joinCondition == null) return false;
-        if (!m_joinCondition.equals(other.m_joinCondition)) return false;
-        return true;
+        final Alias that = (Alias) obj;
+        return Objects.equals(this.m_alias, that.m_alias)
+                && Objects.equals(this.m_associationPath, that.m_associationPath)
+                && Objects.equals(this.m_type, that.m_type)
+                && Objects.equals(this.m_joinCondition, that.m_joinCondition);
     }
 
     @Override

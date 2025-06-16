@@ -1,0 +1,117 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0"
+           xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0
+                http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+                http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+                http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd">
+
+    <!-- Configuration properties -->
+    <cm:property-placeholder id="grpcExporterProperties" persistent-id="org.opennms.features.grpc.exporter"
+                             update-strategy="reload">
+
+        <cm:default-properties>
+            <cm:property name="bsm.enabled" value="true"/>
+            <cm:property name="bsm.host" value="bsm.onmshs.local:1443"/>
+            <cm:property name="spog.enabled" value="true"/>
+            <cm:property name="spog.host" value="nms-inventory.onmshs.local:1443"/>
+            <cm:property name="spog.alarms.export" value="true"/>
+            <cm:property name="spog.events.export" value="true"/>
+            <cm:property name="spog.inventory.export" value="true"/>
+            <cm:property name="tls.enabled" value="true"/>
+            <cm:property name="tls.cert.path" value=""/>
+            <cm:property name="tenant.id" value="opennms-prime"/>
+            <cm:property name="snapshot.interval" value="3600"/>
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <reference id="onmsNodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="optional"/>
+
+    <reference id="nodeDao" interface="org.opennms.integration.api.v1.dao.NodeDao" availability="optional"/>
+    <reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService" availability="optional"/>
+    <reference id="runtimeInfo" interface="org.opennms.integration.api.v1.runtime.RuntimeInfo" availability="optional"/>
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="optional"/>
+
+    <bean id="grpcClientInterceptor" class="org.opennms.features.grpc.exporter.GrpcHeaderInterceptor">
+        <argument value="${tenant.id}"/>
+    </bean>
+
+    <bean id="bsmGrpcClient" class="org.opennms.features.grpc.exporter.bsm.BsmGrpcClient" init-method="start" destroy-method="stop" >
+        <argument value="${bsm.host}"/>
+        <argument value="${tls.cert.path}"/>
+        <argument value="${tls.enabled}"/>
+        <argument ref="grpcClientInterceptor"/>
+        <property name="enabled" value="${bsm.enabled}"/>
+    </bean>
+
+    <bean id="bsmInventoryService" class="org.opennms.features.grpc.exporter.bsm.BsmInventoryService" init-method="start" destroy-method="stop" >
+        <argument ref="nodeDao"/>
+        <argument ref="runtimeInfo"/>
+        <argument ref="bsmGrpcClient"/>
+        <argument value="${snapshot.interval}" />
+    </bean>
+    <service ref="bsmInventoryService" interface="org.opennms.features.grpc.exporter.bsm.BsmInventoryService" />
+
+    <bean id="bsmInventoryExporter" class="org.opennms.features.grpc.exporter.bsm.BsmInventoryExporter" init-method="start" destroy-method="stop">
+        <argument ref="eventSubscriptionService"/>
+        <argument ref="nodeDao"/>
+        <argument ref="bsmInventoryService" />
+    </bean>
+
+    <bean id="serviceStateExporter" class="org.opennms.features.grpc.exporter.bsm.ServiceStateExporter" init-method="start" destroy-method="stop">
+        <argument ref="eventSubscriptionService"/>
+        <argument ref="nodeDao"/>
+        <argument ref="bsmInventoryService" />
+    </bean>
+
+    <!--    Single Pane of Glass ( SPOG)  -->
+
+    <bean id="spogGrpcClient" class="org.opennms.features.grpc.exporter.spog.SpogGrpcClient" init-method="start" destroy-method="stop">
+        <argument value="${spog.host}"/>
+        <argument value="${tls.cert.path}"/>
+        <argument value="${tls.enabled}"/>
+        <argument ref="grpcClientInterceptor"/>
+        <property name="enabled" value="${spog.enabled}"/>
+    </bean>
+
+    <bean id="alarmExporter" class="org.opennms.features.grpc.exporter.spog.AlarmExporter">
+        <argument ref="runtimeInfo" />
+        <argument ref="spogGrpcClient"/>
+        <argument value="${spog.alarms.export}"/>
+    </bean>
+    <service ref="alarmExporter" interface="org.opennms.netmgt.alarmd.api.AlarmLifecycleListener">
+        <service-properties>
+            <entry key="registration.export" value="true"/>
+        </service-properties>
+    </service>
+
+    <bean id="spogInventoryService" class="org.opennms.features.grpc.exporter.spog.SpogInventoryService" init-method="start" destroy-method="stop" >
+        <argument ref="onmsNodeDao"/>
+        <argument ref="runtimeInfo"/>
+        <argument ref="spogGrpcClient"/>
+        <argument ref="sessionUtils"/>
+        <argument value="${snapshot.interval}" />
+        <argument value="${spog.inventory.export}"/>
+    </bean>
+    <service ref="spogInventoryService" interface="org.opennms.features.grpc.exporter.spog.SpogInventoryService" />
+
+    <bean id="spogInventoryExporter" class="org.opennms.features.grpc.exporter.spog.InventoryExporter" init-method="start" destroy-method="stop">
+        <argument ref="eventSubscriptionService"/>
+        <argument ref="onmsNodeDao"/>
+        <argument ref="spogInventoryService" />
+    </bean>
+
+
+    <bean id="eventsExporter" class="org.opennms.features.grpc.exporter.spog.EventsExporter" init-method="start" destroy-method="stop">
+        <argument ref="eventSubscriptionService"/>
+        <argument ref="runtimeInfo"/>
+        <argument ref="spogGrpcClient"/>
+        <argument value="${spog.events.export}"/>
+    </bean>
+
+    <service ref="eventsExporter" interface="org.opennms.netmgt.events.api.EventListener">
+        <service-properties>
+            <entry key="registration.export" value="true"/>
+        </service-properties>
+    </service>
+
+</blueprint>

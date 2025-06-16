@@ -95,6 +95,9 @@ If url is not defined, the collector falls back to legacy mode and uses the depr
 
 If a service requires different configuration, use an entry in `$OPENNMS_HOME/etc/jmx-config.xml` to overwrite it.
 
+NOTE: Metadata expressions can also be used in attributes of the `jmx-config.xml` configuration file.
+This lets the user to also reference credentials stored in the secure credentials.
+
 == JMX collection configuration
 
 Understanding xref:operation:deep-dive/performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
@@ -205,7 +208,7 @@ To successfully collect data, you may need to do the following:
     <parameter key="url" value="service:jmx:http-remoting-jmx://$\{ipaddr}:9990"/>
     <parameter key="retry" value="2"/>
     <parameter key="timeout" value="3000"/>
-    <parameter key="factory" value="PASSWORD-CLEAR"/>
+    <parameter key="factory" value="PASSWORD_CLEAR"/>
     <parameter key="username" value="admin"/>
     <parameter key="password" value="admin"/>
     <parameter key="rrd-base-name" value="java"/>

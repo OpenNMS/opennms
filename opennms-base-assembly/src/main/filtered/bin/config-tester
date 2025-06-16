@@ -6,6 +6,7 @@ OPENNMS_BINDIR="${install.bin.dir}"
 APP_CLASS=org.opennms.netmgt.config.tester.ConfigTester 
 
 exec "$OPENNMS_BINDIR"/runjava -r -- \
+  --add-opens java.base/java.lang=ALL-UNNAMED \
 	-Dopennms.manager.class="$APP_CLASS" \
 	-Dopennms.home="$OPENNMS_HOME" \
 	-Dlog4j.configurationFile="$OPENNMS_HOME"/etc/log4j2-tools.xml \

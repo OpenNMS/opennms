@@ -4,7 +4,7 @@
     <parent>
       <groupId>org.opennms.core.ipc</groupId>
       <artifactId>org.opennms.core.ipc.common</artifactId>
-      <version>31.0.3-SNAPSHOT</version>
+      <version>33.0.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.core.ipc.common</groupId>
@@ -84,6 +84,10 @@
           <exclusion>
             <artifactId>kafka-clients</artifactId>
             <groupId>org.apache.kafka</groupId>
+          </exclusion>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
           </exclusion>
         </exclusions>
       </dependency>

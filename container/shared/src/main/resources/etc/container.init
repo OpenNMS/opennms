@@ -23,7 +23,7 @@ if [ -f /etc/rc.d/init.d/functions ]; then
 fi
 
 if [ -z "$JAVA_HOME" ]; then
-	JAVA_HOME="$("$CONTAINER_HOME/bin/find-java.sh" 1.8.0 11.9.9999)"
+	JAVA_HOME="$("$CONTAINER_HOME/bin/find-java.sh" 11.0 17.9999)"
 fi
 
 if [ -r "$SYSCONFDIR/$NAME" ]; then

@@ -125,6 +125,9 @@ spawn_sentinel() {
   # Instance specific configuration
   set_instance_specific_configuration "$SENTINEL_HOME" "$idx"
 
+  # Enable Hawtio
+  echo 'hawtio' > "$SENTINEL_HOME/etc/featuresBoot.d/hawtio.boot"
+
   echo "Starting Sentinel #$idx (detached=$detached)..."
   KARAF_ARGS="debug"
   cmd_prefix=""

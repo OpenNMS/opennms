@@ -24,6 +24,7 @@
 
     <feature name="sentinel-jms" description="Sentinel :: Core :: JMS" version="${project.version}">
         <feature prerequisite="true">opennms-distributed-core-jms</feature>
+
         <feature>opennms-core-ipc-sink-camel-server</feature>
         <!-- Sink Client -->
         <feature>opennms-core-ipc-sink-camel</feature>
@@ -102,7 +103,7 @@
         <feature>sentinel-thresholding-service</feature>
         <feature>opennms-util</feature>
 
-        <bundle dependency="true">mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
 
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.config/org.opennms.features.telemetry.config.api/${project.version}</bundle>
@@ -129,12 +130,14 @@
         <feature>opennms-dnsresolver-netty</feature>
         <feature>sentinel-kvstore-api</feature>
         <feature>opennms-kafka</feature>
-        <bundle>wrap:mvn:com.google.protobuf/protobuf-java-util/${protobufVersion}$overwrite=merge&amp;Import-Package=javax.annotation;version=!,*</bundle>
+        <feature>rate-limited-logger</feature>
+        <bundle>wrap:wrap:mvn:com.google.protobuf/protobuf-java-util/${protobufVersion}$overwrite=merge&amp;Import-Package=javax.annotation;version=!,*</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.kafka-persistence/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.elastic/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.fileutils/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.processing/${project.version}</bundle>
         <bundle>wrap:mvn:org.freemarker/freemarker/${freemarkerVersion}$Bundle-SymbolicName=org.freemarker&amp;Bundle-Version=${freemarkerVersion}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
@@ -308,5 +311,6 @@
     <feature name="sentinel-timeseries-api" description="Sentinel :: Timeseries Storage API" version="${project.version}">
         <feature>sentinel-persistence</feature>
         <feature>opennms-timeseries-api</feature>
+        <feature>fst</feature>
     </feature>
 </features>

@@ -1,0 +1,18 @@
+commands:
+  prep-package-build:
+    description: "Prepare for package builds"
+    steps:
+      - sign-packages/setup-env:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+      - cached-checkout
+      - attach_workspace:
+          at: ~/
+      - extract-pom-version
+      - run:
+          name: Check for Releasability
+          command: |
+            export OPENNMS_VERSION="$(.circleci/scripts/pom2version.sh pom.xml)"
+            .circleci/scripts/release-lint.sh "${OPENNMS_VERSION}"
+      - restore-maven-cache
+      - restore-nodejs-cache

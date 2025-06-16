@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2006-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.timeseries.samplewrite;
 
 import java.util.ArrayList;
@@ -42,9 +35,12 @@ import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.FallbackScope;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
+import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.integration.api.v1.timeseries.Tag;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTag;
 import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.LatencyCollectionResource;
+import org.opennms.netmgt.collection.support.builder.LatencyTypeResource;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.model.OnmsCategory;
@@ -56,6 +52,9 @@ import org.slf4j.LoggerFactory;
 import com.google.common.base.Strings;
 import com.google.common.cache.CacheLoader;
 import com.google.common.collect.Maps;
+
+import static org.opennms.netmgt.collection.api.CollectionResource.INTERFACE_INFO_IN_TAGS;
+
 
 /** Loads meta data from OpenNMS, to be exposed to the TimeseriesStorage. This data is not relevant for the operation of
  * OpenNMS but can be used to enrich the data in the timeseries database to be used externally. */
@@ -90,7 +89,7 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
             // node related scopes
             String nodeCriteria = getNodeCriteriaFromResource(resource);
             Optional<OnmsNode> nodeOptional = getNode(nodeCriteria);
-            if(nodeOptional.isPresent()) {
+            if (nodeOptional.isPresent()) {
                 OnmsNode node = nodeOptional.get();
                 scopes.add(this.entityScopeProvider.getScopeForNode(node.getId()));
                 if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_IF)) {
@@ -102,7 +101,29 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
                         // pass
                     }
                 }
-                // We cannot retrieve service meta-data - resource time resources contain the IP address and service name, but not the node
+
+                try {
+                    if (resource.getResourceTypeName().equals(CollectionResource.RESOURCE_TYPE_LATENCY) &&
+                            resource.getServiceParams().containsKey(INTERFACE_INFO_IN_TAGS) &&
+                            Boolean.parseBoolean(resource.getServiceParams().get(INTERFACE_INFO_IN_TAGS))) {
+                        if (resource instanceof LatencyCollectionResource) {
+                            String ipAddress = ((LatencyCollectionResource) resource).getIpAddress();
+                            scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), ipAddress));
+                            scopes.add(this.entityScopeProvider.getScopeForService(node.getId(), InetAddressUtils.addr(ipAddress),
+                                    ((LatencyCollectionResource) resource).getServiceName()));
+                        } else {
+                            String[] ipAddressAndService = parseInstance(resource.getInstance());
+                            String ipAddress = ipAddressAndService[0];
+                            String serviceName = ipAddressAndService[1];
+                            scopes.add(this.entityScopeProvider.getScopeForInterface(node.getId(), ipAddress));
+                            scopes.add(this.entityScopeProvider.getScopeForService(node.getId(),
+                                    InetAddressUtils.addr(ipAddress), serviceName));
+                        }
+                    }
+                } catch (Exception e) {
+                    LOG.error("Failed to add scope for resource {}", resource, e);
+                }
+
             }
 
             // create tags for scopes
@@ -119,6 +140,7 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
 
             // create tags for categories
             nodeOptional.ifPresent(onmsNode -> mapCategories(tags, onmsNode));
+            mapResourceTags(configuredMetaTags, tags, resource);
             return tags;
         });
     }
@@ -129,6 +151,25 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
             node.getCategories().stream()
                     .map(OnmsCategory::getName)
                     .forEach(catName -> tags.add(new ImmutableTag("cat_" + catName, catName)));
+        }
+    }
+
+    private void mapResourceTags(final Map<String, String> configuredMetaTags, final Set<Tag> tags,
+                                 final CollectionResource resource) {
+
+        for (Map.Entry<String, String> entry : configuredMetaTags.entrySet()) {
+            if (entry.getValue().contains("resource:label") && resource.getInterfaceLabel() != null) {
+                tags.add(new ImmutableTag(entry.getKey(), resource.getInterfaceLabel()));
+            }
+            if (entry.getValue().contains("resource:node_label") && resource.getTags().get("node_label") != null) {
+                tags.add(new ImmutableTag(entry.getKey(), resource.getTags().get("node_label")));
+            }
+            if (entry.getValue().contains("resource:location") && resource.getTags().get("location") != null) {
+                tags.add(new ImmutableTag(entry.getKey(), resource.getTags().get("location")));
+            }
+            if (entry.getValue().contains("resource:node_id") && resource.getTags().get("node_id") != null) {
+                tags.add(new ImmutableTag(entry.getKey(), resource.getTags().get("node_id")));
+            }
         }
     }
 
@@ -160,7 +201,28 @@ public class MetaTagDataLoader extends CacheLoader<CollectionResource, Set<Tag>>
                 }
             }
         }
+        if (nodeCriteria == null && !resource.getTags().isEmpty()) {
+            return resource.getTags().getOrDefault("node_id", null);
+        }
         return nodeCriteria;
+    }
+
+    private String getIpAddressFromInstance(String instance) {
+        if (instance != null && instance.contains("[")) {
+            return instance.substring(0, instance.indexOf("["));
+        }
+        throw new IllegalArgumentException("not able to parse ipAddress from instance");
+    }
+
+    private static String[] parseInstance(String instance) {
+        if (instance == null || !instance.contains("[") || !instance.endsWith("]")) {
+            throw new IllegalArgumentException("Invalid instance format");
+        }
+
+        String ipAddress = instance.substring(0, instance.indexOf("["));
+        String serviceName = instance.substring(instance.indexOf("[") + 1, instance.length() - 1);
+
+        return new String[] {ipAddress, serviceName};
     }
 
     private boolean checkNumeric(String nodeCriteria) {

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.telemetry.protocols</groupId>
     <artifactId>org.opennms.features.telemetry.protocols.jti</artifactId>
-    <version>31.0.3-SNAPSHOT</version>
+    <version>33.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.telemetry.protocols.jti</groupId>
@@ -32,12 +32,12 @@
         </configuration>
       </plugin>
     <!-- Enable when you need to generate java source files from proto -->
-<!--                  <plugin>
+<!--            <plugin>
               <groupId>org.xolstice.maven.plugins</groupId>
               <artifactId>protobuf-maven-plugin</artifactId>
               <version>0.6.1</version>
               <configuration>
-                <protocArtifact>com.google.protobuf:protoc:3.25.5:exe:${os.detected.classifier}</protocArtifact>
+                <protocArtifact>com.google.protobuf:protoc:${protobufVersion}:exe:${os.detected.classifier}</protocArtifact>
                 <pluginId>grpc-java</pluginId>
                 <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.68.2:exe:${os.detected.classifier}</pluginArtifact>
               </configuration>

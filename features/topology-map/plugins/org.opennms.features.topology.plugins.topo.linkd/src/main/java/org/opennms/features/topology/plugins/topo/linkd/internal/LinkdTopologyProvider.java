@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.features.topology.plugins.topo.linkd.internal;
 
 import org.opennms.features.topology.api.browsers.ContentType;
@@ -38,6 +31,7 @@ import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.Objects;
 import java.util.EnumSet;
@@ -52,57 +46,32 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
     private final LinkdTopologyFactory m_linkdTopologyFactory;
     private final Set<ProtocolSupported> m_supportedSet;
 
-    private static Set<ProtocolSupported> getProtocolSupportedSet(String... names) {
-        Set<ProtocolSupported> protocolSupportedSet = new HashSet<>();
-        protocolSupportedSet.add(ProtocolSupported.NODES);
-        for (String namespace: names) {
-            if (namespace.equalsIgnoreCase(ProtocolSupported.CDP.name())) {
-                protocolSupportedSet.add(ProtocolSupported.CDP);
-            }
-            if (namespace.equalsIgnoreCase(ProtocolSupported.LLDP.name())) {
-                protocolSupportedSet.add(ProtocolSupported.LLDP);
-            }
-            if (namespace.equalsIgnoreCase(ProtocolSupported.BRIDGE.name())) {
-                protocolSupportedSet.add(ProtocolSupported.BRIDGE);
-            }
-            if (namespace.equalsIgnoreCase(ProtocolSupported.OSPF.name())) {
-                protocolSupportedSet.add(ProtocolSupported.OSPF);
-            }
-            if (namespace.equalsIgnoreCase(ProtocolSupported.ISIS.name())) {
-                protocolSupportedSet.add(ProtocolSupported.ISIS);
-            }
-            if (namespace.equalsIgnoreCase(ProtocolSupported.USERDEFINED.name())) {
-                protocolSupportedSet.add(ProtocolSupported.USERDEFINED);
-            }
-        }
-
-        return protocolSupportedSet;
-    }
-
     public LinkdTopologyProvider(LinkdTopologyFactory linkdTopologyFactory) {
-        super(TOPOLOGY_NAMESPACE_LINKD);
-        LOG.debug("Called constructor 1 args");
-        m_linkdTopologyFactory = Objects.requireNonNull(linkdTopologyFactory);
-        m_supportedSet = EnumSet.allOf(ProtocolSupported.class);
+        this(TOPOLOGY_NAMESPACE_LINKD, LinkdTopologyFactory.getProtocolSupportedSet(ProtocolSupported.NODES.name(),
+                ProtocolSupported.LLDP.name(),
+                ProtocolSupported.CDP.name(),
+                ProtocolSupported.BRIDGE.name(),
+                ProtocolSupported.OSPF.name(),
+                ProtocolSupported.ISIS.name(),
+                ProtocolSupported.USERDEFINED.name()), linkdTopologyFactory);
         linkdTopologyFactory.setDelegate(this);
-        LOG.info("Created instance namespace {}, protocols {}", TOPOLOGY_NAMESPACE_LINKD, m_supportedSet);
+        LOG.info("Created delegate instance namespace {}, protocols {}", TOPOLOGY_NAMESPACE_LINKD, m_supportedSet);
     }
 
     public LinkdTopologyProvider(String name, LinkdTopologyFactory linkdTopologyFactory) {
-        super(TOPOLOGY_NAMESPACE_LINKD + ":" + name);
-        LOG.debug("Called constructor 2 args");
-        m_linkdTopologyFactory = Objects.requireNonNull(linkdTopologyFactory);
-        m_supportedSet = getProtocolSupportedSet(name);
-        LOG.info("Created instance namespace {}, protocols {}", name, m_supportedSet);
+        this(TOPOLOGY_NAMESPACE_LINKD + ":" + name, LinkdTopologyFactory.getProtocolSupportedSet(name), linkdTopologyFactory);
     }
 
 
     public LinkdTopologyProvider(String name, LinkdTopologyFactory linkdTopologyFactory, List<String> protocols) {
-        super(TOPOLOGY_NAMESPACE_LINKD+":" + name);
-        LOG.debug("Called constructor {} args protocols {}", name, protocols);
-        m_linkdTopologyFactory = Objects.requireNonNull(linkdTopologyFactory);
-        m_supportedSet =getProtocolSupportedSet(protocols.toArray(new String[0]));
-        LOG.info("Created instance namespace {}, protocols {}", name, m_supportedSet);
+        this(TOPOLOGY_NAMESPACE_LINKD+":" + name, LinkdTopologyFactory.getProtocolSupportedSet(protocols.toArray(new String[0])), linkdTopologyFactory);
+    }
+
+    private LinkdTopologyProvider(String namespace, Set<ProtocolSupported> protocolSupportedSet, LinkdTopologyFactory factory) {
+        super(namespace);
+        m_linkdTopologyFactory = Objects.requireNonNull(factory);
+        m_supportedSet = protocolSupportedSet;
+        LOG.info("Created instance namespace {}, protocols {}", namespace, m_supportedSet);
     }
     
     @Override
@@ -128,6 +97,10 @@ public class LinkdTopologyProvider extends AbstractTopologyProvider implements G
         m_linkdTopologyFactory.doRefresh(m_supportedSet, graph);
         LOG.info("refresh: {}: Found {} vertices",getNamespace(), graph.getVertices().size());
         LOG.info("refresh: {}: Found {} edges", getNamespace(), graph.getEdges().size());
+    }
+
+    public Set<ProtocolSupported> getProtocolSupported() {
+        return m_supportedSet;
     }
 
 }

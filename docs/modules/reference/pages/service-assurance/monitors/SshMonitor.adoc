@@ -7,6 +7,11 @@ During the poll, it attempts to connect on the specified port.
 If the connection request is successful, then the service is considered up.
 Optionally, the banner line the node provides may be parsed and compared against a pattern before the service is considered up.
 
+== SshMonitor vs. MinaSshMonitor
+
+The SshMonitor only tests that the SSH port is accepting connections.
+The xref:service-assurance/monitors/MinaSshMonitor.adoc[MinaSshMonitor] also tests connecting and authenticating to a node via SSH.
+
 == Monitor facts
 
 [cols="1,7"]

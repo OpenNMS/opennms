@@ -66,6 +66,7 @@
 ** xref:service-assurance/monitors/LdapsMonitor.adoc[]
 ** xref:service-assurance/monitors/MailTransportMonitor.adoc[]
 ** xref:service-assurance/monitors/MemcachedMonitor.adoc[]
+** xref:service-assurance/monitors/MinaSshMonitor.adoc[]
 ** xref:service-assurance/monitors/NetScalerGroupHealthMonitor.adoc[]
 ** xref:service-assurance/monitors/NrpeMonitor.adoc[]
 ** xref:service-assurance/monitors/NtpMonitor.adoc[]
@@ -117,7 +118,6 @@
 
 * xref:ticketing/introduction.adoc[]
 ** xref:ticketing/ticketer/jira.adoc[]
-** xref:ticketing/ticketer/remedy.adoc[]
 ** xref:ticketing/ticketer/tsrm.adoc[]
 
 * Provisioning

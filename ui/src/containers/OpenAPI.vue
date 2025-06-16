@@ -18,18 +18,36 @@
       />
     </div>
   </div>
+   <div class="feather-row doc-row">
+      <div class="feather-col-12">
+        <rapi-doc
+          id="thedocV1"
+          ref="docV1"
+          class="doc"
+          render-style="read"
+          fetch-credentials="include"
+          update-route="false"
+          allow-authentication="false"
+          show-header="false"
+        />
+      </div>
+    </div>
 </template>
   
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import 'rapidoc'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { useAppStore } from '@/stores/appStore'
+import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
+import API from '@/services'
 
-const store = useStore()
+const appStore = useAppStore()
+const menuStore = useMenuStore()
 const doc = ref()
+const docV1 = ref()
 
-const homeUrl = computed<string>(() => store.state.menuModule.mainMenu?.homeUrl)
+const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
@@ -39,51 +57,72 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
 })
 
 const getTheme = computed(() => {
-  const theme = store.state.appModule.theme
-  if (theme === 'open-dark') return 'dark'
+  const theme = appStore.theme
+
+  if (theme === 'open-dark') {
+    return 'dark'
+  }
+
   return 'light'
 })
 
 const setup = async () => {
-  const theme = getTheme.value
   const docEl = document.getElementById('thedoc')
+  const docElV1 = document.getElementById('thedocV1')
   const http = 'http', https = 'https'
-  let openApiSpec = await store.dispatch('helpModule/getOpenApi')
   const protocol = window.location.protocol.slice(0, -1)
+
+  const openApiSpec = await API.getOpenApi()
+  const openApiSpecV1 = await API.getOpenApiV1()
+
+  let modifiedOpenApiSpec = openApiSpec
+  let modifiedOpenApiV1Spec = openApiSpecV1
 
   if (protocol === https) {
     const openApiSpecString = JSON.stringify(openApiSpec)
     const modifiedOpenApiSpecString = openApiSpecString.replaceAll(http, https)
-    openApiSpec = JSON.parse(modifiedOpenApiSpecString)
+    modifiedOpenApiSpec = JSON.parse(modifiedOpenApiSpecString)
+
+    const openApiSpecStringV1 = JSON.stringify(openApiSpecV1)
+    const modifiedOpenApiSpecStringV1 = openApiSpecStringV1.replaceAll(http, https)
+    modifiedOpenApiV1Spec = JSON.parse(modifiedOpenApiSpecStringV1)
   }
 
-  doc.value.loadSpec(openApiSpec)
+  doc.value.loadSpec(modifiedOpenApiSpec)
+  docV1.value.loadSpec(modifiedOpenApiV1Spec)
 
-  if (docEl) {
+  setTheme(docEl)
+  setTheme(docElV1)
+}
+
+const setTheme = (element: HTMLElement | null) => {
+  const theme = getTheme.value
+  if (element) {
     if (theme === 'light') {
-      docEl.setAttribute('theme', 'light')
-      docEl.setAttribute('bg-color', '#fff')
-      docEl.setAttribute('nav-bg-color', '#f4f7fc')
-      docEl.setAttribute('nav-text-color', '#131736')
-      docEl.setAttribute('nav-hover-bg-color', '#fff')
-      docEl.setAttribute('nav-hover-text-color', '#00BFCB')
-      docEl.setAttribute('nav-accent-color', '#00BFCB')
-      docEl.setAttribute('primary-color', '#00BFCB')
+      element.setAttribute('theme', 'light')
+      element.setAttribute('bg-color', '#fff')
+      element.setAttribute('nav-bg-color', '#f4f7fc')
+      element.setAttribute('nav-text-color', '#131736')
+      element.setAttribute('nav-hover-bg-color', '#fff')
+      element.setAttribute('nav-hover-text-color', '#00BFCB')
+      element.setAttribute('nav-accent-color', '#00BFCB')
+      element.setAttribute('primary-color', '#00BFCB')
     } else {
-      docEl.setAttribute('theme', 'dark')
-      docEl.setAttribute('bg-color', '#15182B')
-      docEl.setAttribute('nav-bg-color', '#0a0c1b')
-      docEl.setAttribute('nav-text-color', '#fff')
-      docEl.setAttribute('nav-hover-bg-color', '#3a3d4d')
-      docEl.setAttribute('nav-hover-text-color', '#fff')
-      docEl.setAttribute('nav-accent-color', '#b5eff3')
-      docEl.setAttribute('primary-color', '#00BFCB')
+      element.setAttribute('theme', 'dark')
+      element.setAttribute('bg-color', '#15182B')
+      element.setAttribute('nav-bg-color', '#0a0c1b')
+      element.setAttribute('nav-text-color', '#fff')
+      element.setAttribute('nav-hover-bg-color', '#3a3d4d')
+      element.setAttribute('nav-hover-text-color', '#fff')
+      element.setAttribute('nav-accent-color', '#b5eff3')
+      element.setAttribute('primary-color', '#00BFCB')
     }
   }
 }
 
 watch(getTheme, () => setup())
-onMounted(() => {
+
+onMounted(async () => {
   setup()
 })
 </script>

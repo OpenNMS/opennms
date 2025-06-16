@@ -1,0 +1,187 @@
+
+[[structured-node-list]]
+= Structured Node List
+:description: Learn about the structured node list in OpenNMS Horizon/Meridian, which lets users perform enhanced data display, search, filter, and export node information.
+
+The structured node list is a Vue-based page that displays node information and lets the user perform enhanced data display, search, filter, and export data.
+
+The main display shows a paginated table of nodes corresponding to the current search and filtering parameters.
+You can sort most of the columns in ascending or descending order.
+
+You can choose among 10, 20, or 50 entries per page, navigate among pages, or go to the start or end of the currently filtered set.
+
+.Structured Node List
+image::structured-node-list/node-structure-overview.png["{page-component-title} web UI showing structured node list."]
+
+The first column of each node has an Action menu where the user can do the following:
+
+* Choose various actions, including **Info...** to open a dialog that displays details about the node.
+* Navigate to various relevant pages (Alarms, Events, and so on).
+* Perform other actions (rescan, schedule an outage, and so on).
+
+The **Export** symbol image:structured-node-list/node-export-button.png[width=32] lets you export the current data in either CSV or JSON format.
+
+A *gear* symbol image:structured-node-list/node-preferences-button.png[width=32] opens the Node Preferences window that allows you to configure the columns displayed and their order.
+Saving this configuration also saves the current search and filtering options.
+
+An input field above the table lets you search by node label.
+
+The Filtering and Extended Search panel on the left lets you filter and search by various parameters.
+
+== Node table
+
+The table displays columns of information about the nodes that match the current search and filter parameters.
+
+The Node Label and ID fields contain links to navigate to the Node Details page.
+
+The IP Address field contains a link to go to the IP Interface page for that interface.
+A tooltip will also display more information about the interface; for example, if it is managed, primary, not eligible, and so on.
+
+The Flows field contains arrows denoting whether Ingress and/or Egress flow information is available, with a tooltip to provide more detail.
+
+== Action menu
+
+The Action menu next to each node provides options to display the Node Details dialog and navigate to the following pages:
+
+* Events
+* Alarms
+* Outages
+* Assets
+* Metadata
+* Hardware Inventory
+* Availability
+* Resource Graphs
+* Node Rescan
+* Admin/Node Management
+* Update SNMP Information
+* Schedule an Outage
+* View Topology Map
+
+.Node Action Menu
+image::structured-node-list/node-action-menu.png["{page-component-title} node Action menu." width=300]
+
+== Node details
+
+Click **Info...** in the Action Menu to view additional information about the node including its ID, IP address, location, latitude/longitude, and so on.
+
+.Node Details
+image::structured-node-list/node-details.png["{page-component-title} Node Details dialog." width=400]
+
+== Download current node data
+
+Click the **download** symbol to export the current node data (depending on search and filter configuration) in either CSV or JSON format.
+
+.Download/Export
+image::structured-node-list/node-download-menu.png["{page-component-title} Node download/export menu."]
+
+== Node preferences
+
+Node preferences let you specify the order in which the columns of data appear in the UI.
+These preferences are stored in your browser's local storage, and so apply to anyone using the machine on which that browser runs, which may not be the OpenNMS user you are logged in as.
+The preferences will be retained unless cleared by your browser's policy.
+Your preferences are not available on different machines or the same machine using a different web browser.
+
+Click the **gear** symbol to open the Node Preferences dialog.
+
+.Node Preferences
+image::structured-node-list/node-preferences.png["{page-component-title} Node Preferences dialog." width=400]
+
+Click **Default** to reset all displayed columns to the default list visibility and order.
+
+Click the checkbox next to each column name to display or hide that column.
+Note that changes take effect immediately.
+
+Click the up and down arrows to reorder the columns.
+
+Click **Save and Close** to save your settings and your current search and filtering configuration.
+
+Click the "X" to close without saving to local storage.
+
+== Filter and search
+
+You can filter and search via the Filtering and Extended Search sections in the left panel, and by the **Search node label** search box above the node table.
+Note that searches combine the results of all configured filters and search parameters.
+For example, you can search by `Category + Location + Extended Search Term + Node Label search term` in any combination.
+
+=== Node label search
+
+The input box above the Node Table lets you search by node label.
+This is a case-sensitive wildcard search.
+Entering `cal` will match nodes have the label `localhost` as well as `california`, but not `California`.
+
+=== Filtering
+
+You can filter by category (for example, surveillance category), flows, and monitoring locations.
+
+Click on an item to filter by that item.
+You can select more than one item per section.
+
+As you choose items, the number of items selected for that section will display.
+A check symbol lets you clear the selected items for that section.
+
+Use **Clear All** to clear all filters and search parameters.
+
+Use **Match All** in the Categories section to display only nodes corresponding to all the selected categories.
+
+For example, you could filter on nodes that are in both the *Routers* and *Production* categories.
+
+.Category Filter
+image::structured-node-list/category-filter-match-all.png["{page-component-title} Node Category Filter." width=400]
+
+=== Extended search
+
+This lets you to search by additional fields.
+Note that some fields perform wildcard searches and some are exact searches.
+Also note that some fields, for example SNMP fields, are not displayed in the table, but will display in the Node Details dialog.
+
+[options="autowidth"]
+|===
+| Item                   | Description
+
+| Foreign Source
+| Search by Foreign Source only.
+
+| Foreign ID
+| Search by Foreign ID only.
+
+| Foreign Source:Foreign ID
+| Search by Foreign Source and Foreign ID in `fs:fid` format.
+
+| IP Address
+| Search by IP address.
+Will search only on valid IPv4 and IPv6 addresses.
+It will not search on wildcard or partial addresses.
+
+| Sys Contact
+| Performs a case-sensitive wildcard search by system contact.
+
+| Sys Description
+| Performs a case-sensitive wildcard search by system description.
+
+| Sys Location
+| Performs a case-sensitive wildcard search by system location.
+
+| Sys Name
+| Performs a case-sensitive wildcard search by system name.
+
+| Sys Object ID
+| Performs a case-sensitive wildcard search by system object ID.
+
+| SNMP Alias
+| Performs an exact search by SNMP alias.
+
+| SNMP Description
+| Performs an exact search by SNMP description.
+
+| SNMP Index
+| Performs an exact search by SNMP index.
+
+| SNMP Name
+| Performs an exact search by SNMP name.
+
+| SNMP Type
+| Performs an exact search by SNMP type.
+|===
+
+.Extended Search
+image::structured-node-list/node-extended-search.png["{page-component-title} Node Extended Search" width=400]

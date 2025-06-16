@@ -71,7 +71,6 @@ create_and_push_manifest() {
   docker manifest create "${TARGET_REF}" \
     "${IMAGE_REF}-linux-amd64" \
     "${IMAGE_REF}-linux-arm64" \
-    "${IMAGE_REF}-linux-arm-v7" \
     --amend
 
   DOCKER_IMAGE_SHA_256="$(docker manifest push "${TARGET_REF}" --purge | cut -d ':' -f 2)"

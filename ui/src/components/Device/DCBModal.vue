@@ -9,10 +9,9 @@
 
 <script setup lang="ts">
 import { FeatherDialog } from '@featherds/dialog'
-import { DeviceConfigBackup } from '@/types/deviceConfig'
-import { useStore } from 'vuex'
+import { useDeviceStore } from '@/stores/deviceStore'
 
-const store = useStore()
+const deviceStore = useDeviceStore()
 
 defineProps({
   visible: {
@@ -21,14 +20,12 @@ defineProps({
   }
 })
 
-const modalDeviceConfigBackup = computed<DeviceConfigBackup>(() => store.state.deviceModule.modalDeviceConfigBackup)
-
 const labels = reactive({
   title: 'DCB',
   close: 'Close'
 })
 
-watchEffect(() => labels.title = `Device Name: ${modalDeviceConfigBackup.value.deviceName}`)
+watchEffect(() => labels.title = `Device Name: ${deviceStore.modalDeviceConfigBackup.deviceName}`)
 </script>
 
 <style scoped lang="scss">

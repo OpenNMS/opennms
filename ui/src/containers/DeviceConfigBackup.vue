@@ -25,16 +25,18 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import DCBTable from '@/components/Device/DCBTable.vue'
 import DCBGroupFilters from '@/components/Device/DCBGroupFilters.vue'
 import DCBSearch from '@/components/Device/DCBSearch.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { useDeviceStore } from '@/stores/deviceStore'
+import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 
-const store = useStore()
+const deviceStore = useDeviceStore()
+const menuStore = useMenuStore()
 
-const homeUrl = computed<string>(() => store.state.menuModule.mainMenu?.homeUrl)
+const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
@@ -43,7 +45,7 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
   ]
 })
 
-onMounted(() => store.dispatch('deviceModule/getDeviceConfigBackups', true))
+onMounted(() => deviceStore.getDeviceConfigBackups(true))
 </script>
 
 <style scoped lang="scss">

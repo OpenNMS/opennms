@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>31.0.3-SNAPSHOT</version>
+    <version>33.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-base-assembly</artifactId>
@@ -22,14 +22,14 @@
         <filtering>true</filtering>
         <directory>${project.build.directory}/cli</directory>
         <excludes>
-          <exclude>bin/_lib.sh</exclude>
+          <exclude>bin/_*.sh</exclude>
         </excludes>
       </resource>
       <resource>
         <filtering>false</filtering>
         <directory>${project.build.directory}/cli</directory>
         <includes>
-          <include>bin/_lib.sh</include>
+          <include>bin/_*.sh</include>
         </includes>
       </resource>
     </resources>
@@ -451,23 +451,6 @@
       <artifactId>opennms-integration-rt</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>opennms-integration-otrs</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>opennms-integration-otrs-31</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.features</groupId>
-      <artifactId>opennms-integration-remedy</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms</groupId>
-      <artifactId>opennms-reporting</artifactId>
-      <scope>runtime</scope>
-    </dependency>
-    <dependency>
       <groupId>org.opennms</groupId>
       <artifactId>opennms-rrd-model</artifactId>
       <scope>compile</scope>
@@ -874,6 +857,11 @@
     <dependency>
       <groupId>org.opennms.features.topology</groupId>
       <artifactId>org.opennms.features.topology.persistence.impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.fileutils</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

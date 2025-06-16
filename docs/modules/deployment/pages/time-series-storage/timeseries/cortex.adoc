@@ -36,6 +36,7 @@ org.opennms.timeseries.tin.metatags.tag.node=${node:label} <3>
 org.opennms.timeseries.tin.metatags.tag.location=${node:location}
 org.opennms.timeseries.tin.metatags.tag.geohash=${node:geohash}
 org.opennms.timeseries.tin.metatags.tag.ifDescr=${interface:if-description}
+org.opennms.timeseries.tin.metatags.tag.ifName=${interface:if-name}
 ----
 <1> Make sure that the `org.opennms.timeseries.strategy` property is set only once so you don't have conflicting values in multiple `properties` files.
 <2> If you are enabling the <<time-series-storage/timeseries/time-series-storage.adoc#ga-dual-write-integration, dual write plugin>> on an existing installation and want to keep historical metrics, do not set the `org.opennms.timeseries.strategy` to `integration` until you have written enough data to expire any collected data prior to enabling the dual write feature.

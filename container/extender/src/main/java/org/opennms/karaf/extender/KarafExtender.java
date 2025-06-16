@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2016-2023 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.karaf.extender;
 
 import java.io.IOException;
@@ -54,11 +47,15 @@ import java.util.stream.Collectors;
 import org.apache.karaf.features.FeaturesService;
 import org.apache.karaf.features.FeaturesService.Option;
 import org.apache.karaf.kar.KarService;
+import org.opennms.core.health.api.DefaultPassiveHealthCheck;
+import org.opennms.core.health.api.Response;
+import org.opennms.core.health.api.Status;
 import org.ops4j.pax.url.mvn.MavenResolver;
 import org.osgi.service.cm.Configuration;
 import org.osgi.service.cm.ConfigurationAdmin;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.MessageFormatter;
 
 import com.google.common.collect.Lists;
 
@@ -87,21 +84,26 @@ public class KarafExtender {
     private MavenResolver m_mavenResolver;
     private FeaturesService m_featuresService;
     private KarService m_karService;
+    private DefaultPassiveHealthCheck m_defaultPassiveHealthCheck;
 
     private Thread m_installThread;
     private Thread m_karDependencyInstallThread;
+    private ExtenderStatus m_extenderStatus = new ExtenderStatus();
 
     public void init() throws InterruptedException {
         Objects.requireNonNull(m_configurationAdmin, "configurationAdmin");
         Objects.requireNonNull(m_mavenResolver, "mavenResolver");
         Objects.requireNonNull(m_featuresService, "featuresService");
         Objects.requireNonNull(m_karService, "karService");
+        Objects.requireNonNull(m_defaultPassiveHealthCheck, "healthCheckResponseCache");
+
+        m_defaultPassiveHealthCheck.setResponse(new Response(Status.Starting), false);
 
         List<Repository> repositories;
         try {
             repositories = getRepositories();
         } catch (IOException e) {
-            LOG.error("Failed to retrieve the list of repositories. Aborting.", e);
+            m_extenderStatus.error("Failed to retrieve the list of repositories. Aborting", e);
             return;
         }
 
@@ -112,7 +114,7 @@ public class KarafExtender {
         try {
             featuresBoot.addAll(getFeaturesBoot());
         } catch (IOException e) {
-            LOG.error("Failed to retrieve the list of features to boot. Aborting.", e);
+            m_extenderStatus.error("Failed to retrieve the list of features to boot. Aborting", e);
             return;
         }
 
@@ -143,7 +145,7 @@ public class KarafExtender {
                     config.update(props);
                 }
             } catch (IOException e) {
-                LOG.error("Failed to update the list of Maven repositories to '{}'. Aborting.",
+                m_extenderStatus.error("Failed to update the list of Maven repositories to '{}'. Aborting",
                         mavenRepos, e);
                 return;
             }
@@ -164,7 +166,7 @@ public class KarafExtender {
                         LOG.info("Adding feature repository: {}", featureUri);
                         m_featuresService.addRepository(featureUri);
                     } catch (Exception e) {
-                        LOG.error("Failed to add feature repository '{}'. Skipping.", featureUri, e);
+                        m_extenderStatus.error("Failed to add feature repository '{}'. Skipping", featureUri, e);
                     }
                 }
             }
@@ -190,14 +192,16 @@ public class KarafExtender {
                 try {
                     LOG.info("Installing features: {}", featuresToInstall);
                     m_featuresService.installFeatures(featuresToInstall, EnumSet.noneOf(Option.class));
+                    m_extenderStatus.featuresDone(String.format("%s non-KAR features installed", featuresToInstall.size()));
                 } catch (Exception e) {
-                    LOG.error("Failed to install one or more features.", e);
+                    m_extenderStatus.error("Failed to install one or more features", e);
                 }
             });
             m_installThread.setName("Karaf-Extender-Feature-Install");
             m_installThread.start();
         } else {
             LOG.debug("No features to install.");
+            m_extenderStatus.featuresDone("");
         }
 
 
@@ -206,12 +210,13 @@ public class KarafExtender {
                 .collect(Collectors.toList());
         if (!featuresWithKarDependencies.isEmpty()) {
             final KarDependencyHandler karDependencyHandler = new KarDependencyHandler(featuresWithKarDependencies,
-                    m_karService, m_featuresService);
+                    m_karService, m_featuresService, m_extenderStatus);
             m_karDependencyInstallThread = new Thread(karDependencyHandler);
             m_karDependencyInstallThread.setName("Karaf-Extender-Feature-Install-For-Kars");
             m_karDependencyInstallThread.start();
         } else {
             LOG.debug("No features with dependencies on .kar files to install.");
+            m_extenderStatus.karsDone("");
         }
     }
 
@@ -269,7 +274,7 @@ public class KarafExtender {
                 }
                 repositories.add(new Repository(repositoryPath, featureUris, featuresBoot));
             } catch (URISyntaxException e) {
-                LOG.error("Failed to generate one or more feature URIs for repository {}. Skipping.",
+                m_extenderStatus.error("Failed to generate one or more feature URIs for repository {}. Skipping",
                         repositoryPath, e);
             }
         }
@@ -430,4 +435,67 @@ public class KarafExtender {
         m_karService = karService;
     }
 
+    public void setDefaultPassiveHealthCheck(DefaultPassiveHealthCheck defaultPassiveHealthCheck) {
+        m_defaultPassiveHealthCheck = defaultPassiveHealthCheck;
+    }
+
+    public class ExtenderStatus {
+        private String featuresToInstallDone = null;
+        private String karDependencyInstallDone = null;
+
+        public void info(String messagePattern, Object... argArray) {
+            LOG.info(messagePattern, argArray);
+            setResponse(Status.Starting, messagePattern, argArray);
+        }
+
+        public void warn(String messagePattern, Object... argArray) {
+            LOG.warn(messagePattern, argArray);
+            setResponse(Status.Starting, messagePattern, argArray);
+        }
+
+        public void error(String messagePattern, Object... argArray) {
+            LOG.error(messagePattern, argArray);
+            setResponse(Status.Failure, messagePattern, argArray);
+        }
+
+        private void setResponse(Status status, String messagePattern, Object[] argArray) {
+            var formattingTuple = MessageFormatter.arrayFormat(messagePattern, argArray);
+            var failureMessage = new StringBuffer(formattingTuple.getMessage());
+            var throwable = formattingTuple.getThrowable();
+            if (throwable != null) {
+                failureMessage.append(": ");
+                failureMessage.append(throwable.getMessage());
+            }
+            m_defaultPassiveHealthCheck.setResponse(new Response(status, failureMessage.toString()), false);
+        }
+
+        public void featuresDone(String message) {
+            featuresToInstallDone = Objects.requireNonNull(message);
+            areWeCompletelyDone();
+        }
+
+        public void karsDone(String message) {
+            karDependencyInstallDone = Objects.requireNonNull(message);
+            areWeCompletelyDone();
+        }
+
+        private void areWeCompletelyDone() {
+            if (featuresToInstallDone != null && karDependencyInstallDone != null) {
+                StringBuffer message = new StringBuffer();
+                if (!featuresToInstallDone.isEmpty()) {
+                    message.append(featuresToInstallDone);
+                    message.append(". ");
+                }
+                if (!karDependencyInstallDone.isEmpty()) {
+                    message.append(karDependencyInstallDone);
+                    message.append(". ");
+                }
+                if (message.length() > 0) {
+                    m_defaultPassiveHealthCheck.setResponse(new Response(Status.Success, message.toString()), false);
+                } else {
+                    m_defaultPassiveHealthCheck.setResponse(new Response(Status.Success), false);
+                }
+            }
+        }
+    }
 }

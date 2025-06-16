@@ -1,57 +1,51 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.features.distributed.cassandra.api;
 
+import com.datastax.oss.driver.api.core.cql.AsyncResultSet;
+import com.datastax.oss.driver.api.core.cql.PreparedStatement;
+import com.datastax.oss.driver.api.core.cql.ResultSet;
+import com.datastax.oss.driver.api.core.cql.SimpleStatement;
+import com.datastax.oss.driver.api.core.cql.Statement;
+
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Future;
 
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.RegularStatement;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.ResultSetFuture;
-import com.datastax.driver.core.Statement;
-
 /**
- * A thin facade on top of Cassandra's {@link com.datastax.driver.core.Session session}.
+ * A thin facade on top of Cassandra's {@link com.datastax.oss.driver.api.core.session.Session session}.
  * 
- * The purpose of using this interface rather than Cassandra's {@link com.datastax.driver.core.Session} directly is
+ * The purpose of using this interface rather than Cassandra's {@link com.datastax.oss.driver.api.core.session.Session} directly is
  * because Newts wraps the session in a similar interface and does not expose the session directly. So rather than
  * depending on the newts version of the interface in OpenNMS we have this one and proxy between them in
  * NewtsCassandraSessionFactory. The implication being that any future implementations that may expose a
- * {@link com.datastax.driver.core.Session} directly will have to wrap it with this interface, but that should be
+ * {@link com.datastax.oss.driver.api.core.session.Session} directly will have to wrap it with this interface, but that should be
  * trivial.
  */
 public interface CassandraSession {
     PreparedStatement prepare(String statement);
 
-    PreparedStatement prepare(RegularStatement statement);
+    PreparedStatement prepare(SimpleStatement statement);
 
-    ResultSetFuture executeAsync(Statement statement);
+    CompletionStage<AsyncResultSet> executeAsync(Statement statement);
 
     ResultSet execute(Statement statement);
 

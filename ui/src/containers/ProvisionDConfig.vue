@@ -29,13 +29,14 @@ import ConfigurationHeader from '@/components/Configuration/ConfigurationHeader.
 import ConfigurationTableWrapper from '@/components/Configuration/ConfigurationTableWrapper.vue'
 import ThreadPools from '@/components/Configuration/ConfigurationThreadPools.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
-import { populateProvisionD } from '@/services/configurationService'
-import { useStore } from 'vuex'
+import { useConfigurationStore } from '@/stores/configurationStore'
+import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 
-const store = useStore()
+const configurationStore = useConfigurationStore()
+const menuStore = useMenuStore()
 
-const homeUrl = computed<string>(() => store.state.menuModule.mainMenu?.homeUrl)
+const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
@@ -44,7 +45,7 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
   ]
 })
 
-populateProvisionD(store)
+configurationStore.getProvisionDService()
 </script>
 <style
   lang="scss"

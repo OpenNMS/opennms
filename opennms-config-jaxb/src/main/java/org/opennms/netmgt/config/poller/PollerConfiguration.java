@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.config.poller;
 
 import java.io.Serializable;
@@ -93,6 +86,15 @@ public class PollerConfiguration implements Serializable {
 
     @XmlAttribute(name="defaultCriticalPathRetries")
     private Integer m_defaultCriticalPathRetries;
+
+    /**
+     * Flag which indicates if the async polling engine is enabled
+     */
+    @XmlAttribute(name="asyncPollingEngineEnabled")
+    private Boolean m_asyncPollingEngineEnabled;
+
+    @XmlAttribute(name="maxConcurrentAsyncPolls")
+    private Integer m_maxConcurrentAsyncPolls;
 
     /**
      * Configuration of node-outage functionality
@@ -277,11 +279,27 @@ public class PollerConfiguration implements Serializable {
         m_defaultCriticalPathRetries = retries;
     }
 
+    public Boolean getAsyncPollingEngineEnabled() {
+        return Objects.requireNonNullElse(m_asyncPollingEngineEnabled, false);
+    }
+
+    public void setAsyncPollingEngineEnabled(Boolean asyncPollingEngineEnabled) {
+        m_asyncPollingEngineEnabled = asyncPollingEngineEnabled;
+    }
+
+    public Integer getMaxConcurrentAsyncPolls() {
+        return Objects.requireNonNullElse(m_maxConcurrentAsyncPolls, 100);
+    }
+
+    public void setMaxConcurrentAsyncPolls(Integer maxConcurrentAsyncPolls) {
+        m_maxConcurrentAsyncPolls = maxConcurrentAsyncPolls;
+    }
+
     @Override
     public int hashCode() {
         return Objects.hash(getThreads(), getNextOutageId(), getServiceUnresponsiveEnabled(), getPathOutageEnabled(),
                 getDefaultCriticalPathIp(), getDefaultCriticalPathTimeout(), getDefaultCriticalPathRetries(),
-                getNodeOutage(), getPackages(), getMonitors());
+                getNodeOutage(), getPackages(), getMonitors(), getAsyncPollingEngineEnabled(), getMaxConcurrentAsyncPolls());
     }
 
     @Override
@@ -298,7 +316,9 @@ public class PollerConfiguration implements Serializable {
                 && Objects.equals(getDefaultCriticalPathRetries(), that.getDefaultCriticalPathRetries())
                 && Objects.equals(getNodeOutage(), that.getNodeOutage())
                 && Objects.equals(getPackages(), that.getPackages())
-                && Objects.equals(getMonitors(), that.getMonitors());
+                && Objects.equals(getMonitors(), that.getMonitors())
+                && Objects.equals(getAsyncPollingEngineEnabled(), that.getAsyncPollingEngineEnabled())
+                && Objects.equals(getMaxConcurrentAsyncPolls(), that.getMaxConcurrentAsyncPolls());
     }
     @Override
     public String toString() {
@@ -313,6 +333,8 @@ public class PollerConfiguration implements Serializable {
                 ",nodeOutage=" + getNodeOutage() +
                 ",packages=" + getPackages() +
                 ",monitors=" + getMonitors() +
+                ",asyncPollingEngineEnabled=" + getAsyncPollingEngineEnabled() +
+                ",maxConcurrentAsyncPolls=" + getMaxConcurrentAsyncPolls() +
                 "]";
     }
 

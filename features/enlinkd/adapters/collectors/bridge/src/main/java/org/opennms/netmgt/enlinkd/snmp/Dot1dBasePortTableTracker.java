@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.netmgt.snmp.SnmpInstId;
@@ -34,22 +27,24 @@ import org.opennms.netmgt.snmp.SnmpRowResult;
 import org.opennms.netmgt.snmp.TableTracker;
 
 public class Dot1dBasePortTableTracker extends TableTracker {
-	public final static SnmpObjId DOT1D_BASE_PORT = SnmpObjId.get(".1.3.6.1.2.1.17.1.4.1.1");
-	public final static SnmpObjId DOT1D_BASE_IFINDEX = SnmpObjId.get(".1.3.6.1.2.1.17.1.4.1.2");
+	public final static SnmpObjId DOT1D_BASE_PORT_OID = SnmpObjId.get(".1.3.6.1.2.1.17.1.4.1.1");
+	public final static SnmpObjId DOT1D_BASE_IFINDEX_OID = SnmpObjId.get(".1.3.6.1.2.1.17.1.4.1.2");
+	public final static String DOT1D_BASE_IFINDEX = "dot1dBasePortIfIndex";
+	public final static String DOT1D_BASE_PORT = "dot1dBasePort";
 
 	public static final SnmpObjId[] bridgePort_elemList = new SnmpObjId[] {
 		/*
 		 * The port number of the port for which this entry
  		 * contains bridge management information.
 		 */
-		DOT1D_BASE_PORT,
+			DOT1D_BASE_PORT_OID,
 		
 		/*
 		 * The value of the instance of the ifIndex object,
 		 * defined in MIB-II, for the interface corresponding
  		 * to this port.
 		 */
-		DOT1D_BASE_IFINDEX
+			DOT1D_BASE_IFINDEX_OID
 		
 	};
 
@@ -65,7 +60,7 @@ public class Dot1dBasePortTableTracker extends TableTracker {
 		 * @return a Integer.
 		 */
 		public Integer getBaseBridgePort() {
-			return getValue(DOT1D_BASE_PORT).toInt();
+			return getValue(DOT1D_BASE_PORT_OID).toInt();
 		}
 	
 		/**
@@ -74,7 +69,7 @@ public class Dot1dBasePortTableTracker extends TableTracker {
 		 * @return a Integer.
 		 */
 		public Integer getBaseBridgePortIfindex() {
-			return getValue(DOT1D_BASE_IFINDEX).toInt();
+			return getValue(DOT1D_BASE_IFINDEX_OID).toInt();
 		}
 	
 	}	
@@ -96,7 +91,9 @@ public class Dot1dBasePortTableTracker extends TableTracker {
     }
 
     public void processDot1dBasePortRow(final Dot1dBasePortRow row) {
-    }
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_BASE_PORT_OID + "." + row.getInstance().toString(), DOT1D_BASE_PORT, row.getBaseBridgePort() );
+		System.out.printf("\t\t%s (%s)= %s \n", DOT1D_BASE_IFINDEX_OID + "." + row.getInstance().toString(), DOT1D_BASE_IFINDEX, row.getBaseBridgePortIfindex() );
+	}
 
 
 }

@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2019-2025 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2025 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.smoketest.selenium;
 
 import static org.junit.Assert.assertEquals;
@@ -115,6 +108,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 
+@SuppressWarnings("java:S2068")
 public abstract class AbstractOpenNMSSeleniumHelper {
     private static final Logger LOG = LoggerFactory.getLogger(AbstractOpenNMSSeleniumHelper.class);
 
@@ -123,6 +117,11 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
     public static final String BASIC_AUTH_USERNAME = "admin";
     public static final String BASIC_AUTH_PASSWORD = "admin";
+
+    // username/password combination that triggers the password gate, which prompts
+    // user to change the default "admin" password
+    public static final String PASSWORD_GATE_USERNAME = "admin";
+    public static final String PASSWORD_GATE_PASSWORD = "admin";
 
     public static final String REQUISITION_NAME   = "SeleniumTestGroup";
     public static final String USER_NAME          = "SmokeTestUser";
@@ -162,10 +161,12 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         protected void failed(final Throwable e, final Description description) {
             final String testName = description.getMethodName();
             final WebDriver driver = getDriver();
+
             if (driver == null) {
                 LOG.warn("Test {} failed... no web driver was set.", testName);
                 return;
             }
+
             LOG.debug("Test {} failed... attempting to take screenshot.", testName);
 
             // Reset the implicit wait since we can't trust the last value
@@ -173,10 +174,12 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
             if (driver instanceof TakesScreenshot) {
                 final TakesScreenshot shot = (TakesScreenshot)driver;
+
                 try {
                     final Path from = shot.getScreenshotAs(OutputType.FILE).toPath();
                     final Path to = Paths.get("target", "screenshots", description.getClassName() + "." + testName + ".png");
                     LOG.debug("Screenshot saved to: {}", from);
+
                     try {
                         Files.createDirectories(to.getParent());
                         Files.move(from, to, StandardCopyOption.REPLACE_EXISTING);
@@ -190,10 +193,12 @@ public abstract class AbstractOpenNMSSeleniumHelper {
             } else {
                 LOG.debug("Driver can't take screenshots.");
             }
+
             try {
                 LOG.debug("Attempting to dump DOM.");
                 final String domText = driver.findElement(By.tagName("html")).getAttribute("innerHTML");
                 final Path to = Paths.get("target", "contents", description.getClassName() + "." + testName + ".html");
+
                 try {
                     Files.createDirectories(to.getParent());
                     Files.write(to, domText.getBytes(StandardCharsets.UTF_8));
@@ -278,42 +283,63 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         }
     }
 
+    /**
+     * Standard login for smoke tests. Navigate to login page, log in as default admin user,
+     * skip the password gate page and then close the Usage Statistics Sharing dialog if present.
+     */
     public void login() {
-        // Start with a clean slate
-        getDriver().manage().deleteAllCookies();
+        login(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD, true, true, true, false);
+    }
 
-        getDriver().get(getBaseUrlInternal() + "opennms/login.jsp");
+    /**
+     * Perform a login with given credentials and various options.
+     *
+     * If login username/password is "admin/admin", this results in going to the Admin Password Gate page.
+     * 'skip' will skip having to change the password and continue to the main page.
+     *
+     * @param username Username to use for the login
+     * @param password Password to use for the login
+     * @param skip If true, clicks Skip on the password gate page to avoid having to change the admin password
+     * @param closeUsageStatsSharing If true, close the Usage Statistics Sharing dialog if it appears
+     * @param navigateToLoginPage If true, navigate to the login page. Set to false to navigate
+     *     to a different page before calling this method, e.g. to test that redirect after login works.
+     */
+    public void login(final String username, final String password, final boolean skip, final boolean closeUsageStatsSharing,
+                      final boolean navigateToLoginPage, final boolean skipCookieDeletion) {
+        LOG.debug("Login: username={}, skip={}, closeUsageStatsSharing={}, navigateToLoginPage={}, skipCookieDeletion={}",
+            username, skip, closeUsageStatsSharing, navigateToLoginPage, skipCookieDeletion);
+
+        if (navigateToLoginPage) {
+            if (!skipCookieDeletion) {
+                // Start with a clean slate
+                getDriver().manage().deleteAllCookies();
+            }
+
+            getDriver().get(getBaseUrlInternal() + "opennms/login.jsp");
+        }
 
         waitForLogin();
 
-        enterText(By.name("j_username"), BASIC_AUTH_USERNAME);
-        enterText(By.name("j_password"), BASIC_AUTH_PASSWORD);
+        enterText(By.name("j_username"), username);
+        enterText(By.name("j_password"), password);
         clickElement(By.name("Login"));
 
         wait.until((WebDriver driver) -> {
             return ! driver.getCurrentUrl().contains("login.jsp");
         });
+
+        // bootstrap header, exists in all JSP-based OpenNMS pages
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']")));
-        invokeWithImplicitWait(0, () -> {
-            try {
-                // Make sure that the 'login-attempt-failed' element is not present
-                findElementById("login-attempt-failed");
-                fail("Login failed: " + findElementById("login-attempt-failed-reason").getText());
-            } catch (NoSuchElementException e) {
-                // This is expected
-            }
-        });
-        invokeWithImplicitWait(0, () -> {
-            try {
-                WebElement element = findElementById("datachoices-modal");
-                if (element.isDisplayed()) { // datachoice modal is visible
-                    findElementById("datachoices-disable").click(); // opt out
-                }
-            } catch (NoSuchElementException e) {
-                // "datachoices-modal" is not visible or does not exist.
-                // No further action required
-            }
-        });
+
+        ensureLoginSuccess();
+
+        if (skip) {
+            skipPasswordGate(username, password);
+        }
+
+        if (closeUsageStatsSharing) {
+            closeUsageStatisticsSharingDialog();
+        }
     }
 
     private void invokeWithImplicitWait(int implicitWait, Runnable runnable) {
@@ -328,8 +354,10 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     protected void logout() {
+        LOG.debug("Logout started");
         getElementWithoutWaiting(By.name("headerLogoutForm")).submit();
         waitForLogin();
+        LOG.debug("Logout complete");
     }
 
     private void waitForLogin() {
@@ -351,6 +379,50 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     public void clearElement(final By by) {
         sleepQuietly(200);
         waitForElement(by).clear();
+    }
+
+    protected void ensureLoginSuccess() {
+        invokeWithImplicitWait(0, () -> {
+            try {
+                // Make sure that the 'login-attempt-failed' element is not present
+                findElementById("login-attempt-failed");
+                fail("Login failed: " + findElementById("login-attempt-failed-reason").getText());
+            } catch (NoSuchElementException e) {
+                // This is expected
+            }
+        });
+    }
+
+    /**
+     * Logging in with "admin/admin" will result in navigating to the passwordGate page,
+     * this clicks "Skip" to continue.
+     */
+    protected void skipPasswordGate(final String username, final String password) {
+        if (username.equals(PASSWORD_GATE_USERNAME) && password.equals(PASSWORD_GATE_PASSWORD)) {
+            clickElement(By.id("btn_skip"));
+
+            wait.until((WebDriver driver) -> {
+                return !driver.getCurrentUrl().contains("passwordGate.jsp");
+            });
+        }
+    }
+
+    /**
+     * Close the Usage Statistics Sharing dialog if present.
+     */
+    protected void closeUsageStatisticsSharingDialog() {
+        invokeWithImplicitWait(0, () -> {
+            try {
+                WebElement element = findElementById("usage-statistics-sharing-modal");
+
+                if (element.isDisplayed()) { // usage statistics modal is visible
+                    findElementById("usage-statistics-sharing-notice-dismiss").click(); // close modal
+                }
+            } catch (NoSuchElementException e) {
+                // "usage-statistics-sharing-notice-dismiss" is not visible or does not exist.
+                // No further action required
+            }
+        });
     }
 
     public void assertElementDoesNotExist(final By by) {
@@ -415,7 +487,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     protected String handleAlert(final String expectedText) {
-        LOG.debug("handleAlerm: expectedText={}", expectedText);
+        LOG.debug("handleAlert: expectedText={}", expectedText);
         try {
             final Alert alert = getDriver().switchTo().alert();
             final String alertText = alert.getText();
@@ -725,7 +797,6 @@ public abstract class AbstractOpenNMSSeleniumHelper {
                 select.selectByVisibleText(text);
                 return true;
             }
-
         });
     }
 
@@ -1057,6 +1128,9 @@ public abstract class AbstractOpenNMSSeleniumHelper {
                     LOG.warn("Failed to locate id={}", id, t);
                 }
             }
+            if (element == null) {
+                throw new IllegalArgumentException("unable to find element to click for id: " + id);
+            }
             sleepQuietly(50);
             element.click();
         } finally {
@@ -1103,17 +1177,37 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         }
     }
 
+    /**
+     * Do an Http request with standard admin credentials and return status code.
+     */
     public static Integer doRequest(final HttpRequestBase request) throws ClientProtocolException, IOException, InterruptedException {
-        return getRequest(request).getStatus();
+        return getRequest(request, createBasicCredentials()).getStatus();
     }
 
+    /**
+     * Do an Http request, overriding credentials, and return status code.
+     */
+    public static Integer doRequest(final HttpRequestBase request, UsernamePasswordCredentials credentials) throws ClientProtocolException, IOException, InterruptedException {
+        return getRequest(request, credentials).getStatus();
+    }
+
+    /**
+     * Do an Http request using standard admin credentials.
+     */
     protected static ResponseData getRequest(final HttpRequestBase request) throws ClientProtocolException, IOException, InterruptedException {
+        return getRequest(request, createBasicCredentials());
+    }
+
+    /**
+     * Do an Http request with the given credentials.
+     */
+    protected static ResponseData getRequest(final HttpRequestBase request, UsernamePasswordCredentials credentials) throws ClientProtocolException, IOException, InterruptedException {
         final CountDownLatch waitForCompletion = new CountDownLatch(1);
 
         final URI uri = request.getURI();
         final HttpHost targetHost = new HttpHost(uri.getHost(), uri.getPort(), uri.getScheme());
         CredentialsProvider credsProvider = new BasicCredentialsProvider();
-        credsProvider.setCredentials(new AuthScope(targetHost.getHostName(), targetHost.getPort()), new UsernamePasswordCredentials(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD));
+        credsProvider.setCredentials(new AuthScope(targetHost.getHostName(), targetHost.getPort()), credentials);
         AuthCache authCache = new BasicAuthCache();
         // Generate BASIC scheme object and add it to the local auth cache
         BasicScheme basicAuth = new BasicScheme();
@@ -1160,6 +1254,10 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         waitForCompletion.await();
         client.close();
         return result;
+    }
+
+    protected static UsernamePasswordCredentials createBasicCredentials() {
+        return new UsernamePasswordCredentials(BASIC_AUTH_USERNAME, BASIC_AUTH_PASSWORD);
     }
 
     public long getNodesInDatabase(final String foreignSource) {
@@ -1410,10 +1508,17 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     }
 
     protected void sendPut(final String urlFragment, final String body, final Integer expectedResponse) throws ClientProtocolException, IOException, InterruptedException {
+        sendPut(urlFragment, body, expectedResponse, createBasicCredentials());
+    }
+
+    protected void sendPut(final String urlFragment, final String body, final Integer expectedResponse,
+                           final UsernamePasswordCredentials credentials) throws ClientProtocolException, IOException, InterruptedException {
         LOG.debug("sendPut: url={}, expectedResponse={}, body={}", urlFragment, expectedResponse, body);
         final HttpPut put = new HttpPut(buildUrlExternal(urlFragment));
         put.setEntity(new StringEntity(body, ContentType.APPLICATION_FORM_URLENCODED));
-        final Integer response = doRequest(put);
+
+        final Integer response = doRequest(put, credentials);
+
         if (expectedResponse == null) {
             if (response == null || (response != 303 && response != 200 && response != 201 && response != 202)) {
                 throw new RuntimeException("Bad response code! (" + response + "; expected 200, 201, 202, or 303)");

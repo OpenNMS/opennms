@@ -568,43 +568,6 @@
         <property name="statisticsReportService" ref="statisticsReportService"/>
     </bean>
 
-
-    <!--  Rancid Integration -->
-    <!-- RANCID stuff -->
-    <bean name="/inventory/rancid.htm" class="org.opennms.web.controller.inventory.RancidController">
-        <property name="inventoryService" ref="inventoryService"/>
-    </bean>
-
-    <bean name="/inventory/rancidList.htm" class="org.opennms.web.controller.inventory.RancidListController">
-        <property name="inventoryService" ref="inventoryService"/>
-    </bean>
-
-    <bean name="/inventory/invnode.htm" class="org.opennms.web.controller.inventory.InvNodeController">
-        <property name="inventoryService" ref="inventoryService"/>
-    </bean>
-
-    <bean name="/inventory/rancidViewVc.htm" class="org.opennms.web.controller.inventory.RancidViewVcController">
-        <property name="inventoryService" ref="inventoryService"/>
-    </bean>
-
-    <bean name="/inventory/rancidReport.htm" class="org.opennms.web.controller.inventory.RancidReportController">
-        <property name="inventoryService" ref="inventoryService"/>
-    </bean>
-
-    <bean name="/admin/rancid/rancidAdmin.htm" class="org.opennms.web.controller.inventory.AdminRancidController">
-        <property name="inventoryService" ref="inventoryService"/>
-    </bean>
-
-
-    <bean name="/admin/storage/storageAdmin.htm" class="org.opennms.web.controller.inventory.AdminStorageController">
-        <property name="inventoryService" ref="inventoryService"/>
-    </bean>
-
-    <bean name="/admin/storage/storageDeleteBucketItem.htm"
-          class="org.opennms.web.controller.inventory.AdminStorageDeleteBucketItemController">
-        <property name="inventoryService" ref="inventoryService"/>
-    </bean>
-
     <bean id="notifdConfigFactory-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
         <property name="staticMethod"><value>org.opennms.netmgt.config.NotifdConfigFactory.init</value></property>
     </bean>

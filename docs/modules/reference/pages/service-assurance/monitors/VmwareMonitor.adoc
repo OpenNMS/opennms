@@ -17,6 +17,10 @@ The VmwareMonitor requires that hosts be imported using provisiond and the VMwar
 {page-component-title} requires network access to the VMWare vCenter server and each of the monitored hosts.
 
 The credentials for accessing the status of a VMware entity are collected from the appropriate vCenter instance using settings from `$\{OPENNMS_HOME}/etc/vmware-config.xml`.
+
+NOTE: Metadata expressions can also be used in the username and password attributes of the `vmware-config.xml` configuration file. 
+This allows the user to also reference credentials stored in the secure credentials vault.
+
 This file also sets specific asset fields to be assigned to imported virtual machines and host systems.
 
 The VMware integration populates the following asset fields via provisiond:

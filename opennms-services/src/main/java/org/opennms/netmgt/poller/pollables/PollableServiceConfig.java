@@ -1,37 +1,32 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2005-2015 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2015 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.poller.pollables;
 
 import java.util.Collections;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 import org.opennms.core.rpc.api.RpcExceptionHandler;
@@ -45,9 +40,7 @@ import org.opennms.netmgt.config.poller.Service;
 import org.opennms.netmgt.poller.LocationAwarePollerClient;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.PollerResponse;
-import org.opennms.netmgt.poller.ServiceMonitor;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
-import org.opennms.netmgt.poller.ServiceMonitorLocator;
 import org.opennms.netmgt.scheduler.ScheduleInterval;
 import org.opennms.netmgt.scheduler.Timer;
 import org.opennms.netmgt.threshd.api.ThresholdingService;
@@ -112,21 +105,11 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
         m_patternVariables = service.patternVariables;
     }
 
-    /**
-     * <p>poll</p>
-     *
-     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
-     */
     @Override
-    public PollStatus poll() {
-        try {
-            final String packageName = getPackageName();
-            // Use the service's configured interval as the TTL for this request
-            final Long ttlInMs = m_configService.getInterval();
-            LOG.debug("Polling {} with TTL {} using pkg {}",
-                    m_service, ttlInMs, packageName);
-
-            CompletableFuture<PollerResponse> future = m_locationAwarePollerClient.poll()
+    public CompletionStage<PollStatus> asyncPoll() {
+        // Use the service's configured interval as the TTL for this request
+        final Long ttlInMs = m_configService.getInterval();
+        return m_locationAwarePollerClient.poll()
                 .withService(m_service)
                 .withMonitorLocator(m_pollerConfig.getServiceMonitorLocator(m_configService.getName()).orElseThrow())
                 .withTimeToLive(ttlInMs)
@@ -136,45 +119,62 @@ public class PollableServiceConfig implements PollConfig, ScheduleInterval {
                 .withAdaptor(m_invertedStatusServiceMonitorAdaptor)
                 .withAdaptor(m_DeviceConfigMonitorAdaptor)
                 .withPatternVariables(m_patternVariables)
-                .execute();
+                .execute()
+                .thenApply(PollerResponse::getPollStatus);
+    }
 
-            PollerResponse response = future.get();
-            PollStatus result = response.getPollStatus();
+    /**
+     * <p>poll</p>
+     *
+     * @return a {@link org.opennms.netmgt.poller.PollStatus} object.
+     */
+    @Override
+    public PollStatus poll() {
+        try {
+            final String packageName = getPackageName();
+            LOG.debug("Polling {} with TTL {} using pkg {}", m_service, m_configService.getInterval(), packageName);
+
+            PollStatus result = asyncPoll().toCompletableFuture().get();
+
             LOG.debug("Finish polling {} using pkg {} result = {}", m_service, packageName, result);
 
             // Track the results of the poll
             m_service.getContext().trackPoll(m_service, result);
             return result;
-        } catch (Throwable e) {
-            return RpcExceptionUtils.handleException(e, new RpcExceptionHandler<PollStatus>() {
-                @Override
-                public PollStatus onInterrupted(Throwable cause) {
-                    LOG.warn("Interrupted while invoking the poll for {}."
-                            + " Marking the service as UNKNOWN.", m_service);
-                    return PollStatus.unknown("Interrupted while invoking the poll for"+m_service+". "+e);
-                }
-
-                @Override
-                public PollStatus onTimedOut(Throwable cause) {
-                    LOG.warn("No response was received when remotely invoking the poll for {}."
-                            + " Marking the service as UNKNOWN.", m_service);
-                    return PollStatus.unknown(String.format("No response received for %s. %s", m_service, cause));
-                }
-
-                @Override
-                public PollStatus onRejected(Throwable cause) {
-                    LOG.warn("The request to remotely invoke the poll for {} was rejected."
-                            + " Marking the service as UNKNOWN.", m_service);
-                    return PollStatus.unknown(String.format("Remote poll request rejected for %s. %s", m_service, cause));
-                }
-
-                @Override
-                public PollStatus onUnknown(Throwable cause) {
-                    LOG.error("Unexpected exception while polling {}. Marking service as DOWN", m_service, e);
-                    return PollStatus.down("Unexpected exception while polling "+m_service+". "+e);
-                }
-            });
+        } catch (Throwable t) {
+            return errorToPollStatus(m_service, t);
         }
+    }
+
+    public static PollStatus errorToPollStatus(PollableService service, Throwable t) {
+        return RpcExceptionUtils.handleException(t, new RpcExceptionHandler<>() {
+            @Override
+            public PollStatus onInterrupted(Throwable cause) {
+                LOG.warn("Interrupted while invoking the poll for {}."
+                        + " Marking the service as UNKNOWN.", service);
+                return PollStatus.unknown("Interrupted while invoking the poll for "+service+". "+t);
+            }
+
+            @Override
+            public PollStatus onTimedOut(Throwable cause) {
+                LOG.warn("No response received when remotely invoking the poll for {}."
+                        + " Marking the service as UNKNOWN.", service);
+                return PollStatus.unknown(String.format("No response received for %s. %s", service, cause));
+            }
+
+            @Override
+            public PollStatus onRejected(Throwable cause) {
+                LOG.warn("The request to remotely invoke the poll for {} was rejected."
+                        + " Marking the service as UNKNOWN.", service);
+                return PollStatus.unknown(String.format("Remote poll request rejected for %s. %s", service, cause));
+            }
+
+            @Override
+            public PollStatus onUnknown(Throwable cause) {
+                LOG.error("Unexpected exception while polling {}. Marking service as DOWN", service, t);
+                return PollStatus.down("Unexpected exception while polling "+service+". "+t);
+            }
+        });
     }
 
     /**

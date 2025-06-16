@@ -174,6 +174,16 @@
       <parameter key="rrd-base-name" value="ssh" />
       <parameter key="ds-name" value="ssh" />
     </service>
+    <service name="MinaSSH" interval="300000" user-defined="false" status="on">
+      <parameter key="retry" value="1" />
+      <parameter key="port" value="22" />
+      <parameter key="timeout" value="3000" />
+      <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
+      <parameter key="rrd-base-name" value="minassh" />
+      <parameter key="ds-name" value="minassh" />
+      <parameter key="username" value="testuser" />
+      <parameter key="password" value="testuser" />
+    </service>
     <service name="IMAP" interval="300000" user-defined="false" status="on">
       <parameter key="retry" value="1" />
       <parameter key="port" value="143" />
@@ -221,7 +231,7 @@
     </service>
     <service name="OpenNMS-JVM" interval="300000" user-defined="false" status="on">
       <parameter key="port" value="18980"/>
-      <parameter key="factory" value="PASSWORD-CLEAR"/>
+      <parameter key="factory" value="PASSWORD_CLEAR"/>
       <parameter key="username" value="admin"/>
       <parameter key="password" value="admin"/>
       <parameter key="retry" value="2"/>
@@ -679,6 +689,7 @@
   <monitor service="DbTestExample" class-name="org.opennms.netmgt.poller.monitors.JDBCStoredProcedureMonitor" />
   <monitor service="DiskUsage-root" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />
   <monitor service="DiskUsage-home" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />
+  <monitor service="MinaSSH" class-name="org.opennms.netmgt.poller.monitors.MinaSshMonitor" />
   <!--
   <monitor service="DiskUsage-CDrive" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />
   <monitor service="DiskUsage-BootDisk" class-name="org.opennms.netmgt.poller.monitors.DiskUsageMonitor" />

@@ -32,7 +32,7 @@ The monitor offers the following functionalities:
 | from jmx-config.xml
 
 | factory
-| Set this to PASSWORD-CLEAR if credentials are required.
+| Set this to PASSWORD_CLEAR if credentials are required.
 | STANDARD
 
 | protocol
@@ -61,6 +61,9 @@ The <variable> name is arbitrary.
 The <variable> name is arbitrary.
 | n/a
 |===
+
+NOTE: Metadata expressions can also be used in attributes of the `jmx-config.xml` configuration file.
+This lets the user to also reference credentials stored in the secure credentials.
 
 == Examples
 

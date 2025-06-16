@@ -12,9 +12,8 @@
   
 <script setup lang="ts">
 import { BreadCrumb } from '@/types'
-import { FeatherIcon } from '@featherds/icon'
-import ChevronRight from '@featherds/icon/navigation/ChevronRight'
 import { PropType } from 'vue'
+
 defineProps({
   items: {
     required: true,

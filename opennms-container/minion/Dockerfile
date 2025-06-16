@@ -1,10 +1,32 @@
+#
+# Licensed to The OpenNMS Group, Inc (TOG) under one or more
+# contributor license agreements.  See the LICENSE.md file
+# distributed with this work for additional information
+# regarding copyright ownership.
+#
+# TOG licenses this file to You under the GNU Affero General
+# Public License Version 3 (the "License") or (at your option)
+# any later version.  You may not use this file except in
+# compliance with the License.  You may obtain a copy of the
+# License at:
+#
+#      https://www.gnu.org/licenses/agpl-3.0.txt
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+# either express or implied.  See the License for the specific
+# language governing permissions and limitations under the
+# License.
+#
+
 ##
 # Pre-stage image to extract and manipulate Minion directory structure
 # Normally we install to /opt/minion and not /opt/minion-XX.X.X-SNAPSHOT
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
 # as additional layers into the final image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubuntu-3.4.0.b268-jre-11"
+ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.5.3.b286-jre-17"
 
 FROM ${BASE_IMAGE} AS minion-base
 
@@ -37,26 +59,13 @@ RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
 ##
 FROM ${BASE_IMAGE}
 
-ARG REQUIRED_DEBS="hostname uuid-runtime rsync"
-
-# Prevent prompts
-ENV DEBIAN_FRONTEND=noninteractive
+ARG REQUIRED_RPMS="hostname uuid"
 
 # Collect generic steps in a layer for caching
 
-# import keys & install required debs
-RUN apt-get update && \
-    apt-get --no-install-recommends install -yq ${REQUIRED_DEBS} && \
-    apt-get -y autoclean && \
-    apt-get -y clean && \
-    rm -rf /var/cache/apt
-
-# get any security updates for the base system
-RUN grep security /etc/apt/sources.list > /etc/apt/security.sources.list && \
-    apt update -o Dir::Etc::SourceList=/etc/apt/security.sources.list && \
-    apt -y -u -o Dir::Etc::SourceList=/etc/apt/security.sources.list full-upgrade && \
-    apt clean && \
-    rm -rf /var/cache/apt /etc/apt/security.sources.list
+# install required RPMs
+RUN microdnf -y install ${REQUIRED_RPMS} && \
+    rm -rf /var/cache/yum
 
 RUN groupadd \
         --gid 10001 \

@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2020-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.smoketest.minion;
 
 import static io.restassured.RestAssured.given;
@@ -76,7 +69,7 @@ public class MinionRestIT {
         given().get("/jolokia/read/java.lang:type=Memory/HeapMemoryUsage")
                 .then().assertThat().body(Matchers.containsString("HeapMemoryUsage"));
 
-        given().get("/jolokia/read/org.opennms.core.ipc.sink.producer:name=*.dispatch")
+        given().get("/jolokia/read/org.opennms.core.ipc.sink.producer:name=*.dispatch,type=timers")
                 .then().assertThat().body(Matchers.containsString("Heartbeat"));
     }
 
@@ -89,7 +82,7 @@ public class MinionRestIT {
                 .statusCode(200);
 
         LOG.info("testing /minion/rest/health?tag=local .........");
-        List<String> localDescriptions = Arrays.asList("Verifying installed bundles", "Retrieving NodeDao", "DNS Lookups (Netty)");
+        List<String> localDescriptions = Arrays.asList("Verifying installed bundles", "Retrieving NodeDao", "DNS Lookups (Netty)", "Karaf extender");
         List<String> descriptions = given().get("/minion/rest/health?tag=local")
                 .then()
                 .log().ifStatusCodeIsEqualTo(200)
@@ -100,7 +93,9 @@ public class MinionRestIT {
                 .jsonPath().getList("responses.description",String.class);
 
         LOG.info("descriptions in tag 'local' is: {}", Arrays.toString(descriptions.toArray()));
-        descriptions.stream().forEach(d-> Assert.assertTrue(localDescriptions.contains(d) || d.contains("Verifying Listener")));
+        descriptions.stream().forEach(d-> Assert.assertTrue(
+                String.format("Service health description '%s' must be in %s or contain '%s'", d, localDescriptions, "Verifying Listener"),
+                localDescriptions.contains(d) || d.contains("Verifying Listener")));
 
         LOG.info("testing /minion/rest/health/probe?tag=local  .......");
         given().get("/minion/rest/health/probe?tag=local")

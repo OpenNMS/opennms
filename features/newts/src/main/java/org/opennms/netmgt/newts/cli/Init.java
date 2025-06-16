@@ -1,44 +1,40 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2015-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.newts.cli;
 
 import java.util.ServiceLoader;
 
+import com.google.common.base.Strings;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.newts.cassandra.Schema;
 import org.opennms.newts.cassandra.SchemaManager;
 
+import javax.inject.Named;
+
 public class Init implements Command {
 
-    private static ServiceLoader<Schema> s_schemas = ServiceLoader.load(Schema.class);
+    private static final ServiceLoader<Schema> s_schemas = ServiceLoader.load(Schema.class);
 
     @Option(name="-h", aliases={ "--help" }, help=true)
     boolean showHelp = false;
@@ -58,16 +54,22 @@ public class Init implements Command {
             return;
         }
 
+        String datacenter = System.getProperty("org.opennms.newts.config.datacenter", "datacenter1");
         String keyspace = System.getProperty("org.opennms.newts.config.keyspace", "newts");
         String hostname = System.getProperty("org.opennms.newts.config.hostname", "localhost");
         int port = SystemProperties.getInteger("org.opennms.newts.config.port", 9042);
         String username = System.getProperty("org.opennms.newts.config.username");
         String password = System.getProperty("org.opennms.newts.config.password");
         boolean ssl = Boolean.getBoolean("org.opennms.newts.config.ssl");
+        String driverSettingsFile = System.getProperty("org.opennms.newts.config.driver-settings-file");
 
-        System.out.println(String.format("Initializing the '%s' keyspaces on %s:%d", keyspace, hostname, port));
-
-        try (SchemaManager m = new SchemaManager(keyspace, hostname, port, username, password, ssl)) {
+        if (!Strings.isNullOrEmpty(driverSettingsFile)) {
+            System.out.printf("Initializing the '%s' keyspace on %s:%d%n", keyspace, hostname, port);
+        } else {
+            System.out.printf("Initializing the '%s' keyspace with driver settings from: %s%n", keyspace, driverSettingsFile);
+        }
+        try (SchemaManager m = new SchemaManager(datacenter, keyspace,
+                hostname, port, username, password, ssl, driverSettingsFile)) {
             m.setReplicationFactor(replicationFactor);
             for (Schema s : s_schemas) {
                 m.create(s, true, printOnly);
@@ -75,7 +77,7 @@ public class Init implements Command {
         }
 
         if (!printOnly) {
-            System.out.println("The keyspace was succesfully created.");
+            System.out.println("The keyspace was successfully created.");
         }
     }
 }

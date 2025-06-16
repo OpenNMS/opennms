@@ -84,7 +84,7 @@
 | `OPENNMS_CASSANDRA_PORT`      | Cassandra server port                                                           | optional | `9042`
 | `OPENNMS_CASSANDRA_USERNAME`  | Username with access to Cassandra                                              | optional | `cassandra`
 | `OPENNMS_CASSANDRA_PASSWORD`  | Password for user with access to Cassandra                                      | optional | `cassandra`
-| `OPENNMS_CASSANDRA_DATACENTER` | Set this to the value of your local datacenter for the best performance                                     | optional | `datacenter1`
+| `OPENNMS_CASSANDRA_DATACENTER` | Set this to the value of your local datacenter for the best performance        | optional | `datacenter1`
 |===
 
 == Directory conventions

@@ -1,47 +1,50 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.javamail;
 
-import java.io.IOException;
-import java.util.Calendar;
-import java.util.List;
+import static org.junit.Assert.assertEquals;
 
+import java.lang.reflect.Method;
+import java.util.Calendar;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.mail.Authenticator;
+import javax.mail.Flags.Flag;
 import javax.mail.Message;
 import javax.mail.MessagingException;
-import javax.mail.Flags.Flag;
+import javax.mail.PasswordAuthentication;
 import javax.mail.search.OrTerm;
 import javax.mail.search.SearchTerm;
 import javax.mail.search.SubjectTerm;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.opennms.core.mate.api.ContextKey;
+import org.opennms.core.mate.api.MapScope;
+import org.opennms.core.mate.api.Scope;
 import org.opennms.netmgt.config.javamail.ReadmailConfig;
 import org.opennms.netmgt.config.javamail.ReadmailHost;
 import org.opennms.netmgt.config.javamail.ReadmailProtocol;
@@ -52,7 +55,16 @@ import org.opennms.netmgt.config.javamail.SendmailProtocol;
 import org.opennms.netmgt.config.javamail.UserAuth;
 
 public class JavaReadMailerTest {
-    
+
+    @Before
+    public void setup() {
+        final Map<ContextKey, String> map = new HashMap<>();
+        map.put(new ContextKey("scv","javamailer:username"), "john");
+        map.put(new ContextKey("scv","javamailer:password"), "doe");
+
+        JavaMailerConfig.setSecureCredentialsVaultScope(new MapScope(Scope.ScopeName.GLOBAL, map));
+    }
+
     /**
      * Un-ignore this test with a proper gmail account
      * @throws JavaMailerException
@@ -100,7 +112,7 @@ public class JavaReadMailerTest {
             e.printStackTrace();
         }
         
-        Assert.assertEquals(3, msgs.size());
+        assertEquals(3, msgs.size());
         
         st = new OrTerm(new SubjectTerm(".*"+term1+" #.*"), new SubjectTerm(".*"+term2+" #.*"));
         
@@ -112,7 +124,7 @@ public class JavaReadMailerTest {
         
         //Should find only term1 and term2 messages
         Assert.assertNotNull(msgs);
-        Assert.assertEquals(2, msgs.size());
+        assertEquals(2, msgs.size());
 
         //Now cleanup
         //Delete the term1 and term2 messages
@@ -222,5 +234,16 @@ public class JavaReadMailerTest {
         return mailer;
     }
 
+    @Test
+    public void testMetadata() throws Exception {
+        final JavaReadMailer javaReadMailer = createGoogleReadMailer(null, null);
 
+        Authenticator authenticator = javaReadMailer.createAuthenticator("${scv:javamailer:username|ABC}", "${scv:javamailer:password|DEF}");
+        final Method method = authenticator.getClass().getDeclaredMethod("getPasswordAuthentication");
+        method.setAccessible(true);
+        final PasswordAuthentication passwordAuthentication = (PasswordAuthentication) method.invoke(authenticator);
+
+        assertEquals("john", passwordAuthentication.getUserName());
+        assertEquals("doe", passwordAuthentication.getPassword());
+    }
 }

@@ -5,7 +5,7 @@
     <parent>
         <artifactId>org.opennms.features.distributed.kv-store.blob</artifactId>
         <groupId>org.opennms.features.distributed</groupId>
-        <version>31.0.3-SNAPSHOT</version>
+        <version>33.0.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>org.opennms.features.distributed.kv-store.blob.itests</artifactId>
@@ -76,6 +76,12 @@
             <artifactId>cassandra-test-dependencies</artifactId>
             <version>${project.version}</version>
             <type>pom</type>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.distributed</groupId>
+            <artifactId>org.opennms.features.distributed.cassandra.newts-impl</artifactId>
+            <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
     </dependencies>

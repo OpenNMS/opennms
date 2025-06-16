@@ -99,6 +99,10 @@
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
 
+    <bean id="ospfAreaDao" class="org.opennms.netmgt.enlinkd.persistence.impl.OspfAreaDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
     <bean id="isisLinkDao" class="org.opennms.netmgt.enlinkd.persistence.impl.IsIsLinkDaoHibernate">
         <property name="sessionFactory" ref="sessionFactory" />
     </bean>
@@ -179,6 +183,7 @@
    <bean id="ospfTopologyService" class="org.opennms.netmgt.enlinkd.service.impl.OspfTopologyServiceImpl">
       <property name="ospfLinkDao" ref="ospfLinkDao" />
       <property name="ospfElementDao" ref="ospfElementDao" />
+      <property name="ospfAreaDao" ref="ospfAreaDao" />
       <property name="topologyEntityCache" ref="topologyEntityCache" />
    </bean>
 
@@ -192,6 +197,11 @@
 		<constructor-arg ref="onmsTopologyDao" />
 		<constructor-arg ref="nodeTopologyService" />
 	</bean>
+
+    <bean id ="networkRouterTopologyUpdater" class="org.opennms.netmgt.enlinkd.NetworkRouterTopologyUpdater">
+        <constructor-arg ref="onmsTopologyDao" />
+        <constructor-arg ref="nodeTopologyService" />
+    </bean>
 
     <bean id="userDefinedLinkTopologyUpdater" class="org.opennms.netmgt.enlinkd.UserDefinedLinkTopologyUpdater">
         <constructor-arg ref="userDefinedLinkTopologyService" />
@@ -229,7 +239,13 @@
 		<constructor-arg ref="nodeTopologyService" />
 	</bean>
 
-	<bean id="discoveryBridgeDomain" class="org.opennms.netmgt.enlinkd.DiscoveryBridgeDomains">
+    <bean id ="ospfAreaOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.OspfAreaOnmsTopologyUpdater">
+        <constructor-arg ref="onmsTopologyDao" />
+        <constructor-arg ref="ospfTopologyService" />
+        <constructor-arg ref="nodeTopologyService" />
+    </bean>
+
+    <bean id="discoveryBridgeDomain" class="org.opennms.netmgt.enlinkd.DiscoveryBridgeDomains">
 		<constructor-arg ref="bridgeTopologyService" />
 	</bean>
 

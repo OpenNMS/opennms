@@ -1,75 +1,66 @@
+[[releasenotes-33]]
 
-[[releasenotes-31]]
-= What's New in OpenNMS Horizon 31
+= What's New in OpenNMS Horizon 33
 
 == System requirements
 
-* *Java 11*: OpenNMS Horizon 31 runs on JDK 11.
-* *PostgreSQL 10 or higher*: Horizon 31 requires any supported version of PostgreSQL from 10 up to (and including) 15.
+* *Java 11 and 17*: OpenNMS Horizon 33 runs on JDKs 11 and 17.
+* *PostgreSQL 10 or higher*: Horizon 33 requires any supported version of PostgreSQL from 10 up to (and including) 16.
 
-== New features and improvements
+== New features and important changes
 
-=== OpenNMS Plugins
+=== `install.sh` script clears data directory and restores Karaf-related configuration files
+To overcome common upgrading problems, the data directory is automatically pruned when invoking the `install.sh` script.
+Furthermore, all Karaf-related configuration files are restored to their pristine state.
 
-Horizon 31 supports plugins using the OpenNMS Plugin API version 1.0 through 1.2.
+=== OpenNMS Plugin API
 
-Since 1.0, OPA has been improved to include time-series performance enhancements and off-heap support,
-APIs for flow persistence and poller configuration extensions, and enhanced event and monitored service metadata.
+The OpenNMS Plugin API has been updated to version 1.6.0, which includes some new APIs ported over from the Horizon codebase to simplify plugin development, as well as cleanups to dependencies.
+It also includes some fixes to the protocol list used by Enlinkd.
 
-==== Cloud Services Connector with Time Series DB Support
+=== Expanded metadata support
 
-Horizon 31 includes the https://issues.opennms.org/browse/NMS-14471[Cloud Services Connector] in its default RPM
-and DEB install, providing access to OpenNMS Time Series DB – a new hosted cloud service which enables scalable
-metrics storage without the administrative overhead.
+It is now possible to use the metadata DSL in nearly all configuration files.
+For details on all of the subsystems that support the metadata DSL, see xref:operation:deep-dive/meta-data.adoc[the operation manual].
 
-==== Cortex Time-Series Plugin
+=== Confd improvements
 
-Horizon 31.0.0 is the first new major Horizon release to support writing time-series data to a Cortex
-instance via the optional https://github.com/OpenNMS/opennms-cortex-tss-plugin[OpenNMS Cortex Plugin].
+Support for `confd` has been added to the Sentinel container.
 
-=== UI Preview Integration
+=== UI: structured node list
 
-The "UI Preview" that was separate from the main UI in Horizon 30 has been
-https://issues.opennms.org/browse/NMS-14730[integrated into the main web UI] where appropriate for Horizon 31.
+An enhanced node list has been introduced with options for sorting and filtering.
 
-=== Topology Improvements
+== Breaking changes
 
-Network topology discovery ("Enlinkd") has received https://issues.opennms.org/browse/NMS-14883[significant refactoring]
-to make it smarter and more performant.
+=== OpenNMS Minion environment variables changes
+The OpenNMS Minion Docker container no longer uses the KAFKA_SINK, KAFKA_RPC and KAFKA_TWIN prefixes to configure Kafka.
+Instead, only the KAFKA_IPC prefix is used, which ensures that all Kafka-related settings are set correctly for all features and that ActiveMQ is no longer installed incorrectly.
 
-=== Containers
+=== Passive Status Monitor
+The Passive Status Monitor previously used the time of the event's arrival as the timestamp of the status.
+As this is too imprecise for some use cases, the time field of the event is now also evaluated.
+If the field is set, it is adopted unchanged as the timestamp of the status.
+If no time is set, the timestamp is generated as before when the event arrives.
 
-==== Container Cleanup and Refactoring
+=== SNMP Metadata Provisioning Adapter
+The SNMP Metadata Provisioning Adapter is not enabled by default anymore.
+Set `enabled="true"` in the configuration file `$OPENNMS_HOME/etc/snmp-metadata-adapter-configuration.xml` to enable it.
 
-The work done in Horizon 30, cleaning up and standardizing how our container images are built, has been
-expanded in Horizon 31.
-All images (Horizon, Minion, and Sentinel) use the same core, and are now available in amd64, arm64, and arm7 varieties.
+=== Docker image changes
 
-==== OpenShift Support
+The Docker images for the core, minion, and sentinel have been changed from being Ubuntu-based to using RedHat's link:https://www.redhat.com/en/blog/introducing-red-hat-universal-base-image[Universal Base Image].
+This move shrinks the image a bit, makes minimal updating easier, and should simplify running in restrictive OpenShift environments.
 
-Horizon 30 was incompatible with OpenShift, and we have addressed these issues.
-If you see any weird permissions or ownership problems in an OpenShift environment, log an issue report in https://issues.opennms.com/[Jira].
+The images are based on the `ubi9-minimal` image, which is essentially a stripped down version of RHEL 9.
+This means that things will have moved around a bit in the filesystem, and that you should use `microdnf` for package management.
 
-=== Collection and Thresholding
+=== Important internal updates
 
-* configurations have been added for thresholding on Collectd and Pollerd threads
+* Our embedded Karaf container and Karaf APIs have been updated to 4.3.10
+* The OpenNMS Plugin API has been updated to 1.6.0
+* Zookeeper APIs have been updated to 3.7.x
+* If you are performing automated tests, you may need to disable the new popup that shows on first launch.  To do so set `opennms.userDataCollection.show=false` in a properties file in `$OPENNMS_HOME/etc/opennms.properties.d/`.
 
-=== Device Configuration Backup
-
-The DCB feature has had a number of improvements, including debugging and script enhancements.
-
-=== REST API
-
-* The REST API endpoint for configuring external requisitions (aka `requisition-def`s) has been improved to
-  enable targeted updates rather than requiring whole posting of a new configuration.
-
-
-=== Documentation
-
-As usual, our documentation team has been doing tons of work cleaning up and improving the documentation.
-The biggest addition is a new Quick Start Guide that provides simple steps to set up basic monitoring with a minimal configuration of Horizon.
-
-== Breaking Changes
-
-* support for the XML Management Protocol (XMP) has been removed
-* security-related HTTP headers (Strict-Transport-Security, Content-Security-Policy, X-Content-Type-Options, Permissions-Policy, Referrer-Policy) were added in `web.xml`
+=== Stricter validation of requisition names
+Some characters (/, \, ?, &, *, ', “) may not be used in requisition names. The UI components have already enforced the validation of requisition names. This restriction is now also enforced when creating search requests via the OpenNMS ReST API.

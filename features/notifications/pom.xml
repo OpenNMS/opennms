@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>31.0.3-SNAPSHOT</version>
+    <version>33.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -12,6 +12,7 @@
   <name>OpenNMS :: Features :: Notification</name>
   <modules>
     <module>api</module>
+    <module>shell</module>
     <module>ticket-strategy</module>
   </modules>
 </project>

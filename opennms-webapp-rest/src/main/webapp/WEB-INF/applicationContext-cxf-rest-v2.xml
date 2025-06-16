@@ -29,6 +29,13 @@
     -->
     <bean id="springResourceContextProvider" class="org.opennms.web.rest.support.SpringResourceContextProvider"/>
 
+    <!-- Used by MenuRestService -->
+    <bean id="dispatcherServletPath" class="java.lang.String">
+        <constructor-arg value="${opennms.home}/jetty-webapps/opennms/WEB-INF/dispatcher-servlet.xml" />
+    </bean>
+    <bean id="menuProvider" class="org.opennms.web.rest.support.menu.MenuProvider">
+        <constructor-arg ref="dispatcherServletPath"/>
+    </bean>
     <!-- CXF OpenApiFeature -->
     <bean id="securityScheme" class="io.swagger.v3.oas.models.security.SecurityScheme">
         <property name="type">
@@ -39,12 +46,15 @@
     <util:map id="securityDefinitionsMap" map-class="java.util.HashMap">
         <entry key="basicAuth" value-ref = "securityScheme" />
     </util:map>
+
     <bean id="openApiCustomizer" class="org.apache.cxf.jaxrs.openapi.OpenApiCustomizer">
         <property name="dynamicBasePath" value="true" />
     </bean>
-    <bean id="openApiFeature" class="org.apache.cxf.jaxrs.openapi.OpenApiFeature">
+    <!-- Register the OpenAPI feature -->
+    <!-- See https://cxf.apache.org/docs/openapifeature.html -->
+    <bean id="openApiFeatureV2" class="org.apache.cxf.jaxrs.openapi.OpenApiFeature">
         <property name="title" value="OpenNMS V2 RESTful API" />
-        <property name="version" value="0.1.0" />
+        <property name="version" value="1.0.0" />
         <property name="description" value="OpenNMS V2 RESTful API" />
         <property name="license" value="OpenNMS(R) Licensing (GNU Affero General Public License)" />
         <property name="licenseUrl" value="http://www.gnu.org/licenses/agpl.html" />
@@ -52,13 +62,9 @@
         <property name="contactUrl" value="http://www.opennms.com/" />
         <property name="securityDefinitions" ref="securityDefinitionsMap" />
         <property name="customizer" ref="openApiCustomizer" />
-    </bean>
-    <!-- Used by MenuRestService -->
-    <bean id="dispatcherServletPath" class="java.lang.String">
-        <constructor-arg value="${opennms.home}/jetty-webapps/opennms/WEB-INF/dispatcher-servlet.xml" />
-    </bean>
-    <bean id="menuProvider" class="org.opennms.web.rest.support.menu.MenuProvider">
-        <constructor-arg ref="dispatcherServletPath"/>
+        <property name="useContextBasedConfig" value="true" />
+        <property name="scan" value="false" />
+        <property name="scannerClass" value="io.swagger.v3.jaxrs2.integration.JaxrsApplicationScanner"/>
     </bean>
 
     <bean id="newsfeedProvider" class="org.opennms.web.rest.support.newsfeed.NewsFeedProvider">
@@ -98,7 +104,7 @@
         <ref bean="gzipOutInterceptor" />
       </jaxrs:outInterceptors>
         <jaxrs:features>
-            <ref bean="openApiFeature" />
+            <ref bean="openApiFeatureV2" />
         </jaxrs:features>
     </jaxrs:server>
 

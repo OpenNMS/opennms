@@ -1,34 +1,26 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.provision.service.vmware;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.ConnectException;
 import java.net.InetAddress;
@@ -70,6 +62,7 @@ import org.sblim.wbem.cim.CIMObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Strings;
 import com.vmware.vim25.CustomFieldDef;
 import com.vmware.vim25.CustomFieldStringValue;
 import com.vmware.vim25.CustomFieldValue;
@@ -186,23 +179,12 @@ public class VmwareImporter {
      * @return the requisition object
      */
     private Requisition buildVMwareRequisition() {
-        VmwareViJavaAccess vmwareViJavaAccess = null;
-
         // for now, set the foreign source to the specified vcenter host
         m_requisition = new Requisition(request.getForeignSource());
 
         logger.debug("Creating new VIJava access object for host {} ...", request.getHostname());
-        if ((request.getHostname() == null || "".equals(request.getHostname())) || (request.getPassword() == null || "".equals(request.getPassword()))) {
-            logger.info("No credentials found for connecting to host {}, trying anonymously...", request.getHostname());
-            try {
-                vmwareViJavaAccess = new VmwareViJavaAccess(request.getHostname());
-            } catch (IOException e) {
-                logger.warn("Error initialising VMware connection to '{}': '{}'", request.getHostname(), e.getMessage());
-                return null;
-            }
-        } else {
-            vmwareViJavaAccess = new VmwareViJavaAccess(request.getHostname(), request.getUsername(), request.getPassword());
-        }
+        final VmwareViJavaAccess vmwareViJavaAccess = new VmwareViJavaAccess(request.getHostname(), request.getUsername(), request.getPassword());
+
         logger.debug("Successfully created new VIJava access object for host {}", request.getHostname());
 
         logger.debug("Connecting VIJava access for host {} ...", request.getHostname());
@@ -240,7 +222,7 @@ public class VmwareImporter {
      * @param managedEntity the managed entity
      * @return the generated requisition node
      */
-    private RequisitionNode createRequisitionNode(Set<String> ipAddresses, ManagedEntity managedEntity, int apiVersion, VmwareViJavaAccess vmwareViJavaAccess) {
+    RequisitionNode createRequisitionNode(Set<String> ipAddresses, ManagedEntity managedEntity, int apiVersion, VmwareViJavaAccess vmwareViJavaAccess) {
         RequisitionNode requisitionNode = new RequisitionNode();
 
         // Setting the node label
@@ -248,6 +230,11 @@ public class VmwareImporter {
 
         // Foreign Id consisting of managed entity Id
         requisitionNode.setForeignId(managedEntity.getMOR().getVal());
+
+        // set the location
+        if (!Strings.isNullOrEmpty(request.getLocation())) {
+            requisitionNode.setLocation(request.getLocation());
+        }
 
         /*
          * Original version:

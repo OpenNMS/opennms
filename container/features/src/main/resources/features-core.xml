@@ -34,12 +34,15 @@
 
     <feature name="cassandra-driver" version="${cassandraVersion}" description="Datastax Cassandra Driver">
         <feature>dropwizard-metrics</feature>
-        <feature prerequisite="true">guava18</feature>
-        <feature version="[${jackson2Version},3)">jackson-core</feature>
         <feature version="[${netty4Version},5)">netty</feature>
-        <bundle dependency="true">mvn:com.github.jnr/jnr-ffi/2.1.7</bundle>
-        <bundle dependency="true">mvn:com.github.jnr/jnr-posix/3.0.44</bundle>
-        <bundle dependency="true">mvn:com.datastax.cassandra/cassandra-driver-core/${cassandraVersion}</bundle>
+        <feature version="[${jackson2Version},3)">jackson-core</feature>
+        <feature>jnr</feature>
+        <bundle>mvn:com.datastax.oss/java-driver-core/${cassandraVersion}</bundle>
+        <bundle>mvn:com.datastax.oss/native-protocol/1.5.1</bundle>
+        <bundle>mvn:com.datastax.oss/java-driver-shaded-guava/25.1-jre-graal-sub-1</bundle>
+        <bundle>mvn:com.datastax.oss/java-driver-query-builder/${cassandraVersion}</bundle>
+        <bundle>mvn:com.typesafe/config/1.4.2</bundle>
+        <bundle>mvn:org.hdrhistogram/HdrHistogram/2.1.12</bundle>
     </feature>
 
     <feature name="commons-beanutils" version="${commonsBeanutilsVersion}" description="Apache :: commons-beanutils">
@@ -126,8 +129,7 @@
 
     <feature name="dropwizard-metrics" version="${dropwizardMetricsVersion}" description="Dropwizard :: Metrics">
         <bundle dependency="true">mvn:io.dropwizard.metrics/metrics-core/${dropwizardMetricsVersion}</bundle>
-        <!-- TODO: add back in when this merges forward to H32 -->
-        <!-- <bundle dependency="true">mvn:io.dropwizard.metrics/metrics-jmx/${dropwizardMetricsVersion}</bundle> -->
+        <bundle dependency="true">mvn:io.dropwizard.metrics/metrics-jmx/${dropwizardMetricsVersion}</bundle>
     </feature>
 
     <feature name="fst" description="FST" version="${fstVersion}">
@@ -239,6 +241,28 @@
         <bundle>mvn:net.java.dev.jna/jna-platform/${jnaVersion}</bundle>
     </feature>
 
+    <feature name="jnr" version="${jnrVersion}" description="Java Native Runtime">
+        <feature>asm</feature>
+        <bundle>mvn:com.github.jnr/jnr-constants/0.10.4</bundle>
+        <bundle>mvn:com.github.jnr/jnr-ffi/2.2.14</bundle>
+        <bundle>mvn:com.github.jnr/jnr-posix/${jnrVersion}</bundle>
+        <bundle>wrap:mvn:com.github.jnr/jffi/1.3.11$Bundle-SymbolicName=com.github.jnr.jffi&amp;Bundle-Version=1.3.11&amp;Export-Package=com.kenai.jffi;version="1.3.11"</bundle>
+        <bundle>wrap:mvn:com.github.jnr/jffi/1.3.11/jar/native$Bundle-SymbolicName=com.github.jnr.jffi.native&amp;Bundle-Version=1.3.11&amp;Export-Package=jni*;version="1.3.11"</bundle>
+        <bundle>wrap:mvn:com.github.jnr/jnr-a64asm/1.0.0$Bundle-SymbolicName=jnr-a64asm&amp;Bundle-Version=1.0.0</bundle>
+        <bundle>wrap:mvn:com.github.jnr/jnr-x86asm/1.0.2$Bundle-SymbolicName=jnr-x86asm&amp;Bundle-Version=1.0.2</bundle>
+    </feature>
+
+    <!-- override 1.7.1 in karaf-standard features -->
+    <feature name="jolokia" description="Jolokia monitoring support" version="${jolokiaVersion}">
+        <config name="org.jolokia.osgi">
+org.jolokia.user=karaf
+org.jolokia.realm=karaf
+org.jolokia.authMode=jaas
+        </config>
+        <bundle>mvn:org.jolokia/jolokia-osgi/${jolokiaVersion}</bundle>
+        <requirement>osgi.implementation;osgi.implementation="osgi.http";version:Version="1.1"</requirement>
+    </feature>
+
     <feature name="pax-jetty" description="Provide Jetty engine support" version="${jettyVersion}">
         <!-- asm 9.2+ is needed for spifly 1.3.x -->
         <feature version="${asmVersion}">asm</feature>
@@ -247,7 +271,7 @@
         <bundle start-level="20">mvn:org.opennms.container/noop-jetty-extension/${project.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${karaf.servicemix.specs.version}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimoVersion}</bundle>
-        <bundle dependency="true" start-level="30">mvn:javax.annotation/javax.annotation-api/1.3.2</bundle>
+        <bundle dependency="true" start-level="30">mvn:javax.annotation/javax.annotation-api/${javaxAnnotationApiVersion}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/${spiflyVersion}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.aries/org.apache.aries.util/1.1.3</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty/jetty-continuation/${jettyVersion}</bundle>
@@ -321,9 +345,13 @@ org.jolokia.authMode=jaas
         <feature version="[${jackson2Version},3)">jackson-core</feature>
         <bundle>wrap:mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}$Bundle-SymbolicName=org.apache.zookeeper.zookeeper&amp;Bundle-Version=${zookeeperVersion}&amp;Export-Package=org.apache.zookeeper*;version="${zookeeperVersion}"</bundle>
         <bundle>wrap:mvn:org.apache.zookeeper/zookeeper-jute/${zookeeperVersion}$Bundle-SymbolicName=org.apache.zookeeper.zookeeper.jute&amp;Bundle-Version=${zookeeperVersion}&amp;Export-Package=org.apache.*;version="${zookeeperVersion}"</bundle>
-        <bundle>mvn:org.apache.curator/curator-client/${curatorVersion}</bundle>
-        <bundle>mvn:org.apache.curator/curator-framework/${curatorVersion}</bundle>
-        <bundle>mvn:org.apache.curator/curator-recipes/${curatorVersion}</bundle>
+        <!--  Apache Curator shades Guava with a replacement, which complicates its use with OSGi.
+        For OSGi environments, this shaded dependency is omitted via the "osgi" classifier,
+        allowing the project to work with the standard Guava library.For more details,
+        see https://github.com/apache/curator/issues//984, https://github.com/apache/curator/pull/362 -->
+        <bundle>mvn:org.apache.curator/curator-client/${curatorVersion}/jar/osgi</bundle>
+        <bundle>mvn:org.apache.curator/curator-framework/${curatorVersion}/jar/osgi</bundle>
+        <bundle>mvn:org.apache.curator/curator-recipes/${curatorVersion}/jar/osgi</bundle>
     </feature>
 
     <feature name="scv-api" version="${project.version}" description="Secure Credentials Vault">
@@ -339,6 +367,7 @@ org.jolokia.authMode=jaas
         <feature>commons-codec</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature>scv-api</feature>
+        <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.fileutils/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.jceks-impl/${project.version}</bundle>
     </feature>
 
@@ -352,5 +381,11 @@ org.jolokia.authMode=jaas
         <bundle start-level="${systemStartLevel}">mvn:org.apache.sshd/sshd-sftp/${minaSshdVersion}</bundle>
         <bundle start-level="${systemStartLevel}">mvn:org.apache.karaf.shell/org.apache.karaf.shell.ssh/${karafVersion}</bundle>
         <bundle start-level="${systemStartLevel}">mvn:net.i2p.crypto/eddsa/${eddsaVersion}</bundle>
+    </feature>
+
+    <feature name="health-api" version="${project.version}" description="Health API">
+        <feature version="${commonsLang3Version}">commons-lang3</feature>
+        <bundle dependency="true">mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
+        <bundle dependency="true">mvn:io.vavr/vavr/0.10.0</bundle>
     </feature>
 </features>

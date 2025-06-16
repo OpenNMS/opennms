@@ -41,18 +41,18 @@
   setup
   lang="ts"
 >
-import { useStore } from 'vuex'
 import { FeatherIcon } from '@featherds/icon'
 import Error from '@featherds/icon/notification/Error'
+import { useFileEditorStore } from '@/stores/fileEditorStore'
 import { FileEditorResponseLog } from '@/types'
 
-const store = useStore()
-const logs = computed(() => store.state.fileEditorModule.logs)
+const fileEditorStore = useFileEditorStore()
+const logs = computed(() => fileEditorStore.logs)
 const logErrors = computed(() => logs.value.filter((log: FileEditorResponseLog) => !log.success))
-const isConsoleOpen = computed(() => store.state.fileEditorModule.isConsoleOpen)
+const isConsoleOpen = computed(() => fileEditorStore.isConsoleOpen)
 
-const setIsConsoleOpen = (isOpen: boolean) => store.dispatch('fileEditorModule/setIsConsoleOpen', isOpen)
-const clear = () => store.dispatch('fileEditorModule/clearLogs')
+const setIsConsoleOpen = (isOpen: boolean) => fileEditorStore.setIsConsoleOpen(isOpen)
+const clear = () => fileEditorStore.clearLogs()
 </script>
 
 <style
@@ -110,4 +110,3 @@ const clear = () => store.dispatch('fileEditorModule/clearLogs')
   }
 }
 </style>
-

@@ -5,44 +5,56 @@ The search bar lets you do a simple text search, as well as searching particular
 
 == Search fields
 
-You can search the following fields:
+The search function for the geographical map uses the Search REST endpoint.
+This endpoint can find nodes using any of the fields offered by the API, including the previously listed fields:
 
 [options="header"]
-[cols="2*"]
-|====
+[cols="3*"]
+|===
 | Field
 | Description
+| Allow Substring
 
 | nodeId
 | The ID of the node
+| No
 
 | nodeLabel
-| A text description
+| A text description.
+| Yes
 
 | foreignSource
-| The provisioned foreign source, if any
+| The provisioned foreign source, if any.
+| No
 
 | foreignId
-| The provisioned foreign ID, if any
+| The provisioned foreign ID, if any.
+| No
 
 | ipAddress
 | The primary IP address
+| Yes
 
 | severityLabel
-| The severity ("Normal", "Warning", etc.)
+| The severity (Normal, Warning, and so on)
+| No
 
 | description
-| The description field from the node's assets
+| The description field from the node's assets.
+| Yes
 
 | maintContract
-| The maintenance contract from the node's assets
+| The maintenance contract from the node's assets.
+| Yes
 
 | category
-| Match a category, if any
+| Match a category, if any.
+| Yes
+|===
 
-|====
+NOTE: All searches are case-insensitive, and the search currently allows node selection using only the listed search fields.
 
-Note that all searches are case-insensitive.
+If you want to search for exact or partial text in one of the search fields, simply type the desired text in the appropriate field.
 
 == Substring matching example
 

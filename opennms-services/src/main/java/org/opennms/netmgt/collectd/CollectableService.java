@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.collectd;
 
 import java.io.File;
@@ -130,10 +123,6 @@ public class CollectableService implements ReadyRunnable {
 
     private final IpInterfaceDao m_ifaceDao;
 
-    private final ServiceParameters m_params;
-    
-    private final RrdRepository m_repository;
-
     private final PersisterFactory m_persisterFactory;
 
     private ThresholdingSession m_thresholdingSession;
@@ -170,11 +159,8 @@ public class CollectableService implements ReadyRunnable {
 
         m_spec.initialize(m_agent);
 
-        m_params = m_spec.getServiceParameters();
-        m_repository=m_spec.getRrdRepository(m_params.getCollectionName());
-
         try {
-            m_thresholdingSession = thresholdingService.createSession(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_params);
+            m_thresholdingSession = thresholdingService.createSession(m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getServiceParameters());
         } catch (ThresholdInitializationException e) {
             LOG.error("Error when initializing Thresholding. No Thresholding will be performed on this service.", e);
         }
@@ -419,11 +405,13 @@ public class CollectableService implements ReadyRunnable {
         LOG.info("run: starting new collection for {}/{}/{}/{}", m_nodeId, getHostAddress(), m_spec.getServiceName(), m_spec.getPackageName());
         CollectionSet result = null;
         try {
+            final ServiceParameters serviceParameters = m_spec.getServiceParameters();
+            final RrdRepository rrdRepository = m_spec.getRrdRepository(serviceParameters.getCollectionName());
             result = m_spec.collect(m_agent);
             if (result != null) {
                 Collectd.instrumentation().beginPersistingServiceData(m_spec.getPackageName(), m_nodeId, getHostAddress(), m_spec.getServiceName());
                 try {
-                    CollectionSetVisitor persister = m_persisterFactory.createPersister(m_params, m_repository, result.ignorePersist(), false, false);
+                    CollectionSetVisitor persister = m_persisterFactory.createPersister(serviceParameters, rrdRepository, result.ignorePersist(), false, false);
                     if (Boolean.getBoolean(USE_COLLECTION_START_TIME_SYS_PROP)) {
                         final ConstantTimeKeeper timeKeeper = new ConstantTimeKeeper(new Date(m_lastScheduledCollectionTime));
                         // Wrap the persister visitor such that calls to CollectionResource.getTimeKeeper() return the given timeKeeper

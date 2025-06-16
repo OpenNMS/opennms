@@ -13,6 +13,9 @@
         </keep-alive>
       </router-view>
     </div>
+    <template v-slot:footer>
+      <Footer />
+    </template>
   </FeatherAppLayout>
 </template>
 
@@ -20,20 +23,31 @@
   setup
   lang="ts"
 >
-import { useStore } from 'vuex'
 import { FeatherAppLayout } from '@featherds/app-layout'
+import Footer from './components/Layout/Footer.vue'
 import Menubar from './components/Layout/Menubar.vue'
 import Spinner from './components/Common/Spinner.vue'
 import Snackbar from '@/components/Common/Snackbar.vue'
+import { useAuthStore } from '@/stores/authStore'
+import { useInfoStore } from '@/stores/infoStore'
+import { usePluginStore } from '@/stores/pluginStore'
+import { useMenuStore } from '@/stores/menuStore'
+import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 
-const store = useStore()
+const authStore = useAuthStore()
+const infoStore = useInfoStore()
+const menuStore = useMenuStore()
+const nodeStructureStore = useNodeStructureStore()
+const pluginStore = usePluginStore()
 
 onMounted(() => {
-  store.dispatch('authModule/getWhoAmI')
-  store.dispatch('infoModule/getInfo')
-  store.dispatch('menuModule/getMainMenu')
-  store.dispatch('pluginModule/getPlugins')
-  store.dispatch('menuModule/getNotificationSummary')
+  authStore.getWhoAmI()
+  infoStore.getInfo()
+  menuStore.getMainMenu()
+  menuStore.getNotificationSummary()
+  nodeStructureStore.getCategories()
+  nodeStructureStore.getMonitoringLocations()
+  pluginStore.getPlugins()
 })
 </script>
 
@@ -72,4 +86,3 @@ a {
   @include subtitle2;
 }
 </style>
-

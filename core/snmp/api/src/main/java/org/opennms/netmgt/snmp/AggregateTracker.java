@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2011-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.snmp;
 
 import java.util.ArrayList;
@@ -44,7 +37,7 @@ public class AggregateTracker extends CollectionTracker {
     private static final Logger LOG = LoggerFactory.getLogger(AggregateTracker.class);
 
     private static final class ChildTrackerPduBuilder extends PduBuilder {
-        private List<SnmpObjId> m_oids = new ArrayList<>();
+        private final List<SnmpObjId> m_oids = new ArrayList<>();
         private int m_nonRepeaters = 0;
         private int m_maxRepititions = 0;
         private ResponseProcessor m_responseProcessor;
@@ -226,7 +219,7 @@ public class AggregateTracker extends CollectionTracker {
         }
     }
 
-    private CollectionTracker[] m_children;
+    private final CollectionTracker[] m_children;
     
     public AggregateTracker(Collection<Collectable> children) {
         this(children, null);
@@ -296,7 +289,7 @@ public class AggregateTracker extends CollectionTracker {
         // first process the child trackers that aren't finished up to maxVars 
         int count = 0;
         int maxVars = parentBuilder.getMaxVarsPerPdu();
-        final List<ChildTrackerPduBuilder> builders = new ArrayList<ChildTrackerPduBuilder>(m_children.length);
+        final List<ChildTrackerPduBuilder> builders = new ArrayList<>(m_children.length);
         for (int i = 0; i < m_children.length && count < maxVars; i++) {
             CollectionTracker childTracker = m_children[i];
             if (!childTracker.isFinished()) {
@@ -357,18 +350,20 @@ public class AggregateTracker extends CollectionTracker {
             // Add an empty list to every index to make sure we call handleWalkResponses() on every child
             responsesByCorrelationId.put(i, new ArrayList<>());
         }
-        responses.stream().forEach(r -> CorrelationIdUtils.popIndexFromCollerationId(r, responsesByCorrelationId));
+        responses.forEach(r -> CorrelationIdUtils.popIndexFromCollerationId(r, responsesByCorrelationId));
 
         // Store the results in the appropriate child trackers
-        responsesByCorrelationId.entrySet().stream()
-            .forEach(entry -> {
-                int index = entry.getKey();
-                if (index < 0 || index > (m_children.length  -1)) {
-                    // This shouldn't happen, but just in case...
-                    LOG.warn("Invalid index on response: {}, {}, {}", index, entry.getValue(), m_children.length);
-                } else {
-                    m_children[index].handleWalkResponses(entry.getValue());
-                }
-            });
+        responsesByCorrelationId.forEach((index, value) -> {
+            if (index < 0 || index > (m_children.length - 1)) {
+                // This shouldn't happen, but just in case...
+                LOG.warn("Invalid index on response: {}, {}, {}", index, value, m_children.length);
+            } else {
+                m_children[index].handleWalkResponses(value);
+            }
+        });
+    }
+
+    public void printSnmpData() {
+
     }
 }

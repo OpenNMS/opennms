@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.container</artifactId>
-    <version>31.0.3-SNAPSHOT</version>
+    <version>33.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.karaf</groupId>
@@ -200,6 +200,7 @@
       <plugin>
           <groupId>org.apache.karaf.tooling</groupId>
           <artifactId>karaf-maven-plugin</artifactId>
+          <extensions>true</extensions>
           <configuration>
             <skip>${skipTests}</skip>
           </configuration>
@@ -261,7 +262,6 @@
                           <feature>guava17</feature>
                           <feature>guava18</feature>
                           <feature>guava21</feature>
-                          <feature>guava31</feature>
                           <feature>jackson-core</feature>
                           <feature>jackson-dataformat-xml</feature>
                           <feature>jackson-dataformat-yaml</feature>
@@ -286,6 +286,7 @@
 
                           <!-- base API features -->
                           <feature>opennms-activemq-pool</feature>
+                          <feature>opennms-alarm-history-elastic</feature>
                           <feature>opennms-camel-amqp</feature>
                           <feature>opennms-core-camel</feature>
                           <feature>opennms-core-daemon</feature>
@@ -298,11 +299,17 @@
                           <feature>opennms-distributed-core-jms</feature>
                           <feature>opennms-events-api</feature>
                           <feature>opennms-health</feature>
+                          <feature>opennms-events-sink-dispatcher</feature>
                           <feature>opennms-health-api</feature>
+                          <feature>opennms-mate-api</feature>
+                          <feature>opennms-mate-impl</feature>
+                          <feature>opennms-mate-shell</feature>
                           <feature>opennms-newts</feature>
                           <feature>opennms-poller-monitors-core</feature>
                           <feature>opennms-telemetry-daemon</feature>
                           <feature>opennms-timeseries-api</feature>
+                          <feature>opennms-timeseries-api</feature>
+                          <feature>opennms-grpc-exporter</feature>
 
                           <!-- minion features -->
                           <feature>dominion-grpc-client</feature>
@@ -317,6 +324,7 @@
                           <feature>sentinel-api-layer</feature>
                           <feature>sentinel-events-forwarder</feature>
                           <feature>sentinel-jms</feature>
+                          <feature>sentinel-newts</feature>
                           <feature>sentinel-timeseries-api</feature>
                       </features>
                       <configuration>file:${project.build.directory}/apache-karaf-${karafVersion}/etc/config.properties</configuration>
@@ -367,6 +375,12 @@
     <dependency>
       <groupId>org.opennms.container</groupId>
       <artifactId>spring-extender</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features</groupId>
+      <artifactId>org.opennms.features.newts</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -795,6 +809,12 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.grpc</groupId>
+      <artifactId>org.opennms.features.grpc.exporter</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.container</groupId>
       <artifactId>extender</artifactId>
       <version>${project.version}</version>
@@ -920,6 +940,18 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.zenith-connect</groupId>
+      <artifactId>org.opennms.features.zenith-connect.persistence</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.zenith-connect</groupId>
+      <artifactId>org.opennms.features.zenith-connect.rest</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.scv</groupId>
       <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
       <version>${project.version}</version>
@@ -967,6 +999,12 @@
       <artifactId>jackson1-dependencies</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.notifications</groupId>
+      <artifactId>org.opennms.features.notifications.shell</artifactId>
+      <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
   </dependencies>

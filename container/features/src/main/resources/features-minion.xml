@@ -137,7 +137,7 @@
       <feature version="${netty4Version}">netty</feature>
       <feature>opennms-dnsresolver-api</feature>
       <feature>opennms-util</feature>
-      <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+      <bundle>wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
       <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
       <bundle>wrap:mvn:io.pkts/pkts-core/${pktsVersion}$Bundle-SymbolicName=io.pkts.core&amp;Bundle-Version=${pktsVersion}</bundle>
       <bundle>wrap:mvn:io.pkts/pkts-buffers/${pktsVersion}$Bundle-SymbolicName=io.pkts.buffers&amp;Bundle-Version=${pktsVersion}</bundle>
@@ -193,9 +193,7 @@
     </feature>
 
     <feature name="minion-health-check" version="${project.version}" description="Minion :: Health Check">
-        <bundle dependency="true">mvn:org.opennms.core.health/org.opennms.core.health.api/${project.version}</bundle>
-        <bundle dependency="true">mvn:io.vavr/vavr/0.10.0</bundle>
-        <feature>commons-lang3</feature>
+        <feature>health-api</feature>
         <bundle>mvn:org.opennms.features.minion/health-check/${project.version}</bundle>
         <bundle start-level="20">mvn:org.opennms.container/noop-jetty-extension/${project.version}</bundle>
     </feature>

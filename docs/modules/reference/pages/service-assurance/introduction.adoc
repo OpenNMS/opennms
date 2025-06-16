@@ -57,7 +57,7 @@ These minimum configuration parameters are available in all monitors and describ
 
 | rrd-status
 | Enable xref:operation:deep-dive/service-assurance/polling-packages.adoc#service-status-persistence[service status persistence]
-| false
+| true
 
 | thresholding-enabled
 | Whether collected response time should be tested against thresholds.

@@ -1,9 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?> <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<!--
+
+    Licensed to The OpenNMS Group, Inc (TOG) under one or more
+    contributor license agreements.  See the LICENSE.md file
+    distributed with this work for additional information
+    regarding copyright ownership.
+
+    TOG licenses this file to You under the GNU Affero General
+    Public License Version 3 (the "License") or (at your option)
+    any later version.  You may not use this file except in
+    compliance with the License.  You may obtain a copy of the
+    License at:
+
+         https://www.gnu.org/licenses/agpl-3.0.txt
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+    either express or implied.  See the License for the specific
+    language governing permissions and limitations under the
+    License.
+
+-->
   <!-- OpenNMS Top-Level POM -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>31.0.3-SNAPSHOT</version>
+  <version>33.0.3-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -103,7 +126,6 @@
     <module>opennms-taglib</module>
     <module>opennms-jetty</module>
     <module>opennms-correlation</module>
-    <module>opennms-reporting</module>
     <module>opennms-web-api</module>
     <module>opennms-web-dependencies</module>
     <module>opennms-webapp</module>
@@ -443,6 +465,7 @@
           <workingDirectory>${project.build.directory}</workingDirectory>
           <skipIfExist>true</skipIfExist>
           <keystore>${test.keystore}</keystore>
+          <keyalg>RSA</keyalg>
           <storepass>${test.storepass}</storepass>
           <alias>${test.keyalias}</alias>
           <keypass>${test.keypass}</keypass>
@@ -815,19 +838,6 @@
               </pluginExecution>
               <pluginExecution>
                 <pluginExecutionFilter>
-                  <groupId>org.codehaus.mojo</groupId>
-                  <artifactId>axistools-maven-plugin</artifactId>
-                  <versionRange>[1.4,)</versionRange>
-                  <goals>
-                    <goal>wsdl2java</goal>
-                  </goals>
-                </pluginExecutionFilter>
-                <action>
-                  <ignore/>
-                </action>
-              </pluginExecution>
-              <pluginExecution>
-                <pluginExecutionFilter>
                   <groupId>org.commonjava.maven.plugins</groupId>
                   <artifactId>directory-maven-plugin</artifactId>
                   <versionRange>[1.0,)</versionRange>
@@ -1071,6 +1081,104 @@
         <artifactId>structure-maven-plugin</artifactId>
         <version>1.0</version>
       </plugin>
+      <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>4.3</version>
+        <configuration>
+          <properties>
+            <owner>The OpenNMS Group, Inc.</owner>
+            <email>license@opennms.com</email>
+          </properties>
+          <licenseSets>
+            <licenseSet>
+              <header>src/main/resources/license-header.txt</header>
+              <!-- some of these excludes are aspirational, for when we expand this beyond the basics 😅 -->
+              <excludes>
+                <!-- short term, let's exclude everything but c/c++/groovy/java/js/ts -->
+                <exclude>**/*.css</exclude>
+                <exclude>**/*.ftl</exclude>
+                <exclude>**/*.groovy</exclude>
+                <exclude>**/*.html</exclude>
+                <exclude>**/*.pl</exclude>
+                <exclude>**/*.properties</exclude>
+                <exclude>**/*.proto</exclude>
+                <exclude>**/*.py</exclude>
+                <exclude>**/*.sh</exclude>
+                <exclude>**/*.txt</exclude>
+                <exclude>**/*.TXT</exclude>
+                <exclude>**/*.vm</exclude>
+                <exclude>**/*.xml</exclude>
+                <exclude>**/*.xsd</exclude>
+                <exclude>**/*.xsl</exclude>
+                <exclude>**/*.yaml</exclude>
+                <exclude>**/*.yml</exclude>
+
+                <!-- other top-level or specific excludes -->
+                <exclude>**/*.adoc</exclude>
+                <exclude>**/*.d.ts</exclude>
+                <exclude>**/*.md</exclude>
+                <exclude>**/pom.xml</exclude>
+                <exclude>**/THIRD-PARTY.properties</exclude>
+                <exclude>.version.txt</exclude>
+                <exclude>maven/**/*</exclude>
+                <exclude>**/static/legacy/**/*</exclude>
+                <exclude>**/lib/3rdparty/**/*</exclude>
+
+                <!-- top-level src/ contents -->
+                <exclude>src/assembly/source.xml</exclude>
+                <exclude>src/main/eclipse/ArsDigita.eclipse_formatter.xml</exclude>
+                <exclude>src/main/eclipse/org.eclipse.jdt.core.prefs</exclude>
+                <exclude>src/main/resources/checkstyle-suppressions.xml</exclude>
+                <exclude>src/main/resources/license-header.txt</exclude>
+                <exclude>src/main/resources/nms_checks.xml</exclude>
+                <exclude>src/site/site.xml</exclude>
+                <exclude>src/test/resources/test-data.sql</exclude>
+
+                <!-- don't need this can o' worms for now -->
+                <exclude>opennms-base-assembly/src/main/filtered/etc</exclude>
+                <exclude>opennms-base-assembly/src/main/resources</exclude>
+
+                <!-- BSD + GPL, see header for details -->
+                <exclude>core/test-api/dns/**/DNSServer.java</exclude>
+
+                <!-- APLv2 -->
+                <exclude>**/BlueprintCamelStateService.java</exclude>
+                <exclude>**/CaffeineDnsCache*.java</exclude>
+                <exclude>**/DroolsStreamUtils.java</exclude>
+                <exclude>**/GWTTerminal/war/**/*</exclude>
+                <exclude>**/Integer32IgnoreTooManyBytes.java</exclude>
+                <exclude>**/KafkaOffsetProvider.java</exclude>
+                <exclude>**/OnmsOSGiBridgeActivator.java</exclude>
+                <exclude>**/container/web/WebAppListener.java</exclude>
+                <exclude>**/hawkular/**/*</exclude>
+                <exclude>**/impl/holtwinters/*</exclude>
+                <exclude>**/osgi/script/*.java</exclude>
+                <exclude>**/vaadin/extender/Constants.java</exclude>
+                <exclude>**/vaadin/extender/VaadinResourceService.java</exclude>
+                <exclude>**/vaadin/extender/internal/Activator.java</exclude>
+                <exclude>**/vaadin/extender/internal/extender/PaxVaadinBundleTracker.java</exclude>
+                <exclude>**/vaadin/extender/internal/servlet/VaadinResourceServlet.java</exclude>
+
+                <!-- Sun CDDL -->
+                <exclude>**/taglibs/standard/lang/**/*</exclude>
+
+                <!-- BSD-style -->
+                <exclude>**/SyslogClient.java</exclude>
+
+                <!-- GPL+EPL (see headers, it's complicated) -->
+                <exclude>**/VmwareCimCollector.java</exclude>
+                <exclude>**/VmwareCimMonitor.java</exclude>
+                <exclude>**/VmwareViJavaAccess.java</exclude>
+                <exclude>**/VmwareViJavaAccessTest.java</exclude>
+
+                <!-- LGPLv3 -->
+                <exclude>**/CustomJRJdtCompiler.java</exclude>
+              </excludes>
+            </licenseSet>
+          </licenseSets>
+        </configuration>
+      </plugin>
     </plugins>
   </pluginManagement>
    <plugins>
@@ -1110,7 +1218,7 @@
                  <version>[3.5,)</version>
                </requireMavenVersion>
                <requireJavaVersion>
-                 <version>[11,12)</version>
+                 <version>[11,18)</version>
                </requireJavaVersion>
              </rules>
            </configuration>
@@ -1134,13 +1242,14 @@
                    <exclude>xml-apis:xml-apis</exclude>
 
                    <exclude>asm:*</exclude>                          <!-- use: org.ow2.asm.* -->
-                   <exclude>org.ow2.asm:asm-all</exclude>            <!-- use: org.ow2.asm.* -->
+                   <exclude>org.ow2.asm:asm-all</exclude>            <!-- doesn't exist anymore, use individual deps -->
                    <exclude>bouncycastle:*</exclude>                 <!-- use: org.bouncycastle:* instead, but not in a way that ends up in $OPENNMS_HOME/lib/ -->
                    <exclude>bsh:*</exclude>                          <!-- use: org.apache-extras.beanshell:bsh -->
                    <exclude>c3p0:c3p0</exclude>                      <!-- use: com.mchange:c3p0 -->
                    <exclude>commons-logging:*</exclude>              <!-- use: jcl-over-slf4j -->
                    <exclude>com.github.detro:*</exclude>             <!-- use: com.codeborne.phantomjsdriver -->
                    <exclude>com.github.detro.ghostdriver:*</exclude> <!-- use: com.codeborne.phantomjsdriver -->
+                   <exclude>com.sun.mail:jakarta.mail</exclude>      <!-- use: javax.mail:mail -->
                    <exclude>dom4j:dom4j</exclude>                    <!-- use: org.dom4j:dom4j -->
                    <exclude>javax.servlet:jstl</exclude>             <!-- use: jstl-dependencies -->
                    <exclude>javax.servlet.jsp:jsp-api</exclude>      <!-- use: servlet-dependencies -->
@@ -1301,8 +1410,6 @@
             <opennms.library.jicmp>${opennms.library.jicmp}</opennms.library.jicmp>
             <opennms.library.jrrd>${opennms.library.jrrd}</opennms.library.jrrd>
             <install.rrdtool.bin>${install.rrdtool.bin}</install.rrdtool.bin>
-            <runRemedyTests>${runRemedyTests}</runRemedyTests>
-            <runOtrsTests>${runOtrsTests}</runOtrsTests>
             <runRtTests>${runRtTests}</runRtTests>
             <runMailTests>${runMailTests}</runMailTests>
             <runPingTests>${runPingTests}</runPingTests>
@@ -1386,6 +1493,12 @@
         <groupId>org.apache.cxf</groupId>
         <artifactId>cxf-xjc-plugin</artifactId>
         <version>${cxfXjcVersion}</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.karaf.tooling</groupId>
+        <artifactId>karaf-maven-plugin</artifactId>
+        <version>${maven.karaf.plugin.version}</version>
+        <extensions>true</extensions>
       </plugin>
     </plugins>
  </build>
@@ -1498,7 +1611,20 @@
       problematic pauses when starting MockSnmpAgent in unit tests.
     -->
     <argLineMemory>-Xmx4g -XX:ReservedCodeCacheSize=1g</argLineMemory>
-    <argLine>${argLineMemory} -Djava.security.egd=file:/dev/./urandom</argLine>
+    <argLineAllowReflection>--add-opens java.base/java.lang=ALL-UNNAMED
+        --add-opens=java.desktop/java.beans=ALL-UNNAMED
+        --add-opens=java.base/java.io=ALL-UNNAMED
+        --add-opens=java.base/java.lang=ALL-UNNAMED
+        --add-opens=java.base/java.lang.reflect=ALL-UNNAMED
+        --add-opens=java.base/java.math=ALL-UNNAMED
+        --add-opens=java.base/java.util=ALL-UNNAMED
+        --add-opens=java.base/java.util.concurrent=ALL-UNNAMED
+        --add-opens=java.base/java.util.regex=ALL-UNNAMED
+        --add-opens=java.base/java.net=ALL-UNNAMED
+        --add-opens=java.base/java.text=ALL-UNNAMED
+        --add-opens=java.base/sun.util.locale.provider=ALL-UNNAMED
+        --add-opens=java.sql/java.sql=ALL-UNNAMED</argLineAllowReflection>
+    <argLine>${argLineMemory} -Djava.security.egd=file:/dev/./urandom ${argLineAllowReflection}</argLine>
     <skipITs>true</skipITs>
     <runPingTests>false</runPingTests>
 
@@ -1542,10 +1668,12 @@
     <mock.db.adminPassword/>
     <mock.runSnmpTests>false</mock.runSnmpTests>
     <mock.snmpHost>localhost</mock.snmpHost>
+    <product.name>horizon</product.name>
+    <docs.product.version>33</docs.product.version>
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>31.0.3.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>33.0.3.SNAPSHOT</opennms.osgi.version>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
@@ -1567,10 +1695,10 @@
 
     <install.postgresql.service>postgresql</install.postgresql.service>
     <install.database.name>opennms</install.database.name>
-    <install.database.user>opennms</install.database.user>
-    <install.database.password>opennms</install.database.password>
-    <install.database.admin.user>postgres</install.database.admin.user>
-    <install.database.admin.password/>
+    <install.database.user>${scv:postgres:username|opennms}</install.database.user>
+    <install.database.password>${scv:postgres:password|opennms}</install.database.password>
+    <install.database.admin.user>${scv:postgres-admin:username|postgres}</install.database.admin.user>
+    <install.database.admin.password>${scv:postgres-admin:password|}</install.database.admin.password>
     <install.database.driver>org.postgresql.Driver</install.database.driver>
     <install.database.bindir>/usr/bin</install.database.bindir>
     <install.rrdtool.bin>/usr/bin/rrdtool</install.rrdtool.bin>
@@ -1615,9 +1743,8 @@
     <bsonVersion>3.5.0</bsonVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
     <camelVersion>2.21.5</camelVersion>
-    <cassandraUnitVersion>3.11.2.0</cassandraUnitVersion>
-    <!-- Match Newts version -->
-    <cassandraVersion>3.11.5</cassandraVersion>
+    <!-- Match (or beat) Newts version -->
+    <cassandraVersion>4.17.0</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
     <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
     <commonsChainVersion>1.2</commonsChainVersion>
@@ -1649,21 +1776,22 @@
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.5</c3p0Version>
     <curatorVersion>5.6.0</curatorVersion>
-    <cxfVersion>3.6.3</cxfVersion>
+    <cxfVersion>3.6.6</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
     <serviceMixDnsjavaVersion>3.5.3_1</serviceMixDnsjavaVersion>
     <dnsjavaVersion>3.6.1</dnsjavaVersion>
     <dom4jVersion>2.1.4</dom4jVersion>
-    <dropwizardMetricsVersion>3.1.2</dropwizardMetricsVersion>
+    <dropwizardMetricsVersion>4.2.10</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
     <eclipseGeminiVersion>2.1.0.RELEASE</eclipseGeminiVersion>
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <eddsaVersion>0.3.0</eddsaVersion>
-    <elasticsearchNettyVersion>4.1.69.Final</elasticsearchNettyVersion>
-    <elasticsearchTargetVersion>7.6.2</elasticsearchTargetVersion>
-    <esapiVersion>2.3.0.0</esapiVersion>
-    <felixBridgeVersion>4.0.12</felixBridgeVersion>
+    <elasticsearchNettyVersion>${netty4Version}</elasticsearchNettyVersion>
+    <elasticsearchDriftPluginVersion>2.0.5</elasticsearchDriftPluginVersion>
+    <elasticsearchTargetVersion>7.17.9</elasticsearchTargetVersion>
+    <esapiVersion>2.4.0.0</esapiVersion>
+    <felixBridgeVersion>4.1.6</felixBridgeVersion>
     <felixProxyVersion>3.0.6</felixProxyVersion>
     <fopVersion>2.10</fopVersion>
     <freemarkerVersion>2.3.32</freemarkerVersion>
@@ -1673,11 +1801,11 @@
     <geohashVersion>1.4.0</geohashVersion>
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
-    <groovyVersion>2.5.23</groovyVersion>
+    <groovyVersion>3.0.21</groovyVersion>
     <grpcVersion>1.71.0</grpcVersion>
     <gsonVersion>2.9.1</gsonVersion>
-    <guavaVersion>25.1-jre</guavaVersion>
-    <guavaOsgiVersion>25.1.0</guavaOsgiVersion>
+    <guavaVersion>31.1-jre</guavaVersion>
+    <guavaOsgiVersion>31.1</guavaOsgiVersion>
     <guavagRPCVersion>33.3.1-jre</guavagRPCVersion>
     <gwtVersion>2.9.0</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
@@ -1708,16 +1836,16 @@
     <jaxbRuntimeVersion>2.3.3</jaxbRuntimeVersion>
     <!-- this should match what's in Karaf's lib/jdk9plus directory -->
     <jakartaXmlBindVersion>2.3.3</jakartaXmlBindVersion>
-    <!-- this should match what's in Karaf's lib/jdk9plus directory -->
-    <javaxAnnotationApiVersion>1.3.1</javaxAnnotationApiVersion>
+    <!-- major.minor should match what's in Karaf's lib/jdk9plus directory -->
+    <javaxAnnotationApiVersion>1.3.2</javaxAnnotationApiVersion>
     <javaxMailVersion>1.4.7</javaxMailVersion>
     <jbossLoggingVersion>3.5.3.Final</jbossLoggingVersion>
     <jcifsVersion>2.1.6</jcifsVersion>
     <jcommonVersion>1.0.24</jcommonVersion>
     <jdom2Version>2.0.6.1</jdom2Version>
     <jettisonVersion>1.5.4</jettisonVersion>
-    <jettyVersion>9.4.53.v20231009</jettyVersion>
-    <jettyOsgiVersion>9.4.53</jettyOsgiVersion>
+    <jettyVersion>9.4.57.v20241219</jettyVersion>
+    <jettyOsgiVersion>9.4.57</jettyOsgiVersion>
     <jestVersion>5.3.4</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
     <jfreechartVersion>1.5.4</jfreechartVersion>
@@ -1728,6 +1856,7 @@
     <jmhVersion>1.37</jmhVersion>
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
     <jnaVersion>5.12.1</jnaVersion>
+    <jnrVersion>3.1.17</jnrVersion>
     <jodaTimeVersion>2.12.5</jodaTimeVersion>
     <jolokiaVersion>1.7.2</jolokiaVersion>
     <jqwikVersion>1.6.5</jqwikVersion>
@@ -1768,7 +1897,7 @@
     <paxWebVersion>7.3.29</paxWebVersion>
     <slingJohnzonVersion>1.2.16</slingJohnzonVersion>
     <!-- END: versions must match versions provided by embedded Karaf -->
-    <kafkaBundleVersion>3.5.1_1</kafkaBundleVersion>
+    <kafkaBundleVersion>3.6.2_1</kafkaBundleVersion>
     <kafkaVersion>3.6.2</kafkaVersion>
     <kotlinVersion>1.9.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
@@ -1778,11 +1907,12 @@
     <mapstructVersion>1.5.2.Final</mapstructVersion>
     <mavenApiVersion>3.9.6</mavenApiVersion>
     <mavenResolverApiVersion>2.0.1</mavenResolverApiVersion>
-    <minaVersion>2.2.3</minaVersion>
+    <minaVersion>2.2.4</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
     <netty4Version>4.1.100.Final</netty4Version>
-    <newtsVersion>1.5.7</newtsVersion>
+    <newtsVersion>3.0.0</newtsVersion>
+    <newtsOsgiVersion>3.0.0</newtsOsgiVersion>
     <paxCdiVersion>1.1.4</paxCdiVersion>
     <paxExamVersion>4.13.5</paxExamVersion>
     <pktsVersion>3.0.10</pktsVersion>
@@ -1791,9 +1921,11 @@
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>3.6.0</okioVersion>
+    <okhttp3Version>3.10.0</okhttp3Version>
+    <okioGrafanaVersion>1.14.0</okioGrafanaVersion>
     <openid4javaVersion>0.9.6</openid4javaVersion>
-    <opennmsApiVersion>1.5.0</opennmsApiVersion>
-    <opennmsApiVersionOsgi>1.5.0</opennmsApiVersionOsgi>
+    <opennmsApiVersion>1.6.1</opennmsApiVersion>
+    <opennmsApiVersionOsgi>1.6.1</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
@@ -1822,6 +1954,7 @@
     <snmp4jVersion>2.5.5</snmp4jVersion>
     <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
     <sonarVersion>3.9.1.2184</sonarVersion>
+    <spiflyVersion>1.3.6</spiflyVersion>
     <spockVersion>2.3-groovy-2.5</spockVersion>
     <swaggerUIVersion>3.23.11</swaggerUIVersion>
     <swaggerVersion>2.1.12</swaggerVersion>
@@ -1841,9 +1974,9 @@
     <xmlApisExtVersion>1.3.04</xmlApisExtVersion>
     <xmlgraphicsCommonsVersion>2.9</xmlgraphicsCommonsVersion>
     <xmlsecVersion>2.3.4</xmlsecVersion>
-    <xstreamVersion>1.4.20</xstreamVersion>
+    <xstreamVersion>1.4.21</xstreamVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
-    <wsmanVersion>1.2.3</wsmanVersion>
+    <wsmanVersion>1.3.2</wsmanVersion>
     <zookeeperVersion>3.7.2</zookeeperVersion>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
     <minaSshdVersion>2.12.1</minaSshdVersion>
@@ -2096,8 +2229,8 @@
         </pluginRepository>
         <pluginRepository>
           <id>opennms-snapshots</id>
-          <name>OpenNMS Snapshot Maven Repository</name>
-          <url>https://maven.opennms.org/content/groups/opennms.org-snapshot/</url>
+          <name>OpenNMS Snapshot Maven Mega-Repository</name>
+          <url>https://maven.opennms.org/repository/everything/</url>
           <releases>
             <enabled>false</enabled>
           </releases>
@@ -2271,6 +2404,11 @@
       <build>
         <plugins>
           <plugin>
+            <groupId>com.mycila</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+            <version>4.3</version>
+          </plugin>
+          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
             <version>3.3.1</version>
@@ -2293,24 +2431,6 @@
               <consoleOutput>true</consoleOutput>
             </configuration>
             <executions>
-              <execution>
-                <id>check-license</id>
-                <goals>
-                  <goal>check</goal>
-                </goals>
-                <phase>process-resources</phase>
-                <configuration>
-                  <configLocation>${opennms.build.basedir}/src/main/resources/check-license.xml</configLocation>
-                  <suppressionsLocation>${opennms.build.basedir}/src/main/resources/license-suppressions.xml</suppressionsLocation>
-                  <headerLocation>${opennms.build.basedir}/src/main/resources/AGPL-LICENSE.regexp.txt</headerLocation>
-                  <includeResources>false</includeResources>
-                  <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                  <includeTestResources>false</includeTestResources>
-                  <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
-                  <failsOnError>false</failsOnError>
-                  <consoleOutput>true</consoleOutput>
-                </configuration>
-              </execution>
               <execution>
                 <id>check-style</id>
                 <goals>
@@ -2839,11 +2959,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-rancid-provisioning-adapter</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
         <artifactId>opennms-wsman-asset-provisioning-adapter</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -3323,22 +3438,7 @@
       </dependency>
       <dependency>
         <groupId>org.opennms.features</groupId>
-        <artifactId>opennms-integration-otrs</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>opennms-integration-otrs-31</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
         <artifactId>opennms-integration-rt</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms.features</groupId>
-        <artifactId>opennms-integration-remedy</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -3421,11 +3521,6 @@
       </dependency>
       <dependency>
         <groupId>org.opennms</groupId>
-        <artifactId>opennms-reporting</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
         <artifactId>opennms-reportd</artifactId>
         <version>${project.version}</version>
       </dependency>
@@ -3457,11 +3552,6 @@
       <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-rrd-tcp</artifactId>
-        <version>${project.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>org.opennms</groupId>
-        <artifactId>opennms-rws</artifactId>
         <version>${project.version}</version>
       </dependency>
       <dependency>
@@ -3589,12 +3679,6 @@
         <type>pom</type>
       </dependency>
       <dependency>
-        <groupId>org.opennms.dependencies</groupId>
-        <artifactId>rancid-dependencies</artifactId>
-        <version>${project.version}</version>
-        <type>pom</type>
-      </dependency>
-      <dependency>
         <groupId>org.opennms</groupId>
         <artifactId>opennms-asterisk</artifactId>
         <version>${project.version}</version>
@@ -3675,7 +3759,17 @@
       </dependency>
       <dependency>
         <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-bom</artifactId>
+        <version>${asmVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
         <artifactId>asm-commons</artifactId>
+        <version>${asmVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.ow2.asm</groupId>
+        <artifactId>asm-test</artifactId>
         <version>${asmVersion}</version>
       </dependency>
       <dependency>
@@ -4229,7 +4323,7 @@
       <dependency>
         <groupId>com.google.errorprone</groupId>
         <artifactId>error_prone_annotations</artifactId>
-        <version>2.10.0</version>
+        <version>2.18.0</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
@@ -4663,6 +4757,11 @@
         <version>${dropwizardMetricsVersion}</version>
       </dependency>
       <dependency>
+        <groupId>io.dropwizard.metrics</groupId>
+        <artifactId>metrics-jmx</artifactId>
+        <version>${dropwizardMetricsVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>org.jdom</groupId>
         <artifactId>jdom2</artifactId>
         <version>${jdom2Version}</version>
@@ -4927,6 +5026,16 @@
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-codec</artifactId>
+        <version>${netty4Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-codec-http</artifactId>
+        <version>${netty4Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-resolver</artifactId>
         <version>${netty4Version}</version>
       </dependency>
       <dependency>

@@ -108,6 +108,9 @@ The following keys are available under this context:
 | interface:if-description
 | The SNMP interface description
 
+| interface:if-name
+| The SNMP interface name, i.e. ifName
+
 | interface:phy-addr
 | The interface's physical address
 |===
@@ -254,3 +257,24 @@ The following {page-component-title} components allow the use of the Metadata DS
 * <<reference:configuration/ttl-rpc.adoc#metadata-ttls, Using metadata for TTLs>>.
 * <<deep-dive/thresholds/thresholding.adoc#ga-threshold-metadata, Expression-Based Thresholds>>.
 * <<deep-dive/notifications/introduction.adoc#ga-notifications, Notifications>>.
+* <<deep-dive/alarms/alarm-handling.adoc#ga-advanced-alarm-handling, Alarmd Drools rules>>.
+* <<deep-dive/admin/configuration/system-properties.adoc#system-properties, System Properties>>.
+
+Furthermore, some {page-component-title} configuration files allow the use of Metadata DSL to access the global scope `scv` in order to reference credentials in the Secure Credentials Vault:
+
+* xref:operation:deep-dive/elasticsearch/introduction.adoc[Elasticsearch integration]: elastic-configuration.xml
+* xref:reference:performance-data-collection/collectors/http.adoc[HTTP/HTTPS collector]: http-datacollection-config.xml
+* xref:operation:deep-dive/alarms/ifttt-integration.adoc[IFTTT integration]: ifttt-config.xml
+* xref:reference:service-assurance/monitors/JCifsMonitor.adoc[JCIFS monitor]: jcifs.properties
+* xref:reference:service-assurance/monitors/JmxMonitor.adoc[JMX monitor], xref:reference:performance-data-collection/collectors/jmx.adoc[JMX collector]: jmx-config.xml, jmx-datacollection-config.xml, jmx-datacollection-config/*.xml
+* xref:operation:deep-dive/notifications/introduction.adoc[Notification configuration]: javamail-configuration.xml, javamail-configuration.properties, microblog-configuration.xml, xmpp-configuration.xml
+* xref:reference:performance-data-collection/collectors/nsclient.adoc[NSClient collector]: nsclient-config.xml
+* xref:operation:deep-dive/database-reports/template-introduction.adoc[Remote Repository configuration]: remote-repository.xml
+* xref:operation:deep-dive/provisioning/xml-samples.adoc[SNMP configuration], xref:operation:deep-dive/provisioning/snmp-profile.adoc[SNMP profiles]: snmp-config.xml
+* xref:reference:ticketing/introduction.adoc[Ticketer configuration]: jira.properties, remedy.properties, tsrm.properties
+* xref:reference:daemons/daemon-config-files/trapd.adoc[Trapd configuration]: trapd-configuration.xml
+* xref:reference:service-assurance/monitors/VmwareMonitor.adoc[VMware monitor], xref:reference:performance-data-collection/collectors/vmware.adoc[VMware collector]: vmware-config.xml
+* xref:reference:service-assurance/monitors/WmiMonitor.adoc[WMI monitor], xref:reference:performance-data-collection/collectors/wmi.adoc[WMI collector]: wmi-config.xml
+* xref:reference:performance-data-collection/collectors/xml.adoc[XML collector]: xml-datacollection-config.xml, xml-datacollection-config/*.xml
+
+

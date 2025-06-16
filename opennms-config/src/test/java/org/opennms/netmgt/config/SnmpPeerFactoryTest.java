@@ -1,46 +1,55 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.config;
 
 import static org.junit.Assert.assertThat;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.InputStream;
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.Arrays;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.hamcrest.Matchers;
+import org.junit.rules.TemporaryFolder;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LocationUtils;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
+import org.opennms.netmgt.config.snmp.Definition;
+import org.opennms.netmgt.config.snmp.Range;
+import org.opennms.netmgt.config.snmp.SnmpConfig;
 import org.opennms.netmgt.config.snmp.SnmpProfile;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.springframework.core.io.ByteArrayResource;
+import org.springframework.core.io.InputStreamResource;
 
 import junit.framework.TestCase;
 
@@ -50,6 +59,15 @@ public class SnmpPeerFactoryTest extends TestCase {
 
     @Override
     protected void setUp() throws Exception {
+        final TemporaryFolder temporaryFolder = new TemporaryFolder();
+        temporaryFolder.create();
+        final File keystoreFile = new File(temporaryFolder.getRoot(), "scv.jce");
+        final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
+        secureCredentialsVault.setCredentials("myv1community", new Credentials("username", "specificv1"));
+        secureCredentialsVault.setCredentials("myv2community", new Credentials("username", "specificv2c"));
+        secureCredentialsVault.setCredentials("myCredentials-profile1", new Credentials("securityName-profile1", "authPassphrase-profile1"));
+        secureCredentialsVault.setCredentials("myCredentials-profile2", new Credentials("securityName-profile2", "authPassphrase-profile2"));
+        SnmpPeerFactory.setSecureCredentialsVaultScope(new SecureCredentialsVaultScope(secureCredentialsVault));
         setVersion(SnmpAgentConfig.VERSION2C);
         SnmpPeerFactory.setInstance(new SnmpPeerFactory(new ByteArrayResource(getSnmpConfig().getBytes())));
         MockLogAppender.setupLogging(true);
@@ -80,15 +98,15 @@ public class SnmpPeerFactoryTest extends TestCase {
                 "       <specific>"+myLocalHost()+"</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
-                "   <definition version=\"v1\" read-community=\"specificv1\">\n" + 
+                "   <definition version=\"v1\" read-community=\"${scv:myv1community:password}\">\n" +
                 "       <specific>10.0.0.1</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
-                "   <definition version=\"v1\" read-community=\"specificv1\" max-request-size=\"484\">\n" + 
+                "   <definition version=\"v1\" read-community=\"${scv:myv1community:password}\" max-request-size=\"484\">\n" +
                 "       <specific>10.0.0.2</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
-                "   <definition version=\"v1\" read-community=\"specificv1\" proxy-host=\""+myLocalHost()+"\">\n" + 
+                "   <definition version=\"v1\" read-community=\"${scv:myv1community:password}\" proxy-host=\""+myLocalHost()+"\">\n" +
                 "       <specific>10.0.0.3</specific>\n" +
                 "   </definition>\n" + 
                 "\n" + 
@@ -128,7 +146,7 @@ public class SnmpPeerFactoryTest extends TestCase {
                 "       <range begin=\"10.7.20.100\" end=\"10.7.25.100\"/>\n" +
                 "   </definition>\n" + 
                 "\n" +
-                "   <definition version=\"v2c\" read-community=\"specificv2c\">\n" + 
+                "   <definition version=\"v2c\" read-community=\"${scv:myv2community:password}\">\n" +
                 "       <specific>192.168.0.50</specific>\n" +
                 "   </definition>\n" + 
                 "\n" +
@@ -173,7 +191,8 @@ public class SnmpPeerFactoryTest extends TestCase {
                         + "  max-vars-per-pdu=\"4\" "
                         + "  max-repetitions=\"5\" "
                         + "  max-request-size=\"484\" "
-                        + "  security-name=\"securityName\" "
+                        + "  security-name=\"${scv:myCredentials-profile2:username}\" "
+                        + "  auth-passphrase=\"${scv:myCredentials-profile2:password}\" "
                         + "  security-level=\"3\" "
                         + "  auth-protocol=\"MD5\" "
                         + "  engine-id=\"engineId\" "
@@ -188,6 +207,8 @@ public class SnmpPeerFactoryTest extends TestCase {
                         + "  write-community=\"private\" "
                         + "  proxy-host=\""+myLocalHost()+"\""
                         + "  version=\"v3\" "
+                        + "  security-name=\"${scv:myCredentials-profile1:username}\" "
+                        + "  auth-passphrase=\"${scv:myCredentials-profile1:password}\" "
                         + "  max-vars-per-pdu=\"4\" "
                         + "  max-repetitions=\"5\" "
                         + "  max-request-size=\"484\" "
@@ -198,7 +219,7 @@ public class SnmpPeerFactoryTest extends TestCase {
                         + "  context-name=\"profileContext\" "
                         //+ "  privacy-protocol=\"DES\" "
                         + "  enterprise-id=\"enterpriseId\">"
-                        + "<label>profile2</label>"
+                        + "<label>profile1</label>"
                         + "<filter>*.opennms.org</filter>"
                         + "</profile>"
                     + "</profiles>"
@@ -487,8 +508,66 @@ public class SnmpPeerFactoryTest extends TestCase {
             // Even if read-community/write-community is not specified, should use defaults.
             assertEquals("public", snmpAgentConfig.getReadCommunity());
             assertEquals("private", snmpAgentConfig.getWriteCommunity());
+            assertEquals("securityName-" + snmpProfile.getLabel(), snmpAgentConfig.getSecurityName());
+            assertEquals("authPassphrase-" + snmpProfile.getLabel(), snmpAgentConfig.getAuthPassPhrase());
+
             assertNull(snmpAgentConfig.getPrivProtocol());
             assertThat(snmpAgentConfig.getVersionAsString(), Matchers.isOneOf("v2c", "v3"));
+        }
+    }
+
+    public void testMergingWithMetadata() throws Exception {
+        TemporaryFolder temporaryFolder = new TemporaryFolder();
+        temporaryFolder.create();
+        final var file = new File(temporaryFolder.getRoot(), "snmp-config.xml");
+
+        try (var filewriter = new FileWriter(file)) {
+            IOUtils.write("<snmp-config xmlns=\"http://xmlns.opennms.org/xsd/config/snmp\" version=\"v2c\" read-community=\"minion\" timeout=\"1800\" retry=\"1\"/>", filewriter);
+        }
+
+        final URL url = file.toURI().toURL();
+        try (final InputStream inputStream = url.openStream()) {
+            final SnmpPeerFactory snmpPeerFactory = new SnmpPeerFactory(new InputStreamResource(inputStream));
+            SnmpPeerFactory.setFile(file);
+
+            final Definition defA = new Definition();
+            defA.setRanges(Arrays.asList(new Range("192.168.30.1","192.168.30.10")));
+            defA.setReadCommunity("${scv:myCommunity:password}");
+            defA.setWriteCommunity("private");
+            defA.setAuthPassphrase("${scv:myAuthPassphrase:password}");
+            defA.setPrivacyPassphrase("${scv:myPrivacyPassphrase:password}");
+            snmpPeerFactory.saveDefinition(defA);
+            snmpPeerFactory.saveCurrent();
+
+            final Definition defB = new Definition();
+            defB.setRanges(Arrays.asList(new Range("192.168.30.11","192.168.30.30")));
+            defB.setReadCommunity("${scv:myCommunity:password}");
+            defB.setWriteCommunity("private");
+            defB.setAuthPassphrase("${scv:myAuthPassphrase:password}");
+            defB.setPrivacyPassphrase("${scv:myPrivacyPassphrase:password}");
+            snmpPeerFactory.saveDefinition(defB);
+            snmpPeerFactory.saveCurrent();
+
+            final SnmpConfig snmpConfig1 = JaxbUtils.unmarshal(SnmpConfig.class, snmpPeerFactory.getSnmpConfigAsString());
+
+            assertEquals(1, snmpConfig1.getDefinitions().size());
+            assertEquals("${scv:myAuthPassphrase:password}", snmpConfig1.getDefinitions().get(0).getAuthPassphrase());
+            assertEquals("${scv:myPrivacyPassphrase:password}", snmpConfig1.getDefinitions().get(0).getPrivacyPassphrase());
+            assertEquals("${scv:myCommunity:password}", snmpConfig1.getDefinitions().get(0).getReadCommunity());
+            assertEquals("private", snmpConfig1.getDefinitions().get(0).getWriteCommunity());
+
+            final Definition defC = new Definition();
+            defC.setRanges(Arrays.asList(new Range("192.168.30.31","192.168.30.35")));
+            // this should not match
+            defC.setReadCommunity("${scv:anotherCommunity:password}");
+            defC.setWriteCommunity("private");
+            defC.setAuthPassphrase("${scv:myAuthPassphrase:password}");
+            defC.setPrivacyPassphrase("${scv:myPrivacyPassphrase:password}");
+            snmpPeerFactory.saveDefinition(defC);
+            snmpPeerFactory.saveCurrent();
+
+            final SnmpConfig snmpConfig2 = JaxbUtils.unmarshal(SnmpConfig.class, snmpPeerFactory.getSnmpConfigAsString());
+            assertEquals(2, snmpConfig2.getDefinitions().size());
         }
     }
 }

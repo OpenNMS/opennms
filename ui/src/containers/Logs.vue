@@ -21,15 +21,16 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import Editor from '@/components/Logs/Editor.vue'
 import Logs from '@/components/Logs/Logs.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
+import { useLogStore } from '@/stores/logStore'
+import { useMenuStore } from '@/stores/menuStore'
 import { BreadCrumb } from '@/types'
 
-const store = useStore()
-
-const homeUrl = computed<string>(() => store.state.menuModule.mainMenu?.homeUrl)
+const logStore = useLogStore()
+const menuStore = useMenuStore()
+const homeUrl = computed<string>(() => menuStore.mainMenu.homeUrl)
 
 const breadcrumbs = computed<BreadCrumb[]>(() => {
   return [
@@ -38,7 +39,7 @@ const breadcrumbs = computed<BreadCrumb[]>(() => {
   ]
 })
 
-onMounted(() => store.dispatch('logsModule/getLogs'))
+onMounted(() => logStore.getLogs())
 </script>
 
 <style scoped lang="scss">

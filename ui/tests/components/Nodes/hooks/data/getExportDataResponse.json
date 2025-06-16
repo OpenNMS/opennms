@@ -1,0 +1,25 @@
+[
+  {
+    "id": "1",
+    "label": "Node1",
+    "ipaddress": "192.168.0.1",
+    "location": "Location 0",
+    "foreignSource": "selfmonitor",
+    "foreignId": "1",
+    "sysContact": "Administrator <postmaster@example.com>",
+    "sysLocation": "Right here, right now",
+    "sysDescription": "Darwin REMMUSERNAME 22.6.0 Darwin Kernel Version 22.6.0:",
+    "flows": "Ingress, Egress"
+  },
+  {
+    "id": "106",
+    "label": "WI_racine-store-pos",
+    "ipaddress": "192.168.99.106",
+    "location": "Default",
+    "foreignSource": "Demo_Stores",
+    "foreignId": "WI_racine-store-pos",
+    "sysContact": "Administrator <racineadmin@example.com>",
+    "sysLocation": "Racine, WI",
+    "sysDescription": "Alpine Linux"
+  }
+]

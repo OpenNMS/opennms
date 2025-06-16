@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2018-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.alarmd.drools;
 
 
@@ -42,6 +35,10 @@ import static org.mockito.Mockito.when;
 import static org.opennms.netmgt.alarmd.AlarmMatchers.hasSeverity;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -53,6 +50,8 @@ import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.hibernate.classic.Session;
+import org.hibernate.SessionFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Ignore;
@@ -68,6 +67,8 @@ import org.opennms.netmgt.model.AckAction;
 import org.opennms.netmgt.model.OnmsAcknowledgment;
 import org.opennms.netmgt.model.OnmsAlarm;
 import org.opennms.netmgt.model.OnmsEvent;
+import org.opennms.netmgt.model.OnmsMetaData;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.TroubleTicketState;
@@ -76,6 +77,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ContextConfiguration;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 
 /**
@@ -127,6 +129,11 @@ public class DroolsAlarmContextIT {
         dac.setAlarmService(alarmService);
         dac.setAcknowledgmentDao(acknowledgmentDao);
 
+        Session session = mock(Session.class);
+        SessionFactory sessionFactory = mock(SessionFactory.class);
+        when(sessionFactory.getCurrentSession()).thenReturn(session);
+        dac.setSessionFactory(sessionFactory);
+
         dac.start();
 
         // Wait
@@ -137,6 +144,68 @@ public class DroolsAlarmContextIT {
     public void tearDown() {
         if (dac != null) {
             dac.stop();
+        }
+    }
+
+    public static class Result {
+        private String result;
+
+        public void setResult(final String result) {
+            this.result = result;
+        }
+
+        public String getResult() {
+            return result;
+        }
+    }
+
+    @Test
+    public void testMetadata() throws IOException {
+        final Path dstDirectory = Paths.get("target","test", "drools-rules.d");
+
+        try {
+            final Result result = new Result();
+
+            dac.setOnNewKiewSessionCallback(kieSession -> {
+                kieSession.setGlobal("result", result);
+            });
+
+            final String rule = String.format(
+                    "import org.opennms.netmgt.model.OnmsAlarm;\n" +
+                            "global %s result;\n" +
+                            "rule \"metadataTest\"\n" +
+                            "  when\n" +
+                            "      $alarm : OnmsAlarm(node != null)  \n" +
+                            "      eval($alarm.getNode() != null && ($alarm.getNode().findMetaDataForContextAndKey(\"requisition\", \"myKey\").isPresent()))\n"+
+                            "  then\n" +
+                            "      result.setResult($alarm.getNode().findMetaDataForContextAndKey(\"requisition\", \"myKey\").get().getValue());\n" +
+                            "end", Result.class.getCanonicalName());
+
+            Files.write(dstDirectory.resolve("metadata.drl"), rule.getBytes(StandardCharsets.UTF_8));
+
+            dac.reload();
+
+            final OnmsNode onmsNode = new OnmsNode();
+            onmsNode.setNodeId("1");
+            onmsNode.setLabel("MyNode");
+            final OnmsMetaData onmsMetaData = new OnmsMetaData("requisition", "myKey", "foobar");
+            onmsNode.setMetaData(Lists.newArrayList(onmsMetaData));
+
+            final OnmsAlarm onmsAlarm = new OnmsAlarm();
+            onmsAlarm.setId(1);
+            onmsAlarm.setNode(onmsNode);
+            onmsAlarm.setAlarmType(1);
+            onmsAlarm.setSeverity(OnmsSeverity.WARNING);
+            onmsAlarm.setLastEventTime(new Date(100));
+
+            assertThat(result.getResult(), equalTo(null));
+
+            dac.handleNewOrUpdatedAlarm(onmsAlarm);
+            dac.tick();
+
+            assertThat(result.getResult(), equalTo("foobar"));
+        } finally {
+            Files.delete(dstDirectory.resolve("metadata.drl"));
         }
     }
 

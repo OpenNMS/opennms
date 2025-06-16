@@ -847,12 +847,11 @@ public class Coercions
     }
 
     else {
-      if (pLogger.isLoggingError ()) {
-	pLogger.logError
-	  (Constants.ARITH_OP_BAD_TYPE,
-	   pOperator.getOperatorSymbol (),
-	   pLeft.getClass ().getName (),
-	   pRight.getClass ().getName ());
+      if (pLogger.isLoggingError()) {
+        pLogger.logError(Constants.ARITH_OP_BAD_TYPE,
+        pOperator.getOperatorSymbol(),
+        pLeft == null? null : pLeft.getClass().getName(),
+        pRight == null? null : pRight.getClass().getName());
       }
       return Boolean.FALSE;
     }

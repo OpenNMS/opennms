@@ -18,7 +18,7 @@
 
 <script setup lang="ts">
 import { getExtensionFromFilenameSafely } from './utils'
-import { useStore } from 'vuex'
+import { useAppStore } from '@/stores/appStore'
 import { VAceEditor } from 'vue3-ace-editor'
 import { onKeyStroke } from '@vueuse/core'
 import Console from './Console.vue'
@@ -30,23 +30,31 @@ import 'ace-builds/src-noconflict/theme-xcode'
 import 'ace-builds/src-noconflict/theme-dracula'
 import 'ace-builds/src-noconflict/ext-searchbox'
 import workerXmlUrl from 'ace-builds/src-noconflict/worker-xml?url'
+import { useFileEditorStore } from '@/stores/fileEditorStore'
+
 ace.config.setModuleUrl('ace/mode/xml_worker', workerXmlUrl)
 
-const theme = computed(() => {
-  const theme = store.state.appModule.theme
-  if (theme === 'open-dark') return 'dracula'
-  return 'xcode'
-})
-
-const store = useStore()
+const appStore = useAppStore()
+const fileEditorStore = useFileEditorStore()
 const content = ref('')
 const reactiveEditor = ref()
 
-const selectedFileName = computed(() => store.state.fileEditorModule.selectedFileName)
-const isHelpOpen = computed(() => store.state.fileEditorModule.isHelpOpen)
-const fileString = computed(() => store.state.fileEditorModule.file)
+const theme = computed(() => {
+  const theme = appStore.theme
+  if (theme === 'open-dark') {
+    return 'dracula'
+  }
+
+  return 'xcode'
+})
+
+const selectedFileName = computed(() => fileEditorStore.selectedFileName)
+const isHelpOpen = computed(() => fileEditorStore.isHelpOpen)
+const fileString = computed(() => fileEditorStore.file)
+
 const lang = computed(() => {
   const xml = 'xml', properties = 'properties', drl = 'drl', java = 'java'
+
   if (selectedFileName.value) {
     const extension = getExtensionFromFilenameSafely(selectedFileName.value)
     if (extension === xml) return xml
@@ -62,6 +70,7 @@ const disableEditor = (editor: any) => {
 }
 
 watchEffect(() => content.value = fileString.value)
+
 watch(selectedFileName, (selectedFileName) => {
   // enable editor when file is selected
   if (selectedFileName) {
@@ -81,8 +90,8 @@ onKeyStroke('f', (e) => {
 })
 
 const change = () => {
-  store.dispatch('fileEditorModule/setIsFileContentModified', content.value !== fileString.value)
-  store.dispatch('fileEditorModule/setModifiedFileString', content.value)
+  fileEditorStore.setIsFileContentModified(content.value !== fileString.value)
+  fileEditorStore.setModifiedFileString(content.value)
 }
 
 const init = (editor: any) => {
@@ -93,8 +102,9 @@ const init = (editor: any) => {
   editor.commands.addCommand({
     name: 'save',
     bindKey: { win: 'Ctrl-S', 'mac': 'Cmd-S' },
-    exec: () => store.dispatch('fileEditorModule/saveModifiedFile')
+    exec: () => fileEditorStore.saveModifiedFile()
   })
+
   editor.setFontSize(15)
   // disable editor on load
   disableEditor(editor)

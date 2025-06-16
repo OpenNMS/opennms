@@ -1,71 +1,123 @@
-<div class="modal" id="datachoices-modal" tabindex="-1" role="dialog">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h4 class="modal-title">Help Improve OpenNMS</h4>
-            </div>
-            <div class="modal-body">
-                <p>Please opt-in to send anonymous OpenNMS usage statistics to <a target="_blank" href="https://stats.opennms.org">OpenNMS Statistics</a>. This will help us improve your OpenNMS software, subject to our <a target="_blank" href="https://www.opennms.com/privacy/">privacy policy</a>. You can change this setting at any time from the Admin menu.</p>
-				<div id="previewCard" class="card">
-				    <div class="card-header" role="tab" id="headingThree">
-				      <h6 class="mb-0 card-title">
-				        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#previewCard" href="#datachoices-preview">
-				          Show me what is being sent.
-				        </a>
-				      </h6>
-				    </div>
-				    <div id="datachoices-preview" class="card-collapse collapse" role="tabpanel">
-				      <div class="card-body">
-				        <div id="datachoices-preview-spinner" class="text-center"><i class="fa fa-spinner fa-spin fa-3x"></i></div>
-				        <div id="datachoices-preview-content"></div>
-				      </div>
-				    </div>
-				  </div>
-            </div>
-            <div class="modal-footer">
-                <button id="datachoices-enable" type="button" class="btn btn-success" data-dismiss="modal">Opt-in</button>
-           		<button id="datachoices-disable" type="button" class="btn btn-secondary" data-dismiss="modal">Opt-out</button>
-            </div>
-        </div>
-    </div>
+<style>
+    #usage-statistics-sharing-alert.alert {
+		/* ensure alert is above the geomap */
+		z-index: 1000;
+    }
+
+    #usage-statistics-sharing-alert .alert-dialog {
+       position: fixed;
+       top: auto;
+       right: auto;
+       left: max(calc(60% - 450px), 1px);
+       bottom: 1rem;
+       min-width: 600px;
+       max-width: 900px;
+       box-shadow: 1px 3px 3px #6c757d;
+    }
+
+    .alert-dialog .modal-content .modal-header {
+      border-bottom: none;
+    }
+
+    #usage-stats-alert-body.modal-body {
+        display: flex;
+        padding: 0.25rem 1rem 1rem 1rem;
+    }
+
+    .usage-stats-content {
+		display: inline-block;
+		flex: 1;
+		max-width: 70%;
+    }
+
+    .usage-stats-button {
+        border-radius: 0;
+		box-shadow: none;
+        font-size: 0.875rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        line-height: 1.25rem;
+        text-transform: uppercase;
+    }
+
+    #usage-statistics-sharing-notice-learn-more.usage-stats-learn-button {
+        border: none;
+        color: #273180;
+    }
+
+    #usage-statistics-sharing-notice-learn-more.usage-stats-learn-button:hover {
+        background-color: #e9ecef;
+    }
+
+	#usage-statistics-sharing-notice-dismiss.usage-stats-dismiss-button {
+        background-color: #273180;
+        border: 2px solid transparent;
+        color: #fff;
+        margin-left: 1rem;
+    }
+
+    #usage-statistics-sharing-notice-dismiss.usage-stats-dismiss-button:hover {
+        box-shadow: 3px 1px 2px #6c757d;
+    }
+</style>
+
+<div class="alert alert-dismissable" id="usage-statistics-sharing-alert" tabindex="-1" role="alert">
+	<div class="alert-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title">Usage Statistics Sharing Notice</h5>
+			</div>
+			<div id="usage-stats-alert-body" class="modal-body">
+				<div class="usage-stats-content">
+					Your OpenNMS instance shares anonymous
+				    <a target="_blank" href="https://stats.opennms.org">usage statistics</a> by default.
+					Our <a target="_blank" href="https://www.opennms.com/privacy/">privacy policy</a>
+					governs our use of this data to improve the software. Click <em>Learn More</em> for directions to opt out.
+				</div>
+				<div class="usage-stats-buttons">
+					<button id="usage-statistics-sharing-notice-learn-more" type="button" class="btn usage-stats-button usage-stats-learn-button">Learn More</button>
+					<button id="usage-statistics-sharing-notice-dismiss" type="button" class="btn usage-stats-button usage-stats-dismiss-button" data-dismiss="alert">Got It</button>
+				</div>
+			</div>
+		</div>
+	</div>
 </div>
 
 <script type="text/javascript">
-(function(){
+(function() {
+    function ackInitialNotice(redirectUrl) {
+        var data = { initialNoticeAcknowledged: true };
+        $.ajax({
+            url: 'rest/datachoices/status',
+            method: 'POST',
+            dataType: 'json',
+            contentType: 'application/json',
+            processData: false,
+            data: JSON.stringify(data),
+            statusCode: {
+                 202: function() {
+                    if (redirectUrl) {
+                        window.location = redirectUrl;
+                    }
+                }
+            }
+        });
+    }
+
     $(document).ready(function() {
-    	$('#datachoices-preview').on('show.bs.collapse', function () {
-    		$.get('rest/datachoices')
-    		  .done(function(data) {
-    			  $('#datachoices-preview-content').html("<pre>" + JSON.stringify(data, null, 2) + "</pre>");
-    		  })
-    		  .fail(function() {
-    			  $('#datachoices-preview-content').html("<p>There was an error retrieving the content. See server logs for details.</p>");
-    		  })
-    		  .always(function() {
-    			  $('#datachoices-preview-spinner').hide();
-    		  });
-   		});
-   		$('#datachoices-modal').on('shown.bs.modal', function () {
-   		    $(this).find('.modal-dialog').css({height:'auto', 'max-height':'100%'});
-   			$('#datachoices-enable').focus();
- 		});
-    	$('#datachoices-enable').click(function() {
-    		$.post('rest/datachoices?action=enable');
-    	});
-    	$('#datachoices-disable').click(function() {
-    		$.post('rest/datachoices?action=disable');
-    	});
-    	<#if showOnLoad>
-    	$('#datachoices-modal').modal({
-    		  keyboard: false,
-    		  backdrop: 'static'
-    	});
-    	</#if>
+        $('#usage-statistics-sharing-alert').on('shown.bs.alert', function () {
+            $(this).find('.alert-dialog').css({height:'auto', 'max-height':'100%'});
+            $('#usage-statistics-sharing-notice-learn-more').focus();
+        });
+        $('#usage-statistics-sharing-notice-dismiss').click(function() {
+            ackInitialNotice();
+        });
+        $('#usage-statistics-sharing-notice-learn-more').click(function() {
+            ackInitialNotice('ui/index.html#/usage-statistics');
+        });
+        <#if showOnLoad>
+            $('#usage-statistics-sharing-alert').alert();
+        </#if>
     });
 })();
-<#if !showOnLoad>
-function showDataChoicesModal() {
-	$('#datachoices-modal').modal('show');
-}
-</#if>
 </script>

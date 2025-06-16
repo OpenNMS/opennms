@@ -11,15 +11,15 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import { FeatherInput } from '@featherds/input'
 import { FeatherIcon } from '@featherds/icon'
 import SearchIcon from '@featherds/icon/action/Search'
 import { useDebounceFn } from '@vueuse/core'
+import { useDeviceStore } from '@/stores/deviceStore'
 import { DeviceConfigQueryParams } from '@/types/deviceConfig'
 import { UpdateModelFunction } from '@/types'
 
-const store = useStore()
+const deviceStore = useDeviceStore()
 const searchVal = ref<string | undefined>(undefined)
 
 const searchFilterHandler: UpdateModelFunction = (val = '') => {
@@ -32,13 +32,13 @@ const searchFilterHandler: UpdateModelFunction = (val = '') => {
     search: val
   }
 
-  store.dispatch('deviceModule/updateDeviceConfigBackupQueryParams', newQueryParams)
+  deviceStore.updateDeviceConfigBackupQueryParams(newQueryParams)
   getDeviceConfigBackupsOnDebounce()
 }
 
 
 // TODO: return scroll bar to top before running, so infinite scroll won't trigger after search
-const getDeviceConfigBackupsOnDebounce = useDebounceFn(() => store.dispatch('deviceModule/getDeviceConfigBackups'), 1000)
+const getDeviceConfigBackupsOnDebounce = useDebounceFn(() => deviceStore.getDeviceConfigBackups(), 1000)
 </script>
 
 <style scoped lang="scss">

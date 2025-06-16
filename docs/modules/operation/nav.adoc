@@ -62,6 +62,8 @@
 *** xref:deep-dive/device-config-backup/dcb-requisition.adoc[]
 *** xref:deep-dive/device-config-backup/dcb.adoc[]
 
+** xref:deep-dive/structured-node-list/introduction.adoc[]
+
 ** xref:deep-dive/performance-data-collection/introduction.adoc[]
 *** xref:deep-dive/performance-data-collection/collectd/collection-packages.adoc[]
 *** xref:deep-dive/performance-data-collection/collectd/configuration.adoc[]
@@ -119,6 +121,7 @@
 *** xref:deep-dive/notifications/bonus-strategies.adoc[]
 **** xref:deep-dive/notifications/strategies/mattermost.adoc[]
 **** xref:deep-dive/notifications/strategies/slack.adoc[]
+*** xref:deep-dive/notifications/shell.adoc[]
 
 ** xref:deep-dive/bsm/introduction.adoc[]
 *** xref:deep-dive/bsm/business-service-definition.adoc[]
@@ -133,6 +136,7 @@
 *** xref:deep-dive/topology/topology.adoc[]
 *** xref:deep-dive/topology/graphml-asset-topology-provider.adoc[]
 *** xref:deep-dive/topology/enlinkd/introduction.adoc[]
+**** xref:deep-dive/topology/enlinkd/shell/introduction.adoc[]
 **** xref:deep-dive/topology/enlinkd/layer-2-discovery.adoc[]
 ***** xref:deep-dive/topology/enlinkd/layer-2/lldp-discovery.adoc[]
 ***** xref:deep-dive/topology/enlinkd/layer-2/cdp-discovery.adoc[]
@@ -196,6 +200,8 @@
 *** xref:deep-dive/kafka-producer/configure-kafka.adoc[]
 *** xref:deep-dive/kafka-producer/shell-commands.adoc[]
 
+** xref:deep-dive/grpc-exporter/grpc-exporter.adoc[]
+
 ** xref:deep-dive/alarm-correlation/situation-feedback.adoc[]
 ** xref:deep-dive/meta-data.adoc[]
 ** xref:deep-dive/search.adoc[]
@@ -231,7 +237,7 @@
 **** xref:deep-dive/admin/configuration/system-proxies.adoc[]
 **** xref:deep-dive/admin/configuration/config-tester.adoc[]
 **** xref:deep-dive/admin/configuration/daemon-config-files.adoc[]
-**** xref:deep-dive/admin/configuration/data-collection.adoc[]
+**** xref:deep-dive/admin/configuration/usage-statistics.adoc[]
 **** xref:deep-dive/admin/configuration/rmi.adoc[]
 **** xref:deep-dive/admin/configuration/external-auth.adoc[]
 **** xref:deep-dive/admin/configuration/geocoder.adoc[]

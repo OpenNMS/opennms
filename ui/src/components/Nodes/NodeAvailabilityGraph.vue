@@ -37,12 +37,12 @@
 </template>
   
 <script setup lang="ts">
-import { useStore } from 'vuex'
 import { debounce } from 'lodash'
 import { sub, getUnixTime } from 'date-fns'
+import { useNodeStore } from '@/stores/nodeStore'
 
 const baseUrl = ref(import.meta.env.VITE_BASE_URL || '')
-const store = useStore()
+const nodeStore = useNodeStore()
 const route = useRoute()
 const nodeId = ref(route.params.id as string)
 const now = new Date()
@@ -55,12 +55,12 @@ const recalculateWidth = debounce(() => {
 }, 100)
 
 onMounted(async () => {
-  store.dispatch('nodesModule/getNodeAvailabilityPercentage', nodeId.value)
+  nodeStore.getNodeAvailabilityPercentage(nodeId.value)
   recalculateWidth()
   window.addEventListener('resize', recalculateWidth)
 })
 
-const availability = computed(() => store.state.nodesModule.availability)
+const availability = computed(() => nodeStore.availability)
 
 onUnmounted(() => window.removeEventListener('resize', recalculateWidth))
 </script>

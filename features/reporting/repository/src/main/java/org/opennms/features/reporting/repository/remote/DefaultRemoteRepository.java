@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.features.reporting.repository.remote;
 
 import java.io.InputStream;
@@ -41,11 +34,15 @@ import javax.ws.rs.core.GenericType;
 
 import org.apache.commons.beanutils.BeanUtils;
 import org.apache.cxf.common.util.Base64Utility;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.features.reporting.model.basicreport.BasicReportDefinition;
 import org.opennms.features.reporting.model.jasperreport.SimpleJasperReportDefinition;
 import org.opennms.features.reporting.model.remoterepository.RemoteRepositoryDefinition;
 import org.opennms.features.reporting.repository.ReportRepository;
 import org.opennms.features.reporting.sdo.RemoteReportSDO;
+import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,7 +72,7 @@ public class DefaultRemoteRepository implements ReportRepository {
      */
     private String m_jasperReportsVersion;
 
-    private final String m_authorizationHeader;
+    final String m_authorizationHeader;
 
     /**
      * Default constructor to initialize the ReST HTTP client
@@ -84,11 +81,22 @@ public class DefaultRemoteRepository implements ReportRepository {
      * @param jasperReportsVersion       a {@link java.lang.String} object
      */
     public DefaultRemoteRepository(
-            RemoteRepositoryDefinition remoteRepositoryDefinition,
-            String jasperReportsVersion) {
+            final RemoteRepositoryDefinition remoteRepositoryDefinition,
+            final String jasperReportsVersion) {
+        this(remoteRepositoryDefinition, jasperReportsVersion, org.opennms.core.spring.BeanUtils.getBean("jceksScvContext", "jceksSecureCredentialsVault", SecureCredentialsVault.class));
+    }
+
+    public DefaultRemoteRepository(
+            final RemoteRepositoryDefinition remoteRepositoryDefinition,
+            final String jasperReportsVersion,
+            final SecureCredentialsVault secureCredentialsVault) {
         this.m_remoteRepositoryDefintion = remoteRepositoryDefinition;
         this.m_jasperReportsVersion = jasperReportsVersion;
-        m_authorizationHeader = "Basic " + Base64Utility.encode((m_remoteRepositoryDefintion.getLoginUser() + ":" + m_remoteRepositoryDefintion.getLoginRepoPassword()).getBytes());
+
+        final Scope scope = new SecureCredentialsVaultScope(secureCredentialsVault);
+        final String loginUser = Interpolator.interpolate(m_remoteRepositoryDefintion.getLoginUser(), scope).output;
+        final String loginRepoPassword = Interpolator.interpolate(m_remoteRepositoryDefintion.getLoginRepoPassword(), scope).output;
+        m_authorizationHeader = "Basic " + Base64Utility.encode((loginUser + ":" + loginRepoPassword).getBytes());
     }
 
     /**

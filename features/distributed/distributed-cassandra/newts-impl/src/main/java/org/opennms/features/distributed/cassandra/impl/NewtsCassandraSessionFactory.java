@@ -1,44 +1,37 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.features.distributed.cassandra.impl;
 
 import java.util.Objects;
+import java.util.concurrent.CompletionStage;
 import java.util.concurrent.Future;
 
+import com.datastax.oss.driver.api.core.cql.AsyncResultSet;
+import com.datastax.oss.driver.api.core.cql.PreparedStatement;
+import com.datastax.oss.driver.api.core.cql.ResultSet;
+import com.datastax.oss.driver.api.core.cql.SimpleStatement;
+import com.datastax.oss.driver.api.core.cql.Statement;
 import org.opennms.features.distributed.cassandra.api.CassandraSession;
 import org.opennms.features.distributed.cassandra.api.CassandraSessionFactory;
-
-import com.datastax.driver.core.PreparedStatement;
-import com.datastax.driver.core.RegularStatement;
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.ResultSetFuture;
-import com.datastax.driver.core.Statement;
 
 /**
  * Serves the Cassandra session initiated by Newts by proxying it through our own {@link CassandraSession session}
@@ -51,19 +44,23 @@ public class NewtsCassandraSessionFactory implements CassandraSessionFactory {
         Objects.requireNonNull(newtsCassandraSession);
 
         // Map between our proxy session and the session owned by newts
-        proxySession = new CassandraSession() {
+        proxySession = NewtsCassandraSessionFactory.of(newtsCassandraSession);
+    }
+
+    public static CassandraSession of(org.opennms.newts.cassandra.CassandraSession newtsCassandraSession) {
+        return new CassandraSession() {
             @Override
             public PreparedStatement prepare(String statement) {
                 return newtsCassandraSession.prepare(statement);
             }
 
             @Override
-            public PreparedStatement prepare(RegularStatement statement) {
+            public PreparedStatement prepare(SimpleStatement statement) {
                 return newtsCassandraSession.prepare(statement);
             }
 
             @Override
-            public ResultSetFuture executeAsync(Statement statement) {
+            public CompletionStage<AsyncResultSet> executeAsync(Statement statement) {
                 return newtsCassandraSession.executeAsync(statement);
             }
 
@@ -79,7 +76,7 @@ public class NewtsCassandraSessionFactory implements CassandraSessionFactory {
 
             @Override
             public Future<Void> shutdown() {
-                return newtsCassandraSession.shutdown();
+                return newtsCassandraSession.shutdown().toCompletableFuture();
             }
         };
     }

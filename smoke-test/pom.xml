@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>31.0.3-SNAPSHOT</version>
+  <version>33.0.3-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
   <url>http://opennms.org/</url>
   <description>Smoke Test APIs for OpenNMS</description>
@@ -48,9 +48,8 @@
     <skip.surefire.tests>false</skip.surefire.tests>
     <skipITs>true</skipITs>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <updatePolicy>never</updatePolicy>
     <camelVersion>2.21.5</camelVersion>
-    <groovyVersion>2.5.23</groovyVersion>
+    <groovyVersion>3.0.21</groovyVersion>
     <frontendPluginVersion>0.0.29</frontendPluginVersion>
     <jackson2Version>2.14.2</jackson2Version>
     <jersey.version>2.42</jersey.version>
@@ -634,7 +633,7 @@
     <dependency>
       <groupId>com.google.guava</groupId>
       <artifactId>guava</artifactId>
-      <version>25.0-jre</version>
+      <version>32.0.0-jre</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.features.jest</groupId>

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.features</artifactId>
-    <version>31.0.3-SNAPSHOT</version>
+    <version>33.0.3-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features</groupId>
@@ -21,10 +21,6 @@
             <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
             <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
             <Bundle-Version>${project.version}</Bundle-Version>
-            <Import-Package>
-              com.google.common.*;version="[18.0,26)",
-              *
-            </Import-Package>
           </instructions>
         </configuration>
       </plugin>
@@ -60,13 +56,6 @@
       <artifactId>newts-dependencies</artifactId>
       <type>pom</type>
     </dependency>
-    <!-- match the version newts/cassandra need, but don't let it pollute dependencies elsewhere -->
-    <dependency>
-      <groupId>com.google.guava</groupId>
-      <artifactId>guava</artifactId>
-      <version>18.0</version>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>com.googlecode.concurrent-trees</groupId>
       <artifactId>concurrent-trees</artifactId>
@@ -95,6 +84,10 @@
     <dependency>
       <groupId>com.swrve</groupId>
       <artifactId>rate-limited-logger</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>io.dropwizard.metrics</groupId>
+      <artifactId>metrics-jmx</artifactId>
     </dependency>
 
     <!-- Testing -->

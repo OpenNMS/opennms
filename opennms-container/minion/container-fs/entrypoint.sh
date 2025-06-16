@@ -10,6 +10,8 @@ set -e
 
 umask 002
 export MINION_HOME="/opt/minion"
+export KARAF_HOME="${MINION_HOME}"
+
 MINION_CONFIG="${MINION_HOME}/etc/org.opennms.minion.controller.cfg"
 MINION_PROCESS_ENV_CFG="${MINION_HOME}/etc/minion-process.env"
 MINION_SERVER_CERTS_CFG="${MINION_HOME}/etc/minion-server-certs.env"
@@ -21,7 +23,11 @@ CONFD_CONFIG_FILE="${CONFD_CONFIG_DIR}/confd.toml"
 CACERTS="${MINION_HOME}/cacerts"
 export JAVA_OPTS="${JAVA_OPTS} -Xms${JAVA_MIN_MEM:-2g} -Xmx${JAVA_MAX_MEM:-2g}"
 
-export KARAF_OPTS="-Djava.locale.providers=CLDR,COMPAT -Djdk.util.zip.disableZip64ExtraFieldValidation=true"
+
+export JAVA_OPTS="$JAVA_OPTS -Djava.locale.providers=CLDR,COMPAT"
+export JAVA_OPTS="$JAVA_OPTS $("${MINION_HOME}/bin/_module_opts.sh")"
+export JAVA_OPTS="$JAVA_OPTS -Dopennms.home=${MINION_HOME}"
+export JAVA_OPTS="$JAVA_OPTS -Djdk.util.zip.disableZip64ExtraFieldValidation=true"
 
 # Error codes
 E_ILLEGAL_ARGS=126
@@ -90,25 +96,26 @@ function updateConfig() {
 function parseEnvironment() {
     # Configure additional features
     IFS=$'\n'
+
     for VAR in $(env)
     do
         env_var=$(echo "$VAR" | cut -d= -f1)
+        env_val=$(echo "$VAR" | cut -d= -f2)
 
-        if [[ $env_var =~ ^KAFKA_RPC_ ]]; then
-            rpc_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
-            updateConfig "$rpc_name" "${!env_var}" "${MINION_HOME}/etc/org.opennms.core.ipc.rpc.kafka.cfg"
-            if [[ "$rpc_name" == "bootstrap.servers" ]]; then
-                echo "!opennms-core-ipc-rpc-jms"   > ${MINION_HOME}/etc/featuresBoot.d/kafka-rpc.boot
-                echo "opennms-core-ipc-rpc-kafka" >> ${MINION_HOME}/etc/featuresBoot.d/kafka-rpc.boot
-            fi
+        if [ "${env_var}" == "JAVA_MIN_MEM" ]; then
+          export JAVA_OPTS="$JAVA_OPTS -Xms${env_val}"
+        fi
+        if [ "${env_var}" == "JAVA_MAX_MEM" ]; then
+          export JAVA_OPTS="$JAVA_OPTS -Xmx${env_val}"
         fi
 
-        if [[ $env_var =~ ^KAFKA_SINK_ ]]; then
-            sink_key=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
-            updateConfig "$sink_key" "${!env_var}" "${MINION_HOME}/etc/org.opennms.core.ipc.sink.kafka.cfg"
-            if [[ "$sink_key" == "bootstrap.servers" ]]; then
-                echo "!opennms-core-ipc-sink-camel" > ${MINION_HOME}/etc/featuresBoot.d/kafka-sink.boot
-                echo "opennms-core-ipc-sink-kafka" >> ${MINION_HOME}/etc/featuresBoot.d/kafka-sink.boot
+        if [[ $env_var =~ ^KAFKA_IPC_ ]]; then
+            ipc_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
+            updateConfig "$ipc_name" "${!env_var}" "${MINION_HOME}/etc/org.opennms.core.ipc.kafka.cfg"
+            if [[ "$ipc_name" == "bootstrap.servers" ]]; then
+                echo "opennms-core-ipc-kafka"   > ${MINION_HOME}/etc/featuresBoot.d/kafka.boot
+                echo "!minion-jms" > ${MINION_HOME}/etc/featuresBoot.d/disable-activemq.boot
+                echo "!opennms-core-ipc-jms" >> ${MINION_HOME}/etc/featuresBoot.d/disable-activemq.boot
             fi
         fi
     done
@@ -218,6 +225,10 @@ configure() {
     export JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=$CACERTS -Djavax.net.ssl.trustStorePassword=changeit"
     while read certid; do
       [[ $certid =~ ^#.* ]] && continue
+      # check if CA cert already exists and remove so re-adding doesn't error
+      if keytool -list -alias "$certid" -keystore "$CACERTS" -storepass changeit; then
+        keytool -delete -alias "$certid" -keystore "$CACERTS" -storepass changeit
+      fi
       keytool -importcert -file "/opt/minion/server-certs/$certid" -alias "$certid" -keystore "$CACERTS" -storepass changeit -noprompt
     done < "$MINION_SERVER_CERTS_CFG"
   fi

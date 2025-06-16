@@ -1,45 +1,45 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2005-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.trapd;
 
 import java.io.IOException;
+import java.util.stream.Collectors;
 
 import org.opennms.core.ipc.twin.api.TwinPublisher;
+import org.opennms.core.mate.api.Interpolator;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.netmgt.config.TrapdConfig;
 import org.opennms.netmgt.config.TrapdConfigFactory;
+import org.opennms.netmgt.config.trapd.Snmpv3User;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.daemon.DaemonTools;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.snmp.SnmpV3User;
 import org.opennms.netmgt.snmp.TrapListenerConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -88,6 +88,9 @@ public class Trapd extends AbstractServiceDaemon {
     @Autowired
     private TrapListener m_trapListener;
 
+    @Autowired
+    private SecureCredentialsVault secureCredentialsVault;
+
     private TrapdConfig m_config;
 
     @Autowired
@@ -111,6 +114,9 @@ public class Trapd extends AbstractServiceDaemon {
         m_config = TrapdConfigFactory.getInstance();
     }
 
+    public void setSecureCredentialsVault(final SecureCredentialsVault secureCredentialsVault) {
+        this.secureCredentialsVault = secureCredentialsVault;
+    }
 
     /**
      * <p>onInit</p>
@@ -246,9 +252,45 @@ public class Trapd extends AbstractServiceDaemon {
         m_twinSession.publish(from(m_config));
     }
 
-    public static TrapListenerConfig from(final TrapdConfig config) {
+    public static SnmpV3User interpolateUser(final SnmpV3User snmpV3User, final Scope scope) {
+        final SnmpV3User interpolatedSnmpV3User = new SnmpV3User();
+        interpolatedSnmpV3User.setEngineId(Interpolator.interpolate(snmpV3User.getEngineId(), scope).output);
+        interpolatedSnmpV3User.setSecurityLevel(snmpV3User.getSecurityLevel());
+        interpolatedSnmpV3User.setSecurityName(Interpolator.interpolate(snmpV3User.getSecurityName(), scope).output);
+        interpolatedSnmpV3User.setAuthProtocol(Interpolator.interpolate(snmpV3User.getAuthProtocol(), scope).output);
+        interpolatedSnmpV3User.setPrivProtocol(Interpolator.interpolate(snmpV3User.getPrivProtocol(), scope).output);
+        interpolatedSnmpV3User.setPrivPassPhrase(Interpolator.interpolate(snmpV3User.getPrivPassPhrase(), scope).output);
+        interpolatedSnmpV3User.setAuthPassPhrase(Interpolator.interpolate(snmpV3User.getAuthPassPhrase(), scope).output);
+        return interpolatedSnmpV3User;
+    }
+
+    public static Snmpv3User interpolateUser(final Snmpv3User snmpv3User, final Scope scope) {
+        final Snmpv3User interpolatedSnmpV3User = new Snmpv3User();
+        interpolatedSnmpV3User.setEngineId(Interpolator.interpolate(snmpv3User.getEngineId(), scope).output);
+        interpolatedSnmpV3User.setSecurityLevel(snmpv3User.getSecurityLevel());
+        interpolatedSnmpV3User.setSecurityName(Interpolator.interpolate(snmpv3User.getSecurityName(), scope).output);
+        interpolatedSnmpV3User.setAuthProtocol(Interpolator.interpolate(snmpv3User.getAuthProtocol(), scope).output);
+        interpolatedSnmpV3User.setPrivacyProtocol(Interpolator.interpolate(snmpv3User.getPrivacyProtocol(), scope).output);
+        interpolatedSnmpV3User.setPrivacyPassphrase(Interpolator.interpolate(snmpv3User.getPrivacyPassphrase(), scope).output);
+        interpolatedSnmpV3User.setAuthPassphrase(Interpolator.interpolate(snmpv3User.getAuthPassphrase(), scope).output);
+        return interpolatedSnmpV3User;
+    }
+
+    public SnmpV3User interpolateUser(final SnmpV3User snmpV3User) {
+        return interpolateUser(snmpV3User, new SecureCredentialsVaultScope(this.secureCredentialsVault));
+    }
+
+    public Snmpv3User interpolateUser(final Snmpv3User snmpv3User) {
+        return interpolateUser(snmpv3User, new SecureCredentialsVaultScope(this.secureCredentialsVault));
+    }
+
+    public TrapListenerConfig from(final TrapdConfig config) {
         final TrapListenerConfig result = new TrapListenerConfig();
-        result.setSnmpV3Users(config.getSnmpV3Users());
+        final Scope scope = new SecureCredentialsVaultScope(this.secureCredentialsVault);
+        result.setSnmpV3Users(config.getSnmpV3Users().stream()
+                .map(e->interpolateUser(e, scope))
+                .collect(Collectors.toList())
+        );
         return result;
     }
 

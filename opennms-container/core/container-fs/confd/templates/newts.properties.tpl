@@ -9,3 +9,4 @@ org.opennms.newts.config.keyspace={{getv (print $cassandraPath "keyspace") "newt
 org.opennms.newts.config.port={{getv (print $cassandraPath "port") "9042"}}
 org.opennms.newts.config.username={{getv (print $cassandraPath "username") "cassandra"}}
 org.opennms.newts.config.password={{getv (print $cassandraPath "password") "cassandra"}}
+org.opennms.newts.config.datacenter={{getv (print $cassandraPath "datacenter") "datacenter1"}}

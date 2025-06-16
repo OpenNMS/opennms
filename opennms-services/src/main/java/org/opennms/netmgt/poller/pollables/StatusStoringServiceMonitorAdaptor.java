@@ -1,41 +1,31 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2006-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.poller.pollables;
 
 import java.io.File;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 
-import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.core.utils.LocationUtils;
 import org.opennms.core.utils.ParameterMap;
 import org.opennms.netmgt.collection.api.PersisterFactory;
 import org.opennms.netmgt.collection.api.ServiceParameters;
@@ -51,6 +41,9 @@ import org.opennms.netmgt.poller.MonitoredService;
 import org.opennms.netmgt.poller.PollStatus;
 import org.opennms.netmgt.poller.ServiceMonitorAdaptor;
 import org.opennms.netmgt.rrd.RrdRepository;
+
+import static org.opennms.netmgt.collection.api.CollectionResource.INTERFACE_INFO_IN_TAGS;
+
 
 public class StatusStoringServiceMonitorAdaptor implements ServiceMonitorAdaptor {
     public static final int HEARTBEAT_STEP_MULTIPLIER = 2;
@@ -71,7 +64,7 @@ public class StatusStoringServiceMonitorAdaptor implements ServiceMonitorAdaptor
     public PollStatus handlePollResult(final MonitoredService svc,
                                        final Map<String, Object> parameters,
                                        final PollStatus status) {
-        if (ParameterMap.getKeyedBoolean(parameters, "rrd-status", false)) {
+        if (ParameterMap.getKeyedBoolean(parameters, "rrd-status", true)) {
             storeStatus(svc, status, parameters);
         }
 
@@ -87,8 +80,9 @@ public class StatusStoringServiceMonitorAdaptor implements ServiceMonitorAdaptor
         rrdRepository.setHeartBeat(rrdRepository.getStep() * HEARTBEAT_STEP_MULTIPLIER);
         rrdRepository.setRrdBaseDir(new File(System.getProperty("rrd.base.dir"), ResourceTypeUtils.STATUS_DIRECTORY));
 
-        final String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", PollStatus.PROPERTY_RESPONSE_TIME);
+        final String dsName      = ParameterMap.getKeyedString(parameters, "ds-name", svc.getSvcName().toLowerCase());
         final String rrdBaseName = ParameterMap.getKeyedString(parameters, "rrd-base-name", dsName);
+        boolean snmpInfoInTags = ParameterMap.getKeyedBoolean(parameters, INTERFACE_INFO_IN_TAGS, false);
 
         // Build collection agent
         final CollectionAgentDTO agent = new CollectionAgentDTO();
@@ -102,6 +96,12 @@ public class StatusStoringServiceMonitorAdaptor implements ServiceMonitorAdaptor
         // Create collection set from response times as gauges and persist
         final CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(agent);
         final LatencyTypeResource resource = new LatencyTypeResource(svc.getSvcName(), svc.getIpAddr(), svc.getNodeLocation());
+        resource.addTag("node_id", Integer.toString(svc.getNodeId()));
+        resource.addTag("node_label", svc.getNodeLabel());
+        resource.addTag("location", svc.getNodeLocation());
+        if (snmpInfoInTags) {
+            resource.addServiceParam(INTERFACE_INFO_IN_TAGS, "true");
+        }
         collectionSetBuilder.withGauge(resource, rrdBaseName, dsName, buildPollStatusValue(status));
 
         final CollectionSetDTO collectionSetDTO = collectionSetBuilder.build();

@@ -89,7 +89,6 @@
       <feature>opennms-dao-api</feature>
       <feature>opennms-javamail</feature>
 
-      <bundle>mvn:org.opennms/opennms-reporting/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.api/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.availability/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.reporting/org.opennms.features.reporting.core/${project.version}</bundle>
@@ -134,9 +133,6 @@
 
       <feature>opennms-core-web</feature>
       <bundle>mvn:org.opennms.features/org.opennms.features.request-tracker/${project.version}</bundle>
-
-      <!-- TODO: Make this JAR into a bundle -->
-      <bundle>wrap:mvn:org.opennms/rancid-api/${rancidApiVersion}$Bundle-SymbolicName=org.opennms.rancid-api&amp;Bundle-Version=${rancidApiVersion}</bundle>
 
       <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
 

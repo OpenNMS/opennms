@@ -1,34 +1,29 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2023 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.test;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -38,7 +33,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-@SuppressWarnings({"rawtypes","unchecked","java:S3011"})
+@SuppressWarnings({"deprecation","rawtypes","unchecked","java:S3011"})
 public abstract class LocaleProviderUtils {
     private static Logger LOG = LoggerFactory.getLogger(LocaleProviderUtils.class);
 
@@ -78,8 +73,39 @@ public abstract class LocaleProviderUtils {
 
     private static void makeAccessible(final Field adapterPreference) throws ReflectiveOperationException, IllegalArgumentException {
         adapterPreference.setAccessible(true);
-        Field modifiersField = Field.class.getDeclaredField("modifiers");
+        final Field modifiersField = getModifiersField();
         modifiersField.setAccessible(true);
         modifiersField.setInt(adapterPreference, adapterPreference.getModifiers() & ~Modifier.FINAL);
+    }
+
+    public static Field getModifiersField() throws IllegalAccessException, NoSuchFieldException {
+        // this is copied from https://github.com/powermock/powermock/pull/1010/files to
+        // work around
+        // JDK 12+
+        Field modifiersField = null;
+        try {
+            modifiersField = Field.class.getDeclaredField("modifiers");
+        } catch (NoSuchFieldException e) {
+            try {
+                Method getDeclaredFields0 = Class.class.getDeclaredMethod("getDeclaredFields0", boolean.class);
+                boolean accessibleBeforeSet = getDeclaredFields0.isAccessible();
+                getDeclaredFields0.setAccessible(true);
+                Field[] fields = (Field[]) getDeclaredFields0.invoke(Field.class, false);
+                getDeclaredFields0.setAccessible(accessibleBeforeSet);
+                for (Field field : fields) {
+                    if ("modifiers".equals(field.getName())) {
+                        modifiersField = field;
+                        break;
+                    }
+                }
+                if (modifiersField == null) {
+                    throw e;
+                }
+            } catch (NoSuchMethodException | InvocationTargetException ex) {
+                e.addSuppressed(ex);
+                throw e;
+            }
+        }
+        return modifiersField;
     }
 }

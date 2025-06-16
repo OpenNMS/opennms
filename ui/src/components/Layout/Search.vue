@@ -7,7 +7,7 @@
     <div class="dropdown">
       <FeatherDropdown v-model="searchState.dropdownOpen">
         <template
-          v-for="searchResultByContext, searchResultByContextKey in store.state.searchModule.searchResultsByContext"
+          v-for="searchResultByContext, searchResultByContextKey in searchStore.searchResultsByContext"
           :key="searchResultByContextKey">
           <FeatherDropdownItem v-if="searchResultByContext?.results">
             <SearchHeader>{{ searchResultByContext?.label }}</SearchHeader>
@@ -32,15 +32,17 @@
   setup
   lang="ts"
 >
-import { useStore } from 'vuex'
+import { reactive } from 'vue'
 import { FeatherInput } from '@featherds/input'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import SearchHeader from './SearchHeader.vue'
 import SearchResult from './SearchResult.vue'
+import { useMenuStore } from '@/stores/menuStore'
+import { useSearchStore } from '@/stores/searchStore'
 import { SearchResultItem } from '@/types'
-import {reactive} from 'vue'
 
-const store = useStore()
+const menuStore = useMenuStore()
+const searchStore = useSearchStore()
 
 const iconClasses = ref<string[][]>([[]])
 
@@ -56,22 +58,23 @@ const searchState = reactive<SearchState>({
   currentSearch: ''
 })
 
-
 const itemClicked = (item: SearchResultItem) => {
   if (item && item.url) {
-    const baseHref = store.state.menuModule.mainMenu?.baseHref
+    const baseHref = menuStore.mainMenu.baseHref
     const fullPath = `${baseHref}${item.url}`
+
     window.location.href = fullPath
   }
 }
 
-const loading = computed(() => store.state.searchModule?.loading)
+const loading = computed(() => searchStore.loading)
 
 const search = (userInput: string | number | undefined) => {
   searchState.currentSearch = userInput
+
   if (userInput && !loading.value) {
     searchState.dropdownOpen = true
-    store.dispatch('searchModule/search', userInput)
+    searchStore.search('' + userInput)
   } else if (!userInput) {
     searchState.dropdownOpen = false
   } else if (userInput && loading.value) {
@@ -85,7 +88,6 @@ watchEffect(() => {
     searchState.pausedSearch = ''
   }
 })
-
 </script>
 
 <style
@@ -199,4 +201,3 @@ watchEffect(() => {
   }
 }
 </style>
-

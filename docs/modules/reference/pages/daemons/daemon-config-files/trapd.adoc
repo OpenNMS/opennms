@@ -69,4 +69,8 @@ Note that for V3, you must specify the SNMPv3 credentials used to authenticate a
       privacy-passphrase="super-secret" privacy-protocol="DES"/>
 </trapd-configuration>
 ----
+For `privacy-protocol`, the available options are `DES`, `AES`, `AES192`, and `AES256`
+For `auth-protocol`, the available options are  `MD5`, `SHA`, `SHA-224`, `SHA-256`, and `SHA-512`
 
+NOTE: Metadata expressions can also be used in attributes of the `trapd-configuration.xml` configuration file.
+This lets the user to also reference credentials stored in the secure credentials.

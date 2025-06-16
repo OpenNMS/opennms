@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.minion</groupId>
         <artifactId>minion-parent</artifactId>
-        <version>31.0.3-SNAPSHOT</version>
+        <version>33.0.3-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>repository</artifactId>
@@ -31,8 +31,6 @@
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/spring-legacy</descriptor>
                                 <!-- Add Minion features -->
                                 <descriptor>mvn:org.opennms.karaf/opennms/${project.version}/xml/minion</descriptor>
-                                <!-- Additional tools -->
-                                <descriptor>mvn:io.hawt/hawtio-karaf/${hawtio.version}/xml/features</descriptor>
                             </descriptors>
                             <!-- To ensure that all JAR files for a feature
                                 are included in the repository tar.gz file, add the feature to this list. -->
@@ -55,7 +53,6 @@
                                 <feature>minion-collection</feature>
                                 <feature>minion-icmp-proxy</feature>
                                 <feature>minion-telemetryd-receivers</feature>
-                                <feature>hawtio</feature>
                                 <feature>cxf-commands/${cxfVersion}</feature>
                                 <feature>opennms-core-tracing-jaeger</feature>
                                 <feature>opennms-dnsresolver-shell</feature>

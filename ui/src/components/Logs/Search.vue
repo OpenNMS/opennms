@@ -8,12 +8,12 @@
 </template>
 
 <script setup lang="ts">
-import { useStore } from 'vuex'
+import { useLogStore } from '@/stores/logStore'
 import { FeatherInput } from '@featherds/input'
 
-const store = useStore()
+const logStore = useLogStore()
 const searchValue = ref('')
-const search = () => store.dispatch('logsModule/setSearchValue', searchValue.value)
+const search = () => logStore.setSearchValue(searchValue.value)
 </script>
 
 <style scoped lang="scss">

@@ -27,6 +27,8 @@ export interface TileProviderItem {
   name: string
   url: string
   attribution: string
+  userDefinedAsDefault?: boolean
+  visible?: boolean
 }
 
 export interface MainMenu {

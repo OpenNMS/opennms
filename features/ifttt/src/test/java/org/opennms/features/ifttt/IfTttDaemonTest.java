@@ -1,37 +1,33 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2017-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.features.ifttt;
 
-import static org.awaitility.Awaitility.await;
 import static java.util.concurrent.TimeUnit.SECONDS;
+import static org.awaitility.Awaitility.await;
+import static org.junit.Assert.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockConstruction;
 import static org.mockito.Mockito.when;
 
 import java.io.File;
@@ -42,16 +38,22 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.TreeMap;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.stubbing.Answer;
 import org.opennms.core.criteria.Criteria;
+import org.opennms.core.mate.api.ContextKey;
+import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.MapScope;
+import org.opennms.core.mate.api.Scope;
+import org.opennms.core.rpc.mock.MockEntityScopeProvider;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.features.ifttt.config.IfTttConfig;
 import org.opennms.features.ifttt.helper.DefaultVariableNameExpansion;
+import org.opennms.features.ifttt.helper.IfTttTrigger;
 import org.opennms.features.ifttt.helper.VariableNameExpansion;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.events.api.EventConstants;
@@ -195,30 +197,30 @@ public class IfTttDaemonTest {
         List<ResultEntry> bsm1 = resultEntries.get("Foo|Bar / uei.opennms.org/bsm/serviceProblem");
         List<ResultEntry> bsm2 = resultEntries.get(" / uei.opennms.org/bsm/serviceProb.*");
 
-        Assert.assertEquals(new ResultEntry("ON", "null", 0, "null", 0), foo.get(0));
-        Assert.assertEquals(new ResultEntry("MINOR", "INDETERMINATE", 0, "MINOR", 5), foo.get(1));
-        Assert.assertEquals(new ResultEntry("MAJOR", "MINOR", 5, "MAJOR", 6), foo.get(2));
-        Assert.assertEquals(new ResultEntry("OFF", "null", 0, "null", 0), foo.get(3));
+        assertEquals(new ResultEntry("ON", "null", 0, "null", 0), foo.get(0));
+        assertEquals(new ResultEntry("MINOR", "INDETERMINATE", 0, "MINOR", 5), foo.get(1));
+        assertEquals(new ResultEntry("MAJOR", "MINOR", 5, "MAJOR", 6), foo.get(2));
+        assertEquals(new ResultEntry("OFF", "null", 0, "null", 0), foo.get(3));
 
-        Assert.assertEquals(new ResultEntry("ON", "null", 0, "null", 0), bar.get(0));
-        Assert.assertEquals(new ResultEntry("CRITICAL", "INDETERMINATE", 0, "CRITICAL", 7), bar.get(1));
-        Assert.assertEquals(new ResultEntry("CRITICAL", "CRITICAL", 7, "CRITICAL", 8), bar.get(2));
-        Assert.assertEquals(new ResultEntry("OFF", "null", 0, "null", 0), bar.get(3));
+        assertEquals(new ResultEntry("ON", "null", 0, "null", 0), bar.get(0));
+        assertEquals(new ResultEntry("CRITICAL", "INDETERMINATE", 0, "CRITICAL", 7), bar.get(1));
+        assertEquals(new ResultEntry("CRITICAL", "CRITICAL", 7, "CRITICAL", 8), bar.get(2));
+        assertEquals(new ResultEntry("OFF", "null", 0, "null", 0), bar.get(3));
 
-        Assert.assertEquals(new ResultEntry("ON", "null", 0, "null", 0), foobar.get(0));
-        Assert.assertEquals(new ResultEntry("MINOR", "INDETERMINATE", 0, "MINOR", 8), foobar.get(1));
-        Assert.assertEquals(new ResultEntry("MAJOR", "MINOR", 8, "MAJOR", 9), foobar.get(2));
-        Assert.assertEquals(new ResultEntry("OFF", "null", 0, "null", 0), foobar.get(3));
+        assertEquals(new ResultEntry("ON", "null", 0, "null", 0), foobar.get(0));
+        assertEquals(new ResultEntry("MINOR", "INDETERMINATE", 0, "MINOR", 8), foobar.get(1));
+        assertEquals(new ResultEntry("MAJOR", "MINOR", 8, "MAJOR", 9), foobar.get(2));
+        assertEquals(new ResultEntry("OFF", "null", 0, "null", 0), foobar.get(3));
 
-        Assert.assertEquals(new ResultEntry("ON", "null", 0, "null", 0), bsm1.get(0));
-        Assert.assertEquals(new ResultEntry("NORMAL", "INDETERMINATE", 0, "NORMAL", 0), bsm1.get(1));
-        Assert.assertEquals(new ResultEntry("MAJOR", "NORMAL", 0, "MAJOR", 1), bsm1.get(2));
-        Assert.assertEquals(new ResultEntry("OFF", "null", 0, "null", 0), bsm1.get(3));
+        assertEquals(new ResultEntry("ON", "null", 0, "null", 0), bsm1.get(0));
+        assertEquals(new ResultEntry("NORMAL", "INDETERMINATE", 0, "NORMAL", 0), bsm1.get(1));
+        assertEquals(new ResultEntry("MAJOR", "NORMAL", 0, "MAJOR", 1), bsm1.get(2));
+        assertEquals(new ResultEntry("OFF", "null", 0, "null", 0), bsm1.get(3));
 
-        Assert.assertEquals(new ResultEntry("ON", "null", 0, "null", 0), bsm2.get(0));
-        Assert.assertEquals(new ResultEntry("CRITICAL", "INDETERMINATE", 0, "CRITICAL", 3), bsm2.get(1));
-        Assert.assertEquals(new ResultEntry("CRITICAL", "CRITICAL", 3, "CRITICAL", 4), bsm2.get(2));
-        Assert.assertEquals(new ResultEntry("OFF", "null", 0, "null", 0), bsm2.get(3));
+        assertEquals(new ResultEntry("ON", "null", 0, "null", 0), bsm2.get(0));
+        assertEquals(new ResultEntry("CRITICAL", "INDETERMINATE", 0, "CRITICAL", 3), bsm2.get(1));
+        assertEquals(new ResultEntry("CRITICAL", "CRITICAL", 3, "CRITICAL", 4), bsm2.get(2));
+        assertEquals(new ResultEntry("OFF", "null", 0, "null", 0), bsm2.get(3));
     }
 
     public Map<String, List<ResultEntry>> runIfTttDaemonTest(final int timeout, final int entryCount) throws Exception {
@@ -234,7 +236,7 @@ public class IfTttDaemonTest {
 
         final Map<String, List<ResultEntry>> receivedEntries = new HashMap<>();
 
-        final IfTttDaemon ifTttDaemon = new IfTttDaemon(alarmDao, transactionOperations, new File("src/test/resources/etc/ifttt-config.xml")) {
+        final IfTttDaemon ifTttDaemon = new IfTttDaemon(alarmDao, transactionOperations, new MockEntityScopeProvider(), new File("src/test/resources/etc/ifttt-config.xml")) {
             @Override
             protected void fireIfTttTriggerSet(IfTttConfig ifTttConfig, String filterKey, String name, VariableNameExpansion variableNameExpansion) {
                 if (!receivedEntries.containsKey(filterKey)) {
@@ -272,5 +274,49 @@ public class IfTttDaemonTest {
         }
 
         return true;
+    }
+
+    @Test
+    public void testMetadataInterpolation() {
+        final AlarmDao alarmDao = mock(AlarmDao.class);
+        when(alarmDao.findMatching((Criteria) any())).thenReturn(new ArrayList<>(alarmMap.values()));
+
+        final TransactionOperations transactionOperations = mock(TransactionOperations.class);
+        when(transactionOperations.execute(any())).thenAnswer((Answer<Void>) invocationOnMock -> {
+            TransactionCallbackWithoutResult transactionCallbackWithoutResult = invocationOnMock.getArgument(0);
+            transactionCallbackWithoutResult.doInTransaction(null);
+            return null;
+        });
+
+        final List<String> apiKey = new ArrayList<>();
+
+        mockConstruction(IfTttTrigger.class, (ifTttTrigger, context) -> {
+            doAnswer(invocationOnMock -> {
+                apiKey.add(invocationOnMock.getArgument(0));
+                return invocationOnMock.getMock();
+            }).when(ifTttTrigger).key(any());
+            when(ifTttTrigger.event(any())).thenReturn(ifTttTrigger);
+            when(ifTttTrigger.value1(any())).thenReturn(ifTttTrigger);
+            when(ifTttTrigger.value2(any())).thenReturn(ifTttTrigger);
+            when(ifTttTrigger.value3(any())).thenReturn(ifTttTrigger);
+        });
+
+        final Map<ContextKey, String> scopeMap = new TreeMap();
+        scopeMap.put(new ContextKey("scv", "ifttt:password"), "the-secret-api-key");
+
+        final EntityScopeProvider entityScopeProvider = mock(EntityScopeProvider.class);
+        when(entityScopeProvider.getScopeForScv()).thenReturn(new MapScope(Scope.ScopeName.DEFAULT, scopeMap));
+
+        final IfTttDaemon ifTttDaemon = new IfTttDaemon(alarmDao, transactionOperations, entityScopeProvider, new File("src/test/resources/etc/ifttt-config.xml"));
+
+        ifTttDaemon.fireIfTttTriggerSet(
+                ifTttDaemon.getFileReloadContainer().getObject(),
+                "Bar / uei.opennms.org/nodes/nodeLostService",
+                "CRITICAL",
+                new DefaultVariableNameExpansion(OnmsSeverity.CLEARED, OnmsSeverity.CLEARED, 1, 1)
+        );
+
+        assertEquals(1, apiKey.size());
+        assertEquals("the-secret-api-key", apiKey.get(0));
     }
 }

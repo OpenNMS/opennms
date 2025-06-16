@@ -47,6 +47,10 @@ The service is considered available when the node sends back an echo-reply ICMP 
 
 This monitor implements the <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-common-parameters, Common Configuration Parameters>>.
 
+== Response time
+
+Unlike other monitors, the IcmpMonitor returns response time time in _microseconds_.
+
 == Examples
 
 Examples use the CentOS/RHEL path names.

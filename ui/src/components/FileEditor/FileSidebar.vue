@@ -6,7 +6,7 @@
         v-if="changedFilesOnly"
         class="btn"
         icon="Click to show all files."
-        @click="getFles(false)"
+        @click="getFiles(false)"
       >
         <FeatherIcon :icon="FilterAlt" />
       </FeatherButton>
@@ -15,7 +15,7 @@
         v-if="!changedFilesOnly"
         class="btn unfiltered"
         icon="Click to show modified files only."
-        @click="getFles(true)"
+        @click="getFiles(true)"
       >
         <FeatherIcon :icon="FilterAlt" />
       </FeatherButton>
@@ -38,25 +38,28 @@
 </template>
 
 <script lang="ts" setup>
-import { useStore } from 'vuex'
-import FileTreeItem from './FileTreeItem.vue'
-import Search from './Search.vue'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherButton } from '@featherds/button'
 import FilterAlt from '@featherds/icon/action/FilterAlt'
 import SupportCenter from '@featherds/icon/action/SupportCenter'
+import { useFileEditorStore } from '@/stores/fileEditorStore'
+import FileTreeItem from './FileTreeItem.vue'
+import Search from './Search.vue'
 
-const store = useStore()
+const fileEditorStore = useFileEditorStore()
 const changedFilesOnly = ref(false)
-const treeData = computed(() => store.state.fileEditorModule.filesInFolders)
-const selectedFileName = computed(() => store.state.fileEditorModule.selectedFileName)
-const getFles = (changedOnly: boolean) => {
-  store.dispatch('fileEditorModule/setChangedFilesOnly', changedOnly)
-  store.dispatch('fileEditorModule/getFileNames')
+const treeData = computed(() => fileEditorStore.filesInFolders)
+const selectedFileName = computed(() => fileEditorStore.selectedFileName)
+
+const getFiles = (changedOnly: boolean) => {
+  fileEditorStore.setChangedFilesOnly(changedOnly)
+  fileEditorStore.getFileNames()
+
   changedFilesOnly.value = changedOnly
 }
 const scrollToSelectedFile = () => {
   const selected = document.getElementById('selected')
+
   if (selected) {
     selected.scrollIntoView({ behavior: 'smooth', block: 'center' })
   }

@@ -26,6 +26,11 @@
 		<constructor-arg ref="nodeTopologyService" />
 	</bean>
 
+	<bean id ="networkRouterTopologyUpdater" class="org.opennms.netmgt.enlinkd.NetworkRouterTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+
 	<bean id ="userDefinedLinkTopologyUpdater" class="org.opennms.netmgt.enlinkd.UserDefinedLinkTopologyUpdater">
 		<constructor-arg ref="userDefinedLinkTopologyService" />
 		<constructor-arg ref="onmsTopologyDao" />
@@ -61,7 +66,13 @@
 		<constructor-arg ref="ospfTopologyService" />
 		<constructor-arg ref="nodeTopologyService" />
 	</bean>
-	
+
+	<bean id ="ospfAreaOnmsTopologyUpdater" class="org.opennms.netmgt.enlinkd.OspfAreaOnmsTopologyUpdater">
+		<constructor-arg ref="onmsTopologyDao" />
+		<constructor-arg ref="ospfTopologyService" />
+		<constructor-arg ref="nodeTopologyService" />
+	</bean>
+
 	<bean id="discoveryBridgeDomain" class="org.opennms.netmgt.enlinkd.DiscoveryBridgeDomains">
 		<constructor-arg ref="bridgeTopologyService" />
 	</bean>
@@ -93,5 +104,6 @@
     </onmsgi:service>
 
     <onmsgi:service interface="org.opennms.netmgt.enlinkd.api.ReloadableTopologyDaemon" ref="daemon"/>
+	<onmsgi:service interface="org.opennms.netmgt.config.EnhancedLinkdConfig" ref="linkdConfig"/>
 
 </beans>

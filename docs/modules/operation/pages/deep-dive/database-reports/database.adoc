@@ -190,7 +190,7 @@ You must add the Measurements Datasource library to Jaspersoft Studio's build pa
 image::database-reports/1_configure-build-path-1.png["Project Explorer UI displaying the Properties dialog."]
 
 . Click *Add External JARs*.
-. Select `$\{OPENNMS_HOME}/contrib/jasperstudio-extension/opennms-jasperstudio-extension-\{opennms-version}-jar-with-dependencies.jar`.
+. Select `$\{OPENNMS_HOME}/bin/opennms-jasperstudio-extension-\{opennms-version}-jar-with-dependencies.jar`.
 . Close the file selection dialog.
 The Measurements Datasource and helpers should now be available:
 +

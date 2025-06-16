@@ -20,7 +20,7 @@
   <p class="select-msg" v-if="numberOfSelectedConfigs < 2">Select two dates to compare.</p>
   <p
     class="select-msg"
-    v-if="!historyModalBackups.length"
+    v-if="!deviceStore.historyModalBackups.length"
   >No dates are available.</p>
 
   <FeatherChipList
@@ -38,11 +38,11 @@
   </FeatherChipList>
 
   <div class="flex-container" v-if="!isCompareView">
-    <FeatherCheckboxGroup :label="historyModalBackups[0].configName" vertical v-if="historyModalBackups.length">
+    <FeatherCheckboxGroup :label="deviceStore.historyModalBackups[0].configName" vertical v-if="deviceStore.historyModalBackups.length">
       <div class="history-dates-column">
         <FeatherCheckbox
           class="history-date"
-          v-for="config of historyModalBackups"
+          v-for="config of deviceStore.historyModalBackups"
           :key="config.id"
           @update:modelValue="onCheckbox(config)"
           :modelValue="selectedConfigs[config.id]"
@@ -64,20 +64,20 @@
 </template>
 
 <script setup lang="ts">
-import DCBDiff from './DCBDiff.vue'
-import { useStore } from 'vuex'
-import { DeviceConfigBackup } from '@/types/deviceConfig'
-import { FeatherCheckbox, FeatherCheckboxGroup } from '@featherds/checkbox'
-import { FeatherChip, FeatherChipList } from '@featherds/chips'
-import { FeatherButton } from '@featherds/button'
-import { FeatherIcon } from '@featherds/icon'
-import Compare from '@/assets/Compare.vue'
-import Restore from '@featherds/icon/action/Restore'
-import Download from '@featherds/icon/action/DownloadFile'
 import { diffLines } from 'diff'
 import { orderBy } from 'lodash'
+import { FeatherButton } from '@featherds/button'
+import { FeatherCheckbox, FeatherCheckboxGroup } from '@featherds/checkbox'
+import { FeatherChip, FeatherChipList } from '@featherds/chips'
+import { FeatherIcon } from '@featherds/icon'
+import Restore from '@featherds/icon/action/Restore'
+import Download from '@featherds/icon/action/DownloadFile'
+import DCBDiff from './DCBDiff.vue'
+import Compare from '@/assets/Compare.vue'
+import { useDeviceStore } from '@/stores/deviceStore'
+import { DeviceConfigBackup } from '@/types/deviceConfig'
 
-const store = useStore()
+const deviceStore = useDeviceStore()
 
 const selectedConfigs = ref<Record<number, boolean>>({})
 const config1 = ref<DeviceConfigBackup | null>(null)
@@ -85,12 +85,17 @@ const config2 = ref<DeviceConfigBackup | null>(null)
 const isCompareView = ref(false)
 const changes = ref<{ additions: number; deletions: number }>({ additions: 0, deletions: 0 })
 
-const historyModalBackups = computed<DeviceConfigBackup[]>(() => store.state.deviceModule.historyModalBackups)
 const numberOfSelectedConfigs = computed<number>(() => Object.values(selectedConfigs.value).filter((val) => val).length)
 
 const onCompare = () => isCompareView.value = true
 const onReturn = () => isCompareView.value = false
-const onDownload = () => store.dispatch('deviceModule/downloadByConfig', [config1.value, config2.value])
+const onDownload = () => {
+  const ids = [config1.value?.id || 0, config2.value?.id || 0].filter(x => x !== 0)
+
+  if (ids.length > 0) {
+    deviceStore.downloadByConfig(ids)
+  }
+}
 
 const onCheckbox = (config: DeviceConfigBackup) => {
   setConfig(config)
@@ -182,7 +187,7 @@ const calculateChanges = () => {
   }
 }
 
-const getHistoryBackups = () => store.dispatch('deviceModule/getHistoryByIpInterface')
+const getHistoryBackups = () => deviceStore.getHistoryByIpInterface()
 onMounted(() => getHistoryBackups())
 </script>
 

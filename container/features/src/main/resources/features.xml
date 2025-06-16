@@ -97,6 +97,8 @@
         <bundle>mvn:org.eclipse.gemini.blueprint/gemini-blueprint-io/${eclipseGeminiVersion}</bundle>
     </feature>
     <feature name="groovy" version="${groovyVersion}" description="Groovy">
+        <!-- needed by spifly -->
+        <feature version="[9.4,10)">asm</feature>
         <bundle>mvn:org.codehaus.groovy/groovy/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-ant/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-bsf/${groovyVersion}</bundle>
@@ -113,7 +115,7 @@
         <bundle>mvn:org.codehaus.groovy/groovy-json/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-jsr223/${groovyVersion}</bundle>
         <!-- needed by jsr223 support -->
-        <bundle>mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/1.2</bundle>
+        <bundle>mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/${spiflyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-macro/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-nio/${groovyVersion}</bundle>
         <bundle>mvn:org.codehaus.groovy/groovy-servlet/${groovyVersion}</bundle>
@@ -249,11 +251,11 @@
     <feature name="opennms-activemq-pool" version="${project.version}" description="OpenNMS :: Features :: ActiveMQ :: Pool">
         <feature prerequisite="true">zookeeper-dependencies</feature>
         <feature>activemq-client</feature>
+        <feature>asm</feature>
         <feature>camel-core</feature>
         <feature>camel-jms</feature>
         <feature version="[4.2,4.3)">spring</feature>
         <feature>opennms-core</feature>
-        <bundle dependency="true">mvn:org.ow2.asm/asm-all/5.2</bundle>
         <bundle>mvn:org.opennms.features.activemq/org.opennms.features.activemq.pool/${project.version}</bundle>
     </feature>
 
@@ -273,6 +275,7 @@
     <feature name="opennms-util" version="${project.version}" description="OpenNMS :: Util">
         <feature>owasp-encoder</feature>
         <feature>owasp-html-sanitizer</feature>
+        <feature>commons-io</feature>
         <feature>commons-jexl</feature>
         <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.api/${project.version}</bundle>
         <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.soa/${project.version}</bundle>
@@ -298,6 +301,7 @@
         <bundle>mvn:org.opennms.core/org.opennms.core.spring/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.xml/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.fileutils/${project.version}</bundle>
     </feature>
     <feature name="opennms-core-camel" version="${project.version}" description="OpenNMS :: Core :: Camel">
         <feature>camel-core</feature>
@@ -308,6 +312,7 @@
     </feature>
     <feature name="opennms-core-daemon" version="${project.version}" description="OpenNMS :: Core :: Daemon">
         <feature>activemq-client</feature>
+        <feature>asm</feature>
         <feature>camel-jms</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>opennms-activemq-pool</feature>
@@ -315,7 +320,6 @@
         <feature>opennms-config</feature>
         <feature>opennms-icmp-api</feature>
         <feature>opennms-model</feature>
-        <bundle dependency="true">mvn:org.ow2.asm/asm-all/5.2</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.daemon/${project.version}</bundle>
     </feature>
     <feature name="opennms-core-db" version="${project.version}" description="OpenNMS :: Core :: Database">
@@ -420,11 +424,11 @@
         <feature>commons-codec</feature>
         <feature>opennms-config-api</feature>
         <feature>opennms-core-db</feature>
+        <feature>opennms-mate-api</feature>
         <feature>opennms-poller-api</feature>
         <feature>opennms-rrd-api</feature>
         <feature>opennms-snmp</feature>
         <feature>scv-api</feature>
-        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.api/${project.version}</bundle>
         <bundle dependency="true">wrap:mvn:com.googlecode.concurrent-locks/concurrent-locks/1.0.0$Bundle-SymbolicName=com.googlecode.concurrent-locks&amp;Bundle-Version=1.0.0</bundle>
         <bundle dependency="true">wrap:mvn:org.jasypt/jasypt/${jasyptVersion}$Bundle-SymbolicName=org.jasypt&amp;Bundle-Version=${jasyptVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-config/${project.version}</bundle>
@@ -439,6 +443,8 @@
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka_${scalaVersion}/${kafkaBundleVersion}</bundle>
         <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.kafka-clients/${kafkaBundleVersion}</bundle>
         <bundle dependency="true">mvn:com.github.luben/zstd-jni/${zstdJniVersion}</bundle>
+        <bundle dependency="true">mvn:org.lz4/lz4-java/${lz4JavaVersion}</bundle>
+        <bundle dependency="true">mvn:org.xerial.snappy/snappy-java/${snappyJavaVersion}</bundle>
     </feature>
     <feature name="opennms-core-ipc-sink-api" version="${project.version}" description="OpenNMS :: Core :: IPC :: Sink :: API">
         <feature>dropwizard-metrics</feature>
@@ -450,7 +456,7 @@
         <feature>opennms-distributed-core-api</feature>
         <feature>opennms-integration-api</feature>
         <feature>opennms-core-tracing</feature>
-        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.xml/${project.version}</bundle>
@@ -510,18 +516,16 @@
         <feature>opennms-distributed-core-api</feature>
         <feature>opennms-health-api</feature>
         <feature>opennms-rpc-utils</feature>
-        <bundle>wrap:mvn:ch.hsr/geohash/${geohashVersion}$Bundle-SymbolicName=ch.hsr.geohash&amp;Bundle-Version=${geohashVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.xml/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.camel/${project.version}</bundle>
     </feature>
     <feature name="opennms-rpc-utils" version="${project.version}" description="OpenNMS :: Core :: IPC : RPC :: Utils">
+        <feature>opennms-mate-api</feature>
+        <feature>opennms-mate-shell</feature>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.utils/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.api/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.model/${project.version}</bundle>
-        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.shell-commands/${project.version}</bundle>
     </feature>
     <feature name="opennms-core-ipc-rpc-jms" version="${project.version}" description="OpenNMS :: Core :: IPC :: RPC :: JMS Impl.">
         <feature>opennms-core-ipc-rpc-api</feature>
@@ -598,6 +602,7 @@
     <feature name="opennms-events-sink-dispatcher" version="${project.version}" description="OpenNMS :: Events :: Sink Dispatcher">
         <feature>opennms-config-api</feature>
         <feature>opennms-events-api</feature>
+        <feature>opennms-mate-api</feature>
         <bundle>mvn:org.opennms.features.events.sink/org.opennms.features.events.sink.dispatcher/${project.version}</bundle>
     </feature>
 
@@ -892,6 +897,7 @@
     </feature>
     <feature name="opennms-poller-monitors-core" version="${project.version}" description="OpenNMS :: Poller :: Monitors :: Core">
         <feature>activemq-client</feature>
+        <feature>bsf</feature>
         <feature>camel-core</feature>
         <feature>camel-http</feature>
         <feature>commons-io</feature>
@@ -904,7 +910,6 @@
         <feature>jolokia-client</feature>
         <feature>json-simple</feature>
         <feature>jcifs</feature>
-        <feature>bsf</feature>
         <feature>ssh</feature>
         <feature>opennms-core-web</feature>
         <feature>opennms-core-ipc-rpc-api</feature>
@@ -920,6 +925,9 @@
     </feature>
     <feature name="opennms-poller-shell" version="${project.version}" description="OpenNMS :: Poller :: Shell">
         <bundle>mvn:org.opennms.features.poller/org.opennms.features.poller.shell/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-notifications-shell" version="${project.version}" description="OpenNMS :: Notifications :: Shell">
+        <bundle>mvn:org.opennms.features.notifications/org.opennms.features.notifications.shell/${project.version}</bundle>
     </feature>
     <feature name="opennms-situation-feedback-api" version="${project.version}" description="OpenNMS :: Features :: Situation-Feedback :: API">
         <feature>jackson-core</feature>
@@ -938,16 +946,24 @@
     </feature>
 
     <feature name="opennms-alarm-history-rest" description="OpenNMS :: Features :: Alarms :: History :: REST" version="${project.version}">
-        <feature>opennms-osgi-core-rest</feature>
+        <feature>jax-rs-connector</feature>
+        <feature>pax-http</feature>
         <feature>opennms-alarm-history-api</feature>
+        <feature>opennms-es-rest</feature>
         <bundle>mvn:org.opennms.features.alarms.history.rest/org.opennms.features.alarms.history.rest.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.alarms.history.rest/org.opennms.features.alarms.history.rest.impl/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-alarm-history-elastic" description="OpenNMS :: Features :: Alarms :: History :: Elasticsearch" version="${project.version}">
+        <feature>javax.validation</feature>
         <feature>opennms-alarm-history-rest</feature>
+        <feature>opennms-health-api</feature>
         <feature>opennms-jest</feature>
+        <bundle>mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
         <bundle dependency="true">mvn:org.mapstruct/mapstruct/${mapstructVersion}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.opennms/opennms-alarm-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.alarms.history/org.opennms.features.alarms.history.elastic/${project.version}</bundle>
     </feature>
 
@@ -973,7 +989,7 @@
         <feature>rate-limited-logger</feature>
         <feature>opennms-collection-api</feature>
         <feature>opennms-situation-feedback-api</feature>
-        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.kafka/org.opennms.features.kafka.producer/${project.version}</bundle>
     </feature>
@@ -981,7 +997,7 @@
         <feature>opennms-kafka</feature>
         <feature>opennms-events-api</feature>
         <feature>opennms-model</feature>
-        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.kafka/org.opennms.features.kafka.consumer/${project.version}</bundle>
     </feature>
@@ -992,7 +1008,7 @@
         <feature>opennms-collection-api</feature>
         <feature>opennms-thresholding-api</feature>
         <feature>opennms-osgi-jsr223</feature>
-        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
         <bundle>wrap:mvn:io.pkts/pkts-core/${pktsVersion}</bundle>
         <bundle>wrap:mvn:io.pkts/pkts-buffers/${pktsVersion}</bundle>
@@ -1001,6 +1017,7 @@
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.listeners/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.fileutils/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.adapters/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.shell/${project.version}</bundle>
     </feature>
@@ -1016,7 +1033,7 @@
         <feature>opennms-dao</feature>
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-util</feature>
-        <bundle dependency="true">mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle dependency="true">wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.registry/${project.version}</bundle>
@@ -1048,12 +1065,12 @@
     </feature>
     <feature name="opennms-telemetry-jti" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Telemetry :: JTI">
         <feature>opennms-telemetry-collection</feature>
-        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.jti/org.opennms.features.telemetry.protocols.jti.adapter/${project.version}</bundle>
     </feature>
     <feature name="opennms-telemetry-nxos" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Telemetry :: NX-OS">
         <feature>opennms-telemetry-collection</feature>
-        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.nxos/org.opennms.features.telemetry.protocols.nxos.adapter/${project.version}</bundle>
     </feature>
     <feature name="opennms-telemetry-graphite" start-level="${earlyStartLevel}" version="${project.version}" description="OpenNMS :: Telemetry :: Graphite">
@@ -1064,7 +1081,7 @@
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-telemetry-openconfig-client</feature>
         <feature>opennms-rpc-utils</feature>
-        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.common/${project.version}</bundle>
@@ -1131,15 +1148,17 @@
         <feature>opennms-telemetry-collection</feature>
         <feature>opennms-dnsresolver-api</feature>
         <feature>opennms-kafka</feature>
+        <feature>opennms-mate-impl</feature>
         <feature>rate-limited-logger</feature>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.rest/org.opennms.features.flows.rest.api/${project.version}</bundle>
         <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.rest/org.opennms.features.flows.rest.impl/${project.version}</bundle>
-        <bundle>wrap:mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
+        <bundle>mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.elastic/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.fileutils/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.processing/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.kafka-persistence/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
@@ -1150,7 +1169,7 @@
         <bundle>mvn:jakarta.annotation/jakarta.annotation-api/3.0.0</bundle>
         <bundle>mvn:com.google.findbugs/jsr305/3.0.2</bundle>
         -->
-        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>wrap:mvn:com.google.protobuf/protobuf-java-util/${protobufVersion}$overwrite=merge&amp;Import-Package=javax.annotation;version=!,*</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.cache/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/${project.version}</bundle>
@@ -1175,6 +1194,14 @@
     </feature>
     <feature name="opennms-enlinkd-shell" version="${project.version}" description="OpenNMS :: Features :: Enlinkd :: Shell">
         <feature>opennms-dao</feature>
+        <feature>opennms-core-daemon</feature>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.common/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.collectors.bridge/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.collectors.cdp/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.collectors.ipnettomedia/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.collectors.isis/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.collectors.ospf/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.adapters.collectors.lldp/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.shell/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.generator/${project.version}</bundle>
     </feature>
@@ -1218,7 +1245,6 @@
         <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.service.api/${project.version}</bundle>
         <bundle>wrap:mvn:net.sf.jung/jung-api/${jungVersion}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.criteria/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.enlinkd/org.opennms.features.enlinkd.persistence.api/${project.version}</bundle>
     </feature>
     <feature name="org.opennms.features.bsm.service.api" version="${project.version}" description="OpenNMS :: Features :: BSM :: Service :: API">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
@@ -1511,32 +1537,40 @@
         <feature>opennms-health-api</feature>
         <feature>opennms-dao</feature>
         <bundle>mvn:org.opennms.features/datachoices/${project.version}</bundle>
-        <bundle>wrap:mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
+        <bundle>mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
         <bundle start-level="${systemStartLevel}">mvn:org.apache.karaf.shell/org.apache.karaf.shell.console/${karafVersion}</bundle>
         <bundle start-level="${systemStartLevel}">mvn:org.apache.karaf.shell/org.apache.karaf.shell.core/${karafVersion}</bundle>
         <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
-        <bundle>mvn:org.freemarker/freemarker/${freemarkerVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.rpc/org.opennms.core.ipc.rpc.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.usageanalytics/org.opennms.features.usageanalytics.api/${project.version}</bundle>
     </feature>
     <feature name="opennms-es-rest" version="${project.version}" description="OpenNMS :: Features :: ElasticSearch Rest">
         <details>OpenNMS :: Features :: ElasticSearch Rest</details>
-        <feature>opennms-jest</feature>
+        <feature>commons-io</feature>
         <feature>dropwizard-metrics</feature>
+        <feature>opentracing-api</feature>
         <feature>rate-limited-logger</feature>
+        <feature>opennms-dao-api</feature>
+        <feature>opennms-jest</feature>
+        <feature>opennms-mate-impl</feature>
+        <bundle dependency="true">wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
+        <bundle>mvn:org.opennms.core/org.opennms.core.xml/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.sink/org.opennms.core.ipc.sink.xml/${project.version}</bundle>
         <bundle>mvn:org.opennms.features/org.opennms.features.opennms-es-rest/${project.version}</bundle>
         <bundle>mvn:com.googlecode.json-simple/json-simple/1.1.1</bundle>
-        <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
     </feature>
     <feature name="opennms-jest" version="${project.version}" description="OpenNMS :: Features :: Jest :: Feature definition">
         <details>Feature definition for Jest (ElasticSearch Java ReST Client)</details>
         <feature>commons-codec</feature>
-        <!-- TODO: what does it actually need? -->
-        <feature>guava21</feature>
+        <feature>guava</feature>
+        <feature>resilience4j</feature>
+        <feature>opennms-events-api</feature>
+        <feature>opennms-model</feature>
+        <feature>opennms-util</feature>
         <bundle>mvn:com.google.code.gson/gson/${jestGsonVersion}</bundle>
         <bundle>wrap:mvn:org.apache.httpcomponents/httpcore-nio/${httpcoreVersion}</bundle>
         <bundle>mvn:org.opennms.features.jest/org.opennms.features.jest.client/${project.version}</bundle>
@@ -1552,10 +1586,28 @@
         <bundle>mvn:org.opennms.features.search/org.opennms.features.search.service/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.search/org.opennms.features.search.rest/${project.version}</bundle>
     </feature>
+    <feature name="opennms-mate-api" version="${project.version}" description="OpenNMS :: Features :: Metadata :: API">
+        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
+        <feature>opennms-core</feature>
+        <feature>scv-api</feature>
+        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.api/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-mate-impl" version="${project.version}" description="OpenNMS :: Features :: Metadata :: Implementation">
+        <feature>opennms-dao-api</feature>
+        <feature>opennms-mate-api</feature>
+        <bundle>wrap:mvn:ch.hsr/geohash/${geohashVersion}$Bundle-SymbolicName=ch.hsr.geohash&amp;Bundle-Version=${geohashVersion}</bundle>
+        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.model/${project.version}</bundle>
+    </feature>
+    <feature name="opennms-mate-shell" version="${project.version}" description="OpenNMS :: Features :: Metadata :: Karaf Shell Commands">
+        <feature>opennms-dao-api</feature>
+        <feature>opennms-mate-api</feature>
+        <bundle>mvn:org.opennms.core.mate/org.opennms.core.mate.shell-commands/${project.version}</bundle>
+    </feature>
     <feature name="ifttt-integration" version="${project.version}" description="OpenNMS :: Features :: IFTTT Integration">
         <details>OpenNMS is the world's first enterprise grade network management platform developed under the open source model. It consists of a community supported open-source project as well as a commercial services, training and support organization.</details>
-        <feature>opennms-dao-api</feature>
         <feature version="${guavaOsgiVersion}">guava</feature>
+        <feature>opennms-dao-api</feature>
+        <feature>opennms-mate-api</feature>
         <bundle>mvn:org.opennms.features/org.opennms.features.ifttt/${project.version}</bundle>
     </feature>
     <feature name="org.opennms.features.topologies.service.api" version="${project.version}" description="OpenNMS :: Features :: Topologies :: Service :: API">
@@ -1819,7 +1871,7 @@
         <feature>json-patch</feature>
         <feature>opennms-core-tracing</feature>
         <feature>opennms-distributed-core-api</feature>
-        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.common/${project.version}</bundle>
     </feature>
@@ -1850,7 +1902,7 @@
         <bundle>mvn:org.opennms.core.ipc.common/org.opennms.core.ipc.common.kafka/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.ipc.twin.kafka/org.opennms.core.ipc.twin.kafka.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.sysprops/${project.version}</bundle>
-        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
     </feature>
     <feature name="opennms-core-ipc-twin-kafka" version="${project.version}" description="OpenNMS :: Core :: IPC :: Twin :: Kafka :: Subscriber">
         <feature>opennms-core-ipc-twin-kafka-common</feature>
@@ -1945,6 +1997,7 @@
         <feature>opennms-collection-api</feature>
         <feature>opennms-core-ipc-rpc-api</feature>
         <feature version="${opennmsApiVersion}">opennms-integration-api</feature>
+        <feature>opennms-mate-impl</feature>
         <feature>newts-api</feature>
 
         <bundle dependency="true">mvn:com.lmax/disruptor/${lmaxDisruptorVersion}</bundle>
@@ -1982,4 +2035,18 @@
         <bundle>mvn:org.opennms.features/org.opennms.features.newts/${project.version}</bundle>
     </feature>
 
+    <feature name="opennms-grpc-exporter" description="OpenNMS :: Grpc :: Exporter" version="${project.version}">
+        <feature version="${opennmsApiVersion}" dependency="true">opennms-integration-api</feature>
+        <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
+        <bundle>mvn:org.mapstruct/mapstruct/${mapstructVersion}</bundle>
+        <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.grpc/org.opennms.features.grpc.exporter/${project.version}</bundle>
+    </feature>
+
+    <feature name="opennms-zenith-connect" description="OpenNMS :: Zenith Connect" version="${project.version}">
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.api/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.distributed/org.opennms.features.distributed.kv-store.json.postgres/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.zenith-connect/org.opennms.features.zenith-connect.persistence/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.zenith-connect/org.opennms.features.zenith-connect.rest/${project.version}</bundle>
+    </feature>
 </features>

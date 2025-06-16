@@ -107,7 +107,7 @@
     <constructor-arg ref="eventConfDao"/>
   </bean>
 
-  <bean id="eventdMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+  <bean id="eventdMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.jmx.JmxReporter" factory-method="forRegistry">
       <constructor-arg ref="eventdMetricRegistry"/>
   </bean>
 

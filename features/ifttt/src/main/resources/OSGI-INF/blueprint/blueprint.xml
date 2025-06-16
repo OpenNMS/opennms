@@ -10,12 +10,13 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd">
 
     <reference id="alarmDao" interface="org.opennms.netmgt.dao.api.AlarmDao" availability="mandatory"/>
-    <reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations"
-               availability="mandatory"/>
+    <reference id="transactionTemplate" interface="org.springframework.transaction.support.TransactionOperations" availability="mandatory"/>
+    <reference id="entityScopeProvider" interface="org.opennms.core.mate.api.EntityScopeProvider" availability="mandatory"/>
 
     <bean class="org.opennms.features.ifttt.IfTttDaemon" init-method="start" destroy-method="stop">
         <argument ref="alarmDao"/>
         <argument ref="transactionTemplate"/>
+        <argument ref="entityScopeProvider"/>
     </bean>
 
 </blueprint>

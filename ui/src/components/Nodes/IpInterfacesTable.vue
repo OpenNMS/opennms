@@ -31,9 +31,8 @@
     :payload="payload"
     :parameters="queryParameters"
     @update-query-parameters="updateQueryParameters"
-    moduleName="nodesModule"
-    functionName="getNodeIpInterfaces"
-    totalCountStateName="ipInterfacesTotalCount"
+    :query="getNodeIpInterfaces"
+    :getTotalCount="getIpInterfacesTotalCount"
   />
 </template>
 
@@ -42,18 +41,28 @@
   lang="ts"
 >
 import Pagination from '../Common/Pagination.vue'
-import { useStore } from 'vuex'
+import { useNodeStore } from '@/stores/nodeStore'
 import useQueryParameters from '@/composables/useQueryParams'
+import { QueryParameters } from '@/types'
 
-const store = useStore()
+const nodeStore = useNodeStore()
 const route = useRoute()
-const optionalPayload = { id: route.params.id }
+
+const getNodeIpInterfaces = async (payload: QueryParameters) => {
+  nodeStore.getNodeIpInterfaces({ id: route.params.id as string, queryParameters: payload })
+}
+
+const getIpInterfacesTotalCount = () => {
+  return nodeStore.ipInterfacesTotalCount
+}
+
 const { queryParameters, updateQueryParameters, payload } = useQueryParameters({
   limit: 5,
   offset: 0,
   _s: 'isManaged==U,isManaged==P,isManaged==N,isManaged==M'
-}, 'nodesModule/getNodeIpInterfaces', optionalPayload)
-const ipInterfaces = computed(() => store.state.nodesModule.ipInterfaces)
+}, getNodeIpInterfaces)
+
+const ipInterfaces = computed(() => nodeStore.ipInterfaces)
 </script>
 
 <style lang="scss">
@@ -62,4 +71,3 @@ table {
   @include table;
 }
 </style>
-

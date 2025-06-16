@@ -29,10 +29,20 @@ case "$1" in
         /usr/share/opennms/bin/update-package-permissions opennms-server
 
         echo ""
+        echo " *** Thanks for using OpenNMS!"
+        echo " ***"
+        echo " *** Consider joining our active and supportive online community through"
+        echo " ***"
+        echo " *** https://www.opennms.com/participate/"
+        echo " ***"
+        echo " *** To connect with users, testers, experts, and contributors."
+        echo " ***"
+        echo " *** Or email us directly at contactus@opennms.com to learn more."
+        echo " ***"
         echo " *** Installation complete. You must still run the installer at"
         echo " *** \$OPENNMS_HOME/bin/install to be sure your database is up"
         echo " *** to date before you start OpenNMS. See the install guide and"
-        echo " *** release notes for details at https://docs.opennms.com."
+        echo " *** release notes for details at: https://docs.opennms.com"
         echo ""
         ;;
     abort-upgrade|abort-remove|abort-deconfigure)

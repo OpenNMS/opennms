@@ -19,7 +19,7 @@
           <tbody>
             <tr
               v-for="outage in outages"
-              :key="outage.id"
+              :key="outage.outageId"
             >
               <td>{{ outage.ipAddress }}</td>
               <td>{{ outage.hostname }}</td>
@@ -33,9 +33,8 @@
       :payload="payload"
       :parameters="queryParameters"
       @update-query-parameters="updateQueryParameters"
-      moduleName="nodesModule"
-      functionName="getNodeOutages"
-      totalCountStateName="outagesTotalCount"
+      :query="getNodeOutages"
+      :getTotalCount="getOutagesTotalCount"
     />
   </div>
 </template>
@@ -45,16 +44,27 @@
   lang="ts"
 >
 import Pagination from '../Common/Pagination.vue'
-import { useStore } from 'vuex'
+import { useNodeStore } from '@/stores/nodeStore'
 import useQueryParameters from '@/composables/useQueryParams'
-const store = useStore()
+import { QueryParameters } from '@/types'
+
+const nodeStore = useNodeStore()
 const route = useRoute()
-const payload = { id: route.params.id }
-const { queryParameters, updateQueryParameters } = useQueryParameters({
+
+const getNodeOutages = async (payload: QueryParameters) => {
+  nodeStore.getNodeOutages({ id: route.params.id as string, queryParameters: payload })
+}
+
+const getOutagesTotalCount = () => {
+  return nodeStore.outagesTotalCount
+}
+
+const { queryParameters, updateQueryParameters, payload } = useQueryParameters({
   limit: 10,
-  offset: 0,
-}, 'nodesModule/getNodeOutages', payload)
-const outages = computed(() => store.state.nodesModule.outages)
+  offset: 0
+}, getNodeOutages)
+
+const outages = computed(() => nodeStore.outages)
 </script>
 
 <style
@@ -72,4 +82,3 @@ table {
   @include table;
 }
 </style>
-
