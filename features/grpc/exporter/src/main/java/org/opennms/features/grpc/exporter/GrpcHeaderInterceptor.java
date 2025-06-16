@@ -71,8 +71,7 @@ public class GrpcHeaderInterceptor implements ClientInterceptor {
     }
 
     private void addRefreshTokenInHeaders(Metadata headers){
-
-        if(zenithConnectPersistenceService != null) {
+        if (zenithConnectPersistenceService != null) {
             try {
                 ZenithConnectRegistration registrations = zenithConnectPersistenceService.getRegistrations().first();
                 if (registrations != null) {
@@ -83,5 +82,4 @@ public class GrpcHeaderInterceptor implements ClientInterceptor {
             }
         }
     }
-
 }
