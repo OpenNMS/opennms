@@ -51,7 +51,7 @@
     <c:when test="${empty summaries}">
       <div class="card-body">
         <p class="mb-0">
-          There are no pending problems.
+          There are no pending alarms.
         </p>
       </div>
     </c:when>
@@ -93,7 +93,7 @@
       <c:if test="${moreCount > 0}">
         <div class="card-footer text-right">
           <c:url var="moreLink" value="alarm/list.htm"/>
-          <a href="alarm/list.htm?filter=situation%3Dtrue">All pending problems...</a>
+          <a href="alarm/list.htm?filter=situation%3Dtrue">All pending alarms...</a>
         </div>
       </c:if>
     </c:otherwise>
