@@ -1,6 +1,6 @@
 ### All Contributors
 
-* [ ] Have you read our [Contribution Guidelines](https://github.com/OpenNMS/opennms/blob/develop/CONTRIBUTING.md)?
+* [ ] Have you read our [Contribution Guidelines](https://github.com/OpenNMS/opennms/blob/main/CONTRIBUTING.md)?
 * [ ] Have you (electronically) signed the [OpenNMS Contributor Agreement](https://cla-assistant.io/OpenNMS/opennms)?
 
 ### Contribution Checklist

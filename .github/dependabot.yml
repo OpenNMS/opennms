@@ -4,7 +4,7 @@ updates:
   - package-ecosystem: "npm"
     # Look for `package.json` and `lock` files in the `root` directory
     directory: "/ui"
-    target-branch: "develop"
+    target-branch: "main"
     reviewers:
       - "Bluebird-Community/dependabot-reviewers-node"
     labels:
@@ -25,7 +25,7 @@ updates:
   - package-ecosystem: "npm"
     # Look for `package.json` and `lock` files in the `root` directory
     directory: "/core/web-assets/"
-    target-branch: "develop"
+    target-branch: "main"
     versioning-strategy: "increase-if-necessary"
     reviewers:
       - "Bluebird-Community/dependabot-reviewers-node"
@@ -79,7 +79,7 @@ updates:
 
   - package-ecosystem: "maven"
     directory: "/"
-    target-branch: "develop"
+    target-branch: "main"
     reviewers:
       - "Bluebird-Community/dependabot-reviewers-maven"
     labels:
@@ -92,7 +92,7 @@ updates:
 
   - package-ecosystem: "maven"
     directory: "/"
-    target-branch: "develop"
+    target-branch: "main"
     reviewers:
       - "mvrueden"
     labels:

@@ -561,7 +561,7 @@ jobs:
       - core-packages
       - minion-packages
       - sentinel-packages
-    if: github.ref == 'refs/heads/develop' || startsWith(github.ref, 'refs/tags/v')
+    if: github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
     container:
       image: quay.io/bluebird/base-builder:ubuntu.0.1.8.b19
