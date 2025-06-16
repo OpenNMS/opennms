@@ -29,10 +29,14 @@ import io.grpc.ClientInterceptor;
 import io.grpc.ForwardingClientCall;
 import io.grpc.Metadata;
 import io.grpc.MethodDescriptor;
+import org.opennms.features.zenithconnect.persistence.api.ZenithConnectPersistenceException;
+import org.opennms.features.zenithconnect.persistence.api.ZenithConnectPersistenceService;
+import org.opennms.features.zenithconnect.persistence.api.ZenithConnectRegistration;
 
 public class GrpcHeaderInterceptor implements ClientInterceptor {
 
     private final Metadata metadata;
+    private ZenithConnectPersistenceService zenithConnectPersistenceService;
 
     public GrpcHeaderInterceptor(String tenantId) {
         metadata = new Metadata();
@@ -42,6 +46,7 @@ public class GrpcHeaderInterceptor implements ClientInterceptor {
     @Override
     public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(
             MethodDescriptor<ReqT, RespT> method, CallOptions callOptions, Channel next) {
+        addRefreshTokenInHeaders(metadata);
         return new HeaderAttachingClientCall<>(next.newCall(method, callOptions), metadata);
     }
 
@@ -60,4 +65,23 @@ public class GrpcHeaderInterceptor implements ClientInterceptor {
             super.start(responseListener, headers);
         }
     }
+
+    public void setZenithConnectPersistenceService(ZenithConnectPersistenceService service) {
+        this.zenithConnectPersistenceService = service;
+    }
+
+    private void addRefreshTokenInHeaders(Metadata headers){
+
+        if(zenithConnectPersistenceService != null) {
+            try {
+                ZenithConnectRegistration registrations = zenithConnectPersistenceService.getRegistrations().first();
+                if (registrations != null) {
+                    headers.put(Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER), "Bearer " + registrations.refreshToken);
+                }
+            } catch (ZenithConnectPersistenceException e) {
+                throw new RuntimeException(e);
+            }
+        }
+    }
+
 }
