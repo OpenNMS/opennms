@@ -94,7 +94,7 @@ updates:
     directory: "/"
     target-branch: "main"
     reviewers:
-      - "mvrueden"
+      - "indigo423"
     labels:
       - "dependency update"
     commit-message:
