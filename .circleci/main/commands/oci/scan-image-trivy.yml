@@ -52,9 +52,6 @@ commands:
             /tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 --format json -o /tmp/report.json --no-progress opennms/${TAG}
             /tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 --format table --ignore-unfixed --no-progress opennms/${TAG} grep -v "│.*│.*│[[:space:]]*0[[:space:]]*│" > /tmp/report.txt
             
-            # Filter out packages with 0 vulnerabilities
-            grep -v "0 vulnerabilities" /tmp/initial_report.txt > /tmp/report.txt
-            
       - store_artifacts:
           path: /tmp/report.json
           destination: report.json
