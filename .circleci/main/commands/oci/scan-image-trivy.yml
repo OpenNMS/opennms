@@ -49,8 +49,17 @@ commands:
             export TAG="<< parameters.container_name >>-${ARCH}"
             
             # Table result includes only package filenames. Use '--format json' option to get the full path to the package file.
-            /tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 --format json -o /tmp/report.json --no-progress opennms/${TAG}
-            /tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 --format table --ignore-unfixed --no-progress opennms/${TAG} grep -v "│.*│.*│[[:space:]]*0[[:space:]]*│" > /tmp/report.txt
+            /tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 --format json --skip-db-update --scanners vuln -o /tmp/report.json --no-progress opennms/${TAG}
+            /tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 --format table --skip-db-update --scanners vuln --ignore-unfixed --no-progress opennms/${TAG} | \
+            awk '
+              BEGIN {in_entry=0; skip=0}
+              /^┌.*┐$|^├.*┤$|^└.*┘$/ {if (!in_entry) print; next}
+              /^│/ {
+                if ($0 ~ /│[[:space:]]*0[[:space:]]*│/) {skip=1; next}
+                skip=0
+              }
+              {if (!skip) print}
+            ' > /tmp/report.txt
             
       - store_artifacts:
           path: /tmp/report.json
