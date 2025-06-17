@@ -75,7 +75,7 @@ public class UsageStatisticsReportDTOTest {
             "\"coreFlowsPersisted\":0," +
             "\"coreNewtsSamplesInserted\":0," +
             "\"coreQueuedUpdatesCompleted\":0," +
-            "\"cpuUtilization\":null," +
+            "\"coreTssWritesCompleted\":0," +
             "\"databaseProductName\":null," +
             "\"databaseProductVersion\":null," +
             "\"dcbFailed\":0," +
