@@ -119,6 +119,7 @@
             <th>Expression</th>
             <th>Datasource type</th>
             <th>Datasource label</th>
+            <th>Expression label</th>
             <th>Value</th>
             <th>Re-arm</th>
             <th>Trigger</th>
@@ -134,6 +135,7 @@
               <td name="expression.${expressionIndex.index}.expression"><c:out value="${expression.expression}"/></td>
               <td name="expression.${expressionIndex.index}.dsType"><c:out value="${expression.dsType}"/></td>
               <td name="expression.${expressionIndex.index}.dsLabel"><c:out value="${expression.dsLabel.orElse(null)}"/></td>
+              <td name="expression.${expressionIndex.index}.exprLabel"><c:out value="${expression.exprLabel.orElse(null)}"/></td>
               <td name="expression.${expressionIndex.index}.value"><c:out value="${expression.value}"/></td>
               <td name="expression.${expressionIndex.index}.rearm"><c:out value="${expression.rearm}"/></td>
               <td name="expression.${expressionIndex.index}.trigger"><c:out value="${expression.trigger}"/></td>
