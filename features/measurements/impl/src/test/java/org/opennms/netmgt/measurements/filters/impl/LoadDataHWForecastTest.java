@@ -1,5 +1,4 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/* This file is part of OpenNMS(R).
  *
  * Copyright (C) 2025 The OpenNMS Group, Inc.
  * OpenNMS(R) is Copyright (C) 1999-2025 The OpenNMS Group, Inc.
@@ -24,7 +23,7 @@
  *     OpenNMS(R) Licensing <license@opennms.org>
  *     http://www.opennms.org/
  *     http://www.opennms.com/
- *******************************************************************************/
+ */
 
 package org.opennms.netmgt.measurements.filters.impl;
 
