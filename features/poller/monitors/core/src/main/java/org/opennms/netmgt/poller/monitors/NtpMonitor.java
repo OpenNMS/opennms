@@ -95,7 +95,7 @@ final public class NtpMonitor extends AbstractServiceMonitor {
         //
         InetAddress ipAddr = svc.getAddress();
 
-        PollStatus serviceStatus = PollStatus.unavailable();
+        PollStatus serviceStatus = PollStatus.unavailable("The monitor did not receive a response packet within the specified timeout (" + tracker.getTimeoutInMillis() + " ms)");
         DatagramSocket socket = null;
         double responseTime = -1.0;
         try {
