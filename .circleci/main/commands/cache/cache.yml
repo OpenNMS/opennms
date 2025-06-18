@@ -27,8 +27,8 @@ commands:
       steps:
         - restore_cache:
             keys:
-              - source-v4-{{ .Branch }}-{{ .Revision }}
-              - source-v4-{{ .Branch }}-
+              - source-v5-{{ .Branch }}-{{ .Revision }}
+              - source-v5-{{ .Branch }}-
         - setup-github
         - checkout
         - run:
@@ -43,7 +43,7 @@ commands:
       description: "Cache a checkout"
       steps:
         - save_cache:
-            key: source-v4-{{ .Branch }}-{{ .Revision }}
+            key: source-v5-{{ .Branch }}-{{ .Revision }}
             paths:
               - ".git"
   checkout-for-pushing:
@@ -122,8 +122,8 @@ commands:
             command: find core/web-assets -name package\*.json -o -name bower.json | grep -v /target/ | sort -u | xargs cat > nodejs-dependency-json-cache.key
         - restore_cache:
             keys:
-              - nodejs-dependencies-v4-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
-              - nodejs-dependencies-v4-{{ checksum "pom-version-cache.key" }}-
+              - nodejs-dependencies-v5-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
+              - nodejs-dependencies-v5-{{ checksum "pom-version-cache.key" }}-
   save-nodejs-cache:
     description: "NodeJS: Save cache"
     steps:
@@ -131,7 +131,7 @@ commands:
           description: clean up cache tmp directory
           command: rm -rf ~/.npm/_cacache/tmp
       - save_cache:
-          key: nodejs-dependencies-v4-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
+          key: nodejs-dependencies-v5-{{ checksum "pom-version-cache.key" }}-{{ checksum "nodejs-dependency-json-cache.key" }}
           paths:
             - ~/.npm
   restore-sonar-cache:
@@ -139,15 +139,15 @@ commands:
       steps:
         - restore_cache:
             keys:
-              - sonar-cache-v5-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-{{ .Revision }}
-              - sonar-cache-v5-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-
-              - sonar-cache-v5-{{ .Branch }}-
-              - sonar-cache-v5-
+              - sonar-cache-v6-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-{{ .Revision }}
+              - sonar-cache-v6-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-
+              - sonar-cache-v6-{{ .Branch }}-
+              - sonar-cache-v6-
   save-sonar-cache:
       description: "Sonar: Save sonar cache"
       steps:
         - save_cache:
-            key: sonar-cache-v5-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-{{ .Revision }}
+            key: sonar-cache-v6-{{ .Branch }}-{{ checksum "pom-version-cache.key" }}-{{ .Revision }}
             paths:
               - /tmp/sonar-cache
   cache-workflow-assets:
