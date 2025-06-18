@@ -26,6 +26,12 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Karaf-Commands>*</Karaf-Commands>
+                    <!--    keep flows api import resolution optional to avoid the error while uninstalling the flows feature       -->
+                        <Import-Package>
+                            org.opennms.netmgt.flows.api;resolution:=optional,
+                            org.opennms.netmgt.flows.filter.api;resolution:=optional,
+                            *
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
