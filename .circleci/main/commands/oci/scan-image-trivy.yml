@@ -25,7 +25,7 @@ commands:
             # set up multi-arch
             docker container prune -f
             docker run --rm --privileged tonistiigi/binfmt:latest --install "<< parameters.architecture >>"
-
+            
             # export DOCKER_CONTENT_TRUST=1
             cd opennms-container/<< parameters.container_dir >>
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
@@ -41,6 +41,7 @@ commands:
           name: Install trivy
           command: |
             curl -sfL https://raw.githubusercontent.com/aquasecurity/trivy/main/contrib/install.sh | sh -s -- -b /tmp/bin
+
       - run:
           name: Scan the local image with trivy
           command: |
@@ -50,26 +51,25 @@ commands:
             
             #Create artifacts directory in the workspace
             mkdir -p "${HOME}/project/artifacts"
-
+            
             /tmp/bin/trivy image --severity HIGH,CRITICAL --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/filtered_vulnerabilities.json --no-progress opennms/${TAG}
             /tmp/bin/trivy image --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/report.json --no-progress opennms/${TAG}
             /tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 -o /tmp/report.txt --no-progress opennms/${TAG}
-
+            
             # Copy to artifacts with job-specific names
             JOB_NAME_SANITIZED=$(echo "${CIRCLE_JOB}" | tr / -)
             cp /tmp/report.json ~/project/artifacts/${JOB_NAME_SANITIZED}_report.json
             cp /tmp/report.txt ~/project/artifacts/${JOB_NAME_SANITIZED}_report.txt
             cp /tmp/filtered_vulnerabilities.json ~/project/artifacts/${JOB_NAME_SANITIZED}_filtered_vulnerabilities.json
-
+      
       - persist_to_workspace:
           root: ~/project
           paths:
             - artifacts/*
-
       - store_artifacts:
           path: ~/project/artifacts
           destination: trivy-reports
-
+  
   trivy-analyze:
     steps:
       - download-download-artifacts
@@ -83,7 +83,7 @@ commands:
             ls -la /home/circleci/project/.circleci/pyscripts/
             find /home/circleci/project -name analyze_trivy_report.py || true
             find ~/project -name analyze_trivy_report.py || true
-
+            
             if [[ ! -f ~/project/.circleci/pyscripts/analyze_trivy_report.py ]]; then
               echo "Error: Python script not found at ~/project/.circleci/pyscripts/analyze_trivy_report.py"
               echo "Trying to locate script..."
@@ -97,7 +97,7 @@ commands:
                 exit 1
               fi
             fi
-
+            
             echo "Script verification passed - proceeding with analysis"
       - run:
           name: Prepare Trivy reports
@@ -105,11 +105,11 @@ commands:
             # Remove '-analyze' from job name to match artifact
             SCAN_JOB_NAME=$(echo "${CIRCLE_JOB}" | sed 's/-analyze//g')
             SANITIZED_SCAN_JOB_NAME=$(echo "${SCAN_JOB_NAME}" | tr / -)
-
+            
             # Create required symlinks
             ln -sf ~/project/artifacts/${SANITIZED_SCAN_JOB_NAME}_report.json /tmp/report.json
             ln -sf ~/project/artifacts/${SANITIZED_SCAN_JOB_NAME}_filtered_vulnerabilities.json /tmp/filtered_vulnerabilities.json
-
+      
       - run:
           name: Analyze trivy scan
           command: |
@@ -121,7 +121,7 @@ commands:
       - store_artifacts:
           path: report.csv
           destination: report.csv
-      
+
       - run:
           name: Analyze filtered vulnerabilities
           command: |
@@ -142,6 +142,6 @@ commands:
               echo "No filtered_vulnerabilities.txt found. Skipping Jira issue creation."
               exit 0
             fi
-  
+            
             echo "Creating Jira Issues from filtered_vulnerabilities.txt..."
             python3 .circleci/pyscripts/create_jira_issues.py
