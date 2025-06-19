@@ -212,6 +212,12 @@ for e in main_yml_content:
 
             if build_components["oci"]:
                 workflow_path = print_add(workflow_path, level, filters_enabled, "oci")
+            
+            if build_components["trivy-scan"]:
+                workflow_path = print_add(workflow_path, level, filters_enabled, "trivy-scan")
+            
+            if build_components["trivy-analyze"]:
+                workflow_path = print_add(workflow_path, level, filters_enabled, "trivy-analyze")
 
             if build_components["experimental"]:
                 workflow_path = print_add(

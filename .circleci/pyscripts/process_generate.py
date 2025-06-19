@@ -106,6 +106,10 @@ for change in changed_files:
         add_to_build_list("Integration_tests")
     elif "src/test/" in change and "smoke-test/" in change:
         add_to_build_list("smoke_tests")
+    elif "trivy-config/trivyignore" in change:
+        add_to_build_list("trivy-scan")
+    elif "trivy-config/trivyignore" in change:
+        add_to_build_list("trivy-analyze")
     elif "opennms-container" in change:
         add_to_build_list("oci")
     elif ".circleci" in change and ".circleci/epoch" not in change:
@@ -175,6 +179,8 @@ else:
         "debs": False,
         "oci": False,
         "build-publish": False,
+        "trivy-scan": False,
+        "trivy-analyze": False,
         "experimental": False,
     }
 
@@ -290,6 +296,10 @@ for keyword in git_keywords:
             build_mappings["oci"] = True
         if "build-publish" in keyword:
             build_mappings["build-publish"] = True
+        if "trivy-scan" in keyword:
+            build_mappings["trivy-scan"] = True
+        if "trivy-analyze" in keyword:
+            build_mappings["trivy-analyze"] = True
 
 
 if "smoke" in git_keywords or "smoke_tests" in What_to_build:
@@ -299,6 +309,12 @@ if "oci" in git_keywords:
 
 if "rpms" in git_keywords:
     build_mappings["rpms"] = True
+
+if "trivy-scan" in git_keywords:
+    build_mappings["trivy-scan"] = True
+
+if "trivy-analyze" in git_keywords:
+    build_mappings["trivy-analyze"] = True
 
 if "debs" in git_keywords:
     build_mappings["debs"] = True

@@ -13,6 +13,7 @@ commands:
   #commands:login/login.index#
   #commands:executions/executions.index#
   #commands:oci/oci#
+  #commands:oci/scan-image-trivy#
   #commands:generic/generic#
 
 #workflows#
