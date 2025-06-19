@@ -95,9 +95,9 @@ jobs:
               -Pproduction \
               -Prelease \
               --batch-mode \
-              -DnexusUrl="https://oss.sonatype.org/" \
-              -DserverId="opennms-ossrh" \
+              -DnexusUrl="https://central.sonatype.com/" \
+              -DserverId="central-portal" \
               -DautoReleaseAfterClose=true \
               install \
-              org.sonatype.plugins:nexus-staging-maven-plugin:deploy \
+              org.sonatype.central:central-publishing-maven-plugin:publish \
               || exit 1
