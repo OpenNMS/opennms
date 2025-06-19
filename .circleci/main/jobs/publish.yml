@@ -97,7 +97,7 @@ jobs:
               --batch-mode \
               -DnexusUrl="https://central.sonatype.com/" \
               -DserverId="central-portal" \
-              -DautoReleaseAfterClose=true \
+              -DautoPublish=true \
               install \
               org.sonatype.central:central-publishing-maven-plugin:publish \
               || exit 1

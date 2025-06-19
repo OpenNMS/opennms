@@ -11,4 +11,11 @@
    <mirrorOf>*</mirrorOf>
   </mirror>
  </mirrors>
+ <servers>
+   <server>
+     <id>central-portal</id>
+     <username>${env.OPENNMS_OSSRH_USERNAME}</username>
+     <password>${env.OPENNMS_OSSRH_PASSWORD}</password>
+   </server>
+ </servers>
 </settings>
