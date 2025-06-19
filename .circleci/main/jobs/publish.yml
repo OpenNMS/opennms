@@ -99,5 +99,5 @@ jobs:
               -DserverId="central-portal" \
               -DautoReleaseAfterClose=true \
               install \
-              org.sonatype.central:central-publishing-maven-plugin:deploy \
+              org.sonatype.central:central-publishing-maven-plugin:publish \
               || exit 1
