@@ -1,0 +1,6 @@
+jobs:
+  horizon-image-single-arch-linux-amd64-trivy-analyze:
+    executor: base-executor
+    resource_class: medium
+    steps:
+      - trivy-analyze
