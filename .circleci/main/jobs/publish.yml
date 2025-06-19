@@ -99,5 +99,5 @@ jobs:
               -DserverId="central-portal" \
               -DautoReleaseAfterClose=true \
               install \
-              org.sonatype.plugins:nexus-staging-maven-plugin:deploy \
+              org.sonatype.central:central-publishing-maven-plugin:deploy \
               || exit 1
