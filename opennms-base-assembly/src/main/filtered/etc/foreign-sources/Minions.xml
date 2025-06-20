@@ -12,7 +12,7 @@
 			<parameter key="timeout" value="3000"/>
 			<parameter key="retries" value="2"/>
 			<parameter key="type" value="default"/>
-		</detector>
+      </detector>
    </detectors>
    <policies>
       <policy name="Minion-SNMP-Policy" class="org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy">

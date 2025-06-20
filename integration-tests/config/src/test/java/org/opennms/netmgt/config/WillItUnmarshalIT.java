@@ -225,6 +225,7 @@ public class WillItUnmarshalIT {
         addFile(Source.CONFIG, "enlinkd-configuration.xml", EnlinkdConfiguration.class, false, null);
         addFile(Source.CONFIG, "eventconf.xml", Events.class, true, null);
         addFile(Source.CONFIG, "eventd-configuration.xml", EventdConfiguration.class, true, null);
+        addFile(Source.CONFIG, "foreign-sources/Minions.xml", ForeignSource.class, false, null);
         addFile(Source.CONFIG, "foreign-sources/selfmonitor.xml", ForeignSource.class, false, null);
         addFile(Source.CONFIG, "geoip-adapter-configuration.xml", GeoIpConfig.class, false, null);
         addFile(Source.CONFIG, "groups.xml", Groupinfo.class, true, null);
