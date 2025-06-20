@@ -54,6 +54,7 @@ jobs:
   publish-maven:
     executor: build-executor
     resource_class: xlarge
+    no_output_timeout: "60m"
     steps:
       - cached-checkout
       - attach_workspace:
