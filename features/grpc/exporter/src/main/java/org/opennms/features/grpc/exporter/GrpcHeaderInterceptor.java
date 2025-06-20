@@ -37,16 +37,18 @@ public class GrpcHeaderInterceptor implements ClientInterceptor {
 
     private final Metadata metadata;
     private ZenithConnectPersistenceService zenithConnectPersistenceService;
+    private final Metadata.Key AUTHORIZATION_KEY = Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER);
+    private final Metadata.Key TENAT_ID_KEY = Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER);
 
     public GrpcHeaderInterceptor(String tenantId) {
         metadata = new Metadata();
-        metadata.put(Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER), tenantId);
+        metadata.put(TENAT_ID_KEY, tenantId);
     }
 
     @Override
     public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(
             MethodDescriptor<ReqT, RespT> method, CallOptions callOptions, Channel next) {
-        addRefreshTokenInHeaders(metadata);
+        addAccessTokenInHeaders(metadata);
         return new HeaderAttachingClientCall<>(next.newCall(method, callOptions), metadata);
     }
 
@@ -70,12 +72,15 @@ public class GrpcHeaderInterceptor implements ClientInterceptor {
         this.zenithConnectPersistenceService = service;
     }
 
-    private void addRefreshTokenInHeaders(Metadata headers){
+    private void addAccessTokenInHeaders(Metadata headers){
         if (zenithConnectPersistenceService != null) {
             try {
                 ZenithConnectRegistration registrations = zenithConnectPersistenceService.getRegistrations().first();
                 if (registrations != null) {
-                    headers.put(Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER), "Bearer " + registrations.refreshToken);
+                    if (headers.containsKey(AUTHORIZATION_KEY)) {
+                        headers.removeAll(AUTHORIZATION_KEY);
+                    }
+                    headers.put(AUTHORIZATION_KEY, "Bearer " + registrations.accessToken);
                 }
             } catch (ZenithConnectPersistenceException e) {
                 throw new RuntimeException(e);
