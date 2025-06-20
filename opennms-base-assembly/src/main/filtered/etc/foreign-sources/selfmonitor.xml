@@ -21,41 +21,6 @@
       <detector name="OpenNMS-DB-Stats" class="org.opennms.netmgt.provision.detector.loop.LoopDetector">
          <parameter key="ipMatch" value="127.0.0.1"/>
       </detector>
-      <!--The following aren't strictly for the self-monitor but are related and have been moved from the default FS-->
-		<detector name="JMX-Minion" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
-			<parameter key="port" value="1299"/>
-			<parameter key="factory" value="PASSWORD_CLEAR"/>
-			<parameter key="username" value="admin"/>
-			<parameter key="password" value="admin"/>
-			<parameter key="protocol" value="rmi"/>
-			<parameter key="urlPath" value="/karaf-minion"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="retries" value="2"/>
-			<parameter key="type" value="default"/>
-		</detector>
-		<detector name="JMX-Cassandra" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
-			<parameter key="port" value="7199"/>
-			<parameter key="retries" value="2"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="protocol" value="rmi"/>
-			<parameter key="urlPath" value="/jmxrmi"/>
-			<parameter key="factory" value="PASSWORD_CLEAR"/>
-			<parameter key="username" value="cassandra-username"/>
-			<parameter key="password" value="cassandra-password"/>
-			<parameter key="type" value="default"/>
-		</detector>
-		<detector name="JMX-Cassandra-Newts" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
-			<parameter key="port" value="7199"/>
-			<parameter key="retries" value="2"/>
-			<parameter key="timeout" value="3000"/>
-			<parameter key="protocol" value="rmi"/>
-			<parameter key="urlPath" value="/jmxrmi"/>
-			<parameter key="factory" value="PASSWORD_CLEAR"/>
-			<parameter key="username" value="cassandra-username"/>
-			<parameter key="password" value="cassandra-password"/>
-			<parameter key="type" value="default"/>
-			<parameter key="object" value="org.apache.cassandra.db:type=ColumnFamilies,keyspace=newts,columnfamily=samples"/>
-		</detector>
    </detectors>
    <policies/>
 </foreign-source>
