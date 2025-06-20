@@ -1,0 +1,24 @@
+<foreign-source xmlns="http://xmlns.opennms.org/xsd/config/foreign-source" name="Minions">
+   <scan-interval>1d</scan-interval>
+   <detectors>
+      <detector name="SNMP" class="org.opennms.netmgt.provision.detector.snmp.SnmpDetector"/>
+      <detector name="JMX-Minion" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
+			<parameter key="port" value="1299"/>
+			<parameter key="factory" value="PASSWORD_CLEAR"/>
+			<parameter key="username" value="admin"/>
+			<parameter key="password" value="admin"/>
+			<parameter key="protocol" value="rmi"/>
+			<parameter key="urlPath" value="/karaf-minion"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="retries" value="2"/>
+			<parameter key="type" value="default"/>
+		</detector>
+   </detectors>
+   <policies>
+      <policy name="Minion-SNMP-Policy" class="org.opennms.netmgt.provision.persist.policies.MatchingSnmpInterfacePolicy">
+         <parameter key="ifDescr" value="~^docker.*$"/>
+         <parameter key="action" value="DO_NOT_PERSIST"/>
+         <parameter key="matchBehavior" value="ALL_PARAMETERS"/>
+      </policy>
+   </policies>
+</foreign-source>
