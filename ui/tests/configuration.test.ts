@@ -161,13 +161,54 @@ test('Validate host fn should allow ipv4, ipv6, and domains', () => {
   expect(ConfigurationHelper.validateHost('my-123-domain.com-123')).toEqual('')
   expect(ConfigurationHelper.validateHost('123my.do-main.com')).toEqual('')
 
-  // cannot start with hyphen
+  expect(ConfigurationHelper.validateHost('user:pass@domain.com')).toEqual('')
+  expect(ConfigurationHelper.validateHost('admin:admin@33horizon.example.com')).toEqual('')
+  expect(ConfigurationHelper.validateHost('user:pass@192.168.1.10')).toEqual('')
+  expect(ConfigurationHelper.validateHost('user:pass@[2345:0425:2CA1:0000:0000:0567:5673:23b5]')).toEqual('')
+  expect(ConfigurationHelper.validateHost('admin:admin@33horizon.example.com:8980')).toEqual('')
+  expect(ConfigurationHelper.validateHost('admin:admin@host-with-dashes.com')).toEqual('')
+
+  expect(ConfigurationHelper.validateHost('domain.com:8080')).toEqual('')
+  expect(ConfigurationHelper.validateHost('192.168.1.1:3000')).toEqual('')
+  expect(ConfigurationHelper.validateHost('[2345:0425:2CA1:0000:0000:0567:5673:23b5]:443')).toEqual('')
+
+
+
   expect(ConfigurationHelper.validateHost('-domaindotcom')).toEqual(ErrorStrings.InvalidHostname)
-  // cannot contain space
   expect(ConfigurationHelper.validateHost('domain com')).toEqual(ErrorStrings.InvalidHostname)
-  // cannot be over 49 characters unless valid domain
-  const longHostname = 'testalonghostnameover49characterslongtestalonghostn'
-  expect(ConfigurationHelper.validateHost(longHostname)).toEqual(ErrorStrings.InvalidHostname)
+  expect(ConfigurationHelper.validateHost('bad@host:com')).toEqual(ErrorStrings.InvalidHostname)
+  expect(ConfigurationHelper.validateHost('user:@host')).toEqual(ErrorStrings.InvalidHostname)
+  expect(ConfigurationHelper.validateHost(':pass@host')).toEqual(ErrorStrings.InvalidHostname)
+  expect(ConfigurationHelper.validateHost('http://user:pass@')).toEqual(ErrorStrings.InvalidHostname)
+
+  expect(ConfigurationHelper.validateHost('domain..com')).toEqual(ErrorStrings.InvalidHostname)
+  expect(ConfigurationHelper.validateHost('domain@com')).toEqual(ErrorStrings.InvalidHostname)
+  expect(ConfigurationHelper.validateHost('com@domain.com')).toEqual(ErrorStrings.InvalidHostname)
+  expect(ConfigurationHelper.validateHost('user:pass@host:abc')).toEqual(ErrorStrings.InvalidHostname) // invalid port
+
+  expect(ConfigurationHelper.validateHost('${scv:requisition:username}:${scv:requisition:password}@host.com')).toEqual('')
+  expect(ConfigurationHelper.validateHost('${scv:requisition:username}:${scv:requisition:password}@192.168.0.1')).toEqual('')
+  expect(ConfigurationHelper.validateHost('${scv:requisition:username}:${scv:requisition:password}@[2345:0425:2CA1:0000:0000:0567:5673:23b5]:443')).toEqual('')
+  expect(ConfigurationHelper.validateHost('${scv:requisition:password}@example.com')).toEqual(ErrorStrings.InvalidHostname)
+  expect(ConfigurationHelper.validateHost('user:${scv:requisition:password}@host.com')).toEqual('')
+  expect(ConfigurationHelper.validateHost('${scv:requisition:username}@example.com:8080')).toEqual(ErrorStrings.InvalidHostname)
+  expect(ConfigurationHelper.validateHost('${scv:requisition:username}:${scv:requisition:password}@host-with-dashes.com:9090')).toEqual('')
+
+  expect(ConfigurationHelper.validateHost('${scv:requisition:username}@host.com')).toEqual(ErrorStrings.InvalidHostname)
+  expect(ConfigurationHelper.validateHost('${scv:requisition:username}@')).toEqual(ErrorStrings.InvalidHostname)
+  expect(ConfigurationHelper.validateHost('${scvuser}@host')).toEqual(ErrorStrings.InvalidHostname) // missing {}
+
+  expect(ConfigurationHelper.validateHost('user@host:pass')).toEqual(ErrorStrings.InvalidHostname)
+  expect(ConfigurationHelper.validateHost('user:pass@host:abc')).toEqual(ErrorStrings.InvalidHostname)
+  expect(ConfigurationHelper.validateHost('user:pass@host:65536')).toEqual(ErrorStrings.InvalidHostname) // invalid port
+  expect(ConfigurationHelper.validateHost('host:-1')).toEqual(ErrorStrings.InvalidHostname)
+
+  expect(ConfigurationHelper.validateHost('host with space')).toEqual(ErrorStrings.InvalidHostname)
+  expect(ConfigurationHelper.validateHost('host#.com')).toEqual(ErrorStrings.InvalidHostname)
+  expect(ConfigurationHelper.validateHost('-hostname')).toEqual(ErrorStrings.InvalidHostname)
+  expect(ConfigurationHelper.validateHost('hostname-')).toEqual(ErrorStrings.InvalidHostname)
+  expect(ConfigurationHelper.validateHost('.hostname')).toEqual(ErrorStrings.InvalidHostname)
+  expect(ConfigurationHelper.validateHost('hostname.')).toEqual(ErrorStrings.InvalidHostname)
 })
 
 describe('Zone field - validateZoneField()', () => {

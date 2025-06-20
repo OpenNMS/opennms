@@ -1,0 +1,21 @@
+<blueprint
+  xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://www.osgi.org/xmlns/blueprint/v1.0.0 http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd"
+>
+    <reference
+        id="zenithConnectPersistenceService"
+        interface="org.opennms.features.zenithconnect.persistence.api.ZenithConnectPersistenceService"
+        availability="optional"
+    />
+
+    <bean id="defaultZenithConnectRestService"
+          class="org.opennms.features.zenithconnect.rest.impl.DefaultZenithConnectRestService">
+        <argument ref="zenithConnectPersistenceService"/>
+    </bean>
+
+    <service interface="org.opennms.features.zenithconnect.rest.api.ZenithConnectRestService" ref="defaultZenithConnectRestService">
+        <service-properties>
+            <entry key="application-path" value="/rest" />
+        </service-properties>
+    </service>
+</blueprint>

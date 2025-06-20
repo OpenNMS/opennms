@@ -468,12 +468,12 @@ function confirmAssetEdit() {
     <table class="table table-sm">
       <tr>
         <th>Description</th>
-        <td>${model.asset.description}</td>
+        <td>${fn:escapeXml(model.asset.description)}</td>
       </tr>
       
       <tr>
         <th>Comments</th>
-        <td>${model.asset.comments}</td>
+        <td>${fn:escapeXml(model.asset.comments)}</td>
       </tr>
     </table>
     </div>

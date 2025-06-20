@@ -27,10 +27,10 @@ sudo vi etc/custom.system.properties
 .Add configuration properties for tracing with Jaeger
 [source, jaeger.properties]
 ----
-JAEGER_AGENT_HOST=my-jaeger-host<1>
+JAEGER_ENDPOINT=http://localhost:14268/api/traces<1>
 ----
 
-<1> Replace the `my-jaeger-host` with your Jaeger instance where you collect the tracing information
+<1> Replace the `http://localhost:14268` with your Jaeger instance where you collect the tracing information
 
 TIP: Available configuration options are listed in the link:https://github.com/jaegertracing/jaeger-client-java/blob/master/jaeger-core/README.md[Jaeger Core Readme].
 

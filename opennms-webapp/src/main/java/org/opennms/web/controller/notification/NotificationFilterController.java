@@ -186,7 +186,7 @@ public class NotificationFilterController extends AbstractController implements 
                             labels = new String[] { "&lt;No Node Label&gt;", "&lt;No Node Label&gt;" };
                         } else {
                             if ( longLabel.length() > 32 ) {
-                                String shortLabel = longLabel.substring( 0, 31 ) + "&hellip;";
+                                String shortLabel = longLabel.substring( 0, 31 );
                                 labels = new String[] { shortLabel, longLabel };
                             } else {
                                 labels = new String[] { longLabel, longLabel };

@@ -559,10 +559,10 @@
                 <br />
             </c:if>
             <c:if test="<%= alarms[i].getStickyMemo() != null && alarms[i].getStickyMemo().getId() != null%>">
-                <i class="fa fa-comment-o" title="<%=alarms[i].getStickyMemo().getBody() %>"></i>
+                <i class="fa fa-comment-o" title="<%=WebSecurityUtils.sanitizeString(alarms[i].getStickyMemo().getBody()) %>"></i>
             </c:if>
             <c:if test="<%= alarms[i].getReductionKeyMemo() != null && alarms[i].getReductionKeyMemo().getId() != null%>">
-                <i class="fa fa-sticky-note-o" title="<%=alarms[i].getReductionKeyMemo().getBody() %>"></i>
+                <i class="fa fa-sticky-note-o" title="<%=WebSecurityUtils.sanitizeString(alarms[i].getReductionKeyMemo().getBody()) %>"></i>
             </c:if>
 
           <c:if test="${param.display == 'long'}">

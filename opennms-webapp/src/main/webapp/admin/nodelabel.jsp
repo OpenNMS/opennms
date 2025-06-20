@@ -87,7 +87,7 @@
       </div>
       <div class="card-body">
         <p>
-          <a href="element/node.jsp?node=<%=nodeId%>" title="More information for this node"><%=currentLabel.getLabel()%></a> (<%=typeMap.get(currentLabel.getSource())%>)
+          <a href="element/node.jsp?node=<%=nodeId%>" title="More information for this node"><%=WebSecurityUtils.sanitizeString(currentLabel.getLabel())%></a> (<%=typeMap.get(currentLabel.getSource())%>)
         </p>
       </div>
     </div> <!-- panel -->
@@ -110,7 +110,7 @@
             <label>User Defined</label>
             <br/>
             <input type="radio" name="labeltype" class="mr-1" value="user" <%=(currentLabel.getSource() == NodeLabelSource.USER) ? "checked" : ""%> />
-            <input type="text" name="userlabel" value="<%=currentLabel.getLabel()%>" maxlength="255" size="32"/>
+            <input type="text" name="userlabel" value="<%=WebSecurityUtils.sanitizeString(currentLabel.getLabel())%>" maxlength="255" size="32"/>
 
           <br/>
           <br/>
@@ -118,7 +118,7 @@
             <label>Automatic</label>
             <br/>
             <input type="radio" name="labeltype" class="mr-1" value="auto" <%=(currentLabel.getSource() != NodeLabelSource.USER) ? "checked" : ""%> />
-            <%=autoLabel.getLabel()%> (<%=typeMap.get(autoLabel.getSource())%>)
+            <%=WebSecurityUtils.sanitizeString(autoLabel.getLabel())%> (<%=typeMap.get(autoLabel.getSource())%>)
 
           <br/>
           <br/>

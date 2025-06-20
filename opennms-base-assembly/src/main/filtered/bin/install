@@ -67,6 +67,9 @@ for opt in $ADDITIONAL_MANAGER_OPTIONS; do
 	esac
 done
 
+echo "Invoking fix-karaf-setup.sh script..."
+"$OPENNMS_BINDIR"/fix-karaf-setup.sh --yes
+
 # shellcheck disable=SC2086
 exec "$OPENNMS_BINDIR"/runjava -r -- \
 	$OPTIONS \

@@ -45,6 +45,7 @@ import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Properties;
 
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -55,6 +56,7 @@ import org.opennms.core.fileutils.FileUpdateCallback;
 import org.opennms.core.fileutils.FileUpdateWatcher;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.utils.ScvUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -261,7 +263,8 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
     }
 
     private static String getKeystorePassword() {
-        return System.getProperty(KEYSTORE_KEY_PROPERTY, DEFAULT_KEYSTORE_KEY);
+        Properties properties = ScvUtils.loadScvProperties(System.getProperty("opennms.home"));
+        return properties.getProperty(ScvUtils.KEYSTORE_KEY_PROPERTY, DEFAULT_KEYSTORE_KEY);
     }
 
     /*

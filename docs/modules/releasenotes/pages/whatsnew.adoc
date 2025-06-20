@@ -9,6 +9,10 @@
 
 == New features and important changes
 
+=== `install.sh` script clears data directory and restores Karaf-related configuration files
+To overcome common upgrading problems, the data directory is automatically pruned when invoking the `install.sh` script.
+Furthermore, all Karaf-related configuration files are restored to their pristine state.
+
 === OpenNMS Plugin API
 
 The OpenNMS Plugin API has been updated to version 1.6.0, which includes some new APIs ported over from the Horizon codebase to simplify plugin development, as well as cleanups to dependencies.
@@ -28,6 +32,10 @@ Support for `confd` has been added to the Sentinel container.
 An enhanced node list has been introduced with options for sorting and filtering.
 
 == Breaking changes
+
+=== OpenNMS Minion environment variables changes
+The OpenNMS Minion Docker container no longer uses the KAFKA_SINK, KAFKA_RPC and KAFKA_TWIN prefixes to configure Kafka.
+Instead, only the KAFKA_IPC prefix is used, which ensures that all Kafka-related settings are set correctly for all features and that ActiveMQ is no longer installed incorrectly.
 
 === Passive Status Monitor
 The Passive Status Monitor previously used the time of the event's arrival as the timestamp of the status.

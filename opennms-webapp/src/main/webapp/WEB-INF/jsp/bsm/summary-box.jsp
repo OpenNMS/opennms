@@ -27,13 +27,13 @@
 <!-- bsm/summary-box.htm -->
 <div class="card">
   <div class="card-header">
-      <a href="#">Business Services with Pending Problems</a>
+      <a href="#">Business Services with Pending Alarms</a>
   </div>
   <c:choose>
     <c:when test="${empty services}">
       <div class="card-body">
         <p class="mb-0">
-          There are no pending problems.
+          There are no pending alarms.
         </p>
       </div>
     </c:when>
@@ -55,7 +55,7 @@
       </table>
       <c:if test="${more}">
         <div class="card-footer text-right">
-          Not all Business Services with Pending Problems are shown.
+          Not all Business Services with Pending Alarms are shown.
         </div>
       </c:if>
     </c:otherwise>

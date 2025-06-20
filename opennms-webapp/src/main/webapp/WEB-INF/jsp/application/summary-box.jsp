@@ -28,13 +28,13 @@
 <c:url var="headingLink" value="application/index.jsp"/>
 <div class="card">
   <div class="card-header">
-    <a href="${headingLink}">Applications with Pending Problems</a>
+    <a href="${headingLink}">Applications with Pending Alarms</a>
   </div>
   <c:choose>
     <c:when test="${empty summaries}">
       <div class="card-body">
         <p class="mb-0">
-          There are no pending problems.
+          There are no pending alarms.
         </p>
       </div>
     </c:when>
@@ -56,7 +56,7 @@
       </table>
       <c:if test="${more}">
         <div class="card-footer text-right">
-          Not all Applications with Pending Problems are shown.
+          Not all Applications with Pending Alarms are shown.
         </div>
       </c:if>
     </c:otherwise>

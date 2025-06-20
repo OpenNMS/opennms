@@ -41,6 +41,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.features.status.api.node.strategy.query.Query;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
@@ -54,6 +55,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsOutage;
 import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.web.utils.QueryParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
@@ -172,6 +174,37 @@ public class DefaultNodeStatusCalculatorIT {
         verifyStatus(1, ImmutableMap.of(node.getId(), OnmsSeverity.MINOR), statusCalculator.calculateStatus(config));
         config.setLocation("XXX");
         verifyStatus(0, new HashMap<>(), statusCalculator.calculateStatus(config));
+    }
+
+    /**
+     * see NMS-17876
+     */
+    @Test
+    public void testOrderColumns() {
+        for (final NodeStatusCalculationStrategy strategy : Sets.newHashSet(NodeStatusCalculationStrategy.Outages, NodeStatusCalculationStrategy.Alarms)) {
+            for (String orderColumn : Query.ORDER_COLUMNS) {
+                final NodeStatusCalculatorConfig config = new NodeStatusCalculatorConfig();
+                config.setCalculationStrategy(strategy);
+                config.setOrder(new QueryParameters.Order(orderColumn, true));
+                Assert.assertNotNull(statusCalculator.calculateStatus(config));
+            }
+        }
+    }
+
+    /**
+     * see NMS-17876
+     */
+    @Test(expected = IllegalStateException.class)
+    public void testIllegalColumns() {
+        final Set<String> tests = Sets.newHashSet("foobar", "severity; select PG_SLEEP(10)--", "", " ", ";");
+        for (final String test : tests) {
+            for (final NodeStatusCalculationStrategy strategy : Sets.newHashSet(NodeStatusCalculationStrategy.Outages, NodeStatusCalculationStrategy.Alarms)) {
+                final NodeStatusCalculatorConfig config = new NodeStatusCalculatorConfig();
+                config.setCalculationStrategy(strategy);
+                config.setOrder(new QueryParameters.Order(test, true));
+                Assert.assertNotNull(statusCalculator.calculateStatus(config));
+            }
+        }
     }
 
     @Test
