@@ -61,6 +61,7 @@ jobs:
       - restore-maven-cache
       - run:
           name: Deploy to Maven Central
+          no_output_timeout: 30m
           command: |
             ulimit -n 65536 || :
             mkdir -p ~/.m2
@@ -97,7 +98,7 @@ jobs:
               --batch-mode \
               -DnexusUrl="https://central.sonatype.com/" \
               -DserverId="central-portal" \
-              -DautoReleaseAfterClose=true \
+              -DautoPublish=true \
               install \
               org.sonatype.central:central-publishing-maven-plugin:publish \
               || exit 1
