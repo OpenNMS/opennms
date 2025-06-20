@@ -2,6 +2,30 @@
 
 = What's New in OpenNMS Horizon 34
 
+== New features and important changes
+
+=== `install.sh` script clears data directory and restores Karaf-related configuration files
+To overcome common upgrading problems, the data directory is automatically pruned when invoking the `install.sh` script.
+Furthermore, all Karaf-related configuration files are restored to their pristine state.
+
+=== OpenNMS Plugin API
+
+The OpenNMS Plugin API has been updated to version 1.6.0, which includes some new APIs ported over from the Horizon codebase to simplify plugin development, as well as cleanups to dependencies.
+It also includes some fixes to the protocol list used by Enlinkd.
+
+=== Expanded metadata support
+
+It is now possible to use the metadata DSL in nearly all configuration files.
+For details on all of the subsystems that support the metadata DSL, see xref:operation:deep-dive/meta-data.adoc[the operation manual].
+
+=== Confd improvements
+
+Support for `confd` has been added to the Sentinel container.
+
+=== UI: structured node list
+
+An enhanced node list has been introduced with options for sorting and filtering.
+
 == Breaking changes
 The default time series storage strategy is now by default RRDTool.
 
@@ -21,3 +45,18 @@ org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy
 
 The release of Horizon 34 will be the last version which supports reading and writing timeseries data using JRobin.
 The JRobin library and the JRobin timeseries strategy will be removed from Horizon 35+ moving forward.
+
+=== OpenNMS Minion environment variables changes
+The OpenNMS Minion Docker container no longer uses the KAFKA_SINK, KAFKA_RPC and KAFKA_TWIN prefixes to configure Kafka.
+Instead, only the KAFKA_IPC prefix is used, which ensures that all Kafka-related settings are set correctly for all features and that ActiveMQ is no longer installed incorrectly.
+
+=== Secure Credentials Vault changes
+The `Secure Credentials Vault` in `OpenNMS` traditionally supported the `JCEKS` keystore format. As of the latest enhancement,
+support has been added for the `PKCS12` keystore format.
+
+Set `org.opennms.features.scv.jceks.keystore.type=PKCS12` in configuration file
+ `$OPENNMS_HOME/etc/opennms.properties.d/scv.properties.`
+
+If you want to convert the `PKCS12` keystore format instead of `JCEKS`, be sure to update the file extension to match the new format (e.g., use `.pk12` instead of `.jce`).
+You can convert a `JCEKS` file to `PKCS12` using the following command.
+`keytool -importkeystore -srckeystore $OPENNMS_HOME/etc/scv.jce -destkeystore $OPENNMS_HOME/etc/scv.pk12 -deststoretype pkcs12`.

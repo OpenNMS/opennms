@@ -8,7 +8,7 @@ The following are ways you can interact with alarms.
 
 Users can acknowledge alarms to let other {page-component-title} users see that someone is aware of the alarm.
 The alarm will be moved out from `Alarm(s) outstanding` into the `Alarm(s) acknowledged` view.
-Acknowledged alarms will also be hidden from the "Nodes with Pending Problems" section of the home page.
+Acknowledged alarms will also be hidden from the "Nodes with Pending Alarms" section of the home page.
 
 .Acknowledged alarm of an HTTP outage in the alarm overview
 image::alarms/acked_alarm_overview.png["Acknowledged alarm of an HTTP outage in the alarm overview"]

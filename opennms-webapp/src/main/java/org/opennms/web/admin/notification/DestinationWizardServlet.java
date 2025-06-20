@@ -277,7 +277,7 @@ public class DestinationWizardServlet extends HttpServlet {
                 for (int l = 0; l < emailTargets.length; l++) {
                     Target target = new Target();
                     target.setName(emailTargets[l]);
-                    target.addCommand("email");
+                    target.addCommand("javaEmail");
 
                     // see if this target already exists
                     for (int m = 0; m < existingTargets.length; m++) {

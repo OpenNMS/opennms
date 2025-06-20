@@ -32,23 +32,43 @@ if [ "$myuser" != "$RUNAS" ]; then
   exit 4 # According to LSB: 4 - user had insufficient privileges
 fi
 
-echo "This script will try to fix karaf configuration problems by:"
-echo "  - pruning $DATA_DIR directory. This is where the Karaf cache sits."
-echo "  - restore all Karaf related configuration files to a pristine state"
-echo
-echo "You should make a backup of $OPENNMS_HOME/etc before proceeding."
-echo
+ASSUME_YES=0
 
-# make sure user wants to proceed
-echo -e "Are you ready to continue? (y/n) \c"
-read -n1 -r answer
-echo
-if [ "$answer" != "y" ]
-then
-  echo "Ok, goodbye!"
-  exit 0
+while test $# -gt 0
+do
+  case "$1" in
+    --yes) ASSUME_YES=1
+        ;;
+    --help)
+      echo "Usage: fix-karaf-setup.sh [--help | --yes ]"
+      echo "       --yes  : skips confirmation prompt"
+      echo "       --help : displays this help message"
+        ;;
+    *)
+        ;;
+  esac
+  shift
+done
+
+if [ "$ASSUME_YES" -eq 0 ]; then
+  echo "This script will try to fix karaf configuration problems by:"
+  echo "  - pruning $DATA_DIR directory. This is where the Karaf cache sits."
+  echo "  - restore all Karaf related configuration files to a pristine state"
+  echo
+  echo "You should make a backup of $OPENNMS_HOME/etc before proceeding."
+  echo
+
+  # make sure user wants to proceed
+  echo -e "Are you ready to continue? (y/n) \c"
+  read -n1 -r answer
+  echo
+  if [ "$answer" != "y" ]
+  then
+    echo "Ok, goodbye!"
+    exit 0
+  fi
+  echo
 fi
-echo
 
 # Prune data directory, except for history.txt
 echo "Pruning data directory: $DATA_DIR"
