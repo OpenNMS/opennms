@@ -1,5 +1,5 @@
 <!--Cassandra examples for detectors-->
-<foreign-source xmlns="http://xmlns.opennms.org/xsd/config/foreign-source" name="selfmonitor">
+<foreign-source xmlns="http://xmlns.opennms.org/xsd/config/foreign-source" name="cassandraDetectorExample">
    <scan-interval>1d</scan-interval>
    <detectors>
 		<detector name="JMX-Cassandra" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
