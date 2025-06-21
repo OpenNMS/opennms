@@ -23,7 +23,7 @@ RELEASE_BUILD_NUM     ?= ${CIRCLE_BUILD_NUM}
 RELEASE_COMMIT        := $(shell git rev-parse --short HEAD)
 OPEN_FILES_LIMIT      := 20000
 RELEASE_VERSION     := UNSET.0.0
-RELEASE_BRANCH      := develop
+RELEASE_BRANCH      := main
 PUSH_RELEASE        := false
 MAJOR_VERSION       := $(shell echo $(RELEASE_VERSION) | cut -d. -f1)
 MINOR_VERSION       := $(shell echo $(RELEASE_VERSION) | cut -d. -f2)
@@ -792,6 +792,9 @@ release: deps-build
 	@echo "$(OK)"
 	@echo -n "💅 Set version web assets:      "
 	@sed -i.versionsBackup 's/$(OPENNMS_VERSION)/$(RELEASE_VERSION)/g' core/web-assets/package.json >>$(RELEASE_LOG) 2>&1
+	@echo "$(OK)"
+	@echo -n "💅 Set version web assets lock: "
+	@sed -i.versionsBackup 's/$(OPENNMS_VERSION)/$(RELEASE_VERSION)/g' core/web-assets/package-lock.json >>$(RELEASE_LOG) 2>&1
 	@echo "$(OK)"
 	@echo -n "💅 Set version Antora docs:     "
 	@sed -i.versionsBackup 's/$(OPENNMS_VERSION)/$(RELEASE_VERSION)/g' docs/antora.yml >>$(RELEASE_LOG) 2>&1
