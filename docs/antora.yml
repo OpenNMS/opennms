@@ -3,7 +3,7 @@ version: '34-SNAPSHOT'
 title: Horizon
 asciidoc:
   attributes:
-    full-display-version: '34.0.0'
+    full-display-version: '34.0.1-SNAPSHOT'
     package-prefix: opennms
     experimental: true
     source-language: asciidoc@

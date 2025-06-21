@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms-deploy</artifactId>
-  <version>34.0.0</version>
+  <version>34.0.1-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS :: Maven Central Deployment</name>
   <modules>
