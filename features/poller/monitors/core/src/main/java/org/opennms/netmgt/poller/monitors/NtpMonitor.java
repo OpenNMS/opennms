@@ -95,7 +95,9 @@ final public class NtpMonitor extends AbstractServiceMonitor {
         //
         InetAddress ipAddr = svc.getAddress();
 
-        PollStatus serviceStatus = PollStatus.unavailable("The monitor did not receive a response packet within the specified timeout (" + tracker.getTimeoutInMillis() + " ms)");
+        final String noResponseReason = "The monitor did not receive a response packet within the specified timeout (" + tracker.getTimeoutInMillis() + " ms)";
+
+        PollStatus serviceStatus = PollStatus.unavailable(noResponseReason);
         DatagramSocket socket = null;
         double responseTime = -1.0;
         try {
@@ -135,24 +137,20 @@ final public class NtpMonitor extends AbstractServiceMonitor {
                     // Ignore, no response received.
                 }
             }
+
+            LOG.debug(noResponseReason);
         } catch (NoRouteToHostException e) {
-        	
         	String reason = "No route to host exception for address: " + ipAddr;
             LOG.debug(reason, e);
             serviceStatus = PollStatus.unavailable(reason);
-        	
         } catch (ConnectException e) {
-        	
         	String reason = "Connection exception for address: " + ipAddr;
             LOG.debug(reason, e);
             serviceStatus = PollStatus.unavailable(reason);
-        	
-        } catch (IOException ex) {
-        	
+        } catch (IOException e) {
         	String reason = "IOException while polling address: " + ipAddr;
-            LOG.debug(reason, ex);
+            LOG.debug(reason, e);
             serviceStatus = PollStatus.unavailable(reason);
-        	
         } finally {
             if (socket != null)
                 socket.close();
