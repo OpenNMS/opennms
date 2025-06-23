@@ -69,7 +69,7 @@ commands:
               }
               skip { next }
               $4 ~ /^[[:space:]]*0[[:space:]]*$/ { skip=1; next }
-              { print }' /tmp/fullreport.txt > /tmp/report_cleaned.txt && mv /tmp/report_cleaned.txt /tmp/${JOB_NAME_SANITIZED}_fullreport.txt
+              { print }' /tmp/fullreport.txt > /tmp/report_cleaned.txt && mv /tmp/report_cleaned.txt /tmp/report.txt
 
             # Copy to artifacts with job-specific names
             JOB_NAME_SANITIZED=$(echo "${CIRCLE_JOB}" | tr / -)
