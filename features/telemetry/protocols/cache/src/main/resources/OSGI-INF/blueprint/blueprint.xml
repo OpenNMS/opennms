@@ -61,7 +61,7 @@
             <entry key="description" value="Node Caches" />
         </service-properties>
     </service>
-    <bean id="flowCacheMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.JmxReporter" factory-method="forRegistry">
+    <bean id="flowCacheMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.jmx.JmxReporter" factory-method="forRegistry">
         <argument ref="flowCacheMetricRegistry"/>
     </bean>
     <bean id="flowCacheMetricRegistryDomainedJmxReporterBuilder" factory-ref="flowCacheMetricRegistryJmxReporterBuilder" factory-method="inDomain">
