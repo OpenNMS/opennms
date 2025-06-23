@@ -1031,7 +1031,7 @@
       <url>https://central.sonatype.com/repository/maven-snapshots</url>
     </snapshotRepository>
     <repository>
-      <id>opennms-ossrh</id>
+      <id>central-portal</id>
       <url>https://central.sonatype.com/repository/maven-releases/</url>
     </repository>
   </distributionManagement>
