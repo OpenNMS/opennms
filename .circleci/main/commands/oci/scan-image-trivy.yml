@@ -53,8 +53,24 @@ commands:
 
             /tmp/bin/trivy image --severity HIGH,CRITICAL --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/filtered_vulnerabilities.json --no-progress opennms/${TAG}
             /tmp/bin/trivy image --pkg-types os,library --scanners vuln --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --format json -o /tmp/report.json --no-progress opennms/${TAG}
-            /tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 -o /tmp/report.txt --no-progress opennms/${TAG}
+            /tmp/bin/trivy image --ignorefile ~/project/.circleci/trivy-config/trivyignore --timeout 30m --exit-code 0 -o /tmp/fullreport.txt --no-progress opennms/${TAG}
 
+            # Clean report.txt by removing rows with 0 vulnerabilities
+            awk 'BEGIN { FS="│"; in_table=0; skip=0 }
+              index($0,"┌")==1 { print; in_table=1; next }
+              !in_table { print; next }
+              index($0,"├")==1 {
+                  if (skip) { skip=0; next }
+                  print; next
+              }
+              index($0,"└")==1 {
+                  if (skip) { skip=0; print; in_table=0; next }
+                  print; in_table=0; next
+              }
+              skip { next }
+              $4 ~ /^[[:space:]]*0[[:space:]]*$/ { skip=1; next }
+              { print }' /tmp/fullreport.txt > /tmp/report_cleaned.txt && mv /tmp/report_cleaned.txt /tmp/report.txt
+            
             # Copy to artifacts with job-specific names
             JOB_NAME_SANITIZED=$(echo "${CIRCLE_JOB}" | tr / -)
             cp /tmp/report.json ~/project/artifacts/${JOB_NAME_SANITIZED}_report.json
