@@ -37,6 +37,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.apache.commons.lang.builder.ToStringBuilder;
 import org.apache.commons.lang.builder.ToStringStyle;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.core.utils.LocationUtils;
 import org.opennms.netmgt.config.SnmpEventInfo;
 import org.opennms.netmgt.snmp.SnmpAgentConfig;
 
@@ -91,10 +92,11 @@ public class SnmpInfo {
 	 * @param config
 	 *            a {@link org.opennms.netmgt.snmp.SnmpAgentConfig} object.
 	 */
-	public SnmpInfo(SnmpAgentConfig config) {
+	public SnmpInfo(SnmpAgentConfig config, final String location) {
 		if (config == null) return;
 
 		m_version = config.getVersionAsString();
+		m_location = LocationUtils.getEffectiveLocationName(location);
 		if (config.getPort() >= 1) m_port = config.getPort();
 		if (config.getTimeout() >= 1) m_timeout = config.getTimeout();
 		if (config.getRetries() >= 1) m_retries = config.getRetries();
