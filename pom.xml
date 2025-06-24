@@ -1754,7 +1754,7 @@
     <!-- Match (or beat) Newts version -->
     <cassandraVersion>4.17.0</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
-    <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
+    <commonsBeanutilsVersion>1.11.0</commonsBeanutilsVersion>
     <commonsChainVersion>1.2</commonsChainVersion>
     <commonsCliVersion>1.7.0</commonsCliVersion>
     <commonsCodecVersion>1.16.1</commonsCodecVersion>
