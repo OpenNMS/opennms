@@ -12,4 +12,3 @@ jobs:
           container_dir: sentinel
           tarball_match: sentinel
           tarball_path: /opennms-assemblies/sentinel/target
-      - trivy-analyze
