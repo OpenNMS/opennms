@@ -11,6 +11,8 @@ on:
     tags:
       - 'v*'  # Only version tags like v1.0.0
 
+permissions: write-all
+
 jobs:
   build-with-smoke-test:
     if: "!contains(github.event.commits[0].message, '[skip build-with-smoke-test]')"
