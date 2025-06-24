@@ -2,13 +2,18 @@
   <FeatherAppBar :labels="{ skip: 'main' }" content="app" :ref="outsideClick" @mouseleave="resetMenuItems">
     <template v-slot:left>
       <div class="center-flex">
-        <FeatherAppBarLink :icon="Logo" title="Home" class="logo-link home" type="home" :url="mainMenu.homeUrl || '/'" />
-        <Search class="search-left-margin" />
+        <FeatherAppBarLink :icon="IconLogo" title="Home" class="logo-link home" type="home" :url="mainMenu.homeUrl || '/'" />
+
+        <div class="date-wrapper">
+          <div class="date-formatted-date">{{ formattedDate }}</div>
+          <div class="date-formatted-time">{{ formattedTime }}</div>
+        </div>
       </div>
     </template>
 
-    <template v-slot:right>
-      <template v-if="mainMenu.username">
+    <template v-slot:center>
+        <Search class="search-left-margin" />
+
         <!-- Provision/Quick add node menu -->
         <div class="quick-add-node-wrapper">
           <FeatherButton
@@ -17,30 +22,12 @@
             @click="onAddNode"
           >Add a Node</FeatherButton>
         </div>
+    </template>
 
+    <template v-slot:right>
+      <template v-if="mainMenu.username">
         <UserNotificationsMenuItem :ref="userNotificationsMenu" />
-
-        <template v-if="mainMenu.username">
-          <div class="notifications-icon-wrapper">
-            <FeatherTooltip
-              :title="noticeStatusDisplay?.title"
-              :alignment="PointerAlignment.left"
-              :placement="PopoverPlacement.top"
-               v-slot="{ attrs, on }">
-              <FeatherIcon
-                v-bind="attrs"
-                v-on="on"
-                :icon="noticeStatusDisplay?.iconComponent"
-                :class="[noticeStatusDisplay?.colorClass, 'notice-status-display']"
-              />
-            </FeatherTooltip>
-          </div>
-
-          <div class="date-wrapper">
-            <div class="date-formatted-date">{{ formattedDate }}</div>
-            <div class="date-formatted-time">{{ formattedTime }}</div>
-          </div>
-        </template>
+        <UserSelfServiceMenuItem />
       </template>
 
       <!-- <FeatherIcon :icon="LightDarkMode" title="Toggle Light/Dark Mode" class="pointer light-dark"
@@ -53,16 +40,14 @@
 import { useOutsideClick } from '@featherds/composables/events/OutsideClick'
 import { FeatherAppBar, FeatherAppBarLink } from '@featherds/app-bar'
 import { FeatherButton } from '@featherds/button'
-import { FeatherIcon } from '@featherds/icon'
-import IconHide from '@featherds/icon/action/Hide'
-import IconNotifications from '@featherds/icon/action/Notifications'
-import { FeatherTooltip, PointerAlignment, PopoverPlacement } from '@featherds/tooltip'
-import Logo from '@/assets/LogoHorizon.vue'
+
+import IconLogo from '@/assets/LogoHorizon.vue'
 import { useAppStore } from '@/stores/appStore'
 import { useMenuStore } from '@/stores/menuStore'
-import { MainMenu, NoticeStatusDisplay } from '@/types/mainMenu'
+import { MainMenu } from '@/types/mainMenu'
 import Search from './Search.vue'
 import UserNotificationsMenuItem from './UserNotificationsMenuItem.vue'
+import UserSelfServiceMenuItem from './UserSelfServiceMenuItem.vue'
 import { getFormattedDateTime, FormattedDateTime } from './utils'
 
 const appStore = useAppStore()
@@ -92,34 +77,6 @@ const onAddNode = () => {
   const url = computeLink(mainMenu.value.provisionMenu?.url || '')
   window.location.assign(url)
 }
-
-const noticeStatusDisplay = computed<NoticeStatusDisplay>(() => {
-  const status = mainMenu.value?.noticeStatus
-
-  if (status === 'On') {
-    return {
-      icon: 'fa-solid fa-bell',
-      iconComponent: markRaw(IconNotifications),
-      colorClass: 'alarm-ok',
-      title: 'Notices: On'
-    }
-  } else if (status === 'Off') {
-    return {
-      icon: 'fa-solid fa-bell-slash',
-      iconComponent: markRaw(IconHide),
-      colorClass: 'alarm-error',
-      title: 'Notices: Off'
-    }
-  }
-
-  // 'Unknown'
-  return {
-    icon: 'fa-solid fa-bell',
-    iconComponent: markRaw(IconNotifications),
-    colorClass: 'alarm-unknown',
-    title: 'Notices: Unknown'
-  }
-})
 
 const toggleDarkLightMode = (savedTheme: string | null) => {
   const el = document.body
@@ -256,14 +213,14 @@ onMounted(async () => {
 
   .date-formatted-date {
     display: flex;
-    justify-content: right;
+    justify-content: left;
     font-weight: 800;
     font-size: 1.25em;
   }
 
   .date-formatted-time {
     display: flex;
-    justify-content: right;
+    justify-content: left;
   }
 }
 </style>

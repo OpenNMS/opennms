@@ -7,24 +7,41 @@
     <template v-slot:trigger="{ attrs, on }">
       <div @mouseenter="showMenu">
         <FeatherButton link href="#" v-bind="attrs" v-on="on" class="menubar-dropdown-button-dark">
-          <span
-            :class="['notification-badge-pill', userNotificationBadgeClass]">
-            {{ notificationSummary.userUnacknowledgedCount ?? 0 }}
-          </span>
-          <span
-            :class="['notification-badge-pill', teamNotificationBadgeClass]">
-            {{ notificationSummary.teamUnacknowledgedCount ?? 0 }}
-          </span>
-          <FeatherIcon :icon="ArrowDropDown" />
+          <FeatherIcon
+            :icon="noticeStatusDisplay?.iconComponent"
+            :class="[noticeStatusDisplay?.colorClass, 'notice-status-display']"
+          />
+
+          <FeatherIcon :icon="IconArrowDropDown" />
         </FeatherButton>
       </div>
     </template>
 
-    <FeatherDropdownItem v-for="item in mainMenu.userNotificationMenu?.items?.filter(i => i.id === 'userNotificationUser')"
-      :key="item.name || ''" @click="onMenuItemClick(item.url || '')">
+    <FeatherDropdownItem
+      @click="onMenuItemClick(notificationConfigUrl)"
+    >
+      <div class="menubar-dropdown-item-content">
+        <a :href="computeLink(notificationConfigUrl)" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
+          <FeatherIcon
+            :icon="noticeStatusDisplay?.iconComponent"
+            :class="[noticeStatusDisplay?.colorClass, 'user-notifications-icon']"
+          />
+
+          <span class="left-margin-small">
+            {{ noticeStatusDisplay?.title ?? '' }}
+          </span>
+        </a>
+      </div>
+    </FeatherDropdownItem>
+
+    <FeatherDropdownItem
+      v-for="item in mainMenu.userNotificationMenu?.items?.filter(i => i.id === 'userNotificationUser')"
+      :key="item.name || ''"
+      @click="onMenuItemClick(item.url || '')"
+    >
       <div class="menubar-dropdown-item-content">
         <a :href="computeLink(item.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
-          <FeatherIcon :icon="Person" class="user-notifications-icon" />
+          <FeatherIcon :icon="IconPerson" class="user-notifications-icon" />
           <span class="left-margin-small">
             {{ notificationSummary.userUnacknowledgedCount ?? 0 }} notices assigned to you
           </span>
@@ -35,7 +52,10 @@
     <!-- user notifications -->
     <FeatherDropdownItem
       v-for="item in notificationSummary.userUnacknowledgedNotifications.notification.slice(0, maxNotifications)"
-      :key="item.id || ''" class="notification-dropdown-item" @click="onNotificationItemClick(item)">
+      :key="item.id || ''"
+      class="notification-dropdown-item"
+      @click="onNotificationItemClick(item)"
+    >
       <template #default>
         <div class="menubar-dropdown-item-content">
           <div class="notification-dropdown-item-content dropdown-menu-wrapper">
@@ -61,25 +81,34 @@
         </div>
       </template>
     </FeatherDropdownItem>
-    <FeatherDropdownItem v-if="notificationSummary.userUnacknowledgedCount > maxNotifications">
+
+    <FeatherDropdownItem
+      v-if="notificationSummary.userUnacknowledgedCount > maxNotifications"
+    >
       <div class="menubar-dropdown-item-content">
         <div class="dropdown-menu-wrapper show-more-link notification-dropdown-item-content">
           <a :href="notificationsShowMoreLink" @click="onMenuItemClick(notificationsShowMoreLink)">Show more...</a>
         </div>
       </div>
     </FeatherDropdownItem>
+
     <!-- Team and On-Call links -->
-    <FeatherDropdownItem v-for="item in mainMenu.userNotificationMenu?.items?.filter(i => i.id !== 'userNotificationUser')"
-      :key="item.name || ''" @click="onMenuItemClick(item.url || '')">
+    <FeatherDropdownItem
+      v-for="item in mainMenu.userNotificationMenu?.items?.filter(i => i.id !== 'userNotificationUser' && i.id !== 'userNotificationConfiguration')"
+      :key="item.name || ''"
+      @click="onMenuItemClick(item.url || '')"
+    >
       <div class="menubar-dropdown-item-content">
         <a :href="computeLink(item.url || '')"
           class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
           <template v-if="item.id === 'userNotificationTeam'">
-            <FeatherIcon :icon="Person" class="user-notifications-icon" />
+            <FeatherIcon :icon="IconGroup" class="user-notifications-icon" />
           </template>
+
           <template v-if="item.id === 'userNotificationOnCall'">
-            <FeatherIcon :icon="Calendar" class="user-notifications-icon" />
+            <FeatherIcon :icon="IconCalendar" class="user-notifications-icon" />
           </template>
+
           <span class="left-margin-small">
             <template v-if="item.id === 'userNotificationTeam'">
               {{ notificationSummary.teamUnacknowledgedCount ?? 0 }} of {{ notificationSummary.totalUnacknowledgedCount ?? 0
@@ -98,12 +127,16 @@
 <script setup lang="ts">
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
-import ArrowDropDown from '@featherds/icon/navigation/ArrowDropDown'
-import Calendar from '@featherds/icon/action/Calendar'
-import Person from '@featherds/icon/action/Person'
+import IconArrowDropDown from '@featherds/icon/navigation/ArrowDropDown'
+import IconCalendar from '@featherds/icon/action/Calendar'
+import IconGroup from '@featherds/icon/action/Group'
+import IconNotificationsOff from '@featherds/icon/notification/NotificationsOff'
+import IconNotificationSelected from '@featherds/icon/notification/NotificationSelected'
+import IconPerson from '@featherds/icon/action/Person'
 import { useMenuStore } from '@/stores/menuStore'
 import {
   MainMenu,
+  NoticeStatusDisplay,
   NotificationSummary,
   OnmsNotification
 } from '@/types/mainMenu'
@@ -114,11 +147,7 @@ const maxNotifications = 2
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 
 const updateDisplay = (val: any) => {
-  if (val === true) {
-    displayMenu.value = true
-  } else {
-    displayMenu.value = false
-  }
+  displayMenu.value = val === true
 }
 
 const hideMenu = () => {
@@ -133,30 +162,39 @@ defineExpose({ hideMenu, showMenu })
 
 const notificationSummary = computed<NotificationSummary>(() => menuStore.notificationSummary)
 
-const userNotificationBadgeClass = computed<string>(() => {
-  if (notificationSummary.value.userUnacknowledgedCount === 0) {
-    return 'badge-severity-cleared'
-  }
+const notificationConfigUrl = computed(() => {
+  const item = mainMenu.value?.userNotificationMenu?.items?.find(i => i.id === 'userNotificationConfiguration')
 
-  if (!notificationSummary.value.userUnacknowledgedNotifications ||
-      !notificationSummary.value.userUnacknowledgedNotifications.notification) {
-    return 'badge-severity-indeterminate'
-  }
-
-  const severities = ['cleared', 'indeterminate', 'warning', 'minor', 'major', 'critical']
-
-  const severityIndexList = notificationSummary.value.userUnacknowledgedNotifications
-    .notification.map(n => severities.indexOf(n.severity.toLowerCase())) || []
-
-  const maxSeverityIndex = Math.max.apply(Math, severityIndexList)
-  const maxSeverity = severities[maxSeverityIndex]
-
-  return `badge-severity-${maxSeverity}`
+  return item?.url ?? ''
 })
 
-const teamNotificationBadgeClass = computed<string>(() =>
-  notificationSummary.value.teamUnacknowledgedCount === 0 ?  'badge-severity-cleared' : 'badge-info'
-)
+const noticeStatusDisplay = computed<NoticeStatusDisplay>(() => {
+  const status = mainMenu.value?.noticeStatus
+
+  if (status === 'On') {
+    return {
+      icon: 'fa-solid fa-bell',
+      iconComponent: markRaw(IconNotificationSelected),
+      colorClass: 'alarm-ok',
+      title: 'Notices: On'
+    }
+  } else if (status === 'Off') {
+    return {
+      icon: 'fa-solid fa-bell-slash',
+      iconComponent: markRaw(IconNotificationsOff),
+      colorClass: 'alarm-error',
+      title: 'Notices: Off'
+    }
+  }
+
+  // 'Unknown'
+  return {
+    icon: 'fa-solid fa-bell',
+    iconComponent: markRaw(IconNotificationSelected),
+    colorClass: 'alarm-unknown',
+    title: 'Notices: Unknown'
+  }
+})
 
 const notificationsShowMoreLink = computed<string>(() =>
   mainMenu.value.userNotificationMenu?.items?.filter(item => item.id === 'userNotificationUser')[0].url || ''
@@ -190,6 +228,10 @@ const onNotificationItemClick = (item: OnmsNotification) => {
   &:hover {
     text-decoration: none;
   }
+}
+
+.feather-menu.menubar-dropdown {
+  margin-right: 1em;
 }
 
 .menubar-dropdown {
@@ -235,11 +277,12 @@ const onNotificationItemClick = (item: OnmsNotification) => {
   }
 }
 
+// should match menubar-dropdown-item-content in UserSelfServiceMenu
 .menubar-dropdown-item-content {
-  padding-top: 0.33rem;
-  padding-right: 1.25rem;
-  padding-bottom: 0.33rem;
-  padding-left: 1.25rem;
+  padding-top: 0.25rem;
+  padding-right: 0.5rem;
+  padding-bottom: 0.25rem;
+  padding-left: 0.5rem;
   font-size: 0.875rem;
   font-weight: 400;
 
@@ -250,6 +293,27 @@ const onNotificationItemClick = (item: OnmsNotification) => {
 
 .menubar-dropdown-item-content.menubar-padding {
   padding: 10px;
+}
+
+.alarm-error {
+  background-color: var($error);
+  color: var($primary-text-on-color) !important;
+}
+
+.alarm-ok {
+  background-color: var($success);
+  color: var($primary-text-on-color) !important;
+}
+
+.alarm-unknown {
+  background-color: var($indeterminate);
+  color: var($primary-text-on-color) !important;
+}
+
+.notice-status-display {
+  font-size: 2em;
+  border-radius: 1.5em;
+  padding: 0.1em;
 }
 
 .notification-badge-pill {
@@ -269,8 +333,6 @@ const onNotificationItemClick = (item: OnmsNotification) => {
 .notification-dropdown-item-content {
   border-bottom: 1px solid #ececec;
 
-  //  min-height: 200px;
-  //  overflow-y: none;
   .notification-dropdown-item-content-button {
     display: flex;
     align-items: center;

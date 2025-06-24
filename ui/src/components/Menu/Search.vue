@@ -6,7 +6,7 @@
         @update:modelValue="search"
         :modelValue="searchState.currentSearch"
       >
-        <template v-slot:post>
+        <template v-slot:pre>
           <FeatherIcon :icon="SearchIcon" />
         </template>
       </FeatherInput>
@@ -105,14 +105,16 @@ watchEffect(() => {
 >
 @import "@featherds/styles/themes/variables";
 
+/*
 .menubar-search {
   width: 250px !important;
   margin-right: 20px;
 }
+*/
 
 .dropdown-wrapper {
   position: relative;
-  min-width: 250px;
+  min-width: 30em;
 
   .dropdown {
     position: absolute;

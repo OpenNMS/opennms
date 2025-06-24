@@ -336,6 +336,13 @@
     "roles": null,
     "items": [
       {
+        "id": "userNotificationConfiguration",
+        "name": null,
+        "url": "admin/notification/index.jsp",
+        "locationMatch": null,
+        "roles": null
+      },
+      {
         "id": "userNotificationUser",
         "name": null,
         "url": "notification/browse?acktype=unack&filter=user==$USER",
