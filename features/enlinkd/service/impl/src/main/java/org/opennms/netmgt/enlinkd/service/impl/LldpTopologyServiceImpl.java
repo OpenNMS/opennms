@@ -178,23 +178,7 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
             List<LldpLinkTopologyEntity> lldpLinks = getTopologyEntityCache().getLldpLinkTopologyEntities();
             // 1.) create mapping
             Map<CompositeKey, LldpLinkTopologyEntity> lldpLinkCompositeKeyMap = new HashMap<>();
-            List<LldpLinkTopologyEntity> goodLldpLinks = new ArrayList<>();
             for(LldpLinkTopologyEntity lldpLink : lldpLinks){
-                if (lldpLink.getLldpPortIfindex() == -1 ) {
-                    CompositeKey elementarKeyA = new CompositeKey(
-                            lldpLink.getLldpRemChassisId(),
-                            nodelldpelementidMap.get(lldpLink.getNodeId()).getLldpChassisId(),
-                            lldpLink.getLldpRemPortId(),
-                            lldpLink.getLldpRemPortIdSubType());
-                    CompositeKey elementarKeyB = new CompositeKey(
-                            lldpLink.getLldpRemChassisId(),
-                            nodelldpelementidMap.get(lldpLink.getNodeId()).getLldpChassisId(),
-                            lldpLink.getLldpRemPortDescr());
-                    lldpLinkCompositeKeyMap.put(elementarKeyA,lldpLink);
-                    lldpLinkCompositeKeyMap.put(elementarKeyB,lldpLink);
-                    continue;
-                }
-                goodLldpLinks.add(lldpLink);
                 CompositeKey key = new CompositeKey(
                         lldpLink.getLldpRemChassisId(),
                         nodelldpelementidMap.get(lldpLink.getNodeId()).getLldpChassisId(),
@@ -203,12 +187,14 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
                         lldpLink.getLldpRemPortId(),
                         lldpLink.getLldpRemPortIdSubType());
                 lldpLinkCompositeKeyMap.put(key, lldpLink);
+
                 CompositeKey descrkey = new CompositeKey(
                         lldpLink.getLldpRemChassisId(),
                         nodelldpelementidMap.get(lldpLink.getNodeId()).getLldpChassisId(),
                         lldpLink.getLldpPortDescr(),
                         lldpLink.getLldpRemPortDescr());
                 lldpLinkCompositeKeyMap.put(descrkey,lldpLink);
+
                 CompositeKey sysnameKey = new CompositeKey(
                     lldpLink.getLldpRemSysname(),
                     nodelldpelementidMap.get(lldpLink.getNodeId()).getLldpSysname(),
@@ -218,83 +204,145 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
                     lldpLink.getLldpRemPortIdSubType()
                 );
                 lldpLinkCompositeKeyMap.put(sysnameKey,lldpLink);
+
+                CompositeKey elementaryKeyA = new CompositeKey(
+                        lldpLink.getLldpRemChassisId(),
+                        nodelldpelementidMap.get(lldpLink.getNodeId()).getLldpChassisId(),
+                        lldpLink.getLldpRemPortId(),
+                        lldpLink.getLldpRemPortIdSubType());
+                lldpLinkCompositeKeyMap.put(elementaryKeyA,lldpLink);
+
+                CompositeKey elementaryKeyB = new CompositeKey(
+                        lldpLink.getLldpRemChassisId(),
+                        nodelldpelementidMap.get(lldpLink.getNodeId()).getLldpChassisId(),
+                        lldpLink.getLldpRemPortDescr());
+                lldpLinkCompositeKeyMap.put(elementaryKeyB,lldpLink);
+
+                CompositeKey elementaryKeyC = new CompositeKey(
+                        lldpLink.getLldpRemChassisId(),
+                        nodelldpelementidMap.get(lldpLink.getNodeId()).getLldpChassisId());
+                lldpLinkCompositeKeyMap.put(elementaryKeyC,lldpLink);
+
             }
 
             // 2.) iterate
         Set<Integer> parsed = new HashSet<>();
         List<TopologyConnection<LldpLinkTopologyEntity, LldpLinkTopologyEntity>> results = new ArrayList<>();
 
-        for (LldpLinkTopologyEntity sourceLink : goodLldpLinks) {
-                if (parsed.contains(sourceLink.getId())) {
-                    continue;
-                }
+        for (LldpLinkTopologyEntity sourceLink : lldpLinks) {
+            if (parsed.contains(sourceLink.getId())) {
+                continue;
+            }
 
-                if (nodelldpelementidMap.get(sourceLink.getNodeId()).getLldpChassisId().equals(sourceLink.getLldpRemChassisId())
-                   || nodelldpelementidMap.get(sourceLink.getNodeId()).getLldpSysname().equals(sourceLink.getLldpRemSysname())) {
-                    LOG.info("match: self link, skipping:{}",sourceLink);
-                    continue;
-                }
+            if (nodelldpelementidMap.get(sourceLink.getNodeId()).getLldpChassisId().equals(sourceLink.getLldpRemChassisId())
+                    || nodelldpelementidMap.get(sourceLink.getNodeId()).getLldpSysname().equals(sourceLink.getLldpRemSysname())) {
+                LOG.info("match: self link, skipping:{}", sourceLink);
+                parsed.add(sourceLink.getId());
+                continue;
+            }
 
-                String compositeKeyExplained="composite key: default";
-                CompositeKey key = new CompositeKey(
+            CompositeKey key = new CompositeKey(
+                    nodelldpelementidMap.get(sourceLink.getNodeId()).getLldpChassisId(),
+                    sourceLink.getLldpRemChassisId(),
+                    sourceLink.getLldpRemPortId(),
+                    sourceLink.getLldpRemPortIdSubType(),
+                    sourceLink.getLldpPortId(),
+                    sourceLink.getLldpPortIdSubType());
+            LldpLinkTopologyEntity targetLink = lldpLinkCompositeKeyMap.get(key);
+            if (targetLink == null)
+                continue;
+            LOG.info("match: default, source:{}, target:{}", sourceLink, targetLink);
+            parsed.add(sourceLink.getId());
+            parsed.add(targetLink.getId());
+            results.add(TopologyService.of(sourceLink, targetLink));
+        }
+
+        for (LldpLinkTopologyEntity sourceLink : lldpLinks) {
+            if (parsed.contains(sourceLink.getId())) {
+                continue;
+            }
+            CompositeKey descrkey = new CompositeKey(
                         nodelldpelementidMap.get(sourceLink.getNodeId()).getLldpChassisId(),
                         sourceLink.getLldpRemChassisId(),
-                        sourceLink.getLldpRemPortId(),
-                        sourceLink.getLldpRemPortIdSubType(),
-                        sourceLink.getLldpPortId(),
-                        sourceLink.getLldpPortIdSubType());
-                LldpLinkTopologyEntity targetLink = lldpLinkCompositeKeyMap.get(key);
-                if (targetLink == null) {
-                    compositeKeyExplained="composite key: port description";
-                    CompositeKey descrkey = new CompositeKey(
-                            nodelldpelementidMap.get(sourceLink.getNodeId()).getLldpChassisId(),
-                            sourceLink.getLldpRemChassisId(),
-                            sourceLink.getLldpRemPortDescr(),
-                            sourceLink.getLldpPortDescr());
-                    targetLink = lldpLinkCompositeKeyMap.get(descrkey);
-                }
-                if (targetLink == null) {
-                    compositeKeyExplained="composite key: sysname";
-                    CompositeKey sysnamekey = new CompositeKey(
-                            nodelldpelementidMap.get(sourceLink.getNodeId()).getLldpSysname(),
-                            sourceLink.getLldpRemSysname(),
-                            sourceLink.getLldpRemPortId(),
-                            sourceLink.getLldpRemPortIdSubType(),
-                            sourceLink.getLldpPortId(),
-                            sourceLink.getLldpPortIdSubType());
-                    targetLink = lldpLinkCompositeKeyMap.get(sysnamekey);
-                }
-                if (targetLink == null) {
-                    compositeKeyExplained="composite key: elementary with port id";
-                    CompositeKey elementaryA = new CompositeKey(
-                            nodelldpelementidMap.get(sourceLink.getNodeId()).getLldpChassisId(),
-                            sourceLink.getLldpRemChassisId(),
-                            sourceLink.getLldpPortId(),
-                            sourceLink.getLldpPortIdSubType());
-                    targetLink = lldpLinkCompositeKeyMap.get(elementaryA);
-                }
-                if (targetLink == null) {
-                    compositeKeyExplained="composite key: elementary with port descr";
-                    CompositeKey elementaryB = new CompositeKey(
-                            nodelldpelementidMap.get(sourceLink.getNodeId()).getLldpChassisId(),
-                            sourceLink.getLldpRemChassisId(),
-                            sourceLink.getLldpPortDescr());
-                    targetLink = lldpLinkCompositeKeyMap.get(elementaryB);
-                }
-                if (targetLink == null) {
-                    LOG.info("match: cannot found target for lldplink:{}", sourceLink);
-                    continue;
-                }
-
-                LOG.info("match: {}, source:{}, target:{}", compositeKeyExplained, sourceLink, targetLink);
-
-                parsed.add(sourceLink.getId());
-                parsed.add(targetLink.getId());
-                results.add(TopologyService.of(sourceLink, targetLink));
+                        sourceLink.getLldpRemPortDescr(),
+                        sourceLink.getLldpPortDescr());
+            LldpLinkTopologyEntity  targetLink = lldpLinkCompositeKeyMap.get(descrkey);
+            if (targetLink == null)
+                continue;
+            LOG.info("match: port description, source:{}, target:{}", sourceLink, targetLink);
+            parsed.add(sourceLink.getId());
+            parsed.add(targetLink.getId());
+            results.add(TopologyService.of(sourceLink, targetLink));
+        }
+        for (LldpLinkTopologyEntity sourceLink : lldpLinks) {
+            if (parsed.contains(sourceLink.getId())) {
+                continue;
             }
-            return results;
-       // }
+            CompositeKey sysnamekey = new CompositeKey(
+                    nodelldpelementidMap.get(sourceLink.getNodeId()).getLldpSysname(),
+                    sourceLink.getLldpRemSysname(),
+                    sourceLink.getLldpRemPortId(),
+                    sourceLink.getLldpRemPortIdSubType(),
+                    sourceLink.getLldpPortId(),
+                    sourceLink.getLldpPortIdSubType());
+                    LldpLinkTopologyEntity targetLink = lldpLinkCompositeKeyMap.get(sysnamekey);
+            if (targetLink == null)
+                continue;
+            LOG.info("match: sysname , source:{}, target:{}", sourceLink, targetLink);
+            parsed.add(sourceLink.getId());
+            parsed.add(targetLink.getId());
+            results.add(TopologyService.of(sourceLink, targetLink));
+        }
+        for (LldpLinkTopologyEntity sourceLink : lldpLinks) {
+            if (parsed.contains(sourceLink.getId())) {
+                continue;
+            }
+            CompositeKey elementaryA = new CompositeKey(
+                    nodelldpelementidMap.get(sourceLink.getNodeId()).getLldpChassisId(),
+                    sourceLink.getLldpRemChassisId(),
+                    sourceLink.getLldpPortId(),
+                    sourceLink.getLldpPortIdSubType());
+            LldpLinkTopologyEntity  targetLink = lldpLinkCompositeKeyMap.get(elementaryA);
+            if (targetLink == null)
+                continue;
+            LOG.info("match: chassis id/port/type , source:{}, target:{}", sourceLink, targetLink);
+            parsed.add(sourceLink.getId());
+            parsed.add(targetLink.getId());
+            results.add(TopologyService.of(sourceLink, targetLink));
+        }
 
+        for (LldpLinkTopologyEntity sourceLink : lldpLinks) {
+            if (parsed.contains(sourceLink.getId())) {
+                continue;
+            }
+            CompositeKey elementaryB = new CompositeKey(
+                nodelldpelementidMap.get(sourceLink.getNodeId()).getLldpChassisId(),
+                sourceLink.getLldpRemChassisId(),
+                sourceLink.getLldpPortDescr());
+            LldpLinkTopologyEntity  targetLink = lldpLinkCompositeKeyMap.get(elementaryB);
+            if (targetLink == null)
+                continue;
+            LOG.info("match: chassis id/portdescr , source:{}, target:{}", sourceLink, targetLink);
+            parsed.add(sourceLink.getId());
+            parsed.add(targetLink.getId());
+            results.add(TopologyService.of(sourceLink, targetLink));
+        }
+        for (LldpLinkTopologyEntity sourceLink : lldpLinks) {
+            if (parsed.contains(sourceLink.getId())) {
+                continue;
+            }
+            CompositeKey elementaryC = new CompositeKey(
+                    nodelldpelementidMap.get(sourceLink.getNodeId()).getLldpChassisId(),
+                    sourceLink.getLldpRemChassisId());
+            LldpLinkTopologyEntity targetLink = lldpLinkCompositeKeyMap.get(elementaryC);
+            if (targetLink == null)
+                continue;
+            LOG.info("match: chassis, source:{}, target:{}", sourceLink, targetLink);
+            parsed.add(sourceLink.getId());
+            parsed.add(targetLink.getId());
+            results.add(TopologyService.of(sourceLink, targetLink));
+        }
+        return results;
     }
 
     @Override

@@ -127,7 +127,7 @@ public class TimeTetraLldpRemTableTracker extends TableTracker {
 	    }
 
 	    public String getLldpRemPortid() {
-	    	return LldpRemTableTracker.decodeLldpPortId(getLldpRemPortidSubtype(), getValue(TIMETETRA_LLDP_REM_PORT_ID_OID));
+	    	return LldpSnmpUtils.decodeLldpPortId(LldpPortIdSubType.get(getLldpRemPortidSubtype()), getValue(TIMETETRA_LLDP_REM_PORT_ID_OID));
 	    }
 
 	    public String getLldpRemPortDescr() {
@@ -147,8 +147,9 @@ public class TimeTetraLldpRemTableTracker extends TableTracker {
             lldpLink.setLldpRemLocalPortNum(getIfindex()*31+getTmnxLldpRemLocalDestMACAddress());
             lldpLink.setLldpRemIndex(getLldpRemIndex());
             lldpLink.setLldpPortIfindex(getIfindex());
-            lldpLink.setLldpRemChassisId(LldpLocalGroupTracker.decodeLldpChassisId(getLldpRemChassisId(), getLldpRemChassisidSubtype()));
             lldpLink.setLldpRemChassisIdSubType(LldpChassisIdSubType.get(getLldpRemChassisidSubtype()));
+            lldpLink.setLldpRemChassisId(LldpSnmpUtils.decodeLldpChassisId(lldpLink.getLldpRemChassisIdSubType(),
+                    getLldpRemChassisId()));
             lldpLink.setLldpRemSysname(getLldpRemSysname());
             lldpLink.setLldpRemPortId(getLldpRemPortid());
             lldpLink.setLldpRemPortIdSubType(LldpPortIdSubType.get(getLldpRemPortidSubtype()));
@@ -199,8 +200,11 @@ public class TimeTetraLldpRemTableTracker extends TableTracker {
      * @param row a {@link TimeTetraLldpRemRow} object.
      */
     public void processLldpRemRow(final TimeTetraLldpRemRow row) {
-        System.out.printf("\t\t%s (%s)= %s (%s)\n", TIMETETRA_LLDP_REM_CHASSIS_ID_SUBTYPE_OID + "." + row.getInstance().toString(), TIMETETRA_LLDP_REM_CHASSIS_ID_SUBTYPE, row.getLldpRemChassisidSubtype(), LldpChassisIdSubType.getTypeString(row.getLldpRemChassisidSubtype()));
-        System.out.printf("\t\t%s (%s)= %s \n", TIMETETRA_LLDP_REM_CHASSIS_ID_OID + "." + row.getInstance().toString(), TIMETETRA_LLDP_REM_CHASSIS_ID, LldpLocalGroupTracker.decodeLldpChassisId(row.getLldpRemChassisId() , row.getLldpRemChassisidSubtype()));
+        System.out.printf("\t\t%s (%s)= %s (%s)\n", TIMETETRA_LLDP_REM_CHASSIS_ID_SUBTYPE_OID + "." +
+                row.getInstance().toString(), TIMETETRA_LLDP_REM_CHASSIS_ID_SUBTYPE, row.getLldpRemChassisidSubtype(), LldpChassisIdSubType.getTypeString(row.getLldpRemChassisidSubtype()));
+        System.out.printf("\t\t%s (%s)= %s \n", TIMETETRA_LLDP_REM_CHASSIS_ID_OID + "." + row.getInstance().toString(), TIMETETRA_LLDP_REM_CHASSIS_ID,
+                LldpSnmpUtils.decodeLldpChassisId(LldpChassisIdSubType.get(row.getLldpRemChassisidSubtype()),
+                row.getLldpRemChassisId()));
         System.out.printf("\t\t%s (%s)= %s (%s)\n", TIMETETRA_LLDP_REM_PORT_ID_SUBTYPE_OID + "." + row.getInstance().toString(), TIMETETRA_LLDP_REM_PORT_ID_SUBTYPE, row.getLldpRemPortidSubtype(), LldpPortIdSubType.getTypeString(row.getLldpRemPortidSubtype()));
         System.out.printf("\t\t%s (%s)= %s \n", TIMETETRA_LLDP_REM_PORT_ID_OID + "." + row.getInstance().toString(), TIMETETRA_LLDP_REM_PORT_ID, row.getLldpRemPortid());
         System.out.printf("\t\t%s (%s)= %s \n", TIMETETRA_LLDP_REM_PORT_DESCR_OID + "." + row.getInstance().toString(), TIMETETRA_LLDP_REM_PORT_DESCR, row.getLldpRemPortDescr());
