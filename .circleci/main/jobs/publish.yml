@@ -61,7 +61,7 @@ jobs:
       - restore-maven-cache
       - run:
           name: Deploy to Maven Central
-          no_output_timeout: 30m
+          no_output_timeout: 80m
           command: |
             ulimit -n 65536 || :
             mkdir -p ~/.m2
