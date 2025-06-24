@@ -23,6 +23,7 @@ package org.opennms.web.rest.support.menu;
 
 import java.time.Instant;
 import java.time.ZoneId;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.netmgt.config.NotifdConfigFactory;
@@ -45,6 +46,10 @@ public class HttpMenuRequestContext implements MenuRequestContext {
 
     public boolean isUserInRole(final String role) {
         return this.request.isUserInRole(role);
+    }
+
+    public boolean isUserInAnyRole(List<String> roles) {
+       return roles.stream().anyMatch(this.request::isUserInRole);
     }
 
     public String getFormattedTime() {

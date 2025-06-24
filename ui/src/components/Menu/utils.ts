@@ -21,19 +21,14 @@
 ///
 
 import { Plugin } from '@/types'
-import { MenuItem, TopMenuItem } from '@/types/mainMenu'
+import { MenuItem } from '@/types/mainMenu'
 
 const createMenuItem = (id: string, name: string) => {
   return {
     id,
     name,
     url: null,
-    className: null,
     locationMatch: null,
-    icon: null,
-    iconType: null,
-    isIconOnly: null,
-    isVueLink: null,
     roles: null
   } as MenuItem
 }
@@ -44,14 +39,9 @@ const createTopMenuItem = (id: string, name: string, items: MenuItem[]) => {
     name,
     items,
     url: null,
-    className: null,
     locationMatch: null,
-    icon: null,
-    iconType: null,
-    isIconOnly: null,
-    isVueLink: null,
     roles: null
-  } as TopMenuItem
+  } as MenuItem
 }
 
 const computePluginRelLink = (plugin: Plugin) => {
