@@ -109,9 +109,14 @@
                 "minion-image-single-arch-linux-amd64-trivy"
             ]
         },
-        "trivy-analyze": { 
+        "trivy-analyze": {
             "extends": [
-                "trivy-scan"
+                "horizon-image-single-arch-trivy-analyze",
+                "sentinel-image-single-arch-trivy-analyze",
+                "minion-image-single-arch-trivy-analyze",
+                "horizon-image-single-arch-linux-amd64-trivy-analyze",
+                "sentinel-image-single-arch-linux-amd64-trivy-analyze",
+                "minion-image-single-arch-linux-amd64-trivy-analyze"
             ]
         },
         "experimental": {
@@ -273,6 +278,15 @@
                 "tarball-assembly-only"
             ]
         },        
+        "minion-image-single-arch-linux-amd64-trivy-analyze": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "minion-image-single-arch-linux-amd64-trivy"
+            ]
+        },        
         "horizon-image-single-arch-linux-amd64": {
             "context": [
                 "CircleCI",
@@ -291,6 +305,15 @@
                 "tarball-assembly-only"
             ]
         },        
+        "horizon-image-single-arch-linux-amd64-trivy-analyze": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "horizon-image-single-arch-linux-amd64-trivy"
+            ]
+        },        
         "sentinel-image-single-arch-linux-amd64": {
             "context": [
                 "CircleCI",
@@ -307,6 +330,15 @@
             ],
             "requires": [
                 "tarball-assembly-only"
+            ]
+        },        
+        "sentinel-image-single-arch-linux-amd64-trivy-analyze": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "sentinel-image-single-arch-linux-amd64-trivy"
             ]
         },        
         "minion-image-single-arch": {
@@ -335,6 +367,19 @@
                 "tarball-assembly-only"
             ]
         },        
+        "minion-image-single-arch-trivy-analyze": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "variations": [
+                "linux/arm64"
+            ],
+            "requires": [
+                "minion-image-single-arch-trivy",
+                "minion-image-single-arch-linux-amd64-trivy-analyze"
+            ]
+        },        
         "horizon-image-single-arch-trivy":{
             "context": [
                 "CircleCI",
@@ -345,6 +390,19 @@
             ],
             "requires": [
                 "tarball-assembly-only"
+            ]
+        },
+        "horizon-image-single-arch-trivy-analyze":{
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "variations": [
+                "linux/arm64"
+            ],
+            "requires": [
+                "horizon-image-single-arch-trivy",
+                "horizon-image-single-arch-linux-amd64-trivy-analyze"
             ]
         },
         "horizon-image-single-arch": {
@@ -371,6 +429,19 @@
             ],
             "requires": [
                 "tarball-assembly-only"
+            ]
+        },
+        "sentinel-image-single-arch-trivy-analyze": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "variations": [
+                "linux/arm64"
+            ],
+            "requires": [
+                "sentinel-image-single-arch-trivy",
+                "sentinel-image-single-arch-linux-amd64-trivy-analyze"
             ]
         },
         "sentinel-image-single-arch": {
