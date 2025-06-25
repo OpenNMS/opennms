@@ -32,23 +32,36 @@ import io.grpc.MethodDescriptor;
 import org.opennms.features.zenithconnect.persistence.api.ZenithConnectPersistenceException;
 import org.opennms.features.zenithconnect.persistence.api.ZenithConnectPersistenceService;
 import org.opennms.features.zenithconnect.persistence.api.ZenithConnectRegistration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Properties;
 
 public class GrpcHeaderInterceptor implements ClientInterceptor {
-
+    public static final Logger LOG = LoggerFactory.getLogger(GrpcHeaderInterceptor.class);
     private final Metadata metadata;
     private ZenithConnectPersistenceService zenithConnectPersistenceService;
     private final Metadata.Key AUTHORIZATION_KEY = Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER);
-    private final Metadata.Key TENAT_ID_KEY = Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER);
+    private final Metadata.Key TENANT_ID_KEY = Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER);
+    private final Metadata.Key AUTHORIZATION_BYPASS_KEY = Metadata.Key.of("Bypass-Authorization", Metadata.ASCII_STRING_MARSHALLER);
+    private final boolean ZENITH_CONNECT_ENABLED;
 
     public GrpcHeaderInterceptor(String tenantId) {
         metadata = new Metadata();
-        metadata.put(TENAT_ID_KEY, tenantId);
+        metadata.put(TENANT_ID_KEY, tenantId);
+        Properties onmsProperties = SystemUtils.getONMSSystemProperties();
+        ZENITH_CONNECT_ENABLED = Boolean.valueOf(onmsProperties.getProperty("opennms.zenithConnect.enabled", "false"));
+        if (!ZENITH_CONNECT_ENABLED) {
+            metadata.put(AUTHORIZATION_BYPASS_KEY, Boolean.TRUE.toString());
+        }
     }
 
     @Override
     public <ReqT, RespT> ClientCall<ReqT, RespT> interceptCall(
             MethodDescriptor<ReqT, RespT> method, CallOptions callOptions, Channel next) {
-        addAccessTokenInHeaders(metadata);
+        if (ZENITH_CONNECT_ENABLED) {
+            addAccessTokenInHeaders(metadata);
+        }
         return new HeaderAttachingClientCall<>(next.newCall(method, callOptions), metadata);
     }
 
@@ -72,7 +85,7 @@ public class GrpcHeaderInterceptor implements ClientInterceptor {
         this.zenithConnectPersistenceService = service;
     }
 
-    private void addAccessTokenInHeaders(Metadata headers){
+    private void addAccessTokenInHeaders(Metadata headers) {
         if (zenithConnectPersistenceService != null) {
             try {
                 ZenithConnectRegistration registrations = zenithConnectPersistenceService.getRegistrations().first();
@@ -83,7 +96,7 @@ public class GrpcHeaderInterceptor implements ClientInterceptor {
                     headers.put(AUTHORIZATION_KEY, "Bearer " + registrations.accessToken);
                 }
             } catch (ZenithConnectPersistenceException e) {
-                throw new RuntimeException(e);
+                LOG.error("Error while fetching data from zenithConnectPersistenceService ", e);
             }
         }
     }
