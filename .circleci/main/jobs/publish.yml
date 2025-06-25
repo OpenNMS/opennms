@@ -61,6 +61,7 @@ jobs:
       - restore-maven-cache
       - run:
           name: Deploy to Maven Central
+          no_output_timeout: 80m
           command: |
             ulimit -n 65536 || :
             mkdir -p ~/.m2
@@ -95,9 +96,9 @@ jobs:
               -Pproduction \
               -Prelease \
               --batch-mode \
-              -DnexusUrl="https://oss.sonatype.org/" \
-              -DserverId="opennms-ossrh" \
-              -DautoReleaseAfterClose=true \
+              -DnexusUrl="https://central.sonatype.com/" \
+              -DserverId="central-portal" \
+              -DautoPublish=true \
               install \
-              org.sonatype.plugins:nexus-staging-maven-plugin:deploy \
+              org.sonatype.central:central-publishing-maven-plugin:publish \
               || exit 1
