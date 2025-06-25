@@ -23,6 +23,8 @@ includeObjectNames:
 includeObjectNames:
   - "OpenNMS:*"
   - "org.opennms.*:*"
+  - "org.opennms.newts:name=ring-buffer*"
+  - "org.opennms.newts:name=repository.samples-inserted*"
   - "org.opennms.core.ipc.rpc:*"
   - "com.zaxxer.hikari:*"
 {{end -}}
