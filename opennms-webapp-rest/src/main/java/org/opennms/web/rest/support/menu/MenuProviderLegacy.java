@@ -113,6 +113,8 @@ public class MenuProviderLegacy {
 
             mainMenu.baseHref = menuRequestContext.calculateUrlBase();
             mainMenu.homeUrl = mainMenu.baseHref + "index.jsp";
+            mainMenu.formattedDateTime = menuRequestContext.getFormattedDateTime();
+            mainMenu.formattedDate = menuRequestContext.getFormattedDate();
             mainMenu.formattedTime = menuRequestContext.getFormattedTime();
             mainMenu.username = menuRequestContext.getRemoteUser();
             // for navigating to a specific node id

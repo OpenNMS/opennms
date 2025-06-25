@@ -26,7 +26,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 import com.fasterxml.jackson.databind.DatabindException;
@@ -115,6 +114,8 @@ public class MenuProvider {
         try {
             mainMenu.baseHref = menuRequestContext.calculateUrlBase();
             mainMenu.homeUrl = mainMenu.baseHref + "index.jsp";
+            mainMenu.formattedDateTime = menuRequestContext.getFormattedDateTime();
+            mainMenu.formattedDate = menuRequestContext.getFormattedDate();
             mainMenu.formattedTime = menuRequestContext.getFormattedTime();
             mainMenu.username = menuRequestContext.getRemoteUser();
             // for navigating to a specific node id

@@ -19,30 +19,26 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.web.rest.support.menu;
 
-import java.util.List;
+package org.opennms.core.time;
 
-/**
- * Context that can be passed to a MenuProvider.
- * This can be used in unit or smoke tests to provide alternative implementations.
- */
-public interface MenuRequestContext {
-    String getRemoteUser();
+public class ExtendedTimeOnlyFormat extends CentralizedDateTimeFormat {
+    public final static String SYSTEM_PROPERTY_UI_TIME_ONLY_FORMAT = "org.opennms.ui.timeonlyformat";
 
-    String calculateUrlBase();
+    public final static String DEFAULT_TIME_ONLY_FORMAT_PATTERN = "HH:mm:ss 'UTC'x";
 
-    boolean isUserInRole(String role);
+    public ExtendedTimeOnlyFormat() {
+        super();
+    }
 
-    boolean isUserInAnyRole(List<String> roles);
+    @Override
+    public String getFormatPattern() {
+        String format = System.getProperty(SYSTEM_PROPERTY_UI_TIME_ONLY_FORMAT);
 
-    String getFormattedDateTime();
+        if (format == null) {
+            format = DEFAULT_TIME_ONLY_FORMAT_PATTERN;
+        }
 
-    String getFormattedDate();
-
-    String getFormattedTime();
-
-    String getNoticeStatus();
-
-    String getSystemProperty(String name, String def);
+        return format;
+    }
 }

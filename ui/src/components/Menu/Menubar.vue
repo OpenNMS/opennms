@@ -48,7 +48,6 @@ import { MainMenu } from '@/types/mainMenu'
 import Search from './Search.vue'
 import UserNotificationsMenuItem from './UserNotificationsMenuItem.vue'
 import UserSelfServiceMenuItem from './UserSelfServiceMenuItem.vue'
-import { getFormattedDateTime, FormattedDateTime } from './utils'
 
 const appStore = useAppStore()
 const menuStore = useMenuStore()
@@ -61,9 +60,8 @@ const userNotificationsMenu = ref()
 
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 
-const formattedDateTime = computed<FormattedDateTime>(() => getFormattedDateTime(mainMenu.value?.formattedTime ?? ''))
-const formattedDate = computed(() => formattedDateTime.value.date)
-const formattedTime = computed(() => `${formattedDateTime.value.time} (UTC${formattedDateTime.value.utcOp}${formattedDateTime.value.utc})`)
+const formattedDate = computed<string>(() => mainMenu.value?.formattedDate ?? '')
+const formattedTime = computed<string>(() => mainMenu.value?.formattedTime ?? '')
 
 useOutsideClick(outsideClick.value, () => {
   resetMenuItems()

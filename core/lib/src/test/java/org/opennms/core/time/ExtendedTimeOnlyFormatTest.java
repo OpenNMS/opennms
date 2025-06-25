@@ -19,10 +19,10 @@
  * language governing permissions and limitations under the
  * License.
  */
+
 package org.opennms.core.time;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import org.junit.Test;
 
 import java.io.IOException;
 import java.time.Instant;
@@ -30,30 +30,31 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Date;
 
-import org.junit.Test;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
-public class CentralizedDateTimeFormatTest {
+public class ExtendedTimeOnlyFormatTest {
     @Test
-    public void shouldOutputDateTimeIncludingTimeZone() throws IOException {
-        test("yyyy-MM-dd'T'HH:mm:ssxxx", Instant.now());
+    public void shouldOutputTimeIncludingTimeZone() throws IOException {
+        test("HH:mm:ss 'UTC'x", Instant.now());
     }
 
     @Test
     public void shouldBeResilientAgainstNull() throws IOException {
-        assertNull(new CentralizedDateTimeFormat().format((Instant)null, null));
-        assertNull(new CentralizedDateTimeFormat().format((Date)null, null));
+        assertNull(new ExtendedTimeOnlyFormat().format((Instant)null, null));
+        assertNull(new ExtendedTimeOnlyFormat().format((Date)null, null));
     }
 
     @Test
     public void shouldHonorSystemSettings() throws IOException {
-        String format = "yyy-MM-dd";
-        System.setProperty(CentralizedDateTimeFormat.SYSTEM_PROPERTY_DATE_FORMAT, format);
+        String format = "ss:mm:HH";
+        System.setProperty(ExtendedTimeOnlyFormat.SYSTEM_PROPERTY_UI_TIME_ONLY_FORMAT, format);
         test(format, Instant.now());
-        System.clearProperty(CentralizedDateTimeFormat.SYSTEM_PROPERTY_DATE_FORMAT);
+        System.clearProperty(ExtendedTimeOnlyFormat.SYSTEM_PROPERTY_UI_TIME_ONLY_FORMAT);
     }
 
     public void test(String expectedPattern, Instant time) {
-        String output = new CentralizedDateTimeFormat().format(time, ZoneId.systemDefault());
+        String output = new ExtendedTimeOnlyFormat().format(time, ZoneId.systemDefault());
         assertEquals(DateTimeFormatter.ofPattern(expectedPattern).withZone(ZoneId.systemDefault()).format(time), output);
     }
 }
