@@ -1,6 +1,6 @@
 {
     "name": "opennms-core-web-assets",
-    "version": "33.0.3-SNAPSHOT",
+    "version": "34.0.0-SNAPSHOT",
     "description": "JavaScript Web Components for OpenNMS",
     "license": "AGPL-3.0",
     "repository": {
@@ -20,6 +20,7 @@
         "@babel/plugin-transform-runtime": "^7.16.5",
         "@babel/preset-env": "^7.16.5",
         "@babel/preset-typescript": "^7.16.5",
+        "@babel/runtime-corejs3": "^7.24.8",
         "@babel/runtime-corejs3": "^7.24.8",
         "@rangerrick/moment-javaformat": "^2.0.1",
         "@types/jest": "^29.5.2",
@@ -78,7 +79,6 @@
         "yargs": "^16.2.0"
     },
     "dependencies": {
-        "@babel/runtime-corejs3": "^7.16.5",
         "angular": "^1.8.3",
         "angular-animate": "^1.8.3",
         "angular-bootstrap-checkbox": "^0.5.0",
@@ -96,7 +96,6 @@
         "bootbox": "^6.0.0",
         "bootstrap": "~4.6.2",
         "c3": "^0.4.24",
-        "core-js": "^3.19.3",
         "cron-parser": "^4.2.1",
         "cross-env": "^7.0.3",
         "d3": "^3.5.17",

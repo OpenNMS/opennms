@@ -78,7 +78,7 @@ public class PendingPollEvent extends PollEvent {
      * @return a int.
      */
     @Override
-    public int getEventId() {
+    public long getEventId() {
         return m_event.getDbid();
     }
     

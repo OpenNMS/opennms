@@ -214,7 +214,7 @@ public abstract class SearchProperties {
 	));
 
 	static final SortedSet<SearchProperty> EVENT_PROPERTIES = new TreeSet<>(Arrays.asList(
-		new SearchProperty(OnmsEvent.class, "id", "ID", INTEGER),
+		new SearchProperty(OnmsEvent.class, "id", "ID", LONG),
 		new SearchProperty(OnmsEvent.class, "eventAckTime", "Acknowledged Time", TIMESTAMP),
 		new SearchProperty(OnmsEvent.class, "eventAckUser", "Acknowledging User", STRING),
 		new SearchProperty(OnmsEvent.class, "eventAutoAction", "Autoaction", STRING),

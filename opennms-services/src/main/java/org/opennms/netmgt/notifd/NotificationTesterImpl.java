@@ -95,7 +95,7 @@ public class NotificationTesterImpl implements NotificationTester {
         // Build a fake event
         Event event = new Event();
         event.setUei(EventConstants.NODE_LOST_SERVICE_EVENT_UEI);
-        event.setDbid(0);
+        event.setDbid(0L);
 
         // Generate the parameter map
         Map<String, String> parameterMap = broadcastEventProcessor.buildParameterMap(notification, event, 0);

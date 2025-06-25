@@ -193,7 +193,7 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
     private List<OnmsMetaData> m_metaData = new ArrayList<>();
 
     private List<OnmsMetaData> m_requisitionedMetaData = new ArrayList<>();
-
+    private Integer nodeParentId;
     /**
      * <p>
      * Constructor for OnmsNode. This constructor should only be used
@@ -322,6 +322,17 @@ public class OnmsNode extends OnmsEntity implements Serializable, Comparable<Onm
      */
     public void setParent(OnmsNode parent) {
         m_parent = parent;
+    }
+
+    // This already maps to the existing column ,readonly
+    @XmlAttribute(name = "nodeParentID")
+    @Column(name = "nodeParentID",insertable = false, updatable = false)
+    public Integer getNodeParentId() {
+        return nodeParentId;
+    }
+
+    public void setNodeParentId(Integer nodeParentId) {
+        this.nodeParentId = nodeParentId;
     }
 
     @XmlEnum

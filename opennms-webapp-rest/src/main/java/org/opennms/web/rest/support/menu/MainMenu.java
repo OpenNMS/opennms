@@ -31,6 +31,9 @@ public class MainMenu {
     public String noticeStatus;
     public String username;
     public String baseNodeUrl;
+    public Boolean zenithConnectEnabled;
+    public String zenithConnectBaseUrl;
+    public String zenithConnectRelativeUrl;
     public String copyrightDates;
     public String version;
     final public List<TileProviderItem> userTileProviders = new ArrayList<>();

@@ -41,6 +41,8 @@ import java.util.concurrent.CompletableFuture;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import org.opennms.features.elastic.client.ElasticRestClient;
+import org.opennms.features.elastic.client.model.SearchResponse;
 import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.features.jest.client.index.IndexSelector;
 import org.opennms.netmgt.flows.api.BytesInOut;
@@ -49,6 +51,7 @@ import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Host;
 import org.opennms.netmgt.flows.api.LimitedCardinalityField;
 import org.opennms.netmgt.flows.api.TrafficSummary;
+import org.opennms.netmgt.flows.elastic.AggregationUtils;
 import org.opennms.netmgt.flows.elastic.ElasticFlowQueryService;
 import org.opennms.netmgt.flows.elastic.GPath;
 import org.opennms.netmgt.flows.elastic.ProportionalSumAggregation;
@@ -64,9 +67,9 @@ import com.google.common.collect.Table;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import io.searchbox.client.JestClient;
-import io.searchbox.core.SearchResult;
 import io.searchbox.core.search.aggregation.MetricAggregation;
+import io.searchbox.core.search.aggregation.SumAggregation;
+import io.searchbox.core.search.aggregation.TermsAggregation;
 import io.searchbox.core.search.aggregation.SumAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
 
@@ -80,7 +83,7 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
 
     private final AggregatedSearchQueryProvider searchQueryProvider = new AggregatedSearchQueryProvider();
 
-    public AggregatedFlowQueryService(JestClient client, IndexSelector indexSelector) {
+    public AggregatedFlowQueryService(ElasticRestClient client, IndexSelector indexSelector) {
         super(client, indexSelector);
     }
 
@@ -195,7 +198,15 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
         final TimeRangeFilter timeRangeFilter = Filter.find(filters, TimeRangeFilter.class).orElse(null);
         String query = searchQueryProvider.getAllTerms(groupedBy, groupedByField, fieldSize, filters);
         return searchAsync(query, timeRangeFilter)
-                .thenApply(searchResult -> ALL_TERMS_AS_INT_GPATH.eval(searchResult.getJsonObject()));
+                .thenApply(searchResult -> {
+                    // Create a wrapper JSON object that contains aggregations
+                    JsonObject wrapper = new JsonObject();
+                    if (searchResult.getAggregations() != null) {
+                        wrapper.add("aggregations", searchResult.getAggregations());
+                        wrapper.add("aggs", searchResult.getAggregations()); // Jest compatibility
+                    }
+                    return ALL_TERMS_AS_INT_GPATH.eval(wrapper);
+                });
     }
 
     /**
@@ -283,13 +294,14 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
     }
 
     /** use the convert the results of the proportional_sum aggregation (provided by our ES plugin) to a table */
-    private static <T> CompletableFuture<Void> toTableFromBuckets(ImmutableTable.Builder<Directional<T>, Long, Double> builder, Function<String, CompletableFuture<T>> keyToEntity, SearchResult res) {
-        final MetricAggregation aggs = res.getAggregations();
+    private static <T> CompletableFuture<Void> toTableFromBuckets(ImmutableTable.Builder<Directional<T>, Long, Double> builder, Function<String, CompletableFuture<T>> keyToEntity, SearchResponse res) {
+        final JsonObject aggs = res.getAggregations();
         if (aggs == null) {
             // No results
             return CompletableFuture.completedFuture(null);
         }
-        final TermsAggregation byKeyAgg = aggs.getTermsAggregation("by_key");
+        final MetricAggregation metricAggs = AggregationUtils.toMetricAggregation(res);
+        final TermsAggregation byKeyAgg = metricAggs.getTermsAggregation("by_key");
         if (byKeyAgg == null) {
             // No results
             return CompletableFuture.completedFuture(null);
@@ -318,19 +330,20 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
     }
 
     /** use the convert the results of the proportional_sum aggregation (provided by our ES plugin) to a table */
-    private static <T> void toTableFromTotals(ImmutableTable.Builder<Directional<T>, Long, Double> builder, T otherEntity, SearchResult res) {
-        final MetricAggregation aggs = res.getAggregations();
+    private static <T> void toTableFromTotals(ImmutableTable.Builder<Directional<T>, Long, Double> builder, T otherEntity, SearchResponse res) {
+        final JsonObject aggs = res.getAggregations();
         if (aggs == null) {
             // No results
             return;
         }
-        final ProportionalSumAggregation bytesInAgg = aggs.getAggregation("bytes_in", ProportionalSumAggregation.class);
+        final MetricAggregation metricAggs = AggregationUtils.toMetricAggregation(res);
+        final ProportionalSumAggregation bytesInAgg = metricAggs.getAggregation("bytes_in", ProportionalSumAggregation.class);
         if (bytesInAgg != null) {
             for (ProportionalSumAggregation.DateHistogram dateHistogram : bytesInAgg.getBuckets()) {
                 builder.put(new Directional<>(otherEntity, true), dateHistogram.getTime(), dateHistogram.getValue());
             }
         }
-        final ProportionalSumAggregation bytesOutAgg = aggs.getAggregation("bytes_out", ProportionalSumAggregation.class);
+        final ProportionalSumAggregation bytesOutAgg = metricAggs.getAggregation("bytes_out", ProportionalSumAggregation.class);
         if (bytesOutAgg != null) {
             for (ProportionalSumAggregation.DateHistogram dateHistogram : bytesOutAgg.getBuckets()) {
                 builder.put(new Directional<>(otherEntity, false), dateHistogram.getTime(), dateHistogram.getValue());
@@ -357,12 +370,13 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
             final String query = searchQueryProvider.getTopNQuery(N, groupedBy, type.getAggregationType(), type.getKey(), filters);
             summaryFutures = searchAsync(query, Filter.find(filters, TimeRangeFilter.class).orElse(null))
                     .thenCompose(searchResult -> {
-                        final MetricAggregation aggs = searchResult.getAggregations();
+                        final JsonObject aggs = searchResult.getAggregations();
                         if (aggs == null) {
                             // No results
                             return CompletableFuture.completedFuture(Collections.emptyList());
                         }
-                        final TermsAggregation byKeyAgg = aggs.getTermsAggregation("by_key");
+                        final MetricAggregation metricAggs = AggregationUtils.toMetricAggregation(searchResult);
+                        final TermsAggregation byKeyAgg = metricAggs.getTermsAggregation("by_key");
                         if (byKeyAgg == null) {
                             // No results
                             return CompletableFuture.completedFuture(Collections.emptyList());
@@ -415,14 +429,15 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
         final String query = searchQueryProvider.getSumQuery(groupedBy, filters);
         return searchAsync(query, Filter.find(filters, TimeRangeFilter.class).orElse(null))
                 .thenApply(searchResult -> {
-                    final MetricAggregation aggs = searchResult.getAggregations();
-                    SumAggregation ingress = aggs.getSumAggregation("bytes_ingress");
-                    SumAggregation egress = aggs.getSumAggregation("bytes_egress");
+                    final JsonObject aggs = searchResult.getAggregations();
+                    final MetricAggregation metricAggs = AggregationUtils.toMetricAggregation(searchResult);
+                    SumAggregation ingress = metricAggs.getSumAggregation("bytes_ingress");
+                    SumAggregation egress = metricAggs.getSumAggregation("bytes_egress");
                     return TrafficSummary.<String>builder()
                             .withEntity(OTHER_NAME)
                             .withBytesIn(ingress != null ? ingress.getSum().longValue() : 0L)
                             .withBytesOut(egress != null ? egress.getSum().longValue() : 0L)
-                            .withEcnInfo(aggs)
+                            .withEcnInfo(metricAggs)
                             .build();
                 });
     }
@@ -431,7 +446,7 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
     public CompletableFuture<Long> getFlowCount(List<Filter> filters) {
         final String query = searchQueryProvider.getFlowCountQuery(filters);
         return searchAsync(query, Filter.find(filters, TimeRangeFilter.class).orElse(null))
-                .thenApply(SearchResultUtils::getTotal);
+                .thenApply(res -> res.getHits().getTotalHits());
     }
 
     // Unsupported methods
@@ -513,10 +528,10 @@ public class AggregatedFlowQueryService extends ElasticFlowQueryService {
         final String hostnameQuery = searchQueryProvider.getHostname(ip, filters);
         return searchAsync(hostnameQuery, timeRangeFilter)
                 .thenApply(res -> {
-                    final SearchResult.Hit<JsonObject, Void> hit = res.getFirstHit(JsonObject.class);
+                    final JsonObject hit = AggregationUtils.getFirstHitSource(res);
                     if (hit != null) {
-                        if (Objects.equals(hit.source.getAsJsonPrimitive("host_address").getAsString(), ip)) {
-                            return Optional.ofNullable(hit.source.getAsJsonPrimitive("host_name")).map(JsonPrimitive::getAsString);
+                        if (Objects.equals(hit.getAsJsonPrimitive("host_address").getAsString(), ip)) {
+                            return Optional.ofNullable(hit.getAsJsonPrimitive("host_name")).map(JsonPrimitive::getAsString);
                         }
                     }
 

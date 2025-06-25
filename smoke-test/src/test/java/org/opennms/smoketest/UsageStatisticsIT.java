@@ -26,6 +26,7 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.anEmptyMap;
 import static org.hamcrest.Matchers.emptyString;
 import static org.hamcrest.Matchers.greaterThan;
+import static org.hamcrest.Matchers.greaterThanOrEqualTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.matchesPattern;
 import static org.junit.Assert.assertEquals;
@@ -136,7 +137,10 @@ public class UsageStatisticsIT {
         assertThat((long) usageReport.get("snmpInterfaces"), is(0L));
         assertThat((long) usageReport.get("nodes"), is(7L));
         assertThat((long) usageReport.get("events"), greaterThan(1L));
+        assertThat((long) usageReport.get("eventsLastHours"), greaterThanOrEqualTo(0L));
+        assertThat((long) usageReport.get("flowCountPerSecond"), greaterThanOrEqualTo(0L));
         assertThat((long) usageReport.get("alarms"), is(0L));
+        assertThat((long) usageReport.get("alarmsLastHours"), greaterThanOrEqualTo(0L));
         assertThat((long) usageReport.get("minions"), is(0L));
 
         final Map<String, Integer> appliances = (Map<String, Integer>)usageReport.get("applianceCounts");

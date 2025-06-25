@@ -132,9 +132,9 @@ public class EventController extends MultiActionController implements Initializi
     public ModelAndView detail(HttpServletRequest request, HttpServletResponse response) throws Exception {
     	String idString = request.getParameter("id");
     	// asking for a specific ID; only filter should be event ID
-        final int eventId;
+        final long eventId;
         try {
-            eventId = WebSecurityUtils.safeParseInt(idString);
+            eventId = WebSecurityUtils.safeParseLong(idString);
         } catch (NumberFormatException e) {
             throw new EventIdNotFoundException("Could not parse event ID '" + idString + "' to integer.", idString);
         }
@@ -215,7 +215,7 @@ public class EventController extends MultiActionController implements Initializi
         }
 
         List<Filter> filters = new ArrayList<>();
-        filters.add(new EventIdListFilter(WebSecurityUtils.safeParseInt(eventIdStrings)));
+        filters.add(new EventIdListFilter(WebSecurityUtils.safeParseLong(eventIdStrings)));
         EventCriteria criteria = new EventCriteria(filters.toArray(new Filter[0]));
 
         LOG.debug("criteria = {}, action = {}", criteria, action);

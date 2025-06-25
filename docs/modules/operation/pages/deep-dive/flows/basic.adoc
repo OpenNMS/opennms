@@ -58,6 +58,34 @@ elasticIndexStrategy=daily
 
 ** See <<deep-dive/elasticsearch/introduction.adoc#ga-elasticsearch-integration-configuration, General Elasticsearch configuration>> for a complete set of configuration options.
 
+== Configuring NetFlow Composable Templates
+
+OpenNMS supports [composable templates](https://www.elastic.co/docs/manage-data/data-store/templates) for more flexible and modular management of Elasticsearch index settings. To enable composable templates for NetFlow data, update below configuration in Karaf:
+
+[source, karaf]
+----
+config:edit org.opennms.features.flows.persistence.elastic
+config:property-set useComposableTemplates true
+config:update
+----
+
+=== Managing NetFlow Templates and Policies
+
+NetFlow component and index templates can be managed from the following directory:
+
+`${OPENNMS_HOME}/etc/netflow-templates`
+
+You can customize existing templates, add new ones, or define Index Lifecycle Management (ILM) policies within this folder. Any valid Elasticsearch template or ILM JSON placed here will be picked up and applied by the system.
+
+When placing files in the netflow-templates directory:
+
+* Files intended as ILM policies should have names that include keywords such as ilm, lifecycle, or policy.
+* Files with names containing setting(s), mapping(s), alias(es), or component will be treated as component templates.
+* Files with names containing index or composable will be recognized as index templates.
+
+
+
+
 == Multi-protocol listener
 
 With most tools, if you are monitoring multiple flow protocols, you must set up a listener on its own UDP port for each protocol.

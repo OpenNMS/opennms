@@ -65,8 +65,8 @@ Requires(pre):		%{name}-webui       = %{version}-%{release}
 Requires:		%{name}-webui       = %{version}-%{release}
 Requires(pre):		%{name}-core        = %{version}-%{release}
 Requires:		%{name}-core        = %{version}-%{release}
-Requires(pre):		postgresql-server  >= 10
-Requires:		postgresql-server  >= 10
+Requires(pre):		postgresql-server  >= 13
+Requires:		postgresql-server  >= 13
 Requires(pre):		%{jdk}
 Requires:		%{jdk}
 
@@ -98,6 +98,8 @@ Requires(pre):	jicmp >= 3.0.0
 Requires:	jicmp >= 3.0.0
 Requires(pre):	jicmp6 >= 3.0.0
 Requires:	jicmp6 >= 3.0.0
+Requires(pre):	jrrd2 >= 2.0.0
+Requires:	jrrd2 >= 2.0.0
 Requires(pre):	/usr/sbin/useradd
 Requires:	/usr/sbin/useradd
 Obsoletes:	opennms < 1.3.11
@@ -114,7 +116,6 @@ Provides:	%{name}-plugin-ticketing-otrs = %{version}-%{release}
 Obsoletes:	%{name}-plugin-ticketing-otrs < %{version}
 Provides:	%{name}-plugin-ticketing-remedy = %{version}-%{release}
 Obsoletes:	%{name}-plugin-ticketing-remedy < %{version}
-Recommends:	haveged
 
 %description core
 The core backend.  This package contains the main daemon responsible

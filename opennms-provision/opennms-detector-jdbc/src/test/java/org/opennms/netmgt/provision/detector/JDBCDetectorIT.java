@@ -78,12 +78,14 @@ public class JDBCDetectorIT implements InitializingBean {
         m_detector = m_detectorFactory.createDetector(new HashMap<>());
         String url = null;
         String username = null;
+        String password = "postgres";
         Connection conn = null;
         try {
             conn = m_dataSource.getConnection();
             DatabaseMetaData metaData = conn.getMetaData();
             url = metaData.getURL();
             username = metaData.getUserName();
+            
             conn.close();
         } catch (final SQLException e) {
             e.printStackTrace();
@@ -91,13 +93,12 @@ public class JDBCDetectorIT implements InitializingBean {
                 conn.close();
             }
         }
-
-
+        
         m_detector.setDbDriver("org.postgresql.Driver");
         m_detector.setPort(5432);
         m_detector.setUrl(url);
         m_detector.setUser(username);
-        m_detector.setPassword("");
+        m_detector.setPassword(password);
 
 
 

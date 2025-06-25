@@ -278,6 +278,8 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
             writeProps(etc.resolve("org.opennms.features.flows.persistence.elastic.cfg"),
                     ImmutableMap.<String,String>builder()
                             .put("elasticUrl", "http://" + ELASTIC_ALIAS + ":9200")
+                            // Try to use composable templates on OpenNMS
+                            .put("useComposableTemplates", "true")
                             .build());
 
             writeProps(etc.resolve("org.opennms.plugin.elasticsearch.rest.forwarder.cfg"),

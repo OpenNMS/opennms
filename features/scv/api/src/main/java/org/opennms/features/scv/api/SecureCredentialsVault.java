@@ -25,6 +25,11 @@ import java.util.Set;
 
 public interface SecureCredentialsVault {
 
+    public enum KeyStoreType {
+        JCEKS,
+        PKCS12
+    }
+
     Set<String> getAliases();
 
     Credentials getCredentials(String alias);

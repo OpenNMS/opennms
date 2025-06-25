@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -37,8 +38,8 @@ import org.opennms.netmgt.dao.api.EventCountDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.model.OnmsEvent;
 
-public class MockEventDao extends AbstractMockDao<OnmsEvent, Integer> implements EventDao, EventCountDao {
-    private AtomicInteger m_id = new AtomicInteger(0);
+public class MockEventDao extends AbstractMockDao<OnmsEvent, Long> implements EventDao, EventCountDao {
+    private AtomicLong m_id = new AtomicLong(0);
 
     @Override
     protected void generateId(final OnmsEvent event) {
@@ -46,8 +47,8 @@ public class MockEventDao extends AbstractMockDao<OnmsEvent, Integer> implements
     }
 
     @Override
-    protected Integer getId(final OnmsEvent event) {
-        final Integer id = event.getId();
+    protected Long getId(final OnmsEvent event) {
+        final Long id = event.getId();
         return id == null || id == 0? null : id;
     }
 
@@ -97,5 +98,10 @@ public class MockEventDao extends AbstractMockDao<OnmsEvent, Integer> implements
         }
 
         return stream.distinct().collect(Collectors.toList());
+    }
+
+    @Override
+    public long getNumEventsLastHours(int hours) {
+        return 0;
     }
 }

@@ -60,6 +60,10 @@ public class HttpMenuRequestContext implements MenuRequestContext {
         return "Unknown";
     }
 
+    public String getSystemProperty(String name, String def) {
+        return System.getProperty(name, def);
+    }
+
     private ZoneId extractUserTimeZone() {
         ZoneId timeZoneId = (ZoneId) this.request.getSession().getAttribute(CentralizedDateTimeFormat.SESSION_PROPERTY_TIMEZONE_ID);
 

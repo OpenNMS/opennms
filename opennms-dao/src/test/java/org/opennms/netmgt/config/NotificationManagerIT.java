@@ -470,7 +470,7 @@ public class NotificationManagerIT implements InitializingBean {
                 .put(NotificationManager.PARAM_INTERFACE, InetAddressUtils.toIpAddrString(ipInterfaceOnNode1.getIpAddress()))
                 .put(NotificationManager.PARAM_SERVICE, "ICMP")
                 .put("eventUEI", dbEvent.getEventUei())
-                .put("eventID", Integer.toString(dbEvent.getId()))
+                .put("eventID", Long.toString(dbEvent.getId()))
                 .build();
         m_notificationManager.insertNotice(1, params, "q1", notification);
 
@@ -483,7 +483,7 @@ public class NotificationManagerIT implements InitializingBean {
                 .getEvent();
         Collection<Integer> eventIds = m_notificationManager.acknowledgeNotice(e, EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI, parmMatchList);
         assertEquals(1, eventIds.size());
-        assertEquals(dbEvent.getId(), eventIds.iterator().next());
+        assertEquals(dbEvent.getId(), Long.valueOf(eventIds.iterator().next()));
         unacknowledgeAllNotices();
 
         // It should not match when either of the event parameters are different

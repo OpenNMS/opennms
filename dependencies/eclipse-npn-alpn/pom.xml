@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <parent>
+    <groupId>org.opennms</groupId>
+    <artifactId>dependencies</artifactId>
+    <version>34.0.0-SNAPSHOT</version>
+  </parent>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.opennms.dependencies</groupId>
+  <artifactId>eclipse-npn-alpn</artifactId>
+  <name>OpenNMS :: Dependencies :: Eclipse NPN and ALPN</name>
+  <packaging>bundle</packaging>
+  <description>
+    This module provides repacked versions of some Netty
+    dependencies from Eclipse that have broken manifests.
+  </description>
+  <licenses>
+    <license>
+      <name>Apache License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+    </license>
+    <license>
+      <name>Eclipse Public License - v 1.0</name>
+      <url>https://www.eclipse.org/org/documents/epl-v10.php</url>
+    </license>
+  </licenses>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>${maven.shade.plugin.version}</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <artifactSet>
+                <includes>
+                  <include>org.eclipse.jetty.npn:npn-api</include>
+                  <include>org.eclipse.jetty.alpn:alpn-api</include>
+                </includes>
+              </artifactSet>
+              <!-- cut out the manifest to be sure we get the bundle one -->
+              <filters>
+                <filter>
+                  <artifact>*:*</artifact>
+                  <excludes>
+                    <exclude>META-INF/MANIFEST.MF</exclude>
+                  </excludes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>bundle</goal>
+            </goals>
+            <configuration>
+              <instructions>
+                <Bundle-RequiredExecutionEnvironment>JavaSE-1.8</Bundle-RequiredExecutionEnvironment>
+                <Bundle-Version>${project.version}</Bundle-Version>
+                <Import-Package>
+                  javax.net.ssl
+                </Import-Package>
+                <Export-Package>
+                  org.eclipse.jetty.npn;uses:="javax.net.ssl";version="1.1.1",
+                  org.eclipse.jetty.alpn;uses:="javax.net.ssl";version="1.1.3"
+                </Export-Package>
+              </instructions>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  <dependencies>
+    <dependency>
+      <groupId>org.eclipse.jetty.npn</groupId>
+      <artifactId>npn-api</artifactId>
+      <version>1.1.1.v20141010</version>
+    </dependency>
+    <dependency>
+      <groupId>org.eclipse.jetty.alpn</groupId>
+      <artifactId>alpn-api</artifactId>
+      <version>1.1.3.v20160715</version>
+    </dependency>
+  </dependencies>
+</project>

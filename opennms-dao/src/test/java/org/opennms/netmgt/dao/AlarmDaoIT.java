@@ -29,6 +29,8 @@ import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
@@ -162,6 +164,99 @@ public class AlarmDaoIT implements InitializingBean {
 
 	}
 
+	private OnmsAlarm createAlarm(OnmsEvent event) {
+
+		OnmsNode node = m_nodeDao.findAll().iterator().next();
+
+		OnmsAlarm alarm = new OnmsAlarm();
+		alarm.setNode(node);
+		alarm.setUei(event.getEventUei());
+		alarm.setSeverityId(event.getEventSeverity());
+		alarm.setFirstEventTime(event.getEventTime());
+		alarm.setLastEvent(event);
+		alarm.setCounter(1);
+		alarm.setDistPoller(m_distPollerDao.whoami());
+
+		return  alarm;
+	}
+
+	@Test
+	@Transactional
+	public void testGetNumAlarmsLastHours() {
+
+		OnmsEvent event = new OnmsEvent();
+		event.setEventLog("Y");
+		event.setEventDisplay("Y");
+		event.setEventCreateTime(new Date());
+		event.setDistPoller(m_distPollerDao.whoami());
+		event.setEventTime(new Date());
+		event.setEventSeverity(OnmsSeverity.MAJOR.getId());
+		event.setEventUei("uei://org/opennms/test/EventDaoTest");
+		event.setEventSource("test");
+		m_eventDao.save(event);
+
+		//there exists one populated alarm in setup with time: 2015-07-14 13:45:48
+		assertEquals(1, m_alarmDao.findAll().size());
+
+		//verify zero count for last 0 hours
+		long alarmCount = m_alarmDao.getNumAlarmsLastHours(0);
+		assertEquals(0, alarmCount);
+
+		//saving a new alarm
+		OnmsAlarm alarm = createAlarm(event);
+		m_alarmDao.save(alarm);
+
+		//saving another alarm
+		OnmsAlarm alarm1 = createAlarm(event);
+		m_alarmDao.save(alarm1);
+		m_alarmDao.flush();
+
+		//verify all count should be 3 after saving two new alarms
+		assertEquals(3, m_alarmDao.findAll().size());
+
+		//verify zero count for -1 hours,
+		alarmCount = m_alarmDao.getNumAlarmsLastHours(-1);
+		assertEquals(0, alarmCount);
+		//verify count should be 0 for last 0 hours as per condition
+		alarmCount = m_alarmDao.getNumAlarmsLastHours(0);
+		assertEquals(0, alarmCount);
+
+		//param hours value one hour
+		//verify there should be 2 count for last one hour after saving new alarms
+		alarmCount = m_alarmDao.getNumAlarmsLastHours(1);
+		assertEquals(2, alarmCount);
+
+		//updating alarm time 61 minutes earlier
+		alarm.setFirstEventTime(Date.from(Instant.now().minus(Duration.ofMinutes(61))));
+		m_alarmDao.save(alarm);
+		m_alarmDao.flush();
+
+		//verify all count should still be 3 after updating alarm event time
+		assertEquals(3, m_alarmDao.findAll().size());
+
+		//verify there should be 1 count after updating alarm time, alarm1 event time is same
+		alarmCount = m_alarmDao.getNumAlarmsLastHours(1);
+		assertEquals(1, alarmCount);
+
+		//verify there should be 2 count for last 10 hours also
+		alarmCount = m_alarmDao.getNumAlarmsLastHours(10);
+		assertEquals(2, alarmCount);
+
+		//saving another alarm
+		OnmsAlarm alarm2 = createAlarm(event);
+		alarm2.setFirstEventTime(Date.from(Instant.now().minus(Duration.ofHours(11))));
+		m_alarmDao.save(alarm2);
+
+		//verify all count should be 4 after adding new with alarm2 event time 11 hours earlier
+		assertEquals(4, m_alarmDao.findAll().size());
+		//verify count should be 2 for last 10 hours, as alarm2 event time lies in last 11th hour
+		alarmCount = m_alarmDao.getNumAlarmsLastHours(10);
+		assertEquals(2, alarmCount);
+
+		//verify count should be 3 for last 11 hours, including 2 alarms for last 10 hours
+		alarmCount = m_alarmDao.getNumAlarmsLastHours(11);
+		assertEquals(3, alarmCount);
+	}
 
 	@Test
 	@Transactional

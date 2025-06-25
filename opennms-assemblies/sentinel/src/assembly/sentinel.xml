@@ -10,59 +10,46 @@
   <includeBaseDirectory>false</includeBaseDirectory>
   <fileSets>
     <fileSet>
-      <directory>${project.build.directory}/classes</directory>
+      <directory>${project.build.directory}/unpacked/container-sentinel/sentinel-${project.version}</directory>
+      <outputDirectory>sentinel-${project.version}</outputDirectory>
+    </fileSet>
+    <fileSet>
+      <directory>${project.build.directory}/unpacked/base-assembly</directory>
       <outputDirectory>sentinel-${project.version}</outputDirectory>
       <includes>
-        <include>debian/rules</include>
-        <include>bin/scvcli</include>
+        <include>bin/ensure-user-ping.sh</include>
+        <include>bin/fix-permissions</include>
+        <include>bin/update-package-permissions</include>
         <include>bin/support_pack.sh</include>
       </includes>
       <fileMode>0755</fileMode>
     </fileSet>
     <fileSet>
-      <directory>${project.build.directory}/classes</directory>
-      <outputDirectory>sentinel-${project.version}</outputDirectory>
-      <excludes>
-        <exclude>debian/rules</exclude>
-      </excludes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.build.directory}/unpacked/sentinel-${project.version}</directory>
-      <outputDirectory>sentinel-${project.version}</outputDirectory>
-      <excludes>
-        <exclude>**/container.*</exclude>
-      </excludes>
-    </fileSet>
-    <fileSet>
-      <directory>${project.build.directory}/unpacked/base-assembly/bin</directory>
-      <outputDirectory>sentinel-${project.version}/bin</outputDirectory>
+      <directory>${project.basedir}/src/main/filtered/debian</directory>
+      <outputDirectory>sentinel-${project.version}/debian</outputDirectory>
     </fileSet>
   </fileSets>
   <files>
     <file>
-      <source>${project.build.directory}/unpacked/sentinel-${project.version}/etc/container.service</source>
+      <source>${project.build.directory}/unpacked/container-shared/org.opennms.container.shared-${project.version}/etc/container.service</source>
       <outputDirectory>sentinel-${project.version}/etc</outputDirectory>
       <destName>sentinel.service</destName>
       <fileMode>0644</fileMode>
       <filtered>true</filtered>
     </file>
     <file>
-      <source>${project.build.directory}/unpacked/sentinel-${project.version}/etc/container.init</source>
+      <source>${project.build.directory}/unpacked/container-shared/org.opennms.container.shared-${project.version}/etc/container.init</source>
       <outputDirectory>sentinel-${project.version}/etc</outputDirectory>
       <destName>sentinel.init</destName>
       <fileMode>0755</fileMode>
       <filtered>true</filtered>
     </file>
     <file>
-      <source>${project.build.directory}/unpacked/sentinel-${project.version}/etc/container.conf</source>
+      <source>${project.build.directory}/unpacked/container-shared/org.opennms.container.shared-${project.version}/etc/container.conf</source>
       <outputDirectory>sentinel-${project.version}/etc</outputDirectory>
       <destName>sentinel.conf</destName>
       <fileMode>0640</fileMode>
       <filtered>true</filtered>
-    </file>
-    <file>
-      <source>../../COPYING</source>
-      <outputDirectory>sentinel-${project.version}</outputDirectory>
     </file>
     <file>
       <source>../../COPYING</source>

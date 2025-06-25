@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 # JDK 9+ modules we need
 JAVA_MODULES=(

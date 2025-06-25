@@ -95,6 +95,9 @@ public abstract class AbstractSystemReportFormatter implements SystemReportForma
     @Override
     public void end() {
     }
+
+    @Override
+    public boolean isVisible() { return false; }
     
     @Override
     public final int compareTo(final SystemReportFormatter o) { 

@@ -49,6 +49,7 @@ import {
 } from './deviceService'
 
 import { getMainMenu, getNotificationSummary } from './menuService'
+import { getMainMonitoringSystem } from './monitoringSystemService'
 import { getFileNames, getFile, getSnippets, postFile, deleteFile, getFileExtensions } from './configService'
 import { getAliases, getCredentialsByAlias, addCredentials, updateCredentials } from './scvService'
 
@@ -69,6 +70,10 @@ import {
   getUsageStatisticsStatus,
   setUsageStatisticsStatus
 } from './usageStatisticsService'
+import {
+ addZenithRegistration,
+ getZenithRegistrations
+} from './zenithConnectService'
 
 export default {
   search,
@@ -97,6 +102,7 @@ export default {
   getSnippets,
   getMainMenu,
   getNotificationSummary,
+  getMainMonitoringSystem,
   getFileNames,
   getFileExtensions,
   getOpenApiV1,
@@ -123,5 +129,7 @@ export default {
   getUsageStatistics,
   getUsageStatisticsMetadata, 
   getUsageStatisticsStatus,
-  setUsageStatisticsStatus
+  setUsageStatisticsStatus,
+  addZenithRegistration,
+  getZenithRegistrations
 }

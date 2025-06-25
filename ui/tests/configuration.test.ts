@@ -44,15 +44,15 @@ const mockHttpProvisionDServiceConfig = {
 
 const mockProps = {
   itemList: [mockHttpProvisionDServiceConfig],
-  editClicked: () => '',
-  deleteClicked: () => '',
-  setNewPage: () => ''
+  editClicked: () => {},
+  deleteClicked: () => {},
+  setNewPage: () => {}
 }
 
 const wrapper = mount(ConfigurationTable, {
   global: {
     plugins: [createTestingPinia()],
-    stubs: ['router-link']
+    stubs: ['router-link', 'FeatherRipple']
   },
   propsData: mockProps
 })
@@ -262,11 +262,13 @@ test('The File type config path keeps params', () => {
 
 test('The edit btn disables if the record starts with "requisition://"', async () => {
   const editBtn = wrapper.get('[data-test="edit-btn"]')
+
   // expect edit btn to be enabled
   expect(editBtn.attributes('aria-disabled')).toBeUndefined()
 
   // update props with requisition type url
   const newProps = { ...mockProps, itemList: [mockRequisitionProvisionDServiceConfig] }
+
   await wrapper.setProps(newProps)
 
   // expect edit btn to be disabled

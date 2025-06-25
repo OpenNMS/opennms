@@ -70,7 +70,7 @@ public class Notification {
     public int m_serviceId;
 
     // ID of the event that triggered this notification
-    public int m_eventId;
+    public long m_eventId;
 
     /**
      * Default Constructor
@@ -227,7 +227,7 @@ public class Notification {
      *
      * @return a int.
      */
-    public int getEventId() {
+    public long getEventId() {
         return (this.m_eventId);
     }
 

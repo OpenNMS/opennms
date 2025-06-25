@@ -1,11 +1,6 @@
-[[releasenotes-33]]
+[[releasenotes-34]]
 
-= What's New in OpenNMS Horizon 33
-
-== System requirements
-
-* *Java 11 and 17*: OpenNMS Horizon 33 runs on JDKs 11 and 17.
-* *PostgreSQL 10 or higher*: Horizon 33 requires any supported version of PostgreSQL from 10 up to (and including) 16.
+= What's New in OpenNMS Horizon 34
 
 == New features and important changes
 
@@ -32,35 +27,36 @@ Support for `confd` has been added to the Sentinel container.
 An enhanced node list has been introduced with options for sorting and filtering.
 
 == Breaking changes
+The default time series storage strategy is now by default RRDTool.
+
+IMPORTANT: If you use JRobin, make sure you set the property.
+You can easily verify it by checking the file extension created in the directory  `$\{OPENNMS_HOME}/share/rrd/snmp`. The extension .jrb indicates JRobin and .rrd indicates RRDtool.
+If you miss this setting, all your timeseries files will be newely created as .rrd files and you won't have access to your JRobin files with your history.
+
+IMPORTANT: When you have .jrb files, ensure after upgrading to Horizon 34 you explicitly configure JRobin in a file like `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`.
+
+.Configure explicitly JRobin for Horizon 34.x if required
+[source, console]
+----
+org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy
+----
+
+== Deprecation of JRobin as timeseries storage
+
+The release of Horizon 34 will be the last version which supports reading and writing timeseries data using JRobin.
+The JRobin library and the JRobin timeseries strategy will be removed from Horizon 35+ moving forward.
 
 === OpenNMS Minion environment variables changes
 The OpenNMS Minion Docker container no longer uses the KAFKA_SINK, KAFKA_RPC and KAFKA_TWIN prefixes to configure Kafka.
 Instead, only the KAFKA_IPC prefix is used, which ensures that all Kafka-related settings are set correctly for all features and that ActiveMQ is no longer installed incorrectly.
 
-=== Passive Status Monitor
-The Passive Status Monitor previously used the time of the event's arrival as the timestamp of the status.
-As this is too imprecise for some use cases, the time field of the event is now also evaluated.
-If the field is set, it is adopted unchanged as the timestamp of the status.
-If no time is set, the timestamp is generated as before when the event arrives.
+=== Secure Credentials Vault changes
+The `Secure Credentials Vault` in `OpenNMS` traditionally supported the `JCEKS` keystore format. As of the latest enhancement,
+support has been added for the `PKCS12` keystore format.
 
-=== SNMP Metadata Provisioning Adapter
-The SNMP Metadata Provisioning Adapter is not enabled by default anymore.
-Set `enabled="true"` in the configuration file `$OPENNMS_HOME/etc/snmp-metadata-adapter-configuration.xml` to enable it.
+Set `org.opennms.features.scv.jceks.keystore.type=PKCS12` in configuration file
+ `$OPENNMS_HOME/etc/opennms.properties.d/scv.properties.`
 
-=== Docker image changes
-
-The Docker images for the core, minion, and sentinel have been changed from being Ubuntu-based to using RedHat's link:https://www.redhat.com/en/blog/introducing-red-hat-universal-base-image[Universal Base Image].
-This move shrinks the image a bit, makes minimal updating easier, and should simplify running in restrictive OpenShift environments.
-
-The images are based on the `ubi9-minimal` image, which is essentially a stripped down version of RHEL 9.
-This means that things will have moved around a bit in the filesystem, and that you should use `microdnf` for package management.
-
-=== Important internal updates
-
-* Our embedded Karaf container and Karaf APIs have been updated to 4.3.10
-* The OpenNMS Plugin API has been updated to 1.6.0
-* Zookeeper APIs have been updated to 3.7.x
-* If you are performing automated tests, you may need to disable the new popup that shows on first launch.  To do so set `opennms.userDataCollection.show=false` in a properties file in `$OPENNMS_HOME/etc/opennms.properties.d/`.
-
-=== Stricter validation of requisition names
-Some characters (/, \, ?, &, *, ', “) may not be used in requisition names. The UI components have already enforced the validation of requisition names. This restriction is now also enforced when creating search requests via the OpenNMS ReST API.
+If you want to convert the `PKCS12` keystore format instead of `JCEKS`, be sure to update the file extension to match the new format (e.g., use `.pk12` instead of `.jce`).
+You can convert a `JCEKS` file to `PKCS12` using the following command.
+`keytool -importkeystore -srckeystore $OPENNMS_HOME/etc/scv.jce -destkeystore $OPENNMS_HOME/etc/scv.pk12 -deststoretype pkcs12`.

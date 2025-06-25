@@ -463,7 +463,7 @@ public class Poller extends AbstractServiceDaemon {
             node.withTreeLock(r);
 
         } catch (final Throwable e) {
-            LOG.error("Unable to schedule service {}/{}/{}", nodeId, normalizedAddress, svcName);
+            LOG.error("Unable to schedule service {}/{}/{}", nodeId, normalizedAddress, svcName, e);
         }
     }
 

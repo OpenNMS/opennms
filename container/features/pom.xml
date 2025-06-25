@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.container</artifactId>
-    <version>33.0.3-SNAPSHOT</version>
+    <version>34.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.karaf</groupId>
@@ -109,7 +109,6 @@
       <plugin>
         <groupId>com.google.code.maven-replacer-plugin</groupId>
         <artifactId>replacer</artifactId>
-        <version>1.5.3</version>
         <executions>
           <execution>
             <id>exec</id>
@@ -125,7 +124,7 @@
                   <token>apache-cxf/[\d\.]+</token>
                   <value>apache-cxf/${cxfVersion}</value>
                 </replacement>
-                <!-- fix an issue with resolving multiple versions of spring by forcing the dep to force spring 4.2 -->
+                <!-- fix an issue with resolving multiple versions of spring by forcing the dep to spring 4.2 -->
                 <replacement>
                   <token>\[4\.\d,5\)</token>
                   <value>[4.2,4.3)</value>
@@ -192,6 +191,11 @@
                   <type>xml</type>
                   <classifier>camel</classifier>
                 </artifact>
+                <artifact>
+                  <file>${project.build.outputDirectory}/overrides.properties</file>
+                  <type>properties</type>
+                  <classifier>overrides</classifier>
+                </artifact>
               </artifacts>
             </configuration>
           </execution>
@@ -212,11 +216,8 @@
                       <goal>verify</goal>
                   </goals>
                   <configuration>
-                      <javase>11</javase>
+                      <javase>17</javase>
                       <descriptors>
-                          <descriptor>mvn:org.apache.karaf.features/framework/${karafVersion}/xml/features</descriptor>
-                          <descriptor>mvn:org.apache.karaf.features/standard/${karafVersion}/xml/features</descriptor>
-                          <descriptor>mvn:org.opennms.newts/newts-karaf/${newtsVersion}/xml/features</descriptor>
                           <descriptor>file:${project.build.directory}/classes/features.xml</descriptor>
                           <descriptor>file:${project.build.directory}/classes/features-core.xml</descriptor>
                           <descriptor>file:${project.build.directory}/classes/features-experimental.xml</descriptor>
@@ -259,9 +260,6 @@
                           <feature>fst</feature>
                           <feature>guava</feature>
                           <feature>guava-dependencies</feature>
-                          <feature>guava17</feature>
-                          <feature>guava18</feature>
-                          <feature>guava21</feature>
                           <feature>jackson-core</feature>
                           <feature>jackson-dataformat-xml</feature>
                           <feature>jackson-dataformat-yaml</feature>
@@ -274,6 +272,7 @@
                           <feature>javax.servlet</feature>
                           <feature>javax.validation</feature>
                           <feature>jetty</feature>
+                          <feature>jung</feature>
                           <feature>netty</feature>
                           <feature>org.json</feature>
                           <feature>pax-jetty</feature>
@@ -310,6 +309,7 @@
                           <feature>opennms-timeseries-api</feature>
                           <feature>opennms-timeseries-api</feature>
                           <feature>opennms-grpc-exporter</feature>
+                          <feature>vaadin</feature>
 
                           <!-- minion features -->
                           <feature>dominion-grpc-client</feature>
@@ -405,6 +405,12 @@
     <dependency>
       <groupId>org.opennms.features.config.osgi</groupId>
       <artifactId>org.opennms.features.config.osgi.cm</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.dnsresolver</groupId>
+      <artifactId>org.opennms.features.dnsresolver.netty</artifactId>
       <version>${project.version}</version>
       <scope>provided</scope>
     </dependency>
@@ -989,23 +995,26 @@
     </dependency>
     <dependency>
       <groupId>org.opennms.dependencies</groupId>
-      <artifactId>spring-dependencies</artifactId>
-      <version>${project.version}</version>
-      <type>pom</type>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.dependencies</groupId>
       <artifactId>jackson1-dependencies</artifactId>
       <version>${project.version}</version>
       <type>pom</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>eclipse-npn-alpn</artifactId>
+      <version>${project.version}</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jung-shaded</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.notifications</groupId>
       <artifactId>org.opennms.features.notifications.shell</artifactId>
       <version>${project.version}</version>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
 
