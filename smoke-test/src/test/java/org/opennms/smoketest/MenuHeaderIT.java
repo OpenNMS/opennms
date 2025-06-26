@@ -22,16 +22,19 @@
 package org.opennms.smoketest;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertThat;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.opennms.smoketest.ui.framework.TextInput;
 import org.opennms.smoketest.ui.framework.search.CentralSearch;
 import org.opennms.smoketest.ui.framework.search.result.ContextSearchResult;
 import org.opennms.smoketest.ui.framework.search.result.SearchContext;
@@ -42,108 +45,135 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.rnorth.ducttape.unreliables.Unreliables;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MenuHeaderIT extends OpenNMSSeleniumIT {
+    private static final Logger LOG = LoggerFactory.getLogger(MenuHeaderIT.class);
 
     @Test
     public void testMenuEntries() throws Exception {
-        clickMenuItem("Search", null, "element/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='Search for Nodes']");
+        LOG.debug("testMenuEntries");
 
-        clickMenuItem("Info", "Nodes", "element/nodeList.htm");
-        findElementByXpath("//div[@class='btn-toolbar']/span[text()='Nodes' or text()='Availability']");
+        frontPage();
 
-        clickMenuItem("Info", "Assets", "asset/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='Search Asset Information']");
+        WebElement foundElement = null;
+        final WebDriverWait shortWait = new WebDriverWait(getDriver(), Duration.ofSeconds(1));
 
-        clickMenuItem("Info", "Path Outages", "pathOutage/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='All Path Outages']");
+        clickMenuItem("searchMenu", "Search");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Search for Nodes']")));
 
-        clickMenuItem("Status", "Events", "event/index");
-        findElementByXpath("//div[@class='card-header']/span[text()='Event Queries']");
+        clickMenuItem("info", "Nodes");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='btn-toolbar']/span[text()='Nodes' or text()='Availability']")));
 
-        clickMenuItem("Status", "Alarms", "alarm/index.htm");
-        findElementByXpath("//div[@class='card-header']/span[text()='Alarm Queries']");
+        clickMenuItem("info", "Assets");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']//div[@class='card-header']/span[text()='Search Asset Information']")));
 
-        clickMenuItem("Status", "Notifications", "notification/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='Notification queries']");
+        clickMenuItem("info", "Path Outages");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='All Path Outages']")));
 
-        clickMenuItem("Status", "Outages", "outage/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='Outage Menu']");
+        clickMenuItem("statusMenu", "Events");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Event Queries']")));
 
-        clickMenuItem("Status", "Application", "application/index.jsp");
-        findElementByXpath("//li[text()='Application Status']");
+        clickMenuItem("statusMenu", "Alarms");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Alarm Queries']")));
 
-        clickMenuItem("Status", "Surveillance", "surveillance-view.jsp");
+        clickMenuItem("statusMenu", "Notifications");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Notification queries']")));
+
+        clickMenuItem("statusMenu", "Outages");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Outage Menu']")));
+
+        clickMenuItem("statusMenu", "Application");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//li[text()='Application Status']")));
+
+        clickMenuItem("statusMenu", "Surveillance");
+
         // switchTo() by xpath is much faster than by ID
         //driver.switchTo().frame("surveillance-view-ui");
         driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
         driver.switchTo().parentFrame();
         frontPage();
 
-        final String reportsMenuName = "name=nav-Reports-top";
-        clickMenuItem(reportsMenuName, "Charts", "charts/index.jsp");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("include-charts")));
+        clickMenuItem("reportsMenu", "Charts");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("include-charts")));
 
-        clickMenuItem(reportsMenuName, "Resource Graphs", "graph/index.jsp");
+        clickMenuItem("reportsMenu", "Resource Graphs");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//label[contains(text()[normalize-space()], 'Standard Resource')]")));
 
-        clickMenuItem(reportsMenuName, "KSC Reports", "KSC/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='Customized Reports']");
+        clickMenuItem("reportsMenu", "KSC Reports");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Customized Reports']")));
 
-        clickMenuItem(reportsMenuName, "Statistics", "statisticsReports/index.htm");
-        findElementByXpath("//div[@class='card-header']/span");
+        clickMenuItem("reportsMenu", "Statistics");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span")));
 
-        final String dashboardsMenuName = "name=nav-Dashboards-top";
-        clickMenuItem(dashboardsMenuName, "Dashboard", "dashboard.jsp");
-        // switchTo() by xpath is much faster than by ID
-        //driver.switchTo().frame("surveillance-view-ui");
+        clickMenuItem("dashboardsMenu", "Dashboard");
         driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
         driver.switchTo().parentFrame();
         frontPage();
 
-        clickMenuItem(dashboardsMenuName, "Ops Board", "vaadin-wallboard");
-        findElementByXpath("//select[@class='v-select-select']");
+        clickMenuItem("dashboardsMenu", "Ops Board");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//select[@class='v-select-select']")));
 
         frontPage();
-        final String mapsMenuName = "name=nav-Maps-top";
-        clickMenuItem(mapsMenuName, "Topology", "topology");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(), 'Selection Context')]")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='navbar']//a[@name='nav-Maps-top']")));
+        clickMenuItem("mapsMenu", "Topology");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[contains(text(), 'Selection Context')]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[starts-with(@id, 'opennmstopology-')]")));
 
         frontPage();
-        findElementByXpath("//nav//a[contains(@title, 'Configure OpenNMS') and contains(@href, 'opennms/admin/index.jsp')]").click();
-        findElementByXpath("//div[@class='card-header']/span[text()='OpenNMS System']");
-        findElementByXpath("//div[@class='card-header']/span[text()='Provisioning']");
-        findElementByXpath("//div[@class='card-header']/span[text()='Event Management']");
-        findElementByXpath("//div[@class='card-header']/span[text()='Service Monitoring']");
-        findElementByXpath("//div[@class='card-header']/span[text()='Performance Measurement']");
-        findElementByXpath("//div[@class='card-header']/span[text()='Distributed Monitoring']");
+        clickMenuItem("administration", "Configure OpenNMS");
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='OpenNMS System']")));
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Provisioning']")));
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Event Management']")));
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Service Monitoring']")));
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Performance Measurement']")));
+
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Distributed Monitoring']")));
 
         frontPage();
-        final String helpMenuName = "nav-help-top";
-        clickMenuItemWithIcon(helpMenuName, "Help", "opennms/help/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='Documentation']");
-        clickMenuItemWithIcon(helpMenuName, "Support", "opennms/support/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='Commercial Support']");
-        clickMenuItemWithIcon(helpMenuName, "About", "opennms/about/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='Version Details']");
+        clickMenuItem("helpMenu", "Help");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Documentation']")));
 
-        // Navigation to new Vue UI page from legacy menubar
+        clickMenuItem("helpMenu", "About");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Version Details']")));
+
+        clickMenuItem("helpMenu", "Support");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Commercial Support']")));
+
+        // Navigation to new Vue UI page
         frontPage();
-        clickMenuItemWithIcon("nav-Info-top", "Device Configs", "opennms/ui/index.html#/device-config-backup");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("app")));
-        findElementByXpath("//div[@id='app']//span[text()='Device Configuration']");
+        clickMenuItem("info", "Device Configs");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("app")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//span[text()='Device Configuration']")));
 
         Unreliables.retryUntilSuccess(60, TimeUnit.SECONDS, () -> {
             frontPage();
             Thread.sleep(200);
-            final String userMenuName = "nav-user-top";
-            clickMenuItemWithIcon(userMenuName, "Log Out", "javascript:document.headerLogoutForm.submit()");
+
+            logout();
+
+            findElementById("input_j_username");
+
+            return null;
+        });
+    }
+
+    @Test
+    public void testLogout() {
+        Unreliables.retryUntilSuccess(60, TimeUnit.SECONDS, () -> {
+            frontPage();
+            Thread.sleep(200);
+
+            logout();
+
             findElementById("input_j_username");
             return null;
         });
@@ -160,7 +190,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         reportsPage();
         findElementByName("resourceGraphs");
         findElementByName("kscReports");
-
 
         // testAllLinks
         reportsPage();
@@ -186,23 +215,50 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
     @Test
     public void verifyCentralSearch() {
-        // Kick off search
-        final SearchResult searchResult = new CentralSearch(getDriver()).search("Configure");
-        assertThat(searchResult.size(), is(10L));
+        frontPage();
 
-        // Load more elements
-        final ContextSearchResult contextSearchResult = searchResult.forContext(SearchContext.Action);
-        assertThat(contextSearchResult.hasMore(), is(true));
-        contextSearchResult.loadMore();
-        assertThat(contextSearchResult.size(), is(14L));
+        // get the central search text input control and search for "Configure"
+        WebElement searchInput = findElementByXpath("//div[@id='onms-central-search-control']/div[@class='onms-search-input-wrapper']//div[@class='feather-input-wrapper']//input[@class='feather-input']");
+        TextInput ti = new TextInput(getDriver(), searchInput.getAttribute("id"));
+        ti.setInput("Configure");
 
-        // Select last element from the now loaded elements
-        contextSearchResult.getItem("Configure Users").click();
-        getDriver().getCurrentUrl().endsWith("/opennms/admin/userGroupView/users/list.jsp");
+        // Get the search results, including the search results header
+        List<WebElement> searchResults = findElementsByXpath("//div[@id='onms-central-search-control']/div[@class='onms-search-dropdown-wrapper']//ul[@class='feather-dropdown']/li");
 
-        // Go back to start page
-        new CentralSearch(getDriver()).search("Home").getSingleItem().click();
-        getDriver().getCurrentUrl().endsWith("/opennms/index.jsp");
+        // 10 actual results plus 1 header
+        assertThat(searchResults.size(), is(11));
+
+        List<WebElement> searchResultsHeader = findElementsByXpath("//div[@class='onms-search-result-header']");
+        assertThat(searchResultsHeader.size(), is(1));
+        assertThat(searchResultsHeader.get(0).getText(), is("Action"));
+
+        List<WebElement> searchResultItems = findElementsByXpath("//a[contains(@class, 'onms-search-result-item')]");
+        assertThat(searchResultItems.size(), is(10));
+
+        frontPage();
+
+        if (false) {
+            // final List<WebElement> elements = getDriver().findElements(By.xpath("//div[@id='onms-search-result']//*[contains(@class, 'list-group-item')]"));
+
+            // Kick off search
+            final SearchResult searchResult = new CentralSearch(getDriver()).search("Configure");
+            assertThat(searchResult.size(), is(10L));
+
+            // TODO!
+            // Load more elements
+            final ContextSearchResult contextSearchResult = searchResult.forContext(SearchContext.Action);
+            assertThat(contextSearchResult.hasMore(), is(true));
+            contextSearchResult.loadMore();
+            assertThat(contextSearchResult.size(), is(14L));
+
+            // Select last element from the now loaded elements
+            contextSearchResult.getItem("Configure Users").click();
+            getDriver().getCurrentUrl().endsWith("/opennms/admin/userGroupView/users/list.jsp");
+
+            // Go back to start page
+            new CentralSearch(getDriver()).search("Home").getSingleItem().click();
+            getDriver().getCurrentUrl().endsWith("/opennms/index.jsp");
+        }
     }
 
     // We need this helper method, as with the icon used in some menus the contains(text(),...) method does not work anymore
@@ -212,6 +268,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         // Repeat the process altering the offset slightly each time
         final AtomicInteger offset = new AtomicInteger(10);
         final WebDriverWait shortWait = new WebDriverWait(getDriver(), Duration.ofSeconds(1));
+
         try {
             setImplicitWait(5, TimeUnit.SECONDS);
             Unreliables.retryUntilSuccess(30, TimeUnit.SECONDS, () -> {

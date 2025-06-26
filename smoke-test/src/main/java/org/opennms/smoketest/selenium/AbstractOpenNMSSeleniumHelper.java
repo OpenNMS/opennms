@@ -255,15 +255,18 @@ public abstract class AbstractOpenNMSSeleniumHelper {
                     try {
                         sleepQuietly(200);
                         final List<WebElement> elements = input.findElements(selector);
+
                         if (elements.size() == 0) {
                             return true;
                         }
+
                         LOG.debug("waitForClose: matching elements: {}", elements);
                         WebElement element = input.findElement(selector);
                         final Point location = element.getLocation();
                         // recreate it because the browser is funny about timing after the getLocation()
                         element = input.findElement(selector);
                         final Dimension size = element.getSize();
+
                         if (new Point(0,0).equals(location) && new Dimension(0,0).equals(size)) {
                             LOG.debug("waitForClose: {} element technically exists, but is sized 0,0", element);
                             return true;
@@ -355,7 +358,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
     protected void logout() {
         LOG.debug("Logout started");
-        getElementWithoutWaiting(By.name("headerLogoutForm")).submit();
+        clickLogout();
         waitForLogin();
         LOG.debug("Logout complete");
     }
@@ -398,6 +401,8 @@ public abstract class AbstractOpenNMSSeleniumHelper {
      * this clicks "Skip" to continue.
      */
     protected void skipPasswordGate(final String username, final String password) {
+        LOG.debug("In skipPasswordGate, username {}, password: {}", username, password);
+
         if (username.equals(PASSWORD_GATE_USERNAME) && password.equals(PASSWORD_GATE_PASSWORD)) {
             clickElement(By.id("btn_skip"));
 
@@ -428,15 +433,18 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     public void assertElementDoesNotExist(final By by) {
         LOG.debug("assertElementDoesNotExist: {}", by);
         WebElement element = getElementWithoutWaiting(by);
+
         if (element == null) {
             LOG.debug("Success: element does not exist: {}", by);
             return;
         }
+
         throw new OpenNMSTestException("Element should not exist, but was found: " + element);
     }
 
     public WebElement getElementImmediately(final By by) {
         WebElement element = null;
+
         try {
             setImplicitWait(0, TimeUnit.MILLISECONDS);
             element = getDriver().findElement(by);
@@ -445,11 +453,13 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         } finally {
             setImplicitWait();
         }
+
         return element;
     }
 
     protected WebElement getElementWithoutWaiting(final By by) {
         WebElement element = null;
+
         try {
             setImplicitWait(2, TimeUnit.SECONDS);
             element = getDriver().findElement(by);
@@ -464,6 +474,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     protected void assertElementDoesNotHaveText(final By by, final String text) {
         LOG.debug("assertElementDoesNotHaveText: locator={}, text={}", by, text);
         WebElement element = null;
+
         try {
             setImplicitWait(2, TimeUnit.SECONDS);
             element = getDriver().findElement(by);
@@ -488,6 +499,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
     protected String handleAlert(final String expectedText) {
         LOG.debug("handleAlert: expectedText={}", expectedText);
+
         try {
             final Alert alert = getDriver().switchTo().alert();
             final String alertText = alert.getText();
@@ -524,57 +536,76 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         }
     }
 
-    protected void clickMenuItem(final String menuItemText, final String submenuItemText, final String submenuItemHref) {
-        clickMenuItem(menuItemText, submenuItemText, submenuItemHref, 30);
+    protected void clickMenuItem(final String menuItemId, final String subMenuText) {
+        clickMenuItem(menuItemId, subMenuText, 30);
     }
 
-    protected void clickMenuItem(final String menuItemText, final String submenuItemText, final String submenuItemHref, int timeout) {
-        LOG.debug("clickMenuItem: itemText={}, submenuItemText={}, submenuHref={}, timeout={}", menuItemText, submenuItemText, submenuItemHref, timeout);
+    /**
+     * Click on a side menu item to navigate to the linked page.
+     * See 'menu-template.json' for the menu and submenu IDs.
+     * Note that the UI adds a prefix to the IDs to make sure they are unique.
+     * @param menuItemId the 'id' of the top-level menu item (not including the prefix)
+     * @param subMenuText the text of the sub menu item under the menu item
+     */
+    protected void clickMenuItem(final String menuItemId, final String subMenuText, int timeout) {
+        LOG.debug("Clicking menu item with id '{}' and text '{}'", menuItemId, subMenuText);
 
-        if (timeout == 0) {
+        if (timeout <= 0) {
             timeout = 30;
         }
 
-        // Repeat the process altering the offset slightly everytime
-        final AtomicInteger offset = new AtomicInteger(10);
+        final String TOP_MENU_PREFIX = "opennms-menu-id-";
+        final String TOP_MENU_XPATH = "//div[@id='opennms-sidebar-control-content']/ul[@id='opennms-sidebar-control-menu']/li[@id='$ID']";
+        final String POPUP_MENU_ITEMS_XPATH = "//div[@id='opennms-sidebar-control-content']/ul/div[contains(@class, 'feather-popover-container')]/div[@class='popover']/ul[@id='opennms-sidebar-control-menu-opennms-menu-id-$ID-menu']/li/a[contains(@class, 'feather-list-item')]";
+
         final WebDriverWait shortWait = new WebDriverWait(getDriver(), Duration.ofSeconds(1));
+
+        Unreliables.retryUntilTrue(timeout, TimeUnit.SECONDS, () -> {
+            final Actions action = new Actions(getDriver());
+            final String topMenuXpath = TOP_MENU_XPATH.replace("$ID", TOP_MENU_PREFIX + menuItemId);
+            final WebElement topMenuElement = findElementByXpath(topMenuXpath);
+
+            shortWait.until(ExpectedConditions.visibilityOf(topMenuElement));
+            topMenuElement.click();
+
+            final String popupMenuItemsXpath = POPUP_MENU_ITEMS_XPATH.replace("$ID", menuItemId);
+            final List<WebElement> popupMenuItems = findElementsByXpath(popupMenuItemsXpath);
+
+            for (WebElement link : popupMenuItems) {
+                if (link.getText().trim().equals(subMenuText)) {
+                    link.click();
+                    return true;
+                }
+            }
+
+            return false;
+        });
+    }
+
+    protected void clickLogout() {
+        LOG.debug("Clicking logout");
+
+        final int timeout = 5;
+        final WebDriverWait shortWait = new WebDriverWait(getDriver(), Duration.ofSeconds(1));
+
+        final String SELF_SERVICE_BUTTON_XPATH = "//div[@id='opennms-sidemenu-container']//div[contains(@class, 'self-service-menubar-dropdown')]//featherbutton[@class='self-service-menubar-dropdown-button-dark']";
+        final String LOGOUT_XPATH = "//div[@id='opennms-sidemenu-container']//div[@class='self-service-menubar-dropdown-item-content']//a[@name='self-service-logout']";
+
         Unreliables.retryUntilSuccess(timeout, TimeUnit.SECONDS, () -> {
             final Actions action = new Actions(getDriver());
 
-            final WebElement menuElement;
-            if (menuItemText.startsWith("name=")) {
-                final String menuItemName = menuItemText.replaceFirst("name=", "");
-                menuElement = findElementByName(menuItemName);
-            } else {
-                menuElement = findElementByXpath("//a[contains(text(), '" + menuItemText + "')]");
-            }
-            action.moveToElement(menuElement, offset.get(), offset.get()).perform();
-            if (offset.incrementAndGet() > 10) {
-                offset.set(0);
-            }
+            // Find the self service menu and hover over it so that the dropdown menu appears`
+            final WebElement selfServiceMenu = findElementByXpath(SELF_SERVICE_BUTTON_XPATH);
+            shortWait.until(ExpectedConditions.visibilityOf(selfServiceMenu ));
 
-            final WebElement submenuElement;
-            if (submenuItemText != null) {
-                if (submenuItemHref == null) {
-                    submenuElement = findElementByXpath("//a[contains(text(), '" + submenuItemText + "')]");
-                } else {
-                    submenuElement = findElementByXpath("//a[contains(@href, '" + submenuItemHref + "') and contains(text(), '" + submenuItemText + "')]");
-                }
-            } else {
-                submenuElement = null;
-            }
+            action.moveToElement(selfServiceMenu).build().perform();
 
-            if (submenuElement == null) {
-                // no submenu given, just click the main element
-                // wait until the element is visible, not just present in the DOM
-                shortWait.until(ExpectedConditions.visibilityOf(menuElement));
-                menuElement.click();
-            } else {
-                // we want a submenu item, click it instead
-                // wait until the element is visible, not just present in the DOM
-                shortWait.until(ExpectedConditions.visibilityOf(submenuElement));
-                submenuElement.click();
-            }
+            // Find and click the logout link item on the dropdown menu
+            final WebElement logoutLink = findElementByXpath(LOGOUT_XPATH);
+
+            shortWait.until(ExpectedConditions.visibilityOf(logoutLink));
+            logoutLink.click();
+
             return null;
         });
     }
@@ -847,6 +878,11 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     public WebElement findElementByXpath(final String xpath) {
         LOG.debug("findElementByXpath: selector={}", xpath);
         return getDriver().findElement(By.xpath(xpath));
+    }
+
+    public List<WebElement> findElementsByXpath(final String xpath) {
+        LOG.debug("findElementsByXpath: selector={}", xpath);
+        return getDriver().findElements(By.xpath(xpath));
     }
 
     public int countElementsMatchingCss(final String css) throws InstantiationException, IllegalAccessException, ClassNotFoundException {

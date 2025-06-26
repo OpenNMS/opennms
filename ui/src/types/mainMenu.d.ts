@@ -1,7 +1,9 @@
 export interface MenuItem {
+  type?: string // 'item' or 'separator'
   id: string | null
   name: string | null
   url: string | null
+  isExternalLink?: boolean | null
   locationMatch: string | null
   roles: string[] | null
   items?: MenuItem[] | null

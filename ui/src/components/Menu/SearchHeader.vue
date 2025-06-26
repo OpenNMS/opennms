@@ -1,8 +1,9 @@
 <template>
-  <div :style="{ backgroundColor: bgColor, color: textColor, padding }">
+  <div class="onms-search-result-header" :style="{ backgroundColor: bgColor, color: textColor, padding }">
     <slot />
   </div>
 </template>
+
 <script lang="ts" setup>
 defineProps({
   label: { type: String, default: '' },
@@ -11,6 +12,7 @@ defineProps({
   padding: { type: String, default: '3px 6px' }
 })
 </script>
+
 <style lang="scss" scoped>
 
 </style>

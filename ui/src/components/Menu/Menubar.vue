@@ -12,7 +12,7 @@
     </template>
 
     <template v-slot:center>
-        <Search class="search-left-margin" />
+        <Search class="search-left-margin" id="onms-central-search-control" />
 
         <!-- Provision/Quick add node menu -->
         <div class="quick-add-node-wrapper">

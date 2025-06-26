@@ -17,17 +17,24 @@ import { FeatherSidenav } from '@featherds/sidebar'
 import { FeatherMenuList, MenuListEntry } from '@featherds/menu'
 import { FeatherIcon } from '@featherds/icon'
 import type { Panel } from '@featherds/panel-bar'
+import IconApiConfig from '@featherds/icon/network/ApiConfig'
+import IconApiEndpoints from '@featherds/icon/network/ApiEndpoints'
+import IconBuild from '@featherds/icon/network/Build'
+import IconColumnChart from '@featherds/icon/datavis/ColumnChart'
 import IconDashboard from '@featherds/icon/action/Dashboard'
-import IconFeedback from '@featherds/icon/action/Feedback'
 import IconHelp from '@featherds/icon/action/Help'
 import IconHome from '@featherds/icon/action/Home'
-import IconInfo from '@featherds/icon/action/Info'
 import IconInstances from '@featherds/icon/network/Instances'
-import IconLocation from '@featherds/icon/action/Location'
 import IconLogout from '@featherds/icon/action/LogOut'
+import IconLogsAlt from '@featherds/icon/network/LogsAlt'
+import IconManageProfile from '@featherds/icon/action/ManageProfile'
+import IconNetworkServer from '@featherds/icon/network/Server'
+import IconNodes from '@featherds/icon/network/Nodes'
 import IconPerson from '@featherds/icon/action/Person'
-import IconReporting from '@featherds/icon/action/Reporting'
 import IconSearch from '@featherds/icon/action/Search'
+import IconContactSupport from '@featherds/icon/action/ContactSupport'
+import IconView from '@featherds/icon/action/View'
+import IconViewDetails from '@featherds/icon/action/ViewDetails'
 
 import { useMenuStore } from '@/stores/menuStore'
 import { usePluginStore } from '@/stores/pluginStore'
@@ -35,15 +42,21 @@ import { Plugin } from '@/types'
 import { MainMenu, MenuItem } from '@/types/mainMenu'
 import { computePluginRelLink, createFakePlugin, createMenuItem, createTopMenuItem } from './utils'
 
+const TOP_MENU_ID_PREFIX = 'opennms-menu-id-'
+
 const menuStore = useMenuStore()
 const pluginStore = usePluginStore()
 
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 const plugins = computed<Plugin[]>(() => pluginStore.plugins)
 
-const getMenuLink = (url?: string | null) => {
-  if (mainMenu.value?.baseHref && url) {
-    return `${mainMenu.value.baseHref}${url}`
+const getMenuLink = (menuItem: MenuItem) => {
+  if (mainMenu.value?.baseHref && menuItem.url) {
+    if (menuItem.isExternalLink && menuItem.isExternalLink === true) {
+      return menuItem.url
+    }
+
+    return `${mainMenu.value.baseHref}${menuItem.url}`
   }
   
   return '#'
@@ -53,26 +66,42 @@ const createTopMenuIcon = (menuItem: MenuItem) => {
   let icon: DefineComponent | null = null
 
   switch (menuItem.id) {
+    case 'operationsMenu':
+      icon = IconDashboard; break
+    case 'inventoryMenu':
+      icon = IconNetworkServer; break
+    case 'remoteMonitoringMenu':
+      icon = IconView; break
+    case 'dashboardsMenu':
+      icon = IconDashboard; break
+    case 'metricsMenu':
+      icon = IconColumnChart; break
+    case 'discoveryMenu':
+      icon = IconNodes; break
+    case 'distributedMonitoringMenu':
+      icon = IconViewDetails; break
+    case 'toolsMenu':
+      icon = IconBuild; break
+    case 'integrationsMenu':
+      icon = IconApiEndpoints; break
+    case 'administrationMenu':
+      icon = IconManageProfile; break
+    case 'internalLogsMenu':
+      icon = IconLogsAlt; break
+    case 'apiDocumentationMenu':
+      icon = IconApiConfig; break
+    case 'supportMenu':
+      icon = IconContactSupport; break
+    case 'helpMenu':
+      icon = IconHelp; break
     case 'selfServiceMenu':
       icon = IconPerson; break
     case 'logout':
       icon = IconLogout; break
     case 'searchMenu':
       icon = IconSearch; break
-    case 'info':
-      icon = IconInfo; break
-    case 'statusMenu':
-      icon = IconFeedback; break
-    case 'reportsMenu':
-      icon = IconReporting; break
-    case 'dashboardsMenu':
-      icon = IconDashboard; break
-    case 'mapsMenu':
-      icon = IconLocation; break
-    case 'plugins':
+    case 'pluginsMenu':
       icon = IconInstances; break
-    case 'helpMenu':
-      icon = IconHelp; break
   }
 
   return (icon ?? IconHome) as typeof FeatherIcon
@@ -83,14 +112,30 @@ const createMenuListEntry = (menuItem: MenuItem) => {
     id: menuItem.id ?? menuItem.name,
     type: 'item',
     title: menuItem.name,
-    href: getMenuLink(menuItem?.url),
+    href: getMenuLink(menuItem),
     onClick: menuItem.onClick
   } as MenuListEntry
 }
 
 const createPanel = (topMenuItem: MenuItem) => {
+  if (topMenuItem.type === 'separator') {
+    return {
+      id: '',
+      type: 'separator'
+    } as Panel
+  }
+
+  if (topMenuItem.type === 'header') {
+    return {
+      id: '',
+      type: 'header',
+      title: topMenuItem.name
+    } as Panel
+  }
+
+  // 'item'
   return {
-    id: topMenuItem.id ?? topMenuItem.name,
+    id: `${TOP_MENU_ID_PREFIX}${topMenuItem.id ?? topMenuItem.name ?? ''}`,
     type: 'item',
     title: topMenuItem.name,
     content: '',
@@ -120,7 +165,7 @@ const createPluginsMenu = (useFake: boolean) => {
     }
   })
 
-  return createTopMenuItem('plugins', 'Plugins', pluginsMenuItems)
+  return createTopMenuItem('pluginsMenu', 'Plugins', pluginsMenuItems)
 }
 
 const createFlowsMenu = () => {
@@ -135,17 +180,17 @@ const createFlowsMenu = () => {
   return createTopMenuItem('flows', 'Flows', [flowsMenuItem])
 }
 
-const createAdministrationMenu = () => {
-  const configMenuLink = mainMenu.value?.configurationMenu?.url ?? 'admin/index.jsp'
-  const configMenuName = mainMenu.value?.configurationMenu?.name ?? 'Configure'
+// const createAdministrationMenu = () => {
+//   const configMenuLink = mainMenu.value?.configurationMenu?.url ?? 'admin/index.jsp'
+//   const configMenuName = mainMenu.value?.configurationMenu?.name ?? 'Configure'
 
-  const adminMenuItem = {
-    ...createMenuItem('configuration', configMenuName),
-    url: configMenuLink
-  }
+//   const adminMenuItem = {
+//     ...createMenuItem('configuration', configMenuName),
+//     url: configMenuLink
+//   }
 
-  return createTopMenuItem('administration', 'Administration', [adminMenuItem])
-}
+//   return createTopMenuItem('administration', 'Administration', [adminMenuItem])
+// }
 
 const topPanels = computed<Panel[]>(() => {
   // If user not logged in, don't display any menus
@@ -170,12 +215,12 @@ const topPanels = computed<Panel[]>(() => {
     allMenus.push(createPluginsMenu(true))
   }
 
-  allMenus.push(createAdministrationMenu())
+  // allMenus.push(createAdministrationMenu())
   // allMenus.push(createSelfServiceMenu())
 
-  if (mainMenu.value.helpMenu) {
-    allMenus.push(mainMenu.value.helpMenu)
-  }
+  // if (mainMenu.value.helpMenu) {
+  //   allMenus.push(mainMenu.value.helpMenu)
+  // }
 
   // HACK for now for Search menu
   const searchMenu = allMenus.find(m => m.name === 'Search')
@@ -210,6 +255,15 @@ const topPanels = computed<Panel[]>(() => {
   :deep(.feather-dock.dock-closed > button.feather-dock-toggle) {
     top: 0;
     left: 0;
+  }
+
+  :deep(li.feather-list-item.li-separator.disabled span.feather-list-item-text > hr) {
+      border: 1px;
+      border: 1px solid var(--feather-dock-color);
+  }
+
+  :deep(.feather-popover-container > .popover) {
+    max-width: 24rem;
   }
 }
 </style>

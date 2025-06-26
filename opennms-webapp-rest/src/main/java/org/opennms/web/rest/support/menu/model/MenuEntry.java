@@ -26,10 +26,16 @@ import java.util.List;
 
 // Similar to org.opennms.web.navigate.MenuEntry
 public class MenuEntry {
+    /** A MenuEntryTypes value */
+    public String type;
     public String id;
     public String name;
     public String url;
+    /** If present and true, the link in 'url' is an external link. */
+    public Boolean isExternalLink;
+
     public String locationMatch;
+
     /** If present, user must have at least one of these roles to display */
     public List<String> roles;
 
@@ -51,5 +57,10 @@ public class MenuEntry {
     public static class RequiredSystemProperty {
         public String name;
         public String value;
+    }
+
+    public static class MenuEntryTypes {
+        public static final String TYPE_ITEM = "item";
+        public static final String TYPE_SEPARATOR = "separator";
     }
 }

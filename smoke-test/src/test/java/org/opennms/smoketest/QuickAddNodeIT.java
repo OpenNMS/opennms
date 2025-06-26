@@ -74,11 +74,14 @@ public class QuickAddNodeIT extends OpenNMSSeleniumIT {
     @Test
     public void testQuickAddNode() throws Exception {
         adminPage();
-        findElementByXpath("//nav//a[contains(@title, 'Quick-Add Node') and contains(@href, 'admin/ng-requisitions/quick-add-node.jsp')]").click();
+
+        WebElement btnElem = findElementByXpath("//div[@id='opennms-sidemenu-container']//div[@class='quick-add-node-wrapper']/button");
+        btnElem.click();
 
         Thread.sleep(5000);
 
         long end = System.currentTimeMillis() + LOAD_TIMEOUT;
+
         do {
             // Basic fields
             findElementByCss("input#foreignSource");
@@ -107,11 +110,13 @@ public class QuickAddNodeIT extends OpenNMSSeleniumIT {
         Thread.sleep(100);
         element.sendKeys(Keys.ENTER);
         Thread.sleep(100);
+
         try {
             setImplicitWait(5, TimeUnit.SECONDS);
             final List<WebElement> matching = driver.findElements(By.cssSelector("a[title='"+text+"']"));
+
             if (!matching.isEmpty()) {
-                findElementByCss("a[title='"+text+"']").click();
+                findElementByCss("a[title='" + text + "']").click();
             }
         } finally {
             setImplicitWait();
