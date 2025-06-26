@@ -26,10 +26,40 @@ import java.util.List;
 
 // Similar to org.opennms.web.navigate.MenuEntry
 public class MenuEntry {
+    /** A MenuEntryTypes value */
+    public String type;
+
     public String id;
+
     public String name;
+
     public String url;
+
+    /** If present and true, the link in 'url' is an external link. */
+    public Boolean isExternalLink;
+
     public String locationMatch;
+
+    /**
+     * An optional action identifier which informs the UI to do additional processing.
+     * Currently used for 'logout' which prompts the UI to wire clicking the menu item to a logout action.
+     */
+    public String action;
+
+    /**
+     * Can use this to provide an HTML link target for the link.
+     * Currently may only support a subset, e.g. '_blank' and '_self'.
+     * Default: '_self'.
+     */
+    public String linkTarget;
+
+    /**
+     * An icon specifier, most used for top-level menu items.
+     * Should correspond to a Feather icon id, e.g.: 'actions/AccountCircle'
+     * Currently only certain icons are actually supported.
+     */
+    public String icon;
+
     /** If present, user must have at least one of these roles to display */
     public List<String> roles;
 
@@ -51,5 +81,10 @@ public class MenuEntry {
     public static class RequiredSystemProperty {
         public String name;
         public String value;
+    }
+
+    public static class MenuEntryTypes {
+        public static final String TYPE_ITEM = "item";
+        public static final String TYPE_SEPARATOR = "separator";
     }
 }

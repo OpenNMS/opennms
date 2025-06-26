@@ -251,6 +251,12 @@
     <jsp:include page="/assets/load-assets.jsp" flush="false">
       <jsp:param name="asset" value="onms-default-apps" />
     </jsp:include>
+
+    <%-- Logout form, expected to exist on some pages. --%>
+    <c:if test='${(__bs_includeLogoutForm != null) && (__bs_includeLogoutForm.contains("true"))}'>
+      <form id="headerLogoutForm" name="headerLogoutForm" action="${baseHref}j_spring_security_logout" method="post"></form>
+    </c:if>
+
     <%= "<div id=\"content\" class=\"container-fluid\">" %>
 
     <%-- Vue menus: do not display if 'quiet' is true, or if 'oldmenu' query string param is true --%>

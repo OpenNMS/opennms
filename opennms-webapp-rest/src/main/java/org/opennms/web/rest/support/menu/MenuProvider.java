@@ -112,6 +112,9 @@ public class MenuProvider {
         }
 
         try {
+            // The following should be set by the template. We do not override them here.
+            // templateName, displayAddNodeButton, sideMenuInitialExpand
+
             mainMenu.baseHref = menuRequestContext.calculateUrlBase();
             mainMenu.homeUrl = mainMenu.baseHref + "index.jsp";
             mainMenu.formattedDateTime = menuRequestContext.getFormattedDateTime();

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MainMenu {
+    public String templateName;
     public String baseHref;
     public String homeUrl;
     public String formattedDateTime;
@@ -36,6 +37,8 @@ public class MainMenu {
     public Boolean zenithConnectEnabled;
     public String zenithConnectBaseUrl;
     public String zenithConnectRelativeUrl;
+    public Boolean displayAddNodeButton;
+    public Boolean sideMenuInitialExpand;
     public String copyrightDates;
     public String version;
 

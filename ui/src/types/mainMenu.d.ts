@@ -1,8 +1,13 @@
 export interface MenuItem {
+  type?: string         // 'item', 'header', 'separator'. default is 'item'
   id: string | null
   name: string | null
   url: string | null
+  isExternalLink?: boolean | null
   locationMatch: string | null
+  action?: string | null
+  linkTarget?: string | null
+  icon?: string | null
   roles: string[] | null
   items?: MenuItem[] | null
   requiredSystemProperties?: [{ name: string, value: string }] | null
@@ -20,6 +25,7 @@ export interface TileProviderItem {
 }
 
 export interface MainMenu {
+  templateName: string
   baseHref: string
   homeUrl: string
   formattedDateTime: string
@@ -33,6 +39,8 @@ export interface MainMenu {
   zenithConnectEnabled: boolean
   zenithConnectBaseUrl: string
   zenithConnectRelativeUrl: string
+  displayAddNodeButton?: boolean
+  sideMenuInitialExpand?: boolean
   userTileProviders?: TileProviderItem[]
   
   menus: MenuItem[]

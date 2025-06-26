@@ -3,6 +3,8 @@
     <FeatherSidenav
       id="opennms-sidebar-control"
       :items="topPanels"
+      v-model="isExpanded"
+      @update:modelValue="(val: any) => isExpanded = !!val"
       pushedSelector=".app-layout"
       menuTitle="OpenNMS"
       menuHeader
@@ -17,33 +19,33 @@ import { FeatherSidenav } from '@featherds/sidebar'
 import { FeatherMenuList, MenuListEntry } from '@featherds/menu'
 import { FeatherIcon } from '@featherds/icon'
 import type { Panel } from '@featherds/panel-bar'
-import IconDashboard from '@featherds/icon/action/Dashboard'
-import IconFeedback from '@featherds/icon/action/Feedback'
-import IconHelp from '@featherds/icon/action/Help'
 import IconHome from '@featherds/icon/action/Home'
-import IconInfo from '@featherds/icon/action/Info'
-import IconInstances from '@featherds/icon/network/Instances'
-import IconLocation from '@featherds/icon/action/Location'
-import IconLogout from '@featherds/icon/action/LogOut'
-import IconPerson from '@featherds/icon/action/Person'
-import IconReporting from '@featherds/icon/action/Reporting'
-import IconSearch from '@featherds/icon/action/Search'
-
+import { performLogout } from '@/services/logoutService'
 import { useMenuStore } from '@/stores/menuStore'
 import { usePluginStore } from '@/stores/pluginStore'
 import { Plugin } from '@/types'
 import { MainMenu, MenuItem } from '@/types/mainMenu'
 import { computePluginRelLink, createFakePlugin, createMenuItem, createTopMenuItem } from './utils'
+import useMenuIcons from './useMenuIcons'
+
+const TOP_MENU_ID_PREFIX = 'opennms-menu-id-'
 
 const menuStore = useMenuStore()
 const pluginStore = usePluginStore()
 
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 const plugins = computed<Plugin[]>(() => pluginStore.plugins)
+const isExpanded = ref(mainMenu.value?.sideMenuInitialExpand ?? false)
 
-const getMenuLink = (url?: string | null) => {
-  if (mainMenu.value?.baseHref && url) {
-    return `${mainMenu.value.baseHref}${url}`
+const { getIcon } = useMenuIcons()
+
+const getMenuLink = (menuItem: MenuItem) => {
+  if (mainMenu.value?.baseHref && menuItem.url) {
+    if (menuItem.isExternalLink && menuItem.isExternalLink === true) {
+      return menuItem.url
+    }
+
+    return `${mainMenu.value.baseHref}${menuItem.url}`
   }
   
   return '#'
@@ -52,45 +54,57 @@ const getMenuLink = (url?: string | null) => {
 const createTopMenuIcon = (menuItem: MenuItem) => {
   let icon: DefineComponent | null = null
 
-  switch (menuItem.id) {
-    case 'selfServiceMenu':
-      icon = IconPerson; break
-    case 'logout':
-      icon = IconLogout; break
-    case 'searchMenu':
-      icon = IconSearch; break
-    case 'info':
-      icon = IconInfo; break
-    case 'statusMenu':
-      icon = IconFeedback; break
-    case 'reportsMenu':
-      icon = IconReporting; break
-    case 'dashboardsMenu':
-      icon = IconDashboard; break
-    case 'mapsMenu':
-      icon = IconLocation; break
-    case 'plugins':
-      icon = IconInstances; break
-    case 'helpMenu':
-      icon = IconHelp; break
-  }
+  icon = getIcon(menuItem.icon)
 
   return (icon ?? IconHome) as typeof FeatherIcon
 }
 
+const onPerformLogout = async () => {
+    console.log('In onPerformLogout...')
+
+    await performLogout()
+
+    console.log('| exiting onPerformLogout...')
+}
+
 const createMenuListEntry = (menuItem: MenuItem) => {
+  let onClick = menuItem.onClick
+
+  if (menuItem.action === 'logout') {
+    onClick = onPerformLogout
+  }
+
+  const target = menuItem.linkTarget === '_blank' ? '_blank' : '_self'
+
   return {
     id: menuItem.id ?? menuItem.name,
     type: 'item',
     title: menuItem.name,
-    href: getMenuLink(menuItem?.url),
-    onClick: menuItem.onClick
+    href: getMenuLink(menuItem),
+    target,
+    onClick
   } as MenuListEntry
 }
 
 const createPanel = (topMenuItem: MenuItem) => {
+  if (topMenuItem.type === 'separator') {
+    return {
+      id: '',
+      type: 'separator'
+    } as Panel
+  }
+
+  if (topMenuItem.type === 'header') {
+    return {
+      id: '',
+      type: 'header',
+      title: topMenuItem.name
+    } as Panel
+  }
+
+  // 'item'
   return {
-    id: topMenuItem.id ?? topMenuItem.name,
+    id: `${TOP_MENU_ID_PREFIX}${topMenuItem.id ?? topMenuItem.name ?? ''}`,
     type: 'item',
     title: topMenuItem.name,
     content: '',
@@ -100,14 +114,6 @@ const createPanel = (topMenuItem: MenuItem) => {
       items: topMenuItem.items?.map(createMenuListEntry) ?? []
     }
   } as Panel
-}
-
-// TODO: Add this to the Menu Rest service
-const createFakeSearchMenu = (searchMenu: MenuItem) => {
-  return {
-    ...createMenuItem('search', 'Search'),
-    url: searchMenu.url
-  }
 }
 
 const createPluginsMenu = (useFake: boolean) => {
@@ -120,7 +126,12 @@ const createPluginsMenu = (useFake: boolean) => {
     }
   })
 
-  return createTopMenuItem('plugins', 'Plugins', pluginsMenuItems)
+  const topMenuItem = {
+    ...createTopMenuItem('pluginsMenu', 'Plugins', pluginsMenuItems),
+    icon: 'network/Connection'
+  } as MenuItem
+
+  return topMenuItem
 }
 
 const createFlowsMenu = () => {
@@ -132,19 +143,7 @@ const createFlowsMenu = () => {
     url: flowsMenuLink
   }
 
-  return createTopMenuItem('flows', 'Flows', [flowsMenuItem])
-}
-
-const createAdministrationMenu = () => {
-  const configMenuLink = mainMenu.value?.configurationMenu?.url ?? 'admin/index.jsp'
-  const configMenuName = mainMenu.value?.configurationMenu?.name ?? 'Configure'
-
-  const adminMenuItem = {
-    ...createMenuItem('configuration', configMenuName),
-    url: configMenuLink
-  }
-
-  return createTopMenuItem('administration', 'Administration', [adminMenuItem])
+  return createTopMenuItem('flowsMenu', 'Flows', [flowsMenuItem])
 }
 
 const topPanels = computed<Panel[]>(() => {
@@ -168,20 +167,6 @@ const topPanels = computed<Panel[]>(() => {
     allMenus.push(createPluginsMenu(false))
   } else {
     allMenus.push(createPluginsMenu(true))
-  }
-
-  allMenus.push(createAdministrationMenu())
-  // allMenus.push(createSelfServiceMenu())
-
-  if (mainMenu.value.helpMenu) {
-    allMenus.push(mainMenu.value.helpMenu)
-  }
-
-  // HACK for now for Search menu
-  const searchMenu = allMenus.find(m => m.name === 'Search')
-
-  if (searchMenu) {
-    searchMenu.items = [createFakeSearchMenu(searchMenu)]
   }
 
   return allMenus.map(i => createPanel(i) as Panel)
@@ -210,6 +195,15 @@ const topPanels = computed<Panel[]>(() => {
   :deep(.feather-dock.dock-closed > button.feather-dock-toggle) {
     top: 0;
     left: 0;
+  }
+
+  :deep(li.feather-list-item.li-separator.disabled span.feather-list-item-text > hr) {
+      border: 1px;
+      border: 1px solid var(--feather-dock-color);
+  }
+
+  :deep(.feather-popover-container > .popover) {
+    max-width: 24rem;
   }
 }
 </style>

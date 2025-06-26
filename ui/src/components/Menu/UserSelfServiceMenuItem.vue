@@ -22,7 +22,7 @@
        @click="onMenuItemClick(item)"
     >
       <div class="self-service-menubar-dropdown-item-content">
-        <a :href="computeLink(item?.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper">
+        <a :href="computeLink(item?.url || '')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper" :name="`self-service-${item.id}`">
           <FeatherIcon :icon="createIcon(item)" class="self-service-icon" />
           <span class="left-margin-small">
             {{ item?.name || '' }}
@@ -96,7 +96,7 @@ const computeLink = (url: string) => {
 }
 
 const onMenuItemClick = async (item: MenuItem) => {
-  if (item.id === 'logout') {
+  if (item.action === 'logout') {
     await performLogout()
     return
   }
