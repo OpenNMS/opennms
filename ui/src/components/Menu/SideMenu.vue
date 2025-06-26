@@ -1,6 +1,6 @@
 <template>
   <div id="opennms-sidemenu-vue-container">
-    <FeatherSidebar
+    <FeatherSidenav
       id="opennms-sidebar-control"
       :items="topPanels"
       pushedSelector=".app-layout"
@@ -12,9 +12,8 @@
 </template>
 
 <script setup lang="ts">
-import axios from 'axios'
 import { DefineComponent, markRaw } from 'vue'
-import { FeatherSidebar } from '@featherds/sidebar'
+import { FeatherSidenav } from '@featherds/sidebar'
 import { FeatherMenuList, MenuListEntry } from '@featherds/menu'
 import { FeatherIcon } from '@featherds/icon'
 import type { Panel } from '@featherds/panel-bar'
@@ -92,6 +91,7 @@ const createMenuListEntry = (menuItem: MenuItem) => {
 const createPanel = (topMenuItem: MenuItem) => {
   return {
     id: topMenuItem.id ?? topMenuItem.name,
+    type: 'item',
     title: topMenuItem.name,
     content: '',
     icon: createTopMenuIcon(topMenuItem),
@@ -147,40 +147,6 @@ const createAdministrationMenu = () => {
   return createTopMenuItem('administration', 'Administration', [adminMenuItem])
 }
 
-const onLogout = async () => {
-  const submitter = axios.create({
-    baseURL: mainMenu.value.baseHref,
-    withCredentials: true
-  })
-
-  try {
-    await submitter.post('j_spring_security_logout')
-  } catch (e) {
-    console.error('Error attempting logout: ', e)
-    return
-  }
-
-  // For the Vue SPA app, this is needed to replace the full page
-  window.location.assign(mainMenu.value.baseHref)
-}
-
-const createSelfServiceMenu = () => {
-  const logoutMenuItem = {
-    ...createMenuItem('logout', 'Logout'),
-    onClick: onLogout
-  }
-
-  const otherItems = mainMenu.value?.selfServiceMenu?.items?.filter(i => i.id !== 'logout') || []
-
-  const items = [
-    ...otherItems,
-    logoutMenuItem
-  ]
-
-  const name = mainMenu.value?.selfServiceMenu?.name || 'You'
-  return createTopMenuItem('self-service', name, items)
-}
-
 const topPanels = computed<Panel[]>(() => {
   // If user not logged in, don't display any menus
   if (!mainMenu.value.username) {
@@ -205,7 +171,7 @@ const topPanels = computed<Panel[]>(() => {
   }
 
   allMenus.push(createAdministrationMenu())
-  allMenus.push(createSelfServiceMenu())
+  // allMenus.push(createSelfServiceMenu())
 
   if (mainMenu.value.helpMenu) {
     allMenus.push(mainMenu.value.helpMenu)
@@ -229,37 +195,21 @@ const topPanels = computed<Panel[]>(() => {
 @import "@featherds/styles/themes/variables";
 
 #opennms-sidemenu-vue-container {
+  // put Sidenav below the top menu and make sure popover menus are over geomap
   :deep(.feather-dock) {
-    background-color: midnightblue;
-    z-index: 1;
+    top: 3.75rem;     // --feather-header-height
+    z-index: 2000;    // over the geomap
   }
 
-  :deep(.feather-panel-bar-header) {
-    background-color: midnightblue;
-    color: white;
+  // fix Sidenav toggle button placement
+  :deep(.feather-dock.dock-open > button.feather-dock-toggle) {
+    top: var(--feather-header-height);
+    left: calc(var(--feather-dock-width) - 3.75rem);
   }
 
-  :deep(.feather-panel-bar-content) {
-    background-color: midnightblue;
-    color: white;
-
-    a.feather-list-item {
-      color: white;
-
-      &:visited {
-        color: white;
-      }
-    }
-  }
-
-  :deep(.feather-panel-bar-details) {
-    background-color: midnightblue;
-    color: white;
-  }
-
-  :deep(.feather-panel-bar-summary) {
-    background-color: midnightblue;
-    color: white;
+  :deep(.feather-dock.dock-closed > button.feather-dock-toggle) {
+    top: 0;
+    left: 0;
   }
 }
 </style>
