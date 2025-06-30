@@ -46,14 +46,21 @@ public class GrpcHeaderInterceptor implements ClientInterceptor {
     private final Metadata.Key AUTHORIZATION_BYPASS_KEY = Metadata.Key.of("Bypass-Authorization", Metadata.ASCII_STRING_MARSHALLER);
     private final boolean ZENITH_CONNECT_ENABLED;
 
-    public GrpcHeaderInterceptor(String tenantId) {
+    public GrpcHeaderInterceptor(String tenantId, String zenithEnabled) {
         metadata = new Metadata();
         metadata.put(TENANT_ID_KEY, tenantId);
-        Properties onmsProperties = SystemUtils.getONMSSystemProperties();
-        ZENITH_CONNECT_ENABLED = Boolean.valueOf(onmsProperties.getProperty("opennms.zenithConnect.enabled", "false"));
+        if (zenithEnabled != null) {
+            ZENITH_CONNECT_ENABLED = Boolean.valueOf(zenithEnabled);
+        }else {
+            ZENITH_CONNECT_ENABLED = Boolean.FALSE;
+        }
         if (!ZENITH_CONNECT_ENABLED) {
             metadata.put(AUTHORIZATION_BYPASS_KEY, Boolean.TRUE.toString());
         }
+    }
+
+    public GrpcHeaderInterceptor(String tenantId) {
+       this(tenantId, Boolean.FALSE.toString());
     }
 
     @Override
