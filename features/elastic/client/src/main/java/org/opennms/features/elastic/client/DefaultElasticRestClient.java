@@ -776,7 +776,7 @@ public class DefaultElasticRestClient implements ElasticRestClient {
 
             return success;
         } catch (Exception e) {
-            LOG.error("Failed to delete indices '{}': {}", indices, e.getMessage(), e);
+            LOG.error("Failed to delete indices '{}'", indices, e);
             throw e;
         }
     }
