@@ -21,7 +21,7 @@
             :class="[noticeStatusDisplay?.colorClass, 'notice-status-display']"
           />
 
-          <FeatherIcon :icon="IconArrowDropDown" />
+          <FeatherIcon class="user-notification-arrow-dropdown" :icon="IconArrowDropDown" />
         </FeatherButton>
       </div>
     </template>
@@ -313,8 +313,11 @@ const onNotificationItemClick = (item: OnmsNotification) => {
 
 div.user-notification-badge-wrapper {
   .menubar-dropdown-button-dark {
-    :deep(svg.feather-icon) {
+    svg.notice-status-display.feather-icon {
       vertical-align: -0.5rem;
+    }
+    svg.user-notification-arrow-dropdown.feather-icon {
+      vertical-align: 0;
     }
   }
 }

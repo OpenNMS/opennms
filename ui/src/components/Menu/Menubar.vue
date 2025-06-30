@@ -266,6 +266,10 @@ body {
   box-shadow: none;
 }
 
+.header-wrapper.feather-app-bar-wrapper a.skip {
+  display: none;
+}
+
 .center-flex {
   display: flex;
   align-items: center;
@@ -276,8 +280,9 @@ body {
   .right.center-horiz {
     margin-right:2px;
   }
-    .top-menu-search {
-      margin-right:5px;
-    }
+
+  .top-menu-search {
+    margin-right:5px;
+  }
 }
 </style>

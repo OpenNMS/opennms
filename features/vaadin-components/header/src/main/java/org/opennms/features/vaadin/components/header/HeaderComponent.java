@@ -24,6 +24,13 @@ package org.opennms.features.vaadin.components.header;
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.ui.AbstractJavaScriptComponent;
 
+/**
+ * Header component for Vaadin Topology and other UI pages.
+ * Note that the 'header-component_connector.vaadin.js' file loads 'bootstrap.jsp'.
+ * The query string param 'superQuiet' disables the old menu and some other things.
+ * The query string param 'fromVaadin' will direct 'bootstrap.jsp' to include the code injecting the
+ * Vue top/side menus into the vaadin-based page.
+ */
 @JavaScript("theme://../opennms/assets/header-component_connector.vaadin.js")
 public class HeaderComponent extends AbstractJavaScriptComponent {
 

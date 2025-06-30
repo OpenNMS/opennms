@@ -9,7 +9,7 @@
   "zenithConnectEnabled": false,
   "zenithConnectBaseUrl": "",
   "zenithConnectRelativeUrl": "",
-  "displayAddNodeButton": false,
+  "displayAddNodeButton": true,
   "sideMenuInitialExpand": false,
   "copyrightDates": "",
   "version": "",
