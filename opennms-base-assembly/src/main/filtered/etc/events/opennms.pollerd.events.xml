@@ -338,7 +338,6 @@
       <descr>&lt;p>%parm[nodelabel]% (%parm[foreignSource]%:%parm[foreignId]%) in location %parm[location]% was deleted from requisition %parm[foreignSource]%.&lt;/p>
              &lt;p>This can have multiple reasons.
              &lt;ul>
-             &lt;li>OpenNMS default config will delete any node that is down for seven consecutive days.&lt;/li>
              &lt;li>It was removed from the corresponding requisition %parm[foreignSource]%. This can be done manually using the web UI or using provisiond import schedules.&lt;/li>
              &lt;li>It was manually deleted using the "Delete nodes" entry in the Admin menu.&lt;/li>
              &lt;li>It was removed using the ReST API&lt;/li>
