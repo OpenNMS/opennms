@@ -22,6 +22,8 @@ export interface TileProviderItem {
 export interface MainMenu {
   baseHref: string
   homeUrl: string
+  formattedDateTime: string
+  formattedDate: string
   formattedTime: string
   noticeStatus: string
   username: string

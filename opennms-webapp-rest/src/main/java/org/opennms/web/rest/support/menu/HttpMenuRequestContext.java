@@ -26,11 +26,17 @@ import java.time.ZoneId;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.opennms.core.time.CentralizedDateTimeFormat;
+import org.opennms.core.time.ExtendedDateOnlyFormat;
+import org.opennms.core.time.ExtendedTimeOnlyFormat;
 import org.opennms.netmgt.config.NotifdConfigFactory;
 
 public class HttpMenuRequestContext implements MenuRequestContext {
     final private HttpServletRequest request;
-    final private CentralizedDateTimeFormat dateTimeFormat = new CentralizedDateTimeFormat();
+    final private CentralizedDateTimeFormat dateTimeFormatter = new CentralizedDateTimeFormat();
+
+    final private ExtendedDateOnlyFormat dateOnlyFormatter = new ExtendedDateOnlyFormat();
+
+    final private ExtendedTimeOnlyFormat timeOnlyFormatter = new ExtendedTimeOnlyFormat();
 
     public HttpMenuRequestContext(HttpServletRequest request) {
         this.request = request;
@@ -52,8 +58,16 @@ public class HttpMenuRequestContext implements MenuRequestContext {
        return roles.stream().anyMatch(this.request::isUserInRole);
     }
 
+    public String getFormattedDateTime() {
+        return this.dateTimeFormatter.format(Instant.now(), extractUserTimeZone());
+    }
+
+    public String getFormattedDate() {
+        return this.dateOnlyFormatter.format(Instant.now(), extractUserTimeZone());
+    }
+
     public String getFormattedTime() {
-        return this.dateTimeFormat.format(Instant.now(), extractUserTimeZone());
+        return this.timeOnlyFormatter.format(Instant.now(), extractUserTimeZone());
     }
 
     public String getNoticeStatus() {

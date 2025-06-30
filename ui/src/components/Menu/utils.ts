@@ -66,50 +66,9 @@ const createFakePlugin = () => {
   return fakePlugin
 }
 
-const TimeRegex = new RegExp(/(\d{2}:\d{2}:\d{2})(-|\+)(\d{2}):(\d{2})/, 'i')
-
-interface FormattedDateTime {
-  date: string
-  time: string
-  utcOp: string
-  utc: string
-  utcMinutes: string
-}
-
-const getFormattedDateTime = (value: string) => {
-  // 2025-05-24T14:32:24-04:00 ->
-  // {
-  //   date: '2025-05-24',
-  //   time: '14:32:24',
-  //   utcOp: '-',
-  //   utc: '04'
-  //   utcMinutes: '00'
-  // }
-
-  const dateTime = value.split('T')
-  const fullTime = dateTime[1]
-
-  const matches = TimeRegex.exec(fullTime)
-
-  const time = matches?.[1] ?? ''
-  const utcOp = matches?.[2] ?? '+'
-  const utc = matches?.[3] ?? ''
-  const utcMinutes = matches?.[4] ?? ''
-
-  return {
-    date: dateTime[0],
-    time,
-    utcOp,
-    utc,
-    utcMinutes
-  } as FormattedDateTime
-}
-
 export {
   computePluginRelLink,
   createFakePlugin,
   createMenuItem,
-  createTopMenuItem,
-  getFormattedDateTime,
-  FormattedDateTime
+  createTopMenuItem
 }

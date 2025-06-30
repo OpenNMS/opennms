@@ -27,6 +27,8 @@ import java.util.List;
 public class MainMenu {
     public String baseHref;
     public String homeUrl;
+    public String formattedDateTime;
+    public String formattedDate;
     public String formattedTime;
     public String noticeStatus;
     public String username;

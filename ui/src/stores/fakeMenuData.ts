@@ -27,7 +27,9 @@ import { MainMenu, NotificationSummary } from '@/types/mainMenu'
 export const defaultMainMenu = {
   baseHref: 'http://localhost:8980/opennms/',
   homeUrl: 'http://localhost:8980/opennms/index.jsp',
-  formattedTime: '2022-10-13T19:49:29-04:00',
+  formattedDateTime: '2022-10-13T19:49:29-04:00',
+  formattedDate: '2022-10-13',
+  formattedTime: '19:49:29 UTC-04',
   noticeStatus: 'Off',
   username: 'admin',
   menus: [
