@@ -151,4 +151,9 @@ public class ElasticRestClientWithCircuitBreaker implements ElasticRestClient {
     public String getServerVersion() throws IOException {
         return delegate.getServerVersion();
     }
+
+    @Override
+    public boolean deleteIndex(String indices) throws IOException {
+        return delegate.deleteIndex(indices);
+    }
 }
