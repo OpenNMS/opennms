@@ -49,7 +49,7 @@ import { externalComponent, getJSPath } from '../components/Plugin/utils'
 (window as any)['VRouter'] = router
 
 // plugin scripts must be loaded before app to use their routes
-const baseUrl = import.meta.env.VITE_BASE_REST_URL
+const baseRestUrl = import.meta.env.VITE_BASE_REST_URL
 const plugins = await API.getPlugins()
 
 for (const plugin of plugins) {
@@ -78,7 +78,7 @@ for (const plugin of plugins) {
   }
 
   try {
-    const js = getJSPath(baseUrl, plugin.extensionId, plugin.resourceRootPath, plugin.moduleFileName)
+    const js = getJSPath(baseRestUrl, plugin.extensionId, plugin.resourceRootPath, plugin.moduleFileName)
     await externalComponent(js)
   } catch (e) {
     console.error('Error attempting to load plugin: ', e)
