@@ -1777,9 +1777,9 @@
     <eclipselinkVersion>2.5.1</eclipselinkVersion>
     <eddsaVersion>0.3.0</eddsaVersion>
     <elasticsearchNettyVersion>${netty4Version}</elasticsearchNettyVersion>
-    <elasticsearchDriftPluginVersion>2.0.5</elasticsearchDriftPluginVersion>
+    <elasticsearchDriftPluginVersion>2.1.0</elasticsearchDriftPluginVersion>
     <elasticsearchTargetVersion>7.17.9</elasticsearchTargetVersion>
-    <elasticsearchClientVersion>8.18.1</elasticsearchClientVersion>
+    <elasticsearchClientVersion>8.18.3</elasticsearchClientVersion>
     <errorProneAnnotationsVersion>2.25.0</errorProneAnnotationsVersion>
     <esapiVersion>2.5.2.0</esapiVersion>
     <felixBridgeVersion>4.1.6</felixBridgeVersion>

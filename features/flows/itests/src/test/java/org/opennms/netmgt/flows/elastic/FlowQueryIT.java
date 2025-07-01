@@ -112,8 +112,8 @@ public class FlowQueryIT {
     protected SmartQueryService smartQueryService;
 
     // Elasticsearch version used for testing
-    private static final String ES_VERSION = "8.18.2";
-    private static final String DRIFT_PLUGIN_VERSION = "2.0.7";
+    private static final String ES_VERSION = "8.18.3";
+    private static final String DRIFT_PLUGIN_VERSION = "2.1.0";
 
     @ClassRule
     public static ElasticTestContainerWithPlugins elasticsearchContainer;
