@@ -181,5 +181,10 @@
             <artifactId>awaitility</artifactId>
             <scope>test</scope>
         </dependency>
+       <dependency>
+            <groupId>org.opennms.features.zenith-connect</groupId>
+            <artifactId>org.opennms.features.zenith-connect.persistence</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
