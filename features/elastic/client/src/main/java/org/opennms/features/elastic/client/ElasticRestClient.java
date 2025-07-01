@@ -137,4 +137,13 @@ public interface ElasticRestClient {
      * @throws IOException if an error occurs during version retrieval
      */
     String getServerVersion() throws IOException;
+
+    /**
+     * Deletes one or more indices from Elasticsearch.
+     *
+     * @param indices the indices to delete (supports wildcards)
+     * @return true if the indices were successfully deleted
+     * @throws IOException if an error occurs during deletion
+     */
+    boolean deleteIndex(String indices) throws IOException;
 }
