@@ -757,4 +757,27 @@ public class DefaultElasticRestClient implements ElasticRestClient {
 
         throw new IOException("Could not retrieve server version from response: " + responseBody);
     }
+
+    @Override
+    public boolean deleteIndex(String indices) throws IOException {
+
+        try {
+            Request request = new Request("DELETE", "/" + indices);
+            Response response = restClient.performRequest(request);
+
+            int statusCode = response.getStatusLine().getStatusCode();
+            boolean success = statusCode >= 200 && statusCode < 300;
+
+            if (success) {
+                LOG.info("Successfully deleted indices: {}", indices);
+            } else {
+                LOG.warn("Failed to delete indices: {}, status code: {}", indices, statusCode);
+            }
+
+            return success;
+        } catch (Exception e) {
+            LOG.error("Failed to delete indices '{}'", indices, e);
+            throw e;
+        }
+    }
 }

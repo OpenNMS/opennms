@@ -44,6 +44,8 @@ import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
 import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
 import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCache;
 import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCacheImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.script.ScriptEngineManager;
 import java.net.MalformedURLException;
@@ -57,12 +59,14 @@ import static org.mockito.Mockito.mock;
 
 public class ComposableFlowQueryIT extends FlowQueryIT {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ComposableFlowQueryIT.class);
+
     public  static String relativePathToEtc = Path.of("../../../opennms-base-assembly/src/main/filtered/etc/").toString();
 
     @Before
     public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {
         final MetricRegistry metricRegistry = new MetricRegistry();
-        final ElasticRestClientFactory elasticRestClientFactory = new ElasticRestClientFactory(elasticSearchRule.getUrl(), null, null);
+        final ElasticRestClientFactory elasticRestClientFactory = new ElasticRestClientFactory(elasticsearchContainer.getHttpHostAddress(), null, null);
         final ElasticRestClient elasticRestClient = elasticRestClientFactory.createClient();
         // No specific Index settings should be applied for composable templates, they should be in component settings
         final IndexSettings settings = new IndexSettings();
@@ -104,6 +108,16 @@ public class ComposableFlowQueryIT extends FlowQueryIT {
                 nodeInfoCache);
 
         String pathToTemplates = Path.of(relativePathToEtc, "netflow-templates" , "default").toString();
+
+        // Delete any existing indices before initializing to ensure a clean state
+        try {
+            LOG.info("Deleting any existing flow indices before test");
+            elasticRestClient.deleteIndex("netflow*");
+            LOG.info("Successfully deleted existing indices");
+        } catch (Exception e) {
+            LOG.info("No existing indices to delete or error during deletion: {}", e.getMessage());
+        }
+        
         final ComposableTemplateInitializer initializer = new ComposableTemplateInitializer(elasticRestClient,
                 pathToTemplates, true);
 

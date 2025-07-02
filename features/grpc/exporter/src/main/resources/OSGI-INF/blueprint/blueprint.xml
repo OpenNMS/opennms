@@ -7,9 +7,9 @@
 
     <!-- Configuration properties -->
     <cm:property-placeholder id="grpcExporterProperties" persistent-id="org.opennms.features.grpc.exporter"
-                             update-strategy="reload">
+                             update-strategy="reload" >
 
-        <cm:default-properties>
+        <cm:default-properties >
             <cm:property name="bsm.enabled" value="true"/>
             <cm:property name="bsm.host" value="bsm.onmshs.local:1443"/>
             <cm:property name="spog.enabled" value="true"/>
@@ -21,10 +21,12 @@
             <cm:property name="tls.cert.path" value=""/>
             <cm:property name="tenant.id" value="opennms-prime"/>
             <cm:property name="snapshot.interval" value="3600"/>
+            <cm:property name="opennms.zenithConnect.enabled" value="false"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
     <reference id="onmsNodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="optional"/>
+    <reference id="zenithConnectPersistenceService" interface="org.opennms.features.zenithconnect.persistence.api.ZenithConnectPersistenceService" />
 
     <reference id="nodeDao" interface="org.opennms.integration.api.v1.dao.NodeDao" availability="optional"/>
     <reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService" availability="optional"/>
@@ -33,6 +35,8 @@
 
     <bean id="grpcClientInterceptor" class="org.opennms.features.grpc.exporter.GrpcHeaderInterceptor">
         <argument value="${tenant.id}"/>
+        <argument value="${opennms.zenithConnect.enabled}"/>
+        <property name="zenithConnectPersistenceService" ref="zenithConnectPersistenceService"/>
     </bean>
 
     <bean id="bsmGrpcClient" class="org.opennms.features.grpc.exporter.bsm.BsmGrpcClient" init-method="start" destroy-method="stop" >
