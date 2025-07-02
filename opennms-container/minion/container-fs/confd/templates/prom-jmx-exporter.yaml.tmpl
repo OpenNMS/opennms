@@ -3,25 +3,26 @@
 #
 {{$promJmxPath := "/java/agent/prom-jmx-exporter" -}}
 startDelaySeconds: {{getv (print $promJmxPath "/startDelaySeconds") "0"}}
-jmxUrl: {{getv (print $promJmxPath "/jmxUrl") "service:jmx:rmi:///jndi/rmi://127.0.0.1:1299/karaf-minion"}}
-username: {{getv (print $promJmxPath "/username") "admin"}}
-password: {{getv (print $promJmxPath "/password") "admin"}}
 lowercaseOutputName: {{getv (print $promJmxPath "/lowerCaseOutputName") "true"}}
 lowercaseOutputLabelNames: {{getv (print $promJmxPath "/lowercaseOutputLabelNames") "true"}}
-{{$woSize := len (getvs (print $promJmxPath "/whitelistObjectNames/*")) -}}
+autoExcludeObjectNameAttributes: {{getv (print $promJmxPath "/autoExcludeObjectNameAttributes") "true"}}
+
+{{$woSize := len (getvs (print $promJmxPath "/includeObjectNames/*")) -}}
 {{if gt $woSize 0 -}}
-whitelistObjectNames:
-{{range getvs (print $promJmxPath "/whitelistObjectNames/*") -}}
+includeObjectNames:
+{{range getvs (print $promJmxPath "/includeObjectNames/*") -}}
 - "{{.}}"
 {{end -}}
 {{end -}}
-{{$boSize := len (getvs (print $promJmxPath "/blacklistObjectNames/*")) -}}
+
+{{$boSize := len (getvs (print $promJmxPath "/excludeObjectNames/*")) -}}
 {{if gt $boSize 0 -}}
-blacklistObjectNames:
-{{range getvs (print $promJmxPath "/blacklistObjectNames/*") -}}
+excludeObjectNames:
+{{range getvs (print $promJmxPath "/excludeObjectNames/*") -}}
 - "{{.}}"
 {{end -}}
-{{end}}
+{{end -}}
+
 rules:
 - pattern: org\.opennms\..+\.(.+)<name=(.+)><>Value
   name: minion_$1_$2
