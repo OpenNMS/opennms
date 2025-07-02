@@ -38,6 +38,9 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Instant;
 
+import static org.opennms.netmgt.collection.api.CollectionResource.RESOURCE_TYPE_IF;
+import static org.opennms.netmgt.collection.api.CollectionResource.RESOURCE_TYPE_NODE;
+
 public class OpenConfigAdapterTest {
 
     private static final String INSTANCE_NAME = "abc-32/0/2";
@@ -64,6 +67,28 @@ public class OpenConfigAdapterTest {
         MatcherAssert.assertThat(mockPersister.getValue(), CoreMatchers.is(ATTRIBUTE_VALUE));
     }
 
+
+    @Test
+    public void testCpuUtilization() throws ScriptException, IOException {
+
+        var collectionAgent = Mockito.mock(CollectionAgent.class);
+        Mockito.when(collectionAgent.getNodeId()).thenReturn(1);
+        CollectionSetBuilder collectionSetBuilder = new CollectionSetBuilder(collectionAgent);
+
+        var url = this.getClass().getResource("/openconfig-gnmi-telemetry.groovy");
+        if(url == null) {
+            throw  new IllegalArgumentException("Invalid file path");
+        }
+        var file = new File(url.getPath());
+        var scriptBuilder = new ScriptedCollectionSetBuilder(file);
+        var collectionSet = scriptBuilder.build(collectionAgent, generateGnmiCpuUtilizationMessage(), Instant.now().toEpochMilli());
+        var mockPersister = new MockPersister();
+        collectionSet.visit(mockPersister);
+        MatcherAssert.assertThat(mockPersister.getAttributeName(), CoreMatchers.is("cpu-utilization-state-avg"));
+        MatcherAssert.assertThat(mockPersister.getValue(), CoreMatchers.is(15.0));
+
+    }
+
     private Gnmi.SubscribeResponse generateGnmiMessage() {
         Gnmi.SubscribeResponse.Builder builder = Gnmi.SubscribeResponse.newBuilder();
         Gnmi.Update.Builder updateBuilder = Gnmi.Update.newBuilder();
@@ -81,17 +106,32 @@ public class OpenConfigAdapterTest {
                 .addUpdate(updateBuilder).build());
         return builder.build();
     }
-    
-    private Gnmi.SubscribeResponse generateCustomGnmiMessage() {
-            Gnmi.SubscribeResponse.Builder responseBuilder = Gnmi.SubscribeResponse.newBuilder();
-            Gnmi.Path.Builder pathBuilder = Gnmi.Path.newBuilder()
-                    .addElem(Gnmi.PathElem.newBuilder().setName("eth1").build())
-                    .addElem(Gnmi.PathElem.newBuilder().setName("ifInOctets"));
-            return responseBuilder.setUpdate(Gnmi.Notification.newBuilder().setTimestamp(System.currentTimeMillis())
-                    .addUpdate(Gnmi.Update.newBuilder().setPath(pathBuilder.build())
-                            .setVal(Gnmi.TypedValue.newBuilder().setUintVal(4000).build()).build())
-                    .build()).build();
+
+    private Gnmi.SubscribeResponse generateGnmiCpuUtilizationMessage() {
+        Gnmi.SubscribeResponse.Builder builder = Gnmi.SubscribeResponse.newBuilder();
+        
+        Gnmi.Notification.Builder notificationBuilder = Gnmi.Notification.newBuilder();
+        notificationBuilder.setTimestamp(1751293808127192960L);
+
+        notificationBuilder.setPrefix(Gnmi.Path.newBuilder()
+                .addElem(Gnmi.PathElem.newBuilder().setName("components").build())
+                .addElem(Gnmi.PathElem.newBuilder().setName("component").putKey("name", "CPU0:CORE0").build())
+                .build());
+
+        notificationBuilder.addUpdate(Gnmi.Update.newBuilder()
+                .setPath(Gnmi.Path.newBuilder()
+                        .addElem(Gnmi.PathElem.newBuilder().setName("cpu").build())
+                        .addElem(Gnmi.PathElem.newBuilder().setName("utilization").build())
+                        .addElem(Gnmi.PathElem.newBuilder().setName("state").build())
+                        .addElem(Gnmi.PathElem.newBuilder().setName("avg").build())
+                        .build())
+                .setVal(Gnmi.TypedValue.newBuilder().setJsonVal(com.google.protobuf.ByteString.copyFromUtf8("15")).build())
+                .build());
+        
+        builder.setUpdate(notificationBuilder.build());
+        return builder.build();
     }
+
 
     private class MockPersister extends AbstractCollectionSetVisitor {
 
@@ -101,7 +141,13 @@ public class OpenConfigAdapterTest {
 
         @Override
         public void visitResource(CollectionResource resource) {
-            setInterfaceLabel(resource.getInterfaceLabel());
+            if(resource.getResourceTypeName().equals(RESOURCE_TYPE_NODE)) {
+               //setAttributeName(resource.getInstance());
+            }
+            if(resource.getResourceTypeName().equals(RESOURCE_TYPE_IF)) {
+                setInterfaceLabel(resource.getInterfaceLabel());
+            }
+
         }
 
         @Override
