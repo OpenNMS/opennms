@@ -1999,7 +1999,7 @@
     <skipPdfGeneration>true</skipPdfGeneration>
 
     <!-- nodejs development -->
-    <frontendPluginVersion>1.14.2</frontendPluginVersion>
+    <frontendPluginVersion>1.15.1</frontendPluginVersion>
     <nodeVersion>v18.20.2</nodeVersion>
     <npmVersion>9.8.1</npmVersion>
     <yarnVersion>v1.22.19</yarnVersion>
