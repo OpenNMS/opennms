@@ -1,5 +1,5 @@
 [template]
-src = "timeseries.properties.tpl"
+src = "timeseries.properties.tmpl"
 dest = "/opt/opennms/etc/opennms.properties.d/_confd.timeseries.properties"
 keys = [
     "opennms/timeseries/strategy",

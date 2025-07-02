@@ -13,6 +13,7 @@ excludeObjectNameAttributes:
     - "Schedule"
   "OpenNMS:Name=Collectd":
     - "Schedule"
+
 {{$ioSize := len (getvs (print $promJmxPath "/includeObjectNames/*")) -}}
 {{if gt $ioSize 0 -}}
 includeObjectNames:
@@ -27,6 +28,14 @@ includeObjectNames:
   - "org.opennms.newts:name=repository.samples-inserted*"
   - "org.opennms.core.ipc.rpc:*"
   - "com.zaxxer.hikari:*"
+{{end -}}
+
+{{$boSize := len (getvs (print $promJmxPath "/excludeObjectNames/*")) -}}
+{{if gt $boSize 0 -}}
+excludeObjectNames:
+{{range getvs (print $promJmxPath "/excludeObjectNames/*") -}}
+- "{{.}}"
+{{end -}}
 {{end -}}
 
 # Exclude noisy Kafka metrics

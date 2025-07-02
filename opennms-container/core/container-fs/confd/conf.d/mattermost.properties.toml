@@ -1,5 +1,5 @@
 [template]
-src = "mattermost.properties.tpl"
+src = "mattermost.properties.tmpl"
 dest = "/opt/opennms/etc/opennms.properties.d/_confd.mattermost.properties"
 keys = [
    "opennms/notifd/mattermost",
