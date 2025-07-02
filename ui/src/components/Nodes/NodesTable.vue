@@ -21,7 +21,7 @@
               </template>
             </FeatherInput>
           </div>
-          <div class="filter-icon-wrapper pointer">
+          <div class="filter-icon-wrapper">
             <FeatherIcon :icon="FilterAlt" />
           </div>
           <div class="feather-col-3 chip-container">
@@ -47,7 +47,7 @@
       <div class="feather-col-12">
         <div id="wrap" class="node-table">
           <table :class="tableCssClasses" summary="Nodes">
-            <thead>
+            <thead >
               <tr>
                 <th scope="column" />
                 <template v-for="column in nodeStructureStore.columns" :key="column.id">
@@ -383,26 +383,16 @@ table {
   margin-bottom: 2rem;
 }
 
-.pointer {
-  padding: 7px 9px;
-  border-radius: 3px;
-  font-size: 1.5rem;
-  color: var($primary);
-  cursor: pointer;
-  border: 2px solid var($border-on-surface);
-  margin-left: 10px;
-
-  &:hover {
-    cursor: pointer;
-  }
-}
-
 .filter-icon-wrapper {
   display: flex;
   align-items: center;
+  margin-left: 10px;
   padding: 0 0.5rem;
   font-size: 1.5rem;
   cursor: pointer;
+  border: 2px solid var($border-on-surface);
+  color: var($primary);
+  border-radius: 3px;
 }
 
 .title-bar {
