@@ -1,5 +1,5 @@
 [template]
-src = "prom-jmx-exporter.yaml.tpl"
+src = "prom-jmx-exporter.yaml.tmpl"
 dest = "/opt/opennms/etc/prom-jmx-exporter-config.yaml"
 keys = [
     "/java/agent/prom-jmx-exporter"
