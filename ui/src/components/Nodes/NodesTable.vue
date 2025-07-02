@@ -12,9 +12,9 @@
       </div>
       <div class="spacer-large"></div>
       <div class="spacer-large"></div>
-      <div class="feather-col-6">
+      <div class="search-container feather-col-6">
         <div class="feather-row">
-          <div class="feather-col-8 search-filter-column">
+          <div class="search-filter-column">
             <FeatherInput v-model="currentSearch" @update:modelValue="searchFilterHandler" label="Search node label">
               <template #pre>
                 <FeatherIcon :icon="icons.Search" />
@@ -24,7 +24,22 @@
           <div class="filter-icon-wrapper pointer">
             <FeatherIcon :icon="FilterAlt" />
           </div>
-
+          <div class="feather-col-3 chip-container">
+            <FeatherChipList label="Tags">
+              <FeatherChip>
+                <template v-slot:icon>
+                  <FeatherIcon :icon="cancelIcon" class="icon" />
+                </template>
+                {{ "tag" }}
+              </FeatherChip>
+              <FeatherChip>
+                <template v-slot:icon>
+                  <FeatherIcon :icon="cancelIcon" />
+                </template>
+                {{ "tag" }}
+              </FeatherChip>
+            </FeatherChipList>
+          </div>
         </div>
       </div>
     </div>
@@ -129,6 +144,8 @@ import { useNodeExport } from './hooks/useNodeExport'
 import { getTableCssClasses } from './utils'
 import Search from '@featherds/icon/action/Search'
 import FilterAlt from '@featherds/icon/action/FilterAlt'
+import Cancel from '@featherds/icon/navigation/Cancel'
+import { FeatherChip, FeatherChipList } from '@featherds/chips'
 
 const menuStore = useMenuStore()
 const nodeStructureStore = useNodeStructureStore()
@@ -172,6 +189,7 @@ const sortStateForId = (label: string) => {
 const icons = markRaw({
   Search,
 })
+const cancelIcon = computed(() => Cancel)
 
 const currentSearch = ref(nodeStructureStore.queryFilter.searchTerm || '')
 const nodes = computed(() => nodeStore.nodes)
@@ -344,6 +362,21 @@ table {
   :deep(.feather-input-sub-text) {
     display: none !important;
   }
+
+  .feather-input-container {
+    width: 450px !important;
+  }
+
+}
+
+.chip-container {
+  :deep(.chip) {
+    margin-bottom: 0 !important;
+  }
+
+  :deep(.chip-list) {
+    margin-top: 0.25rem !important;
+  }
 }
 
 .spacer-large {
@@ -357,6 +390,7 @@ table {
   color: var($primary);
   cursor: pointer;
   border: 2px solid var($border-on-surface);
+  margin-left: 10px;
 
   &:hover {
     cursor: pointer;
@@ -376,6 +410,7 @@ table {
   justify-content: space-between;
   align-items: center;
   padding-right: 1rem;
+  padding-left: 1rem;
 }
 
 .action-buttons-container {
