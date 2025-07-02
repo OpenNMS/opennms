@@ -57,6 +57,9 @@ export default defineConfig({
     'process.env': process.env
   },
   root: './src/menu',
+  // make sure we get environment variables from .env files in the main ui directory
+  // path is relative to 'root' defined just above
+  envDir: '../..',
   build: {
     emptyOutDir: true,
     outDir: './dist-menu',
@@ -64,9 +67,9 @@ export default defineConfig({
     copyPublicDir: false,
     rollupOptions: {
       output: {
-        entryFileNames: `assets/[name].js`,
-        chunkFileNames: `assets/[name].js`,
-        assetFileNames: `assets/[name].[ext]`
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/[name].[ext]'
       }
     }
   }
