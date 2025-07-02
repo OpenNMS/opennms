@@ -21,6 +21,27 @@ OPENNMS_OVERLAY="/opt/opennms-overlay"
 OPENNMS_OVERLAY_ETC="/opt/opennms-etc-overlay"
 OPENNMS_OVERLAY_JETTY_WEBINF="/opt/opennms-jetty-webinf-overlay"
 
+# Prometheus JMX Exporter Configuration
+#
+# The JMX exporter allows Prometheus to scrape JMX metrics from the OpenNMS Core applications.
+# The Prometheus JMX exporter needs to be enabled and is disabled by default.
+#
+# Requirements:
+# - PROM_JMX_EXPORTER_ENABLED=true
+# - All other settings are optional and have sensible defaults
+#
+# Default behavior:
+# - Configuration is managed via confd templates
+# - Template uses key/values from /java/agent/prom-jmx-exporter
+PROM_JMX_EXPORTER_ENABLED="${PROM_JMX_EXPORTER_ENABLED:-false}" # required
+PROM_JMX_EXPORTER_JAR="${PROM_JMX_EXPORTER_JAR:-/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar}"
+PROM_JMX_EXPORTER_PORT="${PROM_JMX_EXPORTER_PORT:-9299}"
+PROM_JMX_EXPORTER_CONFIG="${PROM_JMX_EXPORTER_CONFIG:-/opt/opennms/etc/prom-jmx-exporter-config.yaml}"
+
+if [[ "${PROM_JMX_EXPORTER_ENABLED,,}" == "true" ]]; then
+  export JAVA_OPTS="${JAVA_OPTS} -javaagent:${PROM_JMX_EXPORTER_JAR}=${PROM_JMX_EXPORTER_PORT}:${PROM_JMX_EXPORTER_CONFIG}"
+fi
+
 # Error codes
 E_ILLEGAL_ARGS=126
 E_INIT_CONFIG=127
