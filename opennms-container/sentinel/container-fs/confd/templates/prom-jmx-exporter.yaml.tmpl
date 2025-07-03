@@ -25,15 +25,15 @@ excludeObjectNames:
 
 rules:
 - pattern: org\.opennms\..+\.(.+)<name=(.+)><>Value
-  name: minion_$1_$2
+  name: sentinel_$1_$2
   type: GAUGE
 
 - pattern: org\.opennms\..+\.(.+)<name=(.+)><>Count
-  name: minion_$1_$2_count
+  name: sentinel_$1_$2_count
   type: COUNTER
 
 - pattern: org\.opennms\..+\.(.+)<name=(.+)><>(\d+)thPercentile
-  name: minion_$1_$2
+  name: sentinel_$1_$2
   type: GAUGE
   labels:
     quantile: "0.$3"

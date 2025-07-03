@@ -6,6 +6,12 @@ lowercaseOutputName: true
 lowercaseOutputLabelNames: true
 autoExcludeObjectNameAttributes: true
 
+includeObjectNames:
+  - "java.lang:*"
+  - "org.opennms.*:*"
+  - "kafka.producer:*"
+  - "org.apache.camel:*"
+
 rules:
   - pattern: org\.opennms\..+\.(.+)<name=(.+)><>Value
     name: minion_$1_$2
