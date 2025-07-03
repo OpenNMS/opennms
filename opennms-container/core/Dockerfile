@@ -1,5 +1,5 @@
 ## Set a fallback, so you can use just docker build without failing
-ARG DEPLOY_BASE_IMAGE="quay.io/bluebird/deploy-base:2.0.3.b25"
+ARG DEPLOY_BASE_IMAGE="quay.io/bluebird/deploy-base:2.0.3.b27"
 
 FROM ${DEPLOY_BASE_IMAGE} AS core-tarball
 
