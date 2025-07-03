@@ -50,6 +50,9 @@ RUN groupadd \
 COPY container-fs/entrypoint.sh /
 COPY container-fs/health.sh /
 
+# Install a default JMX Prometheus configuration
+COPY container-fs/prom-jmx-default-config.yaml /opt/prom-jmx-exporter/config.yaml
+
 VOLUME [ "/opt/sentinel/deploy", "/opt/sentinel/etc", "/opt/sentinel/data" ]
 
 WORKDIR /opt/sentinel

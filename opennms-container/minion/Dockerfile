@@ -53,6 +53,9 @@ RUN groupadd \
 COPY container-fs/entrypoint.sh /
 COPY container-fs/health.sh /
 
+# Install a default JMX Prometheus configuration
+COPY container-fs/prom-jmx-default-config.yaml /opt/prom-jmx-exporter/config.yaml
+
 # If you copy from /opt/minion to /opt/minion the permissions are not preserved
 # We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion
 COPY --chown=10001:0 --from=minion-tarball /opt /opt
