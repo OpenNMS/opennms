@@ -34,6 +34,7 @@ import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 
 import junit.framework.TestCase;
+import org.opennms.core.spring.ContextRegistry;
 
 /**
  * JUnit tests for the configureSNMP event handling and optimization of
@@ -43,6 +44,13 @@ import junit.framework.TestCase;
  *
  */
 public class WmiPeerFactoryTest extends TestCase {
+    
+    @Override
+    protected void setUp() throws Exception {
+        super.setUp();
+        // Reload contexts to pick up test-specific beanRefContext.xml
+        ContextRegistry.getInstance().reloadContexts();
+    }
     private WmiPeerFactory getFactory(String amiConfigXml) throws IOException {
         WmiPeerFactory factory = new WmiPeerFactory(ConfigurationTestUtils.getResourceForConfigWithReplacements(amiConfigXml));
         factory.afterPropertiesSet();
