@@ -12,6 +12,11 @@
    </bean>
 
     <bean id="webContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+        <constructor-arg>
+            <list>
+                <!-- Empty configuration list - context serves as a bridge to parent context -->
+            </list>
+        </constructor-arg>
         <!-- Use thresholdingContext as the parent so the thresholding and poll outages config DAOs are exposed  -->
         <constructor-arg ref="thresholdingContext" />
     </bean>

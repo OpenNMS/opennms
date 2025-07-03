@@ -19,19 +19,28 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.scriptd.helper;
+package org.opennms.core.spring;
 
-import org.opennms.core.spring.BeanFactoryReference;
-import org.opennms.core.spring.BeanUtils;
-import org.opennms.netmgt.dao.api.NodeDao;
+import org.springframework.beans.factory.BeanFactory;
 
-public abstract class DbHelper {
-
-	
-	public static String getNodeLabel(Integer nodeid) {
-    	BeanFactoryReference bf = BeanUtils.getBeanFactory("daoContext");
-        return BeanUtils.getBean(bf,"nodeDao", NodeDao.class)
-        	.get(nodeid).getLabel();
-	}
-	
+/**
+ * OpenNMS replacement for Spring's removed BeanFactoryReference interface.
+ * 
+ * This interface provides the same functionality as Spring's deprecated
+ * org.springframework.beans.factory.access.BeanFactoryReference which was
+ * removed in Spring 5.0.
+ */
+public interface BeanFactoryReference {
+    
+    /**
+     * Return the BeanFactory instance held by this reference.
+     * @return the BeanFactory instance (never null)
+     */
+    BeanFactory getFactory();
+    
+    /**
+     * Indicate that this reference is not needed anymore.
+     * This may trigger cleanup of the underlying BeanFactory instance.
+     */
+    void release();
 }
