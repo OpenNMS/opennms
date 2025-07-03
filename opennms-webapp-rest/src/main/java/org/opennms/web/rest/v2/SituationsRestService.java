@@ -44,7 +44,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.ws.rs.*;
 import javax.ws.rs.core.*;
-import java.text.MessageFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -57,6 +56,7 @@ public class SituationsRestService extends AlarmRestService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SituationsRestService.class);
 
+    public enum Action { ACK, UNACK, ESCALATE, CLEAR, ACCEPT}
 
     static final String SITUATION_LOG_MSG = "situationLogMsg";
     static final String DESCR = "situationDescr";
@@ -157,7 +157,7 @@ public class SituationsRestService extends AlarmRestService {
     @Path("clear")
     @Transactional
     public Response doAction(
-            AlarmActionRequest req,
+            AlarmAddRemoveRequest req,
             @Context SecurityContext secCtx) {
         writeLock();
         Integer alarmId = req.getSituationId();
@@ -171,27 +171,16 @@ public class SituationsRestService extends AlarmRestService {
 
             }
 
-            boolean alarmUpdated = false;
             final String ackUser = secCtx.getUserPrincipal().getName();
             if (StringUtils.isNotBlank(ackUser)) {
                 SecurityHelper.assertUserEditCredentials(secCtx, ackUser);
             }
-
-            OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, ackUser);
-            if (Boolean.TRUE.equals(req.getValue())) {
-                ack.setAckAction(AckAction.CLEAR);
-                alarmUpdated = true;
-            }
-
-            if (alarmUpdated) {
-                m_ackDao.processAck(ack);
-                m_ackDao.flush();
-            }
+            clearAlarm(alarm,ackUser);
         } finally {
             writeUnlock();
         }
 
-        return Response.noContent().build();
+        return Response.ok().build();
     }
 
 
@@ -200,7 +189,7 @@ public class SituationsRestService extends AlarmRestService {
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Transactional
     public Response removeAndClear(
-            AlarmActionRequest req,
+            AlarmAddRemoveRequest req,
             @Context SecurityContext secCtx,
             @Context UriInfo uriInfo) throws InterruptedException {
 
@@ -228,9 +217,9 @@ public class SituationsRestService extends AlarmRestService {
             if (StringUtils.isNotBlank(user)) {
                 SecurityHelper.assertUserEditCredentials(secCtx, user);
             }
-            clearAlarms(req.getAlarmIdList(), user, req.getValue());
+            clearAlarms(req.getAlarmIdList(), user);
 
-            return Response.noContent().build();
+            return Response.ok().build();
         } finally {
             writeUnlock();
         }
@@ -280,20 +269,20 @@ public class SituationsRestService extends AlarmRestService {
                 null
         );
 
-        return Response.noContent().build();
+        return Response.ok().build();
     }
 
 
-    private void clearAlarm(OnmsAlarm alarm, String user, Boolean value) {
+    private void clearAlarm(OnmsAlarm alarm, String user) {
         OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, user);
-        performAction(ack, AlarmActionRequest.Action.CLEAR, value);
+        performAction(ack, Action.CLEAR, Boolean.TRUE);
     }
 
-    private void clearAlarms(List<Integer> alarmIds, String user, Boolean value) {
+    private void clearAlarms(List<Integer> alarmIds, String user) {
         for (Integer alarmId : alarmIds) {
             OnmsAlarm alarm = getDao().get(alarmId);
             if (alarm != null) {
-                clearAlarm(alarm, user, value);
+                clearAlarm(alarm, user);
             }
         }
     }
@@ -318,7 +307,7 @@ public class SituationsRestService extends AlarmRestService {
     }
 
 
-    public void performAction(OnmsAcknowledgment ack, AlarmActionRequest.Action action, Boolean value) {
+    public void performAction(OnmsAcknowledgment ack, Action action, Boolean value) {
         boolean alarmUpdated = false;
         switch (action) {
             case ACK:
