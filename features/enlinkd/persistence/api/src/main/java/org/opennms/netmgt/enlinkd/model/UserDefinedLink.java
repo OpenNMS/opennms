@@ -122,7 +122,7 @@ public class UserDefinedLink {
 
     @Id
     @Column(name="id", nullable = false)
-    @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
+    @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId", allocationSize = 1)
     @GeneratedValue(generator = "opennmsSequence")
     public Integer getDbId() {
         return dbId;

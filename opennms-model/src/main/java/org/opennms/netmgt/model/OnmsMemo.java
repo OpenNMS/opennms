@@ -62,7 +62,7 @@ public class OnmsMemo implements Serializable {
 
     @Id
     @Column(name = "id", nullable = false)
-    @SequenceGenerator(name = "memoSequence", sequenceName = "memoNxtId")
+    @SequenceGenerator(name = "memoSequence", sequenceName = "memoNxtId", allocationSize = 1)
     @GeneratedValue(generator = "memoSequence")
     @XmlAttribute(name="id")
     private Integer m_id;

@@ -41,7 +41,7 @@ public class BmpRouteInfo implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bmpRouteInfoSequence")
-    @SequenceGenerator(name = "bmpRouteInfoSequence", sequenceName = "bmprouteinfonxtid")
+    @SequenceGenerator(name = "bmpRouteInfoSequence", sequenceName = "bmprouteinfonxtid", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

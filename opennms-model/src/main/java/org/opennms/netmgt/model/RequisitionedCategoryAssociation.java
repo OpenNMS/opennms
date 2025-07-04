@@ -50,7 +50,7 @@ public class RequisitionedCategoryAssociation implements Serializable, Comparabl
     }
 
     @Id
-    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId")
+    @SequenceGenerator(name="opennmsSequence", sequenceName="opennmsNxtId", allocationSize = 1)
     @GeneratedValue(generator="opennmsSequence")
     @Column(name="id")
     public Integer getId() {

@@ -34,7 +34,7 @@ import javax.persistence.Table;
 public class VertexPositionEntity {
 
     @Id
-    @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
+    @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId", allocationSize = 1)
     @GeneratedValue(generator = "opennmsSequence")
     @Column(name = "id", nullable = false)
     private int id;

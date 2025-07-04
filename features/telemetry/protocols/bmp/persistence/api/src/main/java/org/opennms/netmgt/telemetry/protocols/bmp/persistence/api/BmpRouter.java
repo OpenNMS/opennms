@@ -49,7 +49,7 @@ public class BmpRouter implements Serializable {
 
     @Id
     @GeneratedValue(strategy= GenerationType.SEQUENCE, generator = "bmpRouterSequence")
-    @SequenceGenerator(name = "bmpRouterSequence", sequenceName = "bmprouternxtid")
+    @SequenceGenerator(name = "bmpRouterSequence", sequenceName = "bmprouternxtid", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

@@ -52,7 +52,7 @@ public class DeviceConfig implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "deviceConfigSequence")
-    @SequenceGenerator(name = "deviceConfigSequence", sequenceName = "deviceconfignxtid")
+    @SequenceGenerator(name = "deviceConfigSequence", sequenceName = "deviceconfignxtid", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

@@ -37,7 +37,7 @@ import com.google.common.base.MoreObjects;
 public class GrafanaEndpoint {
 
     @Id
-    @SequenceGenerator(name = "endpointsSequence", sequenceName = "endpointsnxtid")
+    @SequenceGenerator(name = "endpointsSequence", sequenceName = "endpointsnxtid", allocationSize = 1)
     @GeneratedValue(generator = "endpointsSequence")
     @Column(name="id", nullable = false)
     private Long id;

@@ -71,7 +71,7 @@ public class AlarmAssociation implements Serializable {
     }
 
     @Id
-    @SequenceGenerator(name="alarmSequence", sequenceName="alarmsNxtId")
+    @SequenceGenerator(name="alarmSequence", sequenceName="alarmsNxtId", allocationSize = 1)
     @GeneratedValue(generator="alarmSequence")
     @Column(name="id", nullable=false)
     public Integer getId() {

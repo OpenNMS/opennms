@@ -179,7 +179,7 @@ public class OnmsNotification implements Acknowledgeable, Serializable {
     @Id
     @Column(nullable=false)
     @XmlAttribute(name="id")
-    @SequenceGenerator(name="notifySequence", sequenceName="notifyNxtId")
+    @SequenceGenerator(name="notifySequence", sequenceName="notifyNxtId", allocationSize = 1)
     @GeneratedValue(generator="notifySequence")
     public Integer getNotifyId() {
         return m_notifyId;

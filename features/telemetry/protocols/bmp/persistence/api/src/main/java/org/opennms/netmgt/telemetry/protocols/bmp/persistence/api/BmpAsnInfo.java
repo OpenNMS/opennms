@@ -43,7 +43,7 @@ public class BmpAsnInfo implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "bmpAsnSequence")
-    @SequenceGenerator(name = "bmpAsnSequence", sequenceName = "bmpasninfonxtid")
+    @SequenceGenerator(name = "bmpAsnSequence", sequenceName = "bmpasninfonxtid", allocationSize = 1)
     @Column(name = "id", nullable = false)
     private Long id;
 

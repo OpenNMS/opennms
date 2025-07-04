@@ -68,7 +68,7 @@ public class OnmsApplication implements Comparable<OnmsApplication> {
 
     @Id
     @Column(nullable=false)
-    @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId")
+    @SequenceGenerator(name = "opennmsSequence", sequenceName = "opennmsNxtId", allocationSize = 1)
     @GeneratedValue(generator = "opennmsSequence")
     @XmlAttribute
     public Integer getId() {
