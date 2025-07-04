@@ -44,7 +44,6 @@
         <configuration>
           <instructions>
             <Import-Package>
-              com.google.protobuf;version="[3.19,5)",
               javax.net,
               javax.net.ssl,
               javax.security.cert,

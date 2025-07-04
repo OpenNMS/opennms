@@ -58,9 +58,7 @@
     <listener name="Netflow-5-UDP-8877" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="false">
         <parameter key="port" value="8877"/>
 
-        <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser" queue="Netflow-5">
-            <parameter key="includeRawMessage" value="false"/>
-        </parser>
+        <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser" queue="Netflow-5"/>
     </listener>
 
     <queue name="Netflow-5">
@@ -96,9 +94,7 @@
     <listener name="Netflow-9-UDP-4729" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="false">
         <parameter key="port" value="4729"/>
 
-        <parser name="Netflow-9-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser" queue="Netflow-9">
-            <parameter key="includeRawMessage" value="false"/>
-        </parser>
+        <parser name="Netflow-9-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser" queue="Netflow-9"/>
     </listener>
 
     <queue name="Netflow-9">
@@ -134,17 +130,13 @@
     <listener name="IPFIX-UDP-4730" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="false">
         <parameter key="port" value="4730"/>
 
-        <parser name="IPFIX-UDP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser" queue="IPFIX">
-            <parameter key="includeRawMessage" value="false"/>
-        </parser>
+        <parser name="IPFIX-UDP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser" queue="IPFIX"/>
     </listener>
 
     <listener name="IPFIX-TCP-4730" class-name="org.opennms.netmgt.telemetry.listeners.TcpListener" enabled="false">
         <parameter key="port" value="4730"/>
 
-        <parser name="IPFIX-TCP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixTcpParser" queue="IPFIX">
-            <parameter key="includeRawMessage" value="false"/>
-        </parser>
+        <parser name="IPFIX-TCP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixTcpParser" queue="IPFIX"/>
     </listener>
 
     <queue name="IPFIX">
@@ -217,15 +209,11 @@
     <listener name="Multi-UDP-9999" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="true">
         <parameter key="port" value="9999"/>
 
-        <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser" queue="Netflow-5">
-            <parameter key="includeRawMessage" value="false"/>
-        </parser>
-        <parser name="Netflow-9-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser" queue="Netflow-9">
-            <parameter key="includeRawMessage" value="false"/>
-        </parser>
-        <parser name="IPFIX-UDP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser" queue="IPFIX">
-            <parameter key="includeRawMessage" value="false"/>
-        </parser>
+        <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser" queue="Netflow-5"/>
+
+        <parser name="Netflow-9-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser" queue="Netflow-9"/>
+
+        <parser name="IPFIX-UDP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser" queue="IPFIX"/>
 
         <parser name="SFlow-Parser" class-name="org.opennms.netmgt.telemetry.protocols.sflow.parser.SFlowUdpParser" queue="SFlow" />
     </listener>
