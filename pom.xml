@@ -4719,11 +4719,11 @@
         <artifactId>jakarta.activation-api</artifactId>
         <version>1.2.2</version>
       </dependency>
-      <!-- we want to use JPA 2.0. Do not add javax.persistence/persistence-api! -->
+      <!-- Using JPA 2.2 API for Hibernate 5.6.15 compatibility -->
       <dependency>
-        <groupId>org.hibernate.javax.persistence</groupId>
-        <artifactId>hibernate-jpa-2.0-api</artifactId>
-        <version>1.0.1.Final</version>
+        <groupId>javax.persistence</groupId>
+        <artifactId>javax.persistence-api</artifactId>
+        <version>2.2</version>
       </dependency>
       <dependency>
         <groupId>org.hibernate</groupId>

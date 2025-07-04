@@ -910,7 +910,7 @@
         <feature>commons-lang</feature>
         <feature>commons-net</feature>
         <feature>dnsjava</feature>
-            <feature>hibernate36</feature>
+        <feature>hibernate36</feature>
         <feature>jldap</feature>
         <feature>jolokia-client</feature>
         <feature>json-simple</feature>
