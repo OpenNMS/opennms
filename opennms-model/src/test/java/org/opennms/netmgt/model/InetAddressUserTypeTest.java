@@ -39,7 +39,7 @@ public class InetAddressUserTypeTest {
         when(rs.getString("ipAddr")).thenReturn(null);
 
         final InetAddressUserType userType = new InetAddressUserType();
-        final Object result = userType.nullSafeGet(rs, new String[]{"ipAddr"}, null);
+        final Object result = userType.nullSafeGet(rs, new String[]{"ipAddr"}, (org.hibernate.engine.spi.SharedSessionContractImplementor)null, null);
 
         assertNull(result);
         verify(rs, atLeastOnce()).getString("ipAddr");

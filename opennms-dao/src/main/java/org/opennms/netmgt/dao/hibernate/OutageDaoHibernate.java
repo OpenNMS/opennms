@@ -22,7 +22,6 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.net.InetAddress;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -53,7 +52,7 @@ import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
 import org.opennms.netmgt.model.outage.CurrentOutageDetails;
 import org.opennms.netmgt.model.outage.OutageSummary;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 
 import com.google.common.collect.Lists;
 
@@ -132,7 +131,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
 
             @SuppressWarnings("unchecked")
             @Override
-            public Collection<OnmsOutage> doInHibernate(final Session session) throws HibernateException, SQLException {
+            public Collection<OnmsOutage> doInHibernate(final Session session) throws HibernateException {
                 return session.createCriteria(OnmsOutage.class)
                         .setFirstResult(offset)
                         .setMaxResults(limit)
@@ -148,7 +147,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
         return getHibernateTemplate().execute(new HibernateCallback<List<CurrentOutageDetails>>() {
             @Override
             @SuppressWarnings("unchecked")
-            public List<CurrentOutageDetails> doInHibernate(Session session) throws HibernateException, SQLException {
+            public List<CurrentOutageDetails> doInHibernate(Session session) throws HibernateException {
                 final StringBuilder query = new StringBuilder()
                         .append("SELECT DISTINCT\n")
                         .append("        outages.outageId,\n")
@@ -274,7 +273,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
         return getHibernateTemplate().execute(new HibernateCallback<List<HeatMapElement>>() {
             @Override
             @SuppressWarnings("unchecked")
-            public List<HeatMapElement> doInHibernate(Session session) throws HibernateException, SQLException {
+            public List<HeatMapElement> doInHibernate(Session session) throws HibernateException {
 
                 // We can't use a prepared statement here as the variables are column names, and postgres
                 // does not allow for parameter binding of column names.

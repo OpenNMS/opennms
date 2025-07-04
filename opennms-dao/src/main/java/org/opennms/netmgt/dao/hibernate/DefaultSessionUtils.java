@@ -24,7 +24,7 @@ package org.opennms.netmgt.dao.hibernate;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.function.Supplier;
 
-import org.hibernate.FlushMode;
+import javax.persistence.FlushModeType;
 import org.hibernate.SessionFactory;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.slf4j.Logger;
@@ -68,9 +68,9 @@ public class DefaultSessionUtils implements SessionUtils {
 
     @Override
     public <V> V withManualFlush(Supplier<V> supplier) {
-        final FlushMode flushMode = sessionFactory.getCurrentSession().getFlushMode();
+        final FlushModeType flushMode = sessionFactory.getCurrentSession().getFlushMode();
         try {
-            sessionFactory.getCurrentSession().setFlushMode(FlushMode.MANUAL);
+            sessionFactory.getCurrentSession().setFlushMode(FlushModeType.COMMIT);
             return supplier.get();
         } finally {
             sessionFactory.getCurrentSession().setFlushMode(flushMode);

@@ -158,7 +158,7 @@
               org.springframework.context.config;version="[4.0,5)",
               org.springframework.context.support;version="[4.0,5)",
               org.springframework.js.resource, <!-- No version because webflow is a wrapped dep :/ -->
-              org.springframework.orm.hibernate3.support;version="[4.0,5)",
+              org.springframework.orm.hibernate5.support;version="[4.0,5)",
               <!-- Spring Security namespace handler -->
               org.springframework.security.config;version="[3.2,4)",
               org.springframework.security.web.authentication;version="[3.2,4)",

@@ -25,8 +25,8 @@ import java.net.InetSocketAddress;
 
 import org.hibernate.SessionFactory;
 import org.opennms.netmgt.dao.hibernate.AbstractDaoHibernate;
-import org.springframework.orm.hibernate3.HibernateTemplate;
-import org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean;
+import org.springframework.orm.hibernate5.HibernateTemplate;
+import org.springframework.orm.hibernate5.LocalSessionFactoryBean;
 
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
@@ -48,7 +48,7 @@ public class HibernateDaoFactory {
         config.setPassword("opennms");
         HikariDataSource ds = new HikariDataSource(config);
 
-        AnnotationSessionFactoryBean sfb = new AnnotationSessionFactoryBean();
+        LocalSessionFactoryBean sfb = new LocalSessionFactoryBean();
         sfb.setDataSource(ds);
         sfb.setPackagesToScan("org.opennms.netmgt.model",
                               "org.opennms.features.deviceconfig.persistence.api");

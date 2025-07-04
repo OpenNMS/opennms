@@ -22,7 +22,6 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.io.Serializable;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -37,7 +36,6 @@ import javax.persistence.Table;
 
 import com.google.common.collect.Sets;
 import org.hibernate.Criteria;
-import org.hibernate.EntityMode;
 import org.hibernate.HibernateException;
 import org.hibernate.LockMode;
 import org.hibernate.Query;
@@ -52,9 +50,8 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataAccessException;
-import org.springframework.orm.hibernate3.HibernateCallback;
-import org.springframework.orm.hibernate3.HibernateQueryException;
-import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
+import org.springframework.orm.hibernate5.HibernateCallback;
+import org.springframework.orm.hibernate5.support.HibernateDaoSupport;
 
 /**
  * <p>Abstract AbstractDaoHibernate class.</p>
@@ -175,7 +172,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     protected int queryInt(final String queryString, final Object... args) {
     	final HibernateCallback<Number> callback = new HibernateCallback<Number>() {
             @Override
-            public Number doInHibernate(final Session session) throws HibernateException, SQLException {
+            public Number doInHibernate(final Session session) throws HibernateException {
             	final Query query = session.createQuery(queryString);
                 for (int i = 0; i < args.length; i++) {
                     query.setParameter(i, args[i]);
@@ -196,7 +193,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         final Class <? extends T> type = m_entityClass;
     	final HibernateCallback<T> callback = new HibernateCallback<T>() {
             @Override
-            public T doInHibernate(final Session session) throws HibernateException, SQLException {
+            public T doInHibernate(final Session session) throws HibernateException {
             	final Query query = session.createQuery(queryString);
                 for (int i = 0; i < args.length; i++) {
                     query.setParameter(i, args[i]);
@@ -319,7 +316,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     protected <T> HibernateCallback<List<T>> buildHibernateCallback(org.opennms.core.criteria.Criteria criteria) {
         return new HibernateCallback<List<T>>() {
             @Override
-            public List<T> doInHibernate(final Session session) throws HibernateException, SQLException {
+            public List<T> doInHibernate(final Session session) throws HibernateException {
                 LOG.debug("criteria = {}", criteria);
                 final Criteria hibernateCriteria = m_criteriaConverter.convert(criteria, session);
                 return (List<T>)(hibernateCriteria.list());
@@ -332,7 +329,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     public int countMatching(final org.opennms.core.criteria.Criteria criteria) throws DataAccessException {
         final HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
             @Override
-            public Integer doInHibernate(final Session session) throws HibernateException, SQLException {
+            public Integer doInHibernate(final Session session) throws HibernateException {
                 
                 final Criteria hibernateCriteria = m_criteriaConverter.convertForCount(criteria, session);
                 hibernateCriteria.setProjection(Projections.rowCount());
@@ -353,7 +350,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         
         final HibernateCallback<List<T>> callback = new HibernateCallback<List<T>>() {
             @Override
-            public List<T> doInHibernate(final Session session) throws HibernateException, SQLException {
+            public List<T> doInHibernate(final Session session) throws HibernateException {
             	final Criteria attachedCrit = onmsCrit.getDetachedCriteria().getExecutableCriteria(session);
                 if (onmsCrit.getFirstResult() != null) attachedCrit.setFirstResult(onmsCrit.getFirstResult());
                 if (onmsCrit.getMaxResults() != null) attachedCrit.setMaxResults(onmsCrit.getMaxResults());
@@ -367,7 +364,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     public int countMatching(final OnmsCriteria onmsCrit) throws DataAccessException {
         final HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
             @Override
-            public Integer doInHibernate(final Session session) throws HibernateException, SQLException {
+            public Integer doInHibernate(final Session session) throws HibernateException {
                 final Criteria attachedCrit = onmsCrit.getDetachedCriteria().getExecutableCriteria(session).setProjection(Projections.rowCount());
                 Long retval = (Long)attachedCrit.uniqueResult();
                 attachedCrit.setProjection(null);
@@ -476,7 +473,7 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
             if (cause.getMessage() != null) {
                 if (cause.getMessage().contains("duplicate key value violates unique constraint")) {
                     final ClassMetadata meta = getSessionFactory().getClassMetadata(m_entityClass);
-                    LOG.warn("Duplicate key constraint violation, class: {}, key value: {}", m_entityClass.getName(), meta.getPropertyValue(entity, meta.getIdentifierPropertyName(), EntityMode.POJO));
+                    LOG.warn("Duplicate key constraint violation, class: {}, key value: {}", m_entityClass.getName(), meta.getIdentifier(entity));
                     break;
                 } else if (cause.getMessage().contains("given object has a null identifier")) {
                     LOG.warn("Null identifier on object, class: {}: {}", m_entityClass.getName(), entity.toString());

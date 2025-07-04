@@ -1821,12 +1821,12 @@
     <gwtVersion>2.9.0</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
-    <hibernateVersion>3.6.11.ONMS_RELEASE_1</hibernateVersion>
-    <hibernateOsgiVersion>3.6.11</hibernateOsgiVersion>
+    <hibernateVersion>5.6.15.Final</hibernateVersion>
+    <hibernateOsgiVersion>5.6.15</hibernateOsgiVersion>
     <hibernateAnnotationsVersion>3.2.0.Final</hibernateAnnotationsVersion>
     <hibernateAnnotationsOsgiVersion>3.2.0</hibernateAnnotationsOsgiVersion>
-    <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
-    <hibernateValidatorAnnotationProcessorVersion>4.3.2.Final</hibernateValidatorAnnotationProcessorVersion>
+    <hibernateValidatorVersion>6.2.5.Final</hibernateValidatorVersion>
+    <hibernateValidatorAnnotationProcessorVersion>6.2.5.Final</hibernateValidatorAnnotationProcessorVersion>
     <hikaricpVersion>5.0.1</hikaricpVersion>
     <hllVersion>1.6.0</hllVersion>
     <httpcoreVersion>4.4.16</httpcoreVersion>

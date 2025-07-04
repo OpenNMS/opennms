@@ -28,6 +28,7 @@ import java.sql.SQLException;
 import java.util.Objects;
 
 import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.type.CharacterType;
 import org.hibernate.usertype.UserType;
 
@@ -60,21 +61,19 @@ public class CharacterUserType implements UserType {
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public Object nullSafeGet(final ResultSet rs, final String[] names, final Object owner) throws HibernateException, SQLException {
-        final Character c = CharacterType.INSTANCE.nullSafeGet(rs, names[0]);
+    public Object nullSafeGet(final ResultSet rs, final String[] names, final SharedSessionContractImplementor session, final Object owner) throws HibernateException, SQLException {
+        final Character c = CharacterType.INSTANCE.nullSafeGet(rs, names[0], session);
         return c == null ? null : String.valueOf(c);
     }
 
     @Override
-    @SuppressWarnings("deprecation")
-    public void nullSafeSet(final PreparedStatement st, final Object value, final int index) throws HibernateException, SQLException {
+    public void nullSafeSet(final PreparedStatement st, final Object value, final int index, final SharedSessionContractImplementor session) throws HibernateException, SQLException {
         if (value == null) {
-            CharacterType.INSTANCE.nullSafeSet(st, null, index);
+            CharacterType.INSTANCE.nullSafeSet(st, null, index, session);
         } else if (value instanceof Character) {
-            CharacterType.INSTANCE.nullSafeSet(st, (Character)value, index);
+            CharacterType.INSTANCE.nullSafeSet(st, (Character)value, index, session);
         } else if (value instanceof String) {
-            CharacterType.INSTANCE.nullSafeSet(st, ((String)value).charAt(0), index);
+            CharacterType.INSTANCE.nullSafeSet(st, ((String)value).charAt(0), index, session);
         }
     }
 

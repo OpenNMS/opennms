@@ -24,7 +24,6 @@ package org.opennms.netmgt.dao;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-import java.sql.SQLException;
 import java.util.Collection;
 import java.util.List;
 
@@ -49,7 +48,7 @@ import org.opennms.netmgt.model.outage.OutageSummary;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.transaction.AfterTransaction;
 import org.springframework.test.context.transaction.BeforeTransaction;
@@ -194,7 +193,7 @@ public class AuthorizationIT implements InitializingBean {
         HibernateCallback<Object> cb = new HibernateCallback<Object>() {
 
             @Override
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+            public Object doInHibernate(Session session) throws HibernateException {
                 session.enableFilter("authorizedOnly").setParameterList("userGroups", groupNames);
                 return null;
             }
@@ -209,7 +208,7 @@ public class AuthorizationIT implements InitializingBean {
         HibernateCallback<Object> cb = new HibernateCallback<Object>() {
 
             @Override
-            public Object doInHibernate(Session session) throws HibernateException, SQLException {
+            public Object doInHibernate(Session session) throws HibernateException {
                 session.disableFilter("authorizedOnly");
                 return null;
             }

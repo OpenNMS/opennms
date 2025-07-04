@@ -21,14 +21,13 @@
  */
 package org.opennms.netmgt.dao.hibernate;
 
-import java.sql.SQLException;
 import java.util.Collection;
 
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.opennms.netmgt.dao.api.MinionDao;
 import org.opennms.netmgt.model.minion.OnmsMinion;
-import org.springframework.orm.hibernate3.HibernateCallback;
+import org.springframework.orm.hibernate5.HibernateCallback;
 
 /**
  * <p>LinkStateDaoHibernate class.</p>
@@ -47,7 +46,7 @@ public class MinionDaoHibernate extends AbstractDaoHibernate<OnmsMinion, String>
 
             @Override
             @SuppressWarnings("unchecked")
-            public Collection<OnmsMinion> doInHibernate(Session session) throws HibernateException, SQLException {
+            public Collection<OnmsMinion> doInHibernate(Session session) throws HibernateException {
                 return session.createCriteria(OnmsMinion.class)
                 .setFirstResult(offset)
                 .setMaxResults(limit)

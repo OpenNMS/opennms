@@ -32,7 +32,7 @@ import java.util.Optional;
 
 import org.apache.commons.io.FileUtils;
 import org.hibernate.SessionFactory;
-import org.hibernate.classic.Session;
+import org.hibernate.Session;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;

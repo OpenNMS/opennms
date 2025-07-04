@@ -353,7 +353,7 @@
                 <feature>fop</feature>
                 <feature>guava</feature>
                 <feature>hibernate36</feature>
-                <feature>hibernate-validator4</feature>
+                <feature>hibernate-validator6</feature>
                 <feature>jaxb</feature>
                 <feature>jolokia</feature>
                 <feature>jrobin</feature>

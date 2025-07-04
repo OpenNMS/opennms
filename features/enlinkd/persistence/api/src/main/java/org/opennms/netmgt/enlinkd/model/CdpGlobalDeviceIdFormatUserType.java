@@ -27,6 +27,7 @@ import java.sql.SQLException;
 import java.util.Properties;
 
 import org.hibernate.HibernateException;
+import org.hibernate.engine.spi.SharedSessionContractImplementor;
 import org.hibernate.type.EnumType;
 import org.hibernate.type.IntegerType;
 import org.opennms.netmgt.enlinkd.model.CdpElement.CdpGlobalDeviceIdFormat;
@@ -51,8 +52,8 @@ public class CdpGlobalDeviceIdFormatUserType extends EnumType {
     }
 
     @Override
-    public Object nullSafeGet(final ResultSet rs, final String[] names, final Object owner) throws HibernateException, SQLException {
-        Integer c = IntegerType.INSTANCE.nullSafeGet(rs, names[0]);
+    public Object nullSafeGet(final ResultSet rs, final String[] names, final SharedSessionContractImplementor session, final Object owner) throws HibernateException, SQLException {
+        Integer c = IntegerType.INSTANCE.nullSafeGet(rs, names[0], session);
         if (c == null) {
             return null;
         }
@@ -65,11 +66,11 @@ public class CdpGlobalDeviceIdFormatUserType extends EnumType {
     }
 
     @Override
-    public void nullSafeSet(final PreparedStatement st, final Object value, final int index) throws HibernateException, SQLException {
+    public void nullSafeSet(final PreparedStatement st, final Object value, final int index, final SharedSessionContractImplementor session) throws HibernateException, SQLException {
         if (value == null) {
-            IntegerType.INSTANCE.nullSafeSet(st, null, index);
+            IntegerType.INSTANCE.nullSafeSet(st, null, index, session);
         } else if (value instanceof CdpGlobalDeviceIdFormat){
-            IntegerType.INSTANCE.nullSafeSet(st, ((CdpGlobalDeviceIdFormat)value).getValue(), index);
+            IntegerType.INSTANCE.nullSafeSet(st, ((CdpGlobalDeviceIdFormat)value).getValue(), index, session);
         }
     }
 
