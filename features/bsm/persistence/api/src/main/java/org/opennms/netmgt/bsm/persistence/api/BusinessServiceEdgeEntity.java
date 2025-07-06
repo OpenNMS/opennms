@@ -26,9 +26,6 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
-import javax.persistence.DiscriminatorColumn;
-import javax.persistence.DiscriminatorType;
-import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -57,8 +54,6 @@ import com.google.common.collect.Sets;
 @Entity
 @Table(name = "bsm_service_edge")
 @Inheritance(strategy = InheritanceType.JOINED)
-@DiscriminatorColumn(name="type", discriminatorType= DiscriminatorType.STRING)
-@DiscriminatorValue(value="")
 public class BusinessServiceEdgeEntity implements EdgeEntity {
 
     public static final int DEFAULT_WEIGHT = 1;
