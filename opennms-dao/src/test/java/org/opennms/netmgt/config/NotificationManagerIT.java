@@ -74,6 +74,8 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.annotation.Propagation;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -128,6 +130,7 @@ public class NotificationManagerIT implements InitializingBean {
     }
 
     @Before
+    @Transactional(propagation = Propagation.REQUIRED)
     public void setUp() throws Exception {
         // Initialize Filter DAO
         DatabaseSchemaConfigFactory.init();

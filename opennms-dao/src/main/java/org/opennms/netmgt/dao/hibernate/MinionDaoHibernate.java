@@ -57,11 +57,11 @@ public class MinionDaoHibernate extends AbstractDaoHibernate<OnmsMinion, String>
 
     @Override
     public OnmsMinion findById(final String id) {
-        return findUnique("from OnmsMinion as m where m.id = ?", id);
+        return findUnique("from OnmsMinion as m where m.id = ?1", id);
     }
     
     @Override
     public Collection<OnmsMinion> findByLocation(final String locationName) {
-        return find("from OnmsMinion as m where m.location = ?", locationName);
+        return find("from OnmsMinion as m where m.location = ?1", locationName);
     }
 }

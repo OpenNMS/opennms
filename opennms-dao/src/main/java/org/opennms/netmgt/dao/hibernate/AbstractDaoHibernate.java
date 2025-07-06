@@ -134,7 +134,18 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      */
     @SuppressWarnings("unchecked")
     public List<T> find(final String query, final Object... values) {
-        return (List<T>)getHibernateTemplate().find(query, values);
+        final HibernateCallback<List<T>> callback = new HibernateCallback<List<T>>() {
+            @Override
+            public List<T> doInHibernate(final Session session) throws HibernateException {
+                final Query hibernateQuery = session.createQuery(query);
+                for (int i = 0; i < values.length; i++) {
+                    // Hibernate 5 uses 1-based parameter indexing
+                    hibernateQuery.setParameter(i + 1, values[i]);
+                }
+                return (List<T>)hibernateQuery.list();
+            }
+        };
+        return getHibernateTemplate().execute(callback);
     }
     
     /**
@@ -147,9 +158,19 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      * @return a {@link java.util.List} object.
      */
     public <S> List<S> findObjects(final Class<S> clazz, final String query, final Object... values) {
-        @SuppressWarnings("unchecked")
-        final List<S> notifs = (List<S>)getHibernateTemplate().find(query, values);
-        return notifs;
+        final HibernateCallback<List<S>> callback = new HibernateCallback<List<S>>() {
+            @Override
+            @SuppressWarnings("unchecked")
+            public List<S> doInHibernate(final Session session) throws HibernateException {
+                final Query hibernateQuery = session.createQuery(query);
+                for (int i = 0; i < values.length; i++) {
+                    // Hibernate 5 uses 1-based parameter indexing
+                    hibernateQuery.setParameter(i + 1, values[i]);
+                }
+                return (List<S>)hibernateQuery.list();
+            }
+        };
+        return getHibernateTemplate().execute(callback);
     }
 
     /**
@@ -182,7 +203,8 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
             public Number doInHibernate(final Session session) throws HibernateException {
             	final Query query = session.createQuery(queryString);
                 for (int i = 0; i < args.length; i++) {
-                    query.setParameter(i, args[i]);
+                    // Hibernate 5 uses 1-based parameter indexing
+                    query.setParameter(i + 1, args[i]);
                 }
                 return (Number)query.uniqueResult();
             }
@@ -203,7 +225,8 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
             public T doInHibernate(final Session session) throws HibernateException {
             	final Query query = session.createQuery(queryString);
                 for (int i = 0; i < args.length; i++) {
-                    query.setParameter(i, args[i]);
+                    // Hibernate 5 uses 1-based parameter indexing
+                    query.setParameter(i + 1, args[i]);
                 }
                 final Object result = query.uniqueResult();
                 return result == null ? null : type.cast(result);
@@ -392,7 +415,18 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
      * @throws org.springframework.dao.DataAccessException if any.
      */
     public int bulkDelete(final String hql, final Object[] values ) throws DataAccessException {
-        return getHibernateTemplate().bulkUpdate(hql, values);
+        final HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
+            @Override
+            public Integer doInHibernate(final Session session) throws HibernateException {
+                final Query hibernateQuery = session.createQuery(hql);
+                for (int i = 0; i < values.length; i++) {
+                    // Hibernate 5 uses 1-based parameter indexing
+                    hibernateQuery.setParameter(i + 1, values[i]);
+                }
+                return hibernateQuery.executeUpdate();
+            }
+        };
+        return getHibernateTemplate().execute(callback);
     }
     
     /**

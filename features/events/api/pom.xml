@@ -108,5 +108,11 @@
       <artifactId>org.opennms.core.test-api.xml</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.glassfish</groupId>
+      <artifactId>javax.el</artifactId>
+      <version>${javaxElVersion}</version>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 </project>

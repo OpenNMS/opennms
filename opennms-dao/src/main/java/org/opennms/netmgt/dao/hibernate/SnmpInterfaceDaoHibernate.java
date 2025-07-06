@@ -42,7 +42,7 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
     public OnmsSnmpInterface findByNodeIdAndIfIndex(Integer nodeId, Integer ifIndex) {
         Assert.notNull(nodeId, "nodeId may not be null");
         Assert.notNull(ifIndex, "ifIndex may not be null");
-        return findUnique("select snmpIf from OnmsSnmpInterface as snmpIf where snmpIf.node.id = ? and snmpIf.ifIndex = ?",
+        return findUnique("select snmpIf from OnmsSnmpInterface as snmpIf where snmpIf.node.id = ?1 and snmpIf.ifIndex = ?2",
                           nodeId, 
                           ifIndex);
         
@@ -51,7 +51,7 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
     @Override
     public List<OnmsSnmpInterface> findByNodeId(Integer nodeId) {
         Assert.notNull(nodeId, "nodeId may not be null");
-        return find("select snmpIf from OnmsSnmpInterface as snmpIf where snmpIf.node.id = ?",
+        return find("select snmpIf from OnmsSnmpInterface as snmpIf where snmpIf.node.id = ?1",
                 nodeId);
 
     }
@@ -59,14 +59,14 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
     @Override
     public List<OnmsSnmpInterface> findByMacLinksOfNode(Integer nodeId) {
         Assert.notNull(nodeId, "nodeId may not be null");
-        return find("from OnmsSnmpInterface snmpIf where snmpIf.physAddr in (select l.macAddress from BridgeMacLink l where l.node.id = ?)",
+        return find("from OnmsSnmpInterface snmpIf where snmpIf.physAddr in (select l.macAddress from BridgeMacLink l where l.node.id = ?1)",
                 nodeId);
 
     }
 
     @Override
     public List<OnmsSnmpInterface> findBySnpaAddressOfRelatedIsIsLink(int nodeId) {
-        return find("from OnmsSnmpInterface snmpIf where snmpIf.physAddr in (select l.isisISAdjNeighSNPAAddress from IsIsLink l where l.node.id = ?)",
+        return find("from OnmsSnmpInterface snmpIf where snmpIf.physAddr in (select l.isisISAdjNeighSNPAAddress from IsIsLink l where l.node.id = ?1)",
                 nodeId);
     }
 
@@ -75,7 +75,7 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
         Assert.notNull(foreignSource, "foreignSource may not be null");
         Assert.notNull(foreignId, "foreignId may not be null");
         Assert.notNull(ifIndex, "ifIndex may not be null");
-        return findUnique("select snmpIf from OnmsSnmpInterface as snmpIf join snmpIf.node as node where node.foreignSource = ? and node.foreignId = ? and node.type = 'A' and snmpIf.ifIndex = ?",
+        return findUnique("select snmpIf from OnmsSnmpInterface as snmpIf join snmpIf.node as node where node.foreignSource = ?1 and node.foreignId = ?2 and node.type = 'A' and snmpIf.ifIndex = ?3",
                           foreignSource, 
                           foreignId, 
                           ifIndex);
@@ -86,7 +86,7 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
         Assert.notNull(nodeId, "nodeId may not be null");
         Assert.notNull(description, "description may not be null");
 
-        return findUnique("SELECT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.node.id = ? AND (LOWER(snmpIf.ifDescr) = LOWER(?) OR LOWER(snmpIf.ifName) = LOWER(?))",
+        return findUnique("SELECT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.node.id = ?1 AND (LOWER(snmpIf.ifDescr) = LOWER(?2) OR LOWER(snmpIf.ifName) = LOWER(?3))",
             nodeId, 
             description,
             description
@@ -112,18 +112,18 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
     @Override
     public List<OnmsSnmpInterface> findAllHavingFlows(final Integer nodeId) {
         if (OnmsSnmpInterface.INGRESS_AND_EGRESS_REQUIRED) {
-            return find("select iface from OnmsSnmpInterface as iface where iface.node.id = ? and (EXTRACT(EPOCH FROM (NOW() - lastIngressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE +" AND EXTRACT(EPOCH FROM (NOW() - lastEgressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE + ")", nodeId);
+            return find("select iface from OnmsSnmpInterface as iface where iface.node.id = ?1 and (EXTRACT(EPOCH FROM (NOW() - lastIngressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE +" AND EXTRACT(EPOCH FROM (NOW() - lastEgressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE + ")", nodeId);
         } else {
-            return find("select iface from OnmsSnmpInterface as iface where iface.node.id = ? and (EXTRACT(EPOCH FROM (NOW() - lastIngressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE +" OR EXTRACT(EPOCH FROM (NOW() - lastEgressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE + ")", nodeId);
+            return find("select iface from OnmsSnmpInterface as iface where iface.node.id = ?1 and (EXTRACT(EPOCH FROM (NOW() - lastIngressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE +" OR EXTRACT(EPOCH FROM (NOW() - lastEgressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE + ")", nodeId);
         }
     }
 
     public List<OnmsSnmpInterface> findAllHavingIngressFlows(final Integer nodeId) {
-        return find("select iface from OnmsSnmpInterface as iface where iface.node.id = ? and EXTRACT(EPOCH FROM (NOW() - lastIngressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE, nodeId);
+        return find("select iface from OnmsSnmpInterface as iface where iface.node.id = ?1 and EXTRACT(EPOCH FROM (NOW() - lastIngressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE, nodeId);
     }
 
     public List<OnmsSnmpInterface> findAllHavingEgressFlows(final Integer nodeId) {
-        return find("select iface from OnmsSnmpInterface as iface where iface.node.id = ? and EXTRACT(EPOCH FROM (NOW() - lastEgressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE, nodeId);
+        return find("select iface from OnmsSnmpInterface as iface where iface.node.id = ?1 and EXTRACT(EPOCH FROM (NOW() - lastEgressFlow)) <= " + OnmsSnmpInterface.MAX_FLOW_AGE, nodeId);
     }
 
     @Override

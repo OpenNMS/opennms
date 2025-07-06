@@ -53,7 +53,7 @@ public class HwEntityDaoHibernate extends AbstractDaoHibernate<OnmsHwEntity, Int
      */
     @Override
     public OnmsHwEntity findRootByNodeId(Integer nodeId) {
-        return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.parent is null and e.node.id = ?", nodeId);
+        return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.parent is null and e.node.id = ?1", nodeId);
     }
 
     @Override
@@ -147,7 +147,7 @@ public class HwEntityDaoHibernate extends AbstractDaoHibernate<OnmsHwEntity, Int
      */
     @Override
     public OnmsHwEntity findEntityByIndex(Integer nodeId, Integer entPhysicalIndex) {
-        return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.node.id = ? and e.entPhysicalIndex = ?", nodeId, entPhysicalIndex);
+        return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.node.id = ?1 and e.entPhysicalIndex = ?2", nodeId, entPhysicalIndex);
     }
 
     /* (non-Javadoc)
@@ -155,7 +155,7 @@ public class HwEntityDaoHibernate extends AbstractDaoHibernate<OnmsHwEntity, Int
      */
     @Override
     public OnmsHwEntity findEntityByName(Integer nodeId, String entPhysicalName) {
-        return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.node.id = ? and e.entPhysicalName = ?", nodeId, entPhysicalName);
+        return (OnmsHwEntity) findUnique("from OnmsHwEntity e where e.node.id = ?1 and e.entPhysicalName = ?2", nodeId, entPhysicalName);
     }
 
     /* (non-Javadoc)

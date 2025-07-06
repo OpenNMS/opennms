@@ -111,17 +111,17 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
 
     @Override
     public OnmsOutage currentOutageForService(OnmsMonitoredService service) {
-        return findUnique("from OnmsOutage as o where o.perspective is null and o.monitoredService = ? and o.ifRegainedService is null", service);
+        return findUnique("from OnmsOutage as o where o.perspective is null and o.monitoredService = ?1 and o.ifRegainedService is null", service);
     }
 
     @Override
     public OnmsOutage currentOutageForServiceFromPerspective(final OnmsMonitoredService service, final OnmsMonitoringLocation perspective) {
-        return findUnique("from OnmsOutage as o where o.monitoredService = ? and o.perspective = ? and o.ifRegainedService is null", service, perspective);
+        return findUnique("from OnmsOutage as o where o.monitoredService = ?1 and o.perspective = ?2 and o.ifRegainedService is null", service, perspective);
     }
 
     @Override
     public Collection<OnmsOutage> currentOutagesForServiceFromPerspectivePoller(OnmsMonitoredService service) {
-        return find("from OnmsOutage as o where o.monitoredService = ?  and o.perspective is not null and o.ifRegainedService is null", service);
+        return find("from OnmsOutage as o where o.monitoredService = ?1  and o.perspective is not null and o.ifRegainedService is null", service);
     }
 
     /** {@inheritDoc} */
@@ -336,8 +336,8 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
     public Collection<OnmsOutage> getStatusChangesForApplicationIdBetween(final Date startDate, final Date endDate, final Integer applicationId) {
         return find("SELECT DISTINCT o FROM OnmsOutage o " +
                         "WHERE o.perspective IS NOT NULL AND " +
-                        "o.monitoredService.id IN (SELECT m.id FROM OnmsApplication a LEFT JOIN a.monitoredServices m WHERE a.id = ?) AND " +
-                        "o.perspective.id IN (SELECT p.id FROM OnmsApplication a LEFT JOIN a.perspectiveLocations p WHERE a.id = ?) AND " +
-                        "((o.ifRegainedService >= ? AND o.ifLostService <= ?) OR (o.ifLostService <= ? AND o.ifRegainedService IS NULL))", applicationId, applicationId, startDate, endDate, endDate);
+                        "o.monitoredService.id IN (SELECT m.id FROM OnmsApplication a LEFT JOIN a.monitoredServices m WHERE a.id = ?1) AND " +
+                        "o.perspective.id IN (SELECT p.id FROM OnmsApplication a LEFT JOIN a.perspectiveLocations p WHERE a.id = ?2) AND " +
+                        "((o.ifRegainedService >= ?3 AND o.ifLostService <= ?4) OR (o.ifLostService <= ?5 AND o.ifRegainedService IS NULL))", applicationId, applicationId, startDate, endDate, endDate);
     }
 }

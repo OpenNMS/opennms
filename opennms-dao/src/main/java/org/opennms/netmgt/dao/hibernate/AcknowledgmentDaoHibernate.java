@@ -134,7 +134,7 @@ public class AcknowledgmentDaoHibernate extends AbstractDaoHibernate<OnmsAcknowl
     }
     
     private List<OnmsNotification> findRelatedNotifications(final OnmsAlarm alarm) {
-        final String hql = "from OnmsNotification as n where n.event.alarm = ?";
+        final String hql = "from OnmsNotification as n where n.event.alarm = ?1";
         return findObjects(OnmsNotification.class, hql, alarm);
     }
 

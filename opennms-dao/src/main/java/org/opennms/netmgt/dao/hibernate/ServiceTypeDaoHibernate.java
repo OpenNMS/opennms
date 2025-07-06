@@ -48,7 +48,7 @@ public class ServiceTypeDaoHibernate extends AbstractCachingDaoHibernate<OnmsSer
         if (name == null) {
             return null;
         } else {
-            return findByCacheKey("from OnmsServiceType as svcType where svcType.name = ?", name);
+            return findByCacheKey("from OnmsServiceType as svcType where svcType.name = ?1", name);
         }
     }
     

@@ -62,7 +62,7 @@ public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplicatio
 	/** {@inheritDoc} */
         @Override
 	public OnmsApplication findByName(final String name) {
-		return findUnique("from OnmsApplication as app where app.name = ?", name);
+		return findUnique("from OnmsApplication as app where app.name = ?1", name);
 	}
 
 	@Override
@@ -149,9 +149,9 @@ public class ApplicationDaoHibernate extends AbstractDaoHibernate<OnmsApplicatio
 																		  "from OnmsMonitoredService service " +
 																		  "join service.applications application " +
 																		  "join application.perspectiveLocations perspectiveLocation " +
-																		  "where service.ipInterface.node.id = ? and " +
-																		  "      service.ipInterface.ipAddress = ? and " +
-																		  "      service.serviceType.name = ?",
+																		  "where service.ipInterface.node.id = ?1 and " +
+																		  "      service.ipInterface.ipAddress = ?2 and " +
+																		  "      service.serviceType.name = ?3",
 																		  nodeId, ipAddress, serviceName);
 	}
 

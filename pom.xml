@@ -1827,6 +1827,7 @@
     <hibernateAnnotationsOsgiVersion>3.2.0</hibernateAnnotationsOsgiVersion>
     <hibernateValidatorVersion>6.2.5.Final</hibernateValidatorVersion>
     <hibernateValidatorAnnotationProcessorVersion>6.2.5.Final</hibernateValidatorAnnotationProcessorVersion>
+    <javaxElVersion>3.0.0</javaxElVersion>
     <hikaricpVersion>5.0.1</hikaricpVersion>
     <hllVersion>1.6.0</hllVersion>
     <httpcoreVersion>4.4.16</httpcoreVersion>
@@ -4654,6 +4655,11 @@
         <groupId>org.hibernate</groupId>
         <artifactId>hibernate-validator</artifactId>
         <version>${hibernateValidatorVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.glassfish</groupId>
+        <artifactId>javax.el</artifactId>
+        <version>${javaxElVersion}</version>
       </dependency>
       <!-- this should match what's in Karaf's lib/jdk9plus directory -->
       <dependency>
