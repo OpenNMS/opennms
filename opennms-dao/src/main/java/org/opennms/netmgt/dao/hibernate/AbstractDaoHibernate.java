@@ -75,12 +75,19 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
 
     @Override
     protected void initDao() throws Exception {
-        getHibernateTemplate().saveOrUpdate(new AccessLock(m_lockName));
+        // AccessLock will be created on first use in the lock() method
     }
 
     /** {@inheritDoc} */
     @Override
     public void lock() {
+        AccessLock lock = getHibernateTemplate().get(AccessLock.class, m_lockName);
+        if (lock == null) {
+            // Create the lock if it doesn't exist
+            getHibernateTemplate().saveOrUpdate(new AccessLock(m_lockName));
+            getHibernateTemplate().flush();
+        }
+        // Now acquire the pessimistic lock
         getHibernateTemplate().get(AccessLock.class, m_lockName, LockMode.PESSIMISTIC_WRITE);
     }
 
