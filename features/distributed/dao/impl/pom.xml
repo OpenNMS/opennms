@@ -77,9 +77,9 @@
                             org.hibernate.validator.constraints;version="${hibernateValidatorVersion}",
                             org.hibernate.validator.messageinterpolation;version="${hibernateValidatorVersion}",
                             org.hibernate.validator.resourceloading;version="${hibernateValidatorVersion}",
-                            org.hibernate.validator.ap,
-                            org.hibernate.validator.ap.checks,
-                            org.hibernate.validator.ap.util,
+                            org.hibernate.validator.ap;resolution:=optional,
+                            org.hibernate.validator.ap.checks;resolution:=optional,
+                            org.hibernate.validator.ap.util;resolution:=optional,
 
                             org.opennms.core.criteria,
                             org.opennms.core.criteria.restrictions,
