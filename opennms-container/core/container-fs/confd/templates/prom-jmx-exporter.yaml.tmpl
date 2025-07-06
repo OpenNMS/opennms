@@ -23,9 +23,11 @@ includeObjectNames:
 {{else -}}
 includeObjectNames:
   - "java.lang:*"
+  - "OpenNMS:*"
   - "org.opennms.*:*"
-  - "kafka.producer:*"
-  - "org.apache.camel:*"
+  - "org.opennms.newts:name=ring-buffer*"
+  - "org.opennms.newts:name=repository.samples-inserted*"
+  - "org.opennms.core.ipc.rpc:*"
 {{end -}}
 
 {{$boSize := len (getvs (print $promJmxPath "/excludeObjectNames/*")) -}}
