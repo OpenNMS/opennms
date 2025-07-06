@@ -37,6 +37,7 @@ import org.hibernate.criterion.Junction;
 import org.hibernate.criterion.Projections;
 import org.hibernate.criterion.SimpleExpression;
 import org.hibernate.criterion.Subqueries;
+import org.hibernate.engine.spi.SessionImplementor;
 import org.hibernate.type.StandardBasicTypes;
 import org.opennms.core.criteria.AbstractCriteriaVisitor;
 import org.opennms.core.criteria.Alias;
@@ -130,7 +131,17 @@ public class HibernateCriteriaConverter implements CriteriaConverter<DetachedCri
         private Integer m_offset;
 
         public org.hibernate.Criteria getCriteria(final Session session) {
-            final org.hibernate.Criteria hibernateCriteria = getCriteria().getExecutableCriteria(session);
+            // In Hibernate 5, DetachedCriteria.getExecutableCriteria() requires SessionImplementor
+            // If we have a Spring proxy, we need to unwrap it to get the actual SessionImplementor
+            org.hibernate.engine.spi.SessionImplementor sessionImpl;
+            if (session instanceof org.hibernate.engine.spi.SessionImplementor) {
+                sessionImpl = (org.hibernate.engine.spi.SessionImplementor) session;
+            } else {
+                // Unwrap Spring proxy to get the actual SessionImplementor
+                sessionImpl = session.unwrap(org.hibernate.engine.spi.SessionImplementor.class);
+            }
+            
+            final org.hibernate.Criteria hibernateCriteria = getCriteria().getExecutableCriteria(sessionImpl);
             if (m_limit != null)
                 hibernateCriteria.setMaxResults(m_limit);
             if (m_offset != null)
