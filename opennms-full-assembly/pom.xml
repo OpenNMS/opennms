@@ -352,7 +352,7 @@
                 <feature>dropwizard-metrics</feature>
                 <feature>fop</feature>
                 <feature>guava</feature>
-                <feature>hibernate36</feature>
+                <feature>hibernate5</feature>
                 <feature>hibernate-validator6</feature>
                 <feature>jaxb</feature>
                 <feature>jolokia</feature>

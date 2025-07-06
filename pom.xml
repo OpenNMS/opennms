@@ -1995,8 +1995,8 @@
     <minaSshdVersion>2.12.1</minaSshdVersion>
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
 
-    <springVersion>4.2.9.RELEASE_1</springVersion>
-    <patchedSpringVersion>4.2.9.RELEASE_1.ONMS.1</patchedSpringVersion>
+    <springVersion>4.3.30.RELEASE_1</springVersion>
+    <patchedSpringVersion>4.3.30.RELEASE_1</patchedSpringVersion>
 
     <!-- ALWAYS change aspectj to match the version referenced in the spring poms -->
     <aspectjVersion>1.9.9.1_1</aspectjVersion>
@@ -4733,12 +4733,12 @@
       <dependency>
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>
-        <version>1.0.0.GA</version>
+        <version>2.0.1.Final</version>
       </dependency>
       <dependency>
         <groupId>javax.validation</groupId>
         <artifactId>validation-api</artifactId>
-        <version>1.0.0.GA</version>
+        <version>2.0.1.Final</version>
         <classifier>sources</classifier>
       </dependency>
       <dependency>

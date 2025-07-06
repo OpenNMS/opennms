@@ -441,7 +441,9 @@ public abstract class AbstractSpringJerseyRestTestCase {
         final MockHttpServletRequest request = createRequest(servletContext, requestType, url, getUser(), getUserRoles());
         request.setCharacterEncoding(StandardCharsets.UTF_8.name());
         request.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-        request.setParameters(parameters);
+        @SuppressWarnings("unchecked")
+        final Map<String,?> stringKeyParams = (Map<String,?>) parameters;
+        request.setParameters(stringKeyParams);
         request.setQueryString(getQueryString(parameters));
         request.setRemoteUser(getUser());
         return sendRequest(request, expectedStatus, expectedUrlSuffix);

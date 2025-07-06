@@ -341,7 +341,7 @@
                         <!-- These versions match the versions shipped with Apache Karaf 4.1.5 -->
                         <feature>spring/4.0.9.RELEASE_1</feature>
                         <feature>spring/4.1.9.RELEASE_1</feature>
-                        <feature>spring/4.2.9.RELEASE_1</feature>
+                        <feature>spring/${springVersion}</feature>
                         <feature>spring/4.3.30.RELEASE_1</feature>
 
                         <feature>spring-jms/4.1.9.RELEASE_1</feature>

@@ -127,7 +127,7 @@
                 <!-- fix an issue with resolving multiple versions of spring by forcing the dep to spring 4.2 -->
                 <replacement>
                   <token>\[4\.\d,5\)</token>
-                  <value>[4.2,4.3)</value>
+                  <value>[4.3,4.4)</value>
                 </replacement>
                 <!-- standardize on the "final" version of jms-api 2.x -->
                 <replacement>
