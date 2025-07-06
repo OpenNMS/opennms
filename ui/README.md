@@ -45,7 +45,15 @@ Project routes make use of [vue-router](https://next.router.vuejs.org/guide/).
 
 ## Developer workflow
 
-Developer workflow for development -> build -> fast deploy. There may be issues running the vite development server since it runs on a different port than OpenNMS; OpenNMS menu items and URLs will point to that port instead of the vite port.
+As a developer, there are two ways of making changes to the current UI:
+
+* **Classic** Fully integrated with OpenNMS, but has slower cycle times and is not as convenient. 
+* **Fast** Not fully integrated (menu/login, etc. won't work properly) but faster cycle times as well as a more established workflow for ui developers
+
+### Classic
+
+Developer workflow for development -> build -> fast deploy. 
+There may be issues running the vite development server since it runs on a different port than OpenNMS; OpenNMS menu items and URLs will point to that port instead of the vite port.
 
 - assuming your local OpenNMS Horizon code is in `~/projects/opennms`
 
@@ -62,6 +70,22 @@ Developer workflow for development -> build -> fast deploy. There may be issues 
 - refresh your browser, which points at `http://localhost:8980/opennms/ui/index.html#/nodes` or similar
 
 - test and debug code, use browser `F12 Developer Tools` to set breakpoints, view console output, inspect elements, etc.
+
+### Fast (with some flaws)
+
+This method assumes, that an OpenNMS instance is running with default settings, as well as a modified CORS filter.
+Refer to https://docs.opennms.com/horizon/latest/development/rest/CORS.html for details on how to set it up correctly. 
+In short, simply enable the filter in the `web.xml` of the deployed OpenNMS.
+
+In `.env.development` you can configure a `VITE_BASE_USER` and `VITE_BASE_PASSWORD`, which then configures the axios http clients to use basic auth headers.
+
+With `vite` it should not be possible to work on the OpenNMS ui and see the changes immediately.
+
+#### Flaws
+
+* The menu will not work, so the URLs must be typed in the browser's address list.
+* If the provided credentials are wrong, no error-handling on the client side is done, as this is usually be done by the OpenNMS backend in "classic" mode
+
 
 ## Prettier
 Formatting should use the .prettierrc file. For VSCode, install the Prettier extension, go to the IDE Settings and set this formatter to take precedence.
