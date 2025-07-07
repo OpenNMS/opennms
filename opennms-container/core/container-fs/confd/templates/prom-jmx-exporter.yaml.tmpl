@@ -7,13 +7,6 @@ lowercaseOutputName: {{getv (print $promJmxPath "/lowerCaseOutputName") "true"}}
 lowercaseOutputLabelNames: {{getv (print $promJmxPath "/lowercaseOutputLabelNames") "true"}}
 autoExcludeObjectNameAttributes: {{getv (print $promJmxPath "/autoExcludeObjectNameAttributes") "true"}}
 
-# The specific list of scheduled objects for Pollerd and Collectd are not exposed to Prometheus.
-excludeObjectNameAttributes:
-  "OpenNMS:Name=Pollerd":
-    - "Schedule"
-  "OpenNMS:Name=Collectd":
-    - "Schedule"
-
 {{$ioSize := len (getvs (print $promJmxPath "/includeObjectNames/*")) -}}
 {{if gt $ioSize 0 -}}
 includeObjectNames:
