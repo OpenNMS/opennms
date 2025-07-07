@@ -94,7 +94,7 @@ public class LldpSnmpUtils {
             LOG.debug("getDisplayable: displayable {} hex value {}", snmpValue.isDisplayable(),snmpValue.toHexString());
             return snmpValue.toHexString();
         } catch (Exception e) {
-            LOG.error("getDisplayable: got not Hex Value {}", e.getMessage(),e);
+            LOG.error("getDisplayable: got not Hex Value {}", e.getMessage(), e);
         }
         try {
             LOG.debug("getDisplayable: displayable value {}", snmpValue.toDisplayString());
