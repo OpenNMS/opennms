@@ -288,8 +288,9 @@ public class LldpTopologyServiceImpl extends TopologyServiceImpl implements Lldp
                     sourceLink.getLldpPortId(),
                     sourceLink.getLldpPortIdSubType());
                     LldpLinkTopologyEntity targetLink = lldpLinkCompositeKeyMap.get(sysnamekey);
-            if (targetLink == null)
+            if (targetLink == null) {
                 continue;
+            }
             LOG.info("match: sysname , source:{}, target:{}", sourceLink, targetLink);
             parsed.add(sourceLink.getId());
             parsed.add(targetLink.getId());
