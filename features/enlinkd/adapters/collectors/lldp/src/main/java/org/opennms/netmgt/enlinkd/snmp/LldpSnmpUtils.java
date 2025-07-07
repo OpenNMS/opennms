@@ -127,8 +127,9 @@ public class LldpSnmpUtils {
             case LLDP_CHASSISID_SUBTYPE_NETWORKADDRESS:
                 return getNetworkAddress(snmpValue);
         }
-        if (humanReadable(snmpValue.toDisplayString()))
+        if (humanReadable(snmpValue.toDisplayString())) {
             return snmpValue.toDisplayString();
+        }
 
         return getDisplayable(snmpValue);
 
