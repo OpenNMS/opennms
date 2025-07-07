@@ -194,10 +194,10 @@ public class LldpSnmpUtils {
     }
 
     public static String decodeTimeTetraLldpPortId(LldpUtils.LldpPortIdSubType portSubType, SnmpValue snmpValue) {
-	    if (portSubType == LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL) {
-	        return String.valueOf(Integer.parseInt(decodeLldpPortId( LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL,snmpValue),16));
+        if (portSubType == LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL) {
+                return String.valueOf(Integer.parseInt(decodeLldpPortId( LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL,snmpValue),16));
         }
-	    return decodeLldpPortId(portSubType,snmpValue);
+        return decodeLldpPortId(portSubType,snmpValue);
     }
 
     public static LldpLink getLldpLink(MtxrLldpRemTableTracker.MtxrLldpRemRow mtxrlldprow, Integer mtxrIndex, Map<Integer, LldpLocalTableTracker.LldpLocalPortRow> mtxrLldpLocalPortMap) {
