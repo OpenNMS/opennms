@@ -160,8 +160,9 @@ public class LldpSnmpUtils {
         if (lldpPortIdSubType == null || lldpPortIdSubType == 0 || lldpPortIdSubType > 7) {
             try {
                 String macAddress = getMacAddress(lldpportid);
-                if (InetAddressUtils.isValidBridgeAddress(macAddress))
+                if (InetAddressUtils.isValidBridgeAddress(macAddress)) {
                     return LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_MACADDRESS;
+                }
             } catch (IllegalArgumentException e) {
                 LOG.debug("decodeLldpPortSubType: no mac address: {}", e.getMessage());
             }
