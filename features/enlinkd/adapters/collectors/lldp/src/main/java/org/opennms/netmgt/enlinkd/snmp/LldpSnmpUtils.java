@@ -172,7 +172,7 @@ public class LldpSnmpUtils {
                     return LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL;
                 }
             } catch (NumberFormatException e) {
-                LOG.debug("decodeLldpPortSubType: no LOCAL PORT: ");
+                LOG.debug("decodeLldpPortSubType: no LOCAL PORT: {}", lldpportid.toDisplayString());
             }
             try {
                 if (lldpportid.isDisplayable()) {
