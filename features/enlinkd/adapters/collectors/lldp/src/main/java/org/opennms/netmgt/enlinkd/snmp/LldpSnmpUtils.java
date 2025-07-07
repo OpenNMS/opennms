@@ -37,9 +37,12 @@ public class LldpSnmpUtils {
 
     private final static Logger LOG = LoggerFactory.getLogger(LldpSnmpUtils.class);
 
+    private final static String humanReadableRegex = ".*[a-zA-Z].*";
+    private final static String isNumberRegex = "-?\\d+(\\.\\d+)?([eE][+-]?\\d+)?";
     public static String getInterface(SnmpValue snmpValue) {
-        if (snmpValue == null )
+        if (snmpValue == null ) {
             return "Null";
+        }
         if (humanReadable(snmpValue.toDisplayString()) || snmpValue.toDisplayString().contains("-") || snmpValue.toDisplayString().contains("/")) {
             return snmpValue.toDisplayString();
         }
@@ -47,18 +50,21 @@ public class LldpSnmpUtils {
     }
 
     public static String getMacAddress(SnmpValue snmpValue) {
-        if (InetAddressUtils.isValidBridgeAddress(formatMacAddress(getDisplayable(snmpValue))))
+        if (InetAddressUtils.isValidBridgeAddress(formatMacAddress(getDisplayable(snmpValue)))) {
             return formatMacAddress(getDisplayable(snmpValue));
+        }
         if (snmpValue.isDisplayable() &&
-                InetAddressUtils.isValidBridgeAddress(formatMacAddress(snmpValue.toDisplayString())))
+                InetAddressUtils.isValidBridgeAddress(formatMacAddress(snmpValue.toDisplayString()))) {
             return formatMacAddress(snmpValue.toDisplayString());
+        }
         LOG.error("getMacAddress: not valid mac found: {}", formatMacAddress(getDisplayable(snmpValue)));
         return formatMacAddress(getDisplayable(snmpValue));
     }
 
     public static String getNetworkAddress(SnmpValue snmpValue) {
-        if (snmpValue == null )
+        if (snmpValue == null ) {
             return "Null";
+        }
         try {
             return LldpUtils.decodeNetworkAddress(getDisplayable(snmpValue));
         } catch (Exception e) {
@@ -76,20 +82,21 @@ public class LldpSnmpUtils {
         if (input == null || input.isEmpty()) {
             return false;
         }
-        return input.matches("-?\\d+(\\.\\d+)?([eE][+-]?\\d+)?");
+        return input.matches(isNumberRegex);
     }
 
     public static boolean humanReadable(final String input) {
         if (input == null || input.isEmpty()) {
             return false;
         }
-        Pattern pattern = Pattern.compile(".*[a-zA-Z].*");
+        Pattern pattern = Pattern.compile(humanReadableRegex);
         return pattern.matcher(input).matches();
     }
 
     public static String getDisplayable(final SnmpValue snmpValue) {
-        if (snmpValue == null )
+        if (snmpValue == null ) {
             return "Null";
+        }
         try {
             LOG.debug("getDisplayable: displayable {} hex value {}", snmpValue.isDisplayable(),snmpValue.toHexString());
             return snmpValue.toHexString();
