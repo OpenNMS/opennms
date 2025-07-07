@@ -376,7 +376,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     @SuppressWarnings("unchecked")
     @Override
     public Map<String, Integer> getForeignIdToNodeIdMap(String foreignSource) {
-        List<Object[]> pairs = (List<Object[]>)getHibernateTemplate().find("select n.id, n.foreignId from OnmsNode n where n.foreignSource = ?1", foreignSource);
+        List<Object[]> pairs = findObjects(Object[].class, "select n.id, n.foreignId from OnmsNode n where n.foreignSource = ?1", foreignSource);
         Map<String, Integer> foreignIdMap = new HashMap<String, Integer>();
         for (Object[] pair : pairs) {
             foreignIdMap.put((String)pair[1], (Integer)pair[0]);
@@ -461,8 +461,27 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     /** {@inheritDoc} */
     @Override
     public void deleteObsoleteInterfaces(Integer nodeId, Date scanStamp) {
-        getHibernateTemplate().bulkUpdate("delete from OnmsIpInterface ipInterface where ipInterface.node.id = ?1 and ipInterface.snmpPrimary != 'P' and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?2)", new Object[] { nodeId, scanStamp });
-        getHibernateTemplate().bulkUpdate("delete from OnmsSnmpInterface snmpInterface where snmpInterface.node.id = ?1 and (snmpInterface.lastCapsdPoll is null or snmpInterface.lastCapsdPoll < ?2)", new Object[] { nodeId, scanStamp });
+        final HibernateCallback<Integer> callback1 = new HibernateCallback<Integer>() {
+            @Override
+            public Integer doInHibernate(final Session session) throws HibernateException {
+                final Query query = session.createQuery("delete from OnmsIpInterface ipInterface where ipInterface.node.id = ?1 and ipInterface.snmpPrimary != 'P' and (ipInterface.ipLastCapsdPoll is null or ipInterface.ipLastCapsdPoll < ?2)");
+                query.setParameter(1, nodeId);
+                query.setParameter(2, scanStamp);
+                return query.executeUpdate();
+            }
+        };
+        getHibernateTemplate().execute(callback1);
+        
+        final HibernateCallback<Integer> callback2 = new HibernateCallback<Integer>() {
+            @Override
+            public Integer doInHibernate(final Session session) throws HibernateException {
+                final Query query = session.createQuery("delete from OnmsSnmpInterface snmpInterface where snmpInterface.node.id = ?1 and (snmpInterface.lastCapsdPoll is null or snmpInterface.lastCapsdPoll < ?2)");
+                query.setParameter(1, nodeId);
+                query.setParameter(2, scanStamp);
+                return query.executeUpdate();
+            }
+        };
+        getHibernateTemplate().execute(callback2);
     }
 
     /** {@inheritDoc} */
@@ -487,7 +506,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
     @Override
     @SuppressWarnings("unchecked")
     public Map<String, Long> getNumberOfNodesBySysOid() {
-        List<Object[]> pairs = (List<Object[]>)getHibernateTemplate().find("select n.sysObjectId, count(*) from OnmsNode as n where n.sysObjectId != null group by sysObjectId");
+        List<Object[]> pairs = findObjects(Object[].class, "select n.sysObjectId, count(*) from OnmsNode as n where n.sysObjectId != null group by sysObjectId");
         Map<String, Long> numberOfNodesBySysOid = new HashMap<String, Long>();
         for (Object[] pair : pairs) {
             numberOfNodesBySysOid.put((String)pair[0], (Long)pair[1]);
@@ -497,16 +516,34 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
 
     @Override
     public Integer getNextNodeId (Integer nodeId) {
-        Integer nextNodeId = null;
-        nextNodeId = findObjects(Integer.class, "select n.id from OnmsNode as n where n.id > ?1 and n.type != ?2 order by n.id asc limit 1", nodeId, String.valueOf(NodeType.DELETED.value())).get(0);
-        return nextNodeId;
+        final HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
+            @Override
+            public Integer doInHibernate(final Session session) throws HibernateException {
+                final Query query = session.createQuery("select n.id from OnmsNode as n where n.id > ?1 and n.type != ?2 order by n.id asc");
+                query.setParameter(1, nodeId);
+                query.setParameter(2, String.valueOf(NodeType.DELETED.value()));
+                query.setMaxResults(1);
+                List<Integer> results = query.list();
+                return results.isEmpty() ? null : results.get(0);
+            }
+        };
+        return getHibernateTemplate().execute(callback);
     }
 
     @Override
     public Integer getPreviousNodeId (Integer nodeId) {
-        Integer nextNodeId = null;
-        nextNodeId = findObjects(Integer.class, "select n.id from OnmsNode as n where n.id < ?1 and n.type != ?2 order by n.id desc limit 1", nodeId, String.valueOf(NodeType.DELETED.value())).get(0);
-        return nextNodeId;
+        final HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
+            @Override
+            public Integer doInHibernate(final Session session) throws HibernateException {
+                final Query query = session.createQuery("select n.id from OnmsNode as n where n.id < ?1 and n.type != ?2 order by n.id desc");
+                query.setParameter(1, nodeId);
+                query.setParameter(2, String.valueOf(NodeType.DELETED.value()));
+                query.setMaxResults(1);
+                List<Integer> results = query.list();
+                return results.isEmpty() ? null : results.get(0);
+            }
+        };
+        return getHibernateTemplate().execute(callback);
     }
 
     @Override

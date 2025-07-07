@@ -81,14 +81,21 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
     /** {@inheritDoc} */
     @Override
     public void lock() {
-        AccessLock lock = getHibernateTemplate().get(AccessLock.class, m_lockName);
-        if (lock == null) {
-            // Create the lock if it doesn't exist
-            getHibernateTemplate().saveOrUpdate(new AccessLock(m_lockName));
-            getHibernateTemplate().flush();
-        }
-        // Now acquire the pessimistic lock
-        getHibernateTemplate().get(AccessLock.class, m_lockName, LockMode.PESSIMISTIC_WRITE);
+        getHibernateTemplate().execute(new HibernateCallback<Void>() {
+            @Override
+            public Void doInHibernate(Session session) throws HibernateException {
+                // Use database-level INSERT ON CONFLICT to handle race conditions
+                // This avoids transaction rollback issues
+                String sql = "INSERT INTO accessLocks (lockName) VALUES (?) ON CONFLICT (lockName) DO NOTHING";
+                session.createNativeQuery(sql)
+                    .setParameter(1, m_lockName)
+                    .executeUpdate();
+                
+                // Now acquire the pessimistic lock
+                session.get(AccessLock.class, m_lockName, LockMode.PESSIMISTIC_WRITE);
+                return null;
+            }
+        });
     }
 
     /** {@inheritDoc} */
@@ -381,7 +388,9 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         final HibernateCallback<List<T>> callback = new HibernateCallback<List<T>>() {
             @Override
             public List<T> doInHibernate(final Session session) throws HibernateException {
-            	final Criteria attachedCrit = onmsCrit.getDetachedCriteria().getExecutableCriteria(session);
+                // In Hibernate 5, we need to unwrap the session to get the actual implementation
+                final Session actualSession = session.unwrap(Session.class);
+            	final Criteria attachedCrit = onmsCrit.getDetachedCriteria().getExecutableCriteria(actualSession);
                 if (onmsCrit.getFirstResult() != null) attachedCrit.setFirstResult(onmsCrit.getFirstResult());
                 if (onmsCrit.getMaxResults() != null) attachedCrit.setMaxResults(onmsCrit.getMaxResults());
                 return (List<T>)attachedCrit.list();
@@ -395,7 +404,9 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         final HibernateCallback<Integer> callback = new HibernateCallback<Integer>() {
             @Override
             public Integer doInHibernate(final Session session) throws HibernateException {
-                final Criteria attachedCrit = onmsCrit.getDetachedCriteria().getExecutableCriteria(session).setProjection(Projections.rowCount());
+                // In Hibernate 5, we need to unwrap the session to get the actual implementation
+                final Session actualSession = session.unwrap(Session.class);
+                final Criteria attachedCrit = onmsCrit.getDetachedCriteria().getExecutableCriteria(actualSession).setProjection(Projections.rowCount());
                 Long retval = (Long)attachedCrit.uniqueResult();
                 attachedCrit.setProjection(null);
                 attachedCrit.setResultTransformer(Criteria.ROOT_ENTITY);

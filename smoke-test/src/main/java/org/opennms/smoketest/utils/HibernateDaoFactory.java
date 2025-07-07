@@ -59,6 +59,7 @@ public class HibernateDaoFactory {
         }
         m_sessionFactory = sfb.getObject();
         m_hibernateTemplate = new HibernateTemplate(m_sessionFactory);
+        m_hibernateTemplate.setCheckWriteOperations(false);
     }
 
     public <T extends AbstractDaoHibernate<?, ?>> T getDao(Class<T> clazz) {

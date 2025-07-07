@@ -86,7 +86,8 @@ import com.google.common.collect.ImmutableMap;
         "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
         "classpath*:/META-INF/opennms/component-dao.xml",
         "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
-        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml"
+        "classpath:/META-INF/opennms/applicationContext-minimal-conf.xml",
+        "classpath:/META-INF/opennms/applicationContext-hibernateTemplate-test.xml"
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase=false)
@@ -130,7 +131,7 @@ public class NotificationManagerIT implements InitializingBean {
     }
 
     @Before
-    @Transactional(propagation = Propagation.REQUIRED)
+    @Transactional(readOnly = false)
     public void setUp() throws Exception {
         // Initialize Filter DAO
         DatabaseSchemaConfigFactory.init();
@@ -148,6 +149,7 @@ public class NotificationManagerIT implements InitializingBean {
         OnmsMonitoredService service;
         OnmsServiceType serviceType;
 
+
         OnmsCategory category1 = new OnmsCategory("CategoryOne");
         m_categoryDao.save(category1);
         OnmsCategory category2 = new OnmsCategory("CategoryTwo");
@@ -156,7 +158,6 @@ public class NotificationManagerIT implements InitializingBean {
         m_categoryDao.save(category3);
         OnmsCategory category4 = new OnmsCategory("CategoryFour");
         m_categoryDao.save(category4);
-        m_categoryDao.flush();
 
         serviceType = new OnmsServiceType("ICMP");
         m_serviceTypeDao.save(serviceType);
@@ -210,12 +211,6 @@ public class NotificationManagerIT implements InitializingBean {
         // node 5 has no interfaces
         node = new OnmsNode(m_locationDao.getDefaultLocation(), "node 5");
         m_nodeDao.save(node);
-
-        m_nodeDao.flush();
-        m_ipInterfaceDao.flush();
-        m_serviceDao.flush();
-        m_serviceTypeDao.flush();
-        m_categoryDao.flush();
     }
     
     @Test
@@ -446,6 +441,7 @@ public class NotificationManagerIT implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase
+    @Transactional(readOnly = false)
     public void canMatchEventParametersWhenAcknowledgingNotices() throws IOException, SQLException {
         // Insert some event in the database with a few event parameters
         OnmsEvent dbEvent = new OnmsEvent();
