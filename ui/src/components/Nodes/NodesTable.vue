@@ -1,31 +1,62 @@
 <template>
   <div class="card">
-    <div class="feather-row">
-      <div class="feather-col-6">
-        <span class="title">Nodes</span>
+    <div>
+      <div class="feather-row title-bar">
+        <span class="title">Structured Node List</span>
+        <div class="action-buttons-container">
+          <NodeDownloadDropdown
+            :onCsvDownload="onCsvDownload"
+            :onJsonDownload="onJsonDownload"
+          />
+          <FeatherButton
+            icon="Open Preferences"
+            @click="openPreferences"
+          >
+            <FeatherIcon
+              :icon="settingsIcon"
+              class="node-actions-icon"
+            />
+          </FeatherButton>
+        </div>
       </div>
-      <div class="feather-col-6">
+      <div class="spacer-large"></div>
+      <div class="spacer-large"></div>
+      <div class="search-container feather-col-6">
         <div class="feather-row">
-          <div class="feather-col-3 action-buttons-column">
-            <div class="action-buttons-container">
-              <NodeDownloadDropdown
-                :onCsvDownload="onCsvDownload"
-                :onJsonDownload="onJsonDownload"
-              ></NodeDownloadDropdown>
-              <FeatherButton
-                icon="Open Preferences"
-                @click="openPreferences"
-              >
-                <FeatherIcon :icon="settingsIcon" class="node-actions-icon" />
-              </FeatherButton>
-            </div>
-          </div>
-          <div class="feather-col-9 search-filter-column">
+          <div class="search-filter-column">
             <FeatherInput
               v-model="currentSearch"
               @update:modelValue="searchFilterHandler"
               label="Search node label"
+            >
+              <template #pre>
+                <FeatherIcon :icon="icons.Search" />
+              </template>
+            </FeatherInput>
+          </div>
+          <div class="filter-icon-wrapper">
+            <FeatherIcon
+              :icon="FilterAlt"
             />
+          </div>
+          <div class="feather-col-3 chip-container">
+            <FeatherChipList label="Tags">
+              <FeatherChip>
+                <template v-slot:icon>
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                  />
+                </template>
+                {{ "tag" }}
+              </FeatherChip>
+              <FeatherChip>
+                <template v-slot:icon>
+                  <FeatherIcon :icon="cancelIcon" />
+                </template>
+                {{ "tag" }}
+              </FeatherChip>
+            </FeatherChipList>
           </div>
         </div>
       </div>
@@ -43,14 +74,19 @@
             <thead>
               <tr>
                 <th scope="column" />
-                <template v-for="column in nodeStructureStore.columns" :key="column.id">
+                <template
+                  v-for="column in nodeStructureStore.columns"
+                  :key="column.id"
+                >
                   <FeatherSortHeader
                     scope="col"
                     :property="column.id"
                     :sort="sortStateForId(column.id)"
                     v-on:sort-changed="sortChanged"
                     v-if="column.selected && column.id !== 'ipaddress'"
-                  >{{ column.label }}</FeatherSortHeader>
+                  >
+                    {{ column.label }}
+                  </FeatherSortHeader>
 
                   <th v-if="column.selected && column.id === 'ipaddress'">{{ column.label }}</th>
                 </template>
@@ -69,12 +105,16 @@
                   />
                 </td>
 
-                <template v-for="column in nodeStructureStore.columns" :key="column.id">
+                <template
+                  v-for="column in nodeStructureStore.columns"
+                  :key="column.id"
+                >
                   <td v-if="isSelectedColumn(column, 'id')">
                     <a
                       :href="computeNodeLink(node.id)"
                       @click="onNodeLinkClick(node.id)"
-                      target="_blank">
+                      target="_blank"
+                    >
                       {{ node.id }}
                     </a>
                   </td>
@@ -82,12 +122,14 @@
                     <a
                       :href="computeNodeLink(node.id)"
                       @click="onNodeLinkClick(node.id)"
-                      target="_blank">
+                      target="_blank"
+                    >
                       {{ node.label }}
                     </a>
                   </td>
 
-                  <ManagementIPTooltipCell v-if="isSelectedColumn(column, 'ipaddress')"
+                  <ManagementIPTooltipCell
+                    v-if="isSelectedColumn(column, 'ipaddress')"
                     :computeNodeIpInterfaceLink="computeNodeIpInterfaceLink"
                     :node="node"
                     :nodeToIpInterfaceMap="nodeStore.nodeToIpInterfaceMap"
@@ -95,11 +137,26 @@
 
                   <td v-if="isSelectedColumn(column, 'location')">{{ node.location }}</td>
 
-                  <NodeTooltipCell v-if="isSelectedColumn(column, 'foreignSource')" :text="node.foreignSource" />
-                  <NodeTooltipCell v-if="isSelectedColumn(column, 'foreignId')" :text="node.foreignId" />
-                  <NodeTooltipCell v-if="isSelectedColumn(column, 'sysContact')" :text="node.sysContact" />
-                  <NodeTooltipCell v-if="isSelectedColumn(column, 'sysLocation')" :text="node.sysLocation" />
-                  <NodeTooltipCell v-if="isSelectedColumn(column, 'sysDescription')" :text="node.sysDescription" />
+                  <NodeTooltipCell
+                    v-if="isSelectedColumn(column, 'foreignSource')"
+                    :text="node.foreignSource"
+                  />
+                  <NodeTooltipCell
+                    v-if="isSelectedColumn(column, 'foreignId')"
+                    :text="node.foreignId"
+                  />
+                  <NodeTooltipCell
+                    v-if="isSelectedColumn(column, 'sysContact')"
+                    :text="node.sysContact"
+                  />
+                  <NodeTooltipCell
+                    v-if="isSelectedColumn(column, 'sysLocation')"
+                    :text="node.sysLocation"
+                  />
+                  <NodeTooltipCell
+                    v-if="isSelectedColumn(column, 'sysDescription')"
+                    :text="node.sysDescription"
+                  />
 
                   <td v-if="isSelectedColumn(column, 'flows')">
                     <FlowTooltipCell :node="node" />
@@ -124,12 +181,14 @@
     :computeNodeIpInterfaceLink="computeNodeIpInterfaceLink"
     @close="dialogVisible = false"
     :visible="dialogVisible"
-    :node="dialogNode">
+    :node="dialogNode"
+  >
   </NodeDetailsDialog>
 
   <NodePreferencesDialog
     @close="preferencesVisible = false"
-    :visible="preferencesVisible">
+    :visible="preferencesVisible"
+  >
   </NodePreferencesDialog>
 </template>
 
@@ -151,7 +210,8 @@ import {
   Node,
   NodeColumnSelectionItem,
   QueryParameters,
-  UpdateModelFunction } from '@/types'
+  UpdateModelFunction
+} from '@/types'
 import { MainMenu } from '@/types/mainMenu'
 
 import FlowTooltipCell from './FlowTooltipCell.vue'
@@ -164,6 +224,10 @@ import NodeTooltipCell from './NodeTooltipCell.vue'
 import { useNodeQuery } from './hooks/useNodeQuery'
 import { useNodeExport } from './hooks/useNodeExport'
 import { getTableCssClasses } from './utils'
+import Search from '@featherds/icon/action/Search'
+import FilterAlt from '@featherds/icon/action/FilterAlt'
+import Cancel from '@featherds/icon/navigation/Cancel'
+import { FeatherChip, FeatherChipList } from '@featherds/chips'
 
 const menuStore = useMenuStore()
 const nodeStructureStore = useNodeStructureStore()
@@ -203,6 +267,11 @@ const sortStateForId = (label: string) => {
 
   return SORT.NONE
 }
+
+const icons = markRaw({
+  Search,
+})
+const cancelIcon = computed(() => Cancel)
 
 const currentSearch = ref(nodeStructureStore.queryFilter.searchTerm || '')
 const nodes = computed(() => nodeStore.nodes)
@@ -337,6 +406,7 @@ watch([() => nodeStructureStore.queryFilter], () => {
 @import "@featherds/table/scss/table";
 @import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/mixins/typography";
+@import "@featherds/styles/themes/variables";
 
 #wrap {
   overflow: auto;
@@ -363,16 +433,63 @@ table {
 
 .feather-col-11.search-filter-column {
   padding-left: 1rem;
+  max-width: 60% !important;
 }
 
 .action-buttons-column {
-  text-align: right;
+  text-align: left;
 }
 
 .search-filter-column {
+  :deep(.feather-input-sub-text) {
+    display: none !important;
+  }
+
+  .feather-input-container {
+    width: 450px !important;
+  }
+
+}
+
+.chip-container {
+  :deep(.chip) {
+    margin-bottom: 0 !important;
+  }
+
+  :deep(.chip-list) {
+    margin-top: 0.25rem !important;
+  }
+}
+
+.spacer-large {
+  margin-bottom: 2rem;
+}
+
+.filter-icon-wrapper {
+  display: flex;
+  align-items: center;
+  margin-left: 10px;
+  padding: 0 0.5rem;
+  font-size: 1.5rem;
+  cursor: pointer;
+  border: 2px solid var($border-on-surface);
+  color: var($primary);
+  border-radius: 3px;
+}
+
+.title-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-right: 1rem;
+  padding-left: 1rem;
 }
 
 .action-buttons-container {
+  display: flex;
   display: inline-block;
+  gap: 0.5rem;
+  align-items: center;
 }
 </style>
+
