@@ -22,11 +22,15 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import java.net.InetAddress;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import joptsimple.internal.Strings;
 import org.hibernate.transform.ResultTransformer;
+import org.opennms.netmgt.config.api.collection.IColumn;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsNode;
@@ -195,7 +199,11 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
     }
 
     @Override
-    public List<OnmsIpInterface> findInterfacesWithMetadata(String context, String key, String value) {  return getHibernateTemplate().execute(session -> (List<OnmsIpInterface>) session.createSQLQuery("SELECT ip.id FROM ipInterface ip, ipInterface_metadata m WHERE m.id = ip.id AND context = :context AND key = :key AND value = :value ORDER BY ip.id")
+    public List<OnmsIpInterface> findInterfacesWithMetadata(final String context, String key, final String value, final boolean matchEnumeration) {
+        // what is happening here?
+        // 1. in the case matchEnumeration is set to true, we try to find the given value by using the following regular expression: (?:^[ ,]*|,[ ]*)stringToSearchFor(?=[ ]*,|,?[ ]*$)
+        // 2. of course the value to search for needs to be escaped, so we use REGEXP_REPLACE(:value, '([\.\+\*\?\^\$\(\)\[\]\{\}\|\\])', '\\\1', 'g') here
+        return getHibernateTemplate().execute(session -> (List<OnmsIpInterface>) session.createSQLQuery("SELECT ip.id FROM ipInterface ip, ipInterface_metadata m WHERE m.id = ip.id AND context = :context AND key = :key AND value " + (matchEnumeration ? "~ CONCAT('(?:^[ ,]*|,[ ]*)', REGEXP_REPLACE(:value, '([\\.\\+\\*\\?\\^\\$\\(\\)\\[\\]\\{\\}\\|\\\\])', '\\\\\\1', 'g'), '(?=[ ]*,|,?[ ]*$)')" : "= :value" ) + " ORDER BY ip.id")
             .setString("context", context)
             .setString("key", key)
             .setString("value", value)

@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.flows.processing.enrichment;
+package org.opennms.netmgt.telemetry.protocols.cache;
 
 import java.util.List;
 

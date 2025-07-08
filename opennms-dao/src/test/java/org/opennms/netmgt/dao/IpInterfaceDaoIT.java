@@ -38,7 +38,9 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.stream.Collectors;
 
+import com.google.common.collect.Sets;
 import org.hibernate.criterion.Restrictions;
 import org.junit.Before;
 import org.junit.Test;
@@ -207,5 +209,54 @@ public class IpInterfaceDaoIT implements InitializingBean {
         assertEquals(itf.getNode().getLocation().getLocationName(), location);
         OnmsIpInterface itf2 = m_ipInterfaceDao.findByIpAddressAndLocation(ipAddress, location + location).stream().findFirst().orElse(null);
         assertNull(itf2);
+    }
+
+    @Test
+    @Transactional
+    public void testFindInterfacesWithMetadata() {
+        OnmsIpInterface ipinterface;
+
+        ipinterface = m_ipInterfaceDao.findByIpAddress("192.168.1.1").get(0);
+        ipinterface.addMetaData("context", "key", "value");
+        m_ipInterfaceDao.save(ipinterface);
+
+        ipinterface = m_ipInterfaceDao.findByIpAddress("192.168.1.2").get(0);
+        ipinterface.addMetaData("context", "key", "foo,bar");
+        m_ipInterfaceDao.save(ipinterface);
+
+        ipinterface = m_ipInterfaceDao.findByIpAddress("192.168.1.3").get(0);
+        ipinterface.addMetaData("context", "key", "value,foo,bar");
+        m_ipInterfaceDao.save(ipinterface);
+
+        ipinterface = m_ipInterfaceDao.findByIpAddress("192.168.2.1").get(0);
+        ipinterface.addMetaData("context", "key", "foo,value,bar");
+        m_ipInterfaceDao.save(ipinterface);
+
+        ipinterface = m_ipInterfaceDao.findByIpAddress("192.168.2.2").get(0);
+        ipinterface.addMetaData("context", "key", "foo,bar,value");
+        m_ipInterfaceDao.save(ipinterface);
+
+        m_ipInterfaceDao.flush();
+
+        assertEquals(Sets.newHashSet(),
+                m_ipInterfaceDao.findInterfacesWithMetadata("context", "key", "xxx", false).stream()
+                        .map(i->i.getIpAddressAsString())
+                        .collect(Collectors.toSet()));
+
+        assertEquals(Sets.newHashSet(),
+                m_ipInterfaceDao.findInterfacesWithMetadata("context", "key", "xxx", true).stream()
+                        .map(i->i.getIpAddressAsString())
+                        .collect(Collectors.toSet()));
+
+        assertEquals(Sets.newHashSet("192.168.1.1"),
+                m_ipInterfaceDao.findInterfacesWithMetadata("context", "key", "value", false).stream()
+                        .map(i->i.getIpAddressAsString())
+                        .collect(Collectors.toSet()));
+
+        assertEquals(Sets.newHashSet("192.168.1.1", "192.168.1.3", "192.168.2.1", "192.168.2.2"),
+                m_ipInterfaceDao.findInterfacesWithMetadata("context", "key", "value", true).stream()
+                        .map(i->i.getIpAddressAsString())
+                        .collect(Collectors.toSet()));
+
     }
 }

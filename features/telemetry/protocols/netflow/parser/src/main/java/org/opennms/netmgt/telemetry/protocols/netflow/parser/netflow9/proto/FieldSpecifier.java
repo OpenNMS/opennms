@@ -80,7 +80,11 @@ public final class FieldSpecifier implements Field {
 
     @Override
     public Value<?> parse(final Session.Resolver resolver, final ByteBuf buffer) throws InvalidPacketException, MissingTemplateException {
-        return this.informationElement.parse(resolver, buffer);
+        try {
+            return this.informationElement.parse(resolver, buffer);
+        } catch (final InvalidPacketException e) {
+            throw new InvalidPacketException(e, "Failed to parse Netflow9 information element: fieldType=%d", this.fieldType);
+        }
     }
 
     @Override
