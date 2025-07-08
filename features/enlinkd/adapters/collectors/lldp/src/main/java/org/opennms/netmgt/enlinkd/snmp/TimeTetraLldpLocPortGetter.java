@@ -83,7 +83,7 @@ public class TimeTetraLldpLocPortGetter extends SnmpGetter {
             LOG.debug("getLldpLink: setting default not found Values: portid=\"Not Found On lldpLocPortTable\"");
             lldpLink.setLldpPortId("\"Not Found On lldpLocPortTable\"");
         } else {
-            lldpLink.setLldpPortId(decodeLldpPortId(lldpLink.getLldpPortIdSubType(),
+            lldpLink.setLldpPortId(LldpSnmpUtils.decodeTimeTetraLldpPortId(lldpLink.getLldpPortIdSubType(),
                     val.get(1)));
         }
         if (val.get(2) != null && !val.get(2).isError())
@@ -91,13 +91,6 @@ public class TimeTetraLldpLocPortGetter extends SnmpGetter {
         else
             lldpLink.setLldpPortDescr("");
         return lldpLink;
-    }
-
-    public static String decodeLldpPortId(LldpUtils.LldpPortIdSubType portSubType, SnmpValue snmpValue) {
-	    if (portSubType == LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL) {
-	        return String.valueOf(Integer.parseInt(LldpRemTableTracker.decodeLldpPortId( LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_LOCAL.getValue(),snmpValue),16));
-        }
-	    return LldpRemTableTracker.decodeLldpPortId(portSubType.getValue(),snmpValue);
     }
 
 }
