@@ -37,7 +37,6 @@
           <div class="filter-icon-wrapper">
             <FeatherIcon
               :icon="FilterAlt"
-              @click="() => nodeStructureStore.openInstancesDrawerModal2()"
             />
           </div>
           <div class="feather-col-3 chip-container">
@@ -85,9 +84,9 @@
                     :sort="sortStateForId(column.id)"
                     v-on:sort-changed="sortChanged"
                     v-if="column.selected && column.id !== 'ipaddress'"
-                    >{{ column.label
-                    }}</FeatherSortHeader
                   >
+                    {{ column.label }}
+                  </FeatherSortHeader>
 
                   <th v-if="column.selected && column.id === 'ipaddress'">{{ column.label }}</th>
                 </template>
@@ -191,7 +190,6 @@
     :visible="preferencesVisible"
   >
   </NodePreferencesDialog>
-  <NodesAdvanceFiltersDrawer />
 </template>
 
 <script setup lang="ts">
@@ -230,7 +228,6 @@ import Search from '@featherds/icon/action/Search'
 import FilterAlt from '@featherds/icon/action/FilterAlt'
 import Cancel from '@featherds/icon/navigation/Cancel'
 import { FeatherChip, FeatherChipList } from '@featherds/chips'
-import NodesAdvanceFiltersDrawer from './NodesAdvanceFiltersDrawer.vue'
 
 const menuStore = useMenuStore()
 const nodeStructureStore = useNodeStructureStore()
@@ -306,11 +303,6 @@ const updatePageSize = (size: number) => {
 
   updateQuery()
 }
-
-// const openFilterDrawer = () => {
-//   nodeStructureStore.toggleDrawer(true)
-//   nodeStructureStore.toggleAdvanceFilterDrawer(true)
-// }
 
 const sortChanged = (sortObj: FeatherSortObject) => {
   // currently we don't support sorting by ipaddress
