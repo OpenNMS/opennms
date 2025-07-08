@@ -22,7 +22,6 @@
 package org.opennms.smoketest.rest;
 
 import io.restassured.RestAssured;
-import io.restassured.common.mapper.TypeRef;
 import io.restassured.filter.log.RequestLoggingFilter;
 import io.restassured.http.ContentType;
 import org.json.JSONArray;
@@ -32,37 +31,28 @@ import org.junit.ClassRule;
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
-import org.opennms.core.config.api.JaxbListWrapper;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.hibernate.AlarmDaoHibernate;
 import org.opennms.netmgt.model.OnmsAlarm;
-import org.opennms.netmgt.model.OnmsAlarmCollection;
-import org.opennms.netmgt.model.OnmsSeverity;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper;
 import org.opennms.smoketest.stacks.OpenNMSStack;
 import org.opennms.smoketest.utils.DaoUtils;
 import org.opennms.smoketest.utils.RestClient;
-
 import java.io.PrintStream;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
-
 import static io.restassured.RestAssured.given;
 import static io.restassured.RestAssured.preemptive;
-import static java.util.concurrent.TimeUnit.MINUTES;
-import static java.util.concurrent.TimeUnit.SECONDS;
 import static org.awaitility.Awaitility.await;
-import static org.hamcrest.Matchers.*;
-import static org.junit.Assert.*;
-import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_PASSWORD;
-import static org.opennms.smoketest.selenium.AbstractOpenNMSSeleniumHelper.BASIC_AUTH_USERNAME;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.notNullValue;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertEquals;
+
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class SituationRestServicesIT {
@@ -85,8 +75,6 @@ public class SituationRestServicesIT {
         restClient = stack.opennms().getRestClient();
     }
 
-
-
     private int fetchRelatedCount() {
         return given()
                 .accept(ContentType.JSON)
@@ -102,7 +90,7 @@ public class SituationRestServicesIT {
 
     @Test
     public void test1_createSituation() {
-        // send two events
+
         restClient.sendEvent(getServiceProblemEvent("Major", "uei.opennms.org/bsm/serviceProblem"));
         restClient.sendEvent(getServiceProblemEvent("Minor", "uei.opennms.org/traps/A10/axFan1Failure"));
 
@@ -217,9 +205,7 @@ public class SituationRestServicesIT {
     public void test4_clearSituation() {
         PrintStream log = System.out;
         RequestLoggingFilter logFilter = new RequestLoggingFilter(log);
-
         JSONObject clear = new JSONObject().put("situationId", situationId);
-
         given().filter(logFilter)
                 .auth().basic(
                         AbstractOpenNMSSeleniumHelper.BASIC_AUTH_USERNAME,
@@ -231,7 +217,6 @@ public class SituationRestServicesIT {
                 .post("/situations/clear")
                 .then()
                 .statusCode(equalTo(200));
-
 
         given()
                 .accept(ContentType.JSON)
@@ -246,5 +231,4 @@ public class SituationRestServicesIT {
     private Event getServiceProblemEvent(String severity, String uei) {
         return new EventBuilder(uei, "test").setSeverity(severity).getEvent();
     }
-
 }

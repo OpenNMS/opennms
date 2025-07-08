@@ -19,7 +19,6 @@
  * language governing permissions and limitations under the
  * License.
  */
-
 package org.opennms.web.rest.v2;
 
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -41,10 +40,29 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.ws.rs.*;
-import javax.ws.rs.core.*;
-import java.util.*;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.GET;
+import javax.ws.rs.DELETE;
+import javax.ws.rs.POST;
+import javax.ws.rs.PathParam;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.SecurityContext;
+import java.util.UUID;
+import java.util.Set;
+import java.util.Map;
+import java.util.Collections;
+import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Collection;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.HashSet;
+import java.util.Comparator;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
@@ -55,30 +73,25 @@ import java.util.stream.Collectors;
 public class SituationsRestService extends AlarmRestService {
 
     private static final Logger LOG = LoggerFactory.getLogger(SituationsRestService.class);
-
     public enum Action { ACK, UNACK, ESCALATE, CLEAR, ACCEPT}
-
-    static final String SITUATION_LOG_MSG = "situationLogMsg";
-    static final String DESCR = "situationDescr";
-    static final String STATUS = "situationStatus";
-    static final String ID = "situationId";
-    static final String RELATED_PREFIX = "related-reductionKey";
-    static final String CREATED = "USER_CREATED";
-    static final String REMOVED_ALARM = "REMOVED_ALARM";
-    static final String ADDED_ALARM = "ADDED_ALARM";
-    static final String ACCEPTED = "ACCEPTED";
-    static final String REJECTED = "REJECTED";
-
+    static final String SITUATION_LOG_MSG="situationLogMsg";
+    static final String DESCR="situationDescr";
+    static final String STATUS="situationStatus";
+    static final String ID="situationId";
+    static final String RELATED_PREFIX="related-reductionKey";
+    static final String CREATED="USER_CREATED";
+    static final String REMOVED_ALARM="REMOVED_ALARM";
+    static final String ADDED_ALARM="ADDED_ALARM";
+    static final String ACCEPTED="ACCEPTED";
+    static final String REJECTED="REJECTED";
     static final String SOURCE = "Api";
     private final String IS_SITUATION = "isSituation";
-
 
     @Autowired
     private EventForwarder eventForwarder;
 
     @Autowired
     private AcknowledgmentDao m_ackDao;
-
 
     @GET
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -87,13 +100,11 @@ public class SituationsRestService extends AlarmRestService {
         return super.get(uriInfo, searchContext);
     }
 
-
     @POST
     @Path("create")
     @Transactional
     public Response create(@Context UriInfo uriInfo, SituationPayload payload) throws InterruptedException {
         String situationId = UUID.randomUUID().toString();
-        ;
         return handleAssociation(
                 payload.getAlarmIdList(),
                 payload.getDiagnosticText(),
@@ -137,19 +148,16 @@ public class SituationsRestService extends AlarmRestService {
     @Path("removeAlarm")
     @Transactional
     public Response removeAlarm(@Context UriInfo uriInfo,
-                                AlarmAddRemoveRequest request) throws InterruptedException {
+                                AlarmAddRemoveRequest request) {
         OnmsAlarm situationAlarm = getDao().get(request.getSituationId());
         if (situationAlarm == null || !situationAlarm.isSituation()) {
             return Response.noContent().build();
         }
 
-        Response noChangeResponse = removeAlarmsFromSituation(
+      return removeAlarmsFromSituation(
                 situationAlarm,
                 request.getAlarmIdList()
         );
-        return (noChangeResponse != null)
-                ? noChangeResponse
-                : Response.ok().build();
     }
 
 
@@ -159,16 +167,16 @@ public class SituationsRestService extends AlarmRestService {
     public Response doAction(
             AlarmAddRemoveRequest req,
             @Context SecurityContext secCtx) {
-        writeLock();
+
         Integer alarmId = req.getSituationId();
         try {
+            writeLock();
             if (alarmId == null) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Unable to determine alarm ID to update based on query path.").type(MediaType.TEXT_PLAIN).build();
             }
             final OnmsAlarm alarm = getDao().get(alarmId);
             if (alarm == null) {
                 return Response.status(Response.Status.BAD_REQUEST).entity("Unable to locate alarm with ID '" + alarmId + "'").type(MediaType.TEXT_PLAIN).build();
-
             }
 
             final String ackUser = secCtx.getUserPrincipal().getName();
@@ -193,8 +201,8 @@ public class SituationsRestService extends AlarmRestService {
             @Context SecurityContext secCtx,
             @Context UriInfo uriInfo) throws InterruptedException {
 
-        writeLock();
         try {
+            writeLock();
             OnmsAlarm situationAlarm = getDao().get(req.getSituationId());
             if (situationAlarm == null || !situationAlarm.isSituation()) {
                 return Response.status(Response.Status.BAD_REQUEST)
@@ -203,15 +211,13 @@ public class SituationsRestService extends AlarmRestService {
                         .build();
             }
 
-
-            Response noChangeResponse = removeAlarmsFromSituation(
+            Response initialResponse = removeAlarmsFromSituation(
                     situationAlarm,
                     req.getAlarmIdList()
             );
-            if (noChangeResponse != null) {
-                return noChangeResponse;
+            if (initialResponse.getStatus() != 200) {
+                return initialResponse;
             }
-
 
             String user = secCtx.getUserPrincipal().getName();
             if (StringUtils.isNotBlank(user)) {
@@ -224,7 +230,6 @@ public class SituationsRestService extends AlarmRestService {
             writeUnlock();
         }
     }
-
 
     @POST
     @Path("accepted/{id}")
@@ -259,7 +264,6 @@ public class SituationsRestService extends AlarmRestService {
                     return String.valueOf(situation.getId());
                 });
 
-
         buildAndSendEvent(
                 situation.getRelatedAlarms(),
                 situation,
@@ -271,7 +275,6 @@ public class SituationsRestService extends AlarmRestService {
 
         return Response.ok().build();
     }
-
 
     private void clearAlarm(OnmsAlarm alarm, String user) {
         OnmsAcknowledgment ack = new OnmsAcknowledgment(alarm, user);
@@ -292,7 +295,6 @@ public class SituationsRestService extends AlarmRestService {
                 .filter(a -> !alarmIdsToRemove.contains(a.getId()))
                 .collect(Collectors.toUnmodifiableSet());
 
-
         if (situationAlarm.getRelatedAlarms().equals(remaining)) {
             return Response.noContent().build();
         }
@@ -303,9 +305,8 @@ public class SituationsRestService extends AlarmRestService {
                     return Integer.toString(situationAlarm.getId());
                 });
         buildAndSendEvent(remaining, situationAlarm, situationId, SituationsRestService.REMOVED_ALARM, null, null);
-        return null;
+        return Response.ok().build();
     }
-
 
     public void performAction(OnmsAcknowledgment ack, Action action, Boolean value) {
         boolean alarmUpdated = false;
@@ -339,11 +340,9 @@ public class SituationsRestService extends AlarmRestService {
 
     }
 
-
     @Override
     protected CriteriaBuilder getCriteriaBuilder(UriInfo uriInfo) {
         CriteriaBuilder builder = super.getCriteriaBuilder(uriInfo);
-
         @SuppressWarnings("unchecked")
         CriteriaBehavior<String> isSituationBehavior =
                 (CriteriaBehavior<String>) getCriteriaBehaviors()
@@ -357,7 +356,6 @@ public class SituationsRestService extends AlarmRestService {
         return builder;
     }
 
-
     @Override
     protected Map<String, CriteriaBehavior<?>> getCriteriaBehaviors() {
         Map<String, CriteriaBehavior<?>> base = CriteriaBehaviors.ALARM_BEHAVIORS;
@@ -366,7 +364,6 @@ public class SituationsRestService extends AlarmRestService {
         CriteriaBehavior<?> b = prefixed.get(Aliases.alarm.prop(IS_SITUATION));
         return Collections.singletonMap(Aliases.alarm.prop(IS_SITUATION), b);
     }
-
 
     private Response handleAssociation(List<Integer> alarmIds, String diagText, String desctiption, UriInfo uriInfo, String sid) throws InterruptedException {
         Set<OnmsAlarm> alarms = loadValidAlarms(alarmIds, uriInfo);
@@ -377,7 +374,6 @@ public class SituationsRestService extends AlarmRestService {
         buildAndSendEvent(alarms, null, sid, CREATED, diagText, desctiption);
         return Response.ok().build();
     }
-
 
     private Set<OnmsAlarm> loadValidAlarms(List<Integer> ids, UriInfo uriInfo) throws InterruptedException {
         Set<OnmsAlarm> alarms = new HashSet<>();
@@ -407,7 +403,6 @@ public class SituationsRestService extends AlarmRestService {
         return getDao().findMatching(builder.toCriteria());
     }
 
-
     public static OnmsAlarm getAlarmForDescription(final Collection<OnmsAlarm> alarms) {
         Objects.requireNonNull(alarms, "alarms can not be null");
         if (alarms.isEmpty()) {
@@ -420,7 +415,6 @@ public class SituationsRestService extends AlarmRestService {
                 .findFirst()
                 .orElseThrow(() -> new IllegalArgumentException("alarms can not be empty"));
     }
-
 
     private void buildAndSendEvent(
             Collection<OnmsAlarm> alarms,
@@ -446,7 +440,6 @@ public class SituationsRestService extends AlarmRestService {
             }
         }
 
-
         String logMsg;
         String descr;
         switch (status) {
@@ -457,7 +450,6 @@ public class SituationsRestService extends AlarmRestService {
                     descr += "<p>Diagnostic: " + diagText + "</p>";
                 }
                 break;
-
             case ADDED_ALARM:
                 logMsg = String.format("Added alarms to situation %s", sid);
                 descr = Objects.toString(situation != null ? situation.getDescription() : null, "");
@@ -472,12 +464,10 @@ public class SituationsRestService extends AlarmRestService {
                 logMsg = "Situation accepted";
                 descr = Objects.toString(situation != null ? situation.getDescription() : null, "");
                 break;
-
             case REJECTED:
-                logMsg = "Situation rejected ";
+                logMsg = "Situation rejected";
                 descr = Objects.toString(situation != null ? situation.getDescription() : null, "");
                 break;
-
             default:
                 logMsg = situation.getLogMsg();
                 descr = desctiption;
@@ -490,11 +480,9 @@ public class SituationsRestService extends AlarmRestService {
             eb.addParam(DESCR, descr);
         }
 
-
         if (desc != null && desc.getNodeId() != null) {
             eb.setNodeid(desc.getNodeId().longValue());
         }
-
 
         AtomicInteger idx = new AtomicInteger(0);
         for (String key : alarms.stream().map(OnmsAlarm::getReductionKey).toList()) {
@@ -503,7 +491,6 @@ public class SituationsRestService extends AlarmRestService {
         eb.addParam(STATUS, status);
         eventForwarder.sendNow(eb.getEvent());
     }
-
 
     public String maxSeverityLabel(Collection<OnmsAlarm> alarmSet) {
         final OnmsSeverity maxSeverity = OnmsSeverity.get(
@@ -524,15 +511,9 @@ public class SituationsRestService extends AlarmRestService {
         if (parms == null) {
             return Optional.empty();
         }
+
         return parms.stream()
                 .map(OnmsEventParameter::getValue)
                 .findFirst();
     }
-
-    public void setEventForwarder(EventForwarder eventForwarder) {
-        this.eventForwarder = eventForwarder;
-    }
-
-
-
 }
