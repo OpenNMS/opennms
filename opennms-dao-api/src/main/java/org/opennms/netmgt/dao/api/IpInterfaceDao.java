@@ -115,7 +115,11 @@ public interface IpInterfaceDao extends LegacyOnmsDao<OnmsIpInterface, Integer> 
 
 	OnmsIpInterface findPrimaryInterfaceByNodeId(Integer nodeId);
 
-	List<OnmsIpInterface> findInterfacesWithMetadata(final String context, final String key, final String value);
+	List<OnmsIpInterface> findInterfacesWithMetadata(final String context, final String key, final String value, final boolean matchEnumeration);
+
+    default List<OnmsIpInterface> findInterfacesWithMetadata(final String context, final String key, final String value) {
+        return findInterfacesWithMetadata(context, key, value, false);
+    }
 
     List<OnmsIpInterface> findByIpAddressAndLocation(String address, String location);
 

@@ -165,6 +165,7 @@
       <feature>dropwizard-metrics</feature>
       <feature>opennms-core-ipc-sink-api</feature>
       <feature>opennms-core-ipc-rpc-api</feature>
+      <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
       <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.ipc.grpc/org.opennms.core.ipc.grpc.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.ipc.grpc/org.opennms.core.ipc.grpc.client/${project.version}</bundle>

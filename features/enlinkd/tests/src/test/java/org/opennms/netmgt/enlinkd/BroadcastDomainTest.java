@@ -48,6 +48,7 @@ import org.opennms.netmgt.enlinkd.service.api.BridgeTopologyException;
 import org.opennms.netmgt.enlinkd.service.api.BroadcastDomain;
 import org.opennms.netmgt.enlinkd.service.api.DiscoveryBridgeTopology;
 import org.opennms.netmgt.enlinkd.service.api.SharedSegment;
+import org.opennms.netmgt.enlinkd.snmp.LldpSnmpUtils;
 import org.opennms.netmgt.model.OnmsNode;
 
 import com.google.common.collect.Sets;
@@ -73,6 +74,16 @@ public class BroadcastDomainTest extends EnLinkdTestHelper {
         Properties p = new Properties();
         p.setProperty("log4j.logger.org.opennms.netmgt.enlinkd.service.api", "DEBUG");
         MockLogAppender.setupLogging(p);
+    }
+
+    @Test
+    public void testIsNumber() {
+        assertFalse(LldpSnmpUtils.isNumber("766d7831"));
+    }
+
+    @Test
+    public void testHumanReadable() {
+        assertTrue(LldpSnmpUtils.humanReadable("766d7831"));
     }
 
     @Test

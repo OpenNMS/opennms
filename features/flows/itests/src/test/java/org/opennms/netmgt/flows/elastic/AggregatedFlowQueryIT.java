@@ -89,7 +89,6 @@ import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.flows.persistence.FlowDocumentBuilder;
 import org.opennms.netmgt.flows.processing.FlowBuilder;
-import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
 import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
 import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
 
@@ -97,6 +96,9 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfo;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCache;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCacheImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -193,19 +195,26 @@ public class AggregatedFlowQueryIT {
                 new RuleBuilder().withName("http").withSrcPort("80").withProtocol("tcp,udp").build(),
                 new RuleBuilder().withName("https").withSrcPort("443").withProtocol("tcp,udp").build()),
                                                                          FilterService.NOOP);
+        final NodeInfoCache nodeInfoCache = new NodeInfoCacheImpl(
+                new CacheConfigBuilder()
+                        .withName("nodeInfoCache")
+                        .withMaximumSize(1000)
+                        .withExpireAfterWrite(300)
+                        .withExpireAfterRead(300)
+                        .build(),
+                true,
+                new MetricRegistry(),
+                new MockNodeDao(),
+                new MockIpInterfaceDao(),
+                new MockInterfaceToNodeCache(),
+                new MockSessionUtils()
+        );
 
-        documentEnricher = new DocumentEnricherImpl(metricRegistry,
-                                                    new MockNodeDao(),
-                                                    new MockIpInterfaceDao(),
-                                                    new MockInterfaceToNodeCache(),
-                                                    new MockSessionUtils(),
+        documentEnricher = new DocumentEnricherImpl(new MockSessionUtils(),
                                                     classificationEngine,
-                                                    new CacheConfigBuilder()
-                                                        .withName("flows.node")
-                                                        .withMaximumSize(1000)
-                                                        .withExpireAfterWrite(300)
-                                                        .build(), 0,
-                                                    new DocumentMangler(new ScriptEngineManager()));
+                                                    0,
+                                                    new DocumentMangler(new ScriptEngineManager()),
+                                                    nodeInfoCache);
 
         // Delete any existing indices before initializing to ensure a clean state
         elasticRestClient.deleteIndex("netflow*,flows*");

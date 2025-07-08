@@ -5,7 +5,36 @@
 == System requirements
 
 * *Java 17*: OpenNMS Horizon 34 runs on OpenJDK 17.
-* *PostgreSQL 13 or higher*: Horizon 33 requires any supported version of PostgreSQL from 13 up to (and including) 15.
+* *PostgreSQL 13 or higher*: Horizon 34 requires any supported version of PostgreSQL from 13 up to 17.
+
+== New features and important changes
+
+=== Node Cache configuration
+
+Due to a refactoring to enable the collection of IPFix metrics, the node cache has been moved to another module.
+The configuration of the cache is now stored in the file `org.opennms.features.telemetry.protocols.common.cfg` and no longer in the file `org.opennms.features.flows.persistence.elastic.cfg`.
+
+=== `install.sh` script clears data directory and restores Karaf-related configuration files
+To overcome common upgrading problems, the data directory is automatically pruned when invoking the `install.sh` script.
+Furthermore, all Karaf-related configuration files are restored to their pristine state.
+
+=== OpenNMS Plugin API
+
+The OpenNMS Plugin API has been updated to version 1.6.0, which includes some new APIs ported over from the Horizon codebase to simplify plugin development, as well as cleanups to dependencies.
+It also includes some fixes to the protocol list used by Enlinkd.
+
+=== Expanded metadata support
+
+It is now possible to use the metadata DSL in nearly all configuration files.
+For details on all of the subsystems that support the metadata DSL, see xref:operation:deep-dive/meta-data.adoc[the operation manual].
+
+=== Confd improvements
+
+Support for `confd` has been added to the Sentinel container.
+
+=== UI: structured node list
+
+An enhanced node list has been introduced with options for sorting and filtering.
 
 == Breaking changes
 The default time series storage strategy is now by default RRDTool.

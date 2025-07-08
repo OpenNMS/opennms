@@ -58,7 +58,11 @@ public class DataSet extends FlowSet<DataRecord> {
 
         final List<DataRecord> records = new LinkedList();
         while (buffer.isReadable(minimumRecordLength)) {
-            records.add(new DataRecord(this, this.resolver, this.template, buffer));
+            try {
+                records.add(new DataRecord(this, this.resolver, this.template, buffer));
+            } catch (final InvalidPacketException e) {
+                throw new InvalidPacketException(e, "Failed to parse IPFix data record: template=%d", this.template.id);
+            }
         }
 
         if (records.size() == 0) {

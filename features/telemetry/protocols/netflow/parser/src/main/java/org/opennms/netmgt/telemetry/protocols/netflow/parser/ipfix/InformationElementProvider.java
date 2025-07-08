@@ -67,7 +67,7 @@ public class InformationElementProvider implements InformationElementDatabase.Pr
             .put("snmpGauge", Semantics.SNMP_GAUGE)
             .build();
 
-    private static final Map<String, InformationElementDatabase.ValueParserFactory> TYPE_LOOKUP = ImmutableMap.<String, InformationElementDatabase.ValueParserFactory>builder()
+    static final Map<String, InformationElementDatabase.ValueParserFactory> TYPE_LOOKUP = ImmutableMap.<String, InformationElementDatabase.ValueParserFactory>builder()
             .put("octetArray", OctetArrayValue::parser)
             .put("unsigned8", UnsignedValue::parserWith8Bit)
             .put("unsigned16", UnsignedValue::parserWith16Bit)

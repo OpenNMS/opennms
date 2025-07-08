@@ -53,6 +53,7 @@ NOTE: You must also enable the associated protocol, in this case `Netflow-5`, on
 In some scenarios, the exporter's address is altered due to network address translation.
 In this case, use node metadata to identify the exporter.
 Use the `metaDataNodeLookup` parameter to specify a context-key pair in the form of `context:key` for the lookup.
+This allows the user to associate exporters to a node by specifying a comma-separated list of identifiers.
 
 The value the lookup uses corresponds to the following fields from each protocol:
 

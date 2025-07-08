@@ -13,6 +13,7 @@
   <modules>
     <module>adapters</module>
     <module>bmp</module>
+    <module>cache</module>
     <module>common</module>
     <module>flows</module>
     <module>graphite</module>
