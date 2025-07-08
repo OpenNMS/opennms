@@ -4,9 +4,18 @@
       <div class="feather-row title-bar">
         <span class="title">Structured Node List</span>
         <div class="action-buttons-container">
-          <NodeDownloadDropdown :onCsvDownload="onCsvDownload" :onJsonDownload="onJsonDownload" />
-          <FeatherButton icon="Open Preferences" @click="openPreferences">
-            <FeatherIcon :icon="settingsIcon" class="node-actions-icon" />
+          <NodeDownloadDropdown
+            :onCsvDownload="onCsvDownload"
+            :onJsonDownload="onJsonDownload"
+          />
+          <FeatherButton
+            icon="Open Preferences"
+            @click="openPreferences"
+          >
+            <FeatherIcon
+              :icon="settingsIcon"
+              class="node-actions-icon"
+            />
           </FeatherButton>
         </div>
       </div>
@@ -15,20 +24,30 @@
       <div class="search-container feather-col-6">
         <div class="feather-row">
           <div class="search-filter-column">
-            <FeatherInput v-model="currentSearch" @update:modelValue="searchFilterHandler" label="Search node label">
+            <FeatherInput
+              v-model="currentSearch"
+              @update:modelValue="searchFilterHandler"
+              label="Search node label"
+            >
               <template #pre>
                 <FeatherIcon :icon="icons.Search" />
               </template>
             </FeatherInput>
           </div>
           <div class="filter-icon-wrapper">
-            <FeatherIcon :icon="FilterAlt" />
+            <FeatherIcon
+              :icon="FilterAlt"
+              @click="() => nodeStructureStore.openInstancesDrawerModal2()"
+            />
           </div>
           <div class="feather-col-3 chip-container">
             <FeatherChipList label="Tags">
               <FeatherChip>
                 <template v-slot:icon>
-                  <FeatherIcon :icon="cancelIcon" class="icon" />
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                  />
                 </template>
                 {{ "tag" }}
               </FeatherChip>
@@ -45,49 +64,100 @@
     </div>
     <div class="feather-row">
       <div class="feather-col-12">
-        <div id="wrap" class="node-table">
-          <table :class="tableCssClasses" summary="Nodes">
-            <thead >
+        <div
+          id="wrap"
+          class="node-table"
+        >
+          <table
+            :class="tableCssClasses"
+            summary="Nodes"
+          >
+            <thead>
               <tr>
                 <th scope="column" />
-                <template v-for="column in nodeStructureStore.columns" :key="column.id">
-                  <FeatherSortHeader scope="col" :property="column.id" :sort="sortStateForId(column.id)"
-                    v-on:sort-changed="sortChanged" v-if="column.selected && column.id !== 'ipaddress'">{{ column.label
-                    }}</FeatherSortHeader>
+                <template
+                  v-for="column in nodeStructureStore.columns"
+                  :key="column.id"
+                >
+                  <FeatherSortHeader
+                    scope="col"
+                    :property="column.id"
+                    :sort="sortStateForId(column.id)"
+                    v-on:sort-changed="sortChanged"
+                    v-if="column.selected && column.id !== 'ipaddress'"
+                    >{{ column.label
+                    }}</FeatherSortHeader
+                  >
 
                   <th v-if="column.selected && column.id === 'ipaddress'">{{ column.label }}</th>
                 </template>
               </tr>
             </thead>
             <tbody>
-              <tr v-for="node in nodes" :key="node.id">
+              <tr
+                v-for="node in nodes"
+                :key="node.id"
+              >
                 <td>
-                  <NodeActionsDropdown :baseHref="mainMenu.baseHref" :node="node" :triggerNodeInfo="onNodeInfo" />
+                  <NodeActionsDropdown
+                    :baseHref="mainMenu.baseHref"
+                    :node="node"
+                    :triggerNodeInfo="onNodeInfo"
+                  />
                 </td>
 
-                <template v-for="column in nodeStructureStore.columns" :key="column.id">
+                <template
+                  v-for="column in nodeStructureStore.columns"
+                  :key="column.id"
+                >
                   <td v-if="isSelectedColumn(column, 'id')">
-                    <a :href="computeNodeLink(node.id)" @click="onNodeLinkClick(node.id)" target="_blank">
+                    <a
+                      :href="computeNodeLink(node.id)"
+                      @click="onNodeLinkClick(node.id)"
+                      target="_blank"
+                    >
                       {{ node.id }}
                     </a>
                   </td>
                   <td v-if="isSelectedColumn(column, 'label')">
-                    <a :href="computeNodeLink(node.id)" @click="onNodeLinkClick(node.id)" target="_blank">
+                    <a
+                      :href="computeNodeLink(node.id)"
+                      @click="onNodeLinkClick(node.id)"
+                      target="_blank"
+                    >
                       {{ node.label }}
                     </a>
                   </td>
 
-                  <ManagementIPTooltipCell v-if="isSelectedColumn(column, 'ipaddress')"
-                    :computeNodeIpInterfaceLink="computeNodeIpInterfaceLink" :node="node"
-                    :nodeToIpInterfaceMap="nodeStore.nodeToIpInterfaceMap" />
+                  <ManagementIPTooltipCell
+                    v-if="isSelectedColumn(column, 'ipaddress')"
+                    :computeNodeIpInterfaceLink="computeNodeIpInterfaceLink"
+                    :node="node"
+                    :nodeToIpInterfaceMap="nodeStore.nodeToIpInterfaceMap"
+                  />
 
                   <td v-if="isSelectedColumn(column, 'location')">{{ node.location }}</td>
 
-                  <NodeTooltipCell v-if="isSelectedColumn(column, 'foreignSource')" :text="node.foreignSource" />
-                  <NodeTooltipCell v-if="isSelectedColumn(column, 'foreignId')" :text="node.foreignId" />
-                  <NodeTooltipCell v-if="isSelectedColumn(column, 'sysContact')" :text="node.sysContact" />
-                  <NodeTooltipCell v-if="isSelectedColumn(column, 'sysLocation')" :text="node.sysLocation" />
-                  <NodeTooltipCell v-if="isSelectedColumn(column, 'sysDescription')" :text="node.sysDescription" />
+                  <NodeTooltipCell
+                    v-if="isSelectedColumn(column, 'foreignSource')"
+                    :text="node.foreignSource"
+                  />
+                  <NodeTooltipCell
+                    v-if="isSelectedColumn(column, 'foreignId')"
+                    :text="node.foreignId"
+                  />
+                  <NodeTooltipCell
+                    v-if="isSelectedColumn(column, 'sysContact')"
+                    :text="node.sysContact"
+                  />
+                  <NodeTooltipCell
+                    v-if="isSelectedColumn(column, 'sysLocation')"
+                    :text="node.sysLocation"
+                  />
+                  <NodeTooltipCell
+                    v-if="isSelectedColumn(column, 'sysDescription')"
+                    :text="node.sysDescription"
+                  />
 
                   <td v-if="isSelectedColumn(column, 'flows')">
                     <FlowTooltipCell :node="node" />
@@ -99,15 +169,29 @@
         </div>
       </div>
     </div>
-    <FeatherPagination v-model="pageNumber" :pageSize="queryParameters.limit" :total="nodeStore.totalCount"
-      @update:modelValue="updatePageNumber" @update:pageSize="updatePageSize" />
+    <FeatherPagination
+      v-model="pageNumber"
+      :pageSize="queryParameters.limit"
+      :total="nodeStore.totalCount"
+      @update:modelValue="updatePageNumber"
+      @update:pageSize="updatePageSize"
+    />
   </div>
-  <NodeDetailsDialog :computeNodeLink="computeNodeLink" :computeNodeIpInterfaceLink="computeNodeIpInterfaceLink"
-    @close="dialogVisible = false" :visible="dialogVisible" :node="dialogNode">
+  <NodeDetailsDialog
+    :computeNodeLink="computeNodeLink"
+    :computeNodeIpInterfaceLink="computeNodeIpInterfaceLink"
+    @close="dialogVisible = false"
+    :visible="dialogVisible"
+    :node="dialogNode"
+  >
   </NodeDetailsDialog>
 
-  <NodePreferencesDialog @close="preferencesVisible = false" :visible="preferencesVisible">
+  <NodePreferencesDialog
+    @close="preferencesVisible = false"
+    :visible="preferencesVisible"
+  >
   </NodePreferencesDialog>
+  <NodesAdvanceFiltersDrawer />
 </template>
 
 <script setup lang="ts">
@@ -146,6 +230,7 @@ import Search from '@featherds/icon/action/Search'
 import FilterAlt from '@featherds/icon/action/FilterAlt'
 import Cancel from '@featherds/icon/navigation/Cancel'
 import { FeatherChip, FeatherChipList } from '@featherds/chips'
+import NodesAdvanceFiltersDrawer from './NodesAdvanceFiltersDrawer.vue'
 
 const menuStore = useMenuStore()
 const nodeStructureStore = useNodeStructureStore()
@@ -221,6 +306,11 @@ const updatePageSize = (size: number) => {
 
   updateQuery()
 }
+
+// const openFilterDrawer = () => {
+//   nodeStructureStore.toggleDrawer(true)
+//   nodeStructureStore.toggleAdvanceFilterDrawer(true)
+// }
 
 const sortChanged = (sortObj: FeatherSortObject) => {
   // currently we don't support sorting by ipaddress
@@ -410,3 +500,4 @@ table {
   align-items: center;
 }
 </style>
+
