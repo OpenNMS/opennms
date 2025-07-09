@@ -46,7 +46,7 @@ defaults to 3600 secs.
 <4> SPoG alarms export is enabled by default. For testing purposes, it can be disabled by setting this value to false.
 <5> SPoG events export is enabled by default. For testing purposes, it can be disabled by setting this value to false.
 <6> SPoG inventory export is enabled by default. For testing purposes, it can be disabled by setting this value to false.
-<7> The <<deep-dive/zenith-connect/introduction.adoc#zenith-connect-configuration, Zenith Connect>> feature is disabled by default for gRPC Exporter. It can be enabled by setting this value to true.
+<7> The <<deep-dive/zenith-connect/introduction.adoc#zenith-connect-configuration, Zenith Connect>> feature is disabled by default for gRPC Exporter, it can be enabled by setting this value to true.
 
 == Enable gRPC Exporter
 
