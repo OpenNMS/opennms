@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.enlinkd</artifactId>
-    <version>33.1.8-SNAPSHOT</version>
+    <version>33.1.8</version>
   </parent>
   <properties>
     <bundle.symbolicName>org.opennms.features.enlinkd.shell</bundle.symbolicName>
