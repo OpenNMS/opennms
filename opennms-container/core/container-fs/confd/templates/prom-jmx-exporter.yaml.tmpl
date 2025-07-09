@@ -38,13 +38,6 @@ excludeObjectNames:
 {{end -}}
 {{end -}}
 
-# The specific list of scheduled objects for Pollerd and Collectd are not exposed to Prometheus.
-excludeObjectNameAttributes:
-  "OpenNMS:Name=Pollerd":
-    - "Schedule"
-  "OpenNMS:Name=Collectd":
-    - "Schedule"
-
 rules:
   - pattern: "OpenNMS.*"
   - pattern: "org.opennms.*"
