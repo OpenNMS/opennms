@@ -1,0 +1,241 @@
+
+= Monitoring with Prometheus
+
+Running OpenNMS {page-component-title} components in a larger monitoring application stack requires monitoring.
+To give people operating these components a unified view, a Prometheus compatible metrics endpoint can be exposed for the Core, Minion and Sentinel applications which allows engineers insights for sizing, troubleshooting and capacity planing.
+We recommend using the https://github.com/prometheus/jmx_exporter[JMX Prometheus Exporter] agent which exposes our JMX management beans as a Prometheus compatible metrics endpoint.
+
+== Native application deployment
+
+You can install the JMX Prometheus Exporter in native deployments with RPM or DEB packages.
+This section describes how you can install and configure the JMX Prometheus Exporter in the same way as it is working in the container images.
+
+[{tabs}]
+====
+Core::
++
+--
+.Step 1: Install the JMX Prometheus agent
+[source, bash]
+[subs="verbatim,attributes"]
+----
+install -g opennms -o opennms -d /opt/prom-jmx-exporter
+sudo -u opennms curl -fssL https://github.com/prometheus/jmx_exporter/releases/download/{jmx-prom-exporter-version}/jmx_prometheus_javaagent-{jmx-prom-exporter-version}.jar -o /opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar
+----
+
+.Step 2: Create a default configuration in `/opt/prom-jmx-exporter/config.yaml`
+[source, yaml]
+----
+cat <<EOF | sudo -u opennms tee /opt/prom-jmx-exporter/config.yaml
+startDelaySeconds: 0
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+autoExcludeObjectNameAttributes: true
+
+# The specific list of scheduled objects for Pollerd and Collectd are not exposed to Prometheus.
+excludeObjectNameAttributes:
+  "OpenNMS:Name=Pollerd":
+    - "Schedule"
+  "OpenNMS:Name=Collectd":
+    - "Schedule"
+
+includeObjectNames:
+  - "java.lang:*"
+  - "OpenNMS:*"
+  - "org.opennms.*:*"
+  - "org.opennms.newts:name=ring-buffer*"
+  - "org.opennms.newts:name=repository.samples-inserted*"
+  - "org.opennms.core.ipc.rpc:*"
+# The specific list of scheduled objects for Pollerd and Collectd are not exposed to Prometheus.
+excludeObjectNameAttributes:
+  "OpenNMS:Name=Pollerd":
+    - "Schedule"
+  "OpenNMS:Name=Collectd":
+    - "Schedule"
+
+rules:
+  - pattern: "OpenNMS.*"
+  - pattern: "org.opennms.*"
+  - pattern: "com.zaxxer.hikari.*"
+  - pattern: "org.opennms.core.ipc.rpc<name=([^.,]*).([^.,]*).([^.,]*).*Count*"
+    name: org_opennms_core_ipc_rpc_count
+    labels:
+      destination: $1
+      type: $2
+      metric: $3
+  - pattern: "org.opennms.core.ipc.rpc<name=([^.,]*).([^.,]*).([^.,]*).*Mean*"
+    name: org_opennms_core_ipc_rpc_mean
+    labels:
+      destination: $1
+      type: $2
+      metric: $3
+EOF
+----
+
+.Step 3: Add the Java agent to JAVA_OPTS in `$\{OPENNMS_HOME}/opennms/etc/opennms.conf`
+[source, bash]
+----
+ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -javaagent:/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar=9299:/opt/prom-jmx-exporter/config.yaml
+----
+
+TIP: Replace `$\{OPENNMS_HOME}` with `/opt/opennms` on RPM and `/usr/share/opennms` on Debian-based Linux distributions.
+
+.Step 4: Restart the Core service
+[source]
+----
+systemctl restart opennms
+----
+
+.Step 5: Verify if the JMX Prometheus agent is started
+[source, bash]
+----
+ss -lnpt sport = :9299      # Verify if the TCP port 9299 listener is started
+curl localhost:9299/metrics # Test the metrics endpoint for Prometheus
+----
+
+--
+Minion::
++
+--
+.Step 1: Install the JMX Prometheus agent
+[source, bash]
+[subs="verbatim,attributes"]
+----
+install -g minion -o minion -d /opt/prom-jmx-exporter
+sudo -u minion curl -fssL https://github.com/prometheus/jmx_exporter/releases/download/{jmx-prom-exporter-version}/jmx_prometheus_javaagent-{jmx-prom-exporter-version}.jar -o /opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar
+----
+
+.Step 2: Create a default configuration in `/opt/prom-jmx-exporter/config.yaml`
+[source, yaml]
+----
+cat <<EOF | sudo -u minion tee /opt/prom-jmx-exporter/config.yaml
+startDelaySeconds: 10
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+autoExcludeObjectNameAttributes: true
+
+includeObjectNames:
+  - "java.lang:*"
+  - "org.opennms.*:*"
+  - "kafka.producer:*"
+  - "org.apache.camel:*"
+
+rules:
+  - pattern: org\.opennms\..+\.(.+)<name=(.+)><>Value
+    name: minion_$1_$2
+    type: GAUGE
+
+  - pattern: org\.opennms\..+\.(.+)<name=(.+)><>Count
+    name: minion_$1_$2_count
+    type: COUNTER
+
+  - pattern: org\.opennms\..+\.(.+)<name=(.+)><>(\d+)thPercentile
+    name: minion_$1_$2
+    type: GAUGE
+    labels:
+      quantile: "0.$3"
+EOF
+----
+
+.Step 3: Add the Java agent to JAVA_OPTS in `$\{MINION_HOME}/minion/etc/minion.conf`
+[source, bash]
+----
+export JAVA_OPTS=-javaagent:/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar=9299:/opt/prom-jmx-exporter/config.yaml
+----
+
+TIP: Replace `$\{MINION_HOME}` with `/opt/minion` on RPM and `/usr/share/minion` on Debian-based Linux distributions.
+
+.Step 4: Restart the Minion
+[source]
+----
+systemctl restart minion
+----
+
+.Step 5: Verify if the JMX Prometheus agent is started
+[source, bash]
+----
+ss -lnpt sport = :9299      # Verify if the TCP port 9299 listener is started
+curl localhost:9299/metrics # Test the metrics endpoint for Prometheus
+----
+--
+Sentinel::
++
+--
+.Step 1: Install the JMX Prometheus agent
+[source, bash]
+[subs="verbatim,attributes"]
+----
+install -g sentinel -o sentinel -d /opt/prom-jmx-exporter
+sudo -u sentinel curl -fssL https://github.com/prometheus/jmx_exporter/releases/download/{jmx-prom-exporter-version}/jmx_prometheus_javaagent-{jmx-prom-exporter-version}.jar -o /opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar
+
+----
+
+.Step 2: Create a default configuration in `/opt/prom-jmx-exporter/config.yaml`
+[source, yaml]
+----
+cat <<EOF | sudo -u sentinel tee /opt/prom-jmx-exporter/config.yaml
+startDelaySeconds: 10
+lowercaseOutputName: true
+lowercaseOutputLabelNames: true
+autoExcludeObjectNameAttributes: true
+
+includeObjectNames:
+  - "java.lang:*"
+  - "org.opennms.*:*"
+  - "kafka.producer:*"
+  - "org.apache.camel:*"
+
+rules:
+  - pattern: org\.opennms\..+\.(.+)<name=(.+)><>Value
+    name: sentinel_$1_$2
+    type: GAUGE
+
+  - pattern: org\.opennms\..+\.(.+)<name=(.+)><>Count
+    name: sentinel_$1_$2_count
+    type: COUNTER
+
+  - pattern: org\.opennms\..+\.(.+)<name=(.+)><>(\d+)thPercentile
+    name: sentinel_$1_$2
+    type: GAUGE
+    labels:
+      quantile: "0.$3"
+EOF
+----
+
+.Step 3: Add the Java agent to JAVA_OPTS in `$\{SENTINEL_HOME}/sentinel/etc/sentinel.conf`
+[source, bash]
+----
+export JAVA_OPTS=-javaagent:/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar=9299:/opt/prom-jmx-exporter/config.yaml
+----
+
+TIP: Replace `$\{SENTINEL_HOME}` with `/opt/sentinel` on RPM and `/usr/share/sentinel` on Debian-based Linux distributions.
+
+.Step 4: Restart the Sentinel
+[source]
+----
+systemctl restart sentinel
+----
+
+.Step 5: Verify if the JMX Prometheus agent is started
+[source, bash]
+----
+ss -lnpt sport = :9299      # Verify if the TCP port 9299 listener is started
+curl localhost:9299/metrics # Test the metrics endpoint for Prometheus
+----
+--
+====
+
+== Container based deployment
+
+In the container images the JMX Prometheus Exporter is bundled with the container image and we also provide a basic configuration that exposes the most important metrics.
+The metric exporter is disabled by default and you can enable it by setting the environment variable `PROM_JMX_EXPORTER_ENABLED=true`.
+Configure your Prometheus to scrape the metrics from the HTTP endpoint http://your-app:9299/metrics.
+Replace `your-app` with the host or domain name where your Core, Minion or Sentinel is running in your network.
+The environment variables can be used for Core, Minion and Sentinel in the same way and are documented in the xref:reference:configuration/core-docker.adoc#core-oci-confd[docker environment] section.
+
+If you need to customize the JMX Prometheus Exporter configuration you have two options.
+You can use Confd which is running in our containers to render configuration files or use just inject your own `config.yaml` file to path configured with `PROM_JMX_EXPORTER_CONFIG`.
+
+IMPORTANT: In confd you have access to some basic JMX Prometheus Exporter configurations. If you need a more sophisticated configuration with JMX rules, you need to inject your own `config.yaml` file.
+
+For configuring container deployments with Confd refer to xref:reference:configuration/core-docker.adoc#core-oci-confd[Core Confd], xref:reference:configuration/minion-confd/minion-confd.adoc#minion-confd[Minion Confd], and xref:reference:configuration/sentinel-features.adoc#sentinel-oci-confd[Sentinel Confd].
