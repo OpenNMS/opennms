@@ -17,7 +17,7 @@ admin@opennms()> config:property-set bsm.host bsm.onmshs.local:1443 <1>
 admin@opennms()> config:property-set spog.host nms-inventory.onmshs.local:1443 <2>
 admin@opennms()> config:property-set tenant.id opennms-prime <3>
 admin@opennms()> config:property-set tls.cert.path /opt/opennms/etc/tls.cert <4>
-admin@opennms()> config:property-set opennms.zenithConnect.enabled true <5>
+admin@opennms()> config:property-set zenithConnect.enabled true <5>
 admin@opennms()> config:update
 ----
 
