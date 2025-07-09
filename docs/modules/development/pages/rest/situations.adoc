@@ -1,0 +1,81 @@
+= Situations
+
+== GETs (reading data)
+
+[caption=]
+.Situation API GET functions
+[cols="1,3"]
+|===
+| Resource  | Description
+| /api/v2/situations?limit=2
+| Get a list of situations.
+The default for `offset` is `0`, and the default for `limit` is `10`.
+To get all results, use `limit=0` as a parameter on the URL (for example, `GET /api/v2/situations?limit=2`).
+|===
+
+== POSTs (creating and modifying situations)
+
+`POST` requires form data using `application/x-www-form-urlencoded` as a `Content-Type`.
+
+
+[caption=""]
+.Situation API Post functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| /api/v2/situations/create
+a|
+Create situation.
+
+* `alarmIdList` (List): Comma‑separated list of alarm IDs to associate with the new situation.
+* `description` (String): User‑friendly description of the situation.
+* `diagnosticText` (String): Diagnostic information about the situation.
+
+| /api/v2/situations/associateAlarm
+a|
+Associate Alarm with Situation.
+
+* `situationId` Integer – ID of the existing situation..
+* `alarmIdList` List – Comma-separated list of alarm IDs to add..
+* `feedback`  (optional): String – Feedback message.
+
+| /api/v2/situations/clear
+a|
+Clear Single Situation .
+
+* `situationId` Integer – ID of the situation to clear
+
+|  /api/v2/situations/alarms/clear
+a|
+Remove from situation and clean multiple Alarms .
+
+* `situationId` Integer – ID of the existing situation.
+* `alarmIdList` List – Comma-separated list of alarm IDs to remove from situation and clear.
+
+| /api/v2/situations/accepted/{id}
+a|
+Accept Situation .
+
+* `id` Integer (`Path Parameter`) – The ID of the situation to accept
+|===
+
+== DELETE (Remove Alarms from situation)
+
+`DELETE` requires form data using `application/x-www-form-urlencoded` as a `Content-Type`.
+
+
+
+[caption=""]
+.Situation API Delete functions
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| /api/v2/situations/removeAlarm
+a|
+Remove Alarm from situation.
+
+* `situationId` Integer – ID of the existing situation.
+* `alarmIdList` List – Comma-separated list of alarm IDs to remove from the situation.
+|===
