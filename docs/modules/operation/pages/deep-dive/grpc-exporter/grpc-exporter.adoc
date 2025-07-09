@@ -17,7 +17,6 @@ admin@opennms()> config:property-set bsm.host bsm.onmshs.local:1443 <1>
 admin@opennms()> config:property-set spog.host nms-inventory.onmshs.local:1443 <2>
 admin@opennms()> config:property-set tenant.id opennms-prime <3>
 admin@opennms()> config:property-set tls.cert.path /opt/opennms/etc/tls.cert <4>
-admin@opennms()> config:property-set zenithConnect.enabled true <5>
 admin@opennms()> config:update
 ----
 
@@ -25,7 +24,6 @@ admin@opennms()> config:update
 <2> Set the hostname of the external gRPC application for the SPoG
 <3> Set tenant id for the data being sent, defaults to `opennms-prime`
 <4> Configure the path to the TLS certificate.
-<5> Set`true` to enable the <<deep-dive/zenith-connect/introduction.adoc#zenith-connect-configuration, Zenith Connect>> feature for gRPC Exporter, defaults to `false`.
 
 === Optional Configuration
 [source, karaf]
@@ -38,6 +36,7 @@ admin@opennms()> config:property-set snapshot.interval 3600 <3>
 admin@opennms()> config:property-set spog.alarms.export true <4>
 admin@opennms()> config:property-set spog.events.export true <5>
 admin@opennms()> config:property-set spog.inventory.export true <6>
+admin@opennms()> config:property-set zenith.connect.enabled false <7>
 ----
 
 <1> TLS is enabled by default. For testing purposes, it can be disabled by setting this value to false.
@@ -47,6 +46,7 @@ defaults to 3600 secs.
 <4> SPoG alarms export is enabled by default. For testing purposes, it can be disabled by setting this value to false.
 <5> SPoG events export is enabled by default. For testing purposes, it can be disabled by setting this value to false.
 <6> SPoG inventory export is enabled by default. For testing purposes, it can be disabled by setting this value to false.
+<7> The <<deep-dive/zenith-connect/introduction.adoc#zenith-connect-configuration, Zenith Connect>> feature is disabled by default for gRPC Exporter. It can be enabled by setting this value to true.
 
 == Enable gRPC Exporter
 
