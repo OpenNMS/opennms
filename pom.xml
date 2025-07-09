@@ -1748,7 +1748,7 @@
     <commonsDbcpVersion>1.4</commonsDbcpVersion>
     <commonsDigesterVersion>2.1</commonsDigesterVersion>
     <commonsExecVersion>1.4.0</commonsExecVersion>
-    <commonsFileuploadVersion>1.5</commonsFileuploadVersion>
+    <commonsFileuploadVersion>1.6.0</commonsFileuploadVersion>
     <commonsJexlVersion>2.1.1</commonsJexlVersion>
     <commonsJexl3Version>3.3</commonsJexl3Version>
     <commonsJxpathVersion>1.3</commonsJxpathVersion>
