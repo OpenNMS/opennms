@@ -328,6 +328,7 @@ admin@sentinel> config:update
 Please note, that the file `/opt/sentinel/etc/junos-telemetry-interface.groovy` must also be provided manually,
 e.g. by manually copying it over from _{page-component-title}_.
 
+[[sentinel-oci-confd]]
 == Configure Sentinel via confd
 
 === Mount
@@ -405,3 +406,23 @@ Config specified will be written to `deploy/confd-flows-feature.xml`.
 org.opennms.instance.id: "<instance id>"
 ----
 Config specified will be written to `etc/custom.system.properties`.
+
+=== JMX Prometheus Exporter
+
+.JMX Exporter with a Confd YAML configuration file
+[source, yaml]
+----
+java:
+  agent:
+    prom-jmx-exporter:
+      startDelaySeconds: 0
+      lowerCaseOutputName: true
+      lowercaseOutputLabelNames: true
+      autoExcludeObjectNameAttributes: true
+      includeObjectNames:
+        - "java.lang:*"
+        - "org.opennms.*:*"
+        - "kafka.producer:*"
+      excludeObjectNames:
+        - "org.apache.camel:*"
+----

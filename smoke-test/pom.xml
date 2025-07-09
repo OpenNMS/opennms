@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>33.1.7</version>
+  <version>33.1.8</version>
   <name>OpenNMS Smoke Test</name>
   <url>http://opennms.org/</url>
   <description>Smoke Test APIs for OpenNMS</description>
@@ -1022,12 +1022,12 @@
 
   <distributionManagement>
     <snapshotRepository>
-      <id>opennms-ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <id>central-portal</id>
+      <url>https://central.sonatype.com/repository/maven-snapshots</url>
     </snapshotRepository>
     <repository>
-      <id>opennms-ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+      <id>central-portal</id>
+      <url>https://central.sonatype.com/repository/maven-releases/</url>
     </repository>
   </distributionManagement>
 </project>

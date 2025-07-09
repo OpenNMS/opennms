@@ -26,7 +26,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>33.1.7</version>
+  <version>33.1.8</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -1673,7 +1673,7 @@
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>33.1.7</opennms.osgi.version>
+    <opennms.osgi.version>33.1.8</opennms.osgi.version>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
@@ -1746,7 +1746,7 @@
     <!-- Match (or beat) Newts version -->
     <cassandraVersion>4.17.0</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
-    <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
+    <commonsBeanutilsVersion>1.11.0</commonsBeanutilsVersion>
     <commonsChainVersion>1.2</commonsChainVersion>
     <commonsCliVersion>1.7.0</commonsCliVersion>
     <commonsCodecVersion>1.16.1</commonsCodecVersion>
@@ -1790,7 +1790,7 @@
     <elasticsearchNettyVersion>${netty4Version}</elasticsearchNettyVersion>
     <elasticsearchDriftPluginVersion>2.0.5</elasticsearchDriftPluginVersion>
     <elasticsearchTargetVersion>7.17.9</elasticsearchTargetVersion>
-    <esapiVersion>2.4.0.0</esapiVersion>
+    <esapiVersion>2.5.2.0</esapiVersion>
     <felixBridgeVersion>4.1.6</felixBridgeVersion>
     <felixProxyVersion>3.0.6</felixProxyVersion>
     <fopVersion>2.10</fopVersion>
@@ -2051,8 +2051,8 @@
       <repositories>
         <!-- Disable snapshots for our own artifacts for release builds -->
         <repository>
-          <id>opennms-ossrh</id>
-          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+          <id>central-portal</id>
+          <url>https://central.sonatype.com/repository/maven-snapshots</url>
           <releases>
             <enabled>true</enabled>
             <updatePolicy>never</updatePolicy>
@@ -2199,8 +2199,8 @@
           </snapshots>
         </repository>
         <repository>
-          <id>opennms-ossrh</id>
-          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+          <id>central-portal</id>
+          <url>https://central.sonatype.com/repository/maven-snapshots</url>
           <releases>
             <enabled>false</enabled>
           </releases>
@@ -5607,8 +5607,8 @@
       </snapshots>
     </repository>
     <repository>
-      <id>opennms-ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <id>central-portal</id>
+      <url>https://central.sonatype.com/repository/maven-snapshots</url>
       <releases>
         <enabled>false</enabled>
       </releases>
@@ -5619,12 +5619,12 @@
   </repositories>
   <distributionManagement>
     <snapshotRepository>
-      <id>opennms-ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <id>central-portal</id>
+      <url>https://central.sonatype.com/repository/maven-snapshots</url>
     </snapshotRepository>
     <repository>
-      <id>opennms-ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+      <id>central-portal</id>
+      <url>https://central.sonatype.com/repository/maven-releases</url>
     </repository>
   </distributionManagement>
 </project>
