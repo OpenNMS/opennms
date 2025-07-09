@@ -10,6 +10,10 @@
       <outputDirectory></outputDirectory>
       <fileMode>0644</fileMode>
       <directoryMode>0755</directoryMode>
+      <excludes>
+        <exclude>**/zookeeper/3.4.14</exclude>
+        <exclude>**/zookeeper/3.4.14/*</exclude>
+      </excludes>
     </fileSet>
   </fileSets>
 </assembly>

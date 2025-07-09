@@ -30,6 +30,8 @@
         <exclude>**/commons-io/commons-io/2.8.0/*</exclude>
         <exclude>**/commons-io/commons-io/2.13.0</exclude>
         <exclude>**/commons-io/commons-io/2.13.0/*</exclude>
+        <exclude>**/zookeeper/3.4.14</exclude>
+        <exclude>**/zookeeper/3.4.14/*</exclude>
       </excludes>
     </fileSet>
   </fileSets>
