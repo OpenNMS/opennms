@@ -83,7 +83,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
     @Override
     public List<DeviceConfig> findConfigsForInterfaceSortedByDate(OnmsIpInterface ipInterface, String serviceName) {
 
-        return find("from DeviceConfig dc where dc.lastUpdated is not null AND dc.ipInterface.id = ? AND serviceName = ? ORDER BY lastUpdated DESC",
+        return find("from DeviceConfig dc where dc.lastUpdated is not null AND dc.ipInterface.id = ?1 AND serviceName = ?2 ORDER BY lastUpdated DESC",
                 ipInterface.getId(), serviceName);
     }
 
@@ -114,11 +114,11 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
         if (!Strings.isNullOrEmpty(serviceName)) {
             deviceConfigs =
                     findObjects(DeviceConfig.class,
-                            "from DeviceConfig dc WHERE dc.ipInterface.id = ? AND serviceName = ? " +
+                            "from DeviceConfig dc WHERE dc.ipInterface.id = ?1 AND serviceName = ?2 " +
                                     "ORDER BY lastUpdated DESC LIMIT 1", ipInterface.getId(), serviceName);
         } else {
             deviceConfigs = findObjects(DeviceConfig.class,
-                    "from DeviceConfig dc WHERE dc.ipInterface.id = ? AND serviceName is NULL " +
+                    "from DeviceConfig dc WHERE dc.ipInterface.id = ?1 AND serviceName is NULL " +
                             "ORDER BY lastUpdated DESC LIMIT 1", ipInterface.getId());
         }
 
@@ -222,7 +222,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
             hql +=
                 "\n" +
                 "INNER JOIN ip.node AS node\n" +
-                "WHERE (node.label LIKE ? OR ip.ipAddress LIKE ?)";
+                "WHERE (node.label LIKE ?1 OR ip.ipAddress LIKE ?2)";
         }
 
         if (statuses != null && !statuses.isEmpty()) {
@@ -243,7 +243,7 @@ public class DeviceConfigDaoImpl extends AbstractDaoHibernate<DeviceConfig, Long
 
     @Override
     public List<DeviceConfig> getAllDeviceConfigsWithAnInterfaceId(Integer ipInterfaceId) {
-        return find("from DeviceConfig dc where dc.ipInterface.id = ? ",
+        return find("from DeviceConfig dc where dc.ipInterface.id = ?1 ",
                 ipInterfaceId);
     }
 

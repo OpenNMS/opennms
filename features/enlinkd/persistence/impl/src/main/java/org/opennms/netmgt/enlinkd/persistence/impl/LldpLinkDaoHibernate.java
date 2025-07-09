@@ -49,7 +49,7 @@ public class LldpLinkDaoHibernate extends AbstractDaoHibernate<LldpLink, Integer
     /** {@inheritDoc} */
     @Override
     public LldpLink get(OnmsNode node, Integer lldpRemLocalPortNum, Integer lldpRemIndex) {
-        return findUnique("from LldpLink as lldpLink where lldpLink.node = ? and lldpLink.lldpRemLocalPortNum = ? and lldpRemIndex = ?", node, lldpRemLocalPortNum, lldpRemIndex);
+        return findUnique("from LldpLink as lldpLink where lldpLink.node = ?1 and lldpLink.lldpRemLocalPortNum = ?2 and lldpRemIndex = ?3", node, lldpRemLocalPortNum, lldpRemIndex);
     }
 
     /** {@inheritDoc} */
@@ -58,25 +58,25 @@ public class LldpLinkDaoHibernate extends AbstractDaoHibernate<LldpLink, Integer
         Assert.notNull(nodeId, "nodeId cannot be null");
         Assert.notNull(lldpRemLocalPortNum, "lldpRemLocalPortNum cannot be null");
         Assert.notNull(lldpRemIndex, "lldpRemIndex cannot be null");
-        return findUnique("from LldpLink as lldpLink where lldpLink.node.id = ? and lldpLink.lldpRemLocalPortNum = ? and lldpLink.lldpRemIndex = ?", nodeId, lldpRemLocalPortNum, lldpRemIndex);
+        return findUnique("from LldpLink as lldpLink where lldpLink.node.id = ?1 and lldpLink.lldpRemLocalPortNum = ?2 and lldpLink.lldpRemIndex = ?3", nodeId, lldpRemLocalPortNum, lldpRemIndex);
     }
     
     /** {@inheritDoc} */
     @Override
     public List<LldpLink> findByNodeId(Integer nodeId) {
         Assert.notNull(nodeId, "nodeId cannot be null");
-        return find("from LldpLink lldpLink where lldpLink.node.id = ?", nodeId);
+        return find("from LldpLink lldpLink where lldpLink.node.id = ?1", nodeId);
     }
 
     @Override
     public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-        getHibernateTemplate().bulkUpdate("delete from LldpLink lldpLink where lldpLink.node.id = ? and lldpLink.lldpLinkLastPollTime < ?",
+        getHibernateTemplate().bulkUpdate("delete from LldpLink lldpLink where lldpLink.node.id = ?1 and lldpLink.lldpLinkLastPollTime < ?2",
                 nodeId, now);
     }
 
    @Override
    public void deleteByNodeId(Integer nodeId) {
-       getHibernateTemplate().bulkUpdate("delete from LldpLink lldpLink where lldpLink.node.id = ? ",
+       getHibernateTemplate().bulkUpdate("delete from LldpLink lldpLink where lldpLink.node.id = ?1 ",
                                          new Object[] {nodeId});
     }
 
@@ -113,7 +113,7 @@ public class LldpLinkDaoHibernate extends AbstractDaoHibernate<LldpLink, Integer
         Assert.notNull(portId, "portId may not be null");
 
         List<?> ifaces=
-                getHibernateTemplate().find("SELECT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.node.id = ? AND (LOWER(snmpIf.ifDescr) = LOWER(?) OR LOWER(snmpIf.ifName) = LOWER(?) OR snmpIf.physAddr = ?)",
+                getHibernateTemplate().find("SELECT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.node.id = ?1 AND (LOWER(snmpIf.ifDescr) = LOWER(?2) OR LOWER(snmpIf.ifName) = LOWER(?3) OR snmpIf.physAddr = ?4)",
                        nodeid,
                         portId,
                        portId,
@@ -122,11 +122,11 @@ public class LldpLinkDaoHibernate extends AbstractDaoHibernate<LldpLink, Integer
         if (ifaces.size() == 1) {
             return ((OnmsSnmpInterface) ifaces.iterator().next()).getIfIndex();
         }
-        ifaces = getHibernateTemplate().find("SELECT ipIf FROM OnmsIpInterface AS ipIf WHERE ipIf.node.id = ? AND ipIf.ipAddress = ?", nodeid, portId);
+        ifaces = getHibernateTemplate().find("SELECT ipIf FROM OnmsIpInterface AS ipIf WHERE ipIf.node.id = ?1 AND ipIf.ipAddress = ?2", nodeid, portId);
         if (ifaces.size() == 1) {
             OnmsIpInterface ipif = (OnmsIpInterface) ifaces.iterator().next();
             if (ipif.getSnmpInterface() != null) {
-                ifaces = getHibernateTemplate().find("SELECT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.id = ?)",
+                ifaces = getHibernateTemplate().find("SELECT snmpIf FROM OnmsSnmpInterface AS snmpIf WHERE snmpIf.id = ?1)",
                         ipif.getSnmpInterface().getId());
             }
             if (ifaces.size() == 1) {

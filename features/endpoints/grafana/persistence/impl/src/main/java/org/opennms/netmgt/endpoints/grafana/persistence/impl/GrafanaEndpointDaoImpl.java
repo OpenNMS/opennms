@@ -37,7 +37,7 @@ public class GrafanaEndpointDaoImpl extends AbstractDaoHibernate<GrafanaEndpoint
 
     @Override
     public GrafanaEndpoint getByUid(String endpointUid) {
-        final List<GrafanaEndpoint> endpoints = (List<GrafanaEndpoint>) getHibernateTemplate().find("select g from GrafanaEndpoint g where g.uid = ?", endpointUid);
+        final List<GrafanaEndpoint> endpoints = (List<GrafanaEndpoint>) getHibernateTemplate().find("select g from GrafanaEndpoint g where g.uid = ?1", endpointUid);
         if (endpoints.isEmpty()) {
             return null;
         }

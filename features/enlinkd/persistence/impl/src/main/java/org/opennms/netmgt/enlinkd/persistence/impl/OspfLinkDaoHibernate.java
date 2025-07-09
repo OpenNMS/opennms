@@ -49,7 +49,7 @@ public class OspfLinkDaoHibernate extends AbstractDaoHibernate<OspfLink, Integer
     @Override
     public OspfLink get(OnmsNode node, InetAddress ospfRemRouterId,
             InetAddress ospfRemIpAddr, Integer ospfRemAddressLessIndex) {
-        return findUnique("from OspfLink as ospfLink where ospfLink.node = ? and ospfLink.ospfRemRouterId = ? and ospfLink.ospfRemIpAddr = ? and ospfLink.ospfRemAddressLessIndex = ?",
+        return findUnique("from OspfLink as ospfLink where ospfLink.node = ?1 and ospfLink.ospfRemRouterId = ?2 and ospfLink.ospfRemIpAddr = ?3 and ospfLink.ospfRemAddressLessIndex = ?4",
                           node, ospfRemRouterId, ospfRemIpAddr,
                           ospfRemAddressLessIndex);
     }
@@ -63,7 +63,7 @@ public class OspfLinkDaoHibernate extends AbstractDaoHibernate<OspfLink, Integer
         Assert.notNull(ospfRemIpAddr, "ospfRemIpAddr cannot be null");
         Assert.notNull(ospfRemAddressLessIndex,
                        "ospfRemAddressLessIndex cannot be null");
-        return findUnique("from OspfLink as ospfLink where ospfLink.node.id = ? and ospfLink.ospfRemRouterId = ? and ospfLink.ospfRemIpAddr = ? and ospfLink.ospfRemAddressLessIndex = ?",
+        return findUnique("from OspfLink as ospfLink where ospfLink.node.id = ?1 and ospfLink.ospfRemRouterId = ?2 and ospfLink.ospfRemIpAddr = ?3 and ospfLink.ospfRemAddressLessIndex = ?4",
                           nodeId, ospfRemRouterId, ospfRemIpAddr,
                           ospfRemAddressLessIndex);
     }
@@ -72,18 +72,18 @@ public class OspfLinkDaoHibernate extends AbstractDaoHibernate<OspfLink, Integer
     @Override
     public List<OspfLink> findByNodeId(Integer nodeId) {
         Assert.notNull(nodeId, "nodeId cannot be null");
-        return find("from OspfLink ospfLink where ospfLink.node.id = ?", nodeId);
+        return find("from OspfLink ospfLink where ospfLink.node.id = ?1", nodeId);
     }
 
     @Override
     public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-        getHibernateTemplate().bulkUpdate("delete from OspfLink ospfLink where ospfLink.node.id = ? and ospfLinkLastPollTime < ?",
+        getHibernateTemplate().bulkUpdate("delete from OspfLink ospfLink where ospfLink.node.id = ?1 and ospfLinkLastPollTime < ?2",
                 nodeId, now);
     }    
     
     @Override
     public void deleteByNodeId(Integer nodeId) {
-        getHibernateTemplate().bulkUpdate("delete from OspfLink ospfLink where ospfLink.node.id = ? ",
+        getHibernateTemplate().bulkUpdate("delete from OspfLink ospfLink where ospfLink.node.id = ?1 ",
                                  new Object[] {nodeId});
     }
 

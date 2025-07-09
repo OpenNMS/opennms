@@ -49,28 +49,28 @@ public class OspfElementDaoHibernate extends AbstractDaoHibernate<OspfElement, I
      */
     @Override
     public OspfElement findByNodeId(Integer id) {
-        return findUnique("from OspfElement rec where rec.node.id = ?", id);
+        return findUnique("from OspfElement rec where rec.node.id = ?1", id);
     }
 
     @Override
     public OspfElement findByRouterId(InetAddress routerId) {
-        return findUnique("from OspfElement rec where rec.ospfRouterId = ?",
+        return findUnique("from OspfElement rec where rec.ospfRouterId = ?1",
                           routerId);
     }
 
     @Override
     public List<OspfElement> findAllByRouterId(InetAddress routerId) {
-        return find("from OspfElement rec where rec.ospfRouterId = ?", routerId);
+        return find("from OspfElement rec where rec.ospfRouterId = ?1", routerId);
     }
 
     @Override
     public List<OspfElement> findByRouterIdOfRelatedOspfLink(int nodeId) {
-        return find("from OspfElement rec where rec.ospfRouterId in (select l.ospfRemRouterId from OspfLink l where l.node.id = ?)", nodeId);
+        return find("from OspfElement rec where rec.ospfRouterId in (select l.ospfRemRouterId from OspfLink l where l.node.id = ?1)", nodeId);
     }
 
     @Override
     public void deleteByNodeId(Integer nodeId) {
-        getHibernateTemplate().bulkUpdate("delete from OspfElement rec where rec.node.id = ? ",
+        getHibernateTemplate().bulkUpdate("delete from OspfElement rec where rec.node.id = ?1 ",
                                  new Object[] {nodeId});
     }
 

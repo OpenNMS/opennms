@@ -44,7 +44,7 @@ public class GraphContainerDaoImpl extends HibernateDaoSupport implements GraphC
 
     @Override
     public GraphContainerEntity findContainerById(String containerId) {
-        final List<GraphContainerEntity> containers = (List<GraphContainerEntity>) getHibernateTemplate().find("Select ge from GraphContainerEntity ge where ge.namespace = ?", containerId);
+        final List<GraphContainerEntity> containers = (List<GraphContainerEntity>) getHibernateTemplate().find("Select ge from GraphContainerEntity ge where ge.namespace = ?1", containerId);
         if (containers.isEmpty()) {
             return null;
         }
@@ -58,7 +58,7 @@ public class GraphContainerDaoImpl extends HibernateDaoSupport implements GraphC
         // This may load unnecessary properties, but is probably insignificant at the moment.
         // Vertices and Edges are not loaded, as they are lazy loaded.
         final List<GraphContainerEntity> graphContainerEntities = (List<GraphContainerEntity>) getHibernateTemplate()
-                .find("select distinct ge from GraphContainerEntity ge join ge.properties join ge.graphs as graphs join graphs.properties where ge.namespace = ?", containerId);
+                .find("select distinct ge from GraphContainerEntity ge join ge.properties join ge.graphs as graphs join graphs.properties where ge.namespace = ?1", containerId);
         if (graphContainerEntities.isEmpty()) {
             return null;
         }

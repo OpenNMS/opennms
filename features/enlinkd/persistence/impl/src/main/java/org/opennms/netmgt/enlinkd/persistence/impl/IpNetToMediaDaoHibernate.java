@@ -39,42 +39,42 @@ public class IpNetToMediaDaoHibernate extends AbstractDaoHibernate<IpNetToMedia,
 
 	@Override
 	public List<IpNetToMedia> findBySourceNodeId(Integer id) {
-		return find("from IpNetToMedia rec where rec.sourceNode.id = ?",id);
+		return find("from IpNetToMedia rec where rec.sourceNode.id = ?1",id);
 	}
 
 	@Override
 	public IpNetToMedia getByNetAndPhysAddress(InetAddress netAddress,
 			String physAddress) {
-		return findUnique("from IpNetToMedia rec where rec.netAddress = ? and rec.physAddress = ?", netAddress, physAddress);
+		return findUnique("from IpNetToMedia rec where rec.netAddress = ?1 and rec.physAddress = ?2", netAddress, physAddress);
 	}
 
 	@Override
 	public void deleteBySourceNodeIdOlderThen(Integer nodeId, Date now) {
-		for (IpNetToMedia elem: find("from IpNetToMedia rec where rec.sourceNode.id = ? and rec.lastPollTime < ?",nodeId,now)) {
+		for (IpNetToMedia elem: find("from IpNetToMedia rec where rec.sourceNode.id = ?1 and rec.lastPollTime < ?2",nodeId,now)) {
 			delete(elem);
 		}
 	}
 
         @Override
         public void deleteBySourceNodeId(Integer nodeId) {
-                for (IpNetToMedia elem: find("from IpNetToMedia rec where rec.sourceNode.id = ? ",nodeId)) {
+                for (IpNetToMedia elem: find("from IpNetToMedia rec where rec.sourceNode.id = ?1 ",nodeId)) {
                         delete(elem);
                 }
         }
         
 	@Override
 	public List<IpNetToMedia> findByPhysAddress(String physAddress) {
-		return find("from IpNetToMedia rec where rec.physAddress = ?",  physAddress);
+		return find("from IpNetToMedia rec where rec.physAddress = ?1",  physAddress);
 	}
 
 	@Override
 	public List<IpNetToMedia> findByNetAddress(InetAddress netAddress) {
-		return find("from IpNetToMedia rec where rec.netAddress = ? ", netAddress);
+		return find("from IpNetToMedia rec where rec.netAddress = ?1 ", netAddress);
 	}
 
 	@Override
 	public List<IpNetToMedia> findByMacLinksOfNode(Integer nodeId) {
-		return find("from IpNetToMedia m where m.physAddress in (select l.macAddress from BridgeMacLink l where l.node.id = ?)",  nodeId);
+		return find("from IpNetToMedia m where m.physAddress in (select l.macAddress from BridgeMacLink l where l.node.id = ?1)",  nodeId);
 	}
 
 	@Override

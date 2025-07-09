@@ -50,7 +50,7 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
         Assert.notNull(node, "node cannot be null");
         Assert.notNull(cdpCacheifIndex, "cdpCacheifIndex cannot be null");
         Assert.notNull(cdpCacheDeviceIndex, "cdpCacheDeviceIndex cannot be null");
-        return findUnique("from CdpLink as cdpLink where cdpLink.node = ? and cdpLink.cdpCacheIfIndex = ? and cdpCacheDeviceIndex = ?", node, cdpCacheifIndex, cdpCacheDeviceIndex);
+        return findUnique("from CdpLink as cdpLink where cdpLink.node = ?1 and cdpLink.cdpCacheIfIndex = ?2 and cdpCacheDeviceIndex = ?3", node, cdpCacheifIndex, cdpCacheDeviceIndex);
     }
 
     /** {@inheritDoc} */
@@ -59,25 +59,25 @@ public class CdpLinkDaoHibernate extends AbstractDaoHibernate<CdpLink, Integer> 
         Assert.notNull(nodeId, "nodeId cannot be null");
         Assert.notNull(cdpCacheifIndex, "cdpCacheifIndex cannot be null");
         Assert.notNull(cdpCacheDeviceIndex, "cdpCacheDeviceIndex cannot be null");
-        return findUnique("from CdpLink as cdpLink where cdpLink.node.id = ? and cdpLink.cdpCacheIfIndex = ? and cdpCacheDeviceIndex = ?", nodeId, cdpCacheifIndex, cdpCacheDeviceIndex);
+        return findUnique("from CdpLink as cdpLink where cdpLink.node.id = ?1 and cdpLink.cdpCacheIfIndex = ?2 and cdpCacheDeviceIndex = ?3", nodeId, cdpCacheifIndex, cdpCacheDeviceIndex);
     }
     
     /** {@inheritDoc} */
     @Override
     public List<CdpLink> findByNodeId(Integer nodeId) {
         Assert.notNull(nodeId, "nodeId cannot be null");
-        return find("from CdpLink cdpLink where cdpLink.node.id = ?", nodeId);
+        return find("from CdpLink cdpLink where cdpLink.node.id = ?1", nodeId);
     }
 
     @Override
     public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-        getHibernateTemplate().bulkUpdate("delete from CdpLink cdpLink where cdpLink.node.id = ? and cdpLink.cdpLinkLastPollTime < ?",
+        getHibernateTemplate().bulkUpdate("delete from CdpLink cdpLink where cdpLink.node.id = ?1 and cdpLink.cdpLinkLastPollTime < ?2",
                 nodeId,now);
     }
 
     @Override
     public void deleteByNodeId(Integer nodeId) {
-        getHibernateTemplate().bulkUpdate("delete from CdpLink cdpLink where cdpLink.node.id = ? ",
+        getHibernateTemplate().bulkUpdate("delete from CdpLink cdpLink where cdpLink.node.id = ?1 ",
                                           new Object[] {nodeId});
     }
 

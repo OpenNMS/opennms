@@ -43,36 +43,36 @@ public class BridgeMacLinkDaoHibernate extends
 
     @Override
     public List<BridgeMacLink> findByNodeId(Integer id) {
-        return find("from BridgeMacLink rec where rec.node.id = ?", id);
+        return find("from BridgeMacLink rec where rec.node.id = ?1", id);
     }
 
     @Override
     public BridgeMacLink getByNodeIdBridgePortMac(Integer id, Integer port,
             String mac) {
-        return findUnique("from BridgeMacLink rec where rec.node.id = ?  and rec.bridgePort = ? and rec.macAddress = ? ",
+        return findUnique("from BridgeMacLink rec where rec.node.id = ?1  and rec.bridgePort = ?2 and rec.macAddress = ?3 ",
                           id, port, mac);
     }
 
     @Override
     public List<BridgeMacLink> findByNodeIdBridgePort(Integer id, Integer port) {
-        return find("from BridgeMacLink rec where rec.node.id = ?  and rec.bridgePort = ? ",
+        return find("from BridgeMacLink rec where rec.node.id = ?1  and rec.bridgePort = ?2 ",
                     id, port);
     }
 
     @Override
     public List<BridgeMacLink> findByMacAddress(String mac) {
-        return find("from BridgeMacLink rec where rec.macAddress = ?", mac);
+        return find("from BridgeMacLink rec where rec.macAddress = ?1", mac);
     }
 
     @Override
     public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-        getHibernateTemplate().bulkUpdate("delete from BridgeMacLink rec where rec.node.id = ? and rec.bridgeMacLinkLastPollTime < ?",
+        getHibernateTemplate().bulkUpdate("delete from BridgeMacLink rec where rec.node.id = ?1 and rec.bridgeMacLinkLastPollTime < ?2",
                 nodeId, now);
     }
 
     @Override
     public void deleteByNodeId(Integer nodeId) {
-        getHibernateTemplate().bulkUpdate("delete from BridgeMacLink rec where rec.node.id = ?",
+        getHibernateTemplate().bulkUpdate("delete from BridgeMacLink rec where rec.node.id = ?1",
                                           new Object[] { nodeId });
     }
 

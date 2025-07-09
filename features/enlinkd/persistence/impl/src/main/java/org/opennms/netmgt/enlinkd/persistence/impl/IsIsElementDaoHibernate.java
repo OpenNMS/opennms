@@ -48,23 +48,23 @@ public class IsIsElementDaoHibernate extends AbstractDaoHibernate<IsIsElement, I
      */
     @Override
     public IsIsElement findByNodeId(Integer id) {
-        return findUnique("from IsIsElement rec where rec.node.id = ?", id);
+        return findUnique("from IsIsElement rec where rec.node.id = ?1", id);
     }
 
     @Override
     public IsIsElement findByIsIsSysId(String isisSysId) {
-        return findUnique("from IsIsElement rec where rec.isisSysID = ?",
+        return findUnique("from IsIsElement rec where rec.isisSysID = ?1",
                           isisSysId);
     }
 
     @Override
     public List<IsIsElement> findBySysIdOfIsIsLinksOfNode(int nodeId) {
-        return find("from IsIsElement rec where rec.isisSysID in (select l.isisISAdjNeighSysID from IsIsLink l where l.node.id = ?)", nodeId);
+        return find("from IsIsElement rec where rec.isisSysID in (select l.isisISAdjNeighSysID from IsIsLink l where l.node.id = ?1)", nodeId);
     }
 
     @Override
     public void deleteByNodeId(Integer nodeId) {
-        getHibernateTemplate().bulkUpdate("delete from IsIsElement rec where rec.node.id = ? ",
+        getHibernateTemplate().bulkUpdate("delete from IsIsElement rec where rec.node.id = ?1 ",
                                     new Object[] {nodeId});
     }
 

@@ -44,36 +44,36 @@ public class BridgeStpLinkDaoHibernate extends AbstractDaoHibernate<BridgeStpLin
 
 	@Override
 	public List<BridgeStpLink> findByNodeId(Integer id) {
-		return find("from BridgeStpLink rec where rec.node.id = ?", id);
+		return find("from BridgeStpLink rec where rec.node.id = ?1", id);
 	}
 
 	@Override
 	public BridgeStpLink getByNodeIdBridgePort(Integer id, Integer port) {
-		return findUnique("from BridgeStpLink rec where rec.node.id = ?  and rec.stpPort = ?", id,port);
+		return findUnique("from BridgeStpLink rec where rec.node.id = ?1  and rec.stpPort = ?2", id,port);
 	}
 
 	@Override
 	public List<BridgeStpLink> findByDesignatedBridge(String designated) {
-		return find("from BridgeStpLink rec where rec.designatedBridge = ?", designated);
+		return find("from BridgeStpLink rec where rec.designatedBridge = ?1", designated);
 	}
 
 
 	@Override
 	public List<BridgeStpLink> findByDesignatedRoot(String root) {
-		return find("from BridgeStpLink rec where rec.designatedRoot = ?", root);
+		return find("from BridgeStpLink rec where rec.designatedRoot = ?1", root);
 	}
 
 
 
 	@Override
 	public void deleteByNodeIdOlderThen(Integer nodeId, Date now) {
-	    getHibernateTemplate().bulkUpdate("delete from BridgeStpLink rec where rec.node.id = ? and rec.bridgeStpLinkLastPollTime < ?",
+	    getHibernateTemplate().bulkUpdate("delete from BridgeStpLink rec where rec.node.id = ?1 and rec.bridgeStpLinkLastPollTime < ?2",
 				nodeId,now);
 	}
 
 	@Override
 	public void deleteByNodeId(Integer nodeId) {
-	    getHibernateTemplate().bulkUpdate("delete from BridgeStpLink rec where rec.node.id = ? ",
+	    getHibernateTemplate().bulkUpdate("delete from BridgeStpLink rec where rec.node.id = ?1 ",
 	                                      new Object[] {nodeId});
         }
 
