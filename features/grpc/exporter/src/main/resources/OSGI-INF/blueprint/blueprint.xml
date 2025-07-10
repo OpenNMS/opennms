@@ -21,7 +21,7 @@
             <cm:property name="tls.cert.path" value=""/>
             <cm:property name="tenant.id" value="opennms-prime"/>
             <cm:property name="snapshot.interval" value="3600"/>
-            <cm:property name="opennms.zenithConnect.enabled" value="false"/>
+            <cm:property name="zenith.connect.enabled" value="false"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -35,7 +35,7 @@
 
     <bean id="grpcClientInterceptor" class="org.opennms.features.grpc.exporter.GrpcHeaderInterceptor">
         <argument value="${tenant.id}"/>
-        <argument value="${opennms.zenithConnect.enabled}"/>
+        <argument value="${zenith.connect.enabled}"/>
         <property name="zenithConnectPersistenceService" ref="zenithConnectPersistenceService"/>
     </bean>
 

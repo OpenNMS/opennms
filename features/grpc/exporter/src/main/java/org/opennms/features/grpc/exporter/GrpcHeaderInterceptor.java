@@ -87,13 +87,13 @@ public class GrpcHeaderInterceptor implements ClientInterceptor {
     }
 
     private void addAccessTokenInHeaders(Metadata headers) {
+        if (headers.containsKey(authorizationKey)) {
+            headers.removeAll(authorizationKey);
+        }
         if (zenithConnectPersistenceService != null) {
             try {
                 ZenithConnectRegistration registrations = zenithConnectPersistenceService.getRegistrations().first();
                 if (registrations != null) {
-                    if (headers.containsKey(authorizationKey)) {
-                        headers.removeAll(authorizationKey);
-                    }
                     headers.put(authorizationKey, "Bearer " + registrations.accessToken);
                 }
             } catch (ZenithConnectPersistenceException e) {
