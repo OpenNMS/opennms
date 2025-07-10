@@ -60,7 +60,7 @@ jobs:
           at: ~/
       - restore-maven-cache
       - run:
-          name: Deploy to Maven Central
+          name: Create Repository Bundle
           no_output_timeout: 80m
           command: |
             ulimit -n 65536 || :
@@ -79,6 +79,8 @@ jobs:
                 ;;
             esac
             cd deploy
+
+            # Use Maven Central Plugin to build the repository layout
             ../compile.pl \
               -s settings.xml \
               -DskipTests=true \
@@ -97,8 +99,24 @@ jobs:
               -Prelease \
               --batch-mode \
               -DnexusUrl="https://central.sonatype.com/" \
-              -DserverId="central-portal" \
-              -DautoPublish=true \
+              -DpublishingServerId="central-portal" \
+              -DskipPublishing=true \
               install \
               org.sonatype.central:central-publishing-maven-plugin:publish \
               || exit 1
+      - cloudsmith/ensure-api-key
+      - cloudsmith/install-cli
+      - run:
+          name: Deploy to Cloudsmith
+          command: .circleci/scripts/publish-maven-cloudsmith.sh
+
+
+
+
+
+
+
+
+
+
+
