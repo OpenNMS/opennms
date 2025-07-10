@@ -37,9 +37,14 @@ import java.util.stream.Stream;
 
 import javax.script.ScriptException;
 
+import com.codahale.metrics.Histogram;
+import com.codahale.metrics.Meter;
+import com.codahale.metrics.Timer;
 import org.opennms.core.mate.api.ContextKey;
 import org.opennms.netmgt.collection.api.CollectionAgent;
 import org.opennms.netmgt.collection.api.CollectionAgentFactory;
+import org.opennms.netmgt.collection.api.CollectionSet;
+import org.opennms.netmgt.collection.dto.CollectionSetDTO;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.telemetry.protocols.cache.NodeInfo;
 import org.opennms.netmgt.telemetry.api.adapter.TelemetryMessageLog;
@@ -56,7 +61,12 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.common.base.Strings;
 import com.google.protobuf.InvalidProtocolBufferException;
 
+import static com.codahale.metrics.MetricRegistry.name;
+
 public class NetflowTelemetryAdapter extends AbstractScriptedCollectionAdapter {
+    private final Timer scriptEvaluationTimer;
+    private final Meter metricsCollected;
+    private final Meter rawValuesProcessed;
     private InterfaceToNodeCache interfaceToNodeCache;
     private CollectionAgentFactory collectionAgentFactory;
 
@@ -67,6 +77,10 @@ public class NetflowTelemetryAdapter extends AbstractScriptedCollectionAdapter {
     protected NetflowTelemetryAdapter(final AdapterDefinition adapterConfig, final MetricRegistry metricRegistry, final NodeInfoCache nodeInfoCache) {
         super(adapterConfig, metricRegistry);
         this.nodeInfoCache = nodeInfoCache;
+
+        this.scriptEvaluationTimer = metricRegistry.timer(name("adapters", adapterConfig.getFullName(), "scriptEvaluation"));
+        this.rawValuesProcessed = metricRegistry.meter(name("adapters", adapterConfig.getFullName(), "rawValuesProcessed"));
+        this.metricsCollected = metricRegistry.meter(name("adapters", adapterConfig.getFullName(), "metricsCollected"));
     }
 
     @Override
@@ -110,8 +124,17 @@ public class NetflowTelemetryAdapter extends AbstractScriptedCollectionAdapter {
         }
 
         final Map<String, Object> data = flowMessage.getRawMessageList().stream().collect(HashMap::new, (m, v)->m.put(v.getName(), mapToJavaTypes(v)), HashMap::putAll);
+
+        rawValuesProcessed.mark(flowMessage.getRawMessageList().size());
         try {
-            return Stream.of(new CollectionSetWithAgent(agent, builder.build(agent, data, message.getTimestamp())));
+            final CollectionSet builderResults;
+
+            try (final Timer.Context ctx = scriptEvaluationTimer.time()) {
+                builderResults = builder.build(agent, data, message.getTimestamp());
+            }
+
+            metricsCollected.mark(((CollectionSetDTO) builderResults).countMetrics());
+            return Stream.of(new CollectionSetWithAgent(agent, builderResults));
         } catch (final ScriptException e) {
             LOG.error("Error while running script: {}", e.getMessage());
             return Stream.empty();
