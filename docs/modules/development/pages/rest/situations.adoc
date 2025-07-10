@@ -10,7 +10,7 @@
 | /api/v2/situations?limit=2
 | Get a list of situations.
 The default for `offset` is `0`, and the default for `limit` is `10`.
-To get all results, use `limit=0` as a parameter on the URL (for example, `GET /api/v2/situations?offset={offset}&limit={limit}`).
+To get all results, use `limit=0` as a parameter on the URL (for example, `GET /api/v2/situations?offset=20&limit=10`).
 |===
 
 == POSTs (creating and modifying situations)
