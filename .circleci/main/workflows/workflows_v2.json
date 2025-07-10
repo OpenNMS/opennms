@@ -585,6 +585,7 @@
         "publish-maven": {
             "context": [
                 "CircleCI",
+                "cloudsmith-publish-account",
                 "gpg-signing",
                 "OSSRH Principal"
             ],
