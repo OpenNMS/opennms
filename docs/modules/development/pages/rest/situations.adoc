@@ -1,4 +1,4 @@
-= Situations
+= Situations API
 
 == GETs (reading data)
 
@@ -10,12 +10,12 @@
 | /api/v2/situations?limit=2
 | Get a list of situations.
 The default for `offset` is `0`, and the default for `limit` is `10`.
-To get all results, use `limit=0` as a parameter on the URL (for example, `GET /api/v2/situations?limit=2`).
+To get all results, use `limit=0` as a parameter on the URL (for example, `GET /api/v2/situations?offset={offset}&limit={limit}`).
 |===
 
 == POSTs (creating and modifying situations)
 
-`POST` requires form data using `application/x-www-form-urlencoded` as a `Content-Type`.
+`POST` requires form data using `application/json` as a `Content-Type`.
 
 
 [caption=""]
@@ -60,9 +60,37 @@ Accept Situation .
 * `id` Integer (`Path Parameter`) – The ID of the situation to accept
 |===
 
+== Examples
+
+=== Create a Situation
+
+[source,bash]
+----
+curl -v -X POST http://<opennms-host>:<port>/opennms/api/v2/situations/create   -H "Content-Type: application/json"   -u <username>:<password>   -d '{
+        "alarmIdList": [Alarms Id separated by comma]
+        "description": "some description here ",
+        "diagnosticText": "diagnostic text here "
+      }'
+
+----
+
+=== Associate Alarm to  Situation
+
+[source,bash]
+----
+curl -X POST http://<opennms-host>:<port>/opennms/api/v2/situations/associateAlarm \
+  -H "Content-Type: application/json" \
+  -u <username>:<password> \
+  -d '{
+        "situationId": "Situation ID",
+        "alarmIdList": [Alarms Id  separated by comma]
+      }'
+----
+
+
 == DELETE (Remove Alarms from situation)
 
-`DELETE` requires form data using `application/x-www-form-urlencoded` as a `Content-Type`.
+`DELETE` requires form data using `application/json` as a `Content-Type`.
 
 
 
@@ -79,3 +107,16 @@ Remove Alarm from situation.
 * `situationId` Integer – ID of the existing situation.
 * `alarmIdList` List – Comma-separated list of alarm IDs to remove from the situation.
 |===
+== Examples
+
+=== Remove Alarm From Situation
+
+
+[source,bash]
+----
+curl -X DELETE http://<opennms-host>:<port>/opennms/api/v2/situations/removeAlarm   -H "Content-Type: application/json"   -u <username>:<passowrd>   -d '{
+       "situationId": "Situation ID",
+        "alarmIdList": [Alarms Id  separated by comma]
+      }'
+
+----
