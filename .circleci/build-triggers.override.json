@@ -11,5 +11,5 @@
     "build-publish": false,
     "trivy-scan": false,
     "trivy-analyze": false,
-    "experimental": false
+    "experimental": true
 }
