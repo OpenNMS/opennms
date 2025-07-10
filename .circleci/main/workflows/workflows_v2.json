@@ -121,7 +121,7 @@
         },
         "experimental": {
             "extends": [
-                "publish-maven"
+                "empty"
             ]
         }
     },
