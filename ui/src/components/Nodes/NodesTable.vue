@@ -21,7 +21,7 @@
       </div>
       <div class="spacer-large"></div>
       <div class="spacer-large"></div>
-      <div class="search-container feather-col-6">
+      <div class="search-container feather-col-12">
         <div class="feather-row">
           <div class="search-filter-column">
             <FeatherInput
@@ -37,24 +37,51 @@
           <div class="filter-icon-wrapper">
             <FeatherIcon
               :icon="FilterAlt"
+              @click="() => nodeStructureStore.openInstancesDrawerModal()"
             />
           </div>
-          <div class="feather-col-3 chip-container">
+          <div class="chip-container">
             <FeatherChipList label="Tags">
-              <FeatherChip>
-                <template v-slot:icon>
+              <FeatherChip
+                v-for="cat in nodeStructureStore.selectedCategories"
+                :key="cat._value as string"
+              >
+                <template #icon>
                   <FeatherIcon
                     :icon="cancelIcon"
                     class="icon"
+                    @click="removeItem(cat, FilterTypeEnum.Category)"
                   />
                 </template>
-                {{ "tag" }}
+                {{ cat._text }}
               </FeatherChip>
-              <FeatherChip>
-                <template v-slot:icon>
-                  <FeatherIcon :icon="cancelIcon" />
+
+              <FeatherChip
+                v-for="flow in nodeStructureStore.selectedFlows"
+                :key="flow._value as string"
+              >
+                <template #icon>
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                    @click="removeItem(flow, FilterTypeEnum.Flow)"
+                  />
                 </template>
-                {{ "tag" }}
+                {{ flow._text }}
+              </FeatherChip>
+
+              <FeatherChip
+                v-for="loc in nodeStructureStore.queryFilter.selectedMonitoringLocations"
+                :key="loc.name"
+              >
+                <template #icon>
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                    @click="removeItem(loc, FilterTypeEnum.Location)"
+                  />
+                </template>
+                {{ loc.name }}
               </FeatherChip>
             </FeatherChipList>
           </div>
@@ -87,7 +114,6 @@
                   >
                     {{ column.label }}
                   </FeatherSortHeader>
-
                   <th v-if="column.selected && column.id === 'ipaddress'">{{ column.label }}</th>
                 </template>
               </tr>
@@ -190,6 +216,7 @@
     :visible="preferencesVisible"
   >
   </NodePreferencesDialog>
+  <NodesAdvanceFiltersDrawer />
 </template>
 
 <script setup lang="ts">
@@ -207,6 +234,7 @@ import { useNodeStore } from '@/stores/nodeStore'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import {
   FeatherSortObject,
+  FilterTypeEnum,
   Node,
   NodeColumnSelectionItem,
   QueryParameters,
@@ -228,6 +256,8 @@ import Search from '@featherds/icon/action/Search'
 import FilterAlt from '@featherds/icon/action/FilterAlt'
 import Cancel from '@featherds/icon/navigation/Cancel'
 import { FeatherChip, FeatherChipList } from '@featherds/chips'
+import NodesAdvanceFiltersDrawer from './NodesAdvanceFiltersDrawer.vue'
+import { IAutocompleteItemType } from '@featherds/autocomplete'
 
 const menuStore = useMenuStore()
 const nodeStructureStore = useNodeStructureStore()
@@ -305,7 +335,6 @@ const updatePageSize = (size: number) => {
 }
 
 const sortChanged = (sortObj: FeatherSortObject) => {
-  // currently we don't support sorting by ipaddress
   if (sortObj.property === 'ipaddress') {
     return
   }
@@ -374,6 +403,23 @@ const onNodeLinkClick = (nodeId: number | string) => {
   window.location.assign(computeNodeLink(nodeId))
 }
 
+const removeItem = (item: IAutocompleteItemType, type: FilterTypeEnum) => {
+  switch (type) {
+    case FilterTypeEnum.Category:
+      nodeStructureStore.removeCategory(item);
+      break;
+    case FilterTypeEnum.Flow:
+      nodeStructureStore.removeFlow(item);
+      break;
+    case FilterTypeEnum.Location:
+      console.log("locaationparam",item)
+      nodeStructureStore.removeLocation(item);
+      break;
+    default:
+      console.warn(`Unknown filter type: ${type}`);
+  }
+}
+
 const updateQuery = (options?: { orderBy?: string, order?: SORT }) => {
   // make sure anything setting nodeStore.nodeQueryParameters has been processed
   nextTick()
@@ -399,7 +445,9 @@ watch([() => nodeStructureStore.queryFilter], () => {
   }
 
   updateQuery()
-})
+},
+  { deep: true }
+)
 </script>
 
 <style lang="scss" scoped>
@@ -452,6 +500,8 @@ table {
 }
 
 .chip-container {
+  padding-left: 10px;
+
   :deep(.chip) {
     margin-bottom: 0 !important;
   }
