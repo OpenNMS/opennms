@@ -123,8 +123,7 @@ public class IPAddressTableTracker extends TableTracker {
                 if (instanceIds[(instanceIds.length - 1)] == getIfIndex()) {
                     LOG.debug("IPV4: BAD AGENT: Last instance value is the ifIndex, adjusting address index!");
                     addressIndex = instanceIds.length - 5;
-                }
-                else {
+                } else {
                     addressIndex = instanceIds.length - 4;
                 }
                 addressLength = 4;
@@ -142,8 +141,7 @@ public class IPAddressTableTracker extends TableTracker {
                 if (instanceIds[(instanceIds.length - 1)] == getIfIndex()) {
                     LOG.debug("IPV6: BAD AGENT: Last instance value is the ifIndex, adjusting address index!");
                     addressIndex = instanceIds.length - 17;
-                }
-                else {
+                } else {
                     addressIndex = instanceIds.length - 16;
                 }
                 addressLength = 16;
