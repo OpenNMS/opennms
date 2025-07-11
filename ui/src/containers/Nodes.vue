@@ -8,10 +8,10 @@
     <div class="feather-col-12">
       <div class="card">
         <div class="feather-row">
-          <div class="feather-col-2">
+          <!-- <div class="feather-col-2">
             <NodeStructurePanel />
-          </div>
-          <div :class="`feather-col-10`">
+          </div> -->
+          <div :class="`feather-col-12`">
             <NodesTable />
           </div>
         </div>
