@@ -21,28 +21,6 @@
  */
 package org.opennms.netmgt.enlinkd;
 
-import static org.hamcrest.Matchers.hasSize;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertThat;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertFalse;
-import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.FROH_IP;
-import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.FROH_NAME;
-import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.FROH_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.OEDIPUS_IP;
-import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.OEDIPUS_NAME;
-import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.OEDIPUS_SNMP_RESOURCE;
-import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.SIEGFRIE_IP;
-import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.SIEGFRIE_NAME;
-import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.SIEGFRIE_SNMP_RESOURCE;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import org.junit.Test;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgent;
 import org.opennms.core.test.snmp.annotations.JUnitSnmpAgents;
@@ -52,6 +30,26 @@ import org.opennms.netmgt.enlinkd.service.api.ProtocolSupported;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.nb.Nms0001NetworkBuilder;
 import org.opennms.netmgt.topologies.service.api.OnmsTopology;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
+import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.FROH_IP;
+import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.FROH_NAME;
+import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.FROH_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.OEDIPUS_IP;
+import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.OEDIPUS_NAME;
+import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.OEDIPUS_SNMP_RESOURCE;
+import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.SIEGFRIE_IP;
+import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.SIEGFRIE_NAME;
+import static org.opennms.netmgt.nb.Nms0001NetworkBuilder.SIEGFRIE_SNMP_RESOURCE;
 
 public class Nms0001EnIT extends EnLinkdBuilderITCase {
 
@@ -202,8 +200,8 @@ public class Nms0001EnIT extends EnLinkdBuilderITCase {
         assertNotNull(topologyUpdater);
         OnmsTopology topo = topologyUpdater.getTopology();
         printOnmsTopology(topo);
-        assertThat(topo.getVertices(), hasSize(10));
-        assertThat(topo.getEdges(), hasSize(12));
+        assertEquals(10, topo.getVertices().size());
+        assertEquals(12, topo.getEdges().size());
 
     }
 
@@ -241,7 +239,7 @@ public class Nms0001EnIT extends EnLinkdBuilderITCase {
 
         assertTrue(m_linkd.execSingleSnmpCollection(froh.getId()));
 
-        Thread.sleep(10000);
+        Thread.sleep(200);
         m_isisLinkDao.flush();
         assertEquals(2, m_isisLinkDao.countAll());
     }

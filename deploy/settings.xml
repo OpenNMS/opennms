@@ -5,10 +5,5 @@
       <username>${env.OPENNMS_OSSRH_USERNAME}</username>
       <password>${env.OPENNMS_OSSRH_PASSWORD}</password>
     </server>
-    <server>
-     <id>central-portal</id>
-     <username>${env.OPENNMS_OSSRH_USERNAME}</username>
-     <password>${env.OPENNMS_OSSRH_PASSWORD}</password>
-   </server>
   </servers>
 </settings>

@@ -4,6 +4,11 @@
 
 == New features and important changes
 
+=== Node Cache configuration
+
+Due to a refactoring to enable the collection of IPFix metrics, the node cache has been moved to another module.
+The configuration of the cache is now stored in the file `org.opennms.features.telemetry.protocols.common.cfg` and no longer in the file `org.opennms.features.flows.persistence.elastic.cfg`.
+
 === `install.sh` script clears data directory and restores Karaf-related configuration files
 To overcome common upgrading problems, the data directory is automatically pruned when invoking the `install.sh` script.
 Furthermore, all Karaf-related configuration files are restored to their pristine state.

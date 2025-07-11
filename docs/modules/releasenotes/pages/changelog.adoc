@@ -2,6 +2,37 @@
 
 = Changelog
 
+[[releasenotes-changelog-33.1.8]]
+
+== Release 33.1.8
+
+Release 33.1.8 contains bug fixes, security updates and enhancements.
+
+The codename for Horizon 33.1.8 is https://wikipedia.org/wiki/$$Avocado$$[_Avocado_].
+
+=== Bug
+
+* Update commons-beanutils:commons-beanutils Library (Issue https://opennms.atlassian.net/browse/NMS-17996[NMS-17996])
+* Update org.apache.zookeeper:zookeeper Library (Issue https://opennms.atlassian.net/browse/NMS-18001[NMS-18001])
+* Update org.eclipse.jetty:jetty-server Library (Issue https://opennms.atlassian.net/browse/NMS-18002[NMS-18002])
+* Update org.owasp.esapi:esapi Library (Issue https://opennms.atlassian.net/browse/NMS-18003[NMS-18003])
+* Update pam Library (Issue https://opennms.atlassian.net/browse/NMS-18034[NMS-18034])
+* Update python3 Library (Issue https://opennms.atlassian.net/browse/NMS-18035[NMS-18035])
+* Update python3-libs Library (Issue https://opennms.atlassian.net/browse/NMS-18036[NMS-18036])
+* Reason "Unknown" for NTP Monitor (Issue https://opennms.atlassian.net/browse/NMS-18016[NMS-18016])
+* Not able to uninstall opennms flows feature from OpenNMS (Issue https://opennms.atlassian.net/browse/NMS-18020[NMS-18020])
+
+=== Enhancement
+
+* Remove the requirement to run fix-Karaf scripts manually after every update (Issue https://opennms.atlassian.net/browse/NMS-18008[NMS-18008])
+* Rename "Problems" for Application, Business services and Nodes to "Alarms" (Issue https://opennms.atlassian.net/browse/NMS-18021[NMS-18021])
+* Add Prometheus compatible metrics endpoint for Core server (Issue https://opennms.atlassian.net/browse/NMS-18041[NMS-18041])
+* Update OpenConfig gnmi telemetry groovy script with more examples (Issue https://opennms.atlassian.net/browse/NMS-18060[NMS-18060])
+
+=== Task
+
+* Use saved Zenith/Keycloak initial token in gRPC Connection (Issue https://opennms.atlassian.net/browse/NMS-17748[NMS-17748])
+
 [[releasenotes-changelog-33.1.7]]
 
 == Release 33.1.7
