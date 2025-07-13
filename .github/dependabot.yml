@@ -81,19 +81,6 @@ updates:
     directory: "/"
     target-branch: "main"
     reviewers:
-      - "Bluebird-Community/dependabot-reviewers-maven"
-    labels:
-      - "dependency update"
-    commit-message:
-      prefix: "build"
-      include: "scope"
-    schedule:
-      interval: "daily"
-
-  - package-ecosystem: "maven"
-    directory: "/"
-    target-branch: "main"
-    reviewers:
       - "indigo423"
     labels:
       - "dependency update"
