@@ -1848,7 +1848,7 @@
     <jmhVersion>1.37</jmhVersion>
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
     <jnaVersion>5.16.0</jnaVersion>
-    <jnrVersion>3.1.17</jnrVersion>
+    <jnrVersion>3.1.20</jnrVersion>
     <jodaTimeVersion>2.12.5</jodaTimeVersion>
     <jolokiaVersion>1.7.2</jolokiaVersion>
     <jqwikVersion>1.6.5</jqwikVersion>
