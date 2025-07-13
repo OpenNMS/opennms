@@ -1948,7 +1948,7 @@
     <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
     <sonarVersion>3.9.1.2184</sonarVersion>
     <spiflyVersion>1.3.6</spiflyVersion>
-    <spockVersion>2.3-groovy-2.5</spockVersion>
+    <spockVersion>2.3-groovy-4.0</spockVersion>
     <swaggerUIVersion>3.23.11</swaggerUIVersion>
     <swaggerVersion>2.1.12</swaggerVersion>
     <swaggerParserVersion>2.0.33</swaggerParserVersion>
