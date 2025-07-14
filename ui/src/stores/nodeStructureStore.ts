@@ -112,12 +112,12 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     }
   }
 
-  const setSelectedCategories = async (cats: Category[]) => {
-    queryFilter.value = {
-      ...queryFilter.value,
-      selectedCategories: [...cats]
-    }
-  }
+  // const setSelectedCategories = async (cats: Category[]) => {
+  //   queryFilter.value = {
+  //     ...queryFilter.value,
+  //     selectedCategories: [...cats]
+  //   }
+  // }
 
   const setCategoryMode = async (mode: SetOperator) => {
     queryFilter.value = {
@@ -126,12 +126,12 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     }
   }
 
-  const setSelectedFlows = async (flows: string[]) => {
-    queryFilter.value = {
-      ...queryFilter.value,
-      selectedFlows: [...flows]
-    }
-  }
+  // const setSelectedFlows = async (flows: string[]) => {
+  //   queryFilter.value = {
+  //     ...queryFilter.value,
+  //     selectedFlows: [...flows]
+  //   }
+  // }
 
   const setSelectedMonitoringLocations = async (locations: MonitoringLocation[]) => {
     queryFilter.value = {
@@ -300,7 +300,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     )
   }
 
-  const setSelectedCategoriess = (items: IAutocompleteItemType[]) => {
+  const setSelectedCategories = (items: IAutocompleteItemType[]) => {
     selectedCategories.value = items
     // Also update the query filter
     queryFilter.value.selectedCategories = items.map((item) => ({
@@ -310,7 +310,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     }))
   }
 
-  const setSelectedFlowss = (items: IAutocompleteItemType[]) => {
+  const setSelectedFlows = (items: IAutocompleteItemType[]) => {
     selectedFlows.value = items
     queryFilter.value.selectedFlows = items.map((item) => item._text as string)
   }
@@ -348,8 +348,8 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     setFromNodePreferences,
     setNodeColumnSelection,
     setSearchTerm,
-    setSelectedCategories,
-    setSelectedFlows,
+    // setSelectedCategories,
+    // setSelectedFlows,
     setSelectedMonitoringLocations,
     updateNodeColumnSelection,
     openInstancesDrawerModal,
@@ -357,14 +357,11 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     selectedCategories,
     selectedFlows,
     selectedLocations,
-    // setSelectedCategory,
-    // setSelectedFlow,
-    // setSelectedLocation,
     removeCategory,
     removeFlow,
     removeLocation,
-    setSelectedCategoriess,
-    setSelectedFlowss,
+    setSelectedCategories,
+    setSelectedFlows,
     setSelectedLocations
   }
 })

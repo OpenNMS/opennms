@@ -168,8 +168,8 @@ const updateFilter = (key: keyof typeof selectedFilters, items: IAutocompleteIte
 }
 
 const applySelectedFilters = () => {
-  nodeStructureStore.setSelectedCategoriess(selectedFilters.categories)
-  nodeStructureStore.setSelectedFlowss(selectedFilters.flows)
+  nodeStructureStore.setSelectedCategories(selectedFilters.categories)
+  nodeStructureStore.setSelectedFlows(selectedFilters.flows)
   const monitoringLocations = selectedFilters.locations.map(item => ({
     name: item._text,
     longitude: item.longitude,
