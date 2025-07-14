@@ -71,6 +71,7 @@ public class MinionDaoIT {
     }
 
     @Test
+    @Transactional
     public void testQueryByLocation() throws Exception {
         final Date now = new Date();
         m_minionDao.save(new OnmsMinion(UUID.randomUUID().toString(), "TestLocation", "Started", now));
@@ -98,8 +99,8 @@ public class MinionDaoIT {
         m_minionDao.flush();
         
         assertEquals(Integer.valueOf(4), m_jdbcTemplate.queryForObject("select count(*) from monitoringsystemsproperties", Integer.class));
-        assertEquals(Integer.valueOf(2), m_jdbcTemplate.queryForObject("select count(*) from monitoringsystemsproperties where monitoringsystemid = ?1", new Object[] { a.getId() }, Integer.class));
-        assertEquals(Integer.valueOf(2), m_jdbcTemplate.queryForObject("select count(*) from monitoringsystemsproperties where monitoringsystemid = ?1", new Object[] { b.getId() }, Integer.class));
+        assertEquals(Integer.valueOf(2), m_jdbcTemplate.queryForObject("select count(*) from monitoringsystemsproperties where monitoringsystemid = ?", new Object[] { a.getId() }, Integer.class));
+        assertEquals(Integer.valueOf(2), m_jdbcTemplate.queryForObject("select count(*) from monitoringsystemsproperties where monitoringsystemid = ?", new Object[] { b.getId() }, Integer.class));
 
         String prop = m_minionDao.findById(a.getId()).getProperties().get("Left");
         // a doesn't have that property, b does

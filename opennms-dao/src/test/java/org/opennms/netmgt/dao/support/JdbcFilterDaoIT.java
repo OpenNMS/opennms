@@ -38,6 +38,7 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.sql.DataSource;
+import javax.transaction.Transactional;
 
 import org.hamcrest.Matchers;
 import org.junit.After;
@@ -366,22 +367,30 @@ public class JdbcFilterDaoIT implements InitializingBean {
     // See HZN-1161 for more details.
     @Test
     public void verifyPerformance() {
-        // Create a bunch of interfaces
-        final OnmsNode node1 = m_populator.getNode1();
-        final IPAddressRange ipAddresses = new IPAddressRange("10.10.0.0", "10.10.255.255");
-        final Iterator<IPAddress> iterator = ipAddresses.iterator();
-        while (iterator.hasNext()) {
-            IPAddress address = iterator.next();
-            OnmsIpInterface ipInterface = new OnmsIpInterface();
-            ipInterface.setNode(node1);
-            ipInterface.setIpAddress(address.toInetAddress());
-            m_interfaceDao.save(ipInterface);
-        }
-        final int numberOfInterfaces = m_interfaceDao.countAll();
-        assertThat(numberOfInterfaces, greaterThan(255 * 255));
-
-        // verify
-        assertThat(m_dao.getActiveIPAddressList("IPADDR != '0.0.0.0'"), Matchers.hasSize(numberOfInterfaces));
+        final int[] numberOfInterfaces = new int[1];
+        
+        // Create interfaces in a transaction and commit them
+        m_transTemplate.execute(new TransactionCallbackWithoutResult() {
+            @Override
+            public void doInTransactionWithoutResult(TransactionStatus status) {
+                // Create a bunch of interfaces
+                final OnmsNode node1 = m_populator.getNode1();
+                final IPAddressRange ipAddresses = new IPAddressRange("10.10.0.0", "10.10.255.255");
+                final Iterator<IPAddress> iterator = ipAddresses.iterator();
+                while (iterator.hasNext()) {
+                    IPAddress address = iterator.next();
+                    OnmsIpInterface ipInterface = new OnmsIpInterface();
+                    ipInterface.setNode(node1);
+                    ipInterface.setIpAddress(address.toInetAddress());
+                    m_interfaceDao.saveOrUpdate(ipInterface);
+                }
+                // Flush to ensure all interfaces are persisted
+                numberOfInterfaces[0] = m_interfaceDao.countAll();
+                assertThat(numberOfInterfaces[0], greaterThan(255 * 255));
+            }
+        });
+        assertThat(m_dao.getActiveIPAddressList("IPADDR != '0.0.0.0'"), Matchers.hasSize(numberOfInterfaces[0]));
         assertThat(m_dao.isValid("10.10.0.1", "IPADDR != '0.0.0.0'"), is(true));
+
     }
 }

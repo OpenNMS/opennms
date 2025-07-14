@@ -171,7 +171,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
                 query.append("ORDER BY outages.outageId\n")
                 .append(";\n");
 
-                Query sqlQuery = session.createSQLQuery( query.toString() );
+                Query sqlQuery = session.createNativeQuery( query.toString() );
                 if (serviceNames.size() > 0) {
                     sqlQuery = sqlQuery.setParameterList("serviceNames", serviceNames);
                 }
@@ -305,7 +305,7 @@ public class OutageDaoHibernate extends AbstractDaoHibernate<OnmsOutage, Integer
                         "group by " + groupByClause + " having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0";
 
 
-                Query query = session.createSQLQuery(queryStr);
+                Query query = session.createNativeQuery(queryStr);
                 if (restrictionColumn != null) {
                     query.setParameter("restrictionValue", restrictionValue, StringType.INSTANCE);
                 }
