@@ -1,0 +1,17 @@
+{
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["config:base"],
+  "packageRules": [
+    {
+      "managers": ["npm"],
+      "enabled": true,
+      "bumpVersion": "patch"
+    },
+    {
+      "managers": ["maven"],
+      "enabled": true,
+      "bumpVersion": "patch"
+    }
+  ],
+  "baseBranches": ["main"]
+}
