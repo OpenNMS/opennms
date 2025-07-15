@@ -189,6 +189,8 @@
 *** xref:deep-dive/flows/data-collection.adoc[]
 *** xref:deep-dive/flows/thresholding.adoc[]
 *** xref:deep-dive/flows/troubleshooting.adoc[]
+*** xref:deep-dive/flows/vendor-specific-ies.adoc[]
+*** xref:deep-dive/flows/scripting-adapter.adoc[]
 
 ** xref:deep-dive/geographical-map/introduction.adoc[]
 *** xref:deep-dive/geographical-map/searching.adoc[]

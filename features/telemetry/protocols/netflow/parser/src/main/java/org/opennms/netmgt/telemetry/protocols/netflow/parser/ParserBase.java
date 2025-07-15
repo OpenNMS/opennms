@@ -47,9 +47,11 @@ import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.telemetry.api.receiver.Parser;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.SequenceNumberTracker;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.MessageBuilder;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.transport.TransportValueVisitor;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -131,6 +133,8 @@ public abstract class ParserBase implements Parser {
     private LoadingCache<InetAddress, RateLimiter> illegalFlowEventLimiters;
 
     private ExecutorService executor;
+
+    private boolean includeRawMessage = false;
 
     public ParserBase(final Protocol protocol,
                       final String name,
@@ -298,6 +302,14 @@ public abstract class ParserBase implements Parser {
                             throw new RuntimeException(e);
                         }
 
+                        if (includeRawMessage) {
+                            for (final Value<?> value : record) {
+                                final TransportValueVisitor transportValueVisitor = new TransportValueVisitor();
+                                value.visit(transportValueVisitor);
+                                flowMessage.addRawMessage(transportValueVisitor.build());
+                            }
+                        }
+
                         // Check if the flow is valid (and maybe correct it)
                         final List<String> corrections = this.correctFlow(flowMessage);
                         if (!corrections.isEmpty()) {
@@ -397,5 +409,13 @@ public abstract class ParserBase implements Parser {
 
     protected SequenceNumberTracker sequenceNumberTracker() {
         return new SequenceNumberTracker(this.sequenceNumberPatience);
+    }
+
+    public boolean isIncludeRawMessage() {
+        return includeRawMessage;
+    }
+
+    public void setIncludeRawMessage(boolean includeRawMessage) {
+        this.includeRawMessage = includeRawMessage;
     }
 }

@@ -26,7 +26,7 @@
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
 # as additional layers into the final image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.5.3.b286-jre-17"
+ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.6.0.b293-jre-17"
 
 FROM ${BASE_IMAGE} AS minion-base
 
@@ -88,6 +88,9 @@ RUN setcap cap_net_raw+ep $(readlink -f /usr/bin/java)
 # Install entrypoint wrapper and health check script
 COPY container-fs/entrypoint.sh /
 COPY container-fs/health.sh /
+
+# Install a default JMX Prometheus configuration
+COPY container-fs/prom-jmx-default-config.yaml /opt/prom-jmx-exporter/config.yaml
 
 # If you copy from /opt/minion to /opt/minion the permissions are not preserved
 # We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion

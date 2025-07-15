@@ -81,7 +81,11 @@ public final class ScopeFieldSpecifier implements Field, Scope {
 
     @Override
     public Value<?> parse(Session.Resolver resolver, ByteBuf buffer) throws InvalidPacketException, MissingTemplateException {
-        return this.field.parse(resolver, buffer);
+        try {
+            return this.field.parse(resolver, buffer);
+        } catch (final InvalidPacketException e) {
+            throw new InvalidPacketException(e, "Failed to parse Netflow9 scope field: fieldType=%d", this.fieldType);
+        }
     }
 
     @Override

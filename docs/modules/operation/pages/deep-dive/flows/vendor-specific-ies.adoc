@@ -1,0 +1,38 @@
+[[ga-flow-support-vendor-specific-ies]]
+= Vendor-specific Information Elements
+:description: Learn how to include vendor-specific information elements in {page-component-title} to collect additional data from your devices.
+
+NetFlow (v5/v9) allow the collection of pre-defined flow-related metrics.
+In addition to that IPFIX also supports vendor-specific "Information Elements" beside the pre-defined ones (see https://www.iana.org/assignments/ipfix/ipfix.xhtml#ipfix-information-elements).
+{page-component-title} supports the collection of vendor-specific IPFIX data.
+
+== Adding Vendor-specific Definitions
+Any additional definitions need to be placed in the directory `$\{OPENNMS_HOME}/etc/ipfix.d`.
+The following example shows a definition for a vendor "Foobar-Company" with a Private Enterprise Number (PEN) of "1234".
+After the starting `scope` definition the file just lists all defined information elements including their names, their identfiers and their data-types.
+See https://www.iana.org/assignments/ipfix/ipfix.xhtml#ipfix-information-element-data-types for available data-types.
+[source, xml]
+----
+<?xml version="1.0" encoding="utf-8"?>
+<ipfix-elements>
+    <scope>
+        <pen>1234</pen>
+        <name>Foobar-Company</name>
+    </scope>
+
+    <element>
+        <id>123</id>
+        <name>myMetricA</name>
+        <dataType>unsigned64</dataType>
+    </element>
+...
+    <element>
+        <id>456</id>
+        <name>myMetricB</name>
+        <dataType>unsigned64</dataType>
+    </element>
+</ipfix-elements>
+----
+In order for the newly placed files to become active, {page-component-title} needs to be restarted.
+When Minions are in use, the parser are executed on the Minions.
+Thus, the additional definitions also need to placed in the Minions' `ipfix.d` directories.
