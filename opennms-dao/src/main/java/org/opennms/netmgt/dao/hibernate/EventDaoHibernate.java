@@ -93,7 +93,7 @@ public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Long> imp
             return 0L;  // Return 0 for negative and 0 hours instead of letting SQL handle it, SQL also returns 0.
         }
         return getHibernateTemplate().execute(s -> {
-            BigInteger result = (BigInteger) s.createSQLQuery("SELECT COUNT(*) FROM events WHERE eventtime >= NOW() " +
+            BigInteger result = (BigInteger) s.createNativeQuery("SELECT COUNT(*) FROM events WHERE eventtime >= NOW() " +
                             "- (:hours * INTERVAL '1 hour')")
                     .setParameter("hours", hours)
                     .uniqueResult();

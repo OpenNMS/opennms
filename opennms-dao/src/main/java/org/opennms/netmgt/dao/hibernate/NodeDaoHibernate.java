@@ -328,7 +328,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
 
             @Override
             public SurveillanceStatus doInHibernate(Session session) throws HibernateException {
-                return (SimpleSurveillanceStatus)session.createSQLQuery("select" +
+                return (SimpleSurveillanceStatus)session.createNativeQuery("select" +
                         " count(distinct case when outages.outageid is not null and monSvc.status = 'A' then monSvc.id else null end) as svcCount," +
                         " count(distinct case when outages.outageid is null and monSvc.status = 'A' then node.nodeid else null end) as upNodeCount," +
                         " count(distinct node.nodeid) as nodeCount" +
@@ -552,12 +552,12 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
             int results = 0;
 
             if (!ingressIds.isEmpty()) {
-                results += session.createSQLQuery("update node set last_ingress_flow = NOW() where nodeid in (:ids)")
+                results += session.createNativeQuery("update node set last_ingress_flow = NOW() where nodeid in (:ids)")
                         .setParameterList("ids", ingressIds)
                         .executeUpdate();
             }
             if (!egressIds.isEmpty()) {
-                results += session.createSQLQuery("update node set last_egress_flow = NOW() where nodeid in (:ids)")
+                results += session.createNativeQuery("update node set last_egress_flow = NOW() where nodeid in (:ids)")
                         .setParameterList("ids", egressIds)
                         .executeUpdate();
             }
@@ -618,7 +618,7 @@ public class NodeDaoHibernate extends AbstractDaoHibernate<OnmsNode, Integer> im
 
 
     public List<OnmsNode> findNodeWithMetaData(final String context, final String key, final String value) {
-        return getHibernateTemplate().execute(session -> (List<OnmsNode>) session.createSQLQuery("SELECT n.nodeid FROM node n, node_metadata m WHERE m.id = n.nodeid AND context = :context AND key = :key AND value = :value ORDER BY n.nodeid")
+        return getHibernateTemplate().execute(session -> (List<OnmsNode>) session.createNativeQuery("SELECT n.nodeid FROM node n, node_metadata m WHERE m.id = n.nodeid AND context = :context AND key = :key AND value = :value ORDER BY n.nodeid")
                 .setString("context", context)
                 .setString("key", key)
                 .setString("value", value)

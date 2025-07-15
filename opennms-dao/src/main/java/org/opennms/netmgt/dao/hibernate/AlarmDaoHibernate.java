@@ -116,7 +116,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
     /** {@inheritDoc} */
     @Override
     public List<SituationSummary> getSituationSummaries() {
-        return getHibernateTemplate().execute(session -> (List<SituationSummary>) session.createSQLQuery(
+        return getHibernateTemplate().execute(session -> (List<SituationSummary>) session.createNativeQuery(
                 "SELECT " +
                         "  a1.alarmid, " +
                         "  a1.severity, " +
@@ -203,7 +203,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
                                 (restrictionColumn != null ? "and coalesce(" + restrictionColumn + ",'Uncategorized')=:restrictionValue " : "") +
                                 "group by " + groupByClause + " having count(distinct case when ifservices.status <> 'D' then ifservices.id else null end) > 0";
                 
-                Query query = session.createSQLQuery(queryStr);
+                Query query = session.createNativeQuery(queryStr);
 
                 if (restrictionColumn != null) {
                     query.setParameter("restrictionValue",  restrictionValue, StringType.INSTANCE);
@@ -231,7 +231,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
     @Override
     public long getNumSituations() {
         return getHibernateTemplate().execute(s -> {
-            BigInteger result = (BigInteger)s.createSQLQuery(
+            BigInteger result = (BigInteger)s.createNativeQuery(
                     "SELECT COUNT( DISTINCT situation_id ) FROM alarm_situations").uniqueResult();
             return result != null ? result.longValue() : 0L;
         });
@@ -244,7 +244,7 @@ public class AlarmDaoHibernate extends AbstractDaoHibernate<OnmsAlarm, Integer> 
             return 0L;  // Return 0 for negative and 0 hours instead of letting SQL handle it, SQL also returns 0.
         }
         return getHibernateTemplate().execute(s -> {
-            BigInteger result = (BigInteger) s.createSQLQuery(
+            BigInteger result = (BigInteger) s.createNativeQuery(
                             "SELECT COUNT(*) FROM alarms WHERE firsteventtime >= NOW() - (:hours * INTERVAL '1 hour')")
                     .setParameter("hours", hours)
                     .uniqueResult();

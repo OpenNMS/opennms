@@ -59,7 +59,7 @@ public class HwEntityDaoHibernate extends AbstractDaoHibernate<OnmsHwEntity, Int
     @Override
     public OnmsHwEntity findRootEntityByNodeId(Integer nodeId) {
         List<OnmsHwEntity> entityList = getHibernateTemplate().execute(session -> (List<OnmsHwEntity>)
-                session.createSQLQuery("select * FROM hwEntity where nodeid = " + nodeId)
+                session.createNativeQuery("select * FROM hwEntity where nodeid = " + nodeId)
                         .setResultTransformer(
                                 new ResultTransformer() {
                                     @Override
@@ -121,7 +121,7 @@ public class HwEntityDaoHibernate extends AbstractDaoHibernate<OnmsHwEntity, Int
 
     private List<OnmsHwEntityAlias> findHwEntityAlias(OnmsHwEntity parent) {
          List<OnmsHwEntityAlias> hwEntityAliases = getHibernateTemplate().execute(session ->
-                 (List<OnmsHwEntityAlias>) session.createSQLQuery(
+                 (List<OnmsHwEntityAlias>) session.createNativeQuery(
                  "SELECT * FROM hwEntityAlias WHERE hwEntityId = " + parent.getId())
                  .setResultTransformer(new ResultTransformer() {
              @Override

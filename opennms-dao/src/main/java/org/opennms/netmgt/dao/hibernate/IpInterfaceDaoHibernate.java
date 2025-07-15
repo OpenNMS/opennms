@@ -195,7 +195,7 @@ public class IpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsIpInterfac
     }
 
     @Override
-    public List<OnmsIpInterface> findInterfacesWithMetadata(String context, String key, String value) {  return getHibernateTemplate().execute(session -> (List<OnmsIpInterface>) session.createSQLQuery("SELECT ip.id FROM ipInterface ip, ipInterface_metadata m WHERE m.id = ip.id AND context = :context AND key = :key AND value = :value ORDER BY ip.id")
+    public List<OnmsIpInterface> findInterfacesWithMetadata(String context, String key, String value) {  return getHibernateTemplate().execute(session -> (List<OnmsIpInterface>) session.createNativeQuery("SELECT ip.id FROM ipInterface ip, ipInterface_metadata m WHERE m.id = ip.id AND context = :context AND key = :key AND value = :value ORDER BY ip.id")
             .setString("context", context)
             .setString("key", key)
             .setString("value", value)

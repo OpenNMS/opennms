@@ -41,7 +41,6 @@ import org.hibernate.LockMode;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.criterion.Projections;
-import org.hibernate.metadata.ClassMetadata;
 import org.opennms.core.criteria.restrictions.AllRestriction;
 import org.opennms.core.criteria.restrictions.Restriction;
 import org.opennms.netmgt.dao.api.OnmsDao;
@@ -524,8 +523,10 @@ public abstract class AbstractDaoHibernate<T, K extends Serializable> extends Hi
         while (cause.getCause() != null) {
             if (cause.getMessage() != null) {
                 if (cause.getMessage().contains("duplicate key value violates unique constraint")) {
-                    final ClassMetadata meta = getSessionFactory().getClassMetadata(m_entityClass);
-                    LOG.warn("Duplicate key constraint violation, class: {}, key value: {}", m_entityClass.getName(), meta.getIdentifier(entity));
+                    // Use the session to get the identifier - this is more direct and standard
+                    final Session session = getSessionFactory().getCurrentSession();
+                    Object identifier = session.getIdentifier(entity);
+                    LOG.warn("Duplicate key constraint violation, class: {}, key value: {}", m_entityClass.getName(), identifier);
                     break;
                 } else if (cause.getMessage().contains("given object has a null identifier")) {
                     LOG.warn("Null identifier on object, class: {}: {}", m_entityClass.getName(), entity.toString());

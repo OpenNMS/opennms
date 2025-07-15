@@ -95,7 +95,7 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
 
     @Override
     public void markHavingIngressFlows(final Integer nodeId, final Collection<Integer> ingressSnmpIfIndexes) {
-        getHibernateTemplate().executeWithNativeSession(session -> session.createSQLQuery("update snmpinterface set last_ingress_flow = NOW() where nodeid = :nodeid and snmpifindex in (:snmpIfIndexes)")
+        getHibernateTemplate().executeWithNativeSession(session -> session.createNativeQuery("update snmpinterface set last_ingress_flow = NOW() where nodeid = :nodeid and snmpifindex in (:snmpIfIndexes)")
                 .setParameter("nodeid", nodeId)
                 .setParameterList("snmpIfIndexes", ingressSnmpIfIndexes)
                 .executeUpdate());
@@ -103,7 +103,7 @@ public class SnmpInterfaceDaoHibernate extends AbstractDaoHibernate<OnmsSnmpInte
 
     @Override
     public void markHavingEgressFlows(final Integer nodeId, final Collection<Integer> egressSnmpIfIndexes) {
-        getHibernateTemplate().executeWithNativeSession(session -> session.createSQLQuery("update snmpinterface set last_egress_flow = NOW() where nodeid = :nodeid and snmpifindex in (:snmpIfIndexes)")
+        getHibernateTemplate().executeWithNativeSession(session -> session.createNativeQuery("update snmpinterface set last_egress_flow = NOW() where nodeid = :nodeid and snmpifindex in (:snmpIfIndexes)")
                 .setParameter("nodeid", nodeId)
                     .setParameterList("snmpIfIndexes", egressSnmpIfIndexes)
                     .executeUpdate());

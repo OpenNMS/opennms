@@ -23,6 +23,7 @@ package org.opennms.netmgt.dao.hibernate;
 
 import org.hibernate.SessionFactory;
 import org.hibernate.persister.entity.AbstractEntityPersister;
+import org.hibernate.metamodel.spi.MetamodelImplementor;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +43,8 @@ public class HibernateUtils {
     public static List<String> getHibernateTableColumnNames(SessionFactory factory, Class klass, boolean includeTablePrefix) {
 
         List<String> validColumnNames = new ArrayList<>();
-        AbstractEntityPersister aep = (AbstractEntityPersister) factory.getClassMetadata(klass);
+        MetamodelImplementor metamodel = (MetamodelImplementor) factory.getMetamodel();
+        AbstractEntityPersister aep = (AbstractEntityPersister) metamodel.entityPersister(klass);
         for(int propertyIndex = 0; propertyIndex < aep.getPropertyNames().length; propertyIndex++) {
             for (String columnName : aep.getPropertyColumnNames(propertyIndex)) {
                 if (columnName == null) {

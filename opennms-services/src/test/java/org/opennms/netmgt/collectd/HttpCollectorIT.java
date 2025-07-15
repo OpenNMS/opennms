@@ -70,6 +70,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * @author <a href="mailto:david@opennms.org">David Hustace</a>
@@ -146,8 +147,12 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
         OnmsServiceType serviceType = m_serviceTypeDao.findByName(name);
         if (serviceType == null) {
             serviceType = new OnmsServiceType(name);
-            m_serviceTypeDao.save(serviceType);
-            m_serviceTypeDao.flush();
+            final OnmsServiceType finalServiceType = serviceType;
+            new TransactionTemplate(m_transactionManager).execute(status -> {
+                m_serviceTypeDao.save(finalServiceType);
+                m_serviceTypeDao.flush();
+                return null;
+            });
         }
         return serviceType;
     }
@@ -165,8 +170,11 @@ public class HttpCollectorIT implements TestContextAware, InitializingBean {
             builder.addService(getServiceType("HTTPS"));
             OnmsNode n = builder.getCurrentNode();
             assertNotNull(n);
-            m_nodeDao.save(n);
-            m_nodeDao.flush();
+            new TransactionTemplate(m_transactionManager).execute(status -> {
+                m_nodeDao.save(n);
+                m_nodeDao.flush();
+                return null;
+            });
         }
 
         m_collector = new HttpCollector();

@@ -87,7 +87,7 @@ public class GenericHibernateAccessor extends HibernateDaoSupport implements Gen
     @Override
     public <T> List<T> executeNativeQuery(String sql, Map<String, Object> parameterMap) {
         final List result = getHibernateTemplate().execute(session -> {
-            final Query query = session.createSQLQuery(sql);
+            final Query query = session.createNativeQuery(sql);
             if (parameterMap != null) {
                 parameterMap.entrySet().forEach(entry -> {
                     if (entry.getValue() instanceof Collection) {
