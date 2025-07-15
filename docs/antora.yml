@@ -27,6 +27,7 @@ asciidoc:
     jasperreportsversion: '6.3.0'
     latest-meridian-stable: '2023'
     postgresql-version: '15'
+    jmx-prom-exporter-version: '1.3.0'
 nav:
 - modules/ROOT/index.adoc
 - modules/releasenotes/nav.adoc

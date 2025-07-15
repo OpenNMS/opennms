@@ -1,5 +1,5 @@
 [template]
-src = "org.apache.karaf.shell.cfg.tpl"
+src = "org.apache.karaf.shell.cfg.tmpl"
 dest = "/usr/share/opennms/etc/org.apache.karaf.shell.cfg"
 keys = [
     "opennms/karaf/ssh/host",
