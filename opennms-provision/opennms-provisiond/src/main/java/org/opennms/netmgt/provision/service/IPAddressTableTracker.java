@@ -120,9 +120,9 @@ public class IPAddressTableTracker extends TableTracker {
                     }
                 }
                 // Some popular vendors append the ifIndex to the instance value, and argue it is RFC 4001 compliant.
-                if (instanceIds[(instanceIds.length - 1)] == getIfIndex()) {
-                    LOG.debug("IPV4: BAD AGENT: Last instance value is the ifIndex, adjusting address index!");
-                    addressIndex = instanceIds.length - 5;
+                if (instanceIds[(instanceIds.length - 1)] == getIfIndex() && instanceIds.length > 6) {
+                    LOG.debug("IPV4: BAD AGENT: Instance is longer than expected ({}) and last instance value matches the ifIndex ({}), assuming address start on index 2", instanceIds.length, getIfIndex());
+                    addressIndex = 2;
                 } else {
                     addressIndex = instanceIds.length - 4;
                 }
@@ -138,9 +138,9 @@ public class IPAddressTableTracker extends TableTracker {
                         LOG.debug("IPV6: BAD AGENT: Could not parse raw oids as octet string", e);
                     }
                 }
-                if (instanceIds[(instanceIds.length - 1)] == getIfIndex()) {
-                    LOG.debug("IPV6: BAD AGENT: Last instance value is the ifIndex, adjusting address index!");
-                    addressIndex = instanceIds.length - 17;
+                if (instanceIds[(instanceIds.length - 1)] == getIfIndex() && instanceIds.length > 18) {
+                    LOG.debug("IPV6: BAD AGENT: Instance is longer than expected ({}) and last instance value matches the ifIndex ({}), assuming address start on index 2", instanceIds.length, getIfIndex());
+                    addressIndex = 2;
                 } else {
                     addressIndex = instanceIds.length - 16;
                 }
