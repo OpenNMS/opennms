@@ -26,21 +26,21 @@
     </reference-list>
 
     <!-- Metrics -->
-    <bean id="metricRegistry" class="com.codahale.metrics.MetricRegistry"/>
-    <service ref="metricRegistry" interface="com.codahale.metrics.MetricSet">
+    <bean id="telemetryMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <service ref="telemetryMetricRegistry" interface="com.codahale.metrics.MetricSet">
         <service-properties>
             <entry key="name" value="Telemetryd" />
             <entry key="description" value="Telemetryd related metrics" />
         </service-properties>
     </service>
-    <bean id="metricRegistryJmxReporterBuilder" class="com.codahale.metrics.jmx.JmxReporter" factory-method="forRegistry">
-        <argument ref="metricRegistry"/>
+    <bean id="telemetryRegistryJmxReporterBuilder" class="com.codahale.metrics.jmx.JmxReporter" factory-method="forRegistry">
+        <argument ref="telemetryMetricRegistry"/>
     </bean>
-    <bean id="metricRegistryDomainedJmxReporterBuilder" factory-ref="metricRegistryJmxReporterBuilder" factory-method="inDomain">
+    <bean id="telemetryRegistryDomainedJmxReporterBuilder" factory-ref="telemetryRegistryJmxReporterBuilder" factory-method="inDomain">
         <argument value="org.opennms.netmgt.telemetry"/>
     </bean>
-    <bean id="metricRegistryJmxReporter"
-          factory-ref="metricRegistryJmxReporterBuilder"
+    <bean id="telemetryRegistryJmxReporter"
+          factory-ref="telemetryRegistryDomainedJmxReporterBuilder"
           factory-method="build"
           init-method="start"
           destroy-method="stop" />
@@ -49,7 +49,7 @@
         <property name="adapterRegistryDelegate" ref="adapterRegistry"/>
         <property name="listenerRegistryDelegate" ref="listenerRegistry"/>
         <property name="parserRegistryDelegate" ref="parserRegistry"/>
-        <property name="metricRegistry" ref="metricRegistry"/>
+        <property name="metricRegistry" ref="telemetryMetricRegistry"/>
     </bean>
     <service interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" ref="telemetryRegistry" />
 </blueprint>
