@@ -144,6 +144,14 @@ public class CollectionSetDTO implements CollectionSet {
         this.agent = agent;
     }
 
+    public long countMetrics() {
+        long count = 0;
+        for (CollectionResourceDTO entry : this.collectionResources) {
+            count += entry.getAttributes().size();
+        }
+        return count;
+    }
+
     private Set<CollectionResource> buildCollectionResources() {
         final Set<CollectionResource> collectionResources = new LinkedHashSet<>();
         for (CollectionResourceDTO entry : this.collectionResources) {
