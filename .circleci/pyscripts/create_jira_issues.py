@@ -177,6 +177,13 @@ def format_vulnerability_details(vulnerability):
         f"*Title:* {vulnerability['Title']}\n\n"
     )
 
+def extract_component_from_target(target):
+    components = ["minion", "sentinel", "opennms-core"]
+    for component in components:
+        if component in target:
+            return component
+    return None
+
 def create_issue_for_package(package_name, vulnerabilities):
     severity_levels = set([v['Severity'] for v in vulnerabilities])
     priority_name = "Trivial"
@@ -189,7 +196,10 @@ def create_issue_for_package(package_name, vulnerabilities):
     elif "LOW" in severity_levels:
         priority_name = "Low"
 
-    summary = f"Trivy Bug: Vulnerabilities in {package_name}"
+    component = extract_component_from_target(vulnerabilities[0]['Target'])
+    component_prefix = f"[{component}] " if component else ""
+
+    summary = f"Trivy Bug: Vulnerabilities in {package_name}({component_prefix})"
     vulnerabilities_list = "\n".join([format_vulnerability_details(v) for v in vulnerabilities])
     description = (
         f"**Package Name:** {package_name}\n\n"
