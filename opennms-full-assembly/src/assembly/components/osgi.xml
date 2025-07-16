@@ -31,6 +31,8 @@
         <exclude>**/commons-io/commons-io/2.8.0/*</exclude>
         <exclude>**/commons-io/commons-io/2.13.0</exclude>
         <exclude>**/commons-io/commons-io/2.13.0/*</exclude>
+        <exclude>/org/eclipse/jetty/**/9.4.52.v20230823</exclude>
+        <exclude>/org/eclipse/jetty/**/9.4.52.v20230823/*</exclude>
       </excludes>
     </fileSet>
   </fileSets>
