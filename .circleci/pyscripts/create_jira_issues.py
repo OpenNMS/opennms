@@ -177,12 +177,14 @@ def format_vulnerability_details(vulnerability):
         f"*Title:* {vulnerability['Title']}\n\n"
     )
 
-def extract_component_from_target(target):
-    components = ["minion", "sentinel", "opennms-core"]
-    for component in components:
-        if component in target:
-            return component
-    return None
+def extract_component_and_architecture(target):
+    components = ["minion", "sentinel", "horizon"]
+    architectures = ["arm64", "amd64"]
+
+    found_component = next((c for c in components if c in target), None)
+    found_arch = next((a for a in architectures if a in target), None)
+
+    return found_component, found_arch
 
 def create_issue_for_package(package_name, vulnerabilities):
     severity_levels = set([v['Severity'] for v in vulnerabilities])
@@ -196,10 +198,11 @@ def create_issue_for_package(package_name, vulnerabilities):
     elif "LOW" in severity_levels:
         priority_name = "Low"
 
-    component = extract_component_from_target(vulnerabilities[0]['Target'])
-    component_prefix = f"[{component}] " if component else ""
+    component, arch = extract_component_and_architecture(vulnerabilities[0]['Target'])
+    component_label = f"{component}-{arch}" if component and arch else component or ""
+    component_prefix = f"[{component_label}] " if component_label else ""
 
-    summary = f"Trivy Bug: Vulnerabilities in {package_name}({component_prefix})"
+    summary = f"{component_prefix}Trivy Bug: Vulnerabilities in {package_name}"
     vulnerabilities_list = "\n".join([format_vulnerability_details(v) for v in vulnerabilities])
     description = (
         f"**Package Name:** {package_name}\n\n"
