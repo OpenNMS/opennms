@@ -216,7 +216,7 @@
     :visible="preferencesVisible"
   >
   </NodePreferencesDialog>
-  <NodesAdvanceFiltersDrawer />
+  <NodeAdvancedFiltersDrawer/>
 </template>
 
 <script setup lang="ts">
@@ -256,7 +256,7 @@ import Search from '@featherds/icon/action/Search'
 import FilterAlt from '@featherds/icon/action/FilterAlt'
 import Cancel from '@featherds/icon/navigation/Cancel'
 import { FeatherChip, FeatherChipList } from '@featherds/chips'
-import NodesAdvanceFiltersDrawer from './NodesAdvanceFiltersDrawer.vue'
+import NodeAdvancedFiltersDrawer from './NodeAdvancedFiltersDrawer.vue'
 import { IAutocompleteItemType } from '@featherds/autocomplete'
 
 const menuStore = useMenuStore()
