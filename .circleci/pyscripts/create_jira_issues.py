@@ -35,6 +35,7 @@ BLOCKLIST = {
     "python-unversioned-command",
     "openssl-libs",
     "org.apache.camel:camel-core",
+    "java-17-openjdk-headless",
     "CVE-2022-41721",
     "CVE-2022-41723",
     "CVE-2022-0839",
@@ -50,6 +51,9 @@ BLOCKLIST = {
     "CVE-2024-45338",
     "CVE-2024-2961", 
     "CVE-2020-11971",
+    "CVE-2025-30749",
+    "CVE-2025-50059",
+    "CVE-2025-50106"
 }
 
 processed_packages = set()
