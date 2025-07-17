@@ -485,11 +485,11 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         }
         Collections.sort(actualAddrs);
         Collections.sort(expectedAddrs);
-        System.out.println(expectedAddrs);
-        System.out.println(actualAddrs);
+        System.out.println("Expected: " + expectedAddrs.toString());
+        System.out.println("Actual:   " + actualAddrs.toString());
         assertEquals("Count of expected and actual IPAddresses does not match", expectedAddrs.size(), actualAddrs.size());
         assertTrue("Expected and Actual IpInterfaces do not match", expectedAddrs.containsAll(actualAddrs));
-        assertTrue("Expected and Actual IpInterfaces do not match", actualAddrs.containsAll(expectedAddrs));
+        assertTrue("Actual and Expected IpInterfaces do not match", actualAddrs.containsAll(expectedAddrs));
     }
 
     /**
