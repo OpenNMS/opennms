@@ -422,7 +422,9 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         assertEquals(3, getServiceTypeDao().countAll());
         //Verify snmpInterface count
         assertEquals(0, getSnmpInterfaceDao().countAll());
-
+       
+        // Don't resolve addresses 
+        System.setProperty("org.opennms.provisiond.reverseResolveRequisitionIpInterfaceHostnames", "false");
         final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation(), null);
         runScan(scan);
 
