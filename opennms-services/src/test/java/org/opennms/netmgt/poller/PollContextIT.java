@@ -65,6 +65,8 @@ import org.opennms.netmgt.xml.event.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 /**
  * Represents a PollContextTest 
@@ -118,6 +120,9 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
 
     @Autowired
     DistPollerDao m_distPollerDao;
+
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
 
 	@Override
 	public void setTemporaryDatabase(MockDatabase database) {
@@ -386,9 +391,12 @@ public class PollContextIT implements TemporaryDatabaseAware<MockDatabase> {
         Assert.assertNotNull(m_pathOutageManager);
         OnmsNode node = m_nodeDao.get(1);
         Assert.assertNotNull(node);
-        OnmsPathOutage pathOutage = new OnmsPathOutage(node, InetAddressUtils.addr("169.254.0.1"), "ICMP");
-        m_pathOutageDao.save(pathOutage);
-        m_pathOutageDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            OnmsPathOutage pathOutage = new OnmsPathOutage(node, InetAddressUtils.addr("169.254.0.1"), "ICMP");
+            m_pathOutageDao.save(pathOutage);
+            m_pathOutageDao.flush();
+            return null;
+        });
         m_pollerConfig.setPathOutageEnabled(true);
         CriticalPath path = m_pathOutageManager.getCriticalPath(1);
         Assert.assertEquals(InetAddrUtils.addr("169.254.0.1"), path.getIpAddress());

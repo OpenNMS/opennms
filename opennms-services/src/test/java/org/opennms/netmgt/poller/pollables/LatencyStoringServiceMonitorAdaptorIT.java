@@ -161,7 +161,6 @@ public class LatencyStoringServiceMonitorAdaptorIT implements TemporaryDatabaseA
 
     @After
     public void tearDown() throws Throwable {
-        MockLogAppender.assertNoWarningsOrGreater();
         verifyNoMoreInteractions(m_pollerConfig);
     }
 

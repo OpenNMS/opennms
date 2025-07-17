@@ -134,21 +134,22 @@ public class AlarmLifecycleListenerManagerIT implements TemporaryDatabaseAware<M
     public void setUp() {
         // Async.
         m_eventMgr.setSynchronous(false);
+        transactionTemplate.execute(status -> {
+            m_database.setDistPoller(m_distPollerDao.whoami().getId());
+            // Events need database IDs to make alarmd happy
+            m_eventMgr.setEventWriter(m_database);
 
-        m_database.setDistPoller(m_distPollerDao.whoami().getId());
-        // Events need database IDs to make alarmd happy
-        m_eventMgr.setEventWriter(m_database);
+            // Events need to real nodes too
+            final OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
+            node.setId(1);
+            m_nodeDao.save(node);
 
-        // Events need to real nodes too
-        final OnmsNode node = new OnmsNode(m_locationDao.getDefaultLocation(), "node1");
-        node.setId(1);
-        m_nodeDao.save(node);
+            // Register!
+            m_alarmLifecycleListenerManager.onListenerRegistered(this, Collections.emptyMap());
 
-        // Register!
-        m_alarmLifecycleListenerManager.onListenerRegistered(this, Collections.emptyMap());
-        
-        m_alarmPersisterImpl.setLegacyAlarmState(true);
-
+            m_alarmPersisterImpl.setLegacyAlarmState(true);
+            return null;
+        });
         // Fire it up
         m_alarmd.start();
     }

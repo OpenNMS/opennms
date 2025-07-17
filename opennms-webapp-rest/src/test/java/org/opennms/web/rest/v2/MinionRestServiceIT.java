@@ -38,6 +38,8 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -67,23 +69,31 @@ public class MinionRestServiceIT extends AbstractSpringJerseyRestTestCase {
     @Autowired
     MinionDao m_minionDao;
 
+    @Autowired
+    PlatformTransactionManager m_transactionManager;
+
     @Override
     protected void afterServletStart() throws Exception {
-
-        final OnmsMinion minion = new OnmsMinion("12345", "Here", "Started", new Date());
-        minion.setProperty("Foo", "Bar");
-        m_minionDao.save(minion);
-        m_minionDao.save(new OnmsMinion("23456", "There", "Stopped", new Date()));
-        m_minionDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            final OnmsMinion minion = new OnmsMinion("12345", "Here", "Started", new Date());
+            minion.setProperty("Foo", "Bar");
+            m_minionDao.save(minion);
+            m_minionDao.save(new OnmsMinion("23456", "There", "Stopped", new Date()));
+            m_minionDao.flush();
+            return null;
+        });
     }
 
     @Override
     protected void beforeServletDestroy() throws Exception {
-        final Collection<OnmsMinion> minions = m_minionDao.findAll();
-        for (final OnmsMinion minion : minions) {
-            m_minionDao.delete(minion);
-        }
-        m_minionDao.flush();
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            final Collection<OnmsMinion> minions = m_minionDao.findAll();
+            for (final OnmsMinion minion : minions) {
+                m_minionDao.delete(minion);
+            }
+            m_minionDao.flush();
+            return null;
+        });
     }
 
     @Test

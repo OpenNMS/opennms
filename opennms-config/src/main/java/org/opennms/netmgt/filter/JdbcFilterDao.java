@@ -424,7 +424,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
             LOG.warn("Filter Parse Exception occurred testing rule \"{}\" for matching results.", rule, e);
             throw new FilterParseException("Filter Parse Exception occurred testing rule \"" + rule + "\" for matching results: " + e.getLocalizedMessage(), e);
         } catch (final SQLException e) {
-            LOG.warn("SQL Exception occurred testing rule \"{}\" for matching results.", e);
+            LOG.warn("SQL Exception occurred testing rule \"{}\" for matching results.", rule, e);
             throw new FilterParseException("SQL Exception occurred testing rule \""+ rule + "\" for matching results: " + e.getLocalizedMessage(), e);
         } catch (final Throwable e) {
             LOG.error("Exception getting database connection.", e);

@@ -76,6 +76,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 import com.google.common.collect.ImmutableMap;
 
@@ -119,6 +121,9 @@ public class NotificationManagerIT implements InitializingBean {
 	@Autowired
 	private CategoryDao m_categoryDao;
 
+    @Autowired
+    private PlatformTransactionManager m_transactionManager;
+
     private NotificationManagerImpl m_notificationManager;
     private NotifdConfigManager m_configManager;
 
@@ -131,7 +136,6 @@ public class NotificationManagerIT implements InitializingBean {
     }
 
     @Before
-    @Transactional(readOnly = false)
     public void setUp() throws Exception {
         // Initialize Filter DAO
         DatabaseSchemaConfigFactory.init();
@@ -144,73 +148,84 @@ public class NotificationManagerIT implements InitializingBean {
         m_configManager = new MockNotifdConfigManager(ConfigurationTestUtils.getConfigForResourceWithReplacements(this, "notifd-configuration.xml"));
         m_notificationManager = new NotificationManagerIT.NotificationManagerImpl(m_configManager, m_dataSource);
 
-        OnmsNode node;
-        OnmsIpInterface ipInterface;
-        OnmsMonitoredService service;
-        OnmsServiceType serviceType;
+        // Create test data in a transaction
+        new TransactionTemplate(m_transactionManager).execute(status -> {
+            OnmsNode node;
+            OnmsIpInterface ipInterface;
+            OnmsMonitoredService service;
+            OnmsServiceType serviceType;
 
+            OnmsCategory category1 = new OnmsCategory("CategoryOne");
+            m_categoryDao.save(category1);
+            OnmsCategory category2 = new OnmsCategory("CategoryTwo");
+            m_categoryDao.save(category2);
+            OnmsCategory category3 = new OnmsCategory("CategoryThree");
+            m_categoryDao.save(category3);
+            OnmsCategory category4 = new OnmsCategory("CategoryFour");
+            m_categoryDao.save(category4);
+            m_categoryDao.flush();
 
-        OnmsCategory category1 = new OnmsCategory("CategoryOne");
-        m_categoryDao.save(category1);
-        OnmsCategory category2 = new OnmsCategory("CategoryTwo");
-        m_categoryDao.save(category2);
-        OnmsCategory category3 = new OnmsCategory("CategoryThree");
-        m_categoryDao.save(category3);
-        OnmsCategory category4 = new OnmsCategory("CategoryFour");
-        m_categoryDao.save(category4);
+            serviceType = new OnmsServiceType("ICMP");
+            m_serviceTypeDao.save(serviceType);
 
-        serviceType = new OnmsServiceType("ICMP");
-        m_serviceTypeDao.save(serviceType);
+            serviceType = new OnmsServiceType("HTTP");
+            m_serviceTypeDao.save(serviceType);
+            m_serviceTypeDao.flush();
 
-        serviceType = new OnmsServiceType("HTTP");
-        m_serviceTypeDao.save(serviceType);
+            // node 1
+            node = new OnmsNode(m_locationDao.getDefaultLocation(), "node 1");
+            node.addCategory(category1);
+            node.addCategory(category2);
+            node.addCategory(category3);
+            node1 = node;
 
-        // node 1
-        node = new OnmsNode(m_locationDao.getDefaultLocation(), "node 1");
-        node.addCategory(category1);
-        node.addCategory(category2);
-        node.addCategory(category3);
-        node1 = node;
+            ipInterface = new OnmsIpInterface(addr("192.168.1.1"), node);
+            ipInterfaceOnNode1 = ipInterface;
+            service = new OnmsMonitoredService(ipInterface, serviceType);
+            m_nodeDao.save(node);
+            m_nodeDao.flush();
 
-        ipInterface = new OnmsIpInterface(addr("192.168.1.1"), node);
-        ipInterfaceOnNode1 = ipInterface;
-        service = new OnmsMonitoredService(ipInterface, serviceType);
-        m_nodeDao.save(node);
+            // node 2
+            node = new OnmsNode(m_locationDao.getDefaultLocation(), "node 2");
+            node.addCategory(category1);
+            node.addCategory(category2);
+            node.addCategory(category4);
+            m_nodeDao.save(node);
 
-        // node 2
-        node = new OnmsNode(m_locationDao.getDefaultLocation(), "node 2");
-        node.addCategory(category1);
-        node.addCategory(category2);
-        node.addCategory(category4);
-        m_nodeDao.save(node);
+            ipInterface = new OnmsIpInterface(addr("192.168.1.1"), node);
+            m_ipInterfaceDao.save(ipInterface);
+            service = new OnmsMonitoredService(ipInterface, serviceType);
+            m_serviceDao.save(service);
 
-        ipInterface = new OnmsIpInterface(addr("192.168.1.1"), node);
-        m_ipInterfaceDao.save(ipInterface);
-        service = new OnmsMonitoredService(ipInterface, serviceType);
-        m_serviceDao.save(service);
+            ipInterface = new OnmsIpInterface(addr("0.0.0.0"), node);
+            m_ipInterfaceDao.save(ipInterface);
+            m_ipInterfaceDao.flush();
 
-        ipInterface = new OnmsIpInterface(addr("0.0.0.0"), node);
-        m_ipInterfaceDao.save(ipInterface);
+            // node 3
+            node = new OnmsNode(m_locationDao.getDefaultLocation(), "node 3");
+            m_nodeDao.save(node);
 
-        // node 3
-        node = new OnmsNode(m_locationDao.getDefaultLocation(), "node 3");
-        m_nodeDao.save(node);
+            ipInterface = new OnmsIpInterface(addr("192.168.1.2"), node);
+            m_ipInterfaceDao.save(ipInterface);
+            service = new OnmsMonitoredService(ipInterface, serviceType);
+            m_serviceDao.save(service);
+            m_serviceDao.flush();
 
-        ipInterface = new OnmsIpInterface(addr("192.168.1.2"), node);
-        m_ipInterfaceDao.save(ipInterface);
-        service = new OnmsMonitoredService(ipInterface, serviceType);
-        m_serviceDao.save(service);
+            // node 4 has an interface, but no services
+            node = new OnmsNode(m_locationDao.getDefaultLocation(), "node 4");
+            m_nodeDao.save(node);
 
-        // node 4 has an interface, but no services
-        node = new OnmsNode(m_locationDao.getDefaultLocation(), "node 4");
-        m_nodeDao.save(node);
+            ipInterface = new OnmsIpInterface(addr("192.168.1.3"), node);
+            m_ipInterfaceDao.save(ipInterface);
+            m_ipInterfaceDao.flush();
 
-        ipInterface = new OnmsIpInterface(addr("192.168.1.3"), node);
-        m_ipInterfaceDao.save(ipInterface);
-
-        // node 5 has no interfaces
-        node = new OnmsNode(m_locationDao.getDefaultLocation(), "node 5");
-        m_nodeDao.save(node);
+            // node 5 has no interfaces
+            node = new OnmsNode(m_locationDao.getDefaultLocation(), "node 5");
+            m_nodeDao.save(node);
+            m_nodeDao.flush();
+            
+            return null;
+        });
     }
     
     @Test
@@ -441,25 +456,27 @@ public class NotificationManagerIT implements InitializingBean {
 
     @Test
     @JUnitTemporaryDatabase
-    @Transactional(readOnly = false)
     public void canMatchEventParametersWhenAcknowledgingNotices() throws IOException, SQLException {
         // Insert some event in the database with a few event parameters
-        OnmsEvent dbEvent = new OnmsEvent();
-        dbEvent.setDistPoller(m_distPollerDao.whoami());
-        dbEvent.setEventUei(EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI);
-        dbEvent.setEventCreateTime(new Date());
-        dbEvent.setEventLog("Y");
-        dbEvent.setEventDisplay("Y");
-        dbEvent.setEventSeverity(OnmsSeverity.CRITICAL.getId());
-        dbEvent.setEventSource("test");
-        dbEvent.setEventTime(new Date());
-        dbEvent.setNode(node1);
-        dbEvent.setEventParameters(Arrays.asList(
-                new OnmsEventParameter(dbEvent, "some-parameter", "some-specific-value", "string"),
-                new OnmsEventParameter(dbEvent, "some-other-parameter", "some-other-specific-value", "string")
-        ));
-        m_eventDao.save(dbEvent);
-        m_eventDao.flush();
+        OnmsEvent dbEvent = new TransactionTemplate(m_transactionManager).execute(status -> {
+            OnmsEvent event = new OnmsEvent();
+            event.setDistPoller(m_distPollerDao.whoami());
+            event.setEventUei(EventConstants.SERVICE_UNRESPONSIVE_EVENT_UEI);
+            event.setEventCreateTime(new Date());
+            event.setEventLog("Y");
+            event.setEventDisplay("Y");
+            event.setEventSeverity(OnmsSeverity.CRITICAL.getId());
+            event.setEventSource("test");
+            event.setEventTime(new Date());
+            event.setNode(node1);
+            event.setEventParameters(Arrays.asList(
+                    new OnmsEventParameter(event, "some-parameter", "some-specific-value", "string"),
+                    new OnmsEventParameter(event, "some-other-parameter", "some-other-specific-value", "string")
+            ));
+            m_eventDao.save(event);
+            m_eventDao.flush();
+            return event;
+        });
 
         // Create some notification referencing the event we just created
         Notification notification = new Notification();

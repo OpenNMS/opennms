@@ -63,7 +63,6 @@
                 hibernate.cache=false
                 hibernate.cache.use_query_cache=false
                 hibernate.jdbc.batch_size=0
-                hibernate.id.optimizer.pooled.prefer_lo=true
                 <!-- hibernate.show_sql=true -->
                 <!-- hibernate.format_sql=true -->
             </value>
