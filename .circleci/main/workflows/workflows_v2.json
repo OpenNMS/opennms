@@ -284,7 +284,8 @@
                 "docker-publish-account"
             ],
             "requires": [
-                "minion-image-single-arch-linux-amd64-trivy"
+                "minion-image-single-arch-linux-amd64-trivy",
+                "horizon-image-single-arch-linux-amd64-trivy-analyze"
             ]
         },        
         "horizon-image-single-arch-linux-amd64": {
@@ -338,7 +339,9 @@
                 "docker-publish-account"
             ],
             "requires": [
-                "sentinel-image-single-arch-linux-amd64-trivy"
+                "sentinel-image-single-arch-linux-amd64-trivy",
+                "horizon-image-single-arch-linux-amd64-trivy-analyze",
+                "minion-image-single-arch-linux-amd64-trivy-analyze"
             ]
         },        
         "minion-image-single-arch": {
