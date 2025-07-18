@@ -25,10 +25,15 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 
+import org.opennms.core.ipc.twin.api.TwinPublisher;
+import org.opennms.core.ipc.twin.api.TwinSubscriber;
+import org.opennms.distributed.core.api.Identity;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.NullValue;
 
 import com.google.common.collect.ImmutableMap;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedValue;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.InformationElementProvider;
 
 public class InformationElementDatabase {
     public static class Key {
@@ -62,7 +67,7 @@ public class InformationElementDatabase {
 
     @FunctionalInterface
     public interface ValueParserFactory {
-        InformationElement parser(final String name, final Optional<Semantics> semantics);
+        InformationElement parser(final InformationElementDatabase database, final String name, final Optional<Semantics> semantics);
     }
 
     public interface Adder {
@@ -73,44 +78,55 @@ public class InformationElementDatabase {
                          final int informationElementNumber,
                          final ValueParserFactory parserFactory,
                          final String name,
-                         final Optional<Semantics> semantics) {
-            this.add(new InformationElementDatabase.Key(protocol, enterpriseNumber, informationElementNumber), parserFactory.parser(name, semantics));
+                         final Optional<Semantics> semantics,
+                         final InformationElementDatabase database) {
+            this.add(new InformationElementDatabase.Key(protocol, enterpriseNumber, informationElementNumber), parserFactory.parser(database, name, semantics));
         }
 
         default void add(final Protocol protocol,
                          final int informationElementNumber,
                          final ValueParserFactory parserFactory,
                          final String name,
-                         final Optional<Semantics> semantics) {
-            this.add(protocol, Optional.empty(), informationElementNumber, parserFactory, name, semantics);
+                         final Optional<Semantics> semantics,
+                         final InformationElementDatabase database) {
+            this.add(protocol, Optional.empty(), informationElementNumber, parserFactory, name, semantics, database);
         }
 
         default void add(final Protocol protocol,
                          final int informationElementNumber,
                          final ValueParserFactory parserFactory,
                          final String name,
-                         final Semantics semantics) {
-            this.add(protocol, Optional.empty(), informationElementNumber, parserFactory, name, Optional.of(semantics));
+                         final Semantics semantics,
+                         final InformationElementDatabase database) {
+            this.add(protocol, Optional.empty(), informationElementNumber, parserFactory, name, Optional.of(semantics), database);
         }
     }
 
     public interface Provider {
         void load(final Adder adder);
+        InformationElementDatabase getDatabase();
+        void setDatabase(final InformationElementDatabase database);
     }
 
-    public static final InformationElementDatabase instance = new InformationElementDatabase(
-            new org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.InformationElementProvider(),
-            new org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.InformationElementXmlProvider(),
-            new org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.InformationElementProvider());
 
-    private final Map<Key, InformationElement> elements;
+    private Map<Key, InformationElement> elements;
 
-    InformationElementDatabase(final Provider... providers) {
+    public InformationElementDatabase(final Identity identity, final TwinPublisher twinPublisher, final TwinSubscriber twinSubscriber) {
+        this(new org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.InformationElementProvider(),
+             new org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.InformationElementXmlProvider(identity, twinPublisher, twinSubscriber),
+             new org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.InformationElementProvider());
+    }
+
+    public InformationElementDatabase(final Provider... providers) {
+        addProviders(providers);
+    }
+
+    private void addProviders(final Provider... providers) {
         final AdderImpl adder = new AdderImpl();
 
         // Add null element - this derives from the standard but is required by some exporters
-        adder.add(Protocol.NETFLOW9, 0, NullValue::parser, "null", Optional.empty());
-        adder.add(Protocol.IPFIX, 0, NullValue::parser, "null", Optional.empty());
+        adder.add(Protocol.NETFLOW9, 0, NullValue::parser, "null", Optional.empty(), this);
+        adder.add(Protocol.IPFIX, 0, NullValue::parser, "null", Optional.empty(), this);
 
         // Load providers
         for (final Provider provider : providers) {

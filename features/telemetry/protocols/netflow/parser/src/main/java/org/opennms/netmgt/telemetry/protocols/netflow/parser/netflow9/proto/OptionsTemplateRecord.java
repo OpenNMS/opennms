@@ -31,6 +31,7 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketExcept
 import com.google.common.base.MoreObjects;
 
 import io.netty.buffer.ByteBuf;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 
 public final class OptionsTemplateRecord implements Record {
 
@@ -41,7 +42,8 @@ public final class OptionsTemplateRecord implements Record {
     public final List<ScopeFieldSpecifier> scopes;
     public final List<FieldSpecifier> fields;
 
-    public OptionsTemplateRecord(final OptionsTemplateSet set,
+    public OptionsTemplateRecord(final InformationElementDatabase informationElementDatabase,
+                                 final OptionsTemplateSet set,
                                  final OptionsTemplateRecordHeader header,
                                  final ByteBuf buffer) throws InvalidPacketException {
         this.set = Objects.requireNonNull(set);
@@ -50,7 +52,7 @@ public final class OptionsTemplateRecord implements Record {
 
         final List<ScopeFieldSpecifier> scopeFields = new LinkedList<>();
         for (int i = 0; i < this.header.optionScopeLength; i += ScopeFieldSpecifier.SIZE) {
-            final ScopeFieldSpecifier scopeField = new ScopeFieldSpecifier(buffer);
+            final ScopeFieldSpecifier scopeField = new ScopeFieldSpecifier(informationElementDatabase, buffer);
 
             // Ignore scope fields without a value so they will always match during scope resolution
             if (scopeField.fieldLength == 0) {
@@ -62,7 +64,7 @@ public final class OptionsTemplateRecord implements Record {
 
         final List<FieldSpecifier> fields = new LinkedList<>();
         for (int i = 0; i < this.header.optionLength; i += FieldSpecifier.SIZE) {
-            final FieldSpecifier field = new FieldSpecifier(buffer);
+            final FieldSpecifier field = new FieldSpecifier(informationElementDatabase, buffer);
             fields.add(field);
         }
 

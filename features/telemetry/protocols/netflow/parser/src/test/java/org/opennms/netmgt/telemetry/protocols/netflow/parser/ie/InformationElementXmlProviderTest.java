@@ -41,7 +41,7 @@ public class InformationElementXmlProviderTest {
 
         final InformationElementDatabase informationElementDatabase = new InformationElementDatabase(
                 new org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.InformationElementProvider(),
-                new org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.InformationElementXmlProvider(),
+                new org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.InformationElementXmlProvider(null, null, null),
                 new org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.InformationElementProvider());
 
         Assert.assertTrue(informationElementDatabase.lookup(Protocol.IPFIX, Optional.of(9999L), 901).isPresent());

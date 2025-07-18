@@ -40,6 +40,10 @@ import java.util.stream.Stream;
 import javax.xml.bind.DataBindingException;
 import javax.xml.bind.JAXB;
 
+import org.opennms.core.ipc.twin.api.TwinPublisher;
+import org.opennms.core.ipc.twin.api.TwinSubscriber;
+import org.opennms.distributed.core.api.Identity;
+import org.opennms.distributed.core.api.SystemType;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Semantics;
@@ -52,6 +56,28 @@ public class InformationElementXmlProvider implements InformationElementDatabase
 
     private static final Logger LOG = LoggerFactory.getLogger(InformationElementXmlProvider.class);
 
+    private InformationElementDatabase database;
+
+    public InformationElementXmlProvider(final Identity identity, final TwinPublisher twinPublisher, final TwinSubscriber twinSubscriber) {
+        if (identity.getType().equals(SystemType.Minion.name())) {
+            // Minion
+            LOG.error("BMRHGA: Type is MINION: twinPublisher={}, twinSubscriber={}", twinPublisher != null, twinSubscriber != null);
+        } else {
+            // Core or Sentinel
+            LOG.error("BMRHGA: Type is CORE/SENTINEL: twinPublisher={}, twinSubscriber={}", twinPublisher != null, twinSubscriber != null);
+        }
+    }
+
+    @Override
+    public InformationElementDatabase getDatabase() {
+        return database;
+    }
+
+    @Override
+    public void setDatabase(InformationElementDatabase database) {
+        this.database = database;
+    }
+
     private Set<File> getFiles() throws IOException {
         final Path ipfixDotD = Paths.get(System.getProperty("karaf.etc"))
                 .resolve("ipfix.d");
@@ -63,6 +89,7 @@ public class InformationElementXmlProvider implements InformationElementDatabase
                     .collect(Collectors.toSet());
         }
     }
+
     @Override
     public void load(final InformationElementDatabase.Adder adder) {
         final Set<File> files;
@@ -74,11 +101,11 @@ public class InformationElementXmlProvider implements InformationElementDatabase
             return;
         }
 
-        for(final File file : files) {
+        for (final File file : files) {
             final IpfixElements ipfixElements;
 
             try {
-                 ipfixElements = JAXB.unmarshal(file, IpfixElements.class);
+                ipfixElements = JAXB.unmarshal(file, IpfixElements.class);
             } catch (DataBindingException e) {
                 LOG.error("Cannot load file {}", file.getAbsolutePath(), e);
                 continue;
@@ -88,11 +115,11 @@ public class InformationElementXmlProvider implements InformationElementDatabase
 
             final long vendor = ipfixElements.getScope().getPen();
 
-            for(final Element element : ipfixElements.getElements()) {
+            for (final Element element : ipfixElements.getElements()) {
                 final int id = element.getId();
                 final String name = element.getName();
                 final InformationElementDatabase.ValueParserFactory valueParserFactory = InformationElementProvider.TYPE_LOOKUP.get(element.getDataType());
-                adder.add(Protocol.IPFIX, Optional.of(vendor), id, valueParserFactory, name, Optional.of(Semantics.DEFAULT));
+                adder.add(Protocol.IPFIX, Optional.of(vendor), id, valueParserFactory, name, Optional.of(Semantics.DEFAULT), this.database);
             }
         }
     }

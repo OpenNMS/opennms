@@ -36,6 +36,7 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.telemetry.listeners.Dispatchable;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.UdpParser;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header;
@@ -53,14 +54,17 @@ import io.netty.buffer.ByteBuf;
 public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispatchable {
 
     private final Netflow9MessageBuilder messageBuilder = new Netflow9MessageBuilder();
+    private final InformationElementDatabase informationElementDatabase;
 
     public Netflow9UdpParser(final String name,
                              final AsyncDispatcher<TelemetryMessage> dispatcher,
                              final EventForwarder eventForwarder,
                              final Identity identity,
                              final DnsResolver dnsResolver,
-                             final MetricRegistry metricRegistry) {
+                             final MetricRegistry metricRegistry,
+                             final InformationElementDatabase informationElementDatabase) {
         super(Protocol.NETFLOW9, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+        this.informationElementDatabase = informationElementDatabase;
     }
 
     public Netflow9MessageBuilder getMessageBuilder() {
@@ -70,7 +74,7 @@ public class Netflow9UdpParser extends UdpParserBase implements UdpParser, Dispa
     @Override
     protected RecordProvider parse(Session session, ByteBuf buffer) throws Exception {
         final Header header = new Header(slice(buffer, Header.SIZE));
-        final Packet packet = new Packet(session, header, buffer);
+        final Packet packet = new Packet(informationElementDatabase, session, header, buffer);
 
         detectClockSkew(header.unixSecs * 1000L, session.getRemoteAddress());
 
