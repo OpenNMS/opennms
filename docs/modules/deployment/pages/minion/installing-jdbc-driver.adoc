@@ -2,7 +2,7 @@
 [[install-jdbc-driver]]
 = Install JDBC Driver on Minion
 
-To detect, poll, or collect any JDBC service by Minion, you must install the corresponding JDBC driver.
+To detect, poll, or collect any JDBC service by a Minion, you must install the corresponding JDBC driver on that Minion.
 
 We reference the `repository directory` relative to the Minion home directory.
 Depending on your operating system, the home directory is `/usr/share/minion` for Debian and Ubuntu, or `/opt/minion` for CentOS and RHEL.
