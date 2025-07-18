@@ -602,3 +602,8 @@ export enum FilterTypeEnum {
   Flow = 'flow',
   Location = 'location'
 }
+
+export enum Direction {
+  Left = 'left',
+  Right = 'right',
+}
