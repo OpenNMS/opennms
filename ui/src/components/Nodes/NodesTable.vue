@@ -484,7 +484,6 @@ const removeItem = (item: IAutocompleteItemType, type: FilterTypeEnum) => {
       nodeStructureStore.removeFlow(item);
       break;
     case FilterTypeEnum.Location:
-      console.log("locaationparam", item)
       nodeStructureStore.removeLocation(item);
       break;
     default:
