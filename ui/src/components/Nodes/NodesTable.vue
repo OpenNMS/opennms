@@ -100,22 +100,53 @@
           >
             <thead>
               <tr>
-                <th scope="column" />
+                <th v-if="canNavigateLeft">
+                  <div @click="navigateColumns(Direction.Left)">
+                    <FeatherIcon
+                      :icon="ChevronLeft"
+                      class="edit-icon"
+                    />
+                    <FeatherIcon
+                      :icon="ChevronRight"
+                      class="edit-icon"
+                    />
+                  </div>
+                </th>
+
                 <template
-                  v-for="column in nodeStructureStore.columns"
+                  v-for="column in visibleColumns"
                   :key="column.id"
                 >
                   <FeatherSortHeader
+                    v-if="column.id !== 'ipaddress'"
                     scope="col"
                     :property="column.id"
                     :sort="sortStateForId(column.id)"
-                    v-on:sort-changed="sortChanged"
-                    v-if="column.selected && column.id !== 'ipaddress'"
+                    @sort-changed="sortChanged"
                   >
                     {{ column.label }}
                   </FeatherSortHeader>
-                  <th v-if="column.selected && column.id === 'ipaddress'">{{ column.label }}</th>
+                  <th v-else>{{ column.label }}</th>
                 </template>
+                <th
+                  v-if="canNavigateRight"
+                  class="navigation-cell"
+                >
+                  <div
+                    class="icon-container"
+                    @click="navigateColumns(Direction.Right)"
+                  >
+                    <FeatherIcon
+                      :icon="ChevronLeft"
+                      class="edit-icon"
+                    />
+                    <FeatherIcon
+                      :icon="ChevronRight"
+                      class="edit-icon"
+                    />
+                  </div>
+                </th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -123,16 +154,12 @@
                 v-for="node in nodes"
                 :key="node.id"
               >
-                <td>
-                  <NodeActionsDropdown
-                    :baseHref="mainMenu.baseHref"
-                    :node="node"
-                    :triggerNodeInfo="onNodeInfo"
-                  />
-                </td>
-
+                <td
+                  v-if="canNavigateLeft"
+                  class="navigation-cell"
+                ></td>
                 <template
-                  v-for="column in nodeStructureStore.columns"
+                  v-for="column in visibleColumns"
                   :key="column.id"
                 >
                   <td v-if="isSelectedColumn(column, 'id')">
@@ -188,6 +215,26 @@
                     <FlowTooltipCell :node="node" />
                   </td>
                 </template>
+
+                <td
+                  v-if="canNavigateRight"
+                  class="navigation-cell"
+                ></td>
+                <td>
+                  <FeatherButton @click="() => onNodeLinkClick(node.id)">
+                    <FeatherIcon
+                      :icon="Edit"
+                      class="edit-icon"
+                    />
+                  </FeatherButton>
+
+                  <NodeActionsDropdown
+                    :baseHref="mainMenu.baseHref"
+                    :node="node"
+                    :triggerNodeInfo="onNodeInfo"
+                    class="triple-icon"
+                  />
+                </td>
               </tr>
             </tbody>
           </table>
@@ -216,23 +263,26 @@
     :visible="preferencesVisible"
   >
   </NodePreferencesDialog>
-  <NodeAdvancedFiltersDrawer/>
+  <NodeAdvancedFiltersDrawer />
 </template>
 
 <script setup lang="ts">
-import { markRaw } from 'vue'
+import { markRaw, ref, reactive, computed, watch, nextTick } from 'vue'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Settings from '@featherds/icon/action/Settings'
+import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
+import ChevronRight from '@featherds/icon/navigation/ChevronRight'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
-
+import Edit from '@featherds/icon/action/Edit'
 import useSnackbar from '@/composables/useSnackbar'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import {
+  Direction,
   FeatherSortObject,
   FilterTypeEnum,
   Node,
@@ -264,9 +314,31 @@ const nodeStructureStore = useNodeStructureStore()
 const nodeStore = useNodeStore()
 const { showSnackBar } = useSnackbar()
 const settingsIcon = markRaw(Settings)
-
 const { generateBlob, generateDownload, getExportData } = useNodeExport()
 const { buildUpdatedNodeStructureQueryParameters } = useNodeQuery()
+const visibleColumnStart = ref(0)
+const visibleColumnsCount = 5
+
+const visibleColumns = computed(() => {
+  return nodeStructureStore.columns
+    .filter(col => col.selected)
+    .slice(visibleColumnStart.value, visibleColumnStart.value + visibleColumnsCount)
+})
+
+const canNavigateLeft = computed(() => visibleColumnStart.value > 0)
+const canNavigateRight = computed(() =>
+  visibleColumnStart.value + visibleColumnsCount <
+  nodeStructureStore.columns.filter(col => col.selected).length
+)
+
+const navigateColumns = (direction: Direction) => {
+  if (direction === Direction.Left && canNavigateLeft.value) {
+    visibleColumnStart.value -= visibleColumnsCount
+  } else if (direction === Direction.Right && canNavigateRight.value) {
+    visibleColumnStart.value += visibleColumnsCount
+  }
+}
+
 
 const sortStates: any = reactive({
   id: SORT.NONE,
@@ -412,7 +484,6 @@ const removeItem = (item: IAutocompleteItemType, type: FilterTypeEnum) => {
       nodeStructureStore.removeFlow(item);
       break;
     case FilterTypeEnum.Location:
-      console.log("locaationparam",item)
       nodeStructureStore.removeLocation(item);
       break;
     default:
@@ -540,6 +611,22 @@ table {
   display: inline-block;
   gap: 0.5rem;
   align-items: center;
+}
+
+.edit-icon {
+  font-size: 20px;
+}
+
+.triple-icon {
+  margin-left: 7px;
+}
+
+.navigation-cell {
+  width: 10px;
+}
+
+.icon-container {
+  display: flex;
 }
 </style>
 
