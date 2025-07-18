@@ -21,14 +21,49 @@
  */
 package org.opennms.web.rest.v2;
 
+import org.codehaus.jackson.JsonParser;
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.map.DeserializationContext;
+import org.codehaus.jackson.map.JsonMappingException;
+import org.codehaus.jackson.map.TypeDeserializer;
+import org.codehaus.jackson.map.annotate.JsonDeserialize;
+import org.codehaus.jackson.map.deser.std.StdScalarDeserializer;
+
 import javax.xml.bind.annotation.XmlRootElement;
+import java.io.IOException;
 
 @XmlRootElement
 public class GeolocationQueryDTO {
     private String strategy;
-
     private String severityFilter;
 
+    static public class CustomBooleanSerializer extends StdScalarDeserializer<Boolean> {
+
+        public CustomBooleanSerializer() {
+            super(Boolean.class);
+        }
+
+        public Boolean deserialize(final JsonParser jsonParser, final DeserializationContext deserializationContext) throws JsonProcessingException, IOException {
+            try {
+                return this._parseBoolean(jsonParser, deserializationContext);
+            } catch (final JsonMappingException e) {
+                throw new JsonMappingException("Error mapping JSON to Boolean value, details omitted.");
+            }
+        }
+
+        public Boolean deserializeWithType(final JsonParser jsonParser, final DeserializationContext deserializationContext, final TypeDeserializer typeDeserializer) throws JsonProcessingException, IOException {
+            try {
+                return this._parseBoolean(jsonParser, deserializationContext);
+            } catch (final JsonMappingException e) {
+                throw new JsonMappingException("Error mapping JSON to Boolean value, details omitted.");
+            }
+        }
+    }
+
+    /**
+     * Use of a custom deserializer to prevent the incorrect value from being returned to the requester. See NMS-18052.
+     */
+    @JsonDeserialize(using = CustomBooleanSerializer.class)
     private boolean includeAcknowledgedAlarms;
 
     public String getStrategy() {
