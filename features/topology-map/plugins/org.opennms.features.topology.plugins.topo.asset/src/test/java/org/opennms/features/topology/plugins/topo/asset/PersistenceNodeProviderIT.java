@@ -44,6 +44,8 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -68,23 +70,27 @@ public class PersistenceNodeProviderIT {
     @Autowired
     private GenericPersistenceAccessor genericPersistenceAccessor;
 
+    @Autowired
+    private PlatformTransactionManager transactionManager;
+
     @Before
     public void setUp() {
-        OnmsNode node1 = new NodeBuilder().withLabel("Node 1").getNode();
-        nodeDao.save(node1);
+        new TransactionTemplate(transactionManager).execute(status -> {
+            OnmsNode node1 = new NodeBuilder().withLabel("Node 1").getNode();
+            nodeDao.save(node1);
 
-        OnmsNode parentNode = new NodeBuilder().withLabel("Node Parent").withForeignId("parentForeignId").withForeignSource("parentForeignSource").getNode();
-        nodeDao.save(parentNode);
+            OnmsNode parentNode = new NodeBuilder().withLabel("Node Parent").withForeignId("parentForeignId").withForeignSource("parentForeignSource").getNode();
+            nodeDao.save(parentNode);
 
-        OnmsNode node2 = new NodeBuilder()
-                .withLabel("Node 2")
-                .withCategories("Server")
-                .withForeignId("1234")
-                .withForeignSource("dummmy")
-                .withOperatingSystem("Windows")
-                .withSysname("Digger")
-                .withSyslocation("Moon")
-                .withAssets()
+            OnmsNode node2 = new NodeBuilder()
+                    .withLabel("Node 2")
+                    .withCategories("Server")
+                    .withForeignId("1234")
+                    .withForeignSource("dummmy")
+                    .withOperatingSystem("Windows")
+                    .withSysname("Digger")
+                    .withSyslocation("Moon")
+                    .withAssets()
                     .withAddress1("Address 1")
                     .withAddress2("Address 2")
                     .withBuilding("Building")
@@ -115,11 +121,13 @@ public class PersistenceNodeProviderIT {
                     .withThresholdCategory("ThresholdCategory")
                     .withVendor("Vendor")
                     .withZip("Zip")
-                .done()
-                .getNode();
-        node2.getCategories().forEach(c -> categoryDao.save(c));
-        node2.setParent(parentNode);
-        nodeDao.save(node2);
+                    .done()
+                    .getNode();
+            node2.getCategories().forEach(c -> categoryDao.save(c));
+            node2.setParent(parentNode);
+            nodeDao.save(node2);
+            return null;
+        });
     }
 
     /**

@@ -62,18 +62,19 @@ public class CharacterUserType implements UserType {
 
     @Override
     public Object nullSafeGet(final ResultSet rs, final String[] names, final SharedSessionContractImplementor session, final Object owner) throws HibernateException, SQLException {
-        final Character c = CharacterType.INSTANCE.nullSafeGet(rs, names[0], session);
+        String value = rs.getString(names[0]);
+        final Character c = (value != null && value.length() > 0) ? value.charAt(0) : null;
         return c == null ? null : String.valueOf(c);
     }
 
     @Override
     public void nullSafeSet(final PreparedStatement st, final Object value, final int index, final SharedSessionContractImplementor session) throws HibernateException, SQLException {
         if (value == null) {
-            CharacterType.INSTANCE.nullSafeSet(st, null, index, session);
+            st.setNull(index, java.sql.Types.CHAR);
         } else if (value instanceof Character) {
-            CharacterType.INSTANCE.nullSafeSet(st, (Character)value, index, session);
+            st.setString(index, value.toString());
         } else if (value instanceof String) {
-            CharacterType.INSTANCE.nullSafeSet(st, ((String)value).charAt(0), index, session);
+            st.setString(index, String.valueOf(((String)value).charAt(0)));
         }
     }
 

@@ -62,21 +62,24 @@ public class PrimaryTypeUserType implements UserType {
 
     @Override
     public Object nullSafeGet(final ResultSet rs, final String[] names, final SharedSessionContractImplementor session, final Object owner) throws HibernateException, SQLException {
-        final Character c = CharacterType.INSTANCE.nullSafeGet(rs, names[0], session);
+        String value = rs.getString(names[0]);
+        final Character c = (value != null && value.length() > 0) ? value.charAt(0) : null;
         return PrimaryType.get(c);
     }
 
     @Override
     public void nullSafeSet(final PreparedStatement st, final Object value, final int index, final SharedSessionContractImplementor session) throws HibernateException, SQLException {
         if (value == null) {
-            CharacterType.INSTANCE.nullSafeSet(st, null, index, session);
+            st.setNull(index, java.sql.Types.CHAR);
         } else if (value instanceof PrimaryType) {
-            CharacterType.INSTANCE.nullSafeSet(st, ((PrimaryType)value).getCharCode(), index, session);
+            Character charValue = ((PrimaryType)value).getCharCode();
+            st.setString(index, charValue != null ? charValue.toString() : null);
         } else if (value instanceof Character) {
-            CharacterType.INSTANCE.nullSafeSet(st, (Character)value, index, session);
+            st.setString(index, value.toString());
         } else if (value instanceof String) {
             // let PrimaryType validate it as a "good" value
-            CharacterType.INSTANCE.nullSafeSet(st, PrimaryType.get((String)value).getCharCode(), index, session);
+            Character charValue = PrimaryType.get((String)value).getCharCode();
+            st.setString(index, charValue != null ? charValue.toString() : null);
         }
     }
 
