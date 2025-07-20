@@ -173,7 +173,7 @@ jobs:
             target/artifacts/packages/sentinel
 
   core-oci:
-    if: "!contains(github.event.commits[0].message, '[skip core-oci]')"
+    if: "!contains(github.event.commits[0].message, '[skip minion-oci]') || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')"
     needs:
       - integration-tests
       - e2e-tests-core
@@ -233,7 +233,7 @@ jobs:
           tags: quay.io/bluebird/${{ env.OCI_REPOSITORY }}:${{ env.TAG }},quay.io/bluebird/${{ env.OCI_REPOSITORY }}:latest
 
   minion-oci:
-    if: "!contains(github.event.commits[0].message, '[skip minion-oci]')"
+    if: "!contains(github.event.commits[0].message, '[skip minion-oci]') || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')"
     needs:
       - integration-tests
       - e2e-tests-core
@@ -300,7 +300,7 @@ jobs:
           tags: quay.io/bluebird/${{ env.OCI_REPOSITORY }}:${{ env.TAG }},quay.io/bluebird/${{ env.OCI_REPOSITORY }}:latest
 
   sentinel-oci:
-    if: "!contains(github.event.commits[0].message, '[skip sentinel-oci]')"
+    if: "!contains(github.event.commits[0].message, '[skip minion-oci]') || github.ref == 'refs/heads/main' || startsWith(github.ref, 'refs/tags/v')"
     needs:
       - integration-tests
       - e2e-tests-core
