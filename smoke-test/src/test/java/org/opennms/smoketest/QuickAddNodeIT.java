@@ -73,7 +73,7 @@ public class QuickAddNodeIT extends OpenNMSSeleniumIT {
 
     @Test
     public void testQuickAddNode() throws Exception {
-        clickMenuItem("manageInventoryMenu", "Add A Single Node");
+        clickMenuItem("manageInventoryMenu", "Add a Single Node");
 
         Thread.sleep(5000);
 
