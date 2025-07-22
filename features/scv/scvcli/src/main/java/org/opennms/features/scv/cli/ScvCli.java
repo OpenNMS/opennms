@@ -22,11 +22,8 @@
 package org.opennms.features.scv.cli;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.Properties;
 import java.util.function.Function;
-
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -88,18 +85,9 @@ public class ScvCli {
     private  String lookupKeyStoreType() {
         String keyStoreType = SecureCredentialsVault.KeyStoreType.JCEKS.toString();
         try {
+
             // Try to get the OpenNMS home directory from the environment variable
             String opennmsHome = System.getenv("OPENNMS_HOME");
-
-            // Check if the path from the environment variable exists
-            if(!Files.exists(Path.of(opennmsHome))) {
-                // If not, load properties from the classpath resource 'scvcli-filtered.properties'
-                Properties properties = new Properties();
-                properties.load(ScvCli.class.getResourceAsStream("/scvcli-filtered.properties"));
-
-                // Get the 'install.dir' property which may contain the OpenNMS home path
-                opennmsHome = properties.getProperty("install.dir");
-            }
 
             // Get the keystore type from SCV properties, if specified
             Properties scvProps = ScvUtils.loadScvProperties(opennmsHome);
