@@ -21,6 +21,7 @@ const pluginStore = usePluginStore()
 onMounted(() => {
   menuStore.getMainMenu()
   menuStore.getNotificationSummary()
+  menuStore.loadSideMenuExpanded()
   pluginStore.getPlugins()
 })
 </script>

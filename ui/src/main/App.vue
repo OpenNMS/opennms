@@ -51,6 +51,7 @@ onMounted(() => {
   infoStore.getInfo()
   menuStore.getMainMenu()
   menuStore.getNotificationSummary()
+  menuStore.loadSideMenuExpanded()
   monitoringSystemStore.getMainMonitoringSystem()
   nodeStructureStore.getCategories()
   nodeStructureStore.getMonitoringLocations()
