@@ -12,10 +12,10 @@
     </template>
 
     <template v-slot:center>
-        <Search class="search-left-margin" />
+        <Search class="search-left-margin" id="onms-central-search-control" />
 
         <!-- Provision/Quick add node menu -->
-        <div class="quick-add-node-wrapper">
+        <div v-if="displayAddNodeButton" class="quick-add-node-wrapper">
           <FeatherButton
             primary
             v-if="mainMenu.provisionMenu"
@@ -59,6 +59,7 @@ const outsideClick = ref()
 const userNotificationsMenu = ref()
 
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
+const displayAddNodeButton = computed(() => (mainMenu?.value.displayAddNodeButton ?? false))
 
 const formattedDate = computed<string>(() => mainMenu.value?.formattedDate ?? '')
 const formattedTime = computed<string>(() => mainMenu.value?.formattedTime ?? '')
