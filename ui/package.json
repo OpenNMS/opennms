@@ -6,6 +6,7 @@
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc --noEmit && vite build --base=/opennms/ui/",
+    "build:all": "yarn run build && yarn run build:menu",
     "build:menu": "vue-tsc --noEmit && vite build --config ./vite.config.menu.ts --base=/opennms/ui/",
     "build:dev": "vue-tsc --noEmit && vite build --base=/opennms/ui/ --minify false",
     "watch": "vue-tsc --noEmit && vite build --base=/opennms/ui/ --watch",

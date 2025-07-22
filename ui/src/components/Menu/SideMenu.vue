@@ -5,7 +5,7 @@
       :items="topPanels"
       v-model="isExpanded"
       @update:modelValue="(val: any) => isExpanded = !!val"
-      pushedSelector=".app-layout"
+      :pushedSelector="pushedSelector"
       menuTitle="OpenNMS"
       menuHeader
       menuFooter
@@ -27,6 +27,13 @@ import { Plugin } from '@/types'
 import { MainMenu, MenuItem } from '@/types/mainMenu'
 import { computePluginRelLink, createFakePlugin, createMenuItem, createTopMenuItem } from './utils'
 import useMenuIcons from './useMenuIcons'
+
+const props = defineProps({
+  pushedSelector: {
+    type: String,
+    required: true
+  }
+})
 
 const TOP_MENU_ID_PREFIX = 'opennms-menu-id-'
 

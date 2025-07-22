@@ -1,6 +1,9 @@
 <template>
   <Menubar />
-  <SideMenu />
+  <SideMenu
+    pushedSelector="#content"
+  />
+
 </template>
 
 <script setup lang="ts">

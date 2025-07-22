@@ -2,7 +2,9 @@
   <FeatherAppLayout content-layout="full">
     <template v-slot:header>
       <Menubar />
-      <SideMenu />
+      <SideMenu
+        pushedSelector=".app-layout"
+      />
     </template>
 
     <div class="main-content">
