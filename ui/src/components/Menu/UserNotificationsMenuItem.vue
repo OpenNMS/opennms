@@ -5,7 +5,16 @@
     @update:modelValue="(val: any) => updateDisplay(val)"
   >
     <template v-slot:trigger="{ attrs, on }">
-      <div @mouseenter="showMenu">
+      <div @mouseenter="showMenu" class="user-notification-badge-wrapper">
+        <span
+          :class="['notification-badge-pill', userNotificationBadgeClass]">
+          {{ notificationSummary.userUnacknowledgedCount }}
+        </span>
+        <span
+          :class="['notification-badge-pill', teamNotificationBadgeClass]">
+          {{ notificationSummary.teamUnacknowledgedCount }}
+        </span>
+
         <FeatherButton link href="#" v-bind="attrs" v-on="on" class="menubar-dropdown-button-dark">
           <FeatherIcon
             :icon="noticeStatusDisplay?.iconComponent"
@@ -60,7 +69,7 @@
         <div class="menubar-dropdown-item-content">
           <div class="notification-dropdown-item-content dropdown-menu-wrapper">
             <div @click="onNotificationItemClick(item)" class="notification-dropdown-item-content-button">
-              <i :class="`notification-badge-pill badge-severity-${item?.severity?.toLocaleLowerCase()}`" />
+              <i :class="`notification-badge-pill badge-severity-${item?.severity?.toLocaleLowerCase() ?? 'indeterminate'}`" />
               <div class="full-width-left">
                 <div>
                   <span class="font-weight-bold">
@@ -200,6 +209,31 @@ const notificationsShowMoreLink = computed<string>(() =>
   mainMenu.value.userNotificationMenu?.items?.filter(item => item.id === 'userNotificationUser')[0].url || ''
 )
 
+const userNotificationBadgeClass = computed<string>(() => {
+  if (notificationSummary.value.userUnacknowledgedCount === 0) {
+    return 'badge-severity-cleared'
+  }
+
+  if (!notificationSummary.value.userUnacknowledgedNotifications ||
+      !notificationSummary.value.userUnacknowledgedNotifications.notification) {
+    return 'badge-severity-indeterminate'
+  }
+
+  const severities = ['cleared', 'indeterminate', 'warning', 'minor', 'major', 'critical']
+
+  const severityIndexList = notificationSummary.value.userUnacknowledgedNotifications
+    .notification.map(n => severities.indexOf(n.severity?.toLowerCase() ?? 'indeterminate')) || []
+
+  const maxSeverityIndex = Math.max.apply(Math, severityIndexList)
+  const maxSeverity = severities[maxSeverityIndex]
+
+  return `badge-severity-${maxSeverity}`
+})
+
+const teamNotificationBadgeClass = computed<string>(() =>
+  notificationSummary.value.teamUnacknowledgedCount === 0 ? 'badge-severity-cleared' : 'badge-info'
+)
+
 const computeLink = (url: string) => {
   const baseLink = mainMenu.value?.baseHref || import.meta.env.VITE_BASE_URL || ''
   return `${baseLink}${url}`
@@ -277,6 +311,14 @@ const onNotificationItemClick = (item: OnmsNotification) => {
   }
 }
 
+div.user-notification-badge-wrapper {
+  .menubar-dropdown-button-dark {
+    :deep(svg.feather-icon) {
+      vertical-align: -0.5rem;
+    }
+  }
+}
+
 // should match menubar-dropdown-item-content in UserSelfServiceMenu
 .menubar-dropdown-item-content {
   padding-top: 0.25rem;
@@ -321,6 +363,7 @@ const onNotificationItemClick = (item: OnmsNotification) => {
   padding-right: 6px;
   margin-left: 4px;
   margin-right: 2px;
+  line-height: 3rem;
   background-color: #ffffff;
   color: #131736; // --feather-surface-dark
   border-radius: .8rem;

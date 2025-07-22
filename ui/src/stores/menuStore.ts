@@ -23,11 +23,10 @@
 import { defineStore } from 'pinia'
 import API from '@/services'
 import { MainMenu, NotificationSummary } from '@/types/mainMenu'
-import { defaultMainMenu, defaultNotificationSummary } from './fakeMenuData'
+import { defaultNotificationSummary } from './fakeMenuData'
 import { getIsSideMenuExpanded, loadIsSideMenuExpanded, setIsSideMenuExpanded } from '@/services/menuService'
 
 // Set this to true to use local/fake data instead of making API call
-const useFakeMenuData = false
 const useFakeUserNotificationData = false
 
 export const useMenuStore = defineStore('menuStore', () => {
@@ -37,12 +36,6 @@ export const useMenuStore = defineStore('menuStore', () => {
   const isSideMenuExpanded = ref<boolean | null>(null)
 
   const getMainMenu = async () => {
-    // for using local data for dev/debugging purposes
-    if (useFakeMenuData) {
-      mainMenu.value = defaultMainMenu
-      return
-    }
-
     const resp = await API.getMainMenu()
 
     if (resp) {
