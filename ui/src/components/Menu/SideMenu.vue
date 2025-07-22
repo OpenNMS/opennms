@@ -67,11 +67,11 @@ const createTopMenuIcon = (menuItem: MenuItem) => {
 }
 
 const onPerformLogout = async () => {
-    console.log('In onPerformLogout...')
+  console.log('In onPerformLogout...')
 
-    await performLogout()
+  await performLogout()
 
-    console.log('| exiting onPerformLogout...')
+  console.log('| exiting onPerformLogout...')
 }
 
 const onLockMenu = () => {
@@ -192,29 +192,29 @@ const createLockMenu = (isLocked: boolean) => {
 }
 
 const topPanels = computed<Panel[]>(() => {
-  // if user not logged in, don't display any menus
+  // If user not logged in, don't display any menus
   if (!mainMenu.value.username) {
     return []
   }
 
-  // normal menus
+  // Normal menus
   const allMenus = [
     ...mainMenu.value.menus ?? []
   ]
 
-  // flows menu
+  // Flows menu
   if (mainMenu.value.flowsMenu?.url?.length) {
     allMenus.push(createFlowsMenu())
   }
 
-  // plugins menu
+  // Plugins menu
   if (plugins.value && plugins.value.length > 0) {
     allMenus.push(createPluginsMenu(false))
   } else {
     allMenus.push(createPluginsMenu(true))
   }
 
-  // lock/unlock menu
+  // Lock/unlock menu
   allMenus.push(createSeparatorMenu(), createLockMenu(menuStore.sideMenuExpanded() ?? false))
 
   return allMenus.map(i => createPanel(i) as Panel)
