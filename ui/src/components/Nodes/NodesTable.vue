@@ -30,7 +30,7 @@
               label="Search node label"
             >
               <template #pre>
-                <FeatherIcon :icon="icons.Search" />
+                <FeatherIcon :icon="Search" />
               </template>
             </FeatherInput>
           </div>
@@ -268,9 +268,6 @@ const sortStateForId = (label: string) => {
   return SORT.NONE
 }
 
-const icons = markRaw({
-  Search,
-})
 const cancelIcon = computed(() => Cancel)
 
 const currentSearch = ref(nodeStructureStore.queryFilter.searchTerm || '')
@@ -388,6 +385,8 @@ const updateQuery = (options?: { orderBy?: string, order?: SORT }) => {
       : nodeStore.nodeQueryParameters
 
   const updatedParams = buildUpdatedNodeStructureQueryParameters(queryParamsToUse, nodeStructureStore.queryFilter)
+
+  console.log('updatedParams 1', updatedParams)
   queryParameters.value = updatedParams
 
   nodeStore.getNodes(updatedParams, true)

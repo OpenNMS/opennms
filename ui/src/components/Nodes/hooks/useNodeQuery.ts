@@ -96,9 +96,17 @@ export const useNodeQuery = () => {
    * combined with the given NodeQueryFilter.
    */
   const buildUpdatedNodeStructureQueryParameters = (queryParameters: QueryParameters, filter: NodeQueryFilter) => {
+    console.log('buildUpdatedNodeStructureQueryParameters 1', queryParameters)
+    console.log('buildUpdatedNodeStructureQueryParameters 2', filter)
+    
     const searchQuery = buildNodeStructureQuery(filter)
+
+    console.log('searchQuery', searchQuery)
+    
     const searchQueryParam: QueryParameters = { _s: searchQuery }
     const updatedParams = { ...queryParameters, ...searchQueryParam }
+
+    console.log('updatedParams', updatedParams)
 
     // if there is no search query, remove the '_s' property entirely so it doesn't
     // get put into the API request query string
@@ -237,7 +245,8 @@ const buildSearchQuery = (searchTerm: string) => {
   if (searchTerm?.length > 0) {
     const startStar = searchTerm.startsWith('*') ? '' : '*'
     const endStar = searchTerm.endsWith('*') ? '' : '*'
-    return `node.label==${startStar}${searchTerm}${endStar}`
+    const string = `label==${startStar}${searchTerm}${endStar};ipInterface.ipHostName==${startStar}${searchTerm}${endStar};node.ipInterfaces.ipAddress==${startStar}${searchTerm}${endStar}`
+    return string
   }
 
   return ''
