@@ -31,10 +31,67 @@
 | Modify a report with the given ID.
 |===
 
-== POSTs (creating data)
+== POSTs (Creating Data)
+POST requires XML using `application/xml` as its `Content-Type`.
+|===
+| Resource            | Description
+| `/ksc`              | Create a report from an XML payload.
+|===
 
-Documentation incomplete see issue: link:http://issues.opennms.org/browse/NMS-7162[NMS-7162].
+== DELETEs (Removing Data)
+|===
+| Resource            | Description
+| `none`              | _not supported_
+|===
 
-== DELETEs (removing data)
+== Examples using cURL
 
-Documentation incomplete see issue: link:http://issues.opennms.org/browse/NMS-7162[NMS-7162].
+.Get a list of all KSC reports
+[source,bash]
+----
+curl -u admin:admin "http://127.0.0.1:8980/opennms/rest/ksc"
+----
+
+.Response
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<kscReports count="1" offset="0" totalCount="1">
+  <kscReport id="0" label="Report_Title"/>
+</kscReports>
+----
+
+.Create a report
+[source,bash]
+----
+curl -u admin:admin -H 'Content-Type: application/xml' -d @ksc.xml http://localhost:8980/opennms/rest/ksc
+----
+
+.XML Payload ksc.xml
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<kscReport
+  id="1"<1>
+  label="JVM Heap"<2>
+  show_timespan_button="true"<3>
+  show_graphtype_button="true"<4>
+  graphs_per_line="2"><5>
+  <kscGraph
+     title="Heap Memory Usage"<6>
+     timespan="7_day"<7>
+     graphtype="heap.memory"<8>
+     resourceId="node[selfmonitor:1].interfaceSnmp[opennms-jvm]"<9>
+     />
+</kscReport>
+----
+<1>	id is required.
+<2>	label is required.
+<3>	Optional; defaults to false
+<4>	Optional; defaults to false
+<5>	Optional; default 1
+<6>	Graph title is required
+<7>	Optional, defaults to 7 days
+<8>	From graph definition in snmp-graph.properties.d, this is the report.name
+<9>	Required; the timeseries xref:rest/resources.adoc#gets-reading-data[resourceId].
+
