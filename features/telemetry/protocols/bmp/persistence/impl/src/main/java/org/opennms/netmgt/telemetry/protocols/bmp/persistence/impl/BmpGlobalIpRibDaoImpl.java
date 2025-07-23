@@ -96,7 +96,7 @@ public class BmpGlobalIpRibDaoImpl extends AbstractDaoHibernate<BmpGlobalIpRib, 
     public int deleteGlobalRibsBeforeGivenTime(long timeInSecs) {
         Instant instantForGivenTime = Instant.now().minusSeconds(timeInSecs);
         Date givenTime = Date.from(instantForGivenTime);
-        String hql = "DELETE FROM BmpGlobalIpRib where shouldDelete = true and timeStamp < ?";
+        String hql = "DELETE FROM BmpGlobalIpRib where shouldDelete = true and timeStamp < ?1";
         Object[] values = {givenTime};
         return bulkDelete(hql, values);
     }

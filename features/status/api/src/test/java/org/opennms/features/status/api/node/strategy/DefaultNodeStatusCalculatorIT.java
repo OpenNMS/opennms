@@ -58,10 +58,12 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.utils.QueryParameters;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Sets;
+import org.springframework.transaction.support.TransactionTemplate;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations = {
@@ -99,18 +101,23 @@ public class DefaultNodeStatusCalculatorIT {
     @Autowired
     private DefaultNodeStatusCalculator statusCalculator;
 
+    @Autowired
+    private PlatformTransactionManager transactionManager;
+
     @Before
     public void before() {
         databasePopulator.populateDatabase();
+        new TransactionTemplate(transactionManager).execute(status -> {
+            alarmDao.findAll().forEach(alarm -> alarmDao.delete(alarm));
+            alarmDao.flush();
 
-        alarmDao.findAll().forEach(alarm -> alarmDao.delete(alarm));
-        alarmDao.flush();
+            eventDao.findAll().forEach(e -> eventDao.delete(e));
+            eventDao.flush();
 
-        eventDao.findAll().forEach(e -> eventDao.delete(e));
-        eventDao.flush();
-
-        outageDao.findAll().forEach(o -> outageDao.delete(o));
-        outageDao.flush();
+            outageDao.findAll().forEach(o -> outageDao.delete(o));
+            outageDao.flush();
+            return null;
+        });
     }
 
     @After
