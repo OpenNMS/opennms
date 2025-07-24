@@ -157,12 +157,6 @@ watch(
   padding-top: 20px;
 }
 
-.last-filter-autocomplete{
-  :deep(.feather-input-sub-text) {
-    display: none !important;
-  }
-}
-
 .column-row {
   display: flex;
   gap: 1rem;
