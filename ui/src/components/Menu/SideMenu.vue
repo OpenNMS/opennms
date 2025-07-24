@@ -5,7 +5,7 @@
       :items="topPanels"
       v-model="isExpanded"
       @update:modelValue="(val: any) => isExpanded = !!val"
-      pushedSelector=".app-layout"
+      :pushedSelector="pushedSelector"
       menuTitle="OpenNMS"
       menuHeader
       menuFooter
@@ -28,6 +28,13 @@ import { MainMenu, MenuItem } from '@/types/mainMenu'
 import { computePluginRelLink, createFakePlugin, createMenuItem, createTopMenuItem } from './utils'
 import useMenuIcons from './useMenuIcons'
 
+const props = defineProps({
+  pushedSelector: {
+    type: String,
+    required: true
+  }
+})
+
 const TOP_MENU_ID_PREFIX = 'opennms-menu-id-'
 
 const menuStore = useMenuStore()
@@ -35,7 +42,7 @@ const pluginStore = usePluginStore()
 
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 const plugins = computed<Plugin[]>(() => pluginStore.plugins)
-const isExpanded = ref(mainMenu.value?.sideMenuInitialExpand ?? false)
+const isExpanded = ref<boolean>(menuStore.sideMenuExpanded() ?? false)
 
 const { getIcon } = useMenuIcons()
 
@@ -60,11 +67,19 @@ const createTopMenuIcon = (menuItem: MenuItem) => {
 }
 
 const onPerformLogout = async () => {
-    console.log('In onPerformLogout...')
+  console.log('In onPerformLogout...')
 
-    await performLogout()
+  await performLogout()
 
-    console.log('| exiting onPerformLogout...')
+  console.log('| exiting onPerformLogout...')
+}
+
+const onLockMenu = () => {
+  menuStore.setSideMenuExpanded(true)
+}
+
+const onUnlockMenu = () => {
+  menuStore.setSideMenuExpanded(false)
 }
 
 const createMenuListEntry = (menuItem: MenuItem) => {
@@ -72,6 +87,10 @@ const createMenuListEntry = (menuItem: MenuItem) => {
 
   if (menuItem.action === 'logout') {
     onClick = onPerformLogout
+  } else if (menuItem.action === 'lockMenu') {
+    onClick = onLockMenu
+  } else if (menuItem.action === 'unlockMenu') {
+    onClick = onUnlockMenu
   }
 
   const target = menuItem.linkTarget === '_blank' ? '_blank' : '_self'
@@ -146,6 +165,32 @@ const createFlowsMenu = () => {
   return createTopMenuItem('flowsMenu', 'Flows', [flowsMenuItem])
 }
 
+const createSeparatorMenu = () => {
+  return {
+    type: 'separator'
+  } as MenuItem
+}
+
+const createLockMenu = (isLocked: boolean) => {
+  return {
+    id: 'lockMenu',
+    name: isLocked ? 'Unlock Menu' : 'Lock Menu',
+    action: isLocked ? 'unlockMenu' : 'lockMenu',
+    url: '#',
+    locationMatch: null,
+    icon: isLocked ? 'action/Unlock' : 'action/Lock',
+    items: [
+      {
+        id: 'lockItem',
+        name: isLocked ? 'Unlock Menu' : 'Lock Menu',
+        url: '#',
+        locationMatch: null,
+        action: isLocked ? 'unlockMenu' : 'lockMenu'
+      }
+    ]
+  } as MenuItem
+}
+
 const topPanels = computed<Panel[]>(() => {
   // If user not logged in, don't display any menus
   if (!mainMenu.value.username) {
@@ -168,6 +213,9 @@ const topPanels = computed<Panel[]>(() => {
   } else {
     allMenus.push(createPluginsMenu(true))
   }
+
+  // Lock/unlock menu
+  allMenus.push(createSeparatorMenu(), createLockMenu(menuStore.sideMenuExpanded() ?? false))
 
   return allMenus.map(i => createPanel(i) as Panel)
 })

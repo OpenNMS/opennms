@@ -2,7 +2,9 @@
   <FeatherAppLayout content-layout="full">
     <template v-slot:header>
       <Menubar />
-      <SideMenu />
+      <SideMenu
+        pushedSelector=".app-layout"
+      />
     </template>
 
     <div class="main-content">
@@ -49,6 +51,7 @@ onMounted(() => {
   infoStore.getInfo()
   menuStore.getMainMenu()
   menuStore.getNotificationSummary()
+  menuStore.loadSideMenuExpanded()
   monitoringSystemStore.getMainMonitoringSystem()
   nodeStructureStore.getCategories()
   nodeStructureStore.getMonitoringLocations()

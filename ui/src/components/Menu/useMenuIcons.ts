@@ -23,12 +23,14 @@
 import IconDashboard from '@featherds/icon/action/Dashboard'
 import IconHelp from '@featherds/icon/action/Help'
 import IconHome from '@featherds/icon/action/Home'
+import IconLock from '@featherds/icon/action/Lock'
 import IconLogout from '@featherds/icon/action/LogOut'
 import IconLocation from '@featherds/icon/action/Location'
 import IconManageProfile from '@featherds/icon/action/ManageProfile'
 import IconPerson from '@featherds/icon/action/Person'
 import IconSearch from '@featherds/icon/action/Search'
 import IconContactSupport from '@featherds/icon/action/ContactSupport'
+import IconUnlock from '@featherds/icon/action/Unlock'
 import IconView from '@featherds/icon/action/View'
 import IconViewDetails from '@featherds/icon/action/ViewDetails'
 import IconWorkflow from '@featherds/icon/action/Workflow'
@@ -66,11 +68,13 @@ const useMenuIcons = () => {
 
             case 'Home': return IconHome
             case 'Location': return IconLocation
+            case 'Lock': return IconLock
             case 'Logout': return IconLogout
             case 'ManageProfile': return IconManageProfile
             case 'Person': return IconPerson
             case 'Search': return IconSearch
             case 'ContactSupport': return IconContactSupport
+            case 'Unlock': return IconUnlock
             case 'View': return IconView
             case 'ViewDetails': return IconViewDetails
             case 'Workflow': return IconWorkflow

@@ -5,7 +5,7 @@
     @update:modelValue="(val: any) => updateDisplay(val)"
   >
     <template v-slot:trigger="{ attrs, on }">
-      <div @mouseenter="showMenu">
+      <div @mouseenter="showMenu" class="self-service-menubar-icon-wrapper">
         <FeatherButton link href="#" v-bind="attrs" v-on="on" class="self-service-menubar-dropdown-button-dark">
           <FeatherIcon :icon="IconAccountCircle" class="self-service-top-icon" />
           <span class="font-weight-bold">
@@ -160,6 +160,14 @@ const onMenuItemClick = async (item: MenuItem) => {
     font-size: 0.875rem;
     padding-left: 0.1rem;
     padding-right: 0.1rem;
+  }
+}
+
+div.self-service-menubar-icon-wrapper {
+  .self-service-menubar-dropdown-button-dark {
+    :deep(svg.feather-icon) {
+      vertical-align: -0.5rem;
+    }
   }
 }
 

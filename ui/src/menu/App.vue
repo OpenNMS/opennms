@@ -1,6 +1,9 @@
 <template>
   <Menubar />
-  <SideMenu />
+  <SideMenu
+    pushedSelector="#content"
+  />
+
 </template>
 
 <script setup lang="ts">
@@ -18,6 +21,7 @@ const pluginStore = usePluginStore()
 onMounted(() => {
   menuStore.getMainMenu()
   menuStore.getNotificationSummary()
+  menuStore.loadSideMenuExpanded()
   pluginStore.getPlugins()
 })
 </script>
