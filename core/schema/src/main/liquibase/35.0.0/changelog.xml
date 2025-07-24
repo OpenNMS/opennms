@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns:ext="http://www.liquibase.org/xml/ns/dbchangelog-ext"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-2.0.xsd">
+
+    <!-- EventConf Database Schema -->
+    <changeSet author="cgorantla" id="35.0.0-eventconf-sources-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="eventconf_sources"/>
+            </not>
+        </preConditions>
+        
+        <createTable tableName="eventconf_sources">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="name" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="description" type="text"/>
+            <column name="vendor" type="varchar(128)"/>
+            <column name="file_order" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="enabled" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="event_count" type="integer" defaultValueNumeric="0"/>
+            <column name="created_time" type="timestamp with time zone">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp with time zone"/>
+            <column name="uploaded_by" type="varchar(256)"/>
+        </createTable>
+        
+        <createSequence sequenceName="eventconf_sources_id_seq" startValue="1" incrementBy="1"/>
+        
+        <createIndex tableName="eventconf_sources" indexName="idx_eventconf_sources_name">
+            <column name="name"/>
+        </createIndex>
+        
+        <createIndex tableName="eventconf_sources" indexName="idx_eventconf_sources_file_order">
+            <column name="file_order"/>
+        </createIndex>
+        
+        <createIndex tableName="eventconf_sources" indexName="idx_eventconf_sources_enabled">
+            <column name="enabled"/>
+        </createIndex>
+    </changeSet>
+
+    <changeSet author="cgorantla" id="35.0.0-eventconf-events-table">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="eventconf_events"/>
+            </not>
+        </preConditions>
+        
+        <createTable tableName="eventconf_events">
+            <column name="id" type="integer">
+                <constraints primaryKey="true" nullable="false"/>
+            </column>
+            <column name="source_id" type="integer">
+                <constraints nullable="false"/>
+            </column>
+            <column name="uei" type="varchar(256)">
+                <constraints nullable="false"/>
+            </column>
+            <column name="event_label" type="text"/>
+            <column name="description" type="text"/>
+            <column name="enabled" type="boolean" defaultValueBoolean="true">
+                <constraints nullable="false"/>
+            </column>
+            <column name="xml_content" type="text">
+                <constraints nullable="false"/>
+            </column>
+            <column name="created_time" type="timestamp with time zone">
+                <constraints nullable="false"/>
+            </column>
+            <column name="last_modified" type="timestamp with time zone"/>
+            <column name="modified_by" type="varchar(256)"/>
+        </createTable>
+        
+        <createSequence sequenceName="eventconf_events_id_seq" startValue="1" incrementBy="1"/>
+        
+        <addForeignKeyConstraint 
+            baseTableName="eventconf_events" 
+            baseColumnNames="source_id"
+            referencedTableName="eventconf_sources" 
+            referencedColumnNames="id"
+            constraintName="fk_eventconf_events_source_id"
+            onDelete="CASCADE"/>
+        
+        <createIndex tableName="eventconf_events" indexName="idx_eventconf_events_source_id">
+            <column name="source_id"/>
+        </createIndex>
+        
+        <createIndex tableName="eventconf_events" indexName="idx_eventconf_events_uei">
+            <column name="uei"/>
+        </createIndex>
+        
+        <createIndex tableName="eventconf_events" indexName="idx_eventconf_events_enabled">
+            <column name="enabled"/>
+        </createIndex>
+    </changeSet>
+
+</databaseChangeLog>
