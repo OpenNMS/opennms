@@ -35,6 +35,7 @@ BLOCKLIST = {
     "python-unversioned-command",
     "openssl-libs",
     "org.apache.camel:camel-core",
+    "java-17-openjdk-headless",
     "CVE-2022-41721",
     "CVE-2022-41723",
     "CVE-2022-0839",
@@ -50,6 +51,9 @@ BLOCKLIST = {
     "CVE-2024-45338",
     "CVE-2024-2961", 
     "CVE-2020-11971",
+    "CVE-2025-30749",
+    "CVE-2025-50059",
+    "CVE-2025-50106"
 }
 
 processed_packages = set()
@@ -177,6 +181,13 @@ def format_vulnerability_details(vulnerability):
         f"*Title:* {vulnerability['Title']}\n\n"
     )
 
+def extract_component_from_target(target):
+    components = ["minion", "sentinel", "horizon"]
+    for component in components:
+        if component in target:
+            return component
+    return None
+
 def create_issue_for_package(package_name, vulnerabilities):
     severity_levels = set([v['Severity'] for v in vulnerabilities])
     priority_name = "Trivial"
@@ -189,7 +200,10 @@ def create_issue_for_package(package_name, vulnerabilities):
     elif "LOW" in severity_levels:
         priority_name = "Low"
 
-    summary = f"Trivy Bug: Vulnerabilities in {package_name}"
+    component = extract_component_from_target(vulnerabilities[0]['Target'])
+    component_prefix = f"[{component}] " if component else ""
+
+    summary = f"{component_prefix}Trivy Bug: Vulnerabilities in {package_name}"
     vulnerabilities_list = "\n".join([format_vulnerability_details(v) for v in vulnerabilities])
     description = (
         f"**Package Name:** {package_name}\n\n"

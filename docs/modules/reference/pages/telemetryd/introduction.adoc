@@ -1,6 +1,6 @@
 [[ref-telemetryd]]
-= Telemetryd
-:description: Overview of telemetryd documentation in OpenNMS {page-component-title}.
+= Telemetry Daemon
+:description: Overview of the Telemetry Daemon documentation in OpenNMS {page-component-title}.
 
-The xref:operation:deep-dive/telemetryd/introduction.adoc[Telemetryd] service collects sensor data sent from nodes to {page-component-title}.
-You can configure Listeners and Protocols to configure the service to accept data from the specific types of devices on your network.
+The xref:operation:deep-dive/telemetryd/introduction.adoc[Telemetry Daemon] service collects sensor data sent from nodes to {page-component-title}.
+You can configure Listeners and Protocols to accept data from the specific types of devices on your network.
