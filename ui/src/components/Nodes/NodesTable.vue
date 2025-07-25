@@ -9,10 +9,13 @@
             :onJsonDownload="onJsonDownload"
           />
           <FeatherButton
-            secondary
-            @click="()=>nodeStructureStore.openColumnsDrawerModal()"
+            icon="Open Preferences"
+            @click="openPreferences"
           >
-            Customize
+            <FeatherIcon
+              :icon="settingsIcon"
+              class="node-actions-icon"
+            />
           </FeatherButton>
         </div>
       </div>
@@ -254,8 +257,13 @@
     :node="dialogNode"
   >
   </NodeDetailsDialog>
+
+  <NodePreferencesDialog
+    @close="preferencesVisible = false"
+    :visible="preferencesVisible"
+  >
+  </NodePreferencesDialog>
   <NodeAdvancedFiltersDrawer />
-  <ColumnSelectionDrawer />
 </template>
 
 <script setup lang="ts">
@@ -300,7 +308,6 @@ import Cancel from '@featherds/icon/navigation/Cancel'
 import { FeatherChip, FeatherChipList } from '@featherds/chips'
 import NodeAdvancedFiltersDrawer from './NodeAdvancedFiltersDrawer.vue'
 import { IAutocompleteItemType } from '@featherds/autocomplete'
-import ColumnSelectionDrawer from './ColumnSelectionDrawer.vue'
 
 const menuStore = useMenuStore()
 const nodeStructureStore = useNodeStructureStore()
