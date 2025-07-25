@@ -104,6 +104,11 @@ jobs:
               install \
               org.sonatype.central:central-publishing-maven-plugin:publish \
               || exit 1
+      - run:
+          name: Install Python3 and PIP3
+          command: |
+            sudo apt update
+            sudo apt install -y python3 python3-pip
       - cloudsmith/ensure-api-key
       - cloudsmith/install-cli
       - run:
