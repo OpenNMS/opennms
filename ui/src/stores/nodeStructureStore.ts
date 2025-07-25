@@ -61,21 +61,13 @@ const defaultDrawerState: DrawerState = {
   isAdvanceFilterModal: false
 }
 
-  const getDefaultDrawerState = (): DrawerState => {
-    return {
-      visible: false,
-      isAdvanceFilterModal: false
-    }
-  }
-
 export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
   const categories = ref<Category[]>([])
   const categoryCount = computed(() => categories.value.length)
   const monitoringLocations = ref<MonitoringLocation[]>([])
   const columns = ref<NodeColumnSelectionItem[]>(defaultColumns)
   const queryFilter = ref<NodeQueryFilter>(getDefaultNodeQueryFilter())
-  const drawerState = ref<DrawerState>(getDefaultDrawerState())
-  const columnsDrawerState = ref<DrawerState>(getDefaultDrawerState())
+  const drawerState = ref<DrawerState>(defaultDrawerState)
   const selectedCategories = ref<IAutocompleteItemType[]>([])
   const selectedFlows = ref<IAutocompleteItemType[]>([])
   const selectedLocations = ref<MonitoringLocation[]>([])
@@ -252,7 +244,8 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     const nodePrefs = {
       nodeColumns,
       nodeFilter: { ...queryFilter.value }
-    } as NodePreferences    
+    } as NodePreferences
+
     return nodePrefs
   }
 
@@ -295,13 +288,6 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     drawerState.value.visible = false
   }
 
-    const openColumnsDrawerModal = () => {
-    columnsDrawerState.value.visible = true
-  }
-
-  const closeColumnsDrawerModal = () => {
-    columnsDrawerState.value.visible = false
-  }
   const removeCategory = (item: IAutocompleteItemType) => {
     selectedCategories.value = selectedCategories.value.filter((i) => i._value !== item._value)
     queryFilter.value.selectedCategories = queryFilter.value.selectedCategories.filter((c) => c.id !== item._value)
@@ -348,7 +334,6 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     monitoringLocations,
     queryFilter,
     drawerState,
-    columnsDrawerState,
     clearAllFilters,
     getCategories,
     getMonitoringLocations,
@@ -377,10 +362,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     removeLocation,
     setSelectedCategories,
     setSelectedFlows,
-    setSelectedLocations,
-    openColumnsDrawerModal,
-    closeColumnsDrawerModal,
-
+    setSelectedLocations
   }
 })
 
