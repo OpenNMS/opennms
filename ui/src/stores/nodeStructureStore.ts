@@ -1,21 +1,21 @@
 ///
 /// Licensed to The OpenNMS Group, Inc (TOG) under one or more
-/// contributor license agreements.  See the LICENSE.md file
+/// contributor license agreements. See the LICENSE.md file
 /// distributed with this work for additional information
 /// regarding copyright ownership.
 ///
 /// TOG licenses this file to You under the GNU Affero General
 /// Public License Version 3 (the "License") or (at your option)
-/// any later version.  You may not use this file except in
-/// compliance with the License.  You may obtain a copy of the
+/// any later version. You may not use this file except in
+/// compliance with the License. You may obtain a copy of the
 /// License at:
 ///
-///      https://www.gnu.org/licenses/agpl-3.0.txt
+/// https://www.gnu.org/licenses/agpl-3.0.txt
 ///
 /// Unless required by applicable law or agreed to in writing,
 /// software distributed under the License is distributed on an
 /// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
-/// either express or implied.  See the License for the specific
+/// either express or implied. See the License for the specific
 /// language governing permissions and limitations under the
 /// License.
 ///
@@ -61,13 +61,21 @@ const defaultDrawerState: DrawerState = {
   isAdvanceFilterModal: false
 }
 
+const getDefaultDrawerState = (): DrawerState => {
+  return {
+    visible: false,
+    isAdvanceFilterModal: false
+  }
+}
+
 export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
   const categories = ref<Category[]>([])
   const categoryCount = computed(() => categories.value.length)
   const monitoringLocations = ref<MonitoringLocation[]>([])
   const columns = ref<NodeColumnSelectionItem[]>(defaultColumns)
   const queryFilter = ref<NodeQueryFilter>(getDefaultNodeQueryFilter())
-  const drawerState = ref<DrawerState>(defaultDrawerState)
+  const drawerState = ref<DrawerState>(getDefaultDrawerState())
+  const columnsDrawerState = ref<DrawerState>(getDefaultDrawerState())
   const selectedCategories = ref<IAutocompleteItemType[]>([])
   const selectedFlows = ref<IAutocompleteItemType[]>([])
   const selectedLocations = ref<MonitoringLocation[]>([])
@@ -113,10 +121,10 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
   }
 
   // const setSelectedCategories = async (cats: Category[]) => {
-  //   queryFilter.value = {
-  //     ...queryFilter.value,
-  //     selectedCategories: [...cats]
-  //   }
+  // queryFilter.value = {
+  // ...queryFilter.value,
+  // selectedCategories: [...cats]
+  // }
   // }
 
   const setCategoryMode = async (mode: SetOperator) => {
@@ -127,10 +135,10 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
   }
 
   // const setSelectedFlows = async (flows: string[]) => {
-  //   queryFilter.value = {
-  //     ...queryFilter.value,
-  //     selectedFlows: [...flows]
-  //   }
+  // queryFilter.value = {
+  // ...queryFilter.value,
+  // selectedFlows: [...flows]
+  // }
   // }
 
   const setSelectedMonitoringLocations = async (locations: MonitoringLocation[]) => {
@@ -145,8 +153,8 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
   }
 
   /**
-   * Set filter with IP address, clearing out any other extended search params (currently these are mutually exclusive extended searches).
-   */
+  * Set filter with IP address, clearing out any other extended search params (currently these are mutually exclusive extended searches).
+  */
   const setFilterWithIpAddress = async (ipAddress: string) => {
     queryFilter.value = {
       ...queryFilter.value,
@@ -158,8 +166,8 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
   }
 
   /**
-   * Set filter with SNMP parameters, clearing out any other extended search params.
-   */
+  * Set filter with SNMP parameters, clearing out any other extended search params.
+  */
   const setFilterWithSnmpParams = async (key: string, value: string) => {
     // key should be an actual property of NodeQuerySnmpParams
     const snmpParams = {
@@ -177,8 +185,8 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
   }
 
   /**
-   * Set filter with sys parameters, clearing out any other extended search params.
-   */
+  * Set filter with sys parameters, clearing out any other extended search params.
+  */
   const setFilterWithSysParams = async (key: string, value: string) => {
     // key should be an actual on of NodeQuerySysParams
     const sysParams = {
@@ -196,8 +204,8 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
   }
 
   /**
-   * Set filter with foreign source parameters, clearing out any other extended search params.
-   */
+  * Set filter with foreign source parameters, clearing out any other extended search params.
+  */
   const setFilterWithForeignSourceParams = async (key: string, value: string) => {
     // key should be an actual property of NodeQueryForeignSourceParams
     const foreignSourceParams = {
@@ -233,9 +241,9 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     queryFilter.value = !mode
       ? filter
       : {
-          ...filter,
-          categoryMode: mode
-        }
+        ...filter,
+        categoryMode: mode
+      }
   }
 
   const getNodePreferences = async () => {
@@ -245,7 +253,6 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
       nodeColumns,
       nodeFilter: { ...queryFilter.value }
     } as NodePreferences
-
     return nodePrefs
   }
 
@@ -288,6 +295,13 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     drawerState.value.visible = false
   }
 
+  const openColumnsDrawerModal = () => {
+    columnsDrawerState.value.visible = true
+  }
+
+  const closeColumnsDrawerModal = () => {
+    columnsDrawerState.value.visible = false
+  }
   const removeCategory = (item: IAutocompleteItemType) => {
     selectedCategories.value = selectedCategories.value.filter((i) => i._value !== item._value)
     queryFilter.value.selectedCategories = queryFilter.value.selectedCategories.filter((c) => c.id !== item._value)
@@ -334,6 +348,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     monitoringLocations,
     queryFilter,
     drawerState,
+    columnsDrawerState,
     clearAllFilters,
     getCategories,
     getMonitoringLocations,
@@ -362,7 +377,9 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     removeLocation,
     setSelectedCategories,
     setSelectedFlows,
-    setSelectedLocations
+    setSelectedLocations,
+    openColumnsDrawerModal,
+    closeColumnsDrawerModal,
+
   }
 })
-
