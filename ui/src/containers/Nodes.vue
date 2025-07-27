@@ -21,15 +21,14 @@
 </template>
   
 <script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router'
-import NodesTable from '@/components/Nodes/NodesTable.vue'
-import NodeStructurePanel from '@/components/Nodes/NodeStructurePanel.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
+import NodesTable from '@/components/Nodes/NodesTable.vue'
 import { loadNodePreferences } from '@/services/localStorageService'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { BreadCrumb, NodePreferences } from '@/types'
+import { useRoute, useRouter } from 'vue-router'
 
 const menuStore = useMenuStore()
 const nodeStructureStore = useNodeStructureStore()

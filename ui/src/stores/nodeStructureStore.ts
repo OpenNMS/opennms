@@ -233,9 +233,9 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     queryFilter.value = !mode
       ? filter
       : {
-          ...filter,
-          categoryMode: mode
-        }
+        ...filter,
+        categoryMode: mode
+      }
   }
 
   const getNodePreferences = async () => {

@@ -475,16 +475,16 @@ const onNodeLinkClick = (nodeId: number | string) => {
 const removeItem = (item: IAutocompleteItemType, type: FilterTypeEnum) => {
   switch (type) {
     case FilterTypeEnum.Category:
-      nodeStructureStore.removeCategory(item);
-      break;
+      nodeStructureStore.removeCategory(item)
+      break
     case FilterTypeEnum.Flow:
-      nodeStructureStore.removeFlow(item);
-      break;
+      nodeStructureStore.removeFlow(item)
+      break
     case FilterTypeEnum.Location:
-      nodeStructureStore.removeLocation(item);
-      break;
+      nodeStructureStore.removeLocation(item)
+      break
     default:
-      console.warn(`Unknown filter type: ${type}`);
+      console.warn(`Unknown filter type: ${type}`)
   }
 }
 
@@ -516,7 +516,7 @@ watch([() => nodeStructureStore.queryFilter], () => {
 
   updateQuery()
 },
-  { deep: true }
+{ deep: true }
 )
 </script>
 

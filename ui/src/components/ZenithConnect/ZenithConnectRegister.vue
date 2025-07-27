@@ -145,14 +145,14 @@ const onRegisterWithZenith = () => {
   const fields = validateRegistration()
 
   if (fields.length > 0) {
-      const msg = fields.join(', ')
+    const msg = fields.join(', ')
 
-      showSnackBar({
-        msg: `The following fields are required: ${msg}`,
-        error: true
-      })
+    showSnackBar({
+      msg: `The following fields are required: ${msg}`,
+      error: true
+    })
 
-      return
+    return
   }
 
   // Example callbackUrl: http://localhost:8980/opennms/ui/index.html#/zenith-connect/register-result
