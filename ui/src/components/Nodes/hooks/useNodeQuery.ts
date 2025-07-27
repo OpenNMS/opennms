@@ -237,7 +237,7 @@ const buildSearchQuery = (searchTerm: string) => {
   if (searchTerm?.length > 0) {
     const startStar = searchTerm.startsWith('*') ? '' : '*'
     const endStar = searchTerm.endsWith('*') ? '' : '*'
-    return `label==${startStar}${searchTerm}${endStar},ipInterface.ipAddress==${startStar}${searchTerm}${endStar},ipInterface.ipHostName==${startStar}${searchTerm}${endStar}`
+    return `label==${startStar}${searchTerm}${endStar},ipInterface.ipAddress==${startStar}${searchTerm}${endStar},ipInterface.ipHostName==${startStar}${searchTerm}${endStar},ipInterface.isManaged==${searchTerm}`
   }
 
   return ''

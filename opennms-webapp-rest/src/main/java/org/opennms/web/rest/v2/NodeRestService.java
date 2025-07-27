@@ -136,6 +136,8 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         // TODO: Figure out if it makes sense to search/orderBy on 2nd-level and greater JOINed properties
         //builder.alias(Aliases.monitoredService.prop("serviceType"), Aliases.serviceType.toString(), JoinType.LEFT_JOIN);
 
+        builder.distinct();
+
         // Order by label by default
         builder.orderBy("label").desc();
 
@@ -193,7 +195,7 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
                     Restrictions.or(
                             Restrictions.like(Aliases.ipInterface.prop(ipAddress), v),
                             Restrictions.like(Aliases.ipInterface.prop(ipHostName), v),
-                            Restrictions.eq(Aliases.ipInterface.prop(isManaged), v)
+                            Restrictions.like(Aliases.ipInterface.prop(isManaged), v)
                     )
             );
         }));
