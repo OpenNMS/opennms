@@ -37,16 +37,9 @@ const endpoint = '/nodes'
 const getNodes = async (queryParameters?: QueryParameters): Promise<NodeApiResponse | false> => {
   let endpointWithQueryString = ''
 
-  console.log('getNodes queryParameters', queryParameters)
-
   if (queryParameters) {
     endpointWithQueryString = queryParametersHandler(queryParameters, endpoint)
   }
-
-  console.log('endpointWithQueryString', endpointWithQueryString)
-
-  const test = await v2.get(endpoint + '/properties')
-  console.log('getNodes response', test.data)
 
   try {
     const resp = await v2.get(endpointWithQueryString || endpoint)

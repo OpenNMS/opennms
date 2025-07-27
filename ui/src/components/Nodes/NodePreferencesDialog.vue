@@ -49,6 +49,9 @@ const labels = reactive({
 
 const savePreferences = async () => {
   const nodePrefs = await nodeStructureStore.getNodePreferences()
+  if (nodePrefs.nodeFilter) {
+    nodePrefs.nodeFilter.searchTerm = ''
+  }
   saveNodePreferences(nodePrefs)
   emit('close', true)
 }

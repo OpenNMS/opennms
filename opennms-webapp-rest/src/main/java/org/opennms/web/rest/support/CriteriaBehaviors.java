@@ -288,6 +288,7 @@ public abstract class CriteriaBehaviors {
 
         IP_INTERFACE_BEHAVIORS.put("id", new CriteriaBehavior<Integer>(INT_CONVERTER));
         IP_INTERFACE_BEHAVIORS.put("ipLastCapsdPoll", new CriteriaBehavior<Date>(DATE_CONVERTER));
+        IP_INTERFACE_BEHAVIORS.put("ipHostName", new CriteriaBehavior<Character>(CHARACTER_CONVERTER));
         IP_INTERFACE_BEHAVIORS.put("ipAddress", new CriteriaBehavior<InetAddress>(INET_ADDRESS_CONVERTER));
         IP_INTERFACE_BEHAVIORS.put("netMask", new CriteriaBehavior<InetAddress>(INET_ADDRESS_CONVERTER));
         IP_INTERFACE_BEHAVIORS.put("snmpPrimary", new CriteriaBehavior<Character>(CHARACTER_CONVERTER));

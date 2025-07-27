@@ -159,28 +159,44 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.category, CriteriaBehaviors.NODE_CATEGORY_BEHAVIORS));
 
         // Use join conditions for one-to-many aliases
-        for (Map.Entry<String,CriteriaBehavior<?>> entry : CriteriaBehaviors.IP_INTERFACE_BEHAVIORS.entrySet()) {
-            map.put(Aliases.ipInterface.prop(entry.getKey()), new CriteriaBehavior(entry.getValue().getPropertyName(), entry.getValue().getConverter(), (b,v,c,w)-> {
-                b.alias(
-                    "ipInterfaces",
-                    Aliases.ipInterface.toString(),
-                    JoinType.LEFT_JOIN,
-                    Restrictions.or(Restrictions.eq(Aliases.ipInterface.prop(entry.getKey()), v), Restrictions.isNull(Aliases.ipInterface.prop(entry.getKey())))
-                );
-            }));
-        }
+//        for (Map.Entry<String,CriteriaBehavior<?>> entry : CriteriaBehaviors.IP_INTERFACE_BEHAVIORS.entrySet()) {
+//            map.put(Aliases.ipInterface.prop(entry.getKey()), new CriteriaBehavior(entry.getValue().getPropertyName(), entry.getValue().getConverter(), (b,v,c,w)-> {
+//                b.alias(
+//                    "ipInterfaces",
+//                    Aliases.ipInterface.toString(),
+//                    JoinType.LEFT_JOIN,
+//                    Restrictions.or(Restrictions.eq(Aliases.ipInterface.prop(entry.getKey()), v), Restrictions.isNull(Aliases.ipInterface.prop(entry.getKey())))
+//                );
+//            }));
+//        }
         // Also add behaviors for the String properties (which is not normally necessary
         // but is necessary here because they add BeforeVisit operations to add JOINs)
-        for (String prop : new String[] { "ipHostName", "isManaged" } ) {
-            map.put(Aliases.ipInterface.prop(prop), new CriteriaBehavior<>((String)null, String::new, (b,v,c,w)-> {
-                b.alias(
+//        for (String prop : new String[] { "ipHostName", "isManaged" } ) {
+//            map.put(Aliases.ipInterface.prop(prop), new CriteriaBehavior<>((String)null, String::new, (b,v,c,w)-> {
+//                b.alias(
+//                    "ipInterfaces",
+//                    Aliases.ipInterface.toString(),
+//                    JoinType.LEFT_JOIN,
+//                    Restrictions.or(Restrictions.eq(Aliases.ipInterface.prop(prop), v), Restrictions.isNull(Aliases.ipInterface.prop(prop)))
+//                );
+//            }));
+//        }
+
+        String ipAddress = "ipAddress";
+        String ipHostName = "ipHostName";
+        String isManaged = "isManaged";
+        map.put(Aliases.ipInterface.prop(ipAddress), new CriteriaBehavior<>((String)null, String::new, (b,v,c,w)-> {
+            b.alias(
                     "ipInterfaces",
                     Aliases.ipInterface.toString(),
                     JoinType.LEFT_JOIN,
-                    Restrictions.or(Restrictions.eq(Aliases.ipInterface.prop(prop), v), Restrictions.isNull(Aliases.ipInterface.prop(prop)))
-                );
-            }));
-        }
+                    Restrictions.or(
+                            Restrictions.like(Aliases.ipInterface.prop(ipAddress), v),
+                            Restrictions.like(Aliases.ipInterface.prop(ipHostName), v),
+                            Restrictions.eq(Aliases.ipInterface.prop(isManaged), v)
+                    )
+            );
+        }));
 
         final String ipProp = Aliases.node.prop("ipInterfaces.ipAddress");
         map.put(ipProp, new CriteriaBehavior<>(

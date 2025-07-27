@@ -26,8 +26,6 @@ const queryParametersHandler = (queryParameters: QueryParameters, endpoint: stri
   let modifiedEndpoint = endpoint + '?'
   let queryString = ''
 
-  console.log('queryParameters', queryParameters)
-
   for (const key in queryParameters) {
     queryString = `${queryString}${key}=${(queryParameters as any)[key]}&`
   }

@@ -43,8 +43,8 @@
           <div class="chip-container">
             <FeatherChipList label="Tags">
               <FeatherChip
-                v-for="cat in nodeStructureStore.selectedCategories"
-                :key="cat._value as string"
+                v-for="(cat, index) in nodeStructureStore.selectedCategories"
+                :key="`cat-${index}`"
               >
                 <template #icon>
                   <FeatherIcon
@@ -57,8 +57,8 @@
               </FeatherChip>
 
               <FeatherChip
-                v-for="flow in nodeStructureStore.selectedFlows"
-                :key="flow._value as string"
+                v-for="(flow, index) in nodeStructureStore.selectedFlows"
+                :key="`flow-${index}`"
               >
                 <template #icon>
                   <FeatherIcon
@@ -502,8 +502,6 @@ const updateQuery = (options?: { orderBy?: string, order?: SORT }) => {
       : nodeStore.nodeQueryParameters
 
   const updatedParams = buildUpdatedNodeStructureQueryParameters(queryParamsToUse, nodeStructureStore.queryFilter)
-
-  console.log('updatedParams 1', updatedParams)
   queryParameters.value = updatedParams
 
   nodeStore.getNodes(updatedParams, true)
@@ -515,9 +513,7 @@ watch([() => nodeStructureStore.queryFilter], () => {
   }
 
   updateQuery()
-},
-{ deep: true }
-)
+}, { deep: true })
 </script>
 
 <style lang="scss" scoped>
