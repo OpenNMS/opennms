@@ -198,20 +198,6 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
             );
         }));
 
-        final String ipProp = Aliases.node.prop("ipInterfaces.ipAddress");
-        map.put(ipProp, new CriteriaBehavior<>(
-                null,
-                String::new,
-                (b, v, c, w) -> {
-                    b.alias("ipInterfaces", Aliases.ipInterface.toString(), JoinType.LEFT_JOIN,
-                            Restrictions.or(
-                                    Restrictions.like(ipProp, v),  // ⬅ allows _s=ipInterfaces.ipAddress==*111*
-                                    Restrictions.isNull(ipProp)
-                            )
-                    );
-                }
-        ));
-
         map.putAll(CriteriaBehaviors.withAliasPrefix(Aliases.location, CriteriaBehaviors.MONITORING_LOCATION_BEHAVIORS));
 
         // Use join conditions for one-to-many aliases
