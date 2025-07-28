@@ -71,8 +71,8 @@ import {
   setUsageStatisticsStatus
 } from './usageStatisticsService'
 import {
- addZenithRegistration,
- getZenithRegistrations
+  addZenithRegistration,
+  getZenithRegistrations
 } from './zenithConnectService'
 
 export default {

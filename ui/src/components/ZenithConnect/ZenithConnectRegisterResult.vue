@@ -206,10 +206,10 @@ const processRegistrationResponse = async () => {
 
     status = true
   } catch (e) {
-      showSnackBar({
-        msg: 'Error registering with Zenith.',
-        error: true
-      })
+    showSnackBar({
+      msg: 'Error registering with Zenith.',
+      error: true
+    })
   } finally {
     stopSpinner()
     isProcessing.value = false
@@ -224,14 +224,14 @@ onMounted(async () => {
 
   // if registration was successful, redirect to view page
   if (status) {
-      showSnackBar({
-        msg: 'Registration was successful. Redirecting to View page...',
-        timeout: 4000
-      })
+    showSnackBar({
+      msg: 'Registration was successful. Redirecting to View page...',
+      timeout: 4000
+    })
 
-      window.setTimeout(() => {
-        router.push('/zenith-connect')
-      }, 5000);
+    window.setTimeout(() => {
+      router.push('/zenith-connect')
+    }, 5000)
   }
 })
 </script>

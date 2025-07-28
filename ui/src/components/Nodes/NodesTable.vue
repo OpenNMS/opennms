@@ -27,7 +27,7 @@
               label="Search node label"
             >
               <template #pre>
-                <FeatherIcon :icon="icons.Search" />
+                <FeatherIcon :icon="Search" />
               </template>
             </FeatherInput>
           </div>
@@ -40,8 +40,8 @@
           <div class="chip-container">
             <FeatherChipList label="Tags">
               <FeatherChip
-                v-for="cat in nodeStructureStore.selectedCategories"
-                :key="cat._value as string"
+                v-for="(cat, index) in nodeStructureStore.selectedCategories"
+                :key="`cat-${index}`"
               >
                 <template #icon>
                   <FeatherIcon
@@ -54,8 +54,8 @@
               </FeatherChip>
 
               <FeatherChip
-                v-for="flow in nodeStructureStore.selectedFlows"
-                :key="flow._value as string"
+                v-for="(flow, index) in nodeStructureStore.selectedFlows"
+                :key="`flow-${index}`"
               >
                 <template #icon>
                   <FeatherIcon
@@ -362,9 +362,6 @@ const sortStateForId = (label: string) => {
   return SORT.NONE
 }
 
-const icons = markRaw({
-  Search,
-})
 const cancelIcon = computed(() => Cancel)
 
 const currentSearch = ref(nodeStructureStore.queryFilter.searchTerm || '')
@@ -470,16 +467,16 @@ const onNodeLinkClick = (nodeId: number | string) => {
 const removeItem = (item: IAutocompleteItemType, type: FilterTypeEnum) => {
   switch (type) {
     case FilterTypeEnum.Category:
-      nodeStructureStore.removeCategory(item);
-      break;
+      nodeStructureStore.removeCategory(item)
+      break
     case FilterTypeEnum.Flow:
-      nodeStructureStore.removeFlow(item);
-      break;
+      nodeStructureStore.removeFlow(item)
+      break
     case FilterTypeEnum.Location:
-      nodeStructureStore.removeLocation(item);
-      break;
+      nodeStructureStore.removeLocation(item)
+      break
     default:
-      console.warn(`Unknown filter type: ${type}`);
+      console.warn(`Unknown filter type: ${type}`)
   }
 }
 
@@ -508,9 +505,7 @@ watch([() => nodeStructureStore.queryFilter], () => {
   }
 
   updateQuery()
-},
-  { deep: true }
-)
+}, { deep: true })
 </script>
 
 <style lang="scss" scoped>
