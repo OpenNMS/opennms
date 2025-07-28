@@ -104,13 +104,23 @@ jobs:
               install \
               org.sonatype.central:central-publishing-maven-plugin:publish \
               || exit 1
-      - run:
-          name: Install Python3 and PIP3
-          command: |
+
             sudo apt update
             sudo apt install -y python3 python3-pip
-      - cloudsmith/ensure-api-key
-      - cloudsmith/install-cli
-      - run:
-          name: Deploy to Cloudsmith
-          command: .circleci/scripts/publish-maven-cloudsmith.sh
+            if [[ $(command -v cloudsmith) == "" ]]; then
+             export PIP=$(which pip pip3 | head -1)
+              if [[ -n $PIP ]]; then
+                if which sudo > /dev/null; then
+                  sudo $PIP install cloudsmith-cli --upgrade
+                else
+                  $PIP install cloudsmith-cli --upgrade --user
+                fi
+              else
+                echo "Unable to install Cloudsmith CLI. Please install pip."
+                exit 1
+              fi
+            else
+              echo "Cloudsmith CLI is already installed."
+            fi
+          
+            .circleci/scripts/publish-maven-cloudsmith.sh
