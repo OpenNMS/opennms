@@ -28,6 +28,7 @@ import static org.junit.Assert.fail;
 import org.apache.http.auth.UsernamePasswordCredentials;
 import org.junit.Before;
 import org.junit.FixMethodOrder;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
