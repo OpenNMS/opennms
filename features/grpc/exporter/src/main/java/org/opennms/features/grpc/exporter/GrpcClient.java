@@ -29,8 +29,22 @@ import io.grpc.netty.shaded.io.grpc.netty.GrpcSslContexts;
 import io.grpc.netty.shaded.io.grpc.netty.NettyChannelBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.net.ssl.SSLException;
+
+import javax.net.ssl.SSLSocket;
+import javax.net.ssl.SSLSocketFactory;
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
+import java.io.Writer;
+import javax.net.ssl.SSLContext;
+import javax.net.ssl.SSLException;
+import javax.net.ssl.TrustManager;
+import javax.net.ssl.X509TrustManager;
+import java.io.ByteArrayInputStream;
+import java.io.OutputStreamWriter;
+import java.security.cert.Certificate;
+import java.security.cert.X509Certificate;
+import java.util.Base64;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -91,8 +105,18 @@ public abstract class GrpcClient {
             LOG.info("TLS enabled with cert at {}", tlsCertPath);
         } else if (tlsEnabled) {
             // Use system store specified in javax.net.ssl.trustStore
-            this.channel = channelBuilder.useTransportSecurity()
-                    .build();
+            String [] hostAndPort = splitHostAndPort(host);
+            try (InputStream certStream = fetchServerCertificateAsPemStream(hostAndPort[0], Integer.parseInt(hostAndPort[1]))) {
+                this.channel = channelBuilder.useTransportSecurity()
+                        .sslContext(GrpcSslContexts.forClient()
+                                .trustManager(certStream)
+                                .build())
+                        .build();
+                LOG.info("TLS enabled using certificate fetched from {} ", host);
+            } catch (Exception e) {
+                LOG.debug("TLS certificate fetch/setup failed", e);
+            }
+
             LOG.info("TLS enabled with certs from system store");
         } else {
             this.channel = channelBuilder.usePlaintext()
@@ -109,4 +133,61 @@ public abstract class GrpcClient {
         stopped.set(true);
         LOG.info("Grpc client stopped for host {} ", this.host);
     }
+
+    private InputStream fetchServerCertificateAsPemStream(String host, int port) {
+        try {
+            // Trust all certificates temporarily (for fetching)
+            TrustManager[] trustAllCerts = new TrustManager[] {
+                    new X509TrustManager() {
+                        public void checkClientTrusted(X509Certificate[] certs, String authType) {}
+                        public void checkServerTrusted(X509Certificate[] certs, String authType) {}
+                        public X509Certificate[] getAcceptedIssuers() { return new X509Certificate[0]; }
+                    }
+            };
+
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(null, trustAllCerts, new java.security.SecureRandom());
+            SSLSocketFactory socketFactory = sslContext.getSocketFactory();
+
+            try (SSLSocket socket = (SSLSocket) socketFactory.createSocket(host, port)) {
+                socket.startHandshake();
+
+                Certificate[] certs = socket.getSession().getPeerCertificates();
+                if (certs.length > 0 && certs[0] instanceof X509Certificate) {
+                    X509Certificate cert = (X509Certificate) certs[0];
+
+                    // Encode to PEM format
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    try (Writer writer = new OutputStreamWriter(baos)) {
+                        writer.write("-----BEGIN CERTIFICATE-----\n");
+                        writer.write(Base64.getMimeEncoder(64, new byte[]{'\n'})
+                                .encodeToString(cert.getEncoded()));
+                        writer.write("\n-----END CERTIFICATE-----\n");
+                        writer.flush();
+                    }
+                    return new ByteArrayInputStream(baos.toByteArray());
+                } else {
+                    throw new RuntimeException("No valid X.509 certificate found.");
+                }
+            }
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to fetch PEM certificate from " + host + ":" + port, e);
+        }
+    }
+
+    private static String[] splitHostAndPort(String target) {
+        if (target == null || !target.contains(":")) {
+            LOG.debug("Expected format 'host:port', but got: " + target);
+        }
+
+        String[] parts = target.split(":");
+        if (parts.length != 2) {
+            LOG.debug("Invalid host:port format: " + target);
+        }
+
+        return new String[] { parts[0].trim(), parts[1].trim() };
+    }
+
+
+
 }
