@@ -4,13 +4,13 @@
     data-test="left-drawer"
     @shown="() => nodeStructureStore.columnsDrawerState.visible"
     v-model="nodeStructureStore.columnsDrawerState.visible"
-    :labels="{ close: 'close', title: 'Customize Cloumns' }"
+    :labels="{ close: 'close', title: 'Customize Columns' }"
     width="55em"
   >
     <div class="feather-drawer-custom-padding">
       <section>
         <h3>Customize the available columns</h3>
-        <p>Select what columns you wish to showcase</p>
+        <p>Select which columns you wish to showcase</p>
       </section>
 
       <div class="spacer-large"></div>
