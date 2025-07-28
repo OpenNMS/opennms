@@ -322,7 +322,7 @@ describe('Nodes useNodeQuery test', () => {
         {
           limit: 10,
           offset: 20,
-          _s: 'node.label==*Node1*'
+          _s: 'label==*Node1*,ipInterface.ipAddress==*Node1*,ipInterface.ipHostName==*Node1*,ipInterface.isManaged==Node1'
         }
       ]
     ]) (
