@@ -706,6 +706,9 @@
     <feature name="opennms-snmp" version="${project.version}" description="OpenNMS :: Core :: SNMP">
         <feature>commons-lang</feature>
         <feature>org.json</feature>
+        <bundle>wrap:mvn:org.snmp4j/snmp4j-log4j/2.8.11</bundle>
+        <bundle>mvn:org.apache.logging.log4j/log4j-api/${log4j2Version}</bundle>
+        <bundle>mvn:org.apache.logging.log4j/log4j-core/${log4j2Version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.logging/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.snmp/org.opennms.core.snmp.implementations.snmp4j/${project.version}</bundle>
