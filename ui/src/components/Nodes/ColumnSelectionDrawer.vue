@@ -79,7 +79,7 @@ import { FeatherDrawer } from '@featherds/drawer'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import Cancel from '@featherds/icon/navigation/Cancel'
-import Apps from "@featherds/icon/navigation/Apps"
+import Apps from '@featherds/icon/navigation/Apps'
 import { NodeColumnSelectionItem } from '@/types'
 import { saveNodePreferences } from '@/services/localStorageService'
 

@@ -121,7 +121,7 @@ const handleCategorySearch = (query: string) => {
       )
       .map((category) => ({
         _text: category.name,
-        _value: category.id,
+        _value: category.id
       } as IAutocompleteItemType))
     categoryResults.value = filteredCategories
     loading.value = false

@@ -2,7 +2,7 @@
   <div class="card">
     <div>
       <div class="feather-row title-bar">
-        <span class="title">Structured Node List</span>
+        <span class="title">Node List</span>
         <div class="action-buttons-container">
           <NodeDownloadDropdown
             :onCsvDownload="onCsvDownload"
@@ -27,7 +27,7 @@
               label="Search node label"
             >
               <template #pre>
-                <FeatherIcon :icon="icons.Search" />
+                <FeatherIcon :icon="Search" />
               </template>
             </FeatherInput>
           </div>
@@ -40,8 +40,8 @@
           <div class="chip-container">
             <FeatherChipList label="Tags">
               <FeatherChip
-                v-for="cat in nodeStructureStore.selectedCategories"
-                :key="cat._value as string"
+                v-for="(cat, index) in nodeStructureStore.selectedCategories"
+                :key="`cat-${index}`"
               >
                 <template #icon>
                   <FeatherIcon
@@ -50,12 +50,12 @@
                     @click="removeItem(cat, FilterTypeEnum.Category)"
                   />
                 </template>
-                {{ cat._text }}
+                {{ `Category: ${cat._text}` }}
               </FeatherChip>
 
               <FeatherChip
-                v-for="flow in nodeStructureStore.selectedFlows"
-                :key="flow._value as string"
+                v-for="(flow, index) in nodeStructureStore.selectedFlows"
+                :key="`flow-${index}`"
               >
                 <template #icon>
                   <FeatherIcon
@@ -64,7 +64,7 @@
                     @click="removeItem(flow, FilterTypeEnum.Flow)"
                   />
                 </template>
-                {{ flow._text }}
+                {{ `FLow: ${flow._text}` }}
               </FeatherChip>
 
               <FeatherChip
@@ -78,7 +78,7 @@
                     @click="removeItem(loc, FilterTypeEnum.Location)"
                   />
                 </template>
-                {{ loc.name }}
+                {{ `Location: ${loc.name}` }}
               </FeatherChip>
             </FeatherChipList>
           </div>
@@ -218,11 +218,11 @@
                   class="navigation-cell"
                 ></td>
                 <td>
-                  <FeatherButton @click="() => onNodeLinkClick(node.id)">
-                    <FeatherIcon
-                      :icon="Edit"
-                      class="edit-icon"
-                    />
+                  <FeatherButton
+                    icon="Edit"
+                    @click="() => onNodeLinkClick(node.id)"
+                  >
+                    <FeatherIcon :icon="Edit" title="Edit" />
                   </FeatherButton>
 
                   <NodeActionsDropdown
@@ -259,16 +259,6 @@
 </template>
 
 <script setup lang="ts">
-import { markRaw, ref, reactive, computed, watch, nextTick } from 'vue'
-import { FeatherButton } from '@featherds/button'
-import { FeatherIcon } from '@featherds/icon'
-import Settings from '@featherds/icon/action/Settings'
-import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
-import ChevronRight from '@featherds/icon/navigation/ChevronRight'
-import { FeatherInput } from '@featherds/input'
-import { FeatherPagination } from '@featherds/pagination'
-import { FeatherSortHeader, SORT } from '@featherds/table'
-import Edit from '@featherds/icon/action/Edit'
 import useSnackbar from '@/composables/useSnackbar'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
@@ -283,30 +273,36 @@ import {
   UpdateModelFunction
 } from '@/types'
 import { MainMenu } from '@/types/mainMenu'
-
+import { IAutocompleteItemType } from '@featherds/autocomplete'
+import { FeatherButton } from '@featherds/button'
+import { FeatherChip, FeatherChipList } from '@featherds/chips'
+import { FeatherIcon } from '@featherds/icon'
+import Edit from '@featherds/icon/action/Edit'
+import FilterAlt from '@featherds/icon/action/FilterAlt'
+import Search from '@featherds/icon/action/Search'
+import Cancel from '@featherds/icon/navigation/Cancel'
+import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
+import ChevronRight from '@featherds/icon/navigation/ChevronRight'
+import { FeatherInput } from '@featherds/input'
+import { FeatherPagination } from '@featherds/pagination'
+import { FeatherSortHeader, SORT } from '@featherds/table'
+import { computed, nextTick, reactive, ref, watch } from 'vue'
+import ColumnSelectionDrawer from './ColumnSelectionDrawer.vue'
 import FlowTooltipCell from './FlowTooltipCell.vue'
 import ManagementIPTooltipCell from './ManagementIPTooltipCell.vue'
 import NodeActionsDropdown from './NodeActionsDropdown.vue'
-import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
-import NodeDetailsDialog from './NodeDetailsDialog.vue'
-import NodePreferencesDialog from './NodePreferencesDialog.vue'
-import NodeTooltipCell from './NodeTooltipCell.vue'
-import { useNodeQuery } from './hooks/useNodeQuery'
-import { useNodeExport } from './hooks/useNodeExport'
-import { getTableCssClasses } from './utils'
-import Search from '@featherds/icon/action/Search'
-import FilterAlt from '@featherds/icon/action/FilterAlt'
-import Cancel from '@featherds/icon/navigation/Cancel'
-import { FeatherChip, FeatherChipList } from '@featherds/chips'
 import NodeAdvancedFiltersDrawer from './NodeAdvancedFiltersDrawer.vue'
-import { IAutocompleteItemType } from '@featherds/autocomplete'
-import ColumnSelectionDrawer from './ColumnSelectionDrawer.vue'
+import NodeDetailsDialog from './NodeDetailsDialog.vue'
+import NodeDownloadDropdown from './NodeDownloadDropdown.vue'
+import NodeTooltipCell from './NodeTooltipCell.vue'
+import { useNodeExport } from './hooks/useNodeExport'
+import { useNodeQuery } from './hooks/useNodeQuery'
+import { getTableCssClasses } from './utils'
 
 const menuStore = useMenuStore()
 const nodeStructureStore = useNodeStructureStore()
 const nodeStore = useNodeStore()
 const { showSnackBar } = useSnackbar()
-const settingsIcon = markRaw(Settings)
 const { generateBlob, generateDownload, getExportData } = useNodeExport()
 const { buildUpdatedNodeStructureQueryParameters } = useNodeQuery()
 const visibleColumnStart = ref(0)
@@ -362,9 +358,6 @@ const sortStateForId = (label: string) => {
   return SORT.NONE
 }
 
-const icons = markRaw({
-  Search,
-})
 const cancelIcon = computed(() => Cancel)
 
 const currentSearch = ref(nodeStructureStore.queryFilter.searchTerm || '')
@@ -373,7 +366,7 @@ const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 
 const dialogVisible = ref(false)
 const dialogNode = ref<Node>()
-const preferencesVisible = ref(false)
+// const preferencesVisible = ref(false)
 const tableCssClasses = computed<string[]>(() => getTableCssClasses(nodeStructureStore.columns))
 const queryParameters = ref<QueryParameters>(nodeStore.nodeQueryParameters)
 const pageNumber = ref(1)
@@ -451,9 +444,9 @@ const onNodeInfo = (node: Node) => {
   dialogVisible.value = true
 }
 
-const openPreferences = () => {
-  preferencesVisible.value = true
-}
+// const openPreferences = () => {
+//   preferencesVisible.value = true
+// }
 
 const computeNodeLink = (nodeId: number | string) => {
   return `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}${nodeId}`
@@ -470,16 +463,16 @@ const onNodeLinkClick = (nodeId: number | string) => {
 const removeItem = (item: IAutocompleteItemType, type: FilterTypeEnum) => {
   switch (type) {
     case FilterTypeEnum.Category:
-      nodeStructureStore.removeCategory(item);
-      break;
+      nodeStructureStore.removeCategory(item)
+      break
     case FilterTypeEnum.Flow:
-      nodeStructureStore.removeFlow(item);
-      break;
+      nodeStructureStore.removeFlow(item)
+      break
     case FilterTypeEnum.Location:
-      nodeStructureStore.removeLocation(item);
-      break;
+      nodeStructureStore.removeLocation(item)
+      break
     default:
-      console.warn(`Unknown filter type: ${type}`);
+      console.warn(`Unknown filter type: ${type}`)
   }
 }
 
@@ -509,7 +502,7 @@ watch([() => nodeStructureStore.queryFilter], () => {
 
   updateQuery()
 },
-  { deep: true }
+{ deep: true }
 )
 </script>
 
@@ -519,6 +512,10 @@ watch([() => nodeStructureStore.queryFilter], () => {
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/themes/variables";
 
+.node-table {
+  margin-top: 1rem;
+}
+
 #wrap {
   overflow: auto;
   white-space: nowrap;
@@ -527,7 +524,7 @@ watch([() => nodeStructureStore.queryFilter], () => {
 .card {
   @include elevation(2);
   background: var($surface);
-  padding: 15px;
+  padding: 30px;
 }
 
 table {
@@ -535,6 +532,14 @@ table {
   @include table-condensed;
   @include row-select();
   @include row-hover();
+
+  tbody {
+    tr {
+      td {
+        padding: 12px 1rem;
+      }
+    }
+  }
 }
 
 .title {
@@ -600,9 +605,8 @@ table {
 
 .action-buttons-container {
   display: flex;
-  display: inline-block;
-  gap: 0.5rem;
   align-items: center;
+  gap: 0.5rem;
 }
 
 .edit-icon {

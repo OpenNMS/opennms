@@ -379,7 +379,7 @@ export const useNodeStructureStore = defineStore('nodeStructureStore', () => {
     setSelectedFlows,
     setSelectedLocations,
     openColumnsDrawerModal,
-    closeColumnsDrawerModal,
+    closeColumnsDrawerModal
 
   }
 })

@@ -36,9 +36,7 @@ export const getTableCssClasses = (columns: NodeColumnSelectionItem[]) => {
   const classes: string[] = columns.filter(col => col.selected).map((col, i) => {
     let t = 'tl'
 
-    if (col.id === 'id') {
-      t = 'tr'
-    } else if (col.id === 'flows') {
+    if (col.id === 'flows') {
       t = 'tc'
     }
 
