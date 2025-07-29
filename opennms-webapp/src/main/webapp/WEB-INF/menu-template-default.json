@@ -626,17 +626,10 @@
         },
         {
           "id": "restApiReferenceDocumentation",
-          "name": "REST APIv1 Reference Documentation",
+          "name": "REST API Reference Documentation",
           "url": "https://docs.opennms.com/meridian/2024/development/rest/rest-api.html",
           "isExternalLink": true,
-          "locationMatch": "",
-          "roles": null
-        },
-        {
-          "id": "restApiReferenceDocumentation",
-          "name": "REST APIv2 Reference Documentation",
-          "url": "https://docs.opennms.com/meridian/2024/development/rest/rest-api.html",
-          "isExternalLink": true,
+          "linkTarget": "_blank",
           "locationMatch": "",
           "roles": null
         },
@@ -645,6 +638,7 @@
           "name": "Source Code",
           "url": "https://github.com/OpenNMS/opennms",
           "isExternalLink": true,
+          "linkTarget": "_blank",
           "locationMatch": "",
           "roles": null
         }
@@ -702,6 +696,7 @@
           "name": "Professional Support",
           "url": "https://www.opennms.com/support",
           "isExternalLink": true,
+          "linkTarget": "_blank",
           "locationMatch": null,
           "roles": null
         },
@@ -710,6 +705,7 @@
           "name": "Chat",
           "url": "https://chat.opennms.org",
           "isExternalLink": true,
+          "linkTarget": "_blank",
           "locationMatch": null,
           "roles": null
         },
@@ -718,6 +714,7 @@
           "name": "Community Support (Discourse)",
           "url": "https://opennms.discourse.group",
           "isExternalLink": true,
+          "linkTarget": "_blank",
           "locationMatch": null,
           "roles": null
         },
@@ -726,6 +723,7 @@
           "name": "Public Issue Tracker",
           "url": "https://issues.opennms.org/secure/Dashboard.jspa",
           "isExternalLink": true,
+          "linkTarget": "_blank",
           "locationMatch": null,
           "roles": null
         },

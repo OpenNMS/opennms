@@ -560,6 +560,7 @@
           "name": "REST API Reference Documentation",
           "url": "https://docs.opennms.com/meridian/2024/development/rest/rest-api.html",
           "isExternalLink": true,
+          "linkTarget": "_blank",
           "locationMatch": "",
           "roles": null
         },
@@ -568,6 +569,7 @@
           "name": "Source Code",
           "url": "https://github.com/OpenNMS/opennms",
           "isExternalLink": true,
+          "linkTarget": "_blank",
           "locationMatch": "",
           "roles": null
         }

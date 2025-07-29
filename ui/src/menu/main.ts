@@ -24,6 +24,7 @@ import { createApp, h } from 'vue'
 import { createPinia } from 'pinia'
 import '@featherds/styles'
 import '@featherds/styles/themes/open-light.css'
+import '../styles/opennms-feather-styles.scss'
 import App from './App.vue'
 
 // id of div to mount this Vue app onto, expected to exist in the embedding web application
