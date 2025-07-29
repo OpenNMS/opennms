@@ -11,7 +11,7 @@
           <span class="font-weight-bold">
             {{ mainMenu.username }}
           </span>
-          <FeatherIcon :icon="ArrowDropDown" />
+          <FeatherIcon class="self-service-arrow-dropdown" :icon="ArrowDropDown" />
         </FeatherButton>
       </div>
     </template>
@@ -165,8 +165,11 @@ const onMenuItemClick = async (item: MenuItem) => {
 
 div.self-service-menubar-icon-wrapper {
   .self-service-menubar-dropdown-button-dark {
-    :deep(svg.feather-icon) {
+    svg.self-service-top-icon.feather-icon {
       vertical-align: -0.5rem;
+    }
+    svg.self-service-arrow-dropdown.feather-icon {
+      vertical-align: 0;
     }
   }
 }
