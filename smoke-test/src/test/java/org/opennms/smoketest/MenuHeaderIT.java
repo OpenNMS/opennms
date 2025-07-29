@@ -256,14 +256,8 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         foundElement = findMenuItemLink("apiDocumentationMenu", "REST Open API Documentation");
         assertNotNull("apiDocumentationMenu / REST Open API Documentation", foundElement);
 
-        foundElement = findMenuItemLink("apiDocumentationMenu", "REST Open API Documentation");
-        assertNotNull("apiDocumentationMenu / REST Open API Documentation", foundElement);
-
-        foundElement = findMenuItemLink("apiDocumentationMenu", "REST APIv1 Reference Documentation");
-        assertNotNull("apiDocumentationMenu / REST APIv1 Reference Documentation", foundElement);
-
-        foundElement = findMenuItemLink("apiDocumentationMenu", "REST APIv2 Reference Documentation");
-        assertNotNull("apiDocumentationMenu / REST APIv2 Reference Documentation", foundElement);
+        foundElement = findMenuItemLink("apiDocumentationMenu", "REST API Reference Documentation");
+        assertNotNull("apiDocumentationMenu / REST API Reference Documentation", foundElement);
 
         foundElement = findMenuItemLink("apiDocumentationMenu", "Source Code");
         assertNotNull("apiDocumentationMenu / Source Code", foundElement);
