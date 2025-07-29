@@ -11,6 +11,7 @@
 
   <groupId>org.opennms.features.telemetry.protocols.openconfig</groupId>
   <artifactId>org.opennms.features.telemetry.protocols.openconfig.connector</artifactId>
+  <name>OpenNMS :: Features :: Telemetry :: Protocols :: OpenConfig :: Connector</name>
   <packaging>bundle</packaging>
 
   <build>
