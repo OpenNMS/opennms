@@ -24,20 +24,30 @@ package org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bgp.packets.path
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.uint16;
 
 import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 import org.opennms.netmgt.telemetry.protocols.bmp.parser.proto.bmp.PeerFlags;
+import org.opennms.netmgt.telemetry.listeners.utils.BufferUtils;
 
 import com.google.common.base.MoreObjects;
 
 import io.netty.buffer.ByteBuf;
+
 
 public class Aggregator implements Attribute {
     public final int as;              // uint16
     public final InetAddress address; // uint32
 
     public Aggregator(final ByteBuf buffer, final PeerFlags flags) {
+        if (buffer.readableBytes() < 6) {
+            throw new IllegalArgumentException("Insufficient bytes for Aggregator attribute: expected at least 6 bytes, got " + buffer.readableBytes());
+        }
         this.as = uint16(buffer);
-        this.address = flags.parseAddress(buffer);
+        try {
+            this.address = InetAddress.getByAddress(BufferUtils.bytes(buffer, 4));
+        } catch (UnknownHostException e) {
+            throw new IllegalArgumentException("Invalid IP address in Aggregator attribute", e);
+        }
     }
 
     @Override
