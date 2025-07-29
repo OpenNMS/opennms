@@ -53,7 +53,9 @@ export const loadPreferences = (): OpenNmsPreferences | null => {
 export const saveNodePreferences = (data: NodePreferences) => {
   const prefs = loadPreferences() || defaultPreferences()
   prefs.nodePreferences = data
-
+  if (prefs.nodePreferences.nodeFilter) {
+    prefs.nodePreferences.nodeFilter.searchTerm = ''
+  }
   savePreferences(prefs)
 }
 
