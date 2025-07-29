@@ -512,17 +512,17 @@
         <dependency>
             <groupId>org.opennms.features.telemetry.protocols.openconfig</groupId>
             <artifactId>org.opennms.features.telemetry.protocols.openconfig.connector</artifactId>
-            <version>33.0.3-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.openconfig</groupId>
             <artifactId>org.opennms.features.openconfig.api</artifactId>
-            <version>33.0.3-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.openconfig</groupId>
             <artifactId>org.opennms.features.openconfig.telemetry-client</artifactId>
-            <version>33.0.3-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
 
