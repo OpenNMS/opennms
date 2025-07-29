@@ -166,6 +166,7 @@ onMounted(async () => {
 </script>
 
 <style lang="scss" scoped>
+@use "@featherds/styles/mixins/typography" as typo;
 @import "@featherds/dropdown/scss/mixins";
 @import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/mixins/typography";
@@ -197,6 +198,17 @@ onMounted(async () => {
 .quick-add-node-wrapper {
   margin-left: 1em;
   margin-right: 1em;
+
+  .btn {
+    :deep(.btn-content) {
+      @include typo.button();
+      color: var(--feather-primary-text-on-color);
+      font-family: var(--feather-header-font-family);
+      font-size: var(--feather-button-font-size);
+      font-weight: var(--feather-button-font-weight);
+      letter-spacing: var(--feather-button-letter-spacing);
+    }
+  }
 }
 
 .notice-status-display {
