@@ -53,8 +53,7 @@ The JRobin library and the JRobin timeseries strategy will be removed from Horiz
 
 == Deprecation of Reportd service
 
-We removed Reportd service from service configuration. We believe none of our users are using this service. The code will be
-removed in the next Horizon version 35.
+The Reportd service has been deprecated and removed from service configuration due to low user adoption. The service code will be fully removed in the next Horizon/Meridian release.
 
 
 === OpenNMS Minion environment variables changes
