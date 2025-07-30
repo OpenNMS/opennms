@@ -248,8 +248,9 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         // User Profile Menu
         clickMenuItem("userProfileMenu", "Change Password");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Change Password')]")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Please enter the old and new passwords and confirm.']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='form-input-wrapper']//label[contains(text()[normalize-space()], 'Change Password')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@id='btn_change_password']")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@id='btn_skip']")));
 
         // API Documentation Menu
         // Omit clicking for now, some of these are external links
