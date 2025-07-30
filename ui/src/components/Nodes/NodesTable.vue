@@ -111,7 +111,7 @@
                 </th>
 
                 <template
-                  v-for="column in visibleColumns"
+                  v-for="column in visibleColumns.sort((a, b) => a.order - b.order)"
                   :key="column.id"
                 >
                   <FeatherSortHeader
@@ -156,7 +156,7 @@
                   class="navigation-cell"
                 ></td>
                 <template
-                  v-for="column in visibleColumns"
+                  v-for="column in visibleColumns.sort((a, b) => a.order - b.order)"
                   :key="column.id"
                 >
                   <td v-if="isSelectedColumn(column, 'id')">
@@ -217,9 +217,10 @@
                   v-if="canNavigateRight"
                   class="navigation-cell"
                 ></td>
-                <td>
+                <td class="actions-cell">
                   <FeatherButton
                     icon="Edit"
+                    class="edit-icon"
                     @click="() => onNodeLinkClick(node.id)"
                   >
                     <FeatherIcon :icon="Edit" title="Edit" />
@@ -609,8 +610,12 @@ table {
   gap: 0.5rem;
 }
 
-.edit-icon {
-  font-size: 20px;
+.actions-cell {
+  .edit-icon {
+    svg {
+      font-size: 1rem !important;
+    }
+  }
 }
 
 .triple-icon {

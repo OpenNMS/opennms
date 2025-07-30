@@ -12,45 +12,33 @@
         <h3>Customize the available columns</h3>
         <p>Select which columns you wish to showcase</p>
       </section>
-
       <div class="spacer-large"></div>
-
-      <!-- Render each column -->
-      <div
-        v-for="(col, index) in selectedColumns"
-        :key="index"
-        class="column-row"
+      <Draggable
+        v-model="selectedColumns"
+        item-key="value"
+        handle=".drag-handle"
+        class="columns-drag-container"
       >
-        <FeatherButton
-          icon="Apps"
-          text
-        >
-          <FeatherIcon
-            class="close-icon"
-            :icon="Apps"
-          />
-        </FeatherButton>
-        <FeatherSelect
-          v-model="selectedColumns[index]"
-          :options="getAvailableOptions(index)"
-          text-prop="name"
-          value-prop="value"
-          :placeholder="'Select column...'"
-          :label="`Column ${index + 1}`"
-          class="columns-selector"
-        />
-        <FeatherButton
-          icon="Cancel"
-          text
-          @click="removeColumn(index)"
-        >
-          <FeatherIcon
-            class="close-icon"
-            :icon="Cancel"
-          />
-        </FeatherButton>
-      </div>
-
+        <template #item="{ index }">
+          <div class="column-row">
+            <FeatherButton icon="Apps" text>
+              <FeatherIcon class="close-icon drag-handle" :icon="Apps" />
+            </FeatherButton>
+            <FeatherSelect
+              v-model="selectedColumns[index]"
+              :options="getAvailableOptions(index)"
+              text-prop="name"
+              value-prop="value"
+              :placeholder="'Select column...'"
+              :label="`Column ${index + 1}`"
+              class="columns-selector"
+            />
+            <FeatherButton icon="Cancel" text @click="removeColumn(index)">
+              <FeatherIcon class="close-icon" :icon="Cancel" />
+            </FeatherButton>
+          </div>
+        </template>
+      </Draggable>
       <div class="spacer-medium"></div>
       <div class="button-column">
         <FeatherButton
@@ -72,23 +60,24 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, ref, watch } from 'vue'
+import { saveNodePreferences } from '@/services/localStorageService'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { NodeColumnSelectionItem } from '@/types'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDrawer } from '@featherds/drawer'
 import { FeatherIcon } from '@featherds/icon'
-import { FeatherSelect, ISelectItemType } from '@featherds/select'
-import Cancel from '@featherds/icon/navigation/Cancel'
 import Apps from '@featherds/icon/navigation/Apps'
-import { NodeColumnSelectionItem } from '@/types'
-import { saveNodePreferences } from '@/services/localStorageService'
+import Cancel from '@featherds/icon/navigation/Cancel'
+import { FeatherSelect, ISelectItemType } from '@featherds/select'
+import Draggable from 'vuedraggable'
+import { defaultColumns } from './utils'
 
 const nodeStructureStore = useNodeStructureStore()
-const columns = computed<NodeColumnSelectionItem[]>(() => nodeStructureStore.columns)
+const columns = ref<NodeColumnSelectionItem[]>(defaultColumns)
 const selectedColumns = ref<ISelectItemType[]>([])
 
-const initializeSelectedColumns = () => {
-  selectedColumns.value = columns.value
+const initializeSelectedColumns = (columns: NodeColumnSelectionItem[]) => {
+  selectedColumns.value = columns
     .filter(col => col.selected)
     .sort((a, b) => a.order - b.order)
     .map(col => ({ name: col.label, value: col.id }))
@@ -114,25 +103,20 @@ const removeColumn = (index: number) => {
   selectedColumns.value = selectedColumns.value.filter((_, i) => i !== index)
 }
 const customizeTable = async() => {
+  nodeStructureStore.columns = selectedColumns.value.map((col, index) => ({
+    id: col.value as string,
+    label: col.name as string,
+    selected: true,
+    order: index
+  }))
   const nodePrefs = await nodeStructureStore.getNodePreferences()
   saveNodePreferences(nodePrefs)
   nodeStructureStore.columnsDrawerState.visible = false
 }
 
-watch(
-  [() => nodeStructureStore.columns, selectedColumns],
-  ([newColumns], [oldColumns, oldSelected]) => {
-    if (newColumns !== oldColumns) {
-      initializeSelectedColumns()
-    }
-    const selectedIds = selectedColumns.value.map(c => c.value).filter(id => id !== '')
-    nodeStructureStore.columns.forEach((col) => {
-      col.selected = selectedIds.includes(col.id)
-      col.order = selectedIds.indexOf(col.id)
-    })
-  },
-  { immediate: true, deep: true }
-)
+watch(() => nodeStructureStore.columns, (newColumns) => {
+  initializeSelectedColumns(newColumns)
+}, { immediate: true, deep: true })
 </script>
 <style lang="scss" scoped>
 @import "@featherds/table/scss/table";
