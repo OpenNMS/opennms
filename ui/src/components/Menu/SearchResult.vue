@@ -3,7 +3,8 @@
         <div class="label-wrapper">
             <div :style="{ paddingRight: '20px' }">
                 <div :style="{ display: 'flex', alignItems: 'center' }">
-                    <font-awesome-icon v-if="item.icon" :icon="item.icon" :style="{ paddingRight: '6px' }" />
+                    <!-- We have removed font-awesome. Need to map any icons we get from the Search service to Feather icons. -->
+                    <!-- <font-awesome-icon v-if="item.icon" :icon="item.icon" :style="{ paddingRight: '6px' }" /> -->
                     <div>
                         {{ item.label }}
                     </div>
@@ -86,6 +87,8 @@ defineProps({
     inline-size:266px;
     letter-spacing:0.25px;
     line-height:24px;
+    /* width for text in search result labels, so text does not get cut off */
+    min-width: 30em;
     outline-color:rgba(10, 12, 27, 0.7);
     padding:0;
     perspective-origin: 133px 12px;
