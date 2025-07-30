@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.web.rest.support.menu;
+package org.opennms.web.rest.support.menu.model;
 
 /**
  * Geographical Map tile provider info for adding additional tile maps.

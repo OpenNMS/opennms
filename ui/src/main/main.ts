@@ -23,7 +23,7 @@
 import { createApp, h } from 'vue'
 import { RouteRecordRaw } from 'vue-router'
 import VueDiff from 'vue-diff'
-import router, { isLegacyPlugin } from './router'
+import router, { isLegacyPlugin } from '../main/router'
 import { createPinia } from 'pinia'
 import API from '@/services'
 import App from './App.vue'
@@ -39,58 +39,8 @@ import '@featherds/styles/themes/open-light.css'
 
 import 'vue-diff/dist/index.css'
 
-import dateFormatDirective from './directives/v-date'
-import { externalComponent, getJSPath } from './components/Plugin/utils'
-import { library } from '@fortawesome/fontawesome-svg-core'
-
-// font-awesome
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-
-// import specific icons and add to library
-// TODO: Move to separate fil
-// See: https://fontawesome.com/docs/web/use-with/vue/ and following
-import {
-  faArrowLeftLong,
-  faArrowRightLong,
-  faBell,
-  faBellSlash,
-  faCalendar,
-  faCircle,
-  faCogs,
-  faInfoCircle,
-  faSearch,
-  faKey,
-  faLifeRing,
-  faMinusCircle,
-  faPlus,
-  faPlusCircle,
-  faQuestionCircle,
-  faSignOut,
-  faUser,
-  faUsers
-} from '@fortawesome/free-solid-svg-icons'
-const icons = [
-  faArrowLeftLong,
-  faArrowRightLong,
-  faBell,
-  faBellSlash,
-  faCalendar,
-  faCircle,
-  faCogs,
-  faPlusCircle,
-  faPlus,
-  faInfoCircle,
-  faKey,
-  faLifeRing,
-  faMinusCircle,
-  faQuestionCircle,
-  faSearch,
-  faSignOut,
-  faUser,
-  faUsers
-]
-library.add(...icons);
-
+import dateFormatDirective from '../directives/v-date'
+import { externalComponent, getJSPath } from '../components/Plugin/utils'
 
 // let plugins use state mngmnt / router
 (window as any).Vue = Vue;
@@ -99,7 +49,7 @@ library.add(...icons);
 (window as any)['VRouter'] = router
 
 // plugin scripts must be loaded before app to use their routes
-const baseUrl = import.meta.env.VITE_BASE_REST_URL
+const baseRestUrl = import.meta.env.VITE_BASE_REST_URL
 const plugins = await API.getPlugins()
 
 for (const plugin of plugins) {
@@ -127,8 +77,15 @@ for (const plugin of plugins) {
     console.warn(`Warning: plugin '${plugin.menuEntry}' is a legacy plugin. Plugin will not work if any other legacy UI plugins are installed.`)
   }
 
-  const js = getJSPath(baseUrl, plugin.extensionId, plugin.resourceRootPath, plugin.moduleFileName)
-  await externalComponent(js)
+  try {
+    const js = getJSPath(baseRestUrl, plugin.extensionId, plugin.resourceRootPath, plugin.moduleFileName)
+    await externalComponent(js)
+  } catch (e) {
+    console.error('Error attempting to load plugin: ', e)
+    console.log('Plugin:')
+    console.dir(plugin)
+
+  }
 }
 
 createApp({
@@ -137,6 +94,5 @@ createApp({
   .use(VueDiff)
   .use(router)
   .use(createPinia())
-  .component('font-awesome-icon', FontAwesomeIcon)
   .directive('date', dateFormatDirective)
   .mount('#app')

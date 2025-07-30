@@ -115,7 +115,6 @@
     </profile>
   </profiles>
   <dependencies>
-
     <!-- indirect OpenNMS dependencies that belong in $OPENNMS_HOME/lib -->
     <!-- these should all be <scope>${onmsLibScope}</scope> and also included in opennms-base-assembly -->
 
@@ -594,5 +593,4 @@
       <scope>${onmsLibScope}</scope>
     </dependency>
   </dependencies>
-
 </project>

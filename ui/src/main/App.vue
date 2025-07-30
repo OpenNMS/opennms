@@ -2,6 +2,9 @@
   <FeatherAppLayout content-layout="full">
     <template v-slot:header>
       <Menubar />
+      <SideMenu
+        pushedSelector=".app-layout"
+      />
     </template>
 
     <div class="main-content">
@@ -24,9 +27,10 @@
   lang="ts"
 >
 import { FeatherAppLayout } from '@featherds/app-layout'
-import Footer from './components/Layout/Footer.vue'
-import Menubar from './components/Layout/Menubar.vue'
-import Spinner from './components/Common/Spinner.vue'
+import Footer from '@/components/Layout/Footer.vue'
+import Menubar from '@/components/Menu/Menubar.vue'
+import SideMenu from '@/components/Menu/SideMenu.vue'
+import Spinner from '@/components/Common/Spinner.vue'
 import Snackbar from '@/components/Common/Snackbar.vue'
 import { useAuthStore } from '@/stores/authStore'
 import { useInfoStore } from '@/stores/infoStore'
@@ -47,6 +51,7 @@ onMounted(() => {
   infoStore.getInfo()
   menuStore.getMainMenu()
   menuStore.getNotificationSummary()
+  menuStore.loadSideMenuExpanded()
   monitoringSystemStore.getMainMonitoringSystem()
   nodeStructureStore.getCategories()
   nodeStructureStore.getMonitoringLocations()
@@ -58,11 +63,14 @@ onMounted(() => {
 @import "@featherds/styles/lib/grid";
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/themes/open-mixins";
+@import "@featherds/styles/themes/variables";
 
 html {
   overflow-x: hidden;
 }
 .main-content {
+  margin-left: 3.5rem;
+
   table {
     width: 100%;
   }

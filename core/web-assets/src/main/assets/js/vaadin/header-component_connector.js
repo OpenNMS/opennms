@@ -28,7 +28,7 @@ if (!window.org_opennms_features_vaadin_components_header_HeaderComponent) {
             console.log('headercomponent: state change triggered', this.getState());
 
             $("#onmsheader").empty();
-            var div = $("<div></div>").load("/opennms/includes/bootstrap.jsp?nobreadcrumbs=true&superQuiet=true");
+            var div = $("<div></div>").load("/opennms/includes/bootstrap.jsp?nobreadcrumbs=true&superQuiet=true&fromVaadin=true");
             $(div).appendTo("#onmsheader");
         };
     };

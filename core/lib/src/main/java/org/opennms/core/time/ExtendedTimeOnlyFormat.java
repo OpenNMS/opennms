@@ -19,20 +19,26 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.web.rest.support.menu;
 
-import java.util.ArrayList;
-import java.util.List;
+package org.opennms.core.time;
 
-// Similar to org.opennms.web.navigate.MenuEntry
-public class TopMenuEntry extends MenuEntry {
-    public List<MenuEntry> items;
+public class ExtendedTimeOnlyFormat extends CentralizedDateTimeFormat {
+    public final static String SYSTEM_PROPERTY_UI_TIME_ONLY_FORMAT = "org.opennms.ui.timeonlyformat";
 
-    public void addItem(MenuEntry menuEntry) {
-        if (items == null) {
-            items = new ArrayList<>();
+    public final static String DEFAULT_TIME_ONLY_FORMAT_PATTERN = "HH:mm:ss 'UTC'x";
+
+    public ExtendedTimeOnlyFormat() {
+        super();
+    }
+
+    @Override
+    public String getFormatPattern() {
+        String format = System.getProperty(SYSTEM_PROPERTY_UI_TIME_ONLY_FORMAT);
+
+        if (format == null) {
+            format = DEFAULT_TIME_ONLY_FORMAT_PATTERN;
         }
 
-        items.add(menuEntry);
+        return format;
     }
 }
