@@ -20,20 +20,21 @@
 /// License.
 ///
 
-import { defineStore } from 'pinia'
-import API from '@/services'
+import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
+import { defaultColumns } from '@/components/Nodes/utils'
 import { hasNonEmptyProperty } from '@/lib/utils'
+import API from '@/services'
 import {
   Category,
+  DrawerState,
   MonitoringLocation,
   NodeColumnSelectionItem,
-  NodeQueryFilter,
   NodePreferences,
-  SetOperator,
-  DrawerState
+  NodeQueryFilter,
+  SetOperator
 } from '@/types'
-import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import { IAutocompleteItemType } from '@featherds/autocomplete'
+import { defineStore } from 'pinia'
 
 const {
   getDefaultNodeQueryFilter,
@@ -43,23 +44,10 @@ const {
   getDefaultNodeQuerySysParams
 } = useNodeQuery()
 
-export const defaultColumns: NodeColumnSelectionItem[] = [
-  { id: 'id', label: 'ID', selected: false, order: 0 },
-  { id: 'label', label: 'Node Label', selected: true, order: 1 },
-  { id: 'ipaddress', label: 'IP Address', selected: true, order: 2 },
-  { id: 'location', label: 'Location', selected: true, order: 3 },
-  { id: 'foreignSource', label: 'Foreign Source', selected: true, order: 4 },
-  { id: 'foreignId', label: 'Foreign ID', selected: true, order: 5 },
-  { id: 'sysContact', label: 'Sys Contact', selected: true, order: 6 },
-  { id: 'sysLocation', label: 'Sys Location', selected: true, order: 7 },
-  { id: 'sysDescription', label: 'Sys Description', selected: true, order: 8 },
-  { id: 'flows', label: 'Flows', selected: true, order: 9 }
-]
-
-const defaultDrawerState: DrawerState = {
-  visible: false,
-  isAdvanceFilterModal: false
-}
+// const defaultDrawerState: DrawerState = {
+//   visible: false,
+//   isAdvanceFilterModal: false
+// }
 
 const getDefaultDrawerState = (): DrawerState => {
   return {
