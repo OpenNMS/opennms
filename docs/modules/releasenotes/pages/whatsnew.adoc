@@ -51,6 +51,13 @@ org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy
 The release of Horizon 34 will be the last version which supports reading and writing timeseries data using JRobin.
 The JRobin library and the JRobin timeseries strategy will be removed from Horizon 35+ moving forward.
 
+
+== Deprecation of Tl1d
+The Tl1d service has been deprecated and removed from service configuration due to low user adoption. The service code will be fully removed in the next Horizon/Meridian release.
+
+== Deprecation of AsteriskGateway
+The AsteriskGateway service has been deprecated and removed from service configuration due to low user adoption. The service code will be fully removed in the next Horizon/Meridian release.
+
 == Deprecation of Reportd service
 
 The Reportd service has been deprecated and removed from service configuration due to low user adoption. The service code will be fully removed in the next Horizon/Meridian release.
