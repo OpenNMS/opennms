@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.time.Duration;
@@ -341,8 +340,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
                 final List<Filter> filters = Collections.singletonList(new TimeRangeFilter(twentyFourHoursAgo, currentTime));
                 flowCount = flowQueryService.getFlowCount(filters).get();
 
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.warn("An error occurred while retrieving the flow count. ", e);
+            } catch (Exception e) {
+                LOG.warn("An error occurred while retrieving the flow count.", e);
             }
         }
 
