@@ -5,15 +5,11 @@
 There are a number of housekeeping tasks you may want to do regularly to ensure optimum system performance.
 We also recommend you complete some of these housekeeping tasks before upgrading {page-component-title}.
 
-== Prior to upgrading
+== Automatic tasks
 
-[[prune-events]]
-=== Prune unneeded events
-Use vacuumd or cron to regularly prune unneeded events.
-This helps to clean up your events table, and reduces the amount of data in your backups.
-We also recommend doing this before you begin the {page-component-title} upgrade process.
-
-For example, run the following to delete events older than six weeks that have no associated outages:
+[[event-pruning]]
+=== Pruning old events
+The following query runs from `vacuumd-configuration.xml` to delete events older than six weeks that have no associated outages:
 
 [source, sql]
 ----
@@ -27,18 +23,48 @@ SELECT eventid FROM notifications WHERE eventid = events.eventid)
 AND eventtime < now() - interval '6 weeks';
 ----
 
-== After Upgrading
+It is also recommended to have a query in place to delete all events beyond a useful age.
+The following example is frequently used in vaccumd-configuration to prune old events:
+[source, xml]
+----
+<statement>
+   DELETE FROM events WHERE (eventcreatetime &lt; now() - interval '180 days');
+</statement>
+----
 
-[[delete-cache-folder]]
-=== Delete cache folder
-Run the Fix Karaf script to delete cached items so that your system is cleaned up.
-We recommend doing this after an upgrade.
-This script tries to fix Karaf configuration problems by pruning `opt/opennms/data` and restoring all Karaf-related configuration files to a pristine state.
-
-NOTE: Back up `/opt/opennms/etc` before running the script.
-
+[[alarm-pruning]]
+=== Pruning old alarms
+Pruning of old or expired alarms is performed by drools rules that are part of <<alarms/alarmd.adoc#, alarmd>>.
+The following two drools rules from `$OPENMS_HOME}/alarmd/drools-rules.d/alarmd.drl` delete _acknowledged_ alarms older than three days, and _any_ alarm older then 8 days.
 [source, console]
 ----
-/opt/opennms/bin/fix-karaf-setup.sh
+rule "GC"
+  salience 0
+  when
+    $sessionClock : SessionClock()
+    $alarm : OnmsAlarm(alarmAckTime == null)
+    not( OnmsAlarm( this == $alarm ) over window:time( 3d ) )
+  then
+    alarmService.deleteAlarm($alarm);
+end
+
+rule "fullGC"
+  salience 0
+  when
+    $sessionClock : SessionClock()
+    $alarm : OnmsAlarm()
+    not( OnmsAlarm( this == $alarm ) over window:time( 8d ) )
+  then
+    alarmService.deleteAlarm($alarm);
+end
 ----
+
+== Manual tasks
+
+=== Node Inventory Maintenance
+{page-component-title} administrators are strongly encouraged to remove nodes from monitoring that are known to be permanently down.
+Nodes determined to be down are still polled on the critical service on a schedule determined by the polling package's <<service-assurance/downtime-model.adoc#ga-service-assurance-downtime-model, downtime model>>.
+This consumes a `pollerd` thread, which must then wait until all retries and timeouts on the critical service are exhausted before moving on to other useful work, wasting resources.
+Similarly for `collectd`, which will still attempt to collect metrics from a down node until all retries and timeouts are exhausted, consuming a `collectd` thread for the duration.
+Maintaining a clean inventory will keep your {page-component-title} instance performin at its peak.
 
