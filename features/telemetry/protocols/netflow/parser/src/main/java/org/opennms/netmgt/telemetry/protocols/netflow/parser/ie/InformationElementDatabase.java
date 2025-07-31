@@ -100,11 +100,12 @@ public class InformationElementDatabase {
 
     public static final InformationElementDatabase instance = new InformationElementDatabase(
             new org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.InformationElementProvider(),
+            new org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.InformationElementXmlProvider(),
             new org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.InformationElementProvider());
 
     private final Map<Key, InformationElement> elements;
 
-    private InformationElementDatabase(final Provider... providers) {
+    InformationElementDatabase(final Provider... providers) {
         final AdderImpl adder = new AdderImpl();
 
         // Add null element - this derives from the standard but is required by some exporters

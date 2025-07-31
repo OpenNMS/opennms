@@ -25,19 +25,17 @@ package org.opennms.netmgt.flows.elastic;
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.Lists;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.opennms.core.cache.CacheConfigBuilder;
 import org.opennms.features.elastic.client.ElasticRestClient;
 import org.opennms.features.elastic.client.ElasticRestClientFactory;
-import org.opennms.features.jest.client.RestClientFactory;
 import org.opennms.features.jest.client.index.IndexSelector;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
-import org.opennms.netmgt.dao.mock.AbstractMockDao;
 import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockIpInterfaceDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.flows.classification.FilterService;
 import org.opennms.netmgt.flows.classification.internal.DefaultClassificationEngine;
 import org.opennms.netmgt.flows.classification.persistence.api.RuleBuilder;
@@ -45,9 +43,13 @@ import org.opennms.netmgt.flows.elastic.agg.AggregatedFlowQueryService;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
 import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCache;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCacheImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.script.ScriptEngineManager;
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.concurrent.ExecutionException;
@@ -56,12 +58,16 @@ import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.opennms.netmgt.flows.elastic.ComposableFlowQueryIT.relativePathToEtc;
 
+@Ignore(" Deprecating nephron, will deprecate aggregated flows feature.")
 public class ComposableAggFlowQueryIT extends  AggregatedFlowQueryIT {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ComposableAggFlowQueryIT.class);
+
     @Before
-    public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {
+    public void setUp() throws IOException, ExecutionException, InterruptedException {
         final MetricRegistry metricRegistry = new MetricRegistry();
-        final ElasticRestClientFactory elasticRestClientFactory = new ElasticRestClientFactory(elasticSearchRule.getUrl(), null, null);
+        final ElasticRestClientFactory elasticRestClientFactory = new ElasticRestClientFactory(elasticsearchContainer.getHttpHostAddress(),
+                null, null);
         final ElasticRestClient elasticRestClient = elasticRestClientFactory.createClient();
         final IndexSettings rawIndexSettings = new IndexSettings();
         final IndexSettings aggIndexSettings = new IndexSettings();
@@ -97,18 +103,29 @@ public class ComposableAggFlowQueryIT extends  AggregatedFlowQueryIT {
                 new RuleBuilder().withName("https").withSrcPort("443").withProtocol("tcp,udp").build()),
                 FilterService.NOOP);
 
-        documentEnricher = new DocumentEnricherImpl(metricRegistry,
+        final NodeInfoCache nodeInfoCache = new NodeInfoCacheImpl(
+                new CacheConfigBuilder()
+                        .withName("nodeInfoCache")
+                        .withMaximumSize(1000)
+                        .withExpireAfterWrite(300)
+                        .withExpireAfterRead(300)
+                        .build(),
+                true,
+                new MetricRegistry(),
                 new MockNodeDao(),
                 new MockIpInterfaceDao(),
                 new MockInterfaceToNodeCache(),
-                new MockSessionUtils(),
+                new MockSessionUtils()
+        );
+
+        documentEnricher = new DocumentEnricherImpl(new MockSessionUtils(),
                 classificationEngine,
-                new CacheConfigBuilder()
-                        .withName("flows.node")
-                        .withMaximumSize(1000)
-                        .withExpireAfterWrite(300)
-                        .build(), 0,
-                new DocumentMangler(new ScriptEngineManager()));
+                0,
+                new DocumentMangler(new ScriptEngineManager()),
+                nodeInfoCache);
+
+        // Delete any existing indices before initializing to ensure a clean state
+        elasticRestClient.deleteIndex("netflow*");
 
         // The repository should be empty
         assertThat(smartQueryService.getFlowCount(Collections.singletonList(new TimeRangeFilter(0, System.currentTimeMillis()))).get(), equalTo(0L));

@@ -97,6 +97,17 @@ The finished CSS file will include this line, directly:
 }
 
 /*  --------------------------------------------------
+    :: Vue Menu UI
+    -------------------------------------------------- */
+/**
+* Move topology UI over past the Vue top and side menus.
+*/
+.v-app.topo_default.topologyui {
+  margin-top: 0.5em;
+  margin-left: 4em;
+}
+
+/*  --------------------------------------------------
     :: Bsm Admin UI
     -------------------------------------------------- */
 

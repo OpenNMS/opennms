@@ -1,9 +1,0 @@
-jobs:  
-  sentinel-image-single-arch-trivy-analyze:
-    executor: base-executor
-    resource_class: medium
-    parameters:
-      architecture:
-        type: string
-    steps:
-      - trivy-analyze

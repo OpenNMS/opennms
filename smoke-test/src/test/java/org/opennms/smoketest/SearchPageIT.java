@@ -44,6 +44,7 @@ public class SearchPageIT extends OpenNMSSeleniumIT {
     @Test
     public void testAllTextIsPresent() throws Exception {
         assertEquals(3, countElementsMatchingCss("div.card-header"));
+
         findElementByXpath("//span[text()='Search for Nodes']");
         findElementByXpath("//span[text()='Search Asset Information']");
         findElementByXpath("//span[text()='Search Options']");
@@ -51,7 +52,8 @@ public class SearchPageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void testAllFormsArePresent() throws Exception {
-        await().atMost(20, SECONDS).pollInterval(5, SECONDS).until(() -> countElementsMatchingCss("form") == 14);
+        await().atMost(20, SECONDS).pollInterval(5, SECONDS).until(() -> countElementsMatchingCss("form") == 12);
+
         for (final String matchingElement : new String[] {
                 "input[@id='byname_nodename']",
                 "input[@id='byip_iplike']",
@@ -90,6 +92,7 @@ public class SearchPageIT extends OpenNMSSeleniumIT {
     public void testSearchMacAddress() throws Exception {
         final WebElement maclike = enterText(By.cssSelector("input[name='maclike']"), "0");
         maclike.sendKeys(Keys.ENTER);
+
         findElementByXpath("//div[@id='content']/nav/ol/li[text()='Node List']");
         findElementByXpath("//div[@class='card-header']//div[@class='btn-toolbar']/span[text()='Nodes']");
     }

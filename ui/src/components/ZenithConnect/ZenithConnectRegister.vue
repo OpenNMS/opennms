@@ -186,6 +186,7 @@ onMounted(async () => {
 
 <style scoped lang="scss">
 @import "@featherds/styles/mixins/typography";
+@import "@featherds/styles/themes/variables";
 
 .card {
   background: var($surface);

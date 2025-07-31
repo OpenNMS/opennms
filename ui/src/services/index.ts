@@ -58,6 +58,7 @@ import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
 import { getIpInterfaces, getNodeIpInterfaceQuery } from './ipInterfaceService'
 import { search } from './searchService'
+import { performLogout } from './logoutService'
 import { getLogs, getLog } from './logsService'
 import { getWhoAmI } from './whoAmIService'
 import { getInfo } from './infoService'
@@ -131,5 +132,6 @@ export default {
   getUsageStatisticsStatus,
   setUsageStatisticsStatus,
   addZenithRegistration,
-  getZenithRegistrations
+  getZenithRegistrations,
+  performLogout
 }

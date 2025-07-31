@@ -28,15 +28,16 @@ const defaultPreferences = () => {
   return {
     nodePreferences: {
       nodeColumns: []
-    }
+    },
+    isSideMenuExpanded: false
   } as OpenNmsPreferences
 }
 
-export const savePreferences = (data: OpenNmsPreferences) => {
+const savePreferences = (data: OpenNmsPreferences) => {
   localStorage.setItem(OPENNMS_PREFERENCES_STORAGE_KEY, JSON.stringify(data, getCircularReplacer()))
 }
 
-export const loadPreferences = (): OpenNmsPreferences | null => {
+const loadPreferences = (): OpenNmsPreferences | null => {
   const json = localStorage.getItem(OPENNMS_PREFERENCES_STORAGE_KEY)
 
   if (json) {
@@ -50,7 +51,11 @@ export const loadPreferences = (): OpenNmsPreferences | null => {
   return null
 }
 
-export const saveNodePreferences = (data: NodePreferences) => {
+const loadDefaultPreferences = () => {
+  return defaultPreferences()
+}
+
+const saveNodePreferences = (data: NodePreferences) => {
   const prefs = loadPreferences() || defaultPreferences()
   prefs.nodePreferences = data
   if (prefs.nodePreferences.nodeFilter) {
@@ -59,7 +64,7 @@ export const saveNodePreferences = (data: NodePreferences) => {
   savePreferences(prefs)
 }
 
-export const loadNodePreferences = (): NodePreferences | null => {
+const loadNodePreferences = (): NodePreferences | null => {
   const prefs = loadPreferences() || defaultPreferences()
 
   return prefs.nodePreferences
@@ -77,4 +82,12 @@ const getCircularReplacer = () => {
     }
     return value
   }
+}
+
+export {
+  loadDefaultPreferences,
+  loadNodePreferences,
+  loadPreferences,
+  saveNodePreferences,
+  savePreferences
 }
