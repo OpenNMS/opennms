@@ -97,21 +97,22 @@
           >
             <thead>
               <tr>
-                <th v-if="canNavigateLeft">
+                <th
+                  v-if="canNavigateLeft"
+                  class="navigation-cell"
+                >
                   <div @click="navigateColumns(Direction.Left)">
-                    <FeatherIcon
-                      :icon="ChevronLeft"
-                      class="edit-icon"
-                    />
-                    <FeatherIcon
-                      :icon="ChevronRight"
-                      class="edit-icon"
-                    />
+                    <FeatherButton icon="Shift Left">
+                      <FeatherIcon
+                        :icon="Code"
+                        class="navigation-icon"
+                      />
+                    </FeatherButton>
                   </div>
                 </th>
 
                 <template
-                  v-for="column in visibleColumns.sort((a, b) => a.order - b.order)"
+                  v-for="column in visibleColumns.sort((a: NodeColumnSelectionItem, b: NodeColumnSelectionItem) => a.order - b.order)"
                   :key="column.id"
                 >
                   <FeatherSortHeader
@@ -133,14 +134,12 @@
                     class="icon-container"
                     @click="navigateColumns(Direction.Right)"
                   >
-                    <FeatherIcon
-                      :icon="ChevronLeft"
-                      class="edit-icon"
-                    />
-                    <FeatherIcon
-                      :icon="ChevronRight"
-                      class="edit-icon"
-                    />
+                    <FeatherButton icon="Shift Right">
+                      <FeatherIcon
+                        :icon="Code"
+                        class="navigation-icon"
+                      />
+                    </FeatherButton>
                   </div>
                 </th>
                 <th>Actions</th>
@@ -156,7 +155,7 @@
                   class="navigation-cell"
                 ></td>
                 <template
-                  v-for="column in visibleColumns.sort((a, b) => a.order - b.order)"
+                  v-for="column in visibleColumns.sort((a: NodeColumnSelectionItem, b: NodeColumnSelectionItem) => a.order - b.order)"
                   :key="column.id"
                 >
                   <td v-if="isSelectedColumn(column, 'id')">
@@ -223,7 +222,10 @@
                     class="edit-icon"
                     @click="() => onNodeLinkClick(node.id)"
                   >
-                    <FeatherIcon :icon="Edit" title="Edit" />
+                    <FeatherIcon
+                      :icon="Edit"
+                      title="Edit"
+                    />
                   </FeatherButton>
 
                   <NodeActionsDropdown
@@ -282,8 +284,7 @@ import Edit from '@featherds/icon/action/Edit'
 import FilterAlt from '@featherds/icon/action/FilterAlt'
 import Search from '@featherds/icon/action/Search'
 import Cancel from '@featherds/icon/navigation/Cancel'
-import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
-import ChevronRight from '@featherds/icon/navigation/ChevronRight'
+import Code from '@featherds/icon/network/Code'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
@@ -624,10 +625,12 @@ table {
 
 .navigation-cell {
   width: 10px;
-}
 
-.icon-container {
-  display: flex;
+  .btn.btn-icon-table {
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 100%;
+  }
 }
 </style>
 
