@@ -136,6 +136,19 @@
     </bean>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.EventDao" ref="eventDao" />
 
+    <bean id="eventConfigDao" class="org.opennms.netmgt.dao.hibernate.EventConfEventDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.EventConfigDao" ref="eventConfigDao" />
+
+
+    <bean id="eventConfigSourceDao" class="org.opennms.netmgt.dao.hibernate.EventConfSourceDaoHibernate">
+        <property name="sessionFactory" ref="sessionFactory" />
+    </bean>
+
+    <onmsgi:service interface="org.opennms.netmgt.dao.api.EventConfigSourceDao" ref="eventConfigSourceDao" />
+
     <bean id="ifLabel" class="org.opennms.netmgt.dao.hibernate.IfLabelDaoImpl"/>
     <onmsgi:service interface="org.opennms.netmgt.dao.api.IfLabel" ref="ifLabel" />
 

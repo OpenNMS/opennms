@@ -1,3 +1,24 @@
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
+ *
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.model;
 
 
@@ -10,8 +31,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import java.io.Serializable;
-import java.time.ZonedDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "eventconf_events")
@@ -22,7 +45,7 @@ public class EventConfEvents implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "event_seq")
     @SequenceGenerator(name = "event_seq", sequenceName = "eventconf_events_id_seq", allocationSize = 1)
-    private Integer id;
+    private Long id;
 
     @ManyToOne(optional = false)
     @JoinColumn(name = "source_id", nullable = false)
@@ -43,20 +66,22 @@ public class EventConfEvents implements Serializable {
     @Column(name = "xml_content", columnDefinition = "text", nullable = false)
     private String xmlContent;
 
-    @Column(name = "created_time", nullable = false)
-    private ZonedDateTime createdTime;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created_time")
+    private Date createdTime;
 
+    @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "last_modified")
-    private ZonedDateTime lastModified;
+    private Date lastModified;
 
     @Column(name = "modified_by", length = 256)
     private String modifiedBy;
 
-    public Integer getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -108,19 +133,19 @@ public class EventConfEvents implements Serializable {
         this.xmlContent = xmlContent;
     }
 
-    public ZonedDateTime getCreatedTime() {
+    public Date getCreatedTime() {
         return createdTime;
     }
 
-    public void setCreatedTime(ZonedDateTime createdTime) {
+    public void setCreatedTime(Date createdTime) {
         this.createdTime = createdTime;
     }
 
-    public ZonedDateTime getLastModified() {
+    public Date getLastModified() {
         return lastModified;
     }
 
-    public void setLastModified(ZonedDateTime lastModified) {
+    public void setLastModified(Date lastModified) {
         this.lastModified = lastModified;
     }
 
