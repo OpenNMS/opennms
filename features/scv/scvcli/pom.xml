@@ -13,15 +13,6 @@
     <name>OpenNMS :: Features :: SCV :: CLI</name>
 
     <build>
-        <resources>
-            <resource>
-                <filtering>true</filtering>
-                <directory>src/main/filtered</directory>
-            </resource>
-            <resource>
-                <directory>src/main/resources</directory>
-            </resource>
-        </resources>
         <plugins>
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>

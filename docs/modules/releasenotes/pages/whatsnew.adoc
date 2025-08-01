@@ -51,6 +51,18 @@ org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy
 The release of Horizon 34 will be the last version which supports reading and writing timeseries data using JRobin.
 The JRobin library and the JRobin timeseries strategy will be removed from Horizon 35+ moving forward.
 
+
+== Deprecation of Tl1d
+The Tl1d service has been deprecated and removed from service configuration due to low user adoption. The service code will be fully removed in the next Horizon/Meridian release.
+
+== Deprecation of AsteriskGateway
+The AsteriskGateway service has been deprecated and removed from service configuration due to low user adoption. The service code will be fully removed in the next Horizon/Meridian release.
+
+== Deprecation of Reportd service
+
+The Reportd service has been deprecated and removed from service configuration due to low user adoption. The service code will be fully removed in the next Horizon/Meridian release.
+
+
 === OpenNMS Minion environment variables changes
 The OpenNMS Minion Docker container no longer uses the KAFKA_SINK, KAFKA_RPC and KAFKA_TWIN prefixes to configure Kafka.
 Instead, only the KAFKA_IPC prefix is used, which ensures that all Kafka-related settings are set correctly for all features and that ActiveMQ is no longer installed incorrectly.
@@ -59,7 +71,7 @@ Instead, only the KAFKA_IPC prefix is used, which ensures that all Kafka-related
 The `Secure Credentials Vault` in `OpenNMS` traditionally supported the `JCEKS` keystore format. As of the latest enhancement,
 support has been added for the `PKCS12` keystore format.
 
-Set `org.opennms.features.scv.jceks.keystore.type=PKCS12` in configuration file
+Set `org.opennms.features.scv.keystore.type=PKCS12` in configuration file
  `$OPENNMS_HOME/etc/opennms.properties.d/scv.properties.`
 
 If you want to convert the `PKCS12` keystore format instead of `JCEKS`, be sure to update the file extension to match the new format (e.g., use `.pk12` instead of `.jce`).

@@ -50,7 +50,7 @@ import org.testcontainers.containers.Network;
 import org.testcontainers.containers.VncRecordingContainer;
 import org.testcontainers.lifecycle.TestDescription;
 
-/**
+/**b
  * Base class for Selenium based testing of the OpenNMS web application.
  */
 public class OpenNMSSeleniumIT extends AbstractOpenNMSSeleniumHelper {

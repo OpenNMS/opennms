@@ -337,6 +337,7 @@ watch([() => nodeStructureStore.queryFilter], () => {
 @import "@featherds/table/scss/table";
 @import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/mixins/typography";
+@import "@featherds/styles/themes/variables";
 
 #wrap {
   overflow: auto;

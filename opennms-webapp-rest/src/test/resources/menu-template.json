@@ -1,0 +1,389 @@
+{
+  "baseHref": "",
+  "homeUrl": "",
+  "formattedTime": "",
+  "noticeStatus": "",
+  "username": "",
+  "baseNodeUrl": "",
+  "zenithConnectEnabled": false,
+  "zenithConnectBaseUrl": "",
+  "zenithConnectRelativeUrl": "",
+  "copyrightDates": "",
+  "version": "",
+  "userTileProviders": [
+    {
+      "name": "OpenNMS Default",
+      "url": "https://tiles.opennms.org/${z}/${x}/${y}.png",
+      "attribution": "Map data &copy; <a tabindex=\"-1\" target=\"_blank\" href=\"http://openstreetmap.org/copyright\">OpenStreetMap</a> contributors under <a tabindex=\"-1\" target=\"_blank\" href=\"http://opendatacommons.org/licenses/odbl/\">ODbL</a>, <a tabindex=\"-1\" target=\"_blank\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC BY-SA 2.0</a>",
+      "userDefinedAsDefault": false
+    }
+  ],
+  "menus": [
+    {
+      "id": "searchMenu",
+      "name": "Search",
+      "url": "element/index.jsp",
+      "locationMatch": "element",
+      "roles": null,
+      "items": null
+    },
+    {
+      "id": "info",
+      "name": "Info",
+      "url": "#",
+      "locationMatch": null,
+      "roles": null,
+      "items": [
+        {
+          "id": "nodes",
+          "name": "Nodes",
+          "url": "element/nodeList.htm",
+          "locationMatch": "nodelist",
+          "roles": null
+        },
+        {
+          "id": "structuredNodeList",
+          "name": "Structured Node List",
+          "url": "ui/index.html#/nodes",
+          "locationMatch": "configurationManagement",
+          "roles": null
+        },
+        {
+          "id": "assets",
+          "name": "Assets",
+          "url": "asset/index.jsp",
+          "locationMatch": "asset",
+          "roles": null
+        },
+        {
+          "id": "pathOutages",
+          "name": "Path Outages",
+          "url": "pathOutage/index.jsp",
+          "locationMatch": "pathOutage",
+          "roles": null
+        },
+        {
+          "id": "deviceConfigs",
+          "name": "Device Configs",
+          "url": "ui/index.html#/device-config-backup",
+          "locationMatch": "configurationManagement",
+          "roles": ["ROLE_ADMIN", "ROLE_REST" ,"ROLE_DEVICE_CONFIG_BACKUP"]
+        },
+        {
+          "id": "externalRequisition",
+          "name": "External Requisitions",
+          "url": "ui/index.html#/configuration",
+          "locationMatch": "configurationManagement",
+          "roles": ["ROLE_ADMIN"]
+        },
+        {
+          "id": "fileEditor",
+          "name": "File Editor",
+          "url": "ui/index.html#/file-editor",
+          "locationMatch": "configurationManagement",
+          "roles": ["ROLE_FILESYSTEM_EDITOR"]
+        },
+        {
+          "id": "logs",
+          "name": "Logs",
+          "url": "ui/index.html#/logs",
+          "locationMatch": "configurationManagement",
+          "roles": ["ROLE_ADMIN"]
+        },
+        {
+          "id": "scv",
+          "name": "Secure Credentials Vault",
+          "url": "ui/index.html#/scv",
+          "locationMatch": "configurationManagement",
+          "roles": ["ROLE_ADMIN"]
+        },
+        {
+          "id": "zenithConnect",
+          "name": "Connect to Zenith",
+          "url": "ui/index.html#/zenith-connect",
+          "locationMatch": "zenithConnect",
+          "roles": ["ROLE_ADMIN", "ROLE_USER"],
+          "requiredSystemProperties": [
+            {
+              "name": "opennms.zenithConnect.enabled",
+              "value": "true"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "statusMenu",
+      "name": "Status",
+      "url": "#",
+      "locationMatch": null,
+      "roles": null,
+      "items": [
+        {
+          "id": "events",
+          "name": "Events",
+          "url": "event/index",
+          "locationMatch": "event",
+          "roles": null
+        },
+        {
+          "id": "alarms",
+          "name": "Alarms",
+          "url": "alarm/index.htm",
+          "locationMatch": "alarm",
+          "roles": null
+        },
+        {
+          "id": "notifications",
+          "name": "Notifications",
+          "url": "notification/index.jsp",
+          "locationMatch": "notification",
+          "roles": null
+        },
+        {
+          "id": "outages",
+          "name": "Outages",
+          "url": "outage/index.jsp",
+          "locationMatch": "outage",
+          "roles": null
+        },
+        {
+          "id": "surveillance",
+          "name": "Surveillance",
+          "url": "surveillance-view.jsp",
+          "locationMatch": "surveillance-view",
+          "roles": null
+        },
+        {
+          "id": "heatmap",
+          "name": "Heatmap",
+          "url": "heatmap/index.jsp",
+          "locationMatch": "heatmap",
+          "roles": null
+        },
+        {
+          "id": "trend",
+          "name": "Trend",
+          "url": "trend/index.jsp",
+          "locationMatch": "trend",
+          "roles": null
+        },
+        {
+          "id": "application",
+          "name": "Application",
+          "url": "application/index.jsp",
+          "locationMatch": "application",
+          "roles": null
+        }
+      ]
+    },
+    {
+      "id": "reportsMenu",
+      "name": "Reports",
+      "url": "report/index.jsp",
+      "locationMatch": null,
+      "roles": null,
+      "items": [
+        {
+          "id": "charts",
+          "name": "Charts",
+          "url": "charts/index.jsp",
+          "locationMatch": "chart",
+          "roles": null
+        },
+        {
+          "id": "resourceGraphs",
+          "name": "Resource Graphs",
+          "url": "graph/index.jsp",
+          "locationMatch": "performance",
+          "roles": null
+        },
+        {
+          "id": "kscReports",
+          "name": "KSC Reports",
+          "url": "KSC/index.jsp",
+          "locationMatch": "ksc",
+          "roles": null
+        },
+        {
+          "id": "databaseReports",
+          "name": "Database Reports",
+          "url": "report/database/index.jsp",
+          "locationMatch": "database-reports",
+          "roles": null
+        },
+        {
+          "id": "statistics",
+          "name": "Statistics",
+          "url": "statisticsReports/index.htm",
+          "locationMatch": "reports",
+          "roles": null
+        }
+      ]
+    },
+    {
+      "id": "dashboardsMenu",
+      "name": "Dashboards",
+      "url": "dashboards.htm",
+      "locationMatch": null,
+      "roles": null,
+      "items": [
+        {
+          "id": "dashboard",
+          "name": "Dashboard",
+          "url": "dashboard.jsp",
+          "locationMatch": "dashboard",
+          "roles": null
+        },
+        {
+          "id": "opsBoard",
+          "name": "Ops Board",
+          "url": "vaadin-wallboard",
+          "locationMatch": "vaadin-wallboard",
+          "roles": null
+        }
+      ]
+    },
+    {
+      "id": "mapsMenu",
+      "name": "Maps",
+      "url": "maps.htm",
+      "locationMatch": null,
+      "roles": null,
+      "items": [
+        {
+          "id": "topology",
+          "name": "Topology",
+          "url": "topology",
+          "locationMatch": "topology",
+          "roles": null
+        },
+        {
+          "id": "geographicalMap",
+          "name": "Geographical",
+          "url": "ui/index.html#/map",
+          "locationMatch": "ui/index.html#/map",
+          "roles": null
+        }
+      ]
+    }
+  ],
+  "helpMenu": {
+    "id": "helpMenu",
+    "name": "Help",
+    "url": null,
+    "locationMatch": null,
+    "roles": null,
+    "items": [
+      {
+        "id": "helpMain",
+        "name": "Help",
+        "url": "help/index.jsp",
+        "locationMatch": null,
+        "roles": null
+      },
+      {
+        "id": "helpAbout",
+        "name": "About",
+        "url": "about/index.jsp",
+        "locationMatch": null,
+        "roles": null
+      },
+      {
+        "id": "apiDocumentation",
+        "name": "API Documentation",
+        "url": "ui/index.html#/open-api",
+        "locationMatch": null,
+        "roles": null
+      },
+      {
+        "id": "support",
+        "name": "Support",
+        "url": "support/index.jsp",
+        "locationMatch": null,
+        "roles": ["ROLE_ADMIN"]
+      }
+    ]
+  },
+  "selfServiceMenu": {
+    "id": "selfServiceMenu",
+    "name": "admin",
+    "url": "account/selfService/index.jsp",
+    "locationMatch": null,
+    "roles": null,
+    "items": [
+      {
+        "id": "changePassword",
+        "name": "Change Password",
+        "url": "account/selfService/newPasswordEntry",
+        "locationMatch": null,
+        "roles": null
+      },
+      {
+        "id": "logout",
+        "name": "Log Out",
+        "url": "j_spring_security_logout",
+        "locationMatch": null,
+        "roles": null
+      }
+    ]
+  },
+  "userNotificationMenu": {
+    "id": "userNotificationMenu",
+    "name": null,
+    "url": null,
+    "locationMatch": null,
+    "roles": null,
+    "items": [
+      {
+        "id": "userNotificationConfiguration",
+        "name": null,
+        "url": "admin/notification/index.jsp",
+        "locationMatch": null,
+        "roles": null
+      },
+      {
+        "id": "userNotificationUser",
+        "name": null,
+        "url": "notification/browse?acktype=unack&filter=user==$USER",
+        "locationMatch": null,
+        "roles": null
+      },
+      {
+        "id": "userNotificationTeam",
+        "name": null,
+        "url": "notification/browse?acktype=unack",
+        "locationMatch": null,
+        "roles": null
+      },
+      {
+        "id": "userNotificationOnCall",
+        "name": "On-Call Schedule",
+        "url": "roles",
+        "locationMatch": null,
+        "roles": null
+      }
+    ]
+  },
+  "provisionMenu": {
+    "id": "provisionMenu",
+    "name": "Quick-Add Node",
+    "url": "admin/ng-requisitions/quick-add-node.jsp#/",
+    "locationMatch": null,
+    "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
+  },
+  "flowsMenu": {
+    "id": "flowMenu",
+    "name": "Flows Management",
+    "url": "admin/classification/index.jsp",
+    "locationMatch": null,
+    "roles": ["ROLE_FLOW_MANAGER"]
+  },
+  "configurationMenu": {
+    "id": "configurationMenu",
+    "name": "Configure OpenNMS",
+    "url": "admin/index.jsp",
+    "locationMatch": null,
+    "roles": ["ROLE_ADMIN"]
+  }
+}
