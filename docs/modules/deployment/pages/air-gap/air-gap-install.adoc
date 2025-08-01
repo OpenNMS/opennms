@@ -42,7 +42,7 @@ ifeval::["{page-component-title}" == "Meridian"]
 cat << EOF | sudo tee /etc/yum.repos.d/opennms-meridian.repo
 [meridian]
 name=Meridian for Red Hat Enterprise Linux and CentOS
-baseurl=https://REPO_USER:REPO_PASS@meridian.opennms.com/packages/2024/stable/rhel9
+baseurl=https://REPO_USER:REPO_PASS@meridian.opennms.com/packages/2024/stable/rhel$releasever
 gpgcheck=1
 gpgkey=http://yum.opennms.org/OPENNMS-GPG-KEY
 EOF
@@ -67,7 +67,7 @@ dnf install -y java-17-openjdk-devel
 Download PostgreSQL server packages (please refer to system requirements for version support):
 
 ```bash
-dnf install --downloadonly --downloaddir=./rpmtmp postgresql-server
+dnf install --downloadonly --downloaddir=/tmp/opennms_rpms postgresql-server
 mv ./tmp/opennms_rpms ./install/02-postgresql
 dnf install -y postgresql-server
 ```
@@ -78,7 +78,7 @@ Download the basic OpenNMS packages. If you need other packages, this would be t
 
 ifeval::["{page-component-title}" == "Horizon"]
 ```bash
-dnf install --downloadonly --downloaddir=./rpmtmp opennms-core opennms-webapp-jetty
+dnf install --downloadonly --downloaddir=/tmp/opennms_rpms opennms-core opennms-webapp-jetty
 mv ./tmp/opennms_rpms ./install/04-opennms
 dnf install -y opennms-core opennms-webapp-jetty
 ```
@@ -86,11 +86,15 @@ endif::[]
 
 ifeval::["{page-component-title}" == "Meridian"]
 ```bash
-dnf install --downloadonly --downloaddir=./rpmtmp meridian-core meridian-webapp-jetty
+dnf install --downloadonly --downloaddir=/tmp/opennms_rpms meridian-core meridian-webapp-jetty
 mv ./tmp/opennms_rpms ./install/04-opennms
 dnf install -y meridian-core meridian-webapp-jetty
 ```
 endif::[]
+
+### Step 6 (Optional): Plugin Support
+
+If you need additional OpenNMS plugins (e.g., for CIFS monitoring, Asset Inventory, etc), download these packages from the OpenNMS repositories and include them in your installation files.
 
 ## Part 2: Installation on Air-Gapped System
 
@@ -129,10 +133,6 @@ rpm -ivh <directory>/*.rpm
 After completing the package installation, proceed with OpenNMS configuration as described in our xref:core/getting-started.adoc[Set up the core instance] documentation.
 
 ## Additional Considerations
-
-### Plugin Support
-
-If you need additional OpenNMS plugins (e.g., for CIFS monitoring, Asset Inventory, etc), download these packages from the OpenNMS repositories during the package collection phase and include them in your installation files.
 
 ### Version Compatibility
 
