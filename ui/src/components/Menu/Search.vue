@@ -1,68 +1,74 @@
 <template>
-  <div class="onms-search-control-wrapper" :id="props.searchId">
+  <div
+    class="onms-search-control-wrapper"
+    :id="props.searchId"
+  >
     <div class="onms-search-input-wrapper">
       <FeatherInput
+        ref="searchInputRef"
         label="Search..."
-        @update:modelValue="search"
-        :modelValue="searchState.currentSearch"
+        @update:modelValue="handleSearch"
+        :modelValue="searchValue"
+        @keydown="onKeyDown"
       >
         <template v-slot:pre>
           <FeatherIcon :icon="SearchIcon" />
         </template>
       </FeatherInput>
     </div>
-    <div class="onms-search-dropdown-wrapper">
-      <FeatherDropdown v-model="searchState.dropdownOpen">
-        <template
-          v-for="searchResultByContext, searchResultByContextKey in searchStore.searchResultsByContext"
-          :key="searchResultByContextKey"
+    <!-- Replace FeatherDropdown with simple div -->
+    <div
+      v-if="showResults && hasResults"
+      class="search-results-dropdown"
+      @mousedown.prevent
+    >
+      <template
+        v-for="(searchResultByContext, searchResultByContextKey) in filteredResults"
+        :key="searchResultByContextKey"
+      >
+        <div
+          v-if="searchResultByContext?.results"
+          class="search-category"
         >
-          <FeatherDropdownItem v-if="searchResultByContext?.results">
-            <SearchHeader>{{ searchResultByContext?.label }}</SearchHeader>
-          </FeatherDropdownItem>
-
-          <template
-             v-for="contextSearchResults, contextSearchResultsKey in searchResultByContext?.results"
-            :key="contextSearchResultsKey"
+          <SearchHeader>{{ searchResultByContext?.label }}</SearchHeader>
+        </div>
+        <template
+          v-for="contextSearchResults, contextSearchResultsKey in searchResultByContext?.results"
+          :key="contextSearchResultsKey"
+        >
+          <div
+            v-for="searchResultItem, searchResultItemKey in contextSearchResults?.results"
+            :key="searchResultItemKey"
+            class="search-result-item"
+            @click="handleItemClick(searchResultItem)"
+            @mousedown.prevent
           >
-            <FeatherDropdownItem
-              v-for="searchResultItem, searchResultItemKey in contextSearchResults?.results"
-              :key="searchResultItemKey"
-              class="onms-search-result-item"
-              :style="{ padding: '3px 5px' }"
-            >
-              <!-- FeatherDropdownItem does not accept a class, so our extra padding has to be an inline style -->
-              <SearchResult
-                :item="searchResultItem"
-                :iconClass="iconClasses?.[searchResultByContextKey]?.[searchResultItemKey]"
-                :itemClicked="itemClicked"
-              />
-            </FeatherDropdownItem>
-          </template>
+            <SearchResult
+              :item="searchResultItem"
+              :iconClass="iconClasses?.[searchResultByContextKey]?.[searchResultItemKey]"
+              :itemClicked="handleItemClick"
+            />
+          </div>
         </template>
-      </FeatherDropdown>
+      </template>
     </div>
   </div>
 </template>
 
-<script
-  setup
-  lang="ts"
->
-import { reactive } from 'vue'
+<script setup lang="ts">
+import { ref, computed } from 'vue'
 import { FeatherIcon } from '@featherds/icon'
 import SearchIcon from '@featherds/icon/action/Search'
 import { FeatherInput } from '@featherds/input'
-import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import SearchHeader from './SearchHeader.vue'
 import SearchResult from './SearchResult.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { useSearchStore } from '@/stores/searchStore'
-import { SearchResultItem } from '@/types'
 
 const menuStore = useMenuStore()
 const searchStore = useSearchStore()
-const iconClasses = ref<string[][]>([[]])
+const iconClasses = ref<any>([[]])
+const searchInputRef = ref<any>(null)
 
 const props = defineProps({
   searchId: {
@@ -71,136 +77,102 @@ const props = defineProps({
   }
 })
 
-interface SearchState {
-  pausedSearch: string | number;
-  currentSearch: string | number | undefined;
-  dropdownOpen: boolean;
-}
+const searchValue = ref('')
+const showResults = ref(false)
 
-const searchState = reactive<SearchState>({
-  pausedSearch: '',
-  dropdownOpen: false,
-  currentSearch: ''
+let searchTimeout: any = null
+
+const hasResults = computed(() => {
+  return searchStore.searchResultsByContext &&
+    Object.keys(searchStore.searchResultsByContext).length > 0
 })
 
-const itemClicked = (item: SearchResultItem) => {
-  if (item && item.url) {
-    const baseHref = menuStore.mainMenu.baseHref
-    const fullPath = `${baseHref}${item.url}`
+const handleSearch = (value: any) => {
+  const stringValue = String(value || '').trim()
+  searchValue.value = stringValue
+  if (searchTimeout) {
+    clearTimeout(searchTimeout)
+  }
+  if (stringValue.length > 0) {
+    showResults.value = true
+    searchTimeout = setTimeout(() => {
+      searchStore.search(stringValue)
+    }, 300)
+  } else {
+    showResults.value = false
+  }
+}
 
+const handleItemClick = (item: any) => {
+  showResults.value = false
+  if (item && (item.url || item.value)) {
+    const baseHref = menuStore.mainMenu?.baseHref || ''
+    const itemUrl = item.url || item.value || ''
+    const fullPath = `${baseHref}${itemUrl}`
     window.location.href = fullPath
   }
 }
 
-const loading = computed(() => searchStore.loading)
-
-const search = (userInput: string | number | undefined) => {
-  searchState.currentSearch = userInput
-
-  if (userInput && !loading.value) {
-    searchState.dropdownOpen = true
-    searchStore.search('' + userInput)
-  } else if (!userInput) {
-    searchState.dropdownOpen = false
-  } else if (userInput && loading.value) {
-    searchState.pausedSearch = userInput
-  } 
+const onKeyDown = (event: KeyboardEvent) => {
+  if (['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(event.key)) {
+    if (event.key === 'Escape') {
+      showResults.value = false
+    }
+  }
 }
 
-watchEffect(() => {
-  if (!loading.value && searchState.pausedSearch) {
-    search(searchState.pausedSearch)
-    searchState.pausedSearch = ''
-  }
+const filteredResults = computed(() => {
+  return Object.fromEntries(
+    Object.entries(searchStore.searchResultsByContext).filter(
+      ([, value]: any) => value?.label === 'Action'
+    )
+  )
 })
 </script>
 
 <style lang="scss" scoped>
+@import "@featherds/styles/mixins/typography";
+@import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/themes/variables";
 
 .onms-search-control-wrapper {
   position: relative;
   min-width: 30em;
-
-  .onms-search-dropdown-wrapper {
-    position: absolute;
-    min-width: 278px;
-    max-width: 278px;
-    height: 0;
-
-    :deep(.feather-dropdown) {
-      padding: 0;
-      border: #343a40 solid 1px;
-      border-radius: 4px;
-      max-height: none;
-    }
-
-    :deep(.feather-menu) {
-      max-width: 278px;
-      width: 100%;
-    }
-
-    :deep(.feather-menu-dropdown) {
-      min-width: 100%;
-      /* width for text in search result labels, so text does not get cut off */
-      max-width: 30em;
-      position: absolute !important;
-      bottom: unset !important;
-      left: unset !important;
-      top: unset !important;
-      right: unset !important;
-      width: auto !important;
-      transform: translateY(-20px);
-    }
-  }
-
-  :deep(.feather-input-wrapper-container .feather-input-border .pre-border) {
-    border-radius: 0;
-  }
-
-  :deep(.feather-input-wrapper-container .feather-input-border .post-border) {
-    border-radius: 0;
-  }
-
-  :deep(.feather-input-border) {
-    background: var($surface);
-  }
-
-  :deep(.feather-input-sub-text) {
-    display: none;
-  }
-
-  :deep(.feather-input-wrapper-container.raised .feather-input-label) {
-    display: none;
-  }
 }
 
-.label-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: '#e9ecef';
-  color: '#495057';
-  font-weight: 500;
-  white-space: break-spaces;
-  padding: 0 3px;
+.search-results-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: var($surface);
+  border: 1px solid var($secondary);
+  border-radius: 4px;
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
-  .visible {
-    display: block;
+
+  .search-category {
+    background-color: #f8f9fa;
+    padding: 8px 12px;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 500;
   }
 
-  .short {
-    font-size: 0.8em;
-    margin-left: 3px;
-  }
+  .search-result-item {
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f3f4;
 
-  span {
-    opacity: 0;
-  }
+    &:hover {
+      background-color: #f8f9fa;
+    }
 
-  &:hover {
-    span {
-      opacity: 1;
+    &:last-child {
+      border-bottom: none;
     }
   }
 }
@@ -210,21 +182,40 @@ watchEffect(() => {
   position: relative;
   align-items: center;
   width: 100%;
+  background-color: #f8f9fa;
 
-  .onms-search-icon {
-    left: 18px;
-    position: absolute;
-    z-index: 3;
-  }
-  :deep(.feather-input-container){
+  :deep(.feather-input-container) {
     width: 100%;
   }
+
   :deep(.feather-input-label) {
     padding-left: 32px;
     top: 10px;
   }
-  :deep(.feather-input){
+
+  :deep(.feather-input) {
     padding-left: 32px;
   }
 }
+
+:deep(.feather-input-wrapper-container .feather-input-border .pre-border) {
+  border-radius: 0 !important;
+}
+
+:deep(.feather-input-wrapper-container .feather-input-border .post-border) {
+  border-radius: 0 !important;
+}
+
+:deep(.feather-input-border) {
+  background: var(--surface);
+}
+
+:deep(.feather-input-sub-text) {
+  display: none !important;
+}
+
+:deep(.feather-input-wrapper-container.raised .feather-input-label) {
+  display: none !important;
+}
 </style>
+
