@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features.sentinel</groupId>
         <artifactId>sentinel-parent</artifactId>
-        <version>33.0.0-SNAPSHOT</version>
+        <version>34.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <artifactId>core</artifactId>
@@ -22,7 +22,7 @@
                         <Bundle-SymbolicName>${project.groupId}.${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Import-Package>*</Import-Package>
-                        <Karaf-Commands>*</Karaf-Commands>
+                        <Karaf-Commands>org.opennms.*</Karaf-Commands>
                     </instructions>
                 </configuration>
             </plugin>
@@ -39,6 +39,11 @@
             <artifactId>osgi.core</artifactId>
             <version>${osgiVersion}</version>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.karaf.shell</groupId>
+            <artifactId>org.apache.karaf.shell.core</artifactId>
+            <version>${karafVersion}</version>
         </dependency>
         <dependency>
             <groupId>org.opennms.features.distributed</groupId>

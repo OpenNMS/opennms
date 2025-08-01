@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.snmp.proxy.common;
 
 import java.util.ArrayList;
@@ -67,6 +60,9 @@ public class SnmpRequestDTO implements RpcRequest {
 
     @XmlElement(name="walk")
     private List<SnmpWalkRequestDTO> walks = new ArrayList<>(0);
+
+    @XmlElement(name="set")
+    private List<SnmpSetRequestDTO> sets = new ArrayList<>(0);
 
     @XmlTransient
     private Long timeToLive;
@@ -115,6 +111,15 @@ public class SnmpRequestDTO implements RpcRequest {
         return walks;
     }
 
+    public void setSetRequests(List<SnmpSetRequestDTO> sets) {
+        this.sets = sets;
+    }
+
+    public List<SnmpSetRequestDTO> getSetRequest() {
+        return sets;
+    }
+
+
     public String getDescription() {
         return description;
     }
@@ -152,7 +157,7 @@ public class SnmpRequestDTO implements RpcRequest {
 
     @Override
     public int hashCode() {
-        return Objects.hash(location, systemId, agent, gets, walks, description, timeToLive);
+        return Objects.hash(location, systemId, agent, gets, walks, sets, description, timeToLive);
     }
 
     @Override
@@ -169,6 +174,7 @@ public class SnmpRequestDTO implements RpcRequest {
                 && Objects.equals(this.agent, other.agent)
                 && Objects.equals(this.gets, other.gets)
                 && Objects.equals(this.walks, other.walks)
+                && Objects.equals(this.sets, other.sets)
                 && Objects.equals(this.description, other.description)
                 && Objects.equals(this.timeToLive, other.timeToLive);
     }

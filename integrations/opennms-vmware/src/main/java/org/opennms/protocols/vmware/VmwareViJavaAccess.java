@@ -38,7 +38,6 @@
 
 package org.opennms.protocols.vmware;
 
-import java.io.IOException;
 import java.net.ConnectException;
 import java.net.InetAddress;
 import java.net.MalformedURLException;
@@ -58,12 +57,7 @@ import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 
-import org.opennms.core.mate.api.Interpolator;
-import org.opennms.core.mate.api.Scope;
-import org.opennms.core.mate.api.SecureCredentialsVaultScope;
-import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.AnyServerX509TrustManager;
-import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.netmgt.collectd.vmware.vijava.VmwarePerformanceValues;
 import org.opennms.netmgt.config.vmware.VmwareServer;
 import org.opennms.netmgt.dao.vmware.VmwareConfigDao;
@@ -151,52 +145,6 @@ public class VmwareViJavaAccess implements AutoCloseable {
         this.m_hostname = hostname;
         this.m_username = username;
         this.m_password = password;
-    }
-
-    /**
-     * Constructor for creating a instance for a given server. Checks whether credentials
-     * are available in the Vmware config file.
-     *
-     * @param hostname the vCenter's hostname
-     * @throws IOException
-     */
-    public VmwareViJavaAccess(String hostname) throws IOException {
-        if (m_vmwareConfigDao == null) {
-            m_vmwareConfigDao = BeanUtils.getBean("daoContext", "vmwareConfigDao", VmwareConfigDao.class);
-        }
-
-        final SecureCredentialsVault secureCredentialsVault = BeanUtils.getBean("jceksScvContext", "jceksSecureCredentialsVault", SecureCredentialsVault.class);
-
-        this.m_hostname = hostname;
-
-        if (m_vmwareConfigDao == null) {
-            logger.error("vmwareConfigDao should be a non-null value.");
-        } else {
-            Map<String, VmwareServer> serverMap = m_vmwareConfigDao.getServerMap();
-            if (serverMap == null) {
-                logger.error("Error getting vmware-config.xml's server map.");
-            } else {
-                VmwareServer vmwareServer = serverMap.get(m_hostname);
-
-                if (vmwareServer == null) {
-                    logger.error("Error getting credentials for VMware management server '{}'.", m_hostname);
-                } else {
-                    final Scope scvScope = new SecureCredentialsVaultScope(secureCredentialsVault);
-                    this.m_username = Interpolator.interpolate(vmwareServer.getUsername(), scvScope).output;
-                    this.m_password = Interpolator.interpolate(vmwareServer.getPassword(), scvScope).output;
-                }
-            }
-        }
-
-        if (this.m_username == null) {
-            logger.error("Error getting username for VMware management server '{}'.", m_hostname);
-            this.m_username = "";
-        }
-
-        if (this.m_password == null) {
-            logger.error("Error getting password for VMware management server '{}'.", m_hostname);
-            this.m_password = "";
-        }
     }
 
     public VmwareViJavaAccess(VmwareServer vmwareServer) {

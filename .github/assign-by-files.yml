@@ -1,13 +1,12 @@
 ---
 "**/*.adoc":
-  - Bonrob2
+  - indigo423
 
 "opennms-doc/**/*":
-  - Bonrob2
+  - indigo423
 
 "docs/**/*":
-  - Bonrob2
+  - indigo423
 
 ".circleci/**/*":
-  - RangerRick
   - mershad-manesh

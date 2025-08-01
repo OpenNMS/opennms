@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2008-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.web.rest.v2;
 
 import static org.junit.Assert.assertTrue;
@@ -34,19 +27,28 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collections;
+import java.util.List;
+import java.util.Optional;
 
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.json.JSONObject;
+import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.test.rest.AbstractSpringJerseyRestTestCase;
+import org.opennms.netmgt.dao.DatabasePopulator;
+import org.opennms.netmgt.model.NetworkBuilder;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 
@@ -77,7 +79,8 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
     public NodeRestServiceIT() {
         super(CXF_REST_V2_CONTEXT_PATH);
     }
-
+    @Autowired
+    private DatabasePopulator m_databasePopulator;
     @Override
     protected void afterServletStart() throws Exception {
         MockLogAppender.setupLogging(true, "DEBUG");
@@ -248,5 +251,26 @@ public class NodeRestServiceIT extends AbstractSpringJerseyRestTestCase {
         sendData(POST, MediaType.APPLICATION_JSON, "/nodes/1/categories", category.toString(), 201);
         LOG.warn(sendRequest(GET, "/nodes/1/categories", 200));
     }
+    @Test
+    public void createNodeWithParent() throws Exception{
 
+        final NetworkBuilder builder = new NetworkBuilder();
+        builder.addNode("Parent").setForeignSource("JUnit").setForeignId("Parent").setType(OnmsNode.NodeType.ACTIVE);
+        final OnmsNode parent = builder.getCurrentNode();
+        m_databasePopulator.getNodeDao().save(parent);
+
+        builder.addNode("Child").setForeignSource("Junit").setForeignId("Child").setType(OnmsNode.NodeType.ACTIVE)
+                .setParent(parent).setNodeParentId(parent.getId());
+        final OnmsNode child = builder.getCurrentNode();
+        m_databasePopulator.getNodeDao().save(child);
+        m_databasePopulator.getNodeDao().flush();
+
+        Assert.assertNotNull(child.getId());
+        Assert.assertNotNull(parent.getId());
+        sendRequest(GET, "/nodes/"+parent.getId(), 200);
+        final String response = sendRequest(GET, "/nodes/"+child.getId(), 200);
+
+        final JSONObject object = new JSONObject(response);
+        Assert.assertEquals(Optional.ofNullable(parent.getId()), Optional.of(object.getInt("nodeParentID")));
+    }
 }

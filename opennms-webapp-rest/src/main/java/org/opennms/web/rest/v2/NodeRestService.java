@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2008-2021 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2021 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.web.rest.v2;
 
 import java.util.Collection;
@@ -34,7 +27,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
@@ -58,6 +53,7 @@ import org.opennms.core.criteria.restrictions.Restrictions;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.events.api.EventProxy;
+import org.opennms.netmgt.model.OnmsMetaData;
 import org.opennms.netmgt.model.OnmsMetaDataList;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNodeList;
@@ -336,5 +332,85 @@ public class NodeRestService extends AbstractDaoRestService<OnmsNode,SearchBean,
         return new OnmsMetaDataList(node.getMetaData().stream()
                 .filter(e -> context.equals(e.getContext()) && key.equals(e.getKey()))
                 .collect(Collectors.toList()));
+    }
+
+    @DELETE
+    @Path("{nodeCriteria}/metadata/{context}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response deleteMetaData(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("context") final String context) {
+        checkUserDefinedMetadataContext(context);
+
+        writeLock();
+        try {
+            final OnmsNode node = getDao().get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "deleteMetaData: Can't find node " + nodeCriteria);
+            }
+            node.removeMetaData(context);
+            getDao().update(node);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @DELETE
+    @Path("{nodeCriteria}/metadata/{context}/{key}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response deleteMetaData(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("context") final String context, @PathParam("key") final String key) {
+        checkUserDefinedMetadataContext(context);
+
+        writeLock();
+        try {
+            final OnmsNode node = getDao().get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "deleteMetaData: Can't find node " + nodeCriteria);
+            }
+            node.removeMetaData(context, key);
+            getDao().update(node);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @POST
+    @Path("{nodeCriteria}/metadata")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response postMetaData(@PathParam("nodeCriteria") final String nodeCriteria, final OnmsMetaData entity) {
+        checkUserDefinedMetadataContext(entity.getContext());
+
+        writeLock();
+        try {
+            final OnmsNode node = getDao().get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "postMetaData: Can't find node " + nodeCriteria);
+            }
+            node.addMetaData(entity.getContext(), entity.getKey(), entity.getValue());
+            getDao().update(node);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
+    }
+
+    @PUT
+    @Path("{nodeCriteria}/metadata/{context}/{key}/{value}")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML, MediaType.APPLICATION_ATOM_XML})
+    public Response putMetaData(@PathParam("nodeCriteria") final String nodeCriteria, @PathParam("context") final String context, @PathParam("key") final String key, @PathParam("value") final String value) {
+        checkUserDefinedMetadataContext(context);
+
+        writeLock();
+        try {
+            final OnmsNode node = getDao().get(nodeCriteria);
+            if (node == null) {
+                throw getException(Status.BAD_REQUEST, "putMetaData: Can't find node " + nodeCriteria);
+            }
+            node.addMetaData(context, key, value);
+            getDao().update(node);
+            return Response.noContent().build();
+        } finally {
+            writeUnlock();
+        }
     }
 }

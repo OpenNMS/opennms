@@ -1,34 +1,29 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2022-2023 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.web.springframework.security;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -80,28 +75,24 @@ public class OpenNMSLoginUrlAuthEntryPoint extends LoginUrlAuthenticationEntryPo
 
     @Override
     protected String buildRedirectUrlToLoginPage(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
-        String loginForm = determineUrlToUseForThisRequest(request, response, authException);
+        final String loginForm = determineUrlToUseForThisRequest(request, response, authException);
         if (UrlUtils.isAbsoluteUrl(loginForm)) {
             return loginForm;
         }
-        int serverPort = getPortResolver().getServerPort(request);
-        String scheme = request.getScheme();
-        RedirectUrlBuilder urlBuilder = new RedirectUrlBuilder();
-        urlBuilder.setScheme(scheme);
-        urlBuilder.setServerName(request.getServerName());
-        urlBuilder.setPort(serverPort);
-        urlBuilder.setContextPath(request.getContextPath());
-        urlBuilder.setPathInfo(loginForm);
-        if (isHttpsEnabled(request) && "http".equals(scheme)) {
-            Integer httpsPort = getPortMapper().lookupHttpsPort(serverPort);
-            if (httpsPort != null) {
-                // Overwrite scheme and port in the redirect URL
-                urlBuilder.setScheme("https");
-                urlBuilder.setPort(httpsPort);
-            } else {
-                logger.warn("Unable to redirect to HTTPS as no port mapping found for HTTP port {}", serverPort);
-            }
+
+        final URL url;
+
+        try {
+            url = new URL(Util.calculateUrlBase(request, loginForm));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
         }
+        final RedirectUrlBuilder urlBuilder = new RedirectUrlBuilder();
+        urlBuilder.setScheme(url.getProtocol());
+        urlBuilder.setServerName(url.getHost());
+        urlBuilder.setPort(url.getPort() == -1 ? url.getDefaultPort() : url.getPort());
+        urlBuilder.setContextPath(url.getPath());
+        urlBuilder.setPathInfo(url.getQuery());
         return urlBuilder.getUrl();
     }
 

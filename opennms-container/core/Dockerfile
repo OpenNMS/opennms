@@ -1,9 +1,31 @@
+#
+# Licensed to The OpenNMS Group, Inc (TOG) under one or more
+# contributor license agreements.  See the LICENSE.md file
+# distributed with this work for additional information
+# regarding copyright ownership.
+#
+# TOG licenses this file to You under the GNU Affero General
+# Public License Version 3 (the "License") or (at your option)
+# any later version.  You may not use this file except in
+# compliance with the License.  You may obtain a copy of the
+# License at:
+#
+#      https://www.gnu.org/licenses/agpl-3.0.txt
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+# either express or implied.  See the License for the specific
+# language governing permissions and limitations under the
+# License.
+#
+
 ##
 # Use Java base image and setup required RPMs as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.2.0.b247-jre-17"
+ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.6.0.b293-jre-17"
 
-FROM ${BASE_IMAGE} as core-tarball
+FROM ${BASE_IMAGE} AS core-tarball
 
 ADD --chown=10001:0 ./tarball-root/ /opt/usr-share/opennms/
 RUN chmod -R g-w /opt/usr-share/opennms && \
@@ -25,13 +47,13 @@ RUN chmod -R g-w /opt/usr-share/opennms && \
 ##
 # Download plugins
 ##
-FROM ${BASE_IMAGE} as core-plugins
+FROM ${BASE_IMAGE} AS core-plugins
 
 COPY plugins.sh /tmp/plugins.sh 
 RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
 
 
-FROM ${BASE_IMAGE} as core-base
+FROM ${BASE_IMAGE} AS core-base
 
 ARG REQUIRED_RPMS="diffutils hostname jrrd2 jq rrdtool"
 
@@ -140,6 +162,8 @@ CMD [ "-h" ]
 
 ### Runtime information and not relevant at build time
 ENV JAVA_OPTS="-Xmx1024m -XX:MaxMetaspaceSize=512m"
+# Allow OpenNMS to detect whether it is run in a container
+ENV OPENNMS_EXECUTION_ENVIRONMENT=container
 
 # Volumes for storing data outside of the container
 VOLUME [ "/opt/opennms/etc", "/opt/opennms-etc-overlay", "/opennms-data" ]

@@ -49,5 +49,5 @@ Mark the ICMP and HTTP services to be forced unmanaged for the nodes that belong
 
 [source, bash]
 ----
-curl -u admin:admin -X PUT "status=F&services=ICMP,HTTP" "http://localhost:8980/opennms/rest/ifservices?category.name=Production"
+curl -u admin:admin -X PUT -d "status=F&services=ICMP,HTTP" "http://localhost:8980/opennms/rest/ifservices?category.name=Production"
 ----

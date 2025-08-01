@@ -1,35 +1,29 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.features.openconfig.telemetry;
 
 
 import com.google.common.base.Splitter;
+import com.google.common.base.Strings;
 import io.grpc.ConnectivityState;
 import io.grpc.ManagedChannel;
 import io.grpc.Metadata;
@@ -60,6 +54,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.logging.Handler;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -82,18 +77,23 @@ public class OpenConfigClientImpl implements OpenConfigClient {
     private static final int DEFAULT_INTERNAL_RETRIES = 5;
     private static final int DEFAULT_INTERNAL_TIMEOUT = 1000;
     private static final int DEFAULT_FREQUENCY = 300000; //5min
+    private static final long DEFAULT_FREQUENCY_FOR_GNMI = 300 * 10^9; // 5mins in nano seconds
     private static final int DEFAULT_INTERVAL_IN_SEC = 300; //5min
     private static final String PORT = "port";
+    private static final String HOSTNAME = "hostname";
     private static final String MODE = "mode";
     private static final String PATHS = "paths";
     private static final String FREQUENCY = "frequency";
     private static final String INTERVAL = "interval";
     private static final String RETRIES = "retries";
     private static final String JTI_MODE = "jti";
+    private static final String ORIGIN = "origin";
+    private static final String DEFAULT_ORIGIN = "openconfig";
     private static final String USERNAME_FIELD = "username";
     private static final String PASSWORD_FIELD = "password";
     private ManagedChannel channel;
     private final InetAddress host;
+    private String hostName;
     private Integer port;
     private String mode;
     private Integer interval;
@@ -108,11 +108,14 @@ public class OpenConfigClientImpl implements OpenConfigClient {
         this.host = Objects.requireNonNull(host);
         this.paramList.addAll(paramList);
         // Extract port and mode which are global.
-        this.paramList.stream().filter(entry -> entry.get(PORT) != null)
+        this.paramList.stream().filter(entry -> entry.containsKey(PORT) && entry.get(PORT) != null)
                 .findFirst().ifPresent(entry ->
-                this.port = Objects.requireNonNull(StringUtils.parseInt(entry.get(PORT), null)));
+                this.port = StringUtils.parseInt(entry.get(PORT), null));
         this.paramList.stream().filter(entry -> entry.get(MODE) != null)
                 .findFirst().ifPresent(entry -> this.mode = entry.get(MODE));
+        this.paramList.stream().filter(entry -> entry.containsKey(HOSTNAME) && entry.get(HOSTNAME) != null)
+                .findFirst().ifPresent(entry ->
+                        this.hostName = entry.get(HOSTNAME));
     }
 
     @Override
@@ -132,6 +135,7 @@ public class OpenConfigClientImpl implements OpenConfigClient {
                         .filter(configuration -> configuration.getKey().contains("tls"))
                         .collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue)));
             });
+            String host = this.hostName != null ? this.hostName : this.host.getHostAddress();
             var optionalUsername =
                     this.paramList.stream().filter(entry -> entry.get(USERNAME_FIELD) != null).findFirst();
             var optionalPassword =
@@ -143,13 +147,13 @@ public class OpenConfigClientImpl implements OpenConfigClient {
                 metadata.put(Metadata.Key.of(USERNAME_FIELD, Metadata.ASCII_STRING_MARSHALLER), username);
                 metadata.put(Metadata.Key.of(PASSWORD_FIELD, Metadata.ASCII_STRING_MARSHALLER), password);
                 var clientInterceptor = new GrpcClientInterceptor(metadata);
-                this.channel = GrpcClientBuilder.getChannelWithInterceptor(host.getHostAddress(), port, tlsFilePaths, clientInterceptor);
+                this.channel = GrpcClientBuilder.getChannelWithInterceptor(host, port, tlsFilePaths, clientInterceptor);
             } else {
-                this.channel = GrpcClientBuilder.getChannel(host.getHostAddress(), port, tlsFilePaths);
+                this.channel = GrpcClientBuilder.getChannel(host, port, tlsFilePaths);
             }
 
             if (READY.equals(retrieveChannelState())) {
-                subscribeToTelemetry(handler);
+                subscribeToTelemetry(handler, host);
                 return true;
             }
         } catch (Exception e) {
@@ -159,7 +163,7 @@ public class OpenConfigClientImpl implements OpenConfigClient {
     }
 
 
-    private void subscribeToTelemetry(OpenConfigClient.Handler handler) {
+    private void subscribeToTelemetry(Handler handler, String host) {
 
         // Defaults to gnmi
         if (JTI_MODE.equalsIgnoreCase(mode)) {
@@ -171,35 +175,37 @@ public class OpenConfigClientImpl implements OpenConfigClient {
                 List<String> paths = pathString != null ? Arrays.asList(pathString.split(",", -1)) : new ArrayList<>();
                 paths.forEach(path -> requestBuilder.addPathList(Telemetry.Path.newBuilder().setPath(path).setSampleFrequency(frequency).build()));
             });
-            asyncStub.telemetrySubscribe(requestBuilder.build(), new TelemetryDataHandler(host, port, handler));
-            LOG.info("Subscribed to OpenConfig telemetry stream at {}", InetAddressUtils.str(host));
+            asyncStub.telemetrySubscribe(requestBuilder.build(), new TelemetryDataHandler(this.host, port, handler));
+            LOG.info("Subscribed to OpenConfig telemetry stream at {}:{}", host, port);
         } else {
 
             gNMIGrpc.gNMIStub gNMIStub = gNMIGrpc.newStub(channel);
             Gnmi.SubscribeRequest.Builder requestBuilder = Gnmi.SubscribeRequest.newBuilder();
             Gnmi.SubscriptionList.Builder subscriptionListBuilder = Gnmi.SubscriptionList.newBuilder();
             paramList.forEach(entry -> {
-                Integer frequency = StringUtils.parseInt(entry.get(FREQUENCY), DEFAULT_FREQUENCY);
+                Long frequency = StringUtils.parseLong(entry.get(FREQUENCY), DEFAULT_FREQUENCY_FOR_GNMI);
                 String pathString = entry.get(PATHS);
+                String origin = entry.get(ORIGIN);
                 List<String> paths = pathString != null ? Arrays.asList(pathString.split(",", -1)) : new ArrayList<>();
                 paths.forEach(path -> {
-                    Gnmi.Path gnmiPath = buildGnmiPath(path);
+                    Gnmi.Path gnmiPath = buildGnmiPath(path, origin);
                     Gnmi.Subscription subscription = Gnmi.Subscription.newBuilder()
                             .setPath(gnmiPath)
                             .setSampleInterval(frequency)
                             .setMode(Gnmi.SubscriptionMode.SAMPLE).build();
                     subscriptionListBuilder.addSubscription(subscription);
+                    subscriptionListBuilder.setMode(Gnmi.SubscriptionList.Mode.STREAM);
                 });
             });
             requestBuilder.setSubscribe(subscriptionListBuilder.build());
-            StreamObserver<Gnmi.SubscribeRequest> requestStreamObserver = gNMIStub.subscribe(new GnmiDataHandler(handler, host, port));
+            StreamObserver<Gnmi.SubscribeRequest> requestStreamObserver = gNMIStub.subscribe(new GnmiDataHandler(handler, this.host, port));
             requestStreamObserver.onNext(requestBuilder.build());
-            LOG.info("Subscribed to OpenConfig telemetry stream at {}", InetAddressUtils.str(host));
+            LOG.info("Subscribed to OpenConfig telemetry stream at {}:{}", host, port);
         }
     }
 
     // Builds gnmi path based on https://github.com/openconfig/reference/blob/master/rpc/gnmi/gnmi-path-conventions.md
-    static Gnmi.Path buildGnmiPath(String path) {
+    static Gnmi.Path buildGnmiPath(String path, String origin) {
         Gnmi.Path.Builder gnmiPathBuilder = Gnmi.Path.newBuilder();
         List<String> elemList =  Splitter.on(PATH_SEPARATOR).omitEmptyStrings().splitToList(path);
         elemList.forEach(elem -> {
@@ -214,6 +220,11 @@ public class OpenConfigClientImpl implements OpenConfigClient {
                 gnmiPathBuilder.addElem(Gnmi.PathElem.newBuilder().setName(elem).build());
             }
         });
+        if (Strings.isNullOrEmpty(origin)) {
+            gnmiPathBuilder.setOrigin(DEFAULT_ORIGIN);
+        } else {
+            gnmiPathBuilder.setOrigin(origin);
+        }
         return gnmiPathBuilder.build();
     }
 
@@ -246,17 +257,18 @@ public class OpenConfigClientImpl implements OpenConfigClient {
         }
 
         // If it's not subscribed, schedule this to run after configured timeout
-        this.paramList.stream().filter(entry -> entry.get(INTERVAL) != null)
+        this.paramList.stream().filter(entry -> entry.containsKey(INTERVAL) && entry.get(INTERVAL) != null)
                 .findFirst().ifPresent(entry ->
                 this.interval = StringUtils.parseInt(entry.get(INTERVAL), DEFAULT_INTERVAL_IN_SEC));
         // When retries is null or <= 0, scheduling will happen indefinitely until it succeeds.
-        this.paramList.stream().filter(entry -> entry.get(RETRIES) != null)
+        this.paramList.stream().filter(entry -> entry.containsKey(RETRIES) && entry.get(RETRIES) != null)
                 .findFirst().ifPresent(entry ->
-                this.retries = StringUtils.parseInt(entry.get(RETRIES), null));
+                this.retries = StringUtils.parseInt(entry.get(RETRIES), DEFAULT_INTERNAL_RETRIES));
 
-        Integer retries = this.retries;
+        int retries = this.retries != null ? this.retries : DEFAULT_INTERNAL_RETRIES;
+        int interval = this.interval != null ? this.interval : DEFAULT_INTERVAL_IN_SEC;
         while (!closed.get()) {
-            ScheduledFuture<Boolean> future = scheduledExecutor.schedule(() -> trySubscribing(handler), this.interval, TimeUnit.SECONDS);
+            ScheduledFuture<Boolean> future = scheduledExecutor.schedule(() -> trySubscribing(handler), interval, TimeUnit.SECONDS);
             try {
                 succeeded = future.get();
                 if (succeeded) {
@@ -266,7 +278,7 @@ public class OpenConfigClientImpl implements OpenConfigClient {
             } catch (InterruptedException | ExecutionException e) {
                 LOG.warn("Exception while scheduling subscription at host `{}` ", InetAddressUtils.str(host), e);
             }
-            if (retries != null && retries > 0) {
+            if (retries > 0) {
                 retries--;
                 if (retries == 0) {
                     scheduled.set(false);

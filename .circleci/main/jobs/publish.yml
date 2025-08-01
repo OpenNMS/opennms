@@ -48,9 +48,9 @@ jobs:
       - run:
           name: Publish to Cloudsmith
           command: .circleci/scripts/publish-cloudsmith.sh
-      - run:
-          name: Publish to Azure
-          command: .circleci/scripts/publish-azure.sh
+#      - run:
+#          name: Publish to Azure
+#          command: .circleci/scripts/publish-azure.sh
   publish-maven:
     executor: build-executor
     resource_class: xlarge
@@ -60,7 +60,8 @@ jobs:
           at: ~/
       - restore-maven-cache
       - run:
-          name: Deploy to Maven Central
+          name: Create Repository Bundle
+          no_output_timeout: 80m
           command: |
             ulimit -n 65536 || :
             mkdir -p ~/.m2
@@ -78,12 +79,15 @@ jobs:
                 ;;
             esac
             cd deploy
+
+            # Use Maven Central Plugin to build the repository layout
             ../compile.pl \
               -s settings.xml \
               -DskipTests=true \
               -DskipITs=true \
               -DskipSurefire=true \
               -DskipFailsafe=true \
+              -Dbuild.sbom=false \
               -Dbuild.skip.tarball=true \
               -Daether.connector.resumeDownloads=false \
               -Daether.connector.basic.threads=1 \
@@ -94,9 +98,33 @@ jobs:
               -Pproduction \
               -Prelease \
               --batch-mode \
-              -DnexusUrl="https://oss.sonatype.org/" \
-              -DserverId="opennms-ossrh" \
-              -DautoReleaseAfterClose=true \
+              -DnexusUrl="https://central.sonatype.com/" \
+              -DpublishingServerId="central-portal" \
+              -DskipPublishing=true \
               install \
-              org.sonatype.plugins:nexus-staging-maven-plugin:deploy \
+              org.sonatype.central:central-publishing-maven-plugin:publish \
               || exit 1
+
+            sudo apt update
+            sudo apt install -y python3 python3-pip python3-venv
+            
+            if [[ $(command -v cloudsmith) == "" ]]; then
+              cd /tmp
+              python3 -m venv venv
+              export PATH=/tmp/venv/bin:$PATH
+              /tmp/venv/bin/pip3 install cloudsmith-cli
+            else
+              echo "Cloudsmith CLI is already installed."
+            fi
+
+            ROOT_VERSION=$(~/project/.circleci/scripts/pom2version.sh ~/project/pom.xml || echo "0.0.0")
+
+            if [[ "$ROOT_VERSION" == *"-SNAPSHOT" ]]; then
+              ln -s ~/project/deploy/target/central-deferred ~/project/deploy/target/central-publishing
+              cd ~/project/deploy/target/central-deferred
+              zip -r "central-bundle.zip" org
+              rm -r org
+            fi
+            ~/project/.circleci/scripts/publish-maven-cloudsmith.sh
+            
+            

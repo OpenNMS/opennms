@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2008-2023 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.addr;
@@ -943,6 +936,10 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         m_foreignSourceRepository = foreignSourceRepository;
     }
 
+    public void setCategoriesInCache(final Map<String, OnmsCategory> categoryCache) {
+        m_categoryCache.set(categoryCache);
+    }
+
     /**
      * <p>getForeignSourceRepository</p>
      *
@@ -1006,12 +1003,16 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
 
                 LOG.debug("Node {}/{}/{} has the following requisitioned categories: {}", dbNode.getId(), foreignSource, dbNode.getForeignId(), categories);
                 final List<RequisitionedCategoryAssociation> reqCats = new ArrayList<>(m_categoryAssociationDao.findByNodeId(dbNode.getId()));
+                final Set<String> listOfCategories = dbNode.getCategories().stream().map(OnmsCategory::getName).collect(Collectors.toSet());
+
                 for (final Iterator<RequisitionedCategoryAssociation> reqIter = reqCats.iterator(); reqIter.hasNext(); ) {
                     final RequisitionedCategoryAssociation reqCat = reqIter.next();
                     final String categoryName = reqCat.getCategory().getName();
                     if (categories.contains(categoryName)) {
                         // we've already stored this category before, remove it from the list of "new" categories
-                        categories.remove(categoryName);
+                        if (listOfCategories.contains(categoryName)) {
+                            categories.remove(categoryName);
+                        }
                     } else {
                         // we previously stored this category, but now it shouldn't be there anymore
                         // remove it from the category association
@@ -1025,14 +1026,21 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                     }
                 }
 
+                // If some categories were removed or there are new to be added, reset the cache.
+                if (m_categoryCache.get() != null && (changed || !categories.isEmpty())) {
+                      m_categoryCache.set(loadCategoryMap());
+                }
+
                 // the remainder of requisitioned categories get added
                 for (final String cat : categories) {
                     m_categoriesAdded.add(cat);
                     final OnmsCategory onmsCat = createCategoryIfNecessary(cat);
-                    final RequisitionedCategoryAssociation r = new RequisitionedCategoryAssociation(dbNode, onmsCat);
                     node.addCategory(onmsCat);
                     dbNode.addCategory(onmsCat);
-                    m_categoryAssociationDao.saveOrUpdate(r);
+                    if (reqCats.stream().noneMatch(c->cat.equals(c.getCategory().getName()))) {
+                        final RequisitionedCategoryAssociation r = new RequisitionedCategoryAssociation(dbNode, onmsCat);
+                        m_categoryAssociationDao.saveOrUpdate(r);
+                    }
                     changed = true;
                 }
 
@@ -1320,7 +1328,7 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
                 node.setType(NodeType.ACTIVE);
                 node.setLastCapsdPoll(now);
 
-                final OnmsIpInterface iface = new OnmsIpInterface(InetAddressUtils.addr(ipAddress), node);
+                final OnmsIpInterface iface = new OnmsIpInterface(addr(ipAddress), node);
                 iface.setIsManaged("M");
                 iface.setIpHostName(hostname);
                 iface.setIsSnmpPrimary(PrimaryType.NOT_ELIGIBLE);
@@ -1494,6 +1502,17 @@ public class DefaultProvisionService implements ProvisionService, InitializingBe
         if ((!Strings.isNullOrEmpty(name)) && (!Strings.isNullOrEmpty(value))) {
             span.setTag(name, value);
         }
+    }
 
+    public void setCategoryDao(CategoryDao categoryDao) {
+        this.m_categoryDao = categoryDao;
+    }
+
+    public void setTransactionManager(PlatformTransactionManager transactionManager) {
+        this.m_transactionManager = transactionManager;
+    }
+
+    public void setCategoryAssociationDao(RequisitionedCategoryAssociationDao requisitionedCategoryAssociationDao) {
+        this.m_categoryAssociationDao = requisitionedCategoryAssociationDao;
     }
 }

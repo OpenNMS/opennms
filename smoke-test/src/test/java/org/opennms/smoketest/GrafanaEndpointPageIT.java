@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.smoketest;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -38,11 +31,23 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
-
+import okhttp3.Credentials;
+import okhttp3.OkHttpClient;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.MediaType;
+import okhttp3.Response;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.elasticsearch.common.Strings;
 import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Test;
+import org.junit.rules.ExternalResource;
 import org.opennms.netmgt.endpoints.grafana.api.GrafanaEndpoint;
+import org.opennms.smoketest.containers.GrafanaContainer;
+import org.opennms.smoketest.grafana.endpoint.GrafanaTokenDTO;
+import org.opennms.smoketest.grafana.endpoint.ServiceAccountDTO;
 import org.opennms.smoketest.rest.GrafanaEndpointRestIT;
 import org.opennms.smoketest.ui.framework.Button;
 import org.opennms.smoketest.ui.framework.TextInput;
@@ -50,18 +55,58 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 
 public class GrafanaEndpointPageIT extends UiPageTest  {
 
+
+    private static final Logger LOG = LoggerFactory.getLogger(GrafanaEndpointPageIT.class);
+
     private Page uiPage;
 
+    private static OkHttpClient client;
+    private static String token;
+    private static ObjectMapper objectMapper;
+    private static final String USERNAME = "admin";
+    private static final String PASSWORD = "admin";
+    private static final String VIEWER= "Viewer";
+    private static final String GRAFANA_URL = " http://localhost";
+    private static Integer GRAFANA_MAPPED_PORT =0;
+    @ClassRule
+    public static final ExternalResource grafanaContainer = new ExternalResource() {
+        private GrafanaContainer container;
+
+        @Override
+        protected void before() throws Throwable {
+            // Initialize and start the Grafana container
+            container = new GrafanaContainer();
+            container.start();
+            GRAFANA_MAPPED_PORT= container.getMappedPort(3000);
+        }
+
+        @Override
+        protected void after() {
+            // Stop the container after tests
+            if (container != null) {
+               container.stop();
+            }
+        }
+       };
+
     @Before
-    public void setUp() throws IOException, InterruptedException {
+    public void setUp() throws Exception {
         // Delete all endpoints
         sendDelete("rest/endpoints/grafana");
 
         uiPage = new Page(getBaseUrlInternal());
         uiPage.open();
+        objectMapper = new ObjectMapper();
+        client = new OkHttpClient();
+        int serviceAccount = createServiceAccount();
+        token = createToken(serviceAccount);
+
     }
 
     @Test
@@ -115,6 +160,75 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
             return null;
         });
         modal.cancel();
+    }
+
+    public Integer createServiceAccount() {
+
+        String credential = Credentials.basic(USERNAME, PASSWORD);
+
+        String json = "{\"name\":\"" + "my-service-account" + "\",\"role\":\"" + VIEWER + "\"}";
+        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),json);
+        Request request = new Request.Builder()
+                .url(GRAFANA_URL + ":" + GRAFANA_MAPPED_PORT +"/api/serviceaccounts")
+                .post(body)
+                .addHeader("Authorization", credential)
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                LOG.info("Unexpected code " + response);
+            }
+            String responseBody = response.body().string();
+            ServiceAccountDTO dto = objectMapper.readValue(responseBody, ServiceAccountDTO.class);
+            return dto.getId();
+        } catch (IOException e) {
+            LOG.info("Exception" ,e);
+        }
+        return null;
+    }
+
+    public String createToken(int serviceAccount) {
+
+        String credential = Credentials.basic(USERNAME, PASSWORD);
+        String json = "{\"name\":\"" + "my-service-account-token" +"\"}";
+        RequestBody body = RequestBody.create(MediaType.parse("application/json; charset=utf-8"),json);
+        Request request = new Request.Builder()
+                .url(GRAFANA_URL + ":" + GRAFANA_MAPPED_PORT +"/api/serviceaccounts/"+serviceAccount+"/tokens")
+                .post(body)
+                 .addHeader("Authorization", credential)
+                .addHeader("Content-Type", "application/json")
+                .build();
+
+        try (Response response = client.newCall(request).execute()) {
+            if (!response.isSuccessful()) {
+                LOG.info("Unexpected code " + response);
+            }
+            String responseBody = response.body().string();
+            GrafanaTokenDTO dto = objectMapper.readValue(responseBody, GrafanaTokenDTO.class);
+            return dto.getKey();
+
+
+        } catch (IOException e) {
+            LOG.info("Exception" ,e);
+        }
+        return null;
+    }
+
+    @Test
+    public void verifyGrafanaConnection() throws JsonProcessingException {
+
+        final GrafanaEndpoint endpoint = createEndpointConnection();
+        final EndpointModal modal = uiPage.newModal().setInput(endpoint);
+        new Button(getDriver(), "verify-endpoint").click();
+
+        WebDriverWait wait = new WebDriverWait(getDriver(), Duration.ofSeconds(10));
+        execute(() -> {
+            pageContainsText("Connected");
+            return null;
+        });
+
+
     }
 
     @Test
@@ -236,7 +350,7 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
         }
     }
 
-    private class UIGrafanaEndpoint extends org.opennms.netmgt.endpoints.grafana.api.GrafanaEndpoint {
+    private class UIGrafanaEndpoint extends GrafanaEndpoint {
 
     }
 
@@ -285,5 +399,16 @@ public class GrafanaEndpointPageIT extends UiPageTest  {
             execute(() -> new WebDriverWait(driver, Duration.ofSeconds(5)).until(ExpectedConditions.numberOfElementsToBe(By.id("endpointModal"), 0)));
         }
     }
+    public static GrafanaEndpoint createEndpointConnection() throws JsonProcessingException {
 
+        final GrafanaEndpoint endpoint = new GrafanaEndpoint();
+        endpoint.setId(200L);
+        endpoint.setUid("7775ad83-4393-4803-9895-7d50dc292b4f");
+        endpoint.setApiKey(token);
+        endpoint.setUrl("http://localhost" + ":" + GRAFANA_MAPPED_PORT +"/");
+        endpoint.setDescription("dummy description");
+        endpoint.setReadTimeout(3000);
+        endpoint.setConnectTimeout(3000);
+        return endpoint;
+    }
 }

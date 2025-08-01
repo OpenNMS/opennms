@@ -1,3 +1,187 @@
+opennms-sentinel (33.1.8-1) stable; urgency=medium
+
+  * Release 33.1.8 contains bug fixes, security updates and enhancements.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.1.8/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 8 Jul 2025 14:11:00 -0500
+
+opennms-sentinel (33.1.7-1) stable; urgency=medium
+
+  * Release 33.1.7 contains bug fixes, security updates and enhancements.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.1.7/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 10 Jun 2025 14:11:00 -0500
+
+opennms-sentinel (33.1.6-1) stable; urgency=medium
+
+  * Release 33.1.6 contains bug fixes, security updates and enhancements.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.1.6/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 14 May 2025 14:11:00 -0500
+ 
+ opennms-sentinel (33.1.5-1) stable; urgency=medium
+
+  * Release 33.1.5 contains bug fixes, security updates and enhancements.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.1.5/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 8 Apr 2025 14:11:00 -0500
+
+opennms-sentinel (33.1.4-1) stable; urgency=medium
+  
+  * Release 33.1.4 contains bug fixes, security updates and enhancements.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.1.4/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 12 Mar 2025 14:10:00 -0500
+
+opennms-sentinel (33.1.3-1) stable; urgency=medium
+  
+  * Release 33.1.3 contains a couple of bug fixes and few enhancements.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.1.3/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 11 Feb 2025 14:10:00 -0500
+
+opennms-sentinel (33.1.2-1) stable; urgency=medium
+  
+  * Release 33.1.2 contains a bug fix and a new feature.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.1.2/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 07 Jan 2024 10:30:00 -0500
+
+opennms-sentinel (33.1.1-1) stable; urgency=medium
+  
+  * Release 33.1.1 contains bug fixes, security updates and new features.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.1.1/index.html
+ 
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 10 Dec 2024 14:30:00 -0500
+
+opennms-sentinel (33.0.10-1) stable; urgency=medium
+  
+  * Release 33.0.10 contains a bunch of security updates, bug fix and enhancements.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.0.10/index.html
+ 
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 12 Nov 2024 15:57:00 -0500
+
+opennms-sentinel (33.0.9-1) stable; urgency=medium
+  
+  * Release 33.0.9 contains a bunch of security updates, bug fix and an enhancement.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.0.9/index.html
+ 
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 08 Oct 2024 10:24:00 -0500
+
+opennms-sentinel (33.0.8-1) stable; urgency=medium
+  
+  * Release 33.0.8 contains a bunch of bug fixes and an enhancement.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.0.8/index.html
+ 
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 10 Sep 2024 15:05:00 -0500
+
+opennms-sentinel (33.0.7-1) stable; urgency=medium
+  
+  * Release 33.0.7 contains a bunch of security updates.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.0.7/index.html
+ 
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 13 Aug 2024 16:54:00 -0500
+
+opennms-sentinel (33.0.6-1) stable; urgency=medium
+  
+  * Release 33.0.6 contains a couple of bug fixes and an enhancement.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.0.6/index.html
+ 
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 09 Jul 2024 16:54:00 -0500
+
+opennms-sentinel (33.0.5-1) stable; urgency=medium
+  
+  * Release 33.0.5 contains a bug fix and an enhancement.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.0.5/index.html
+ 
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 17 Jun 2024 10:21:00 -0500
+
+opennms-sentinel (33.0.4-1) stable; urgency=medium
+  
+  * Release 33.0.4 contains a bunch of bug fixes and enhancements.
+    
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.0.4/index.html
+ 
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 07 May 2024 14:41:00 -0500
+
+opennms-sentinel (33.0.3-1) stable; urgency=low
+
+  * Release 33.0.3 contains a number of bug fixes and a documentation update.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.0.3/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 09 Apr 2024 11:58:00 -0500
+
+opennms-sentinel (33.0.2-1) stable; urgency=medium
+
+  * Release 33.0.2 contains a bunch of bug fixes and enhancements.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.0.2/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 12 Mar 2024 14:01:00 -0500
+
+opennms-sentinel (33.0.1-1) stable; urgency=medium
+
+  * Release 33.0.1 is a re-release of 33.0.0, reverting the change to enable
+    async polling by default, plus fixing a packaging issue on Debian.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.0.1/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 14 Feb 2024 14:01:00 -0500
+
+opennms-sentinel (33.0.0-1) stable; urgency=low
+
+  * Release 33.0.0 contains a bunch of changes, including metadata support in
+    many more configs, a revamped node list, and more.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/33.0.0/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 13 Feb 2024 13:20:00 -0500
+
+opennms-sentinel (32.0.6-1) stable; urgency=medium
+
+  * Release 32.0.6 contains a bunch of changes including UI cleanups, a number
+    of access/role fixes, and other bug fixes, plus a ton of documentation
+    updates and a new feature to show news and tips from an RSS feed in the UI.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/32.0.6/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 09 Jan 2024 14:02:00 -0500
+
 opennms-sentinel (32.0.5-1) stable; urgency=high
 
   * Release 32.0.5 contains a bunch of security updates to Drools,

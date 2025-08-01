@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.core</groupId>
     <artifactId>org.opennms.core.test-api</artifactId>
-    <version>33.0.0-SNAPSHOT</version>
+    <version>34.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.core.test-api</groupId>
@@ -79,10 +79,6 @@
       <groupId>org.json</groupId>
       <artifactId>json</artifactId>
       <version>${jsonVersion}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.opennms.core</groupId>
-      <artifactId>org.opennms.core.web-assets</artifactId>
     </dependency>
   </dependencies>
 </project>

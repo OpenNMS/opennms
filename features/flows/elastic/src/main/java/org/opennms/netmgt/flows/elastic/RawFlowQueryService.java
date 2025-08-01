@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.flows.elastic;
 
 import java.util.ArrayList;
@@ -44,7 +37,9 @@ import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
-import org.opennms.features.jest.client.SearchResultUtils;
+import org.opennms.features.elastic.client.ElasticRestClient;
+import org.opennms.features.elastic.client.model.SearchRequest;
+import org.opennms.features.elastic.client.model.SearchResponse;
 import org.opennms.features.jest.client.index.IndexSelector;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.ConversationKey;
@@ -58,11 +53,11 @@ import org.opennms.netmgt.flows.processing.ConversationKeyUtils;
 
 import com.google.common.collect.ImmutableTable;
 import com.google.common.collect.Table;
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
-import io.searchbox.client.JestClient;
-import io.searchbox.core.SearchResult;
 import io.searchbox.core.search.aggregation.MetricAggregation;
 import io.searchbox.core.search.aggregation.TermsAggregation;
 
@@ -73,14 +68,14 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
 
     private final SearchQueryProvider searchQueryProvider = new SearchQueryProvider();
 
-    public RawFlowQueryService(JestClient client, IndexSelector indexSelector) {
+    public RawFlowQueryService(ElasticRestClient client, IndexSelector indexSelector) {
         super(client, indexSelector);
     }
 
     @Override
     public CompletableFuture<Long> getFlowCount(List<Filter> filters) {
         final String query = searchQueryProvider.getFlowCountQuery(filters);
-        return searchAsync(query, extractTimeRangeFilter(filters)).thenApply(SearchResultUtils::getTotal);
+        return searchAsync(query, extractTimeRangeFilter(filters)).thenApply(res -> res.getHits().getTotalHits());
     }
 
     @Override
@@ -227,7 +222,13 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
         final TimeRangeFilter timeRangeFilter = extractTimeRangeFilter(filters);
         return searchAsync(searchQueryProvider.getAllValues(field.fieldName, field.size, filters), timeRangeFilter)
                 .thenApply(res -> {
-                    List<String> fieldValues = compositeKeyValuesPath(field.fieldName, GPath.string()).eval(res.getJsonObject());
+                    // Create a wrapper JSON object that contains aggregations
+                    JsonObject wrapper = new JsonObject();
+                    if (res.getAggregations() != null) {
+                        wrapper.add("aggregations", res.getAggregations());
+                        wrapper.add("aggs", res.getAggregations()); // Jest compatibility
+                    }
+                    List<String> fieldValues = compositeKeyValuesPath(field.fieldName, GPath.string()).eval(wrapper);
                     return fieldValues != null ? fieldValues : Collections.emptyList();
                 });
     }
@@ -255,7 +256,10 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
         final String hostnameQuery = searchQueryProvider.getHostnameByConversationQuery(convoKey, filters);
         return searchAsync(hostnameQuery, timeRangeFilter)
                 .thenApply(res ->  {
-                    final JsonObject hit = res.getFirstHit(JsonObject.class).source;
+                    final JsonObject hit = AggregationUtils.getFirstHitSource(res);
+                    if (hit == null) {
+                        return result.build();
+                    }
                     if (Objects.equals(hit.getAsJsonPrimitive("netflow.src_addr").getAsString(), key.getLowerIp())) {
                         Optional.ofNullable(hit.getAsJsonPrimitive("netflow.src_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(result::withLowerHostname);
                         Optional.ofNullable(hit.getAsJsonPrimitive("netflow.dst_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(result::withUpperHostname);
@@ -281,7 +285,10 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
         final String hostnameQuery = searchQueryProvider.getHostnameByHostQuery(host, filters);
         return searchAsync(hostnameQuery, timeRangeFilter)
                 .thenApply(res ->  {
-                    final JsonObject hit = res.getFirstHit(JsonObject.class).source;
+                    final JsonObject hit = AggregationUtils.getFirstHitSource(res);
+                    if (hit == null) {
+                        return result.build();
+                    }
                     if (Objects.equals(hit.getAsJsonPrimitive("netflow.src_addr").getAsString(), host)) {
                         Optional.ofNullable(hit.getAsJsonPrimitive("netflow.src_addr_hostname")).map(JsonPrimitive::getAsString).ifPresent(result::withHostname);
                     } else if (Objects.equals(hit.getAsJsonPrimitive("netflow.dst_addr").getAsString(), host)) {
@@ -384,13 +391,13 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
         return seriesFuture.thenApply(builder -> TableUtils.sortTableByRowKeys(builder.build(), topN));
     }
 
-    private static ImmutableTable.Builder<Directional<String>, Long, Double> toTable(ImmutableTable.Builder<Directional<String>, Long, Double> builder, SearchResult res) {
-        final MetricAggregation aggs = res.getAggregations();
+    private static ImmutableTable.Builder<Directional<String>, Long, Double> toTable(ImmutableTable.Builder<Directional<String>, Long, Double> builder, SearchResponse res) {
+        final JsonObject aggs = res.getAggregations();
         if (aggs == null) {
             // No results
             return builder;
         }
-        final TermsAggregation groupedBy = aggs.getTermsAggregation("grouped_by");
+        final TermsAggregation groupedBy = AggregationUtils.getTermsAggregation(aggs, "grouped_by");
         if (groupedBy == null) {
             // No results
             return builder;
@@ -459,12 +466,12 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
             final String bytesFromOthersQuery = searchQueryProvider.getSeriesFromOthersQuery(from, step, start, end,
                     groupByTerm, missingTermIncluded, filters);
             summariesFuture = summariesFuture.thenCombine(searchAsync(bytesFromOthersQuery, timeRangeFilter), (summaries, results) -> {
-                final MetricAggregation aggs = results.getAggregations();
+                final JsonObject aggs = results.getAggregations();
                 if (aggs == null) {
                     // No results
                     return summaries;
                 }
-                final TermsAggregation directionAgg = aggs.getTermsAggregation("direction");
+                final TermsAggregation directionAgg = AggregationUtils.getTermsAggregation(aggs, "direction");
                 if (directionAgg == null) {
                     // No results
                     return summaries;
@@ -547,7 +554,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
             // We also need to query for items with a missing term, this will require a separate query
             final String seriesFromMissingQuery =
                     searchQueryProvider.getSeriesFromMissingQuery(fag.step, fag.start, fag.end, fag.groupByTerm, keyForMissingTerm, fag.filters);
-            CompletableFuture<SearchResult> missingFuture = searchAsync(seriesFromMissingQuery, fag.timeRangeFilter);
+            CompletableFuture<SearchResponse> missingFuture = searchAsync(seriesFromMissingQuery, fag.timeRangeFilter);
             return builder -> missingFuture.thenApply(searchResult -> toTable(builder, searchResult));
         } else {
             return keepValue();
@@ -574,7 +581,7 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
             // We also need to query for items with a missing term, this will require a separate query
             String bytesFromMissingQuery
                     = searchQueryProvider.getSeriesFromMissingQuery(fag.step, fag.start, fag.end, fag.groupByTerm, keyForMissingTerm, fag.filters);
-            CompletableFuture<SearchResult> missingFuture = searchAsync(bytesFromMissingQuery, fag.timeRangeFilter);
+            CompletableFuture<SearchResponse> missingFuture = searchAsync(bytesFromMissingQuery, fag.timeRangeFilter);
             return summaries -> missingFuture.thenApply(results -> {
                 summaries.putAll(toTrafficSummaries(results));
                 return summaries;
@@ -603,15 +610,15 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                d1 ? -1 : d2 ? 1 : s1.getEntity().compareTo(s2.getEntity());
     };
 
-    private static Map<String, TrafficSummary<String>> toTrafficSummaries(SearchResult res) {
+    private static Map<String, TrafficSummary<String>> toTrafficSummaries(SearchResponse res) {
         // Build the traffic summaries from the search results
         final Map<String, TrafficSummary<String>> summaries = new LinkedHashMap<>();
-        final MetricAggregation aggs = res.getAggregations();
+        final JsonObject aggs = res.getAggregations();
         if (aggs == null) {
             // No results
             return summaries;
         }
-        final TermsAggregation groupedBy = aggs.getTermsAggregation("grouped_by");
+        final TermsAggregation groupedBy = AggregationUtils.getTermsAggregation(aggs, "grouped_by");
         if (groupedBy == null) {
             // No results
             return summaries;
@@ -645,14 +652,14 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
                 .thenCompose((topN) -> getTotalBytesFrom(topN, groupByTerm, keyForMissingTerm, includeOther, filters));
     }
 
-    private static ImmutableTable.Builder<Directional<String>, Long, Double> processOthersResult(SearchResult res,
+    private static ImmutableTable.Builder<Directional<String>, Long, Double> processOthersResult(SearchResponse res,
                                                                                                  ImmutableTable.Builder<Directional<String>, Long, Double> builder) {
-        final MetricAggregation aggs = res.getAggregations();
+        final JsonObject aggs = res.getAggregations();
         if (aggs == null) {
             // No results
             return builder;
         }
-        final TermsAggregation directionAgg = aggs.getTermsAggregation("direction");
+        final TermsAggregation directionAgg = AggregationUtils.getTermsAggregation(aggs, "direction");
         if (directionAgg == null) {
             // No results
             return builder;
@@ -669,13 +676,13 @@ public class RawFlowQueryService extends ElasticFlowQueryService {
         return builder;
     }
 
-    private static List<String> processGroupedByResult(SearchResult searchResult, long limit) {
-        final MetricAggregation aggs = searchResult.getAggregations();
+    private static List<String> processGroupedByResult(SearchResponse searchResult, long limit) {
+        final JsonObject aggs = searchResult.getAggregations();
         if (aggs == null) {
             // No results
             return Collections.emptyList();
         }
-        final TermsAggregation groupedBy = aggs.getTermsAggregation("grouped_by");
+        final TermsAggregation groupedBy = AggregationUtils.getTermsAggregation(aggs, "grouped_by");
         if (groupedBy == null) {
             // No results
             return Collections.emptyList();

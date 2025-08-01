@@ -119,7 +119,7 @@ fi
 
 mkdir -p /tmp/sonar-cache
 export SONAR_USER_HOME=/tmp/sonar-cache
-export SONAR_SCANNER_OPTS="${MAVEN_OPTS:--Xmx7g}"
+export SONAR_SCANNER_OPTS="${MAVEN_OPTS:=-Xmx7g} -verbose:gc"
 
 echo "#### Executing Sonar"
 # shellcheck disable=SC2086

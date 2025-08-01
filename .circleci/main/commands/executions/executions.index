@@ -1,3 +1,4 @@
+  #commands:executions/prep-package-build#
   #commands:executions/run-smoke-tests#
   #commands:executions/run-build#
   #commands:executions/run-integration-tests#

@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.flows.elastic;
 
 import static org.awaitility.Awaitility.await;
@@ -37,7 +30,7 @@ import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.hasSize;
 import static org.opennms.integration.api.v1.flows.Flow.Direction;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -55,20 +48,19 @@ import org.apache.beam.sdk.options.PipelineOptionsFactory;
 import org.apache.beam.sdk.testing.TestPipeline;
 import org.apache.beam.sdk.testing.TestStream;
 import org.apache.beam.sdk.values.TimestampedValue;
-import org.elasticsearch.painless.PainlessPlugin;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.hamcrest.number.IsCloseTo;
 import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.opennms.core.cache.CacheConfigBuilder;
-import org.opennms.core.test.elastic.ElasticSearchRule;
-import org.opennms.core.test.elastic.ElasticSearchServerConfig;
-import org.opennms.elasticsearch.plugin.DriftPlugin;
-import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
-import org.opennms.features.jest.client.RestClientFactory;
+import org.opennms.features.elastic.client.ElasticRestClient;
+import org.opennms.features.elastic.client.ElasticRestClientFactory;
 import org.opennms.features.jest.client.index.IndexSelector;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
@@ -77,12 +69,10 @@ import org.opennms.nephron.NephronOptions;
 import org.opennms.nephron.Pipeline;
 import org.opennms.nephron.UnalignedFixedWindows;
 import org.opennms.nephron.coders.FlowDocumentProtobufCoder;
-import org.opennms.netmgt.dao.mock.AbstractMockDao;
 import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockIpInterfaceDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Flow;
@@ -99,7 +89,6 @@ import org.opennms.netmgt.flows.filter.api.SnmpInterfaceIdFilter;
 import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.flows.persistence.FlowDocumentBuilder;
 import org.opennms.netmgt.flows.processing.FlowBuilder;
-import org.opennms.netmgt.flows.processing.enrichment.NodeInfo;
 import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
 import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
 
@@ -107,55 +96,89 @@ import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
-
-import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfo;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCache;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCacheImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Similar to {@link FlowQueryIT}, but adapted for aggregated queries.
  */
+@Ignore(" Deprecating nephron, will deprecate aggregated flows feature.")
 public class AggregatedFlowQueryIT {
+
+    private static final Logger LOG = LoggerFactory.getLogger(AggregatedFlowQueryIT.class);
 
     @Rule
     public TestPipeline p = TestPipeline.create();
 
-    @Rule
-    public ElasticSearchRule elasticSearchRule = new ElasticSearchRule(new ElasticSearchServerConfig()
-                    .withPlugins(DriftPlugin.class, PainlessPlugin.class));
 
-    private ElasticFlowRepository flowRepository;
-    private SmartQueryService smartQueryService;
-    private RawFlowQueryService rawFlowQueryService;
-    private AggregatedFlowQueryService aggFlowQueryService;
-    private DocumentEnricherImpl documentEnricher;
+    // Elasticsearch version used for testing
+    private static final String ES_VERSION = "8.18.2";
+    private static final String DRIFT_PLUGIN_VERSION = "2.0.7";
+
+    protected ElasticFlowRepository flowRepository;
+    protected SmartQueryService smartQueryService;
+    protected RawFlowQueryService rawFlowQueryService;
+    protected AggregatedFlowQueryService aggFlowQueryService;
+    protected DocumentEnricherImpl documentEnricher;
+
+    @ClassRule
+    public static ElasticTestContainerWithPlugins elasticsearchContainer;
+
+    static {
+        try {
+            elasticsearchContainer = new ElasticTestContainerWithPlugins("docker.elastic.co/elasticsearch/elasticsearch:" + ES_VERSION)
+                    // We only need to add the drift plugin - the Painless plugin is built into the Elasticsearch image
+                    .withPlugin("org.opennms.elasticsearch", "elasticsearch-drift-plugin-" + ES_VERSION, DRIFT_PLUGIN_VERSION);
+
+            LOG.info("Initialized ElasticsearchMavenPluginContainer using downloaded plugin from Maven");
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to initialize ElasticsearchMavenPluginContainer", e);
+        }
+    }
+
+    @BeforeClass
+    public static void setUpClass() {
+
+        // Verify plugins were correctly installed
+        boolean pluginsInstalled = elasticsearchContainer.verifyPluginsInstalled();
+        LOG.info("Elasticsearch plugins successfully installed: {}", pluginsInstalled);
+
+        if (!pluginsInstalled) {
+            throw new RuntimeException("Failed to install required Elasticsearch plugins. Test cannot continue.");
+        }
+    }
+
 
     @Before
-    public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {
+    public void setUp() throws IOException, ExecutionException, InterruptedException {
         final MetricRegistry metricRegistry = new MetricRegistry();
-        final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
-        final EventForwarder eventForwarder = new AbstractMockDao.NullEventForwarder();
-        final JestClientWithCircuitBreaker client = restClientFactory.createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
-                CircuitBreakerConfig.custom().build()).circuitBreaker(AggregatedFlowQueryIT.class.getName()), eventForwarder);
+        final ElasticRestClientFactory elasticRestClientFactory = new ElasticRestClientFactory(elasticsearchContainer.getHttpHostAddress(), null, null);
+        final ElasticRestClient elasticRestClient = elasticRestClientFactory.createClient();
         final IndexSettings rawIndexSettings = new IndexSettings();
         rawIndexSettings.setIndexPrefix("flows");
         final IndexSettings aggIndexSettings = new IndexSettings();
-        aggIndexSettings.setIndexPrefix("aggflows");
+        // Although this works fine, we want to use templates from etc directly for composable templates.
+        // So In order to work for both test cases, we commented out this.
+        //aggIndexSettings.setIndexPrefix("aggflows");
 
         // Here we load the flows by building the documents ourselves,
         // so we must initialize the repository manually
-        final RawIndexInitializer initializer = new RawIndexInitializer(client, rawIndexSettings);
+        final RawIndexInitializer initializer = new RawIndexInitializer(elasticRestClient, rawIndexSettings);
         initializer.initialize();
 
         final IndexSelector rawIndexSelector = new IndexSelector(rawIndexSettings, RawFlowQueryService.INDEX_NAME,
                 IndexStrategy.MONTHLY, 120000);
-        rawFlowQueryService = new RawFlowQueryService(client, rawIndexSelector);
+        rawFlowQueryService = new RawFlowQueryService(elasticRestClient, rawIndexSelector);
 
-        final AggregateIndexInitializer aggIndexInitializer = new AggregateIndexInitializer(client, aggIndexSettings);
+        final AggregateIndexInitializer aggIndexInitializer = new AggregateIndexInitializer(elasticRestClient, aggIndexSettings);
         aggIndexInitializer.initialize();
 
         final IndexSelector aggIndexSelector = new IndexSelector(aggIndexSettings, AggregatedFlowQueryService.INDEX_NAME,
                 IndexStrategy.MONTHLY, 120000);
-        aggFlowQueryService = new AggregatedFlowQueryService(client, aggIndexSelector);
+        aggFlowQueryService = new AggregatedFlowQueryService(elasticRestClient, aggIndexSelector);
 
         smartQueryService = new SmartQueryService(metricRegistry, rawFlowQueryService, aggFlowQueryService);
         // Prefer aggregated queries, but fallback to raw when unsupported by agg.
@@ -163,7 +186,7 @@ public class AggregatedFlowQueryIT {
         smartQueryService.setAlwaysUseRawForQueries(false);
         smartQueryService.setTimeRangeDurationAggregateThresholdMs(1);
 
-        flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY,
+        flowRepository = new ElasticFlowRepository(metricRegistry, elasticRestClient, IndexStrategy.MONTHLY,
             new MockIdentity(), new MockTracerRegistry(), rawIndexSettings, 0, 0);
 
         final var classificationEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(
@@ -172,19 +195,29 @@ public class AggregatedFlowQueryIT {
                 new RuleBuilder().withName("http").withSrcPort("80").withProtocol("tcp,udp").build(),
                 new RuleBuilder().withName("https").withSrcPort("443").withProtocol("tcp,udp").build()),
                                                                          FilterService.NOOP);
+        final NodeInfoCache nodeInfoCache = new NodeInfoCacheImpl(
+                new CacheConfigBuilder()
+                        .withName("nodeInfoCache")
+                        .withMaximumSize(1000)
+                        .withExpireAfterWrite(300)
+                        .withExpireAfterRead(300)
+                        .build(),
+                true,
+                new MetricRegistry(),
+                new MockNodeDao(),
+                new MockIpInterfaceDao(),
+                new MockInterfaceToNodeCache(),
+                new MockSessionUtils()
+        );
 
-        documentEnricher = new DocumentEnricherImpl(metricRegistry,
-                                                    new MockNodeDao(),
-                                                    new MockIpInterfaceDao(),
-                                                    new MockInterfaceToNodeCache(),
-                                                    new MockSessionUtils(),
+        documentEnricher = new DocumentEnricherImpl(new MockSessionUtils(),
                                                     classificationEngine,
-                                                    new CacheConfigBuilder()
-                                                        .withName("flows.node")
-                                                        .withMaximumSize(1000)
-                                                        .withExpireAfterWrite(300)
-                                                        .build(), 0,
-                                                    new DocumentMangler(new ScriptEngineManager()));
+                                                    0,
+                                                    new DocumentMangler(new ScriptEngineManager()),
+                                                    nodeInfoCache);
+
+        // Delete any existing indices before initializing to ensure a clean state
+        elasticRestClient.deleteIndex("netflow*,flows*");
 
         // The repository should be empty
         assertThat(smartQueryService.getFlowCount(Collections.singletonList(new TimeRangeFilter(0, System.currentTimeMillis()))).get(), equalTo(0L));
@@ -886,10 +919,10 @@ public class AggregatedFlowQueryIT {
         TestStream<org.opennms.netmgt.flows.persistence.model.FlowDocument> flowStream = flowStreamBuilder.advanceWatermarkToInfinity();
 
         // Build the pipeline
-        options.setElasticUrl(elasticSearchRule.getUrl());
+        options.setElasticUrl(elasticsearchContainer.getHttpHostAddress());
         // Must match!
         options.setElasticIndexStrategy(org.opennms.nephron.elastic.IndexStrategy.MONTHLY);
-        options.setElasticFlowIndex("aggflowsnetflow_agg");
+        options.setElasticFlowIndex("netflow_agg");
 
         p.apply(flowStream)
                 .apply(new Pipeline.CalculateFlowStatistics(options))

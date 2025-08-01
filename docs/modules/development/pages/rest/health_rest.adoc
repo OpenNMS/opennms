@@ -13,6 +13,10 @@ Examples:
 * `/rest/health/probe?tag=local`
 * `/rest/health/probe?tag=local&tag=dao`
 
+On Minion, URI paths are prefixed with `/minion`, e.g. `/minion/rest/health`
+
+On Core, URI paths are prefixed with `/opennms`, e.g. `/opennms/rest/health`
+
 == GETs (reading data)
 
 [caption=]
@@ -61,7 +65,7 @@ A tag could be: +
 Requests without parameters will return all available health check components.
 
 .Response
-[source,javascript]
+[source,json]
 ----
 {
     "healthy": true,

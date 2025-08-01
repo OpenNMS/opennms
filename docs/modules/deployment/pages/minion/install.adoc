@@ -130,6 +130,29 @@ include::message-broker/grpc.adoc[]
 --
 ====
 
+== Receive Trap/Syslog Messages
+
+By default, the Minion service only listens for traps and syslog messages on the localhost interface.
+If you would like to receive messages on the Minion, the interfaces and ports need to be configured.
+
+=== Syslog messages
+
+.`$\{MINION_HOME}/etc/org.opennms.netmgt.syslog.cfg`
+[source, properties]
+----
+syslog.listen.interface=0.0.0.0
+syslog.listen.port=514
+----
+
+=== SNMP traps
+
+.`$\{MINION_HOME}/etc/org.opennms.netmgt.trapd.cfg`
+[source, properties]
+----
+trapd.listen.interface=0.0.0.0
+trapd.listen.port=162
+----
+
 == Check Minion in the core web UI
 
 . Log in to the web UI as an administrative user.

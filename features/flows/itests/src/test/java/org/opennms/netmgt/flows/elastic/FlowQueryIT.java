@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2017-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.flows.elastic;
 
 import static org.awaitility.Awaitility.await;
@@ -41,7 +34,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.mockito.Mockito.mock;
 import static org.opennms.integration.api.v1.flows.Flow.Direction;
 
-import java.net.MalformedURLException;
+import java.io.IOException;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -60,29 +53,24 @@ import java.util.stream.Collectors;
 import javax.script.ScriptEngineManager;
 
 import org.apache.commons.lang3.tuple.Pair;
-import org.elasticsearch.painless.PainlessPlugin;
 import org.hamcrest.Matcher;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsIterableContainingInOrder;
 import org.hamcrest.number.IsCloseTo;
 import org.junit.Before;
-import org.junit.Rule;
+import org.junit.BeforeClass;
+import org.junit.ClassRule;
 import org.junit.Test;
 import org.opennms.core.cache.CacheConfigBuilder;
-import org.opennms.core.test.elastic.ElasticSearchRule;
-import org.opennms.core.test.elastic.ElasticSearchServerConfig;
-import org.opennms.elasticsearch.plugin.DriftPlugin;
-import org.opennms.features.jest.client.JestClientWithCircuitBreaker;
-import org.opennms.features.jest.client.RestClientFactory;
+import org.opennms.features.elastic.client.ElasticRestClient;
+import org.opennms.features.elastic.client.ElasticRestClientFactory;
 import org.opennms.features.jest.client.index.IndexSelector;
 import org.opennms.features.jest.client.index.IndexStrategy;
 import org.opennms.features.jest.client.template.IndexSettings;
-import org.opennms.netmgt.dao.mock.AbstractMockDao;
 import org.opennms.netmgt.dao.mock.MockInterfaceToNodeCache;
 import org.opennms.netmgt.dao.mock.MockIpInterfaceDao;
 import org.opennms.netmgt.dao.mock.MockNodeDao;
 import org.opennms.netmgt.dao.mock.MockSessionUtils;
-import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.flows.api.Conversation;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.Flow;
@@ -103,43 +91,74 @@ import org.opennms.netmgt.flows.filter.api.TimeRangeFilter;
 import org.opennms.netmgt.flows.processing.FlowBuilder;
 import org.opennms.netmgt.flows.processing.impl.DocumentEnricherImpl;
 import org.opennms.netmgt.flows.processing.impl.DocumentMangler;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCache;
+import org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCacheImpl;
 
 import com.codahale.metrics.MetricRegistry;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Table;
 
-import io.github.resilience4j.circuitbreaker.CircuitBreakerConfig;
-import io.github.resilience4j.circuitbreaker.CircuitBreakerRegistry;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class FlowQueryIT {
 
-    @Rule
-    public ElasticSearchRule elasticSearchRule = new ElasticSearchRule(new ElasticSearchServerConfig()
-            .withPlugins(DriftPlugin.class, PainlessPlugin.class));
+    private static final Logger LOG = LoggerFactory.getLogger(FlowQueryIT.class);
 
-    private ElasticFlowRepository flowRepository;
+    protected ElasticFlowRepository flowRepository;
 
-    private DocumentEnricherImpl documentEnricher;
+    protected DocumentEnricherImpl documentEnricher;
 
-    private SmartQueryService smartQueryService;
+    protected SmartQueryService smartQueryService;
+
+    // Elasticsearch version used for testing
+    private static final String ES_VERSION = "8.18.2";
+    private static final String DRIFT_PLUGIN_VERSION = "2.0.7";
+
+    @ClassRule
+    public static ElasticTestContainerWithPlugins elasticsearchContainer;
+
+    static {
+        try {
+            elasticsearchContainer = new ElasticTestContainerWithPlugins("docker.elastic.co/elasticsearch/elasticsearch:" + ES_VERSION)
+                    // We only need to add the drift plugin - the Painless plugin is built into the Elasticsearch image
+                    .withPlugin("org.opennms.elasticsearch", "elasticsearch-drift-plugin-" + ES_VERSION, DRIFT_PLUGIN_VERSION);
+
+            LOG.info("Initialized ElasticsearchMavenPluginContainer using downloaded plugin from Maven");
+        } catch (IOException e) {
+            throw new RuntimeException("Failed to initialize ElasticsearchMavenPluginContainer", e);
+        }
+    }
+
+    @BeforeClass
+    public static void setUpClass() {
+
+        // Verify plugins were correctly installed
+        boolean pluginsInstalled = elasticsearchContainer.verifyPluginsInstalled();
+        LOG.info("Elasticsearch plugins successfully installed: {}", pluginsInstalled);
+
+        if (!pluginsInstalled) {
+            throw new RuntimeException("Failed to install required Elasticsearch plugins. Test cannot continue.");
+        }
+    }
+
 
     @Before
-    public void setUp() throws MalformedURLException, ExecutionException, InterruptedException {
+    public void setUp() throws IOException, ExecutionException, InterruptedException {
         final MetricRegistry metricRegistry = new MetricRegistry();
-        final RestClientFactory restClientFactory = new RestClientFactory(elasticSearchRule.getUrl());
-        final EventForwarder eventForwarder = new AbstractMockDao.NullEventForwarder();
-        final JestClientWithCircuitBreaker client = restClientFactory.createClientWithCircuitBreaker(CircuitBreakerRegistry.of(
-                CircuitBreakerConfig.custom().build()).circuitBreaker(FlowQueryIT.class.getName()), eventForwarder);
+        final ElasticRestClientFactory elasticRestClientFactory = new ElasticRestClientFactory(elasticsearchContainer.getHttpHostAddress(), null, null);
+        final ElasticRestClient elasticRestClient = elasticRestClientFactory.createClient();
         final IndexSettings settings = new IndexSettings();
         settings.setIndexPrefix("flows");
         final IndexSelector rawIndexSelector = new IndexSelector(settings, RawFlowQueryService.INDEX_NAME,
                 IndexStrategy.MONTHLY, 120000);
-        final RawFlowQueryService rawFlowRepository = new RawFlowQueryService(client, rawIndexSelector);
+        final RawFlowQueryService rawFlowRepository = new RawFlowQueryService(elasticRestClient, rawIndexSelector);
         final AggregatedFlowQueryService aggFlowRepository = mock(AggregatedFlowQueryService.class);
         smartQueryService = new SmartQueryService(metricRegistry, rawFlowRepository, aggFlowRepository);
         smartQueryService.setAlwaysUseRawForQueries(true); // Always use RAW values for these tests
-        flowRepository = new ElasticFlowRepository(metricRegistry, client, IndexStrategy.MONTHLY,
+        flowRepository = new ElasticFlowRepository(metricRegistry, elasticRestClient, IndexStrategy.MONTHLY,
                 new MockIdentity(), new MockTracerRegistry(), settings, 0, 0);
 
         final var classificationEngine = new DefaultClassificationEngine(() -> Lists.newArrayList(
@@ -148,21 +167,31 @@ public class FlowQueryIT {
                 new RuleBuilder().withName("http").withSrcPort("80").withProtocol("tcp,udp").build(),
                 new RuleBuilder().withName("https").withSrcPort("443").withProtocol("tcp,udp").build()),
                                                                          FilterService.NOOP);
+        final NodeInfoCache nodeInfoCache = new NodeInfoCacheImpl(
+                new CacheConfigBuilder()
+                        .withName("nodeInfoCache")
+                        .withMaximumSize(1000)
+                        .withExpireAfterWrite(300)
+                        .withExpireAfterRead(300)
+                        .build(),
+                true,
+                new MetricRegistry(),
+                new MockNodeDao(),
+                new MockIpInterfaceDao(),
+                new MockInterfaceToNodeCache(),
+                new MockSessionUtils()
+        );
 
-        documentEnricher = new DocumentEnricherImpl(metricRegistry,
-                                                    new MockNodeDao(),
-                                                    new MockIpInterfaceDao(),
-                                                    new MockInterfaceToNodeCache(),
-                                                    new MockSessionUtils(),
+        documentEnricher = new DocumentEnricherImpl(new MockSessionUtils(),
                                                     classificationEngine,
-                                                    new CacheConfigBuilder()
-                                                                  .withName("flows.node")
-                                                                  .withMaximumSize(1000)
-                                                                  .withExpireAfterWrite(300)
-                                                                  .build(), 0,
-                                                    new DocumentMangler(new ScriptEngineManager()));
+                                                    0,
+                                                    new DocumentMangler(new ScriptEngineManager()),
+                                                    nodeInfoCache);
 
-        final RawIndexInitializer initializer = new RawIndexInitializer(client, settings);
+        // Delete any existing indices before initializing to ensure a clean state
+        elasticRestClient.deleteIndex("flows*");
+
+        final RawIndexInitializer initializer = new RawIndexInitializer(elasticRestClient, settings);
 
         // Here we load the flows by building the documents ourselves,
         // so we must initialize the repository manually
@@ -1040,7 +1069,7 @@ public class FlowQueryIT {
         return getFlowSet(false);
     }
 
-    private void loadDefaultFlows() throws Exception {
+    protected void loadDefaultFlows() throws Exception {
         loadFlows(getDefaultFlows());
     }
 

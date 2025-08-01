@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2013-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.features.vaadin.dashboard.dashlets;
 
 import java.time.ZoneId;
@@ -34,6 +27,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.commons.lang.StringEscapeUtils;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.criteria.Fetch;
 import org.opennms.core.criteria.restrictions.InRestriction;
@@ -69,6 +63,7 @@ import com.vaadin.ui.AbstractOrderedLayout;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.v7.ui.Label;
 import com.vaadin.v7.ui.Table;
@@ -90,7 +85,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
     /**
      * Helper for handling criterias
      */
-    private CriteriaBuilderHelper m_criteriaBuilderHelper = new CriteriaBuilderHelper(OnmsAlarm.class, OnmsNode.class, OnmsCategory.class, OnmsEvent.class);
+    private final CriteriaBuilderHelper m_criteriaBuilderHelper = new CriteriaBuilderHelper(OnmsAlarm.class, OnmsNode.class, OnmsCategory.class, OnmsEvent.class);
     /**
      * wallboard layout
      */
@@ -135,7 +130,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
         if (m_wallboardComponent == null) {
             m_wallboardComponent = new AbstractDashletComponent() {
 
-                private VerticalLayout m_verticalLayout;
+                private final VerticalLayout m_verticalLayout;
 
                 {
                     m_verticalLayout = new VerticalLayout();
@@ -187,7 +182,7 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
         if (m_dashboardComponent == null) {
             m_dashboardComponent = new AbstractDashletComponent() {
 
-                private AlarmTable m_alarmTable;
+                private final AlarmTable m_alarmTable;
 
                 {
                     m_alarmTable = new AlarmTable("Alarms", new AlarmDaoContainer(m_alarmDao, m_transactionTemplate), m_alarmRepository);
@@ -235,6 +230,14 @@ public class AlarmDetailsDashlet extends AbstractDashlet {
                     m_alarmTable.addGeneratedColumn("severity", new SeverityGenerator());
                     m_alarmTable.addGeneratedColumn("id", new AlarmIdColumnLinkGenerator(m_alarmDao, "id"));
                     m_alarmTable.addGeneratedColumn("lastEventTime", new TimeColumnGenerator(m_timeformatService));
+                    m_alarmTable.addGeneratedColumn("logMsg", (Table.ColumnGenerator) (table, itemId, columnId) -> {
+                        final Property<String> property = table.getContainerProperty(itemId, columnId);
+                        if (property == null || property.getValue() == null) {
+                            return null;
+                        } else {
+                            return StringEscapeUtils.unescapeXml(property.getValue());
+                        }
+                    });
                     m_alarmTable.setVisibleColumns("id", "severity", "nodeLabel", "counter", "lastEventTime", "logMsg");
                     m_alarmTable.setColumnHeaders("ID", "Severity", "Node", "Count", "Last Event Time", "Log Message");
 

@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2011-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.snmp.snmp4j;
 
 import java.io.IOException;
@@ -271,6 +264,18 @@ public class Snmp4JStrategy implements SnmpStrategy {
         return future;
     }
 
+    @Override
+    public CompletableFuture<SnmpValue[]> setAsync(SnmpAgentConfig agentConfig, SnmpObjId[] oids, SnmpValue[] values) {
+        final CompletableFuture<SnmpValue[]> future = new CompletableFuture<>();
+        final Snmp4JAgentConfig snmp4jAgentConfig = new Snmp4JAgentConfig(agentConfig);
+        final PDU pdu = buildPdu(snmp4jAgentConfig, PDU.SET, oids, values);
+        if (pdu == null) {
+            future.completeExceptionally(new Exception("Invalid PDU for OIDs: " + Arrays.toString(oids)));
+        }
+        send(snmp4jAgentConfig, pdu, true, future);
+        return future;
+    }
+
     /**
      * SNMP4J getNext implementation
      * 
@@ -352,7 +357,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
 
             try {
                 final Snmp mySession = session;
-                mySession.send(pdu, agentConfig.getTarget(), null, new ResponseListener() {
+                mySession.send(pdu, agentConfig.getTarget(pdu.getType() == PDU.SET), null, new ResponseListener() {
                     @Override
                     public void onResponse(final ResponseEvent responseEvent) {
                         try {
@@ -381,7 +386,7 @@ public class Snmp4JStrategy implements SnmpStrategy {
             }
         } else { // we're not expecting a response
             try {
-                session.send(pdu, agentConfig.getTarget());
+                session.send(pdu, agentConfig.getTarget(pdu.getType() == PDU.SET));
                 future.complete(null);
             } catch (final Exception e) {
                 LOG.error("send: error during SNMP operation", e);

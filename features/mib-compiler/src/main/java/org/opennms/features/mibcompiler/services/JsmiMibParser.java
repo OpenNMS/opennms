@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2012-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.features.mibcompiler.services;
 
 import java.io.File;
@@ -108,6 +101,8 @@ public class JsmiMibParser implements MibParser, Serializable {
 
     /** The missing dependencies. */
     private List<String> missingDependencies = new ArrayList<>();
+
+    private static final String MISSING_DESCR = "MIB Object is missing the description field";
 
     /**
      * Instantiates a new JLIBSMI MIB parser.
@@ -285,6 +280,7 @@ public class JsmiMibParser implements MibParser, Serializable {
         List<PrefabGraph> graphs = new ArrayList<>();
         LOG.info("Generating graph templates for {}", module.getId());
         NameCutter cutter = new NameCutter();
+        String name = ""; 
         try {
             for (SmiVariable v : module.getVariables()) {
                 String groupName = getGroupName(v);
@@ -297,10 +293,13 @@ public class JsmiMibParser implements MibParser, Serializable {
                 }
                 int order = 1;
                 if (typeName != null && !typeName.toLowerCase().contains("string")) {
-                    String name = groupName + '.' + v.getId();
+                    name = groupName + '.' + v.getId();
                     String title = getMibName() + "::" + groupName + "::" + v.getId();
                     String alias = cutter.trimByCamelCase(v.getId(), 19); // RRDtool/JRobin DS size restriction.
-                    String descr = v.getDescription().replaceAll("[\n\r]", "").replaceAll("\\s+", " ");
+                    String descr = MISSING_DESCR;
+                    if (v.getDescription() != null) { // missing descriptions are a source of pain; don't NPE, just work.
+                        descr = v.getDescription().replaceAll("[\n\r]", "").replaceAll("\\s+", " ");
+                    }
                     final StringBuilder sb = new StringBuilder();
                     sb.append("--title=\"").append(title).append("\" \\\n");
                     sb.append(" DEF:var={rrd1}:").append(alias).append(":AVERAGE \\\n");
@@ -316,7 +315,7 @@ public class JsmiMibParser implements MibParser, Serializable {
         } catch (Throwable e) {
             String errors = e.getMessage();
             if (errors == null || errors.trim().equals(""))
-                errors = "An unknown error accured when generating graph templates from the MIB " + module.getId();
+                errors = "An unknown error accured when generating graph templates from the MIB " + module.getId() + " at " + name + "."; // log the name so we know where to look when graph generation fails
             LOG.error("Graph templates parsing error: {}", errors, e);
             errorHandler.addError(errors);
             return null;

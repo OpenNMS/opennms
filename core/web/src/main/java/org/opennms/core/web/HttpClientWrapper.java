@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2014-2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.core.web;
 
 import java.io.Closeable;
@@ -40,7 +33,6 @@ import java.util.Set;
 
 import javax.net.ssl.SSLContext;
 
-import org.apache.commons.io.IOUtils;
 import org.apache.http.Header;
 import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
@@ -52,7 +44,6 @@ import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.AuthState;
 import org.apache.http.auth.Credentials;
 import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.CookieStore;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.config.CookieSpecs;
@@ -115,12 +106,12 @@ public class HttpClientWrapper implements Closeable {
         addRequestInterceptor(new HttpRequestInterceptor() {
             @Override
             public void process(HttpRequest request, HttpContext context) throws HttpException, IOException {
-                Header host = request.getFirstHeader(HTTP.TARGET_HOST);
-                if (host != null) {
-                    if (host.getValue().endsWith(":80") || host.getValue().endsWith(":443")) {
-                        request.setHeader(HTTP.TARGET_HOST, host.getValue().replaceFirst(":\\d+", ""));
-                        LOG.info("httpRequestInterceptor: removing default port from host header");
-                    }
+                final Header host = request.getFirstHeader(HTTP.TARGET_HOST);
+                if (host == null) return;
+                final String value = host.getValue();
+                if (value.endsWith(":80") || value.endsWith(":443")) {
+                    request.setHeader(HTTP.TARGET_HOST, value.replaceFirst(":\\d+", ""));
+                    LOG.info("httpRequestInterceptor: removing default port from host header");
                 }
             }
         });
@@ -201,6 +192,7 @@ public class HttpClientWrapper implements Closeable {
      * Use relaxed SSL connection handling (EmptyKeyRelaxedTrustSSLContext.ALGORITHM, allows any certificate)
      * @throws NoSuchAlgorithmException
      */
+    @SuppressWarnings("java:S4423")
     public HttpClientWrapper useRelaxedSSL(final String scheme) throws GeneralSecurityException {
         LOG.debug("useRelaxedSSL: scheme={}", scheme);
         assertNotInitialized();
@@ -311,7 +303,11 @@ public class HttpClientWrapper implements Closeable {
     public void close(final CloseableHttpResponse response) {
         if (response != null) {
             EntityUtils.consumeQuietly(response.getEntity());
-            IOUtils.closeQuietly(response);
+            try {
+                response.close();
+            } catch (final IOException e) {
+                LOG.trace("failed to close response {}", response, e);
+            }
         }
     }
 
@@ -330,8 +326,8 @@ public class HttpClientWrapper implements Closeable {
      * 
      * Note that when you are done with the response, you must call {@link #closeResponse()} so that it gets cleaned up properly.
      */
-    public CloseableHttpResponse execute(final HttpUriRequest method) throws ClientProtocolException, IOException {
-        LOG.debug("execute: " + this.toString() + "; method: " + method.toString());
+    public CloseableHttpResponse execute(final HttpUriRequest method) throws IOException {
+        LOG.debug("execute: {}; method: {}", this, method);
         // override some headers with our versions
         final HttpRequestWrapper requestWrapper = HttpRequestWrapper.wrap(method);
         if (!isEmpty(m_userAgent)) {

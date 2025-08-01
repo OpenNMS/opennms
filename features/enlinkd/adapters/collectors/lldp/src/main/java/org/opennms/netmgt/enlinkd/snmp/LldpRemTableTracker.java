@@ -1,39 +1,30 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.enlinkd.snmp;
 
 
-import org.opennms.core.utils.LldpUtils;
 import org.opennms.core.utils.LldpUtils.LldpChassisIdSubType;
 import org.opennms.core.utils.LldpUtils.LldpPortIdSubType;
 import org.opennms.netmgt.enlinkd.model.LldpLink;
-import org.opennms.netmgt.snmp.AbstractSnmpValue;
 import org.opennms.netmgt.snmp.SnmpInstId;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.SnmpRowResult;
@@ -100,76 +91,6 @@ public class LldpRemTableTracker extends TableTracker {
             LLDP_REM_SYSNAME_OID
 
     };
-    
-    public static String decodeLldpPortId(Integer lldpPortIdSubType,SnmpValue lldpportid) {
-        if (lldpPortIdSubType == null) {
-            if (lldpportid.isDisplayable())
-                return lldpportid.toDisplayString();
-            else 
-                return lldpportid.toHexString();
-        }
-        try {
-            LldpPortIdSubType type=LldpPortIdSubType.get(lldpPortIdSubType);
-        /*
-         * 
-         *       If the associated LldpPortIdSubtype object has a value of
-         *       'interfaceAlias(1)', then the octet string identifies a
-         *       particular instance of the ifAlias object (defined in IETF
-         *       RFC 2863). If the particular ifAlias object does not contain
-         *       any values, another port identifier type should be used.
-         *
-         *       If the associated LldpPortIdSubtype object has a value of
-         *       'portComponent(2)', then the octet string identifies a
-         *       particular instance of the entPhysicalAlias object (defined
-         *       in IETF RFC 2737) for a port or backplane component.
-         *
-         *       If the associated LldpPortIdSubtype object has a value of
-         *       'macAddress(3)', then this string identifies a particular
-         *       unicast source address (encoded in network byte order
-         *       and IEEE 802.3 canonical bit order) associated with the port
-         *       (IEEE Std 802-2001).
-         *
-         *       If the associated LldpPortIdSubtype object has a value of
-         *       'networkAddress(4)', then this string identifies a network
-         *       address associated with the port. The first octet contains
-         *       the IANA AddressFamilyNumbers enumeration value for the
-         *       specific address type, and octets 2 through N contain the
-         *       networkAddress address value in network byte order.
-         *
-         *       If the associated LldpPortIdSubtype object has a value of
-         *       'interfaceName(5)', then the octet string identifies a
-         *       particular instance of the ifName object (defined in IETF
-         *       RFC 2863). If the particular ifName object does not contain
-         *       any values, another port identifier type should be used.
-         *
-         *       If the associated LldpPortIdSubtype object has a value of
-         *       'agentCircuitId(6)', then this string identifies a agent-local
-         *       identifier of the circuit (defined in RFC 3046).
-         *
-         *       If the associated LldpPortIdSubtype object has a value of
-         *       'local(7)', then this string identifies a locally
-         *       assigned port ID."
-         */
-            switch (type) {
-            case LLDP_PORTID_SUBTYPE_PORTCOMPONENT:
-            case LLDP_PORTID_SUBTYPE_AGENTCIRCUITID:
-            case LLDP_PORTID_SUBTYPE_INTERFACEALIAS:
-            case LLDP_PORTID_SUBTYPE_INTERFACENAME:
-            case LLDP_PORTID_SUBTYPE_LOCAL:
-                if (AbstractSnmpValue.allBytesUTF_8(lldpportid.getBytes()))
-                    return lldpportid.toDisplayString();
-                else 
-                    return lldpportid.toHexString();
-            case LLDP_PORTID_SUBTYPE_MACADDRESS:
-                return LldpLocalGroupTracker.decodeMacAddress(lldpportid);
-            case LLDP_PORTID_SUBTYPE_NETWORKADDRESS:
-                LldpUtils.decodeNetworkAddress(lldpportid.toDisplayString());
-           }
-        } catch (Exception iae) {
-            iae.printStackTrace();
-        }
-        return lldpportid.toHexString();
-    }
 
 
     public static class LldpRemRow extends SnmpRowResult {
@@ -193,13 +114,13 @@ public class LldpRemTableTracker extends TableTracker {
 	    public SnmpValue getLldpRemChassisId() {
 	        return getValue(LLDP_REM_CHASSIS_ID_OID);
 	    }
-	    
+
 	    public Integer getLldpRemPortidSubtype() {
 	    	return getValue(LLDP_REM_PORT_ID_SUBTYPE_OID).toInt();
 	    }
 
-	    public String getLldpRemPortid() {
-	    	return decodeLldpPortId(getLldpRemPortidSubtype(), getValue(LLDP_REM_PORT_ID_OID));
+	    public String getLldpRemPortid(LldpPortIdSubType portIdSubType) {
+	    	return LldpSnmpUtils.decodeLldpPortId(portIdSubType, getValue(LLDP_REM_PORT_ID_OID));
 	    }
 	    
 	    public String getLldpRemPortDescr() {
@@ -217,11 +138,13 @@ public class LldpRemTableTracker extends TableTracker {
             LldpLink lldpLink = new LldpLink();
             lldpLink.setLldpRemLocalPortNum(getLldpRemLocalPortNum());
             lldpLink.setLldpRemIndex(getLldpRemIndex());
-            lldpLink.setLldpRemChassisId(LldpLocalGroupTracker.decodeLldpChassisId(getLldpRemChassisId() , getLldpRemChassisidSubtype()));
-            lldpLink.setLldpRemChassisIdSubType(LldpChassisIdSubType.get(getLldpRemChassisidSubtype()));
+            lldpLink.setLldpRemChassisIdSubType(LldpSnmpUtils.decodeLldpChassisSubType(getLldpRemChassisidSubtype()));
+            lldpLink.setLldpRemChassisId(LldpSnmpUtils.decodeLldpChassisId(lldpLink.getLldpRemChassisIdSubType(),
+                    getLldpRemChassisId()));
             lldpLink.setLldpRemSysname(getLldpRemSysname());
-            lldpLink.setLldpRemPortId(getLldpRemPortid());
-            lldpLink.setLldpRemPortIdSubType(LldpPortIdSubType.get(getLldpRemPortidSubtype()));
+            lldpLink.setLldpRemPortIdSubType(LldpSnmpUtils.decodeLldpPortSubType(getLldpRemPortidSubtype(),getValue(LLDP_REM_PORT_ID_OID)));
+            lldpLink.setLldpRemPortId(getLldpRemPortid(lldpLink.getLldpRemPortIdSubType()));
+
             lldpLink.setLldpRemPortDescr(getLldpRemPortDescr());
             LOG.debug( "getLldpLink: local port num: {}, identifier: {}, chassis subtype: {}, \n rem sysname: {}, rem port: {}, rem port subtype: {}",  
                        getLldpRemLocalPortNum(),
@@ -258,9 +181,9 @@ public class LldpRemTableTracker extends TableTracker {
      */
     public void processLldpRemRow(final LldpRemRow row) {
         System.out.printf("\t\t%s (%s)= %s (%s)\n", LLDP_REM_CHASSIS_ID_SUBTYPE_OID + "." + row.getInstance().toString(), LLDP_REM_CHASSIS_ID_SUBTYPE, row.getLldpRemChassisidSubtype(), LldpChassisIdSubType.getTypeString(row.getLldpRemChassisidSubtype()));
-        System.out.printf("\t\t%s (%s)= %s \n", LLDP_REM_CHASSIS_ID_OID + "." + row.getInstance().toString(), LLDP_REM_CHASSIS_ID, LldpLocalGroupTracker.decodeLldpChassisId(row.getLldpRemChassisId() , row.getLldpRemChassisidSubtype()));
+        System.out.printf("\t\t%s (%s)= %s \n", LLDP_REM_CHASSIS_ID_OID + "." + row.getInstance().toString(), LLDP_REM_CHASSIS_ID, LldpSnmpUtils.decodeLldpChassisId(LldpChassisIdSubType.get(row.getLldpRemChassisidSubtype()),row.getLldpRemChassisId()));
         System.out.printf("\t\t%s (%s)= %s (%s)\n", LLDP_REM_PORT_ID_SUBTYPE_OID + "." + row.getInstance().toString(), LLDP_REM_PORT_ID_SUBTYPE, row.getLldpRemPortidSubtype(), LldpPortIdSubType.getTypeString(row.getLldpRemPortidSubtype()));
-        System.out.printf("\t\t%s (%s)= %s \n", LLDP_REM_PORT_ID_OID + "." + row.getInstance().toString(), LLDP_REM_PORT_ID, row.getLldpRemPortid());
+        System.out.printf("\t\t%s (%s)= %s \n", LLDP_REM_PORT_ID_OID + "." + row.getInstance().toString(), LLDP_REM_PORT_ID, row.getLldpRemPortid(LldpPortIdSubType.get(row.getLldpRemPortidSubtype())));
         System.out.printf("\t\t%s (%s)= %s \n", LLDP_REM_PORT_DESCR_OID + "." + row.getInstance().toString(), LLDP_REM_PORT_DESCR, row.getLldpRemPortDescr());
         System.out.printf("\t\t%s (%s)= %s \n", LLDP_REM_SYSNAME_OID + "." + row.getInstance().toString(), LLDP_REM_SYSNAME, row.getLldpRemSysname());
     }

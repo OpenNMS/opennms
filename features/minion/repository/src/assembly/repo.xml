@@ -13,6 +13,8 @@
       <excludes>
         <exclude>**/jettison/1.3.*</exclude>
         <exclude>**/jettison/1.3.*/*</exclude>
+        <exclude>**/zookeeper/3.4.14</exclude>
+        <exclude>**/zookeeper/3.4.14/*</exclude>
       </excludes>
     </fileSet>
   </fileSets>

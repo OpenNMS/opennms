@@ -49,7 +49,7 @@ import { FeatherButton } from '@featherds/button'
 import {
   FeatherTab,
   FeatherTabContainer,
-  FeatherTabPanel,
+  FeatherTabPanel
 } from '@featherds/tabs'
 import { PropType } from 'vue'
 Chart.register(...registerables)
@@ -89,7 +89,7 @@ const convertedGraphDataRef = ref<ConvertedGraphData>({
   values: [],
   metrics: [],
   printStatements: [],
-  properties: {},
+  properties: {}
 })
 let chart: any = {}
 const legendRef = ref()
@@ -104,33 +104,33 @@ const options = computed<ChartOptions>(() => ({
   plugins: {
     htmlLegend: {
       // ID of the container to put the legend in
-      containerID: `${props.label}-${props.definition}-lc`,
+      containerID: `${props.label}-${props.definition}-lc`
     },
     legend: {
       display: false
     },
     title: {
       display: true,
-      text: convertedGraphDataRef.value.title,
+      text: convertedGraphDataRef.value.title
     } as TitleOptions,
     zoom: {
       zoom: {
         wheel: {
-          enabled: true,
+          enabled: true
         },
-        mode: 'x',
+        mode: 'x'
       },
       pan: {
         enabled: true,
         mode: 'x'
       }
-    },
+    }
   },
   scales: {
     y: {
       title: {
         display: true,
-        text: convertedGraphDataRef.value.verticalLabel,
+        text: convertedGraphDataRef.value.verticalLabel
       } as TitleOptions,
       ticks: {
         callback: (value) => yAxisFormatter(value as number),
@@ -236,7 +236,7 @@ const getGraphMetricsPayload = (source: Metric[]): GraphMetricsPayload => {
     start,
     end,
     step,
-    source: metricsWithoutExpressions,
+    source: metricsWithoutExpressions
   }
 
   if (metricsWithExpressions.length) {

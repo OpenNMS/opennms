@@ -398,8 +398,7 @@
       </simpleType>
     </attribute>
 
-    <attribute name="rearm
-" use="required">
+    <attribute name="rearm" use="required">
       <simpleType>
         <annotation>
           <documentation>
@@ -437,6 +436,14 @@
         <documentation>
           Value to retrieve from strings.properties to label this
           datasource.
+        </documentation>
+      </annotation>
+    </attribute>
+
+    <attribute name="expr-label" type="string" use="optional">
+      <annotation>
+        <documentation>
+          An optional human-readable label for this expression
         </documentation>
       </annotation>
     </attribute>

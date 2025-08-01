@@ -1,6 +1,28 @@
+///
+/// Licensed to The OpenNMS Group, Inc (TOG) under one or more
+/// contributor license agreements.  See the LICENSE.md file
+/// distributed with this work for additional information
+/// regarding copyright ownership.
+///
+/// TOG licenses this file to You under the GNU Affero General
+/// Public License Version 3 (the "License") or (at your option)
+/// any later version.  You may not use this file except in
+/// compliance with the License.  You may obtain a copy of the
+/// License at:
+///
+///      https://www.gnu.org/licenses/agpl-3.0.txt
+///
+/// Unless required by applicable law or agreed to in writing,
+/// software distributed under the License is distributed on an
+/// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+/// either express or implied.  See the License for the specific
+/// language governing permissions and limitations under the
+/// License.
+///
+
 import { mount } from '@vue/test-utils'
 import { createTestingPinia } from '@pinia/testing'
-import { describe, expect, test } from 'vitest'
+import { beforeEach, describe, expect, test } from 'vitest'
 import { useScvStore } from '@/stores/scvStore'
 import { SCVCredentials } from '@/types/scv'
 import SCV from '@/containers/SecureCredentialsVault.vue'
@@ -12,18 +34,20 @@ const mockCredentials: SCVCredentials = {
   attributes: {}
 }
 
-const wrapper = mount(SCV, {
-  global: {
-    plugins: [
-      createTestingPinia({ stubActions: false })
-    ],
-    stubs: ['router-link']
-  }
-})
-
-const scvStore = useScvStore()
-
 describe('scvStore test', () => {
+  let wrapper: any
+
+  beforeEach(() => {
+    wrapper = mount(SCV, {
+      global: {
+        plugins: [
+          createTestingPinia({ stubActions: false })
+        ],
+        stubs: ['router-link']
+      }
+    })
+  })
+
   test('adding an alias should enable the add btn', async () => {
     const addCredsBtn = wrapper.get('[data-test="add-creds-btn"]')
     const aliasInput = wrapper.get('[data-test="alias-input"] .feather-input')
@@ -38,6 +62,8 @@ describe('scvStore test', () => {
   })
 
   test('the user may not add a duplicate alias', async () => {
+    const scvStore = useScvStore()
+
     const addCredsBtn = wrapper.get('[data-test="add-creds-btn"]')
     const aliasInput = wrapper.get('[data-test="alias-input"] .feather-input')
 
@@ -54,6 +80,8 @@ describe('scvStore test', () => {
   })
 
   test('the update btn should appear and be enabled', async () => {
+    const scvStore = useScvStore()
+
     const updateCreds = wrapper.find('[data-test="update-creds-btn"]')
 
     // the update btn should not be available
@@ -70,6 +98,8 @@ describe('scvStore test', () => {
 
   // NOTE: skipping this test, need to fix
   test.skip('if password is masked and username is being updated, prevent submission', async () => {
+    const scvStore = useScvStore()
+
     const usernameInput = wrapper.get('[data-test="username-input"] .feather-input')
     const passwordInput = wrapper.get('[data-test="password-input"] .feather-input')
 
@@ -96,6 +126,8 @@ describe('scvStore test', () => {
   })
 
   test('the clear btn', async () => {
+    const scvStore = useScvStore()
+
     const usernameInput = wrapper.get('[data-test="username-input"] .feather-input')
     const passwordInput = wrapper.get('[data-test="password-input"] .feather-input')
     const aliasInput = wrapper.get('[data-test="alias-input"] .feather-input')

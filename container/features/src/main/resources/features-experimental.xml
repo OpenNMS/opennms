@@ -120,7 +120,7 @@
       <feature>opennms-reporting</feature>
 
       <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan/${xalanServicemixVersion}</bundle>
-      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan-serializer/${xalanServicemixVersion}</bundle>
+      <bundle dependency="true">mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan-serializer/${xalanSerializerServicemixVersion}</bundle>
       <bundle>wrap:mvn:org.w3c.css/sac/1.3$Bundle-SymbolicName=org.w3c.css.sac&amp;Bundle-Version=1.3</bundle>
       <bundle>mvn:com.vaadin.external.flute/flute/1.3.0.gg2</bundle>
       <bundle>wrap:mvn:net.sourceforge.cssparser/cssparser/0.9.11$Bundle-SymbolicName=net.sourceforge.cssparser&amp;Bundle-Version=0.9.11</bundle>
@@ -135,7 +135,6 @@
       <bundle>mvn:org.opennms.features/org.opennms.features.request-tracker/${project.version}</bundle>
 
       <bundle>mvn:org.opennms/opennms-web-api/${project.version}</bundle>
-      <bundle>mvn:org.opennms.core/org.opennms.core.web-assets/${project.version}</bundle>
 
       <feature>spring-security-opennms</feature>
       <bundle>mvn:org.opennms.features/org.opennms.features.springframework-security/${project.version}</bundle>

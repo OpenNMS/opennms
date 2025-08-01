@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.systemreport.system;
 
 import java.io.File;
@@ -34,16 +27,28 @@ import java.lang.management.OperatingSystemMXBean;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
-
+import org.opennms.core.resource.Vault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.opennms.systemreport.AbstractSystemReportPlugin;
 import org.springframework.core.io.Resource;
-
+import javax.management.AttributeNotFoundException;
+import javax.management.InstanceNotFoundException;
+import javax.management.MBeanException;
+import javax.management.MBeanServer;
+import javax.management.MalformedObjectNameException;
+import javax.management.ObjectName;
+import javax.management.ReflectionException;
 
 public class OSReportPlugin extends AbstractSystemReportPlugin {
     private static final Logger LOG = LoggerFactory.getLogger(OSReportPlugin.class);
     private static final Map<String, String> m_oses = new LinkedHashMap<String, String>();
+    private static final MBeanServer M_BEAN_SERVER = ManagementFactory.getPlatformMBeanServer();
+    private static final String JMX_OBJ_OS = "java.lang:type=OperatingSystem";
+    private static final String JMX_ATTR_AVAILABLE_PROCESSORS = "AvailableProcessors";
+    private static final String JMX_ATTR_FREE_PHYSICAL_MEMORY_SIZE = "FreePhysicalMemorySize";
+    private static final String JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE = "TotalPhysicalMemorySize";
+
     public OSReportPlugin() {
         if (m_oses.size() == 0) {
             m_oses.put("/etc/SUSE-release", "SuSE");
@@ -71,6 +76,9 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
     public String getDescription() {
         return "Kernel, OS, and Distribution";
     }
+
+    @Override
+    public boolean isVisible() { return true; }
 
     @Override
     public int getPriority() {
@@ -136,6 +144,50 @@ public class OSReportPlugin extends AbstractSystemReportPlugin {
             map.put("Description", map.remove("Distribution Description"));
         }
 
+        map.put("HTTP(S) ports",getResource(Vault.getProperty("org.opennms.netmgt.jetty.port")));
+
+        Object availableProcessorsObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_AVAILABLE_PROCESSORS);
+        if (availableProcessorsObj != null) {
+            map.put("System CPU count",getResource(String.valueOf((int) availableProcessorsObj)));
+
+        }
+
+        long totalPhysicalMemSize= 0L;
+        Object totalPhysicalMemSizeObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE);
+        if (totalPhysicalMemSizeObj != null) {
+            totalPhysicalMemSize = (long) totalPhysicalMemSizeObj;
+
+        }
+
+        long freePhysicalMemSize = 0L;
+        Object freePhysicalMemSizeObj = getJmxAttribute(JMX_OBJ_OS, JMX_ATTR_FREE_PHYSICAL_MEMORY_SIZE);
+        if (freePhysicalMemSizeObj != null) {
+            freePhysicalMemSize = (long) freePhysicalMemSizeObj;
+        }
+
+        map.put("Total System RAM",getResource(String.valueOf(totalPhysicalMemSize)));
+        map.put("Used System RAM",getResource(String.valueOf((totalPhysicalMemSize-freePhysicalMemSize))));
+
         return map;
     }
+
+    private Object getJmxAttribute(String objectName, String attributeName) {
+        ObjectName objNameActual;
+        try {
+            objNameActual = new ObjectName(objectName);
+        } catch (MalformedObjectNameException e) {
+            LOG.warn("Failed to query from object name " + objectName, e);
+            return null;
+        }
+        try {
+            return M_BEAN_SERVER.getAttribute(objNameActual, attributeName);
+        } catch (InstanceNotFoundException | AttributeNotFoundException
+                 | ReflectionException | MBeanException e) {
+            LOG.warn("Failed to query from attribute name " + attributeName + " on object " + objectName, e);
+            return null;
+        }
+    }
+
+
+
 }

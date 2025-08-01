@@ -21,6 +21,7 @@ You can view the metadata that is currently assigned to nodes, interfaces, and s
 .Node metadata
 image::metadata/metadata-view.png["{page-component-title} web UI showing a node's associated metadata"]
 
+[[metadata-contexts]]
 == Contexts
 
 Contexts distinguish different kinds of metadata use.
@@ -107,6 +108,9 @@ The following keys are available under this context:
 | interface:if-description
 | The SNMP interface description
 
+| interface:if-name
+| The SNMP interface name, i.e. ifName
+
 | interface:phy-addr
 | The interface's physical address
 |===
@@ -166,7 +170,8 @@ Separate the context and the key using a colon.
 Use a vertical bar (`|`) to separate any fallback context-key pairs and default values.
 
 If the first context-key value is not available (not found on a service, interface, node, or any other special context), the next value following the vertical bar is used.
-The final value--the default value--is not interpreted as a context-key, but is used as a literal.
+The final value--the default value--is interpreted if it contains a valid context-key pair, otherwise is is used as a literal.
+You can enforce a value to be interpreted as a literal by enclosing it with single or double quotes.
 Its evaluation will always succeed.
 
 The interpolation process supports recursive evaluation.
@@ -199,6 +204,14 @@ Separate each reference with a vertical bar (`|`).
 The following placeholder will resolve to the `username` as defined in the requisitioning UI.
 If the `username` is not defined, the fallback `account` reference is used.
 If neither exist, the placeholder defaults to `admin`:
+
+[source]
+${requisition:url|http://example.org}
+Since the last value contains a colon, the interpreter will treat this value as a context-key which evaluates to an empty string in the case there is no data for the context-key `requisition:url`.
+
+[source]
+${requisition:url|"http://example.org"}
+Double or single quotes ensure that the value is treated as the expression's default value.
 
 [source]
 ${requisition:username|requisition:account|admin}
@@ -254,6 +267,7 @@ The following {page-component-title} components allow the use of the Metadata DS
 * <<deep-dive/thresholds/thresholding.adoc#ga-threshold-metadata, Expression-Based Thresholds>>.
 * <<deep-dive/notifications/introduction.adoc#ga-notifications, Notifications>>.
 * <<deep-dive/alarms/alarm-handling.adoc#ga-advanced-alarm-handling, Alarmd Drools rules>>.
+* <<deep-dive/admin/configuration/system-properties.adoc#system-properties, System Properties>>.
 
 Furthermore, some {page-component-title} configuration files allow the use of Metadata DSL to access the global scope `scv` in order to reference credentials in the Secure Credentials Vault:
 

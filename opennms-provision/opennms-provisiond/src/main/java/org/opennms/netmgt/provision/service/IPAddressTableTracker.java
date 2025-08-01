@@ -1,37 +1,32 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2011-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.provision.service;
 
 import static org.opennms.core.utils.InetAddressUtils.getInetAddress;
 import static org.opennms.core.utils.InetAddressUtils.str;
 
+import java.io.UnsupportedEncodingException;
 import java.net.InetAddress;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -111,14 +106,44 @@ public class IPAddressTableTracker extends TableTracker {
             int addressIndex = 2;
             int addressLength = instanceIds[1];
             // Begin NMS-4906 Lame Force 10 agent!
+            LOG.debug("addressType: {}, addressLength: {}, instanceIds.length: {}, instance: {}", addressType, addressLength, instanceIds.length, instance.toString());
+
             if (addressType == TYPE_IPV4 && instanceIds.length != 6) {
-                LOG.warn("BAD AGENT: Does not conform to RFC 4001 Section 4.1 Table Indexing!!! Report them immediately.  Making a best guess!");
-                addressIndex = instanceIds.length - 4;
+                LOG.warn("IPV4: BAD AGENT: Does not conform to RFC 4001 Section 4.1 Table Indexing!!! Report them immediately.  Making a best guess!");
+                if (instanceIds.length == (addressLength + addressIndex)) {
+                    // NMS-6452: Some older Brocade Switches represent the IP address as a octet string.
+                    try {
+                        final InetAddress address = byteStringToInetAddress(instanceIds, addressIndex, addressLength);
+                        return str(address);
+                    } catch (Exception e) {
+                        LOG.debug("IPV4: BAD AGENT: Could not parse raw oids as octet string", e);
+                    }
+                }
+                // Some popular vendors append the ifIndex to the instance value, and argue it is RFC 4001 compliant.
+                if (instanceIds[(instanceIds.length - 1)] == getIfIndex() && instanceIds.length > 6) {
+                    LOG.debug("IPV4: BAD AGENT: Instance is longer than expected ({}) and last instance value matches the ifIndex ({}), assuming address start on index 2", instanceIds.length, getIfIndex());
+                    addressIndex = 2;
+                } else {
+                    addressIndex = instanceIds.length - 4;
+                }
                 addressLength = 4;
             }
             if (addressType == TYPE_IPV6 && instanceIds.length != 18) {
-                LOG.warn("BAD AGENT: Does not conform to RFC 4001 Section 4.1 Table Indexing!!! Report them immediately.  Making a best guess!");
-                addressIndex = instanceIds.length - 16;
+                LOG.warn("IPV6: BAD AGENT: Does not conform to RFC 4001 Section 4.1 Table Indexing!!! Report them immediately.  Making a best guess!");
+                if (instanceIds.length == (addressLength + addressIndex)) {
+                    try {
+                        final InetAddress address = byteStringToInetAddress(instanceIds, addressIndex, addressLength);
+                        return str(address);
+                    } catch (Exception e) {
+                        LOG.debug("IPV6: BAD AGENT: Could not parse raw oids as octet string", e);
+                    }
+                }
+                if (instanceIds[(instanceIds.length - 1)] == getIfIndex() && instanceIds.length > 18) {
+                    LOG.debug("IPV6: BAD AGENT: Instance is longer than expected ({}) and last instance value matches the ifIndex ({}), assuming address start on index 2", instanceIds.length, getIfIndex());
+                    addressIndex = 2;
+                } else {
+                    addressIndex = instanceIds.length - 16;
+                }
                 addressLength = 16;
             }
             // End NMS-4906 Lame Force 10 agent!
@@ -146,6 +171,15 @@ public class IPAddressTableTracker extends TableTracker {
             return null;
         }
 
+        private InetAddress byteStringToInetAddress(final int[] rawIds, int offset, int length) {
+            final byte[] addressBytes = new byte[length];
+            for (int i = 0; i < addressBytes.length; i++) {
+                addressBytes[i] = Integer.valueOf(rawIds[i + offset]).byteValue();
+            }
+            String ipaddr = new String(addressBytes, StandardCharsets.UTF_8);
+            return getInetAddress(ipaddr);
+        }
+
         public Integer getType() {
             final SnmpValue value = getValue(IP_ADDRESS_TYPE_INDEX);
             return value.toInt();
@@ -171,12 +205,12 @@ public class IPAddressTableTracker extends TableTracker {
 
             // Begin NMS-4906 Lame Force 10 agent!
             if (addressType == TYPE_IPV4 && rawIds.length != 1+6+1) {
-                LOG.warn("BAD AGENT: Does not conform to RFC 4001 Section 4.1 Table Indexing!!! Report them immediately.  Making a best guess!");
+                LOG.warn("BAD AGENT: Does not conform to RFC 4001 Section 4.1 Table Indexing!!! Report them immediately.  Making a best guess! Length for ipv4 should be 8 but is {}", rawIds.length);
                 addressIndex = rawIds.length - (4+1);
                 addressLength = 4;
             }
             if (addressType == TYPE_IPV6 && rawIds.length != 1+18+1) {
-                LOG.warn("BAD AGENT: Does not conform to RFC 4001 Section 4.1 Table Indexing!!! Report them immediately.  Making a best guess!");
+                LOG.warn("BAD AGENT: Does not conform to RFC 4001 Section 4.1 Table Indexing!!! Report them immediately.  Making a best guess! Length for ipv6 should be 20 but is {}", rawIds.length);
                 addressIndex = rawIds.length - (16 + 1);
                 addressLength = 16;
             }

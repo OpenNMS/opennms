@@ -63,12 +63,29 @@ During evaluation of an expression, the following scopes are available:
 [[ga-pollerd-configuration-async]]
 == Asynchronous engine
 
-By default, the asynchronous polling engine is enabled.
-It allows threads to be released while polls are active, enabling processing more polls than the number of threads available.
+By default, the number of polls active at any given time is limited by the number of threads that are allocated to pollerd.
+Each thread is responsible for one poll, and will block until the poll is completed; this is true even when the polling is done by a Minion at a remote location.
+In this case, the thread is blocked for the duration of the remote procedure call.
 
-In the older legacy implementation, the number of polls active at any given time was limited by the number of threads allocated to pollerd.
-Each thread was responsible for one poll, and blocked until the poll was completed; this was true even when the polling was done by a Minion at a remote location.
+If you have hundreds of locations and hundreds of nodes at each location, you may want to reduce the number of threads required on your {page-component-title} instance.
+Each thread allocates a fixed amount of system memory.
+Having too many threads active at a given time can cause extensive load on the system.
 
-If you wish to revert to the legacy thread model, disable it by setting `asyncPollingEnabled="false" in `etc/poller-configuration.xml`.
+When enabled, the asynchronous polling mode mitigates this load.
+It allows threads to be released while polls are active, enabling Minions to process more polls than the number of threads available.
 
-You can query the actual number of active (in-flight) polls by reviewing the `NumPollsInFlight` metrics associated with pollerd's MBeans.
+To enable the feature, set the following attributes in the top-level element of `etc/poller-configuration.xml`:
+
+[source, xml]
+----
+<poller-configuration threads="30"
+                      asyncPollingEngineEnabled="true" <1>
+                      maxConcurrentAsyncPolls="200" <2>
+----
+<1> Enables the asynchronous polling engine.
+<2> Used to limit the number of polls active, since each of these still consumes some memory resources.
+
+In this mode, threads are used only to trigger a poll to run; this means that the number of threads can typically be reduced.
+You can see the actual number of active (in-flight) polls by reviewing the `NumPollsInFlight` metrics associated with pollerd's MBeans.
+
+NOTE: To disable asynchronous polling, set `asyncPollingEngineEnabled` to false.

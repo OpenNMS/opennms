@@ -1,122 +1,79 @@
+[[releasenotes-34]]
 
-[[releasenotes-32]]
-= What's New in OpenNMS Horizon 32
-
-== System requirements
-
-* *Java 11 and 17*: OpenNMS Horizon 32 runs on JDKs 11 and 17.
-* *PostgreSQL 10 or higher*: Horizon 32 requires any supported version of PostgreSQL from 10 up to (and including) 15.
+= What's New in OpenNMS Horizon 34
 
 == New features and important changes
 
-=== JDK 17
+=== Node Cache configuration
 
-Horizon 32 adds support for running on JDK 17, while retaining support for JDK 11.
-We are not (yet) taking advantage of JDK 17 specific features, but the new JDK provides a bunch of performance improvements under the covers that benefit any application running on it.
+Due to a refactoring to enable the collection of IPFix metrics, the node cache has been moved to another module.
+The configuration of the cache is now stored in the file `org.opennms.features.telemetry.protocols.common.cfg` and no longer in the file `org.opennms.features.flows.persistence.elastic.cfg`.
 
-=== Kafka version 3.x
-
-Documentation has been updated to indicate that Kafka version 3 is supported for the message broker.
-
-=== Newts: DataStax driver for Cassandra upgrade
-
-The DataStax driver for Cassandra was updated from version 3.x to 4.x.
-This allows us to introduce the following functionality:
-
-. Set additional Cassandra driver settings using system properties (for example, you can set `datastax-java-driver.basic.request.timeout="30 seconds"` to configure the connection timeout).
-See https://docs.datastax.com/en/developer/java-driver/4.0/manual/core/configuration/[Configuration] in the official DataStax documentation for details.
-
-. Configure all driver settings using an external file.
-To do so, set the following system properties in `$\{OPENNMS_HOME}/etc/opennms.properties.d/newts.properties`:
-+
-[source, properties]
-----
-org.opennms.newts.config.keyspace=newts
-org.opennms.newts.config.driver_settings_file=/opt/opennms/etc/newts-on-cassandra.conf
-----
-
-** For example, a minimal version of the file would resemble the following snippet:
-+
-[source, ]
-----
-datastax-java-driver {
-  basic.contact-points = [ "127.0.0.1:9042" ]
-  session-name = "default"
-  session-keyspace = "newnewts"
-  basic.load-balancing-policy {
-    local-datacenter = datacenter1
-  }
-}
-----
-
-** See https://github.com/datastax/java-driver/blob/4.0.1/core/src/main/resources/reference.conf[reference.conf] in the DataStax GitHub repository for a complete example.
-
-=== Native Holt-Winters forecasting
-
-The Holt-Winters forecasting filter no longer depends on the `R` package, and has been converted to Java.
-This leverages adaptive alerting work done by the team at https://github.com/ExpediaGroup/adaptive-alerting[Expedia].
-You can continue to use the filter as-is; no changes are needed to use this forecasting method.
-
-The filter that depends on the `R` package will be discontinued in a future release.
-
-=== Enhanced Linkd improvements
-
-Enlinkd has been refactored, improving performance, fixing bugs, and adding a number of new features, most notably new Karaf command-line tools:
-
-* enlinkd-discovery-bridge-domain: triggers bridge topology discovery
-* enlinkd-run-collection: triggers an SNMP linkd collection
-* enlinkd-reload: restarts Enlinkd
-* enlinkd-reload-config: reload the Enlinkd configuration
-* enlinkd-reload-topology: refresh topology to force an update based on enlinkd data
-* enlinkd-snmp-collect: perform an Enlinkd SNMP group/table collection
-
-=== Poll Status History enabled by default
-
-Our service monitor infrastructure has had support for storing the up/down history of poll status, but it is now enabled by default, including graph definitions for all included services.
-This allows you to get historical availability per-service beyond 24 hours.
-
-=== Experimental asynchronous polling
-
-The poller engine has been updated to support asynchronous polling, allowing OpenNMS to use fewer Pollerd threads to handle the same amount of load.
-This will become the default in a future Horizon release.
-
-Details on enabling it are in xref:operation:deep-dive/service-assurance/configuration.adoc#ga-pollerd-configuration-async[the operation manual].
+=== `install.sh` script clears data directory and restores Karaf-related configuration files
+To overcome common upgrading problems, the data directory is automatically pruned when invoking the `install.sh` script.
+Furthermore, all Karaf-related configuration files are restored to their pristine state.
 
 === OpenNMS Plugin API
 
-The OpenNMS Plugin API has been updated to version 1.5.0, which includes additional alarm- and ticketer-related APIs for plugin authors.
+The OpenNMS Plugin API has been updated to version 1.6.0, which includes some new APIs ported over from the Horizon codebase to simplify plugin development, as well as cleanups to dependencies.
+It also includes some fixes to the protocol list used by Enlinkd.
 
-=== Usage statistics
+=== Expanded metadata support
 
-Consent to share collected usage statistics is now assumed by default on new installs.
-Existing installs respect the setting in effect before upgrading.
+It is now possible to use the metadata DSL in nearly all configuration files.
+For details on all of the subsystems that support the metadata DSL, see xref:operation:deep-dive/meta-data.adoc[the operation manual].
 
-For more details, see the xref:deployment:core/getting-started.adoc#usage-statistics[admin guide].
+=== Confd improvements
 
-=== Additional self-monitoring
+Support for `confd` has been added to the Sentinel container.
 
-Additional JDBC collections for tracking database performance have been added to the built-in monitoring of the localhost node.
+=== UI: structured node list
+
+An enhanced node list has been introduced with options for sorting and filtering.
 
 == Breaking changes
+The default time series storage strategy is now by default RRDTool.
 
-=== Newts: DataStax driver for Cassandra upgrade
+IMPORTANT: If you use JRobin, make sure you set the property.
+You can easily verify it by checking the file extension created in the directory  `$\{OPENNMS_HOME}/share/rrd/snmp`. The extension .jrb indicates JRobin and .rrd indicates RRDtool.
+If you miss this setting, all your timeseries files will be newely created as .rrd files and you won't have access to your JRobin files with your history.
 
-The DataStax driver for Cassandra was updated from version 3.x to 4.x.
-This introduces the following breaking changes:
+IMPORTANT: When you have .jrb files, ensure after upgrading to Horizon 34 you explicitly configure JRobin in a file like `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`.
 
-. `org.opennms.newts.config.datacenter` is now required.
-Set this to the value of your local datacenter for the best performance.
-. `org.opennms.newts.config.core-connections-per-host` and `org.opennms.newts.config.max-connections-per-host` have been removed.
-Use `org.opennms.newts.config.connections-per-host` to configure the number of connections per host.
+.Configure explicitly JRobin for Horizon 34.x if required
+[source, console]
+----
+org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy
+----
 
-=== JMX MBean name changes
+== Deprecation of JRobin as timeseries storage
 
-Because of an upgrade of the Dropwizard Metrics library, some JMX MBeans object names have changed.
-The built-in data collection configurations have been updated to use the new object names, and will continue to work as-is.
-If you have other collections, or you are otherwise relying on MBeans, you may need to adjust the object references there.
-For example, `org.opennms.newts:name=search.update` has become `org.opennms.newts:name=search.update,type=timers`, and the `type` attribute has been added to the object.
+The release of Horizon 34 will be the last version which supports reading and writing timeseries data using JRobin.
+The JRobin library and the JRobin timeseries strategy will be removed from Horizon 35+ moving forward.
 
-=== Important internal updates
 
-* The embedded Groovy interpreter has been updated to version 3
-* Newts APIs have been updated to version 3
+== Deprecation of Tl1d
+The Tl1d service has been deprecated and removed from service configuration due to low user adoption. The service code will be fully removed in the next Horizon/Meridian release.
+
+== Deprecation of AsteriskGateway
+The AsteriskGateway service has been deprecated and removed from service configuration due to low user adoption. The service code will be fully removed in the next Horizon/Meridian release.
+
+== Deprecation of Reportd service
+
+The Reportd service has been deprecated and removed from service configuration due to low user adoption. The service code will be fully removed in the next Horizon/Meridian release.
+
+
+=== OpenNMS Minion environment variables changes
+The OpenNMS Minion Docker container no longer uses the KAFKA_SINK, KAFKA_RPC and KAFKA_TWIN prefixes to configure Kafka.
+Instead, only the KAFKA_IPC prefix is used, which ensures that all Kafka-related settings are set correctly for all features and that ActiveMQ is no longer installed incorrectly.
+
+=== Secure Credentials Vault changes
+The `Secure Credentials Vault` in `OpenNMS` traditionally supported the `JCEKS` keystore format. As of the latest enhancement,
+support has been added for the `PKCS12` keystore format.
+
+Set `org.opennms.features.scv.keystore.type=PKCS12` in configuration file
+ `$OPENNMS_HOME/etc/opennms.properties.d/scv.properties.`
+
+If you want to convert the `PKCS12` keystore format instead of `JCEKS`, be sure to update the file extension to match the new format (e.g., use `.pk12` instead of `.jce`).
+You can convert a `JCEKS` file to `PKCS12` using the following command.
+`keytool -importkeystore -srckeystore $OPENNMS_HOME/etc/scv.jce -destkeystore $OPENNMS_HOME/etc/scv.pk12 -deststoretype pkcs12`.

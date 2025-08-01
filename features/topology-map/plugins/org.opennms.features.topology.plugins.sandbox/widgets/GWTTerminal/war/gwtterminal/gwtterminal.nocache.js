@@ -1,3 +1,24 @@
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
+ *
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 function gwtterminal(){var N='',ub='" for "gwt:onLoadErrorFn"',sb='" for "gwt:onPropertyErrorFn"',gb='"><\/script>',X='#',Sb='.cache.html',Z='/',Rb=':',mb='::',$b='<script defer="defer">gwtterminal.onInjectionDone(\'gwtterminal\')<\/script>',fb='<script id="',pb='=',Y='?',Db='ActiveXObject',rb='Bad handler "',Eb='ChromeTab.ChromeFrame',Zb='DOMContentLoaded',Qb="GWT module 'gwtterminal' may need to be (re)compiled",hb='SCRIPT',eb='__gwt_marker_gwtterminal',ib='base',ab='baseUrl',R='begin',Q='bootstrap',Cb='chromeframe',_='clear.cache.gif',ob='content',W='end',Kb='gecko',Lb='gecko1_8',S='gwt.codesvr=',T='gwt.hosted=',U='gwt.hybrid',Tb='gwt/clean/clean.css',tb='gwt:onLoadErrorFn',qb='gwt:onPropertyErrorFn',nb='gwt:property',O='gwtterminal',cb='gwtterminal.nocache.js',lb='gwtterminal::',Yb='head',Ob='hosted.html?gwtterminal',Xb='href',Jb='ie6',Ib='ie8',Hb='ie9',vb='iframe',$='img',wb="javascript:''",Ub='link',Nb='loadExternalRefs',jb='meta',yb='moduleRequested',V='moduleStartup',Gb='msie',kb='name',Ab='opera',xb='position:absolute;width:0;height:0;border:none',Vb='rel',Fb='safari',bb='script',Pb='selectingPermutation',P='startup',Wb='stylesheet',db='undefined',Mb='unknown',zb='user.agent',Bb='webkit';var l=window,m=document,n=l.__gwtStatsEvent?function(a){return l.__gwtStatsEvent(a)}:null,o=l.__gwtStatsSessionId?l.__gwtStatsSessionId:null,p,q,r,s=N,t={},u=[],v=[],w=[],x=0,y,z;n&&n({moduleName:O,sessionId:o,subSystem:P,evtGroup:Q,millis:(new Date).getTime(),type:R});if(!l.__gwt_stylesLoaded){l.__gwt_stylesLoaded={}}if(!l.__gwt_scriptsLoaded){l.__gwt_scriptsLoaded={}}function A(){var b=false;try{var c=l.location.search;return (c.indexOf(S)!=-1||(c.indexOf(T)!=-1||l.external&&l.external.gwtOnLoad))&&c.indexOf(U)==-1}catch(a){}A=function(){return b};return b}
 function B(){if(p&&q){var b=m.getElementById(O);var c=b.contentWindow;if(A()){c.__gwt_getProperty=function(a){return F(a)}}gwtterminal=null;c.gwtOnLoad(y,O,s,x);n&&n({moduleName:O,sessionId:o,subSystem:P,evtGroup:V,millis:(new Date).getTime(),type:W})}}
 function C(){function e(a){var b=a.lastIndexOf(X);if(b==-1){b=a.length}var c=a.indexOf(Y);if(c==-1){c=a.length}var d=a.lastIndexOf(Z,Math.min(c,b));return d>=0?a.substring(0,d+1):N}

@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2003-2023 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.scriptd;
 
 import java.lang.reflect.UndeclaredThrowableException;
@@ -185,8 +178,7 @@ public class Executor {
         public void run() {
 
             if (isReloadConfigEvent(m_event)) {
-                // reloads are handled by Scriptd#handleReloadConfigEvent
-                return;
+		    doReload();
             }
 
             if (m_config.getTransactional()) {
@@ -208,6 +200,52 @@ public class Executor {
             registerEventProcessor();
             loadConfig();
 
+            // Run all stop scripts before terminating engines
+	    LOG.debug("Running all stop scripts...");
+            for (final StopScript stopScript : m_config.getStopScripts()) {
+                if (stopScript.getContent().isPresent()) {
+                    try {
+                        m_scriptManager.exec(stopScript.getLanguage(), "", 0, 0, stopScript.getContent().get());
+                    } catch (BSFException e) {
+                        LOG.error("Stop script failed: {}", stopScript, e);
+                    }
+                } else {
+                    LOG.warn("Stop script has no script contents: {}", stopScript);
+                }
+            }
+
+	    LOG.debug("Terminating existing engines");
+	    m_scriptManager.terminate();
+
+            for (final Engine engine : m_config.getEngines()) {
+               LOG.debug("Re-Registering engine: {}", engine.getLanguage());
+               String[] extensions = null;
+               if (engine.getExtensions().isPresent()) {
+                   StringTokenizer st = new StringTokenizer(engine.getExtensions().get());
+                   extensions = new String[st.countTokens()];
+                   int j = 0;
+                   while (st.hasMoreTokens()) {
+                       extensions[j++] = st.nextToken();
+                   }
+               }
+               BSFManager.registerScriptingEngine(engine.getLanguage(), engine.getClassName(), extensions);
+            }
+
+	    // Run all start scripts
+	    LOG.debug("Running all start scripts...");
+            for (final StartScript startScript : m_config.getStartScripts()) {
+                if (startScript.getContent().isPresent()) {
+                    try {
+                        m_scriptManager.exec(startScript.getLanguage(), "", 0, 0, startScript.getContent().get());
+                    } catch (BSFException e) {
+                        LOG.error("Start script failed: {}", startScript, e);
+                    }
+                } else {
+                    LOG.warn("Start script has no script content: {}", startScript);
+                }
+            }
+            // run the explicit reload scripts since this is a reload
+	    LOG.debug("Running all reload scripts...");
             for (final ReloadScript script : m_config.getReloadScripts()) {
                 final var scriptContent = script.getContent();
                 if (scriptContent.isPresent()) {
@@ -220,8 +258,7 @@ public class Executor {
                     LOG.warn("Reload Script does not have script contents: {}", script);
                 }
             }
-
-            LOG.debug("Scriptd configuration reloaded");
+            LOG.debug("Scriptd configuration reloaded!");
         } catch (final Exception e) {
             LOG.error("Unable to reload Scriptd configuration", e);
         }
@@ -420,4 +457,5 @@ public class Executor {
 
         LOG.debug("Scriptd executor stopped");
     }
+
 }

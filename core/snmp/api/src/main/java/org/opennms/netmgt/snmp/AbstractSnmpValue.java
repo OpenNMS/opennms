@@ -1,60 +1,36 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.snmp;
 
-import java.nio.charset.Charset;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.apache.commons.lang.CharUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public abstract class AbstractSnmpValue implements SnmpValue {
-
-    public static boolean allBytesPlainAscii(final byte[] bytes) {
-        if (bytes == null) {
-            return false;
-        }
-
-        final String str = new String(bytes, Charset.defaultCharset());
-        final int sz = str.length();
-
-        for(int i = 0; i < sz; ++i) {
-            // check whether character is between 31 and 127
-            final boolean isDisplayable = CharUtils.isAsciiPrintable(str.charAt(i));
-            // check for null terminated string
-            final boolean isNullTerminated = str.charAt(i) == 0 && i == sz-1;
-
-            if (!isDisplayable && !isNullTerminated) {
-                return false;
-            }
-        }
-
-        return true;
-    }
+    private static final Logger LOG = LoggerFactory.getLogger(AbstractSnmpValue.class);
+    public static final String ADDITIONAL_PRINTABLE_CHARACTERS_PROPERTY = "org.opennms.netmgt.snmp.additionalPrintableCharacters";
+    private static Map<Byte, Byte> ADDITIONAL_PRINTABLE_CHARACTERS;
 
     public static boolean allBytesDisplayable(final byte[] bytes) {
         if (allBytesUTF_8(bytes)) {
@@ -78,6 +54,10 @@ public abstract class AbstractSnmpValue implements SnmpValue {
         
         int end;
         for (int j = bytes.length; i < j; ++i) {
+            if (getAdditionalPrintableCharacters().containsKey(bytes[i])) {
+                continue;
+            }
+
             int octet = bytes[i];
 
             // ASCII
@@ -149,6 +129,11 @@ public abstract class AbstractSnmpValue implements SnmpValue {
     public static boolean allBytesISO_8859_1(byte[] bytes) {
         for (int i = 0; i < bytes.length; i++) {
             byte b = bytes[i];
+
+            if (getAdditionalPrintableCharacters().containsKey(b)) {
+                continue;
+            }
+
             // Null (0)
             if (b == 0) {
                 if (i != (bytes.length - 1)) {
@@ -173,5 +158,58 @@ public abstract class AbstractSnmpValue implements SnmpValue {
             }
         }
         return true;
+    }
+
+    public static Map<Byte, Byte> getAdditionalPrintableCharacters() {
+        if (ADDITIONAL_PRINTABLE_CHARACTERS == null) {
+            final Map<Byte, Byte> mappedCharacters = new HashMap<>();
+            final String[] mappings = System.getProperty(ADDITIONAL_PRINTABLE_CHARACTERS_PROPERTY, "").split(",");
+            if (mappings.length == 0) {
+                return mappedCharacters;
+            }
+
+            for(final String mapping : mappings) {
+                final String[] strings = mapping.split(":");
+                if (strings.length == 1 && !"".equals(strings[0])) {
+                    final byte srcChar;
+                    try {
+                        srcChar = Byte.decode(strings[0]);
+                    } catch (NumberFormatException e) {
+                        LOG.warn("Cannot decode '{}' to byte", strings[0], e);
+                        continue;
+                    }
+                    mappedCharacters.put(srcChar, srcChar);
+                    continue;
+                }
+
+                if (strings.length == 2) {
+                    final byte srcChar, dstChar;
+                    try {
+                        srcChar = Byte.decode(strings[0]);
+                    } catch (NumberFormatException e) {
+                        LOG.warn("Cannot decode '{}' to byte", strings[0], e);
+                        continue;
+                    }
+                    try {
+                        dstChar = Byte.decode(strings[1]);
+                    } catch (NumberFormatException e) {
+                        LOG.warn("Cannot decode '{}' to byte", strings[1], e);
+                        continue;
+                    }
+                    mappedCharacters.put(srcChar, dstChar);
+                    continue;
+                }
+
+                LOG.debug("Cannot parse mapping '{}'", mapping);
+            }
+
+            ADDITIONAL_PRINTABLE_CHARACTERS = mappedCharacters;
+        }
+
+        return ADDITIONAL_PRINTABLE_CHARACTERS;
+    }
+
+    public static void invalidateAdditionalCharacters() {
+        ADDITIONAL_PRINTABLE_CHARACTERS = null;
     }
 }

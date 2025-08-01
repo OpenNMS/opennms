@@ -66,8 +66,8 @@ This block consists of <maskelement> tags, and the event will match only if all 
   <descr>&#38lt;p&#38gt;Notification that the aggregate status of a node
          has changed.&#38lt;/p&#38gt;&#38lt;table&#38gt;
          &#38lt;tr&#38gt;&#38lt;td&#38gt;&#38lt;b&#38gt;
-         c3800SysNextTrapSeqNum&#38lt;/b&#38gt;</td&#38gt;&#38lt;td&#38gt;%parm[#1]%
-         &#38lt;/td&#38gt;&#38lt;td&#38gt;&#38lt;p;&#38gt;</p&#38gt;&#38lt;/td;&#38gt;&#38lt;/tr&#38gt;&#38lt;tr&#38gt;&#38lt;td&#38gt;&#38lt;b&#38gt;
+         c3800SysNextTrapSeqNum&#38lt;/b&#38gt;&#38lt;/td&#38gt;&#38lt;td&#38gt;%parm[#1]%
+         &#38lt;/td&#38gt;&#38lt;td&#38gt;&#38lt;p;&#38gt;&#38lt;/p&#38gt;&#38lt;/td;&#38gt;&#38lt;/tr&#38gt;&#38lt;tr&#38gt;&#38lt;td&#38gt;&#38lt;b&#38gt;
          sysName&#38lt;/b&#38gt;&#38lt;/td&#38gt;&#38lt;td&#38gt;%parm[#2]%
          &#38lt;/td&#38gt;&#38lt;td&#38gt;&#38lt;p;&#38gt;&#38lt;/p&#38gt;&#38lt;/td;&#38gt;&#38lt;/tr&#38gt;&#38lt;tr&#38gt;&#38lt;td&#38gt;&#38lt;b&#38gt;
          c3800SysTrapSeverity&#38lt;/b&#38gt;&#38lt;/td&#38gt;&#38lt;td&#38gt;%parm[#3]%
@@ -76,7 +76,7 @@ This block consists of <maskelement> tags, and the event will match only if all 
          &#38lt;/td;&#38gt;&#38lt;/tr&#38gt;&#38lt;tr&#38gt;&#38lt;td&#38gt;&#38lt;b&#38gt;
          c3800SysAggregateStatus&#38lt;/b&#38gt;&#38lt;/td&#38gt;&#38lt;td&#38gt;%parm[#4]%
          &#38lt;/td&#38gt;&#38lt;td&#38gt;&#38lt;p;&#38gt;
-         clear(1) minor(2) major(3)</p>
+         clear(1) minor(2) major(3)&#38lt;/p&#38gt;
          &#38lt;/td;&#38gt;&#38lt;/tr&#38gt;&#38lt;/table&#38gt;
   </descr>
   <logmsg dest='logndisplay'><p>Cisco Event: C3900: Node Status has changed.</p></logmsg>
@@ -354,3 +354,10 @@ To configure {page-component-title} to honor `snmpTrapAddress` when present, set
 <1> Set the SNMP trap daemon listening port to `1162/udp`.
 <2> Don't create new nodes when receiving an SNMP trap with an unknown source IP address.
 <3> Try to use the identifier source IP address from the `snmpTrapAddress` varbind instead of the UDP source IP address.
+
+If you are using Minions to receive traps, edit the `$\{MINION_HOME}/etc/org.opennms.netmgt.trapd.cfg` file on each Minion to include the following setting:
+
+[source, properties]
+----
+trapd.useAddressFromVarbind=true
+----

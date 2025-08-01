@@ -3,7 +3,6 @@
 set -euo pipefail
 IFS=$'\n\t'
 
-export ALEC_VERSION="latest"
 export CORTEX_VERSION="latest"
 export VELOCLOUD_VERSION="latest"
 
@@ -13,18 +12,6 @@ mkdir -p "$DEPLOY_FOLDER"
 
 microdnf -y install cpio python3-pip jq
 pip3 install --upgrade cloudsmith-cli 
-
-mkdir ~/test
-cd ~/test || exit
-artifact_urls=$(cloudsmith list packages --query="opennms-alec-plugin version:$ALEC_VERSION format:rpm" opennms/common -F json  | jq -r '.data[].cdn_url')
-for url in $artifact_urls; do 
- curl -sS -L -O "$url"
-done
-rpm2cpio *-alec-plugin*.rpm | cpio -id
-find . -name '*.kar' -exec mv '{}' "$DEPLOY_FOLDER" \;
-
-cd ~/ || exit
-rm -rf test
 
 cd "$DEPLOY_FOLDER" || exit 
 if [ "$CORTEX_VERSION" == "latest" ]

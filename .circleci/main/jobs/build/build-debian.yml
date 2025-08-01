@@ -1,0 +1,41 @@
+jobs:
+  build-debian:
+    executor: build-executor
+    resource_class: large
+    steps:
+      - prep-package-build
+      - run:
+          name: Build Debian Packages
+          command: |
+            export NODE_OPTIONS=--max_old_space_size=1024
+            export CCI_MAXCPU=2
+            export MAVEN_OPTS="-Xmx5g -XX:ReservedCodeCacheSize=1g -XX:+TieredCompilation"
+            export DEBEMAIL="opennms@opennms.org"
+            export DEBFULLNAME="OpenNMS Build Account"
+            .circleci/scripts/makedeb.sh opennms
+            .circleci/scripts/makedeb.sh minion
+            .circleci/scripts/makedeb.sh sentinel
+      - sign-packages/sign-debs:
+          skip_if_forked_pr: true
+          gnupg_home: ~/tmp/gpg
+          gnupg_key: opennms@opennms.org
+          packages: target/debs/*.deb
+      - run:
+          name: Gather system logs
+          when: always
+          command: |
+            mkdir -p ~/build-results/system-logs
+            (dmesg || :) > ~/build-results/system-logs/dmesg 2>&1
+            (ps auxf || :) > ~/build-results/system-logs/ps 2>&1
+            (free -m || :) > ~/build-results/system-logs/free 2>&1
+            (docker stats --no-stream || :) > ~/build-results/system-logs/docker_stats 2>&1
+      - store_artifacts:
+          when: always
+          path: ~/build-results
+          destination: build-results
+      - store_artifacts:
+          path: ~/project/target/debs
+          destination: debs
+      - cache-workflow-assets:
+          cache_prefix: deb
+          source_path: target/debs

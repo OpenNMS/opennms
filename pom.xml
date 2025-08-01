@@ -1,9 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?> <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<!--
+
+    Licensed to The OpenNMS Group, Inc (TOG) under one or more
+    contributor license agreements.  See the LICENSE.md file
+    distributed with this work for additional information
+    regarding copyright ownership.
+
+    TOG licenses this file to You under the GNU Affero General
+    Public License Version 3 (the "License") or (at your option)
+    any later version.  You may not use this file except in
+    compliance with the License.  You may obtain a copy of the
+    License at:
+
+         https://www.gnu.org/licenses/agpl-3.0.txt
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+    either express or implied.  See the License for the specific
+    language governing permissions and limitations under the
+    License.
+
+-->
   <!-- OpenNMS Top-Level POM -->
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>opennms</artifactId>
-  <version>33.0.0-SNAPSHOT</version>
+  <version>34.0.0-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>OpenNMS</name>
   <url>http://opennms.org/</url>
@@ -121,6 +144,11 @@
   </extensions>
   <pluginManagement>
     <plugins>
+      <plugin>
+        <groupId>com.google.code.maven-replacer-plugin</groupId>
+        <artifactId>replacer</artifactId>
+        <version>1.5.3</version>
+      </plugin>
       <plugin>
         <groupId>org.jacoco</groupId>
         <artifactId>jacoco-maven-plugin</artifactId>
@@ -594,7 +622,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>3.3.0</version>
+        <version>3.3.1</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -608,7 +636,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-dependency-plugin</artifactId>
-        <version>3.6.0</version>
+        <version>3.6.1</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -720,7 +748,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>3.6.0</version>
+        <version>3.7.1</version>
         <configuration>
           <overrideUid>0</overrideUid>
           <overrideGid>0</overrideGid>
@@ -730,7 +758,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.3.2</version>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1058,6 +1086,104 @@
         <artifactId>structure-maven-plugin</artifactId>
         <version>1.0</version>
       </plugin>
+      <plugin>
+        <groupId>com.mycila</groupId>
+        <artifactId>license-maven-plugin</artifactId>
+        <version>4.3</version>
+        <configuration>
+          <properties>
+            <owner>The OpenNMS Group, Inc.</owner>
+            <email>license@opennms.com</email>
+          </properties>
+          <licenseSets>
+            <licenseSet>
+              <header>src/main/resources/license-header.txt</header>
+              <!-- some of these excludes are aspirational, for when we expand this beyond the basics 😅 -->
+              <excludes>
+                <!-- short term, let's exclude everything but c/c++/groovy/java/js/ts -->
+                <exclude>**/*.css</exclude>
+                <exclude>**/*.ftl</exclude>
+                <exclude>**/*.groovy</exclude>
+                <exclude>**/*.html</exclude>
+                <exclude>**/*.pl</exclude>
+                <exclude>**/*.properties</exclude>
+                <exclude>**/*.proto</exclude>
+                <exclude>**/*.py</exclude>
+                <exclude>**/*.sh</exclude>
+                <exclude>**/*.txt</exclude>
+                <exclude>**/*.TXT</exclude>
+                <exclude>**/*.vm</exclude>
+                <exclude>**/*.xml</exclude>
+                <exclude>**/*.xsd</exclude>
+                <exclude>**/*.xsl</exclude>
+                <exclude>**/*.yaml</exclude>
+                <exclude>**/*.yml</exclude>
+
+                <!-- other top-level or specific excludes -->
+                <exclude>**/*.adoc</exclude>
+                <exclude>**/*.d.ts</exclude>
+                <exclude>**/*.md</exclude>
+                <exclude>**/pom.xml</exclude>
+                <exclude>**/THIRD-PARTY.properties</exclude>
+                <exclude>.version.txt</exclude>
+                <exclude>maven/**/*</exclude>
+                <exclude>**/static/legacy/**/*</exclude>
+                <exclude>**/lib/3rdparty/**/*</exclude>
+
+                <!-- top-level src/ contents -->
+                <exclude>src/assembly/source.xml</exclude>
+                <exclude>src/main/eclipse/ArsDigita.eclipse_formatter.xml</exclude>
+                <exclude>src/main/eclipse/org.eclipse.jdt.core.prefs</exclude>
+                <exclude>src/main/resources/checkstyle-suppressions.xml</exclude>
+                <exclude>src/main/resources/license-header.txt</exclude>
+                <exclude>src/main/resources/nms_checks.xml</exclude>
+                <exclude>src/site/site.xml</exclude>
+                <exclude>src/test/resources/test-data.sql</exclude>
+
+                <!-- don't need this can o' worms for now -->
+                <exclude>opennms-base-assembly/src/main/filtered/etc</exclude>
+                <exclude>opennms-base-assembly/src/main/resources</exclude>
+
+                <!-- BSD + GPL, see header for details -->
+                <exclude>core/test-api/dns/**/DNSServer.java</exclude>
+
+                <!-- APLv2 -->
+                <exclude>**/BlueprintCamelStateService.java</exclude>
+                <exclude>**/CaffeineDnsCache*.java</exclude>
+                <exclude>**/DroolsStreamUtils.java</exclude>
+                <exclude>**/GWTTerminal/war/**/*</exclude>
+                <exclude>**/Integer32IgnoreTooManyBytes.java</exclude>
+                <exclude>**/KafkaOffsetProvider.java</exclude>
+                <exclude>**/OnmsOSGiBridgeActivator.java</exclude>
+                <exclude>**/container/web/WebAppListener.java</exclude>
+                <exclude>**/hawkular/**/*</exclude>
+                <exclude>**/impl/holtwinters/*</exclude>
+                <exclude>**/osgi/script/*.java</exclude>
+                <exclude>**/vaadin/extender/Constants.java</exclude>
+                <exclude>**/vaadin/extender/VaadinResourceService.java</exclude>
+                <exclude>**/vaadin/extender/internal/Activator.java</exclude>
+                <exclude>**/vaadin/extender/internal/extender/PaxVaadinBundleTracker.java</exclude>
+                <exclude>**/vaadin/extender/internal/servlet/VaadinResourceServlet.java</exclude>
+
+                <!-- Sun CDDL -->
+                <exclude>**/taglibs/standard/lang/**/*</exclude>
+
+                <!-- BSD-style -->
+                <exclude>**/SyslogClient.java</exclude>
+
+                <!-- GPL+EPL (see headers, it's complicated) -->
+                <exclude>**/VmwareCimCollector.java</exclude>
+                <exclude>**/VmwareCimMonitor.java</exclude>
+                <exclude>**/VmwareViJavaAccess.java</exclude>
+                <exclude>**/VmwareViJavaAccessTest.java</exclude>
+
+                <!-- LGPLv3 -->
+                <exclude>**/CustomJRJdtCompiler.java</exclude>
+              </excludes>
+            </licenseSet>
+          </licenseSets>
+        </configuration>
+      </plugin>
     </plugins>
   </pluginManagement>
    <plugins>
@@ -1097,7 +1223,7 @@
                  <version>[3.5,)</version>
                </requireMavenVersion>
                <requireJavaVersion>
-                 <version>[11,18)</version>
+                 <version>[17,18)</version>
                </requireJavaVersion>
              </rules>
            </configuration>
@@ -1135,7 +1261,9 @@
                    <exclude>javax.ws.rs:jsr311-api</exclude>         <!-- use: javax.ws.rs-api -->
                    <exclude>javax.xml.bind:jaxb-api</exclude>        <!-- use: jaxb-dependencies -->
                    <exclude>jdom:jdom</exclude>                      <!-- use: org.apache.servicemix.bundles.jdom -->
+                   <exclude>net.sf.jung:*</exclude>                  <!-- use: org.opennms.dependencies:jung-shaded -->
                    <exclude>log4j:log4j</exclude>                    <!-- use: log4j2 -->
+                   <exclude>nekohtml:nekohtml</exclude>              <!-- use: org.nokogiri:nekohtml -->
                    <exclude>org.apache.geronimo.specs/geronimo-jms_2.0_spec</exclude>   <!-- use: javax.jms:javax.jms-api -->
                    <exclude>org.apache.velocity:velocity</exclude>   <!-- use: org.apache.velocity:velocity-engine-core -->
                    <exclude>org.springframework:*</exclude>          <!-- use: org.apache.servicemix.bundles.spring-* -->
@@ -1245,8 +1373,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>${maven.compiler.plugin.version}</version>
         <configuration>
-          <source>11</source>
-          <target>11</target>
+          <source>17</source>
+          <target>17</target>
           <encoding>UTF-8</encoding>
           <optimize>true</optimize>
         </configuration>
@@ -1298,9 +1426,19 @@
           </systemPropertyVariables>
           <forkCount>1</forkCount>
           <reuseForks>false</reuseForks>
+          <rerunFailingTestsCount>${ci.rerunFailingTestsCount}</rerunFailingTestsCount>
+          <runOrder>alphabetical</runOrder>
+          <shutdown>kill</shutdown>
           <useModulePath>false</useModulePath>
           <forkedProcessExitTimeoutInSeconds>120</forkedProcessExitTimeoutInSeconds>
         </configuration>
+        <dependencies>
+          <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junit5Version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
@@ -1333,6 +1471,13 @@
             </goals>
           </execution>
         </executions>
+        <dependencies>
+          <dependency>
+            <groupId>org.junit.vintage</groupId>
+            <artifactId>junit-vintage-engine</artifactId>
+            <version>${junit5Version}</version>
+          </dependency>
+        </dependencies>
       </plugin>
       <plugin>
           <groupId>org.apache.karaf.tooling</groupId>
@@ -1444,7 +1589,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jxr-plugin</artifactId>
-        <version>3.3.0</version>
+        <version>3.3.1</version>
       </plugin>
 <!--
       <plugin>
@@ -1500,11 +1645,11 @@
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 
     <!-- maven surefire/failsafe version added here so it could be overridden -->
-    <maven.testing.plugin.version>3.2.2</maven.testing.plugin.version>
+    <maven.testing.plugin.version>3.2.5</maven.testing.plugin.version>
 
     <maven.eclipse.plugin.version>2.10</maven.eclipse.plugin.version>
     <maven.javadoc.plugin.version>3.5.0</maven.javadoc.plugin.version>
-    <maven.karaf.plugin.version>4.4.4</maven.karaf.plugin.version>
+    <maven.karaf.plugin.version>4.4.5</maven.karaf.plugin.version>
     <maven.pax.plugin.version>1.6.0</maven.pax.plugin.version>
     <maven.shade.plugin.version>3.5.1</maven.shade.plugin.version>
     <antlr.version>2.7.7</antlr.version>
@@ -1513,7 +1658,7 @@
     <!-- other plugin versions -->
     <maven.antrun.plugin.version>1.8</maven.antrun.plugin.version> <!-- see smoke-test/pom.xml -->
     <maven.compiler.plugin.version>3.11.0</maven.compiler.plugin.version>
-    <maven.install.plugin.version>3.1.1</maven.install.plugin.version>
+    <maven.install.plugin.version>3.1.3</maven.install.plugin.version>
     <maven.resources.plugin.version>3.3.1</maven.resources.plugin.version>
     <maven.bundle.plugin.version>5.1.9</maven.bundle.plugin.version>
 
@@ -1526,13 +1671,15 @@
     <mock.db.driver>org.postgresql.Driver</mock.db.driver>
     <mock.db.url>jdbc:postgresql://localhost:5432/</mock.db.url>
     <mock.db.adminUser>postgres</mock.db.adminUser>
-    <mock.db.adminPassword/>
+    <mock.db.adminPassword>postgres</mock.db.adminPassword>
     <mock.runSnmpTests>false</mock.runSnmpTests>
     <mock.snmpHost>localhost</mock.snmpHost>
+    <product.name>horizon</product.name>
+    <docs.product.version>33</docs.product.version>
     <install.version>${project.version}</install.version>
     <display.version>${install.version}</display.version>
     <opennms.home>${dist.dir}/${dist.name}</opennms.home>
-    <opennms.osgi.version>33.0.0.SNAPSHOT</opennms.osgi.version>
+    <opennms.osgi.version>34.0.0.SNAPSHOT</opennms.osgi.version>
     <root.dir>${project.basedir}</root.dir>
     <dist.dir>${root.dir}/target</dist.dir>
     <dist.name>opennms-${project.version}</dist.name>
@@ -1575,6 +1722,7 @@
     <rpm.database.name>opennms</rpm.database.name>
     <rpm.database.password>opennms</rpm.database.password>
 
+    <testcontainers.version>1.19.6</testcontainers.version>
     <test.keystore>${project.build.directory}/test-keystore.jks</test.keystore>
     <test.storepass>opennms</test.storepass>
     <test.keyalias>opennms-keystore-key</test.keyalias>
@@ -1591,14 +1739,14 @@
     <hawtio.version>2.17.5</hawtio.version>
 
     <!-- dependency versions -->
-    <accessorsSmartVersion>2.4.8</accessorsSmartVersion>
     <antVersion>1.10.13</antVersion>
     <args4jVersion>2.33</args4jVersion>
-    <asmVersion>9.6</asmVersion>
+    <ariesUtilVersion>1.1.3</ariesUtilVersion>
+    <asmVersion>9.7</asmVersion>
     <activemqVersion>5.15.16</activemqVersion>
     <atomikosVersion>3.9.2</atomikosVersion>
     <batikVersion>1.17</batikVersion>
-    <bouncyCastleVersion>1.76</bouncyCastleVersion>
+    <bouncyCastleVersion>1.78.1</bouncyCastleVersion>
     <bsfVersion>2.4.0</bsfVersion>
     <bsonVersion>3.5.0</bsonVersion>
     <caffeineVersion>2.8.0</caffeineVersion>
@@ -1606,34 +1754,41 @@
     <!-- Match (or beat) Newts version -->
     <cassandraVersion>4.17.0</cassandraVersion>
     <cloverVersion>3.2.0</cloverVersion>
-    <commonsBeanutilsVersion>1.9.4</commonsBeanutilsVersion>
-    <commonsCliVersion>1.2</commonsCliVersion>
-    <commonsCodecVersion>1.16.0</commonsCodecVersion>
+    <commonsBeanutilsVersion>1.11.0</commonsBeanutilsVersion>
+    <commonsChainVersion>1.2</commonsChainVersion>
+    <commonsCliVersion>1.7.0</commonsCliVersion>
+    <commonsCodecVersion>1.16.1</commonsCodecVersion>
     <commonsCollectionsVersion>3.2.2</commonsCollectionsVersion>
     <commonsCollections4Version>4.4</commonsCollections4Version>
-    <commonsCompressVersion>1.23.0</commonsCompressVersion>
+    <commonsCompressVersion>1.26.1</commonsCompressVersion>
     <commonsConfigurationVersion>1.10</commonsConfigurationVersion>
     <commonsCsvVersion>1.5</commonsCsvVersion>
+    <commonsDaemonVersion>1.3.4</commonsDaemonVersion>
+    <commonsDbcpVersion>1.4</commonsDbcpVersion>
     <commonsDigesterVersion>2.1</commonsDigesterVersion>
-    <commonsExecVersion>1.2</commonsExecVersion>
+    <commonsExecVersion>1.4.0</commonsExecVersion>
+    <commonsFileuploadVersion>1.5</commonsFileuploadVersion>
     <commonsJexlVersion>2.1.1</commonsJexlVersion>
+    <commonsJexl3Version>3.3</commonsJexl3Version>
     <commonsJxpathVersion>1.3</commonsJxpathVersion>
-    <commonsIoVersion>2.13.0</commonsIoVersion>
+    <commonsIoVersion>2.15.0</commonsIoVersion>
     <commonsLangVersion>2.6</commonsLangVersion>
-    <commonsLang3Version>3.13.0</commonsLang3Version>
+    <commonsLang3Version>3.16.0</commonsLang3Version>
     <commonsMath3Version>3.6.1</commonsMath3Version>
     <commonsNetVersion>3.10.0</commonsNetVersion>
+    <commonsPoolVersion>1.6</commonsPoolVersion>
     <commonsPool2Version>2.4.3</commonsPool2Version>
-    <commonsValidatorVersion>1.7</commonsValidatorVersion>
+    <commonsTextVersion>1.11.0</commonsTextVersion>
+    <commonsValidatorVersion>1.8.0</commonsValidatorVersion>
     <concurrentTreesVersion>2.6.1</concurrentTreesVersion>
     <cronParserCoreVersion>3.5</cronParserCoreVersion>
     <c3p0Version>0.9.5.5</c3p0Version>
-    <curatorVersion>5.5.0</curatorVersion>
-    <curatorTestVersion>5.5.0</curatorTestVersion>
-    <cxfVersion>3.5.5</cxfVersion>
+    <curatorVersion>5.6.0</curatorVersion>
+    <cxfVersion>3.6.6</cxfVersion>
     <cxfXjcVersion>3.3.2</cxfXjcVersion>
     <dhcp4javaVersion>1.1.0</dhcp4javaVersion>
-    <dnsjavaVersion>3.5.2_1</dnsjavaVersion>
+    <serviceMixDnsjavaVersion>3.5.3_1</serviceMixDnsjavaVersion>
+    <dnsjavaVersion>3.6.1</dnsjavaVersion>
     <dom4jVersion>2.1.4</dom4jVersion>
     <dropwizardMetricsVersion>4.2.10</dropwizardMetricsVersion>
     <ecjVersion>4.4.2</ecjVersion>
@@ -1643,10 +1798,12 @@
     <elasticsearchNettyVersion>${netty4Version}</elasticsearchNettyVersion>
     <elasticsearchDriftPluginVersion>2.0.5</elasticsearchDriftPluginVersion>
     <elasticsearchTargetVersion>7.17.9</elasticsearchTargetVersion>
-    <felixConfigadminVersion>1.9.22</felixConfigadminVersion>
+    <elasticsearchClientVersion>8.18.1</elasticsearchClientVersion>
+    <errorProneAnnotationsVersion>2.25.0</errorProneAnnotationsVersion>
+    <esapiVersion>2.5.2.0</esapiVersion>
     <felixBridgeVersion>4.1.6</felixBridgeVersion>
     <felixProxyVersion>3.0.6</felixProxyVersion>
-    <fopVersion>2.9</fopVersion>
+    <fopVersion>2.10</fopVersion>
     <freemarkerVersion>2.3.32</freemarkerVersion>
     <fstVersion>2.57</fstVersion>
     <!-- this has to match FST's direct dependency because we specify it in karaf features -->
@@ -1654,12 +1811,13 @@
     <geohashVersion>1.4.0</geohashVersion>
     <geoipVersion>2.15.0</geoipVersion>
     <geronimoVersion>1.1.1</geronimoVersion>
-    <groovyVersion>3.0.18</groovyVersion>
-    <grpcVersion>1.46.0</grpcVersion>
+    <groovyVersion>3.0.21</groovyVersion>
+    <grpcVersion>1.71.0</grpcVersion>
     <gsonVersion>2.9.1</gsonVersion>
     <guavaVersion>31.1-jre</guavaVersion>
+    <guava32Version>32.1.3-jre</guava32Version>
     <guavaOsgiVersion>31.1</guavaOsgiVersion>
-    <guavagRPCVersion>30.1-jre</guavagRPCVersion>
+    <guavagRPCVersion>33.3.1-jre</guavagRPCVersion>
     <gwtVersion>2.9.0</gwtVersion>
     <gwtPluginVersion>${gwtVersion}</gwtPluginVersion>
     <h2databaseVersion>1.4.197</h2databaseVersion>
@@ -1668,17 +1826,17 @@
     <hibernateAnnotationsVersion>3.2.0.Final</hibernateAnnotationsVersion>
     <hibernateAnnotationsOsgiVersion>3.2.0</hibernateAnnotationsOsgiVersion>
     <hibernateValidatorVersion>4.3.2.Final</hibernateValidatorVersion>
-    <hibernateValidatorAnnotationProcessorVersion>4.1.0.Final</hibernateValidatorAnnotationProcessorVersion>
+    <hibernateValidatorAnnotationProcessorVersion>4.3.2.Final</hibernateValidatorAnnotationProcessorVersion>
     <hikaricpVersion>5.0.1</hikaricpVersion>
     <hllVersion>1.6.0</hllVersion>
     <httpcoreVersion>4.4.16</httpcoreVersion>
     <httpclientVersion>4.5.14</httpclientVersion>
     <httpasyncclientVersion>4.1.5</httpasyncclientVersion>
-    <ipaddressVersion>5.4.0</ipaddressVersion>
+    <ipaddressVersion>5.5.0</ipaddressVersion>
     <jacksonVersion>1.9.14-atlassian-6</jacksonVersion>
-    <jackson2Version>2.14.2</jackson2Version>
+    <jackson2Version>2.16.2</jackson2Version>
     <jmsApiVersion>2.0.1</jmsApiVersion>
-    <snakeyamlVersion>1.33</snakeyamlVersion>
+    <snakeyamlVersion>2.2</snakeyamlVersion>
     <spiflyVersion>1.3.6</spiflyVersion>
     <jacocoVersion>0.8.9</jacocoVersion>
     <jasperreportsVersion>6.20.0</jasperreportsVersion>
@@ -1696,9 +1854,9 @@
     <jcifsVersion>2.1.6</jcifsVersion>
     <jcommonVersion>1.0.24</jcommonVersion>
     <jdom2Version>2.0.6.1</jdom2Version>
-    <jettisonVersion>1.4.1</jettisonVersion>
-    <jettyVersion>9.4.53.v20231009</jettyVersion>
-    <jettyOsgiVersion>9.4.53</jettyOsgiVersion>
+    <jettisonVersion>1.5.4</jettisonVersion>
+    <jettyVersion>9.4.57.v20241219</jettyVersion>
+    <jettyOsgiVersion>9.4.57</jettyOsgiVersion>
     <jestVersion>5.3.4</jestVersion>
     <jestGsonVersion>${gsonVersion}</jestGsonVersion>
     <jfreechartVersion>1.5.4</jfreechartVersion>
@@ -1708,7 +1866,7 @@
     <jldapVersion>4.3</jldapVersion>
     <jmhVersion>1.37</jmhVersion>
     <jmxremote.optional.version>1.0_01-ea</jmxremote.optional.version>
-    <jnaVersion>5.12.1</jnaVersion>
+    <jnaVersion>5.16.0</jnaVersion>
     <jnrVersion>3.1.17</jnrVersion>
     <jodaTimeVersion>2.12.5</jodaTimeVersion>
     <jolokiaVersion>1.7.2</jolokiaVersion>
@@ -1717,11 +1875,13 @@
     <jrrd2Version>2.0.3</jrrd2Version>
     <jrubyVersion>9.2.6.0</jrubyVersion>
     <jschVersion>0.2.11</jschVersion>
-    <jsonVersion>20231013</jsonVersion>
+    <jsonVersion>20240303</jsonVersion>
     <jsonPatchVersion>1.13</jsonPatchVersion>
     <jsonPathVersion>2.8.0</jsonPathVersion>
-    <jsonSmartVersion>2.4.8</jsonSmartVersion>
-    <jsoupVersion>1.7.2</jsoupVersion>
+    <jsonSmartVersion>2.5.0</jsonSmartVersion>
+    <!-- generally tied with json-smart -->
+    <accessorsSmartVersion>2.5.0</accessorsSmartVersion>
+    <jsoupVersion>1.15.3</jsoupVersion>
     <jsonlibVersion>2.4</jsonlibVersion>
     <jsonlibBundleVersion>2.4_1</jsonlibBundleVersion>
     <junit4Version>4.13.2</junit4Version>
@@ -1748,17 +1908,17 @@
     <paxWebVersion>7.3.29</paxWebVersion>
     <slingJohnzonVersion>1.2.16</slingJohnzonVersion>
     <!-- END: versions must match versions provided by embedded Karaf -->
-    <kafkaBundleVersion>3.5.1_1</kafkaBundleVersion>
-    <kafkaVersion>3.6.0</kafkaVersion>
+    <kafkaBundleVersion>3.6.2_1</kafkaBundleVersion>
+    <kafkaVersion>3.6.2</kafkaVersion>
     <kotlinVersion>1.9.10</kotlinVersion>
     <liquibaseVersion>3.6.3</liquibaseVersion>
     <lmaxDisruptorVersion>3.4.4</lmaxDisruptorVersion>
     <log4j2Version>2.21.1</log4j2Version>
-    <logbackClassicVersion>1.2.12</logbackClassicVersion>
+    <logbackClassicVersion>1.2.13</logbackClassicVersion>
     <mapstructVersion>1.5.2.Final</mapstructVersion>
-    <mavenApiVersion>3.9.5</mavenApiVersion>
-    <mavenResolverApiVersion>1.9.15</mavenResolverApiVersion>
-    <minaVersion>2.2.3</minaVersion>
+    <mavenApiVersion>3.9.6</mavenApiVersion>
+    <mavenResolverApiVersion>2.0.1</mavenResolverApiVersion>
+    <minaVersion>2.2.4</minaVersion>
     <mockitoVersion>3.12.4</mockitoVersion>
     <netty3Version>3.10.6.Final</netty3Version>
     <netty4Version>4.1.100.Final</netty4Version>
@@ -1767,25 +1927,29 @@
     <paxCdiVersion>1.1.4</paxCdiVersion>
     <paxExamVersion>4.13.5</paxExamVersion>
     <pktsVersion>3.0.10</pktsVersion>
-    <protobufVersion>3.22.5</protobufVersion>
-    <postgresqlVersion>42.5.4</postgresqlVersion>
+    <protobufVersion>3.25.5</protobufVersion>
+    <postgresqlVersion>42.5.5</postgresqlVersion>
     <powermockVersion>2.0.9</powermockVersion>
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>3.6.0</okioVersion>
-    <opennmsApiVersion>1.6.0</opennmsApiVersion>
-    <opennmsApiVersionOsgi>1.6.0</opennmsApiVersionOsgi>
+    <okhttp3Version>3.10.0</okhttp3Version>
+    <okioGrafanaVersion>1.14.0</okioGrafanaVersion>
+    <openid4javaVersion>0.9.6</openid4javaVersion>
+    <opennmsApiVersion>1.6.1</opennmsApiVersion>
+    <opennmsApiVersionOsgi>1.6.1</opennmsApiVersionOsgi>
     <osgiVersion>7.0.0</osgiVersion>
     <osgiAnnotationVersion>7.0.0</osgiAnnotationVersion>
     <osgiCompendiumVersion>7.0.0</osgiCompendiumVersion>
     <osgiEnterpriseVersion>7.0.0</osgiEnterpriseVersion>
+    <osgiServiceJdbcVersion>1.0.1</osgiServiceJdbcVersion>
     <owaspEncoderVersion>1.2.3</owaspEncoderVersion>
-    <owaspHtmlSanitizerVersion>20170515.1</owaspHtmlSanitizerVersion>
+    <owaspHtmlSanitizerVersion>20211018.2</owaspHtmlSanitizerVersion>
     <osgiJaxRsVersion>1.1.0.ONMS</osgiJaxRsVersion>
     <osMavenPluginVersion>1.7.1</osMavenPluginVersion>
     <opencsvVersion>2.3</opencsvVersion>
     <opentracingVersion>0.32.0</opentracingVersion>
     <jaegertracingVersion>1.8.1</jaegertracingVersion>
-    <pyroscopeVersion>0.11.5</pyroscopeVersion>
+    <pyroscopeVersion>0.13.1</pyroscopeVersion>
     <lz4JavaVersion>1.8.0</lz4JavaVersion>
     <quartzVersion>2.3.2</quartzVersion>
     <rancidApiVersion>2.0.0</rancidApiVersion>
@@ -1804,10 +1968,10 @@
     <sonarVersion>3.9.1.2184</sonarVersion>
     <spiflyVersion>1.3.6</spiflyVersion>
     <spockVersion>2.3-groovy-2.5</spockVersion>
-    <swaggerUIVersion>3.13.0</swaggerUIVersion>
+    <swaggerUIVersion>3.23.11</swaggerUIVersion>
     <swaggerVersion>2.1.12</swaggerVersion>
     <swaggerParserVersion>2.0.33</swaggerParserVersion>
-    <swaggerRequestValidatorVersion>2.39.0</swaggerRequestValidatorVersion>
+    <swaggerRequestValidatorVersion>2.42.0</swaggerRequestValidatorVersion>
     <openapiSchemaValidatorVersion>1.0.7</openapiSchemaValidatorVersion>
     <tape2Version>2.0.0-beta1</tape2Version>
     <trackerVersion>0.7</trackerVersion>
@@ -1816,16 +1980,19 @@
     <vaadinGentyrefVersion>1.2.0.vaadin1</vaadinGentyrefVersion>
     <velocityVersion>2.3</velocityVersion>
     <xalanVersion>2.7.3</xalanVersion>
-    <xalanServicemixVersion>2.7.3_0_ONMS_1</xalanServicemixVersion>
+    <xalanServicemixVersion>2.7.3_3</xalanServicemixVersion>
+    <xalanSerializerServicemixVersion>2.7.3_1</xalanSerializerServicemixVersion>
     <xercesVersion>2.12.2</xercesVersion>
     <xmlApisExtVersion>1.3.04</xmlApisExtVersion>
+    <xmlSchemaVersion>2.3.1</xmlSchemaVersion>
     <xmlgraphicsCommonsVersion>2.9</xmlgraphicsCommonsVersion>
-    <xstreamVersion>1.4.20</xstreamVersion>
+    <xmlsecVersion>2.3.4</xmlsecVersion>
+    <xstreamVersion>1.4.21</xstreamVersion>
     <wsdl4jVersion>1.6.3</wsdl4jVersion>
-    <wsmanVersion>1.2.3</wsmanVersion>
-    <zookeeperVersion>3.5.10</zookeeperVersion>
+    <wsmanVersion>1.3.2</wsmanVersion>
+    <zookeeperVersion>3.7.2</zookeeperVersion>
     <zstdJniVersion>1.5.2-1</zstdJniVersion>
-    <minaSshdVersion>2.11.0</minaSshdVersion>
+    <minaSshdVersion>2.12.1</minaSshdVersion>
     <karafSshdVersion>${karafVersion}.ONMS_1</karafSshdVersion>
 
     <springVersion>4.2.9.RELEASE_1</springVersion>
@@ -1837,9 +2004,10 @@
     <springSecurityVersion>4.2.21.RELEASE_ONMS_3</springSecurityVersion>
     <springLdapVersion>2.3.8.RELEASE</springLdapVersion>
     <springSecurityKerberosVersion>1.0.1.RELEASE_ONMS_3</springSecurityKerberosVersion>
+    <springSecuritySamlVersion>1.0.10.RELEASE</springSecuritySamlVersion>
 
     <!-- moved here from topology features -->
-    <jungVersion>2.0.1</jungVersion>
+    <jungVersion>2.1.1</jungVersion>
     <vaadinVersion>8.14.3</vaadinVersion>
     <!-- Requiring a more recent plugin version which passes the classpath via ENV -->
     <vaadin.plugin.version>${vaadinVersion}</vaadin.plugin.version>
@@ -1851,7 +2019,7 @@
 
     <!-- nodejs development -->
     <frontendPluginVersion>1.14.2</frontendPluginVersion>
-    <nodeVersion>v18.18.2</nodeVersion>
+    <nodeVersion>v18.20.2</nodeVersion>
     <npmVersion>9.8.1</npmVersion>
     <yarnVersion>v1.22.19</yarnVersion>
 
@@ -1863,6 +2031,7 @@
     <!-- CI Settings -->
     <!-- Limit ITs to 30 minutes by default -->
     <test.fork.timeout>1800</test.fork.timeout>
+    <oshi.core.version>6.7.1</oshi.core.version>
   </properties>
 
   <profiles>
@@ -1896,8 +2065,8 @@
       <repositories>
         <!-- Disable snapshots for our own artifacts for release builds -->
         <repository>
-          <id>opennms-ossrh</id>
-          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+          <id>central-portal</id>
+          <url>https://central.sonatype.com/repository/maven-snapshots</url>
           <releases>
             <enabled>true</enabled>
             <updatePolicy>never</updatePolicy>
@@ -1907,6 +2076,32 @@
           </snapshots>
         </repository>
       </repositories>
+    </profile>
+    <profile>
+      <id>sbom</id>
+      <activation>
+        <property>
+          <name>build.sbom</name>
+          <value>true</value>
+        </property>
+      </activation>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.cyclonedx</groupId>
+            <artifactId>cyclonedx-maven-plugin</artifactId>
+            <version>2.7.11</version>
+            <executions>
+              <execution>
+                <phase>package</phase>
+                <goals>
+                  <goal>makeAggregateBom</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
     </profile>
     <profile>
       <id>coverage</id>
@@ -2018,8 +2213,8 @@
           </snapshots>
         </repository>
         <repository>
-          <id>opennms-ossrh</id>
-          <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+          <id>central-portal</id>
+          <url>https://central.sonatype.com/repository/maven-snapshots</url>
           <releases>
             <enabled>false</enabled>
           </releases>
@@ -2223,6 +2418,11 @@
       <build>
         <plugins>
           <plugin>
+            <groupId>com.mycila</groupId>
+            <artifactId>license-maven-plugin</artifactId>
+            <version>4.3</version>
+          </plugin>
+          <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-checkstyle-plugin</artifactId>
             <version>3.3.1</version>
@@ -2245,24 +2445,6 @@
               <consoleOutput>true</consoleOutput>
             </configuration>
             <executions>
-              <execution>
-                <id>check-license</id>
-                <goals>
-                  <goal>check</goal>
-                </goals>
-                <phase>process-resources</phase>
-                <configuration>
-                  <configLocation>${opennms.build.basedir}/src/main/resources/check-license.xml</configLocation>
-                  <suppressionsLocation>${opennms.build.basedir}/src/main/resources/license-suppressions.xml</suppressionsLocation>
-                  <headerLocation>${opennms.build.basedir}/src/main/resources/AGPL-LICENSE.regexp.txt</headerLocation>
-                  <includeResources>false</includeResources>
-                  <includeTestSourceDirectory>true</includeTestSourceDirectory>
-                  <includeTestResources>false</includeTestResources>
-                  <sourceDirectories>${project.build.sourceDirectory}</sourceDirectories>
-                  <failsOnError>false</failsOnError>
-                  <consoleOutput>true</consoleOutput>
-                </configuration>
-              </execution>
               <execution>
                 <id>check-style</id>
                 <goals>
@@ -2514,6 +2696,12 @@
       <dependency>
         <groupId>org.opennms.core.test-api</groupId>
         <artifactId>org.opennms.core.test-api.http</artifactId>
+        <version>${project.version}</version>
+        <scope>test</scope>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.core.test-api</groupId>
+        <artifactId>org.opennms.core.test-api.kafka</artifactId>
         <version>${project.version}</version>
         <scope>test</scope>
       </dependency>
@@ -2948,6 +3136,17 @@
         <artifactId>jasypt-dependencies</artifactId>
         <version>${project.version}</version>
         <type>pom</type>
+      </dependency>
+      <dependency>
+        <groupId>org.opennms.dependencies</groupId>
+        <artifactId>jung-shaded</artifactId>
+        <version>${project.version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>net.sf.jung</groupId>
+            <artifactId>*</artifactId>
+          </exclusion>
+        </exclusions>
       </dependency>
       <dependency>
         <groupId>org.jasypt</groupId>
@@ -3719,7 +3918,7 @@
       <dependency>
         <groupId>org.apache.curator</groupId>
         <artifactId>curator-test</artifactId>
-        <version>${curatorTestVersion}</version>
+        <version>${curatorVersion}</version>
         <exclusions>
           <exclusion>
             <artifactId>log4j</artifactId>
@@ -3794,6 +3993,11 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>org.apache.santuario</groupId>
+        <artifactId>xmlsec</artifactId>
+        <version>${xmlsecVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>bsf</groupId>
         <artifactId>bsf</artifactId>
         <version>2.4.0</version>
@@ -3858,12 +4062,12 @@
       <dependency>
         <groupId>commons-chain</groupId>
         <artifactId>commons-chain</artifactId>
-        <version>1.2</version>
+        <version>${commonsChainVersion}</version>
       </dependency>
       <dependency>
         <groupId>commons-cli</groupId>
         <artifactId>commons-cli</artifactId>
-        <version>1.2</version>
+        <version>${commonsCliVersion}</version>
       </dependency>
       <dependency>
         <groupId>commons-codec</groupId>
@@ -3892,9 +4096,14 @@
         </exclusions>
       </dependency>
       <dependency>
+        <groupId>commons-daemon</groupId>
+        <artifactId>commons-daemon</artifactId>
+        <version>${commonsDaemonVersion}</version>
+      </dependency>
+      <dependency>
         <groupId>commons-dbcp</groupId>
         <artifactId>commons-dbcp</artifactId>
-        <version>1.4</version>
+        <version>${commonsDbcpVersion}</version>
       </dependency>
       <dependency>
         <groupId>commons-digester</groupId>
@@ -3910,7 +4119,12 @@
       <dependency>
         <groupId>org.apache.commons</groupId>
         <artifactId>commons-exec</artifactId>
-        <version>1.3</version>
+        <version>${commonsExecVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>commons-fileupload</groupId>
+        <artifactId>commons-fileupload</artifactId>
+        <version>${commonsFileuploadVersion}</version>
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
@@ -4042,7 +4256,12 @@
       <dependency>
         <groupId>commons-pool</groupId>
         <artifactId>commons-pool</artifactId>
-        <version>1.6</version>
+        <version>${commonsPoolVersion}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
+        <artifactId>commons-text</artifactId>
+        <version>${commonsTextVersion}</version>
       </dependency>
       <dependency>
         <groupId>commons-validator</groupId>
@@ -4129,7 +4348,7 @@
       <dependency>
         <groupId>com.google.errorprone</groupId>
         <artifactId>error_prone_annotations</artifactId>
-        <version>2.18.0</version>
+        <version>${errorProneAnnotationsVersion}</version>
       </dependency>
       <dependency>
         <groupId>com.google.guava</groupId>
@@ -4235,7 +4454,7 @@
       <dependency>
         <groupId>com.opencsv</groupId>
         <artifactId>opencsv</artifactId>
-        <version>5.8</version>
+        <version>5.9</version>
       </dependency>
       <dependency>
         <groupId>net.i2p.crypto</groupId>
@@ -4247,26 +4466,6 @@
         <artifactId>json-lib</artifactId>
         <version>${jsonlibVersion}</version>
         <classifier>jdk15</classifier>
-      </dependency>
-      <dependency>
-        <groupId>net.sf.jung</groupId>
-        <artifactId>jung-api</artifactId>
-        <version>${jungVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>net.sf.jung</groupId>
-        <artifactId>jung-graph-impl</artifactId>
-        <version>${jungVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>net.sf.jung</groupId>
-        <artifactId>jung-algorithms</artifactId>
-        <version>${jungVersion}</version>
-      </dependency>
-      <dependency>
-        <groupId>net.sf.jung</groupId>
-        <artifactId>jung-visualization</artifactId>
-        <version>${jungVersion}</version>
       </dependency>
       <dependency>
         <groupId>net.sf.opencsv</groupId>
@@ -4820,6 +5019,11 @@
         <version>3.0.1</version>
       </dependency>
       <dependency>
+        <groupId>org.nokogiri</groupId>
+        <artifactId>nekohtml</artifactId>
+        <version>1.9.22.noko2</version>
+      </dependency>
+      <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-all</artifactId>
         <version>${netty4Version}</version>
@@ -4842,6 +5046,26 @@
       <dependency>
         <groupId>io.netty</groupId>
         <artifactId>netty-transport</artifactId>
+        <version>${netty4Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport-classes-epoll</artifactId>
+        <version>${netty4Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport-native-epoll</artifactId>
+        <version>${netty4Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport-classes-kqueue</artifactId>
+        <version>${netty4Version}</version>
+      </dependency>
+      <dependency>
+        <groupId>io.netty</groupId>
+        <artifactId>netty-transport-native-kqueue</artifactId>
         <version>${netty4Version}</version>
       </dependency>
       <dependency>
@@ -5200,6 +5424,17 @@
       </dependency>
       <dependency>
         <groupId>org.apache.commons</groupId>
+        <artifactId>commons-jexl3</artifactId>
+        <version>${commonsJexl3Version}</version>
+        <exclusions>
+          <exclusion>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
+        <groupId>org.apache.commons</groupId>
         <artifactId>commons-jexl</artifactId>
         <version>${commonsJexlVersion}</version>
         <exclusions>
@@ -5334,6 +5569,21 @@
         <version>${minaSshdVersion}</version>
       </dependency>
       <dependency>
+        <groupId>org.apache.zookeeper</groupId>
+        <artifactId>zookeeper</artifactId>
+        <version>${zookeeperVersion}</version>
+        <exclusions>
+          <exclusion>
+            <artifactId>log4j</artifactId>
+            <groupId>log4j</groupId>
+          </exclusion>
+          <exclusion>
+            <artifactId>slf4j-log4j12</artifactId>
+            <groupId>org.slf4j</groupId>
+          </exclusion>
+        </exclusions>
+      </dependency>
+      <dependency>
         <groupId>org.xerial.snappy</groupId>
         <artifactId>snappy-java</artifactId>
         <version>${snappyJavaVersion}</version>
@@ -5382,8 +5632,8 @@
       </snapshots>
     </repository>
     <repository>
-      <id>opennms-ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <id>central-portal</id>
+      <url>https://central.sonatype.com/repository/maven-snapshots</url>
       <releases>
         <enabled>false</enabled>
       </releases>
@@ -5394,12 +5644,12 @@
   </repositories>
   <distributionManagement>
     <snapshotRepository>
-      <id>opennms-ossrh</id>
-      <url>https://oss.sonatype.org/content/repositories/snapshots/</url>
+      <id>central-portal</id>
+      <url>https://central.sonatype.com/repository/maven-snapshots</url>
     </snapshotRepository>
     <repository>
-      <id>opennms-ossrh</id>
-      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
+      <id>central-portal</id>
+      <url>https://central.sonatype.com/repository/maven-releases</url>
     </repository>
   </distributionManagement>
 </project>

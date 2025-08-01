@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2017-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.collection.persistence.tcp;
 
 import static org.awaitility.Awaitility.await;
@@ -41,22 +34,8 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.jboss.netty.bootstrap.ServerBootstrap;
-import org.jboss.netty.channel.Channel;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelHandlerContext;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.ExceptionEvent;
-import org.jboss.netty.channel.MessageEvent;
-import org.jboss.netty.channel.SimpleChannelHandler;
-import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
-import org.jboss.netty.handler.codec.protobuf.ProtobufDecoder;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.ClassRule;
-import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
@@ -77,8 +56,16 @@ import org.opennms.netmgt.rrd.tcp.PerformanceDataProtos.PerformanceDataReadings;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import com.google.protobuf.InvalidProtocolBufferException;
-import org.awaitility.core.ConditionTimeoutException;
+import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
+import io.netty.channel.ChannelHandlerContext;
+import io.netty.channel.ChannelInboundHandlerAdapter;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioServerSocketChannel;
+import io.netty.handler.codec.protobuf.ProtobufDecoder;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -99,18 +86,22 @@ public class TcpOutputStrategyTest {
     public static void setUpClass() {
         // Setup a quick Netty TCP server that decodes the protobuf messages
         // and appends these to a list when received
-        ChannelFactory factory = new NioServerSocketChannelFactory();
-        ServerBootstrap bootstrap = new ServerBootstrap(factory);
-        bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
-            public ChannelPipeline getPipeline() {
-                return Channels.pipeline(
-                        new ProtobufDecoder(PerformanceDataReadings.getDefaultInstance()),
-                        new PerfDataServerHandler());
-            }
-        });
-        bootstrap.setOption("reuseAddress", true);
-        Channel channel = bootstrap.bind(new InetSocketAddress(0));
-        InetSocketAddress addr = (InetSocketAddress)channel.getLocalAddress();
+        EventLoopGroup bossLoopGroup = new NioEventLoopGroup();
+        EventLoopGroup workerLoopGroup = new NioEventLoopGroup();
+
+        ServerBootstrap bootstrap = new ServerBootstrap();
+        bootstrap.group(bossLoopGroup, workerLoopGroup)
+                .childOption(ChannelOption.SO_REUSEADDR, true)
+                .channel(NioServerSocketChannel.class)
+                        .childHandler(new ChannelInitializer<>() {
+                            @Override
+                            protected void initChannel(Channel channel) throws Exception {
+                                channel.pipeline().addLast(new ProtobufDecoder(PerformanceDataReadings.getDefaultInstance())).addLast(new PerfDataServerHandler());
+                            }
+                        });
+
+        Channel channel = bootstrap.bind(new InetSocketAddress(0)).syncUninterruptibly().channel();
+        InetSocketAddress addr = (InetSocketAddress)channel.localAddress();
 
         // Point the TCP exporter to our server
         System.setProperty("org.opennms.rrd.tcp.host", addr.getHostString());
@@ -121,10 +112,11 @@ public class TcpOutputStrategyTest {
         System.setProperty("rrd.base.dir", tempFolder.getRoot().getAbsolutePath());
     }
 
-    public static class PerfDataServerHandler extends SimpleChannelHandler {
+    public static class PerfDataServerHandler extends ChannelInboundHandlerAdapter {
+
         @Override
-        public void messageReceived(ChannelHandlerContext ctx, MessageEvent e) {
-            allReadings.add((PerformanceDataReadings) e.getMessage());
+        public void channelRead(ChannelHandlerContext ctx, Object obj) {
+            allReadings.add((PerformanceDataReadings) obj);
         }
     }
 

@@ -1,12 +1,34 @@
+#
+# Licensed to The OpenNMS Group, Inc (TOG) under one or more
+# contributor license agreements.  See the LICENSE.md file
+# distributed with this work for additional information
+# regarding copyright ownership.
+#
+# TOG licenses this file to You under the GNU Affero General
+# Public License Version 3 (the "License") or (at your option)
+# any later version.  You may not use this file except in
+# compliance with the License.  You may obtain a copy of the
+# License at:
+#
+#      https://www.gnu.org/licenses/agpl-3.0.txt
+#
+# Unless required by applicable law or agreed to in writing,
+# software distributed under the License is distributed on an
+# "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+# either express or implied.  See the License for the specific
+# language governing permissions and limitations under the
+# License.
+#
+
 ##
 # Pre-stage image to extract and manipulate Minion directory structure
 # Normally we install to /opt/minion and not /opt/minion-XX.X.X-SNAPSHOT
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
 # as additional layers into the final image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.2.0.b247-jre-17"
+ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.6.0.b293-jre-17"
 
-FROM ${BASE_IMAGE} as minion-base
+FROM ${BASE_IMAGE} AS minion-base
 
 ADD --chown=10001:0 ./tarball-root/ /opt/minion/
 RUN rm /opt/minion/etc/org.opennms.features.telemetry.listeners-single-port-flows.cfg
@@ -27,7 +49,7 @@ RUN chmod -R g-w /opt/minion && \
 ##
 # Download plugins
 ##
-FROM ${BASE_IMAGE} as minion-plugins
+FROM ${BASE_IMAGE} AS minion-plugins
 
 COPY plugins.sh /tmp/plugins.sh 
 RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
@@ -66,6 +88,9 @@ RUN setcap cap_net_raw+ep $(readlink -f /usr/bin/java)
 # Install entrypoint wrapper and health check script
 COPY container-fs/entrypoint.sh /
 COPY container-fs/health.sh /
+
+# Install a default JMX Prometheus configuration
+COPY container-fs/prom-jmx-default-config.yaml /opt/prom-jmx-exporter/config.yaml
 
 # If you copy from /opt/minion to /opt/minion the permissions are not preserved
 # We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion

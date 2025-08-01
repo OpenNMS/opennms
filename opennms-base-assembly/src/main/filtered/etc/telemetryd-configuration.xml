@@ -58,7 +58,7 @@
     <listener name="Netflow-5-UDP-8877" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="false">
         <parameter key="port" value="8877"/>
 
-        <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser" queue="Netflow-5" />
+        <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser" queue="Netflow-5"/>
     </listener>
 
     <queue name="Netflow-5">
@@ -75,13 +75,26 @@
                 </rrd>
             </package>
         </adapter>
+
+        <adapter name="Netflow-5-Telemetry" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow5.Netflow5TelemetryAdapter" enabled="false">
+            <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/netflow-telemetry.groovy"/>
+            <package name="Netflow-5-Default">
+                <rrd step="300">
+                    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+                    <rra>RRA:AVERAGE:0.5:288:366</rra>
+                    <rra>RRA:MAX:0.5:288:366</rra>
+                    <rra>RRA:MIN:0.5:288:366</rra>
+                </rrd>
+            </package>
+        </adapter>
     </queue>
 
     <!-- Netflow v9 listener & adapters -->
     <listener name="Netflow-9-UDP-4729" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="false">
         <parameter key="port" value="4729"/>
 
-        <parser name="Netflow-9-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser" queue="Netflow-9" />
+        <parser name="Netflow-9-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser" queue="Netflow-9"/>
     </listener>
 
     <queue name="Netflow-9">
@@ -98,25 +111,51 @@
                 </rrd>
             </package>
         </adapter>
+
+        <adapter name="Netflow-9-Telemetry" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.netflow9.Netflow9TelemetryAdapter" enabled="false">
+            <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/netflow-telemetry.groovy"/>
+            <package name="Netflow-9-Default">
+                <rrd step="300">
+                    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+                    <rra>RRA:AVERAGE:0.5:288:366</rra>
+                    <rra>RRA:MAX:0.5:288:366</rra>
+                    <rra>RRA:MIN:0.5:288:366</rra>
+                </rrd>
+            </package>
+        </adapter>
     </queue>
 
     <!-- IPFIX listener & adapters -->
     <listener name="IPFIX-UDP-4730" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="false">
         <parameter key="port" value="4730"/>
 
-        <parser name="IPFIX-UDP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser" queue="IPFIX" />
+        <parser name="IPFIX-UDP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser" queue="IPFIX"/>
     </listener>
 
     <listener name="IPFIX-TCP-4730" class-name="org.opennms.netmgt.telemetry.listeners.TcpListener" enabled="false">
         <parameter key="port" value="4730"/>
 
-        <parser name="IPFIX-TCP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixTcpParser" queue="IPFIX" />
+        <parser name="IPFIX-TCP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixTcpParser" queue="IPFIX"/>
     </listener>
 
     <queue name="IPFIX">
         <adapter name="IPFIX-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixAdapter" enabled="true">
             <parameter key="applicationDataCollection" value="false"/>
             <parameter key="applicationThresholding" value="false"/>
+            <package name="IPFIX-Default">
+                <rrd step="300">
+                    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+                    <rra>RRA:AVERAGE:0.5:288:366</rra>
+                    <rra>RRA:MAX:0.5:288:366</rra>
+                    <rra>RRA:MIN:0.5:288:366</rra>
+                </rrd>
+            </package>
+        </adapter>
+
+        <adapter name="IPFIX-Telemetry" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixTelemetryAdapter" enabled="false">
+            <parameter key="script" value="${install.dir}/etc/telemetryd-adapters/netflow-telemetry.groovy"/>
             <package name="IPFIX-Default">
                 <rrd step="300">
                     <rra>RRA:AVERAGE:0.5:1:2016</rra>
@@ -170,9 +209,12 @@
     <listener name="Multi-UDP-9999" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="true">
         <parameter key="port" value="9999"/>
 
-        <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser" queue="Netflow-5" />
-        <parser name="Netflow-9-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser" queue="Netflow-9" />
-        <parser name="IPFIX-TCP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser" queue="IPFIX" />
+        <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser" queue="Netflow-5"/>
+
+        <parser name="Netflow-9-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser" queue="Netflow-9"/>
+
+        <parser name="IPFIX-UDP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser" queue="IPFIX"/>
+
         <parser name="SFlow-Parser" class-name="org.opennms.netmgt.telemetry.protocols.sflow.parser.SFlowUdpParser" queue="SFlow" />
     </listener>
 

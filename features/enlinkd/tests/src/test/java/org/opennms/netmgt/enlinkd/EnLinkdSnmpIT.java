@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.enlinkd;
 
 import static org.junit.Assert.assertEquals;
@@ -96,7 +89,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
 import org.junit.Before;
@@ -150,6 +142,7 @@ import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocalTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.LldpSnmpUtils;
 import org.opennms.netmgt.enlinkd.snmp.MtxrLldpRemTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.MtxrNeighborTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.OspfAreaTableTracker;
@@ -189,13 +182,8 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
     }
 
     @Before
-    public void setUp() throws Exception {
-        Properties p = new Properties();
-        p.setProperty("log4j.logger.org.opennms.mock.snmp", "WARN");
-        p.setProperty("log4j.logger.org.opennms.netmgt.snmp", "WARN");
-        p.setProperty("log4j.logger.org.springframework","WARN");
-        p.setProperty("log4j.logger.com.mchange.v2.resourcepool", "WARN");
-        MockLogAppender.setupLogging(p);
+    public void setUp() {
+        MockLogAppender.setupLogging(true, "DEBUG");
     }
 
     @Test
@@ -236,12 +224,12 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             LOG.error("run: Ospf Area Table collection interrupted, exiting",e);
             return;
         }
-        assertEquals(areas.get(0).getOspfAreaId(), InetAddress.getByName("0.0.0.0"));
-        assertEquals(areas.get(0).getOspfAuthType().intValue(), 0);
-        assertEquals(areas.get(0).getOspfImportAsExtern().intValue(), 1);
-        assertEquals(areas.get(0).getOspfAreaBdrRtrCount().intValue(), 4);
-        assertEquals(areas.get(0).getOspfAsBdrRtrCount().intValue(), 2);
-        assertEquals(areas.get(0).getOspfAreaLsaCount().intValue(), 43);
+        assertEquals(InetAddress.getByName("0.0.0.0"),areas.get(0).getOspfAreaId());
+        assertEquals(0, areas.get(0).getOspfAuthType().intValue());
+        assertEquals(1, areas.get(0).getOspfImportAsExtern().intValue());
+        assertEquals(4, areas.get(0).getOspfAreaBdrRtrCount().intValue());
+        assertEquals(2, areas.get(0).getOspfAsBdrRtrCount().intValue());
+        assertEquals(43, areas.get(0).getOspfAreaLsaCount().intValue());
     }
 
     @Test
@@ -426,7 +414,8 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
 					assertEquals(InetAddress.getByName("192.168.100.249"), link.getOspfRemRouterId());
 	        		assertEquals(InetAddress.getByName("192.168.100.245"), link.getOspfRemIpAddr());
 				} catch (UnknownHostException e) {
-					e.printStackTrace();
+                    LOG.error("testOspfNbrTableWalk: {}", e.getMessage(),e);
+                    fail();
 				}
         		assertEquals(0, link.getOspfRemAddressLessIndex().intValue());
         	}
@@ -556,7 +545,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         List<SnmpValue> val = lldpLocPort.get(1);
         assertEquals(3, val.size());
         assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, LldpPortIdSubType.get(val.get(0).toInt()));
-        assertEquals("cf", LldpRemTableTracker.decodeLldpPortId(val.get(0).toInt(), val.get(1)));
+        assertEquals("cf", LldpSnmpUtils.decodeLldpPortId(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS, val.get(1)));
         assertEquals("NuDesign", val.get(2).toDisplayString());
     }
 
@@ -846,12 +835,12 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         }
 
         LldpElement lldpElement05 = lldpLocalGroup05.getLldpElement();
-        LOG.warn("local chassis type: " + LldpChassisIdSubType.getTypeString(lldpElement05.getLldpChassisIdSubType().getValue()));
-        LOG.warn("local chassis id: " + lldpElement05.getLldpChassisId());
-        LOG.warn("local sysname: " + lldpElement05.getLldpSysname());
-        LOG.warn("local chassis type: " + LldpChassisIdSubType.getTypeString(lldpElement05.getLldpChassisIdSubType().getValue()));
-        LOG.warn("local chassis id: " + lldpElement05.getLldpChassisId());
-        LOG.warn("local sysname: " + lldpElement05.getLldpSysname());
+        LOG.warn("local chassis type: {}", LldpChassisIdSubType.getTypeString(lldpElement05.getLldpChassisIdSubType().getValue()));
+        LOG.warn("local chassis id: {}", lldpElement05.getLldpChassisId());
+        LOG.warn("local sysname: {}", lldpElement05.getLldpSysname());
+        LOG.warn("local chassis type: {}", LldpChassisIdSubType.getTypeString(lldpElement05.getLldpChassisIdSubType().getValue()));
+        LOG.warn("local chassis id: {}", lldpElement05.getLldpChassisId());
+        LOG.warn("local sysname: {}", lldpElement05.getLldpSysname());
 
         assertEquals(srv005_LLDP_ID, lldpElement05.getLldpChassisId());
         assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, lldpElement05.getLldpChassisIdSubType());
@@ -1092,7 +1081,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
                 assertNotNull(row.getMtxrNeighborIndex());
                 Integer mtxrIndex = mtxrNeighborMap01.get(row.getMtxrNeighborIndex());
                 assertEquals(1, mtxrIndex.intValue());
-                LldpLink link = LldpLocalTableTracker.getLldpLink(row, mtxrIndex, mtxrLldpLocalPortMap01);
+                LldpLink link = LldpSnmpUtils.getLldpLink(row, mtxrIndex, mtxrLldpLocalPortMap01);
                 assertEquals("ether1",link.getLldpPortId());
                 assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, link.getLldpPortIdSubType());
                 assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
@@ -1235,7 +1224,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             assertNotNull(row.getMtxrNeighborIndex());
             Integer mtxrIndex = mtxrNeighborMap02.get(row.getMtxrNeighborIndex());
             assertEquals(1, mtxrIndex.intValue());
-            LldpLink link = LldpLocalTableTracker.getLldpLink(row,mtxrIndex, mtxrLldpLocalPortMap02);
+            LldpLink link = LldpSnmpUtils.getLldpLink(row,mtxrIndex, mtxrLldpLocalPortMap02);
             assertEquals("ether1", link.getLldpPortId());
             assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, link.getLldpPortIdSubType());
             assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
@@ -1379,7 +1368,7 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
             assertNotNull(row.getMtxrNeighborIndex());
             Integer mtxrIndex = mtxrNeighborMap03.get(row.getMtxrNeighborIndex());
             assertNotNull(mtxrIndex);
-            LldpLink link = LldpLocalTableTracker.getLldpLink(row,mtxrIndex, mtxrLldpLocalPortMap03);
+            LldpLink link = LldpSnmpUtils.getLldpLink(row,mtxrIndex, mtxrLldpLocalPortMap03);
             assertNotNull(link.getLldpPortId());
             assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, link.getLldpPortIdSubType());
             assertEquals(LldpChassisIdSubType.LLDP_CHASSISID_SUBTYPE_MACADDRESS, link.getLldpRemChassisIdSubType());
@@ -1438,13 +1427,13 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         List<SnmpValue> val = lldpLocPort.get(9);
         assertEquals(3, val.size());
         assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, LldpPortIdSubType.get(val.get(0).toInt()));
-        assertEquals("Gi0/9", LldpRemTableTracker.decodeLldpPortId(val.get(0).toInt(), val.get(1)));
+        assertEquals("Gi0/9", LldpSnmpUtils.decodeLldpPortId(LldpPortIdSubType.get(val.get(0).toInt()), val.get(1)));
         assertEquals("GigabitEthernet0/9", val.get(2).toDisplayString());
 
         val = lldpLocPort.get(10);
         assertEquals(3, val.size());
         assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, LldpPortIdSubType.get(val.get(0).toInt()));
-        assertEquals("Gi0/10", LldpRemTableTracker.decodeLldpPortId(val.get(0).toInt(), val.get(1)));
+        assertEquals("Gi0/10", LldpSnmpUtils.decodeLldpPortId(LldpPortIdSubType.get(val.get(0).toInt()), val.get(1)));
         assertEquals("GigabitEthernet0/10", val.get(2).toDisplayString());
 
     }
@@ -1461,13 +1450,13 @@ public class EnLinkdSnmpIT extends NmsNetworkBuilder implements InitializingBean
         List<SnmpValue> val = lldpLocPort.get(1);
         assertEquals(3, val.size());
         assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, LldpPortIdSubType.get(val.get(0).toInt()));
-        assertEquals("Gi0/1", LldpRemTableTracker.decodeLldpPortId(val.get(0).toInt(), val.get(1)));
+        assertEquals("Gi0/1", LldpSnmpUtils.decodeLldpPortId(LldpPortIdSubType.get(val.get(0).toInt()), val.get(1)));
         assertEquals("GigabitEthernet0/1", val.get(2).toDisplayString());
 
         val = lldpLocPort.get(2);
         assertEquals(3, val.size());
         assertEquals(LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME, LldpPortIdSubType.get(val.get(0).toInt()));
-        assertEquals("Gi0/2", LldpRemTableTracker.decodeLldpPortId(val.get(0).toInt(), val.get(1)));
+        assertEquals("Gi0/2", LldpSnmpUtils.decodeLldpPortId(LldpPortIdSubType.get(val.get(0).toInt()), val.get(1)));
         assertEquals("GigabitEthernet0/2", val.get(2).toDisplayString());
 
     }

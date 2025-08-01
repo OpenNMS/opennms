@@ -35,7 +35,7 @@ esac
 
 echo "* validating copyright display"
 CURRENT_YEAR="$(date '+%Y')"
-JSP_COUNT="$(grep -c "2002-${CURRENT_YEAR}" opennms-webapp/src/main/webapp/{about,includes}/*.jsp | grep -c -v -E ':0$' || :)"
+JSP_COUNT="$(grep -c "1999-${CURRENT_YEAR}" opennms-webapp/src/main/webapp/{about,includes}/*.jsp | grep -c -v -E ':0$' || :)"
 if [ "${JSP_COUNT}" -eq 0 ]; then
   echo "  WARNING: JSP files in opennms-webapp/src/main/webapp/about and opennms-webapp/src/main/webapp/includes are missing ${CURRENT_YEAR} in their copyright notices."
   FAILED=1

@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>33.0.0-SNAPSHOT</version>
+    <version>34.0.0-SNAPSHOT</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
   <artifactId>opennms-full-assembly</artifactId>
@@ -351,7 +351,6 @@
                 <feature>dnsjava</feature>
                 <feature>dropwizard-metrics</feature>
                 <feature>fop</feature>
-                <feature>guava17</feature>
                 <feature>guava</feature>
                 <feature>hibernate36</feature>
                 <feature>hibernate-validator4</feature>
@@ -392,6 +391,8 @@
                 <feature>opennms-javamail</feature>
                 <feature>opennms-kafka-producer</feature>
                 <feature>opennms-kafka-consumer</feature>
+                <feature>opennms-grpc-exporter</feature>
+                <feature>opennms-zenith-connect</feature>
                 <feature>opennms-model</feature>
                 <feature>opennms-measurements-shell</feature>
                 <feature>opennms-notifications-shell</feature>
@@ -503,9 +504,11 @@
                 <feature>opennms-config-management-osgi-del</feature>
                 <feature>opennms-config-management-osgi-cm</feature>
                 <feature>opennms-scv-rest</feature>
+
                 <!-- Include the OpenNMS Minion features produced by container/features/pom.xml -->
                 <feature>minion-core-api</feature>
                 <feature>opennms-dao-minion</feature>
+
                 <!-- Lots of deviceconfig features -->
                 <feature>opennms-deviceconfig-rest</feature>
                 <feature>opennms-deviceconfig-sink</feature>
@@ -516,6 +519,8 @@
                 
                 <feature>inmemory-timeseries-plugin</feature>
 
+                <!-- pulled in by a transient dependency, so be sure we get our newer one -->
+                <feature>zookeeper-dependencies</feature>
               </features>
               <repository>${project.build.directory}/opennms-repo</repository>
             </configuration>
@@ -1033,6 +1038,11 @@
     <dependency>
       <groupId>org.opennms.features.ticketing</groupId>
       <artifactId>org.opennms.features.ticketing.inmemory</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.elastic</groupId>
+      <artifactId>org.opennms.features.elastic.client</artifactId>
       <version>${project.version}</version>
     </dependency>
 

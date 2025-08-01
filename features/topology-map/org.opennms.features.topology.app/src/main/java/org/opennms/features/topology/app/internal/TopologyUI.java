@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.features.topology.app.internal;
 
 import static org.opennms.features.topology.api.support.hops.CriteriaUtils.getWrappedVertexHopCriteria;
@@ -142,12 +135,13 @@ import com.vaadin.v7.ui.VerticalLayout;
 @Theme("topo_default")
 @Title("OpenNMS Topology Map")
 @PreserveOnRefresh
-public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHandler, WidgetUpdateListener, WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener, VertexUpdateListener, SelectionListener, VerticesUpdateManager.VerticesUpdateListener {
+public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHandler, WidgetUpdateListener,
+        WidgetContext, UriFragmentChangedListener, GraphContainer.ChangeListener, MapViewManagerListener,
+        VertexUpdateListener, SelectionListener, VerticesUpdateManager.VerticesUpdateListener {
 
     private class DynamicUpdateRefresher implements UIEvents.PollListener {
         private final Object lockObject = new Object();
         private boolean m_refreshInProgress = false;
-
 
         @Override
         public void poll(UIEvents.PollEvent pollEvent) {
@@ -211,15 +205,18 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
         private boolean loadLayer(VaadinRequest request) {
             final String layerNamespace = request.getParameter(TopologyLinkBuilder.PARAMETER_LAYER_NAMESPACE);
+
             if (layerNamespace != null) {
                 if (!Objects.equals(m_graphContainer.getTopologyServiceClient().getNamespace(), layerNamespace)) {
                     final GraphProvider layerProvider = m_graphContainer.getTopologyServiceClient().getGraphProviderBy(layerNamespace);
+
                     if (layerProvider != null) {
                         m_graphContainer.selectTopologyProvider(layerProvider, Callbacks.applyDefaults());
                         return true;
                     }
                 }
             }
+
             return false;
         }
 
@@ -236,6 +233,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                     updateURL = true;
                 }
             }
+
             // we redo the layout before we save the history
             m_graphContainer.redoLayout();
             m_topologyComponent.getState().setPhysicalWidth(0);
@@ -273,9 +271,11 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
         private boolean executeOperationWithLabel(String operationLabel) {
             final CheckedOperation operation = m_operationManager.findOperationByLabel(operationLabel);
+
             if (operation != null) {
                 final DefaultOperationContext operationContext = new DefaultOperationContext(TopologyUI.this, m_graphContainer, DisplayLocation.MENUBAR);
                 final List<VertexRef> targets = Collections.<VertexRef>emptyList();
+
                 // CheckedOperations may toggle its state when execute is invoked.
                 // We do not execute if already checked, as this would disable an already checked operation.
                 if (!operation.isChecked(targets, operationContext)) {
@@ -283,20 +283,24 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                     return true;
                 }
             }
+
             return false;
         }
 
         private boolean loadHistoryFragment(VaadinRequest request) {
             String fragment = request.getParameter(PARAMETER_HISTORY_FRAGMENT);
+
             if (!Strings.isNullOrEmpty(fragment) && getPage() != null) {
                 applyHistory(m_applicationContext.getUsername(), fragment);
                 return true;
             }
+
             return false;
         }
 
         private boolean loadSemanticZoomLevel(VaadinRequest request) {
             String szl = request.getParameter(TopologyLinkBuilder.PARAMETER_SEMANTIC_ZOOM_LEVEL);
+
             if (szl != null) {
                 try {
                     m_graphContainer.setSemanticZoomLevel(Integer.parseInt(szl));
@@ -305,27 +309,33 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                     LOG.warn("Invalid SZL found in {} parameter: {}", TopologyLinkBuilder.PARAMETER_SEMANTIC_ZOOM_LEVEL, szl);
                 }
             }
+
             return false;
         }
 
         private boolean loadVertexHopCriteria(VaadinRequest request) {
             final String nodeIds = request.getParameter(PARAMETER_FOCUS_NODES);
             String vertexIdInFocus = request.getParameter(TopologyLinkBuilder.PARAMETER_FOCUS_VERTICES);
+
             if (nodeIds != null && vertexIdInFocus != null) {
                 LOG.warn("Usage of parameter '{1}' and '{2}'. This is not supported. Skipping parameter '{2}'", PARAMETER_FOCUS_NODES, TopologyLinkBuilder.PARAMETER_FOCUS_VERTICES);
             }
+
             if (nodeIds != null) {
                 LOG.warn("Usage of deprecated parameter '{}'. Please use '{}' instead.", PARAMETER_FOCUS_NODES, TopologyLinkBuilder.PARAMETER_FOCUS_VERTICES);
                 vertexIdInFocus = nodeIds;
             }
+
             if (vertexIdInFocus != null) {
                 // Build the VertexRef elements
                 final TreeSet<VertexRef> refs = new TreeSet<>();
+
                 for (String vertexId : vertexIdInFocus.split(",")) {
                     String namespace = m_graphContainer.getTopologyServiceClient().getNamespace();
                     Vertex vertex = m_graphContainer.getTopologyServiceClient().getVertex(namespace, vertexId);
+
                     if (vertex == null) {
-                        LOG.warn("Vertex with namespace {} and id {} do not exist in the selected Graph Provider {}",
+                        LOG.warn("Vertex with namespace {} and id {} does not exist in the selected Graph Provider {}",
                                 namespace, vertexId, m_graphContainer.getTopologyServiceClient().getClass().getSimpleName());
                     } else {
                         refs.add(vertex);
@@ -333,13 +343,16 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                 }
                 // We have to update the vertices in focus (in our case only nodes) only if the focus has changed
                 VertexHopCriteria criteria = CriteriaUtils.getWrappedVertexHopCriteria(m_graphContainer);
+
                 if (!criteria.getVertices().equals(refs)) {
                     m_graphContainer.clearCriteria();
                     refs.forEach(vertexRef -> m_graphContainer.addCriteria(new DefaultVertexHopCriteria(vertexRef)));
                     m_graphContainer.setSemanticZoomLevel(1);
                 }
+
                 return true;
             }
+
             return false;
         }
     }
@@ -417,6 +430,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         private Component wrap(Component component, String title, String id) {
             Label label = new Label();
             label.addStyleName("info-panel-item-label");
+
             if (title != null) {
                 label.setValue(title);
             }
@@ -426,9 +440,11 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
             layout.addComponent(label);
             layout.addComponent(component);
             layout.setMargin(true);
+
             if (id != null) {
                 layout.setId(id);
             }
+
             return layout;
         }
 
@@ -436,6 +452,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
             final List<InfoPanelItemProvider> infoPanelItemProviders = findInfoPanelItems();
             infoPanelItemProviders.add(selectionContextPanelItem); // manually add this, as it is not exposed via osgi
             infoPanelItemProviders.add(topologyProviderInfoPanelItem); // same here
+
             return m_transactionOperations.execute(ts -> {
                 return infoPanelItemProviders.stream()
                                              .flatMap(provider -> {
@@ -524,7 +541,9 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     private TransactionOperations m_transactionOperations;
     private final LayoutManager m_layoutManager;
 
-    public TopologyUI(OperationManager operationManager, HistoryManager historyManager, GraphContainer graphContainer, IconRepositoryManager iconRepoManager, LayoutManager layoutManager, TransactionOperations transactionOperations) {
+    public TopologyUI(OperationManager operationManager, HistoryManager historyManager,
+                      GraphContainer graphContainer, IconRepositoryManager iconRepoManager,
+                      LayoutManager layoutManager, TransactionOperations transactionOperations) {
         // Ensure that selection changes trigger a history save operation
         m_operationManager = operationManager;
         m_historyManager = historyManager;
@@ -636,7 +655,8 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
     private boolean noAdditionalFocusCriteria() {
         Criteria[] crits = m_graphContainer.getCriteria();
-        for(Criteria criteria : crits){
+
+        for (Criteria criteria : crits){
             if (criteria instanceof CategoryHopCriteria) {
                 return false;
             }
@@ -669,6 +689,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
             @Override
             public void error(com.vaadin.server.ErrorEvent event) {
                 Throwable t = findNoSuchProviderException(event.getThrowable());
+
                 if (t instanceof NoSuchProviderException) {
                     final NoSuchProviderException exception = (NoSuchProviderException) t;
                     LOG.warn("Access to a graph/meta topology provider was made, which does not exist anymore: The error message was: {} Don't worry, I know what to do.", exception.getMessage());
@@ -743,11 +764,12 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         m_menuBar = new TopologyMenuBar();
         m_contextMenu = new TopologyContextMenu(getUI());
         updateMenu();
-        if(m_widgetManager.widgetCount() != 0) {
+        if (m_widgetManager.widgetCount() != 0) {
             updateWidgetView(m_widgetManager);
-        }else {
+        } else {
             m_layout.addComponent(m_mapLayout);
         }
+
         // Set expand ratio so that extra space is not allocated to this vertical component
         if (m_showHeader) {
             m_rootLayout.addComponent(m_menuBar, 1);
@@ -882,7 +904,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     private void updateWidgetView(WidgetManager widgetManager) {
         synchronized (m_layout) {
             m_layout.removeAllComponents();
-            if(widgetManager.widgetCount() == 0) {
+            if (widgetManager.widgetCount() == 0) {
                 m_layout.addComponent(m_mapLayout);
             } else {
                 VerticalSplitPanel bottomLayoutBar = new VerticalSplitPanel();
@@ -900,6 +922,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
                         }
                     }
                 });
+
                 m_layout.addComponent(bottomLayoutBar);
                 updateTabVisibility();
             }
@@ -921,7 +944,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         tabSheet = new TabSheet();
         tabSheet.setSizeFull();
 
-        for(IViewContribution viewContrib : manager.getWidgets()) {
+        for (IViewContribution viewContrib : manager.getWidgets()) {
             // Create a new view instance
             final Component view = viewContrib.getView(m_applicationContext, widgetContext);
             try {
@@ -989,8 +1012,9 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     }
 
     private void updateTabVisibility() {
-        for (int i=0; i<tabSheet.getComponentCount(); i++) {
+        for (int i = 0; i < tabSheet.getComponentCount(); i++) {
             TabSheet.Tab tab = tabSheet.getTab(i);
+
             if (tab.getComponent() instanceof SelectionAwareTable) {
                 ContentType contentType = ((SelectionAwareTable) tab.getComponent()).getContentType();
                 boolean visible = m_graphContainer.getTopologyServiceClient().contributesTo(contentType);
@@ -1001,7 +1025,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
 	@Override
 	public void updateMenu() {
-        if(m_menuBar != null) {
+        if (m_menuBar != null) {
             m_menuBar.updateMenu(m_graphContainer, this, m_operationManager);
         }
 	}
@@ -1010,11 +1034,12 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 	public void showContextMenu(Object target, int left, int top) {
         Collection<VertexRef> selectedVertexRefs = getGraphContainer().getSelectionManager().getSelectedVertexRefs();
         List<VertexRef> targets;
+
         // If the user right-clicks on a vertex that is already selected...
-        if(selectedVertexRefs.contains(target)) {
+        if (selectedVertexRefs.contains(target)) {
             // ... then use the entire selection as the target of the operation
             targets = Lists.newArrayList(selectedVertexRefs);
-        } else{
+        } else {
             // Otherwise, just use the single vertex that was right-clicked on as the target
             targets = TopologyContextMenu.asVertexList(target);
         }
@@ -1038,7 +1063,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
 
     @Override
     public void widgetListUpdated(WidgetManager widgetManager) {
-        if(isAttached()) {
+        if (isAttached()) {
             updateWidgetView(widgetManager);
         }
     }
@@ -1082,7 +1107,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
         } else {
             m_topologyComponent.setEnabled(false);
             m_noContentWindow.setVisible(true);
-            if(!m_noContentWindow.isAttached()){
+            if (!m_noContentWindow.isAttached()) {
                 addWindow(m_noContentWindow);
             }
         }
@@ -1111,11 +1136,12 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     private int getFocusVertices(GraphContainer graphContainer) {
         int count = 0;
         Criteria[] crits = graphContainer.getCriteria();
-        for(Criteria criteria : crits){
-            try{
+
+        for (Criteria criteria : crits) {
+            try {
                 VertexHopCriteria catCrit = (VertexHopCriteria) criteria;
                 count += catCrit.getVertices().size();
-            } catch(ClassCastException e){}
+            } catch (ClassCastException e){}
 
         }
         return count;
@@ -1150,7 +1176,10 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
             m_currentHudDisplay.setEdgeSelectionCount(selectionContext.getSelectedEdgeRefs().size());
         }
 
-        if(m_topologyComponent != null) m_topologyComponent.setActiveTool("pan");
+        if (m_topologyComponent != null) {
+            m_topologyComponent.setActiveTool("pan");
+        }
+
         saveHistory();
     }
 
@@ -1173,7 +1202,8 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
     public void verticesUpdated(VerticesUpdateManager.VerticesUpdateEvent event) {
         Collection<VertexRef> selectedVertexRefs = m_selectionManager.getSelectedVertexRefs();
         Set<VertexRef> vertexRefs = event.getVertexRefs();
-        if(!selectedVertexRefs.equals(vertexRefs) && !event.allVerticesSelected()) {
+
+        if (!selectedVertexRefs.equals(vertexRefs) && !event.allVerticesSelected()) {
             m_selectionManager.setSelectedVertexRefs(vertexRefs);
         }
     }
@@ -1198,6 +1228,7 @@ public class TopologyUI extends UI implements MenuUpdateListener, ContextMenuHan
             final Map<String, CheckedOperation> operationMap = serviceReferences.stream()
                     .collect(Collectors.toMap(reference -> (String) reference.getProperty("operation.label"), reference -> bundleContext.getService(reference)));
             final Optional<String> optionalLabel = operationMap.keySet().stream().sorted().findFirst();
+
             if (optionalLabel.isPresent()) {
                 return operationMap.get(optionalLabel.get());
             }

@@ -14,10 +14,6 @@ Use the following properties, found in `$\{OPENNMS_HOME}/etc/opennms.properties`
 |===
 | Name  | Description   | Default Value
 
-| org.opennms.newts.config.datacenter
-| Name of the local Cassandra datacenter.
-| datacenter1
-
 | org.opennms.newts.config.keyspace
 | Name of the keyspace to use.
 | newts
@@ -38,6 +34,10 @@ If including multiple node references, separate each with a single comma.
 | org.opennms.newts.config.password
 | Password to use when connecting to Cassandra via CQL.
 | cassandra
+
+| org.opennms.newts.config.datacenter
+| Set this to the value of your local datacenter for the best performance.
+| datacenter1
 
 | org.opennms.newts.config.ssl
 | Enable or disable SSL when connecting to Cassandra.

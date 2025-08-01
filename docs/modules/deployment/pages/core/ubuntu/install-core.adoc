@@ -19,15 +19,6 @@ NOTE: You can safely ignore the message about conflicting distributions (expecte
 sudo apt -y install opennms
 ----
 
-.Install R packages for trending and forecasting (optional)
-If you want time series trending and forecast functions you have to install the link:https://www.r-project.org/[R project] packages.
-The additional download size for packages is ~152 MB.
-
-[source, console]
-----
-sudo apt -y install r-recommended
-----
-
 TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.
      After upgrade, {page-component-title} requires manual steps to upgrade configuration files or migrate database schemas to a new version.
      We recommend that you exclude the {page-component-title} packages from update except when you are planning on performing an upgrade.

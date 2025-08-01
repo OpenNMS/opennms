@@ -26,5 +26,4 @@
 		<property name="acknowledgmentDao" ref="acknowledgmentDao" />
 		<property name="serviceTypeDao" ref="serviceTypeDao" />
 	</bean>
-
 </beans>

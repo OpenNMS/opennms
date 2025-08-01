@@ -1,34 +1,26 @@
 <%--
-/*******************************************************************************
- * This file is part of OpenNMS(R).
- *
- * Copyright (C) 2012-2023 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
+
+    Licensed to The OpenNMS Group, Inc (TOG) under one or more
+    contributor license agreements.  See the LICENSE.md file
+    distributed with this work for additional information
+    regarding copyright ownership.
+
+    TOG licenses this file to You under the GNU Affero General
+    Public License Version 3 (the "License") or (at your option)
+    any later version.  You may not use this file except in
+    compliance with the License.  You may obtain a copy of the
+    License at:
+
+         https://www.gnu.org/licenses/agpl-3.0.txt
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+    either express or implied.  See the License for the specific
+    language governing permissions and limitations under the
+    License.
 
 --%>
-
 <%@page language="java"
         contentType="text/html"
         session="true"
@@ -134,6 +126,14 @@
           .build(request);
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />
+
+<script type="text/javascript">
+    let url = new URL(location.href);
+    if (!url.searchParams.has('id')) {
+        url.searchParams.set('id', '${alarmId}');
+        window.location.href = url.href;
+    }
+</script>
 
 <div class="card">
   <div class="card-header">
@@ -483,10 +483,10 @@
   <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
 	         <form class="form" method="post" action="alarm/saveStickyMemo.htm">
                  <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-				<textarea class="w-100 mb-1" name="stickyMemoBody" ><%=(alarm.getStickyMemo() != null && alarm.getStickyMemo().getBody() != null) ? alarm.getStickyMemo().getBody() : ""%></textarea>
+				<textarea <%=request.isUserInRole(Authentication.ROLE_READONLY)?"readonly":""%> class="w-100 mb-1" name="stickyMemoBody" ><%=(alarm.getStickyMemo() != null && alarm.getStickyMemo().getBody() != null) ? alarm.getStickyMemo().getBody() : ""%></textarea>
 				<input type="hidden" name="alarmId" value="<%=alarm.getId() %>"/>
-                <form:input class="btn btn-sm btn-secondary" type="submit" value="Save" />
-                <form:input class="btn btn-sm btn-secondary" type="button" value="Delete" onclick="document.getElementById('deleteStickyForm').submit();"/>
+                <input <%=request.isUserInRole(Authentication.ROLE_READONLY)?"disabled":""%> class="btn btn-sm btn-secondary" type="submit" value="Save" />
+                <input <%=request.isUserInRole(Authentication.ROLE_READONLY)?"disabled":""%> class="btn btn-sm btn-secondary" type="button" value="Delete" onclick="document.getElementById('deleteStickyForm').submit();"/>
 	         </form>
 	         <form id="deleteStickyForm" method="post" action="alarm/removeStickyMemo.htm">
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
@@ -521,10 +521,10 @@
   <div class="card-body severity-<%= alarm.getSeverity().getLabel().toLowerCase() %>">
             <form class="form" method="post" action="alarm/saveJournalMemo.htm">
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>
-                <textarea class="w-100 mb-1" name="journalMemoBody" ><%=(alarm.getReductionKeyMemo() != null && alarm.getReductionKeyMemo().getBody() != null) ? alarm.getReductionKeyMemo().getBody() : ""%></textarea>
+                <textarea <%=request.isUserInRole(Authentication.ROLE_READONLY)?"readonly":""%> class="w-100 mb-1" name="journalMemoBody" ><%=(alarm.getReductionKeyMemo() != null && alarm.getReductionKeyMemo().getBody() != null) ? alarm.getReductionKeyMemo().getBody() : ""%></textarea>
                 <input type="hidden" name="alarmId" value="<%=alarm.getId()%>"/>
-                <form:input class="btn btn-sm btn-secondary" type="submit" value="Save" />
-                <form:input class="btn btn-sm btn-secondary" type="button" value="Delete" onclick="document.getElementById('deleteJournalForm').submit();"/>
+                <input <%=request.isUserInRole(Authentication.ROLE_READONLY)?"disabled":""%> class="btn btn-sm btn-secondary" type="submit" value="Save"/>
+                <input <%=request.isUserInRole(Authentication.ROLE_READONLY)?"disabled":""%> class="btn btn-sm btn-secondary" type="button" value="Delete" onclick="document.getElementById('deleteJournalForm').submit();"/>
             </form>
             <form id="deleteJournalForm" method="post" action="alarm/removeJournalMemo.htm">
                 <input type="hidden" name="${_csrf.parameterName}" value="${_csrf.token}"/>

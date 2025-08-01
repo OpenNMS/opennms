@@ -9,4 +9,5 @@
 
     <include file="changelog-cm/30.0.0/changelog-cm.xml"/>
     <include file="changelog-cm/32.0.0/changelog-cm.xml"/>
+    <include file="changelog-cm/33.0.0/changelog-cm.xml"/>
 </databaseChangeLog>

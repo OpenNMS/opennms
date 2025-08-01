@@ -1,36 +1,29 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2006-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.timeseries.samplewrite;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.Mockito.RETURNS_DEEP_STUBS;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -69,6 +62,8 @@ import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTagMatcher;
 import org.opennms.integration.api.v1.timeseries.immutables.ImmutableTimeSeriesFetchRequest;
 import org.opennms.netmgt.collection.api.AttributeType;
 import org.opennms.netmgt.collection.api.CollectionAgent;
+import org.opennms.netmgt.collection.api.CollectionResource;
+import org.opennms.netmgt.collection.api.LatencyCollectionResource;
 import org.opennms.netmgt.collection.api.Persister;
 import org.opennms.netmgt.collection.api.ResourceType;
 import org.opennms.netmgt.collection.api.ResourceTypeMapper;
@@ -84,11 +79,14 @@ import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.model.OnmsAssetRecord;
 import org.opennms.netmgt.model.OnmsCategory;
 import org.opennms.netmgt.model.OnmsIpInterface;
+import org.opennms.netmgt.model.OnmsMonitoredService;
 import org.opennms.netmgt.model.OnmsNode;
+import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
 import org.opennms.netmgt.model.PrimaryType;
 import org.opennms.netmgt.model.ResourcePath;
@@ -112,7 +110,7 @@ import org.springframework.test.context.ContextConfiguration;
 @JUnitConfigurationEnvironment(systemProperties={
         "org.opennms.timeseries.strategy=integration"
 })
-@JUnitTemporaryDatabase(dirtiesContext=true)
+@JUnitTemporaryDatabase(reuseDatabase = false, dirtiesContext=true)
 public class TimeseriesRoundtripIT {
 
     @Autowired
@@ -145,21 +143,30 @@ public class TimeseriesRoundtripIT {
     @Autowired
     private TimeseriesResourceStorageDao resourceStorageDao;
 
+    @Autowired
+    private ServiceTypeDao serviceTypeDao;
+
+
     @Before
-    public void setUp() {
+    public void setUp() throws UnknownHostException {
         Map<String, String> config = new HashMap<>();
         config.put(CONFIG_PREFIX_FOR_TAGS + "nodelabel", "${node:label}");
         config.put(CONFIG_PREFIX_FOR_TAGS + "sysObjectID", "${node:sys-object-id}");
         config.put(CONFIG_PREFIX_FOR_TAGS + "vendor", "${asset:vendor}");
         config.put(CONFIG_PREFIX_FOR_TAGS + "if-description", "${interface:if-description}");
         config.put(CONFIG_KEY_FOR_CATEGORIES, "true");
+        config.put(CONFIG_PREFIX_FOR_TAGS + "resource_label", "${resource:label}");
+        config.put(CONFIG_PREFIX_FOR_TAGS + "node_location", "${resource:location}");
+        config.put(CONFIG_PREFIX_FOR_TAGS + "node_id", "${resource:node_id}");
+        config.put(CONFIG_PREFIX_FOR_TAGS + "if_name", "${interface:if-name}");
+        config.put(CONFIG_PREFIX_FOR_TAGS + "if_description", "${interface:if-description}");
+        config.put(CONFIG_PREFIX_FOR_TAGS + "service_name", "${service:name}");
         metaTagDataLoader.setConfig(new MetaTagConfiguration(config));
+        createAndSaveNode();
     }
 
     @Test
     public void canPersist() throws InterruptedException, StorageException, UnknownHostException {
-
-        createAndSaveNode();
 
         ServiceParameters params = new ServiceParameters(Collections.emptyMap());
         RrdRepository repo = new RrdRepository();
@@ -237,6 +244,36 @@ public class TimeseriesRoundtripIT {
         testForMetaTag("snmp/1/metrics", "m1", "vendor","myVendor");
         testForMetaTag("snmp/1/1/if-metrics", "m3",  "if-description","myDescription");
         testForMetaTag("snmp/1/metrics", "m1",  "cat_myCategory","myCategory");
+    }
+
+
+    @Test
+    public void verifyLatencyResourceTags() throws UnknownHostException {
+
+        var collectionResource = mock(LatencyCollectionResource.class);
+        var resourceTags = new HashMap<String, String>();
+        String location = locationDao.getDefaultLocation().getLocationName();
+        String nodeLabel = "myNodeLabel";
+        String resourceLabel = "localhost-response_time-127.0.0.1";
+        resourceTags.put("location", location);
+        resourceTags.put("node_label", nodeLabel);
+        resourceTags.put("node_id", "1");
+        var parameterMap = new HashMap<String, String>();
+        parameterMap.put(CollectionResource.INTERFACE_INFO_IN_TAGS, "true");
+        when(collectionResource.getTags()).thenReturn(resourceTags);
+        when(collectionResource.getServiceParams()).thenReturn(parameterMap);
+        when(collectionResource.getInterfaceLabel()).thenReturn(resourceLabel);
+        when(collectionResource.getResourceTypeName()).thenReturn(CollectionResource.RESOURCE_TYPE_LATENCY);
+        when(collectionResource.getIpAddress()).thenReturn("10.0.1.1");
+        when(collectionResource.getServiceName()).thenReturn("SNMP");
+        var tags = metaTagDataLoader.load(collectionResource);
+        assertEquals(11, tags.size());
+        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("resource_label")));
+        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("node_location")));
+        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("node_id") && tag.getValue().equals("1")));
+        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("if_name") && tag.getValue().equals("en1/0")));
+        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("if_description") && tag.getValue().equals("myDescription")));
+        assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("service_name") && tag.getValue().equals("SNMP")));
     }
 
     private void testForNumericAttribute(String resourceId, String name, Double expectedValue) throws StorageException {
@@ -326,7 +363,16 @@ public class TimeseriesRoundtripIT {
         onmsIf.setIfIndex(1);
         onmsIf.setIpHostName("myHost");
         onmsIf.setIsSnmpPrimary(PrimaryType.PRIMARY);
+        OnmsServiceType service = serviceTypeDao.findByName("SNMP");
+        if (service == null) {
+            service = new OnmsServiceType("SNMP");
+            serviceTypeDao.save(service);
+            serviceTypeDao.flush();
+        }
+        OnmsMonitoredService onmsMonitoredService = new OnmsMonitoredService(onmsIf, service);
+        onmsIf.addMonitoredService(onmsMonitoredService);
         ipInterfaceDao.save(onmsIf);
+
         Set<OnmsIpInterface> ipInterfaces = new LinkedHashSet<>();
         ipInterfaces.add(onmsIf);
         node.setIpInterfaces(ipInterfaces);

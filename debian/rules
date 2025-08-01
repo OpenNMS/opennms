@@ -302,7 +302,7 @@ binary-indep: build install
 	-dh_shlibdeps
 	dh_gencontrol
 	dh_md5sums
-	dh_builddeb
+	dh_builddeb -- -Zgzip
 
 # Build architecture-dependent files here.
 binary-arch: build install

@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2009-2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.snmpinterfacepoller;
 
 
@@ -50,7 +43,12 @@ import org.opennms.netmgt.snmpinterfacepoller.pollable.PollableSnmpInterface;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutorService;
+import java.util.stream.Collectors;
 
 /**
  * SnmpPoller daemon class
@@ -229,21 +227,23 @@ public class SnmpPoller extends AbstractServiceDaemon {
      * @param ipaddr a {@link java.lang.String} object.
      */
     protected void scheduleNewSnmpInterface(String ipaddr) {
- 
-    	for (OnmsIpInterface iface : getNetwork().getContext().getPollableNodesByIp(ipaddr)) {
-            schedulePollableInterface(iface);    		
-    	}
-                
+
+        List<CompletableFuture<Void>> futures = getNetwork().getContext().getPollableNodesByIp(ipaddr)
+                .stream()
+                .map(this::schedulePollableInterface)
+                .collect(Collectors.toList());
+        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
     }
     
     /**
      * <p>scheduleExistingSnmpInterface</p>
      */
     protected void scheduleExistingSnmpInterface() {
-        
-    	for (OnmsIpInterface iface : getNetwork().getContext().getPollableNodes()) {
-            schedulePollableInterface(iface);    		
-    	}
+        List<CompletableFuture<Void>> futures = getNetwork().getContext().getPollableNodes()
+                .stream()
+                        .map(this::schedulePollableInterface)
+                .collect(Collectors.toList());
+        CompletableFuture.allOf(futures.toArray(CompletableFuture[]::new)).join();
     }   
 
     /**
@@ -251,25 +251,34 @@ public class SnmpPoller extends AbstractServiceDaemon {
      *
      * @param iface a {@link org.opennms.netmgt.model.OnmsIpInterface} object.
      */
-    protected void schedulePollableInterface(OnmsIpInterface iface) {
-        String ipaddress = iface.getIpAddress().getHostAddress();
-        String netmask = null;
-        // netmask is nullable
-        if (iface.getNetMask() != null) {
-            netmask = iface.getNetMask().getHostAddress();
-        }
-        Integer nodeid = iface.getNode().getId();
-        String location = getNetwork().getContext().getLocation(nodeid);
-        if (ipaddress != null && !ipaddress.equals("0.0.0.0")) {
-            String pkgName = getPollerConfig().getPackageName(ipaddress);
-            if (pkgName != null) {
-                LOG.debug("Scheduling snmppolling for node: {} ip address: {} - Found package interface with name: {}", nodeid, ipaddress, pkgName);
-                scheduleSnmpCollection(getNetwork().create(nodeid,ipaddress,netmask,pkgName), pkgName, location);
-            } else if (!getPollerConfig().useCriteriaFilters()) {
-                LOG.debug("No SNMP Poll Package found for node: {} ip address: {}. - Scheduling according with default interval", nodeid, ipaddress);
-                scheduleSnmpCollection(getNetwork().create(nodeid, ipaddress,netmask, "null"), "null", location);
+    protected CompletableFuture<Void> schedulePollableInterface(OnmsIpInterface iface) {
+        ExecutorService executor = getExecutorService();
+        return CompletableFuture.runAsync(() -> {
+            try {
+                String ipaddress = iface.getIpAddress().getHostAddress();
+                String netmask = null;
+                // netmask is nullable
+                if (iface.getNetMask() != null) {
+                    netmask = iface.getNetMask().getHostAddress();
+                }
+                Integer nodeid = iface.getNode().getId();
+                String location = getNetwork().getContext().getLocation(nodeid);
+                if (ipaddress != null && !ipaddress.equals("0.0.0.0")) {
+                    String pkgName = getPollerConfig().getPackageName(ipaddress);
+                    if (pkgName != null) {
+                        LOG.debug("Scheduling snmppolling for node: {} ip address: {} - Found package interface with name: {}", nodeid, ipaddress, pkgName);
+                        scheduleSnmpCollection(getNetwork().create(nodeid, ipaddress, netmask, pkgName), pkgName, location);
+                    } else if (!getPollerConfig().useCriteriaFilters()) {
+                        LOG.debug("No SNMP Poll Package found for node: {} ip address: {}. - Scheduling according with default interval", nodeid, ipaddress);
+                        scheduleSnmpCollection(getNetwork().create(nodeid, ipaddress, netmask, "null"), "null", location);
+                    }
+                }
+                return;
+            } catch (Exception e) {
+                LOG.error("Error occurred while scheduling snmppoll");
+                throw new SnmpPollerException(e);
             }
-        }
+        }, executor);
     }
     
     private void scheduleSnmpCollection(PollableInterface nodeGroup, String pkgName, String location) {
@@ -573,4 +582,7 @@ public class SnmpPoller extends AbstractServiceDaemon {
         getNetwork().suspend(Long.valueOf(event.getNodeid()).intValue());
     }
 
+    private ExecutorService getExecutorService() {
+        return m_scheduler.getRunner();
+    }
 }

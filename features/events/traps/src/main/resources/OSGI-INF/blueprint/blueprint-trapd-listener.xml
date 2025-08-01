@@ -15,6 +15,7 @@
 			<cm:property name="trapd.queue.size" value="10000" />
 			<cm:property name="trapd.batch.size" value="1000" />
 			<cm:property name="trapd.batch.interval" value="500" />
+			<cm:property name="trapd.useAddressFromVarbind" value="false" />
 		</cm:default-properties>
 	</cm:property-placeholder>
 
@@ -30,6 +31,7 @@
 		<property name="batchSize" value="${trapd.batch.size}" />
 		<property name="batchIntervalMs" value="${trapd.batch.interval}" />
 		<property name="includeRawMessage" value="${trapd.includeRawMessage}"/>
+		<property name="useAddressFromVarbind" value="${trapd.useAddressFromVarbind}"/>
 	</bean>
 	<service ref="trapdConfig" interface="org.opennms.netmgt.config.TrapdConfig" />
 

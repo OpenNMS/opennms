@@ -78,6 +78,7 @@
     </feature>
 
     <feature name="minion-shell-provision" description="Minion :: Shell :: Provision" version="${project.version}">
+      <feature prerequisite="true">shell-compat</feature>
       <feature>commons-lang</feature>
       <feature>opennms-core</feature>
       <feature>opennms-model</feature>
@@ -87,6 +88,7 @@
     </feature>
     
     <feature name="minion-shell-poller" description="Minion :: Shell :: Poller" version="${project.version}">
+      <feature prerequisite="true">shell-compat</feature>
       <feature>minion-poller</feature>
       <bundle>mvn:org.opennms.features.minion.shell/org.opennms.features.minion.shell.poller/${project.version}</bundle>
     </feature>
@@ -126,6 +128,7 @@
     </feature>
 
     <feature name="minion-shell-collection" description="Minion :: Shell :: Collection" version="${project.version}">
+      <feature prerequisite="true">shell-compat</feature>
       <feature>minion-collection</feature>
       <bundle>mvn:org.opennms.features.minion.shell/org.opennms.features.minion.shell.collection/${project.version}</bundle>
     </feature>
@@ -162,6 +165,7 @@
       <feature>dropwizard-metrics</feature>
       <feature>opennms-core-ipc-sink-api</feature>
       <feature>opennms-core-ipc-rpc-api</feature>
+      <bundle>mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
       <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.ipc.grpc/org.opennms.core.ipc.grpc.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.core.ipc.grpc/org.opennms.core.ipc.grpc.client/${project.version}</bundle>
@@ -179,6 +183,7 @@
     </feature>
 
     <feature name="dominion-grpc-client" description="Dominion :: GRPC :: Client" version="${project.version}">
+        <feature version="${guavaOsgiVersion}">guava</feature>
         <feature>minion-core-api</feature>
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.minion/dominion-grpc-client/${project.version}</bundle>

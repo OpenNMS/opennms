@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2002-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.web.alarm;
 
 import java.util.ArrayList;
@@ -79,6 +72,7 @@ import org.opennms.web.alarm.filter.ServiceOrFilter;
 import org.opennms.web.alarm.filter.SeverityFilter;
 import org.opennms.web.alarm.filter.SeverityOrFilter;
 import org.opennms.web.alarm.filter.SituationFilter;
+import org.opennms.web.filter.ConditionalFilter;
 import org.opennms.web.filter.Filter;
 import org.opennms.web.utils.filter.CheckboxFilterUtils;
 import org.opennms.web.utils.filter.FilterTokenizeUtils;
@@ -213,6 +207,16 @@ public abstract class AlarmUtil extends Object {
     }
 
     /**
+     * Checks if a string represents an integer.
+     *
+     * @param str The string to check.
+     * @return True if the string is an integer, false otherwise.
+     */
+    public static boolean isInteger(String str) {
+        return str != null && !str.isEmpty() && str.chars().allMatch(Character::isDigit);
+    }
+
+    /**
      * <p>getFilter</p>
      *
      * @param allFilters a {@link java.lang.String}[] object holding all filter Strings
@@ -247,6 +251,30 @@ public abstract class AlarmUtil extends Object {
             }
         } else if (type.equals(InterfaceFilter.TYPE)) {
             filter = new InterfaceFilter(InetAddressUtils.addr(value));
+        } else if (type.equals(ConditionalFilter.TYPE)) {
+            String cleanedValue = value.substring(1, value.length() - 1); // Remove surrounding brackets
+            String[] ids = cleanedValue.split(ARRAY_DELIMITER);
+            boolean hasInteger = false;
+
+            List<Integer> serviceIdsList = new ArrayList<>();
+            List<OnmsSeverity> severitiesList = new ArrayList<>();
+
+            for (String id : ids) {
+                String trimmedId = id.trim();
+                if (isInteger(trimmedId)) {
+                    hasInteger = true;
+                    serviceIdsList.add(WebSecurityUtils.safeParseInt(trimmedId));
+                } else {
+                    severitiesList.add(OnmsSeverity.get(trimmedId));
+                }
+            }
+            if (hasInteger) {
+                Integer[] serviceIds = serviceIdsList.toArray(new Integer[0]);
+                filter = new ServiceOrFilter(serviceIds, servletContext);
+            } else {
+                OnmsSeverity[] severities = severitiesList.toArray(new OnmsSeverity[0]);
+                filter = new SeverityOrFilter(severities);
+            }
         } else if (type.equals(ServiceFilter.TYPE)) {
             String[] ids = value.split(ARRAY_DELIMITER);
             Integer[] serviceIds = new Integer[ids.length];

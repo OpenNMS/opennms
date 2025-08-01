@@ -1,40 +1,38 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2010-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.systemreport.opennms;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
-
+import org.opennms.core.resource.Vault;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.SystemInfoUtils;
+import org.opennms.core.utils.TimeSeries;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -79,6 +77,10 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
         return "OpenNMS core information, version, and basic configuration";
     }
 
+
+    @Override
+    public boolean isVisible() { return true; }
+
     @Override
     public int getPriority() {
         return 3;
@@ -87,17 +89,9 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
     @Override
     public Map<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
-        final InputStream is = this.getClass().getResourceAsStream("/version.properties");
-        if (is != null) {
-            Properties p = new Properties();
-            try {
-                p.load(is);
-                map.put("Version", getResource(p.getProperty("version.display")));
-            } catch (final IOException e) {
-                LOG.warn("Unable to load from version.properties", e);
-            }
-        }
-        
+        map.put("OpenNMS Home Dir",getResourceFromProperty("opennms.home"));
+        map.put("Version", getResource(Vault.getProperty("version.display")));
+
         if (m_nodeDao != null) {
             map.put("Number of Nodes", getResource(Integer.toString(m_nodeDao.countAll())));
         }
@@ -113,7 +107,38 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
         if (m_alarmDao != null) {
             map.put("Number of Alarms", getResource(Integer.toString(m_alarmDao.countAll())));
         }
+
+        RuntimeMXBean runtimeBean = getBean(ManagementFactory.RUNTIME_MXBEAN_NAME, RuntimeMXBean.class);
+        if (runtimeBean == null) {
+            LOG.info("falling back to local VM RuntimeMXBean");
+            runtimeBean = ManagementFactory.getRuntimeMXBean();
+        }
+        addGetters(runtimeBean, map);
+
+        map.put("OpenNMS Up Time",getResource( getOnmsUptimeAsString(runtimeBean) ));
+        map.put("Time-Series Strategy",getResource(TimeSeries.getTimeseriesStrategy().getName()));
+
         return map;
+    }
+
+    private String getOnmsUptimeAsString(RuntimeMXBean runtimeBean){
+
+        long startTimeMillis = runtimeBean.getStartTime();
+
+        // Get the current time (in milliseconds since epoch)
+        long currentTimeMillis = System.currentTimeMillis();
+
+        // Calculate uptime
+        long uptimeMillis = currentTimeMillis - startTimeMillis;
+
+        Duration uptimeDuration = Duration.ofMillis(uptimeMillis);
+
+        // Get hours, minutes, and seconds
+        long hours = uptimeDuration.toHours();
+        long minutes = uptimeDuration.toMinutes() % 60; // Get remaining minutes after hours
+        long seconds = uptimeDuration.getSeconds() % 60; // Get remaining seconds after minutes
+
+        return String.format("%d hours, %d minutes, %d seconds", hours, minutes, seconds);
     }
 
 }

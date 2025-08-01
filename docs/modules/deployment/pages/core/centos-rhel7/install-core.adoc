@@ -7,22 +7,9 @@ include::../../repos/rhel-centos/meridian-rhel7.adoc[]
 endif::[]
 
 .Install {page-component-title} with all built-in dependencies
-[source, console]
+[source, console, subs="attributes"]
 ----
 sudo yum -y install {package-prefix}
-----
-
-If you want time series trending and forecast functions you must install the link:https://www.r-project.org/[R project] packages.
-The additional download size for packages is ~390 MB.
-
-Note that R-core packages require that you have a PowerTools repository enabled.
-
-.Install R-core packages for time series trending and forecasting (optional)
-[source, console]
-----
-sudo dnf config-manager --set-enabled powertools
-sudo yum -y install epel-release
-sudo yum -y install R-core
 ----
 
 TIP: Disable the OpenNMS {page-component-title} repository after installation to prevent unwanted upgrades when upgrading other packages on the server.

@@ -15,10 +15,32 @@ set -x
 
 umask 002
 export OPENNMS_HOME="/usr/share/opennms"
+export KARAF_HOME="${OPENNMS_HOME}"
 
 OPENNMS_OVERLAY="/opt/opennms-overlay"
 OPENNMS_OVERLAY_ETC="/opt/opennms-etc-overlay"
 OPENNMS_OVERLAY_JETTY_WEBINF="/opt/opennms-jetty-webinf-overlay"
+
+# Prometheus JMX Exporter Configuration
+#
+# The JMX exporter allows Prometheus to scrape JMX metrics from the OpenNMS Core applications.
+# The Prometheus JMX exporter needs to be enabled and is disabled by default.
+#
+# Requirements:
+# - PROM_JMX_EXPORTER_ENABLED=true
+# - All other settings are optional and have sensible defaults
+#
+# Default behavior:
+# - Configuration is managed via confd templates
+# - Template uses key/values from /java/agent/prom-jmx-exporter
+PROM_JMX_EXPORTER_ENABLED="${PROM_JMX_EXPORTER_ENABLED:-false}" # required
+PROM_JMX_EXPORTER_JAR="${PROM_JMX_EXPORTER_JAR:-/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar}"
+PROM_JMX_EXPORTER_PORT="${PROM_JMX_EXPORTER_PORT:-9299}"
+PROM_JMX_EXPORTER_CONFIG="${PROM_JMX_EXPORTER_CONFIG:-/opt/prom-jmx-exporter/config.yaml}"
+
+if [[ "${PROM_JMX_EXPORTER_ENABLED,,}" == "true" ]]; then
+  export JAVA_OPTS="${JAVA_OPTS} -javaagent:${PROM_JMX_EXPORTER_JAR}=${PROM_JMX_EXPORTER_PORT}:${PROM_JMX_EXPORTER_CONFIG}"
+fi
 
 # Error codes
 E_ILLEGAL_ARGS=126
@@ -50,7 +72,7 @@ usage() {
   echo "-h: Show this help."
   echo "-i: Initialize or update database and configuration files and do *NOT* start."
   echo "-s: Initialize or update database and configuration files and start OpenNMS."
-  echo "-t: Run the config-tester, e.g -t -h to show help and available options."
+  echo "-t: Run the config-tester against the configuration files."
   echo ""
 }
 
@@ -203,7 +225,7 @@ while getopts "fhist" flag; do
       ;;
     t)
       shift $((OPTIND - 1))
-      configTester "${@}"
+      configTester -a
       exit
       ;;
     *)

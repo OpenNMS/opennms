@@ -1,3 +1,26 @@
+<%--
+
+    Licensed to The OpenNMS Group, Inc (TOG) under one or more
+    contributor license agreements.  See the LICENSE.md file
+    distributed with this work for additional information
+    regarding copyright ownership.
+
+    TOG licenses this file to You under the GNU Affero General
+    Public License Version 3 (the "License") or (at your option)
+    any later version.  You may not use this file except in
+    compliance with the License.  You may obtain a copy of the
+    License at:
+
+         https://www.gnu.org/licenses/agpl-3.0.txt
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+    either express or implied.  See the License for the specific
+    language governing permissions and limitations under the
+    License.
+
+--%>
 <!doctype html><%--
 /*******************************************************************************
  * This file is part of OpenNMS(R).
@@ -53,6 +76,7 @@
 
 <%
   final String __baseHref = Util.calculateUrlBase( request );
+  final String oldMenuValue = request.getParameter("oldmenu");
 %>
 <%-- The <html> tag is unmatched in this file (its matching tag is in the
      footer), so we hide it in a JSP code fragment so the Eclipse HTML
@@ -175,6 +199,8 @@
     </style>
   </c:if>
 
+  <%-- Vue side menu --%>
+  <link rel="stylesheet" href="${baseHref}/opennms/ui-components/assets/index.css" media="screen" />
 </head>
 
 <%-- The <body> tag is unmatched in this file (its matching tag is in the
@@ -205,7 +231,10 @@
     <!-- No visual header is being displayed -->
   </c:when>
   <c:otherwise>
-    <jsp:include page="/navBar.htm" flush="false" />
+    <%-- Only display old menu when user has 'oldmenu=true' in query string --%>
+    <% if (oldMenuValue != null && oldMenuValue.equals("true")) { %>
+      <jsp:include page="/navBar.htm" flush="false" />
+    <% } %>
   </c:otherwise>
 </c:choose>
 <!-- End bootstrap header -->
@@ -216,13 +245,38 @@
      validator doesn't complain.  See bug #1728. --%>
 <c:choose>
   <c:when test="${param.superQuiet == 'true'}">
-
+    <c:if test="${param.fromVaadin == 'true'}">
+      <!-- both superQuiet and fromVaadin are true -->
+      <% if (oldMenuValue == null || !oldMenuValue.equals("true")) { %>
+        <div id="opennms-sidemenu-container"></div>
+        <script type="module" src="${baseHref}/opennms/ui-components/assets/index.js"></script>
+      <% } %>
+    </c:if>
   </c:when>
   <c:otherwise>
     <jsp:include page="/assets/load-assets.jsp" flush="false">
       <jsp:param name="asset" value="onms-default-apps" />
     </jsp:include>
+
+    <%-- Logout form, expected to exist on some pages. --%>
+    <c:if test='${(__bs_includeLogoutForm != null) && (__bs_includeLogoutForm.contains("true"))}'>
+      <form id="headerLogoutForm" name="headerLogoutForm" action="${baseHref}j_spring_security_logout" method="post"></form>
+    </c:if>
+
     <%= "<div id=\"content\" class=\"container-fluid\">" %>
+
+    <%-- Vue menus: do not display if 'quiet' is true, or if 'oldmenu' query string param is true --%>
+    <c:choose>
+      <c:when test='${param.quiet == "true"}'>
+        <!-- 'quiet' mode, not displaying Vue menus -->
+      </c:when>
+      <c:otherwise>
+        <% if (oldMenuValue == null || !oldMenuValue.equals("true")) { %>
+          <div id="opennms-sidemenu-container"></div>
+          <script type="module" src="${baseHref}/opennms/ui-components/assets/index.js"></script>
+        <% } %>
+      </c:otherwise>
+    </c:choose>
   </c:otherwise>
 </c:choose>
 <c:if test='${((not __bs_flags.contains("nonavbar")) && (!empty pageContext.request.remoteUser)) && (not __bs_flags.contains("nobreadcrumbs"))}'>

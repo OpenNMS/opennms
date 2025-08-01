@@ -32,7 +32,7 @@ for CONTAINER in \
   "confluentinc/cp-kafka:latest" \
   "docker.elastic.co/elasticsearch/elasticsearch:7.17.9" \
   "opennms/dummy-http-endpoint:0.0.2" \
-  "postgres:10.7-alpine" \
+  "postgres:13-alpine" \
   "postgres:latest" \
 ; do
   ( (docker pull "$CONTAINER" || :) && echo "$CONTAINER" >> /tmp/finished-containers.txt ) &
@@ -65,12 +65,14 @@ else
   IT_TESTS="$(< /tmp/this_node_it_tests paste -s -d, -)"
 fi
 
+sudo apt update && sudo apt -y install openjdk-11-jdk-headless
+
 # When we are ready to collect coverge on smoke tests, add "-Pcoverage" below
 ionice nice ../compile.pl \
   -DskipTests=false \
   -DskipITs=false \
   -DfailIfNoTests=false \
-  -Dtest.fork.count=0 \
+  -Dtest.fork.count=1 \
   -Dit.test="$IT_TESTS" \
   --fail-fast \
   --batch-mode \

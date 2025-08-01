@@ -67,7 +67,6 @@ Requires:       /sbin/nologin
 Requires:       /usr/bin/id
 Requires:       /usr/bin/sudo
 Provides:	opennms-plugin-api = %{opa_version}
-Recommends:	haveged
 
 Prefix:        %{sentinelinstprefix}
 
@@ -184,6 +183,7 @@ rm -rf %{buildroot}
 %attr(644,sentinel,sentinel) %{_unitdir}/sentinel.service
 %attr(644,sentinel,sentinel) %config(noreplace) %{_sysconfdir}/sysconfig/sentinel
 %attr(644,sentinel,sentinel) %{sentinelinstprefix}/etc/featuresBoot.d/.readme
+%attr(644,sentinel,sentinel) %{sentinelinstprefix}/etc/featuresBoot.d/*.boot
 
 %pre
 ROOT_INST="${RPM_INSTALL_PREFIX0}"

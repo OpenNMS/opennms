@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.features.topology.app.internal.jung;
 
 import java.awt.Dimension;
@@ -43,10 +36,10 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.apache.commons.collections15.Transformer;
-import org.apache.commons.collections15.map.LazyMap;
+import org.apache.commons.collections4.map.LazyMap;
 import org.opennms.features.topology.api.topo.LevelAware;
 
+import com.google.common.base.Function;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.Maps;
 
@@ -66,15 +59,9 @@ public class HierarchyLayout<V, E> implements Layout<V, E> {
 
     private Dimension size = new Dimension(600, 600);
     private Graph<V, E> graph;
-    private Map<V, Integer> basePositions = new HashMap<V, Integer>();
+    private Map<V, Integer> basePositions = new HashMap<>();
 
-    private Map<V, Point2D> locations =
-            LazyMap.decorate(new HashMap<V, Point2D>(),
-                    new Transformer<V, Point2D>() {
-                        public Point2D transform(V arg0) {
-                            return new Point2D.Double();
-                        }
-                    });
+    private Map<V, Point2D> locations = LazyMap.lazyMap(new HashMap<V, Point2D>(), (V arg0) -> new Point2D.Double());
 
     private final int distX;
     private int distY;
@@ -293,7 +280,7 @@ public class HierarchyLayout<V, E> implements Layout<V, E> {
     }
 
     @Override
-    public void setInitializer(Transformer<V, Point2D> initializer) {
+    public void setInitializer(final Function<V, Point2D> initializer) {
     }
 
     @Override
@@ -302,7 +289,7 @@ public class HierarchyLayout<V, E> implements Layout<V, E> {
     }
 
     @Override
-    public Point2D transform(V v) {
+    public Point2D apply(V v) {
         return locations.get(v);
     }
 }

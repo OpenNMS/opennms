@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2012-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.provision.support;
 
 import java.io.IOException;
@@ -34,27 +27,28 @@ import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
-import java.util.concurrent.Executors;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 
-import org.jboss.netty.bootstrap.ClientBootstrap;
-import org.jboss.netty.channel.ChannelFactory;
-import org.jboss.netty.channel.ChannelFuture;
-import org.jboss.netty.channel.ChannelFutureListener;
-import org.jboss.netty.channel.ChannelPipeline;
-import org.jboss.netty.channel.ChannelPipelineFactory;
-import org.jboss.netty.channel.Channels;
-import org.jboss.netty.channel.socket.nio.NioClientSocketChannelFactory;
-import org.jboss.netty.handler.ssl.SslHandler;
-import org.opennms.core.concurrent.LogPreservingThreadFactory;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.RelaxedX509ExtendedTrustManager;
 import org.opennms.netmgt.provision.DetectFuture;
 import org.opennms.netmgt.provision.support.DetectFutureNettyImpl.ServiceDetectionFailedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import io.netty.bootstrap.Bootstrap;
+import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelInitializer;
+import io.netty.channel.ChannelOption;
+import io.netty.channel.ChannelPipeline;
+import io.netty.channel.ChannelPromise;
+import io.netty.channel.EventLoopGroup;
+import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.nio.NioSocketChannel;
+import io.netty.handler.ssl.SslHandler;
+import io.netty.util.concurrent.GenericFutureListener;
 
 /**
  * <p>AsyncBasicDetectorNettyImpl class.</p>
@@ -66,26 +60,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AsyncBasicDetectorNettyImpl<Request, Response> extends AsyncBasicDetector<Request, Response> {
     
     private static final Logger LOG = LoggerFactory.getLogger(AsyncBasicDetectorNettyImpl.class);
-    
-    private static final ChannelFactory m_factory = new NioClientSocketChannelFactory(
-        Executors.newFixedThreadPool(
-          Runtime.getRuntime().availableProcessors(),
-          new LogPreservingThreadFactory("AsyncBasicDetectorNettyImpl.boss", Integer.MAX_VALUE)
-        ),
-        Executors.newFixedThreadPool(
-          Runtime.getRuntime().availableProcessors(),
-          new LogPreservingThreadFactory("AsyncBasicDetectorNettyImpl.worker", Integer.MAX_VALUE)
-        )
-    ); 
 
-    /**
-     * <p>Constructor for AsyncBasicDetector.</p>
-     *
-     * @param serviceName a {@link java.lang.String} object.
-     * @param port a int.
-     * @param <Request> a Request object.
-     * @param <Response> a Response object.
-     */
     public AsyncBasicDetectorNettyImpl(final String serviceName, final int port) {
         super(serviceName, port);
     }
@@ -108,7 +83,6 @@ public abstract class AsyncBasicDetectorNettyImpl<Request, Response> extends Asy
     @Override
     public void dispose(){
         LOG.debug("calling dispose on detector {}", getServiceName());
-        m_factory.releaseExternalResources();
     }
     
     /** {@inheritDoc} */
@@ -118,36 +92,30 @@ public abstract class AsyncBasicDetectorNettyImpl<Request, Response> extends Asy
         DetectFuture detectFuture = new DetectFutureFailedImpl(this, new IllegalStateException());
 
         try {
-            ClientBootstrap bootstrap = new ClientBootstrap(m_factory);
+            EventLoopGroup eventLoopGroup = new NioEventLoopGroup();
 
-            bootstrap.setPipelineFactory(new ChannelPipelineFactory() {
-                @Override
-                public ChannelPipeline getPipeline() throws Exception {
-                    ChannelPipeline retval = Channels.pipeline();
+            final Bootstrap bootstrap = new Bootstrap();
+            bootstrap.channel(NioSocketChannel.class)
+                    .group(eventLoopGroup)
+                    .option(ChannelOption.TCP_NODELAY, true)
+                    .option(ChannelOption.SO_KEEPALIVE, true)
+                    .handler(new ChannelInitializer<NioSocketChannel>() {
+                        @Override
+                        protected void initChannel(NioSocketChannel nioSocketChannel) throws Exception {
+                            final ChannelPipeline retval = nioSocketChannel.pipeline();
+                            appendToPipeline(retval);
+                            retval.addLast("detectorHandler", getDetectorHandler(getConversation()));
+                            if (isUseSSLFilter()) {
+                                // Use a relaxed SSL context
+                                retval.addLast("sslHandler", new SslHandler(createClientSSLContext().createSSLEngine()));
+                            }
+                        }
+                    });
 
-                    // Upstream handlers
-                    //retval.addLast("retryHandler", new RetryChannelHandler());
-                    appendToPipeline(retval);
-
-                    // Downstream handlers
-                    retval.addLast("detectorHandler", getDetectorHandler(getConversation()));
-                    if (isUseSSLFilter()) {
-                        // Use a relaxed SSL context
-                        retval.addLast("sslHandler", new SslHandler(createClientSSLContext().createSSLEngine()));
-                    }
-
-                    return retval;
-                }
-            });
-
-            bootstrap.setOption("tcpNoDelay", true);
-            bootstrap.setOption("keepAlive", true);
-
-            SocketAddress remoteAddress = new InetSocketAddress(address, getPort());
-            ChannelFuture future = bootstrap.connect(remoteAddress);
+            final SocketAddress remoteAddress = new InetSocketAddress(address, getPort());
+            final ChannelFuture future = bootstrap.connect(remoteAddress);
             future.addListener(new RetryChannelFutureListener(remoteAddress, this.getRetries()));
-            detectFuture = new DetectFutureNettyImpl(this, future);
-
+            detectFuture = new DetectFutureNettyImpl(this, (ChannelPromise)future);
         } catch (Throwable e) {
             detectFuture = new DetectFutureFailedImpl(this, e);
         }
@@ -162,7 +130,6 @@ public abstract class AsyncBasicDetectorNettyImpl<Request, Response> extends Asy
     protected DetectorHandlerNettyImpl<Request, Response> getDetectorHandler(AsyncClientConversation<Request,Response> conversation) {
         DetectorHandlerNettyImpl<Request, Response> handler = new DetectorHandlerNettyImpl<Request, Response>();
         handler.setConversation(conversation);
-        //handler.setFuture(detectFuture);
         return handler;
     }
 
@@ -172,7 +139,7 @@ public abstract class AsyncBasicDetectorNettyImpl<Request, Response> extends Asy
      * 
      * TODO: This doesn't work yet... need to figure out how to do retries with Netty
      */
-    private class RetryChannelFutureListener implements ChannelFutureListener {
+    private class RetryChannelFutureListener implements GenericFutureListener<ChannelPromise> {
         private final SocketAddress m_remoteAddress;
         private int m_retries;
 
@@ -182,8 +149,8 @@ public abstract class AsyncBasicDetectorNettyImpl<Request, Response> extends Asy
         }
 
         @Override
-        public void operationComplete(ChannelFuture future) {
-            final Throwable cause = future.getCause();
+        public void operationComplete(ChannelPromise future) {
+            final Throwable cause = future.cause();
 
             if (cause != null) {
                 if(cause instanceof IOException) {
@@ -195,18 +162,14 @@ public abstract class AsyncBasicDetectorNettyImpl<Request, Response> extends Asy
                         // Get an ephemeral port on the localhost interface
                         final InetSocketAddress localAddress = new InetSocketAddress(InetAddressUtils.getLocalHostAddress(), 0);
 
-                        // Disconnect the channel
-                        //future.getChannel().disconnect().awaitUninterruptibly();
-                        //future.getChannel().unbind().awaitUninterruptibly();
-
                         // Remove the current RetryChannelHandler
                         future.removeListener(this);
                         // Add a new listener with 1 fewer retry
                         LOG.error("RETRIES {}", m_retries);
                         future.addListener(new RetryChannelFutureListener(m_remoteAddress, m_retries - 1));
                         // Reconnect the channel
-                        future.getChannel().bind(localAddress);
-                        future.getChannel().connect(m_remoteAddress);
+                        future.channel().bind(localAddress);
+                        future.channel().connect(m_remoteAddress);
                     }
                 } else {
                     LOG.info("Threw a Throwable and detection is false for service {}", getServiceName(), cause);
@@ -216,11 +179,6 @@ public abstract class AsyncBasicDetectorNettyImpl<Request, Response> extends Asy
         }
     }
 
-    /**
-     * @return
-     * @throws NoSuchAlgorithmException 
-     * @throws KeyManagementException 
-     */
     private static SSLContext createClientSSLContext() throws NoSuchAlgorithmException, KeyManagementException {
         final TrustManager[] tm = { new RelaxedX509ExtendedTrustManager() };
         final SSLContext sslContext = SSLContext.getInstance("SSL");

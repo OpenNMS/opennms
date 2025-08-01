@@ -1,0 +1,219 @@
+<datacollection-group xmlns="http://xmlns.opennms.org/xsd/config/datacollection" name="PTPBase">
+   <resourceType name="ptpbaseSystemEntry" label="PTP System" resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ptpbaseSystemDomainEntry" label="PTP SystemDomain" resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ptpbaseClockCurrentDSEntry" label="PTP ClockCurrentDS" resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ptpbaseClockParentDSEntry" label="PTP ClockParentDS" resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ptpbaseClockDefaultDSEntry" label="PTP ClockDefaultDS" resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ptpbaseClockRunningEntry" label="PTP ClockRunning" resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ptpbaseClockTimePropertiesDSEntry" label="PTP ClockTimePropertiesDS" resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ptpbaseClockTransDefaultDSEntry" label="PTP ClockTransDefaultDS" resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ptpbaseClockPortEntry" label="PTP ClockPort" resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ptpbaseClockPortDSEntry" label="PTP ClockPortDS" resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ptpbaseClockPortRunningEntry" label="PTP ClockPortRunning" resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ptpbaseClockPortTransDSEntry" label="PTP ClockPortTransDS" resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <resourceType name="ptpbaseClockPortAssociateEntry" label="PTP ClockPortAssociate" resourceLabel="${index}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+   </resourceType>
+   <group name="ptpbaseSystemTable" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.241.1.1.1.1.1" instance="ptpbaseSystemEntry" alias="ptpDomainIndex" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.1.1.1.2" instance="ptpbaseSystemEntry" alias="ptpInstanceIndex" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.1.1.1.3" instance="ptpbaseSystemEntry" alias="ptpDomaClocPortTota" type="gauge32"/>
+   </group>
+   <group name="ptpbaseSystemDomainTable" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.241.1.1.2.1.1" instance="ptpbaseSystemDomainEntry" alias="ptpSysDomCloTypInde" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.1.2.1.2" instance="ptpbaseSystemDomainEntry" alias="ptpbSysteDomaiTotal" type="integer"/>
+   </group>
+   <group name="ptpbaseMIBSystemInfo" ifType="ignore">
+      <mibObj oid=".1.3.6.1.2.1.241.1.1.3" instance="0" alias="ptpbasSystemProfile" type="string"/>
+   </group>
+   <group name="ptpbaseClockCurrentDSTable" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.1.1.1" instance="ptpbaseClockCurrentDSEntry" alias="ptpCloCurDSDomaInde" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.1.1.2" instance="ptpbaseClockCurrentDSEntry" alias="ptCloCurDSCloTypInd" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.1.1.3" instance="ptpbaseClockCurrentDSEntry" alias="ptpCloCurDSInstInde" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.1.1.4" instance="ptpbaseClockCurrentDSEntry" alias="ptpCloCurDSStepRemo" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.1.1.5" instance="ptpbaseClockCurrentDSEntry" alias="ptCloCurDSOffFroMas" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.1.1.6" instance="ptpbaseClockCurrentDSEntry" alias="ptCloCurDSMeaPatDel" type="octetstring"/>
+   </group>
+   <group name="ptpbaseClockParentDSTable" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.2.1.1" instance="ptpbaseClockParentDSEntry" alias="ptpCloParDSDomaInde" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.2.1.2" instance="ptpbaseClockParentDSEntry" alias="ptCloParDSCloTypInd" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.2.1.3" instance="ptpbaseClockParentDSEntry" alias="ptpCloParDSInstInde" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.2.1.4" instance="ptpbaseClockParentDSEntry" alias="ptCloParDSParPorIde" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.2.1.5" instance="ptpbaseClockParentDSEntry" alias="ptpCloParDSPareStat" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.2.1.6" instance="ptpbaseClockParentDSEntry" alias="ptpbClocPareDSOffse" type="integer32"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.2.1.7" instance="ptpbaseClockParentDSEntry" alias="ptClParDSCloPhChRat" type="integer32"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.2.1.8" instance="ptpbaseClockParentDSEntry" alias="ptpCloParDSGCloIden" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.2.1.9" instance="ptpbaseClockParentDSEntry" alias="ptpCloParDSGCloPri1" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.2.1.10" instance="ptpbaseClockParentDSEntry" alias="ptpCloParDSGCloPri2" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.2.1.11" instance="ptpbaseClockParentDSEntry" alias="ptClParDSGCloQuaCla" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.2.1.12" instance="ptpbaseClockParentDSEntry" alias="ptClParDSGCloQuaAcc" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.2.1.13" instance="ptpbaseClockParentDSEntry" alias="ptClParDSGCloQuaOff" type="integer"/>
+   </group>
+   <group name="ptpbaseClockDefaultDSTable" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.3.1.1" instance="ptpbaseClockDefaultDSEntry" alias="ptpCloDefDSDomaInde" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.3.1.2" instance="ptpbaseClockDefaultDSEntry" alias="ptCloDefDSCloTypInd" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.3.1.3" instance="ptpbaseClockDefaultDSEntry" alias="ptpCloDefDSInstInde" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.3.1.4" instance="ptpbaseClockDefaultDSEntry" alias="ptCloDefDSTwoSteFla" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.3.1.5" instance="ptpbaseClockDefaultDSEntry" alias="ptpCloDefDSClocIden" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.3.1.6" instance="ptpbaseClockDefaultDSEntry" alias="ptpbClocDefaDSPrio1" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.3.1.7" instance="ptpbaseClockDefaultDSEntry" alias="ptpbClocDefaDSPrio2" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.3.1.8" instance="ptpbaseClockDefaultDSEntry" alias="ptpCloDefDSSlavOnly" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.3.1.9" instance="ptpbaseClockDefaultDSEntry" alias="ptpCloDefDSQualClas" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.3.1.10" instance="ptpbaseClockDefaultDSEntry" alias="ptpCloDefDSQualAccu" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.3.1.11" instance="ptpbaseClockDefaultDSEntry" alias="ptpCloDefDSQualOffs" type="integer32"/>
+   </group>
+   <group name="ptpbaseClockRunningTable" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.4.1.1" instance="ptpbaseClockRunningEntry" alias="ptpClocRunnDomaInde" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.4.1.2" instance="ptpbaseClockRunningEntry" alias="ptpCloRunCloTypInde" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.4.1.3" instance="ptpbaseClockRunningEntry" alias="ptpClocRunnInstInde" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.4.1.4" instance="ptpbaseClockRunningEntry" alias="ptpbClockRunniState" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.4.1.5" instance="ptpbaseClockRunningEntry" alias="ptpClocRunnPackSent" type="counter64"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.4.1.6" instance="ptpbaseClockRunningEntry" alias="ptpClocRunnPackRece" type="counter64"/>
+   </group>
+   <group name="ptpbaseClockTimePropertiesDSTable" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.5.1.1" instance="ptpbaseClockTimePropertiesDSEntry" alias="ptCloTimProDSDomInd" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.5.1.2" instance="ptpbaseClockTimePropertiesDSEntry" alias="ptClTiPrDSCloTypInd" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.5.1.3" instance="ptpbaseClockTimePropertiesDSEntry" alias="ptCloTimProDSInsInd" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.5.1.4" instance="ptpbaseClockTimePropertiesDSEntry" alias="ptClTiPrDSCuUTOfVal" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.5.1.5" instance="ptpbaseClockTimePropertiesDSEntry" alias="ptClTiPrDSCurUTCOff" type="integer32"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.5.1.6" instance="ptpbaseClockTimePropertiesDSEntry" alias="ptpCloTimProDSLea59" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.5.1.7" instance="ptpbaseClockTimePropertiesDSEntry" alias="ptpCloTimProDSLea61" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.5.1.8" instance="ptpbaseClockTimePropertiesDSEntry" alias="ptCloTimProDSTimTra" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.5.1.9" instance="ptpbaseClockTimePropertiesDSEntry" alias="ptCloTimProDSFreTra" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.5.1.10" instance="ptpbaseClockTimePropertiesDSEntry" alias="ptpCloTimProDSPTime" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.5.1.11" instance="ptpbaseClockTimePropertiesDSEntry" alias="ptpCloTimPropDSSour" type="string"/>
+   </group>
+   <group name="ptpbaseClockTransDefaultDSTable" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.6.1.1" instance="ptpbaseClockTransDefaultDSEntry" alias="ptCloTraDefDSDomInd" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.6.1.2" instance="ptpbaseClockTransDefaultDSEntry" alias="ptCloTraDefDSInsInd" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.6.1.3" instance="ptpbaseClockTransDefaultDSEntry" alias="ptCloTraDefDSCloIde" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.6.1.4" instance="ptpbaseClockTransDefaultDSEntry" alias="ptClTrDefDSNumOfPor" type="counter32"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.6.1.5" instance="ptpbaseClockTransDefaultDSEntry" alias="ptpCloTraDefaDSDela" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.6.1.6" instance="ptpbaseClockTransDefaultDSEntry" alias="ptCloTraDefDSPriDom" type="integer"/>
+   </group>
+   <group name="ptpbaseClockPortTable" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.7.1.1" instance="ptpbaseClockPortEntry" alias="ptpClocPortDomaInde" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.7.1.2" instance="ptpbaseClockPortEntry" alias="ptpCloPorCloTypInde" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.7.1.3" instance="ptpbaseClockPortEntry" alias="ptpCloPorCloInsInde" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.7.1.4" instance="ptpbaseClockPortEntry" alias="ptClPorTabPorNumInd" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.7.1.5" instance="ptpbaseClockPortEntry" alias="ptpbasClockPortName" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.7.1.6" instance="ptpbaseClockPortEntry" alias="ptpbasClockPortRole" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.7.1.7" instance="ptpbaseClockPortEntry" alias="ptpCloPorSynTwoStep" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.7.1.8" instance="ptpbaseClockPortEntry" alias="ptClPorCurPeeAddTyp" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.7.1.9" instance="ptpbaseClockPortEntry" alias="ptpCloPorCurPeeAddr" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.7.1.10" instance="ptpbaseClockPortEntry" alias="ptCloPorNumOfAssPor" type="gauge32"/>
+   </group>
+   <group name="ptpbaseClockPortDSTable" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.8.1.1" instance="ptpbaseClockPortDSEntry" alias="ptpCloPorDSDomaInde" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.8.1.2" instance="ptpbaseClockPortDSEntry" alias="ptCloPorDSCloTypInd" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.8.1.3" instance="ptpbaseClockPortDSEntry" alias="ptCloPorDSCloInsInd" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.8.1.4" instance="ptpbaseClockPortDSEntry" alias="ptCloPorDSPorNumInd" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.8.1.5" instance="ptpbaseClockPortDSEntry" alias="ptpbClockPortDSName" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.8.1.6" instance="ptpbaseClockPortDSEntry" alias="ptpCloPorDSPortIden" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.8.1.7" instance="ptpbaseClockPortDSEntry" alias="ptpCloPorDSloAnnInt" type="integer32"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.8.1.8" instance="ptpbaseClockPortDSEntry" alias="ptCloPorDSAnnRctTim" type="integer32"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.8.1.9" instance="ptpbaseClockPortDSEntry" alias="ptpCloPorDSloSynInt" type="integer32"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.8.1.10" instance="ptpbaseClockPortDSEntry" alias="ptClPoDSMiDelReqInt" type="integer32"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.8.1.11" instance="ptpbaseClockPortDSEntry" alias="ptClPoDSPeDelReqInt" type="integer32"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.8.1.12" instance="ptpbaseClockPortDSEntry" alias="ptpCloPorDSDelaMech" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.8.1.13" instance="ptpbaseClockPortDSEntry" alias="ptClPoDSPeMeaPatDel" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.8.1.14" instance="ptpbaseClockPortDSEntry" alias="ptpCloPorDSGranDura" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.8.1.15" instance="ptpbaseClockPortDSEntry" alias="ptpClocPortDSPTVers" type="integer"/>
+   </group>
+   <group name="ptpbaseClockPortRunningTable" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.9.1.1" instance="ptpbaseClockPortRunningEntry" alias="ptpCloPorRunDomInde" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.9.1.2" instance="ptpbaseClockPortRunningEntry" alias="ptClPorRunCloTypInd" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.9.1.3" instance="ptpbaseClockPortRunningEntry" alias="ptClPorRunCloInsInd" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.9.1.4" instance="ptpbaseClockPortRunningEntry" alias="ptClPorRunPorNumInd" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.9.1.5" instance="ptpbaseClockPortRunningEntry" alias="ptpClocPortRunnName" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.9.1.6" instance="ptpbaseClockPortRunningEntry" alias="ptpClocPortRunnStat" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.9.1.7" instance="ptpbaseClockPortRunningEntry" alias="ptpClocPortRunnRole" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.9.1.8" instance="ptpbaseClockPortRunningEntry" alias="ptpCloPorRunIntInde" type="integer32"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.9.1.9" instance="ptpbaseClockPortRunningEntry" alias="ptpClocPortRunnTran" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.9.1.10" instance="ptpbaseClockPortRunningEntry" alias="ptpCloPorRunEncType" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.9.1.11" instance="ptpbaseClockPortRunningEntry" alias="ptpCloPorRunnTxMode" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.9.1.12" instance="ptpbaseClockPortRunningEntry" alias="ptpCloPorRunnRxMode" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.9.1.13" instance="ptpbaseClockPortRunningEntry" alias="ptpCloPorRunPacRece" type="counter64"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.9.1.14" instance="ptpbaseClockPortRunningEntry" alias="ptpCloPorRunPacSent" type="counter64"/>
+   </group>
+   <group name="ptpbaseClockPortTransDSTable" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.10.1.1" instance="ptpbaseClockPortTransDSEntry" alias="ptCloPorTraDSDomInd" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.10.1.2" instance="ptpbaseClockPortTransDSEntry" alias="ptCloPorTraDSInsInd" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.10.1.3" instance="ptpbaseClockPortTransDSEntry" alias="ptClPoTrDSPorNumInd" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.10.1.4" instance="ptpbaseClockPortTransDSEntry" alias="ptCloPorTraDSPorIde" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.10.1.5" instance="ptpbaseClockPortTransDSEntry" alias="ptClPoTrDSlMiPdReIn" type="integer32"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.10.1.6" instance="ptpbaseClockPortTransDSEntry" alias="ptCloPorTraDSFauFla" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.10.1.7" instance="ptpbaseClockPortTransDSEntry" alias="ptClPoTrDSPeMePaDel" type="octetstring"/>
+   </group>
+   <group name="ptpbaseClockPortAssociateTable" ifType="all">
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.11.1.1" instance="ptpbaseClockPortAssociateEntry" alias="ptpCloPorCurDomInde" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.11.1.2" instance="ptpbaseClockPortAssociateEntry" alias="ptClPorCurCloTypInd" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.11.1.3" instance="ptpbaseClockPortAssociateEntry" alias="ptClPorCurCloInsInd" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.11.1.4" instance="ptpbaseClockPortAssociateEntry" alias="ptClPorCurPorNumInd" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.11.1.5" instance="ptpbaseClockPortAssociateEntry" alias="ptpCloPorAssPorInde" type="integer"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.11.1.6" instance="ptpbaseClockPortAssociateEntry" alias="ptpCloPorAssAddType" type="string"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.11.1.7" instance="ptpbaseClockPortAssociateEntry" alias="ptpClocPortAssoAddr" type="octetstring"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.11.1.8" instance="ptpbaseClockPortAssociateEntry" alias="ptpCloPorAssPacSent" type="counter64"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.11.1.9" instance="ptpbaseClockPortAssociateEntry" alias="ptpCloPorAssPacRece" type="counter64"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.11.1.10" instance="ptpbaseClockPortAssociateEntry" alias="ptpCloPorAssoInErro" type="counter64"/>
+      <mibObj oid=".1.3.6.1.2.1.241.1.2.11.1.11" instance="ptpbaseClockPortAssociateEntry" alias="ptpCloPorAssOutErro" type="counter64"/>
+   </group>
+
+   <systemDef name="ptpBase">
+      <!-- enabled for Arista devices -->
+      <sysoidMask>.1.3.6.1.4.1.30065.1</sysoidMask>
+      <collect>
+         <includeGroup>ptpbaseSystemTable</includeGroup>
+         <includeGroup>ptpbaseSystemDomainTable</includeGroup>
+         <includeGroup>ptpbaseMIBSystemInfo</includeGroup>
+         <includeGroup>ptpbaseClockCurrentDSTable</includeGroup>
+         <includeGroup>ptpbaseClockParentDSTable</includeGroup>
+         <includeGroup>ptpbaseClockDefaultDSTable</includeGroup>
+         <includeGroup>ptpbaseClockRunningTable</includeGroup>
+         <includeGroup>ptpbaseClockTimePropertiesDSTable</includeGroup>
+         <includeGroup>ptpbaseClockTransDefaultDSTable</includeGroup>
+         <includeGroup>ptpbaseClockPortTable</includeGroup>
+         <includeGroup>ptpbaseClockPortDSTable</includeGroup>
+         <includeGroup>ptpbaseClockPortRunningTable</includeGroup>
+         <includeGroup>ptpbaseClockPortTransDSTable</includeGroup>
+         <includeGroup>ptpbaseClockPortAssociateTable</includeGroup>
+      </collect>
+   </systemDef>
+</datacollection-group>

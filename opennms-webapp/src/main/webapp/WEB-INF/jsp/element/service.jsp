@@ -1,34 +1,26 @@
 <%--
-/*******************************************************************************
- * This file is part of OpenNMS(R).
- *
- * Copyright (C) 2002-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
+
+    Licensed to The OpenNMS Group, Inc (TOG) under one or more
+    contributor license agreements.  See the LICENSE.md file
+    distributed with this work for additional information
+    regarding copyright ownership.
+
+    TOG licenses this file to You under the GNU Affero General
+    Public License Version 3 (the "License") or (at your option)
+    any later version.  You may not use this file except in
+    compliance with the License.  You may obtain a copy of the
+    License at:
+
+         https://www.gnu.org/licenses/agpl-3.0.txt
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+    either express or implied.  See the License for the specific
+    language governing permissions and limitations under the
+    License.
 
 --%>
-
 <%@page language="java"
         contentType="text/html"
         session="true"
@@ -76,39 +68,34 @@
     String ipAddr = service.getIpAddress().getHostAddress();
     String serviceName = service.getServiceName();
 
-    //Collectd
-    Boolean isServiceCollectionEnabled = new CollectdConfigFactory().isServiceCollectionEnabled(service);
-    CollectdConfigFactory collectdConfigFactory = new CollectdConfigFactory();
-    List<String> collectdPackageNames = new ArrayList<String>();
-    Map<String,String> collectdParameters = new TreeMap<String,String>();
+    final boolean isServiceCollectionEnabled = new CollectdConfigFactory().isServiceCollectionEnabled(service);
+    final CollectdConfigFactory collectdConfigFactory = new CollectdConfigFactory();
+    final Map<String,String> collectdParameters = new TreeMap<String,String>();
 
-    if (isServiceCollectionEnabled) { // Service exists in any collection package and is enabled
+    if (isServiceCollectionEnabled) {
         for (org.opennms.netmgt.config.collectd.Package pkg : collectdConfigFactory.getPackages()) {
-            if (pkg.serviceInPackageAndEnabled(serviceName)) {
-                collectdPackageNames.add(pkg.getName()); //there should be at least one, right?
-            }
-            for (org.opennms.netmgt.config.collectd.Service collectdSvc : pkg.getServices()) {
-                if (collectdSvc.getName().equals(serviceName)) {
-		    pageContext.setAttribute("collectdInterval", collectdSvc.getInterval());
-                    for (org.opennms.netmgt.config.collectd.Parameter p : collectdSvc.getParameters()) {
-                        if (p.getKey().toLowerCase().contains("password")) {
-                            continue; // Hide passwords for security reasons
-                        } else {
-                            collectdParameters.put(p.getKey(), p.getValue());
-                        }
+            if (collectdConfigFactory.interfaceInPackage(service.getIpInterface(), pkg) && pkg.serviceInPackageAndEnabled(serviceName)) {
+                pageContext.setAttribute("collectdPackageName", pkg.getName());
+                final org.opennms.netmgt.config.collectd.Service collectdSvc = pkg.getService(serviceName);
+                pageContext.setAttribute("collectdInterval", collectdSvc.getInterval());
+                for (org.opennms.netmgt.config.collectd.Parameter p : collectdSvc.getParameters()) {
+                    if (p.getKey().toLowerCase().contains("password")) {
+                        continue;
+                    } else {
+                        collectdParameters.put(p.getKey(), p.getValue());
                     }
-                    pageContext.setAttribute("collectdParameters", collectdParameters);
                 }
+                pageContext.setAttribute("collectdParameters", collectdParameters);
+
+                for (Collector collectdCollector : collectdConfigFactory.getCollectors()) {
+                    if (collectdCollector.getService().equals(serviceName)) {
+                        pageContext.setAttribute("collectorClassName", collectdCollector.getClassName());
+                        break;
+                    }
+                }
+                break;
             }
         }
-        String collectorClassName = null;
-        for (Collector collectdCollector : collectdConfigFactory.getCollectors()) {
-            if (collectdCollector.getService().equals(serviceName)) {
-		pageContext.setAttribute("collectorClassName", collectdCollector.getClassName());
-    	        break;
-    	    }
-        }
-    pageContext.setAttribute("collectdPackageNames", collectdPackageNames);
     }
 
     // Pollerd
@@ -173,7 +160,6 @@
   <c:param name="ipinterfaceid" value="${service.ipInterface.id}"/>
 </c:url>
 
-
 <%@ page import="org.opennms.web.utils.Bootstrap" %>
 <% Bootstrap.with(pageContext)
           .headTitle("${service.serviceName} Service on ${service.ipInterface.ipAddress.hostAddress}")
@@ -183,9 +169,9 @@
           .breadcrumb("Service")
           .build(request);
 %>
+
 <jsp:directive.include file="/includes/bootstrap.jsp" />
-  
-  
+
 <sec:authorize url="admin/deleteService">
 
 <script type="text/javascript" >
@@ -325,40 +311,37 @@ function doDelete() {
               <span>Collection</span>
             </div>
             <table class="table table-sm">
-	      <% if (isServiceCollectionEnabled) { %>
+	        <% if (isServiceCollectionEnabled) { %>
               <tr>
                 <th>Collection Status</th>
                 <td>Enabled</td>
               </tr>
-              <c:forEach var="pkg" items="${collectdPackageNames}">
-                  <tr>
-                      <th>Collection Package</th>
-                      <td>${pkg}</td>
-                  </tr>
-              </c:forEach>
-             <tr>
-               <th>Collection Interval</th>
-               <c:choose>
-               <c:when test="${collectdInterval != null}"><td>${collectdInterval}</td></c:when>
-                   <c:otherwise><td>Unknown</td></c:otherwise>
-               </c:choose>
-             </tr>
-             <tr>
-               <th>Collector Class</th>
-               <c:choose>
-               <c:when test="${collectorClassName != null}"><td>${collectorClassName}</td></c:when>
-                   <c:otherwise><td>Unknown or Missing</td></c:otherwise>
-               </c:choose>
-             </tr>
-	      <% } else { %>
-	      <tr>
+              <tr>
+                <th>Collection Package</th>
+                <td>${collectdPackageName}</td>
+              </tr>
+              <tr>
+                <th>Collection Interval</th>
+                <c:choose>
+                  <c:when test="${collectdInterval != null}"><td>${collectdInterval}</td></c:when>
+                  <c:otherwise><td>Unknown</td></c:otherwise>
+                </c:choose>
+              </tr>
+              <tr>
+                <th>Collector Class</th>
+                <c:choose>
+                  <c:when test="${collectorClassName != null}"><td>${collectorClassName}</td></c:when>
+                  <c:otherwise><td>Unknown or Missing</td></c:otherwise>
+                </c:choose>
+              </tr>
+	        <% } else { %>
+	          <tr>
                 <th>Collection Status</th>
                 <td>Not Enabled for Collection</td>
               </tr>
-	      <% } %>
+	        <% } %>
             </table>
-            </div>
-
+          </div>
             <!-- Availability box -->
             <jsp:include page="/includes/serviceAvailability-box.jsp" flush="false" />
 

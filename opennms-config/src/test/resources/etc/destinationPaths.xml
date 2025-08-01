@@ -1,0 +1,14 @@
+<?xml version="1.0"?>
+<destinationPaths>
+    <header>
+        <rev>1.0</rev>
+        <created>Wednesday, December 6, 2023 11:34:00 AM EST</created>
+        <mstation>localhost</mstation>
+    </header>
+    <path name="foobar" initial-delay="0s">
+        <target>
+            <name>foo</name>
+            <command>bar</command>
+        </target>
+    </path>
+</destinationPaths>

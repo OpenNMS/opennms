@@ -34,6 +34,7 @@
 
     <feature name="cassandra-driver" version="${cassandraVersion}" description="Datastax Cassandra Driver">
         <feature>dropwizard-metrics</feature>
+        <feature prerequisite="true">guava</feature>
         <feature version="[${netty4Version},5)">netty</feature>
         <feature version="[${jackson2Version},3)">jackson-core</feature>
         <feature>jnr</feature>
@@ -60,6 +61,10 @@
 
     <feature name="commons-collections" version="${commonsCollectionsVersion}" description="Apache :: commons-collections">
         <bundle dependency="true">mvn:commons-collections/commons-collections/${commonsCollectionsVersion}</bundle>
+    </feature>
+
+    <feature name="commons-collections4" version="${commonsCollections4Version}" description="Apache :: commons-collections 4.x">
+        <bundle dependency="true">mvn:org.apache.commons/commons-collections4/${commonsCollections4Version}</bundle>
     </feature>
 
     <feature name="commons-compress" version="${commonsCompressVersion}" description="Apache :: commons-compress">
@@ -138,7 +143,7 @@
     <feature name="guava-dependencies" version="${project.version}" description="Google :: Guava Common Dependencies">
         <feature prerequisite="true">wrap</feature>
         <bundle start-level="${systemStartLevel}" dependency="true">wrap:mvn:org.codehaus.mojo/animal-sniffer-annotations/1.14$Bundle-SymbolicName=org.codehaus.mojo.animal-sniffer-annotations&amp;Bundle-Version=1.14</bundle>
-        <bundle start-level="${systemStartLevel}" dependency="true">wrap:mvn:com.google.errorprone/error_prone_annotations/2.10.0$Bundle-SymbolicName=com.google.errorprone.error-prone-annotations&amp;Bundle-Version=2.10.0</bundle>
+        <bundle start-level="${systemStartLevel}" dependency="true">wrap:mvn:com.google.errorprone/error_prone_annotations/${errorProneAnnotationsVersion}$Bundle-SymbolicName=com.google.errorprone.error-prone-annotations&amp;Bundle-Version=${errorProneAnnotationsVersion}</bundle>
         <bundle start-level="${systemStartLevel}" dependency="true">wrap:mvn:com.google.guava/failureaccess/1.0.1$Bundle-SymbolicName=com.google.guava.failureaccess&amp;Bundle-Version=1.0.1</bundle>
         <bundle start-level="${systemStartLevel}" dependency="true">wrap:mvn:org.checkerframework/checker-qual/2.0.0$Bundle-SymbolicName=org.checkerframework.checker-qual&amp;Bundle-Version=2.0.0</bundle>
         <bundle start-level="${systemStartLevel}" dependency="true">wrap:mvn:com.google.j2objc/j2objc-annotations/1.1$Bundle-SymbolicName=com.google.j2objc.j2objc-annotations&amp;Bundle-Version=1.1</bundle>
@@ -147,21 +152,6 @@
     <feature name="guava" version="${guavaOsgiVersion}" description="Google :: Guava">
         <feature prerequisite="true">guava-dependencies</feature>
         <bundle start-level="${earlyStartLevel}" dependency="true">mvn:com.google.guava/guava/${guavaVersion}</bundle>
-    </feature>
-
-    <!-- don't rely on dependency="true" for things that want specific versions -->
-    <feature name="guava17" version="17.0" description="Google :: Guava">
-        <bundle>mvn:com.google.guava/guava/17.0</bundle>
-    </feature>
-
-    <!-- don't rely on dependency="true" for things that want specific versions -->
-    <feature name="guava18" version="18.0" description="Google :: Guava">
-        <bundle>mvn:com.google.guava/guava/18.0</bundle>
-    </feature>
-
-    <!-- don't rely on dependency="true" for things that want specific versions -->
-    <feature name="guava21" version="21.0" description="Google :: Guava">
-        <bundle>mvn:com.google.guava/guava/21.0</bundle>
     </feature>
 
     <feature name="jackson1" version="${jacksonVersion}" description="Jackson 1">
@@ -221,8 +211,8 @@
     </feature>
 
     <feature name="java-native-access" version="${jnaVersion}" description="Java Native Access (JNA)">
-        <bundle>mvn:net.java.dev.jna/jna/${jnaVersion}</bundle>
-        <bundle>mvn:net.java.dev.jna/jna-platform/${jnaVersion}</bundle>
+        <bundle start-level="5">mvn:net.java.dev.jna/jna/${jnaVersion}</bundle>
+        <bundle start-level="5">mvn:net.java.dev.jna/jna-platform/${jnaVersion}</bundle>
     </feature>
 
     <feature name="jnr" version="${jnrVersion}" description="Java Native Runtime">
@@ -257,7 +247,7 @@ org.jolokia.authMode=jaas
         <bundle dependency="true" start-level="30">mvn:org.apache.geronimo.specs/geronimo-jta_1.1_spec/${geronimoVersion}</bundle>
         <bundle dependency="true" start-level="30">mvn:javax.annotation/javax.annotation-api/${javaxAnnotationApiVersion}</bundle>
         <bundle dependency="true" start-level="30">mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/${spiflyVersion}</bundle>
-        <bundle dependency="true" start-level="30">mvn:org.apache.aries/org.apache.aries.util/1.1.3</bundle>
+        <bundle dependency="true" start-level="30">mvn:org.apache.aries/org.apache.aries.util/${ariesUtilVersion}</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty/jetty-continuation/${jettyVersion}</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty/jetty-http/${jettyVersion}</bundle>
         <bundle start-level="30">mvn:org.eclipse.jetty/jetty-io/${jettyVersion}</bundle>
@@ -301,18 +291,31 @@ org.jolokia.authMode=jaas
         <requirement>osgi.implementation;osgi.implementation="osgi.http";version:Version="1.1"</requirement>
     </feature>
 
+    <feature name="jung" version="${jungVersion}" description="JUNG">
+        <feature>wrap</feature>
+        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
+        <bundle dependency="true">wrap:mvn:org.opennms.dependencies/jung-shaded/${project.version}$Export-Package=edu.uci.ics.jung*&amp;Bundle-Version=${jungVersion}</bundle>
+    </feature>
+
     <feature name="netty" version="${netty4Version}" description="Netty">
         <feature>bouncycastle</feature>
-        <bundle dependency="true">mvn:io.netty/netty-buffer/${netty4Version}</bundle>
-        <bundle dependency="true">mvn:io.netty/netty-codec/${netty4Version}</bundle>
-        <bundle dependency="true">mvn:io.netty/netty-codec-dns/${netty4Version}</bundle>
-        <bundle dependency="true">mvn:io.netty/netty-common/${netty4Version}</bundle>
-        <bundle dependency="true">mvn:io.netty/netty-handler/${netty4Version}</bundle>
-        <bundle dependency="true">mvn:io.netty/netty-resolver/${netty4Version}</bundle>
-        <bundle dependency="true">mvn:io.netty/netty-resolver-dns/${netty4Version}</bundle>
-        <bundle dependency="true">mvn:io.netty/netty-transport/${netty4Version}</bundle>
-        <bundle dependency="true">mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
-        <bundle dependency="true">mvn:io.netty/netty-transport-native-unix-common/${netty4Version}</bundle>
+
+        <!-- this is a repackaged version of org.eclipse.jetty.npn/npn-api and org.eclipse.jetty.alpn/alpn-api because of broken manifests -->
+        <bundle>mvn:org.opennms.dependencies/eclipse-npn-alpn/${project.version}</bundle>
+
+        <bundle>mvn:io.netty/netty-buffer/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-codec/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-codec-dns/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-common/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-handler/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-resolver/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-resolver-dns/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-transport/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-transport-classes-epoll/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-transport-native-epoll/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-transport-classes-kqueue/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-transport-native-kqueue/${netty4Version}</bundle>
+        <bundle>mvn:io.netty/netty-transport-native-unix-common/${netty4Version}</bundle>
     </feature>
 
     <feature name="org.json" version="${jsonVersion}" description="org.json">
@@ -324,14 +327,19 @@ org.jolokia.authMode=jaas
     </feature>
 
     <feature name="zookeeper-dependencies" version="${zookeeperVersion}" description="ZooKeeper Dependencies">
-        <feature prerequisite="true">wrap</feature>
-        <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
+        <feature prerequisite="true">guava-dependencies</feature>
+        <!-- Zookeeper would not properly run with our system guava, so explicitly pull in this bundle for it -->
+        <bundle start-level="${earlyStartLevel}">mvn:com.google.guava/guava/${guava32Version}</bundle>
         <feature version="[${jackson2Version},3)">jackson-core</feature>
         <bundle>wrap:mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}$Bundle-SymbolicName=org.apache.zookeeper.zookeeper&amp;Bundle-Version=${zookeeperVersion}&amp;Export-Package=org.apache.zookeeper*;version="${zookeeperVersion}"</bundle>
         <bundle>wrap:mvn:org.apache.zookeeper/zookeeper-jute/${zookeeperVersion}$Bundle-SymbolicName=org.apache.zookeeper.zookeeper.jute&amp;Bundle-Version=${zookeeperVersion}&amp;Export-Package=org.apache.*;version="${zookeeperVersion}"</bundle>
-        <bundle>mvn:org.apache.curator/curator-client/${curatorVersion}</bundle>
-        <bundle>mvn:org.apache.curator/curator-framework/${curatorVersion}</bundle>
-        <bundle>mvn:org.apache.curator/curator-recipes/${curatorVersion}</bundle>
+        <!--  Apache Curator shades Guava with a replacement, which complicates its use with OSGi.
+        For OSGi environments, this shaded dependency is omitted via the "osgi" classifier,
+        allowing the project to work with the standard Guava library.For more details,
+        see https://github.com/apache/curator/issues//984, https://github.com/apache/curator/pull/362 -->
+        <bundle>mvn:org.apache.curator/curator-client/${curatorVersion}/jar/osgi</bundle>
+        <bundle>mvn:org.apache.curator/curator-framework/${curatorVersion}/jar/osgi</bundle>
+        <bundle>mvn:org.apache.curator/curator-recipes/${curatorVersion}/jar/osgi</bundle>
     </feature>
 
     <feature name="scv-api" version="${project.version}" description="Secure Credentials Vault">
@@ -347,6 +355,7 @@ org.jolokia.authMode=jaas
         <feature>commons-codec</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature>scv-api</feature>
+        <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.fileutils/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.scv/org.opennms.features.scv.jceks-impl/${project.version}</bundle>
     </feature>
 

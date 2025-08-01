@@ -1,3 +1,25 @@
+///
+/// Licensed to The OpenNMS Group, Inc (TOG) under one or more
+/// contributor license agreements.  See the LICENSE.md file
+/// distributed with this work for additional information
+/// regarding copyright ownership.
+///
+/// TOG licenses this file to You under the GNU Affero General
+/// Public License Version 3 (the "License") or (at your option)
+/// any later version.  You may not use this file except in
+/// compliance with the License.  You may obtain a copy of the
+/// License at:
+///
+///      https://www.gnu.org/licenses/agpl-3.0.txt
+///
+/// Unless required by applicable law or agreed to in writing,
+/// software distributed under the License is distributed on an
+/// "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+/// either express or implied.  See the License for the specific
+/// language governing permissions and limitations under the
+/// License.
+///
+
 import { NodePreferences, OpenNmsPreferences } from '@/types'
 
 const OPENNMS_PREFERENCES_STORAGE_KEY = 'opennms-preferences'
@@ -6,15 +28,16 @@ const defaultPreferences = () => {
   return {
     nodePreferences: {
       nodeColumns: []
-    }
+    },
+    isSideMenuExpanded: false
   } as OpenNmsPreferences
 }
 
-export const savePreferences = (data: OpenNmsPreferences) => {
+const savePreferences = (data: OpenNmsPreferences) => {
   localStorage.setItem(OPENNMS_PREFERENCES_STORAGE_KEY, JSON.stringify(data, getCircularReplacer()))
 }
 
-export const loadPreferences = (): OpenNmsPreferences | null => {
+const loadPreferences = (): OpenNmsPreferences | null => {
   const json = localStorage.getItem(OPENNMS_PREFERENCES_STORAGE_KEY)
 
   if (json) {
@@ -28,14 +51,18 @@ export const loadPreferences = (): OpenNmsPreferences | null => {
   return null
 }
 
-export const saveNodePreferences = (data: NodePreferences) => {
+const loadDefaultPreferences = () => {
+  return defaultPreferences()
+}
+
+const saveNodePreferences = (data: NodePreferences) => {
   const prefs = loadPreferences() || defaultPreferences()
   prefs.nodePreferences = data
 
   savePreferences(prefs)
 }
 
-export const loadNodePreferences = (): NodePreferences | null => {
+const loadNodePreferences = (): NodePreferences | null => {
   const prefs = loadPreferences() || defaultPreferences()
 
   return prefs.nodePreferences
@@ -53,4 +80,12 @@ const getCircularReplacer = () => {
     }
     return value
   }
+}
+
+export {
+  loadDefaultPreferences,
+  loadNodePreferences,
+  loadPreferences,
+  saveNodePreferences,
+  savePreferences
 }

@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.core.mate.api;
 
 import static org.hamcrest.Matchers.hasItem;
@@ -59,6 +52,7 @@ public class MetaDataUtilsTest {
         metaData.put(new ContextKey("ctx5", "key1"), "${ctx5:key2}");
         metaData.put(new ContextKey("ctx5", "key2"), "working");
         metaData.put(new ContextKey("ctx6", "key1"), "${ctx6:key1}a");
+        metaData.put(new ContextKey("ctx7", "key1"), "42");
     }
 
     @Test
@@ -112,7 +106,6 @@ public class MetaDataUtilsTest {
     @Test
     public void testPageSequence() {
         final PageSequence pageSequence = JaxbUtils.unmarshal(PageSequence.class, getClass().getClassLoader().getResourceAsStream("page-sequence.xml"));
-        System.err.println(pageSequence);
         final Map<String, Object> input = new HashMap<>();
         input.put("page-sequence", pageSequence);
         final Map<String, Object> output = Interpolator.interpolateObjects(input, new MapScope(Scope.ScopeName.NODE, this.metaData));
@@ -129,5 +122,69 @@ public class MetaDataUtilsTest {
         assertEquals("val1", result.parts.get(0).value.value);
         assertEquals("val4", result.parts.get(1).value.value);
         assertEquals("foo-${aaa}-bar-val1-bla-val4-blupp-${bbb}", result.output);
+    }
+
+    @Test
+    public void testFallBackScopeProvider() {
+        final Map<ContextKey, String> map1 = new TreeMap<>();
+        map1.put(new ContextKey("foobar", "key1"), "value1");
+        map1.put(new ContextKey("foobar", "key2"), "value2");
+        map1.put(new ContextKey("foobar", "key3"), "value3");
+
+        final Map<ContextKey, String> map2 = new TreeMap<>();
+        map2.put(new ContextKey("foobar", "key3"), "new3");
+
+        final FallBackScopeProvider fallBackScopeProvider = new FallBackScopeProvider(
+                () -> new MapScope(Scope.ScopeName.NODE, map1),
+                () -> new MapScope(Scope.ScopeName.INTERFACE, map2)
+        );
+
+        assertEquals("value1", Interpolator.interpolate("${foobar:key1}", fallBackScopeProvider.getScope()).output);
+        assertEquals("value2", Interpolator.interpolate("${foobar:key2}", fallBackScopeProvider.getScope()).output);
+        assertEquals("new3", Interpolator.interpolate("${foobar:key3}", fallBackScopeProvider.getScope()).output);
+    }
+
+    @Test
+    public void testParts() {
+        final Interpolator.Result result = Interpolator.interpolate("foo-${aaa}-bar-${ctx1:key1|down}-bla-${ctx2:key4|down}-blupp-${bbb}", new MapScope(Scope.ScopeName.NODE, this.metaData));
+        assertEquals(2, result.parts.size());
+        assertEquals("val1", result.parts.get(0).value.value);
+        assertEquals("${ctx1:key1|down}", result.parts.get(0).input);
+        assertEquals("ctx1:key1", result.parts.get(0).match);
+        assertEquals("val4", result.parts.get(1).value.value);
+        assertEquals("${ctx2:key4|down}", result.parts.get(1).input);
+        assertEquals("ctx2:key4", result.parts.get(1).match);
+        assertEquals("foo-${aaa}-bar-val1-bla-val4-blupp-${bbb}", result.output);
+    }
+
+    @Test
+    public void testNMS16374() {
+        assertResultOutput("${ctx1:key1|aaa:bbb|ccc:ddd}", "val1");
+        assertResultOutput("${aaa:bbb|ctx1:key1|ccc:ddd}","val1");
+        assertResultOutput("${aaa:bbb|ccc:ddd|ctx1:key1}","val1");
+        assertResultOutput("${aaa:bbb|ccc:ddd|eee:fff}","");
+        assertResultOutput("${aaa:bbb}","");
+        assertResultOutput("${ctx1:key1}", "val1");
+        assertResultOutput("${aaa:bbb|ccc:ddd|\"eee:fff\"}","eee:fff");
+        assertResultOutput("${aaa:bbb|ccc:ddd|\"ctx1:key1\"}","ctx1:key1");
+        assertResultOutput("${aaa:bbb|ccc:ddd|'eee:fff'}","eee:fff");
+        assertResultOutput("${aaa:bbb|ccc:ddd|'ctx1:key1'}","ctx1:key1");
+        assertResultOutput("${requisition:url|detector:url|'jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms'}", "jdbc:postgresql://OPENNMS_JDBC_HOSTNAME:5432/opennms");
+        assertResultOutput("${requisition:url|\"http://example.org\"}", "http://example.org");
+    }
+
+    @Test
+    public void testEscaping() {
+        assertResultOutput("xxx\"$$aaa'$bbb$ccc${ctx1:key1|aaa:bbb|ccc:ddd}", "xxx\"$$aaa'$bbb$cccval1");
+        assertResultOutput("xxx\"$$\"aaa'$$'bbb$$ccc${ctx1:key1|aaa:bbb|ccc:ddd}", "xxx\"$$\"aaa'$$'bbb$$cccval1");
+        assertResultOutput("${aaa:bbb|ccc:ddd|\"eee:fff\"}","eee:fff");
+        assertResultOutput("${aaa:bbb|ccc:ddd|\"ctx1:key1\"}","ctx1:key1");
+        assertResultOutput("${aaa:bbb|ccc:ddd|'eee:fff'}","eee:fff");
+        assertResultOutput("${aaa:bbb|ccc:ddd|'ctx1:key1'}","ctx1:key1");
+    }
+
+    private void assertResultOutput(final String expression, final String expected) {
+        final Interpolator.Result result = Interpolator.interpolate(expression, new MapScope(Scope.ScopeName.NODE, this.metaData));
+        assertEquals(expected, result.output);
     }
 }

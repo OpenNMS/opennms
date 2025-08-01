@@ -1,8 +1,9 @@
 #!/bin/bash
 
-export DOCKER_CONTENT_TRUST=1
+export DOCKER_CONTENT_TRUST=0
 
 export COSIGN_VERSION="1.13.1"
+export ENABLE_COSIGN="0"
 
 export KEY_FOLDER="${HOME}/.docker/trust"
 export PRIVATE_KEY_FOLDER="${KEY_FOLDER}/private"
@@ -18,6 +19,10 @@ NOTARY_AUTH="$(printf '%s:%s' "${DOCKER_USERNAME}" "${DOCKER_PASSWORD}" | base64
 export NOTARY_AUTH
 
 configure_cosign() {
+  if [ "${ENABLE_COSIGN}" -ne 1 ]; then
+    return
+  fi
+
   if [ ! -e /tmp/cosign.key ]; then
     printf '%s' "${COSIGN_PRIVATE_KEY}" | base64 -d > /tmp/cosign.key
   fi
@@ -31,6 +36,10 @@ configure_cosign() {
 cosign_sign() {
   local _tag="$1"
   local _sbom="$2"
+
+  if [ "${ENABLE_COSIGN}" -ne 1 ]; then
+    return
+  fi
 
   if [ -z "${_tag}" ]; then
     echo 'you must specify a docker tag to sign!'

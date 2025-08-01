@@ -13,15 +13,28 @@
         <exclude>**/*jasypt*/1.9.2_1/*</exclude>
         <exclude>**/jettison/1.3.*</exclude>
         <exclude>**/jettison/1.3.*/*</exclude>
+        <exclude>**/jettison/1.4.*</exclude>
+        <exclude>**/jettison/1.4.*/*</exclude>
         <exclude>**/proton-j/0.14.0/*</exclude>
         <exclude>**/proton-j/0.14.0</exclude>
         <exclude>**/proton-j/0.14.0/*</exclude>
+        <exclude>**/proton-j/0.26.0</exclude>
+        <exclude>**/proton-j/0.26.0/*</exclude>
         <exclude>**/scala-library/2.11.0</exclude>
         <exclude>**/scala-library/2.11.0/*</exclude>
         <exclude>**/sshd-*/2.8.0</exclude>
         <exclude>**/sshd-*/2.8.0/*</exclude>
         <exclude>**/*xstream*/1.4.8_1</exclude>
         <exclude>**/*xstream*/1.4.8_1/*</exclude>
+        <exclude>%regex[.*org\/bouncycastle\/(bcprov|bctls|bcutil|bcpkix)-jdk18on\/1.7[56]\/?.*]</exclude>
+        <exclude>**/commons-io/commons-io/2.8.0</exclude>
+        <exclude>**/commons-io/commons-io/2.8.0/*</exclude>
+        <exclude>**/commons-io/commons-io/2.13.0</exclude>
+        <exclude>**/commons-io/commons-io/2.13.0/*</exclude>
+        <exclude>**/zookeeper/3.4.14</exclude>
+        <exclude>**/zookeeper/3.4.14/*</exclude>
+        <exclude>/org/eclipse/jetty/**/9.4.52.v20230823</exclude>
+        <exclude>/org/eclipse/jetty/**/9.4.52.v20230823/*</exclude>
       </excludes>
     </fileSet>
   </fileSets>

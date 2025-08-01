@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2009-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.provision.service;
 
 import com.google.common.collect.Lists;
@@ -35,8 +28,8 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.features.config.service.api.ConfigurationManagerService;
-import org.opennms.netmgt.config.provisiond.ProvisiondConfiguration;
+import org.opennms.features.scv.api.Credentials;
+import org.opennms.features.scv.api.SecureCredentialsVault;
 import org.opennms.netmgt.config.provisiond.RequisitionDef;
 import org.opennms.netmgt.dao.api.ProvisiondConfigurationDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
@@ -50,16 +43,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
-import org.springframework.transaction.annotation.Transactional;
 
 import javax.xml.bind.JAXBException;
 import java.io.IOException;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Optional;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
-
-import static org.junit.Assert.fail;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @ContextConfiguration(locations={
@@ -96,6 +87,9 @@ public class ImportSchedulerIT implements InitializingBean {
     @Autowired
     MockEventIpcManager m_mockEventIpcManager;
 
+    @Autowired
+    private SecureCredentialsVault secureCredentialsVault;
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
@@ -104,6 +98,7 @@ public class ImportSchedulerIT implements InitializingBean {
     @Before
     public void setUp() throws IOException, JAXBException {
         MockLogAppender.setupLogging();
+        secureCredentialsVault.setCredentials("requisition", new Credentials("admin", "admin"));
     }
 
     @After
@@ -238,4 +233,61 @@ public class ImportSchedulerIT implements InitializingBean {
         anticipator.verifyAnticipated();
     }
 
+    @Test
+    @JUnitTemporaryDatabase
+    public void buildHttpImportSchedule() throws SchedulerException, IOException, InterruptedException {
+        JobDetail detail = JobBuilder.newJob(ImportJob.class).withIdentity("test", ImportScheduler.JOB_GROUP).storeDurably(false).requestRecovery(false).build();
+        detail.getJobDataMap().put(ImportJob.URL, "http://${scv:requisition:username}:${scv:requisition:password}@localhost:8980/opennms/rest/requisitions/test");
+        detail.getJobDataMap().put(ImportJob.RESCAN_EXISTING, Boolean.FALSE.toString());
+        String expectedUrl = "http://admin:admin@localhost:8980/opennms/rest/requisitions/test";
+
+        CountDownLatch latch = new CountDownLatch(1);
+
+        m_importScheduler.getScheduler().getListenerManager().addTriggerListener(new TriggerListener() {
+            @Override
+            public String getName() {
+                return "TestTriggerListener";
+            }
+
+            @Override
+            public void triggerComplete(Trigger trigger, JobExecutionContext context, Trigger.CompletedExecutionInstruction triggerInstructionCode) {
+                LOG.info("triggerComplete called on trigger listener");
+            }
+
+            @Override
+            public void triggerFired(Trigger trigger, JobExecutionContext context) {
+                LOG.info("triggerFired called on trigger listener");
+                Job jobInstance = context.getJobInstance();
+
+                if (jobInstance instanceof ImportJob) {
+                    ImportJob importJob = (ImportJob) jobInstance;
+                    String actualUrl = importJob.interpolate(context.getJobDetail().getJobDataMap().getString(ImportJob.URL));
+                    Assert.assertEquals("Interpolated URL did not match expected value.", expectedUrl, actualUrl);
+                }
+                latch.countDown();
+            }
+
+            @Override
+            public void triggerMisfired(Trigger trigger) {
+                LOG.info("triggerMisFired called on trigger listener");
+                Assert.fail("Trigger misfired — job was not executed.");
+            }
+
+            @Override
+            public boolean vetoJobExecution(Trigger trigger, JobExecutionContext context) {
+                LOG.info("vetoJobExecution called on trigger listener");
+                return false;
+            }
+        });
+
+        Calendar testCal = Calendar.getInstance();
+        testCal.add(Calendar.SECOND, 5);
+        Trigger trigger = TriggerBuilder.newTrigger().withIdentity("test", ImportScheduler.JOB_GROUP).startAt(testCal.getTime()).build();
+        m_importScheduler.getScheduler().scheduleJob(detail, trigger);
+        m_importScheduler.start();
+
+        // Wait max 30 seconds for the listener to be called
+        boolean completed = latch.await(30, TimeUnit.SECONDS);
+        Assert.assertTrue("Trigger listener was never called.", completed);
+    }
 }

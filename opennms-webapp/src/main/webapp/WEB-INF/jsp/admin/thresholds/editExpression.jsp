@@ -1,34 +1,26 @@
 <%--
-/*******************************************************************************
- * This file is part of OpenNMS(R).
- *
- * Copyright (C) 2007-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
+
+    Licensed to The OpenNMS Group, Inc (TOG) under one or more
+    contributor license agreements.  See the LICENSE.md file
+    distributed with this work for additional information
+    regarding copyright ownership.
+
+    TOG licenses this file to You under the GNU Affero General
+    Public License Version 3 (the "License") or (at your option)
+    any later version.  You may not use this file except in
+    compliance with the License.  You may obtain a copy of the
+    License at:
+
+         https://www.gnu.org/licenses/agpl-3.0.txt
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+    either express or implied.  See the License for the specific
+    language governing permissions and limitations under the
+    License.
 
 --%>
-
 <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
 <%@ taglib uri="http://java.sun.com/jsp/jstl/functions" prefix="fn"%>
 
@@ -64,6 +56,7 @@
         	<th>Expression</th>
         	<th>Datasource type</th>
         	<th>Datasource label</th>
+        	<th>Expression label</th>
         </tr>
         	<tr>
                 <td>
@@ -97,6 +90,7 @@
         				</c:forEach>
         			</select></td>
                 <td><input type="text" name="dsLabel" class="form-control" size="30" value="${expression.dsLabel.orElse(null)}"/></td>
+                <td><input type="text" name="exprLabel" class="form-control" size="30" value="${expression.exprLabel.orElse(null)}"/></td>
         	</tr>
         </table>
         <table class="table table-sm">
@@ -211,7 +205,7 @@
       </div>
       <div class="card-body">
         <p>
-        <b>Description</b>: An optional description for the threshold expression, to help identify what is their purpose.<br/>
+        <b>Description</b>: An optional full-text description for the threshold expression, to help identify what is their purpose.<br/>
         <b>Type</b>:<br/>
         &nbsp;&nbsp;<b>high</b>: Triggers when the value of the data source equals or exceeds the "value", and is re-armed when it drops below the "re-arm" value.<br/>
         &nbsp;&nbsp;<b>low</b>: Triggers when the value of the data source drops to or below the "value", and is re-armed when it equals or exceeds the "re-arm" value.<br/>
@@ -223,6 +217,7 @@
         <b>Expression</b>: A  mathematical expression involving datasource names which will be evaluated and compared to the threshold values<br/>
         <b>Data source type</b>: Node for "node-level" data items, and "interface" for interface-level items.  <br/>
         <b>Datasource label</b>: The name of the collected "string" type data item to use as a label when reporting this threshold<br/>
+        <b>Expression label</b>: A short human-readable description of the threshold expression<br/>
         <b>Value</b>: Use depends on the type of threshold<br/>
         <b>Re-arm</b>: Use depends on the type of threshold; it is unused/ignored for relativeChange thresholds<br/>
         <b>Trigger</b>: The number of times the threshold must be "exceeded" in a row before the threshold will be triggered.  Not used for relativeChange thresholds.<br/>

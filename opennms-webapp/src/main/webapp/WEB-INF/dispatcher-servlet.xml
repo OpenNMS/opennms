@@ -270,6 +270,10 @@
         <property name="eventConfDao" ref="eventConfDao"/>
     </bean>
 
+    <bean name="/newsfeed/newsFeedPanel.htm" class="org.opennms.web.controller.newsfeed.NewsFeedController">
+        <property name="successView" value="newsfeed/newsFeedPanel"/>
+    </bean>
+
     <bean name="mapMenuEntries" class="org.opennms.web.navigate.MenuDropdownNavBarEntry">
         <property name="name" value="Maps" />
         <property name="url" value="maps.htm" />
@@ -380,6 +384,14 @@
                                 <property name="url" value="ui/index.html#/scv"/>
                                 <property name="locationMatch" value="configurationManagement"/>
                                 <property name="roles" value="ROLE_ADMIN"/>
+                            </bean>
+                            <bean class="org.opennms.web.navigate.RoleBasedNavBarEntry">
+                                <property name="name" value="Connect to Zenith"/>
+                                <property name="url" value="ui/index.html#/zenith-connect"/>
+                                <property name="locationMatch" value="configurationManagement"/>
+                                <property name="systemProperty" value="opennms.zenithConnect.enabled"/>
+                                <property name="systemPropertyValue" value="true"/>
+                                <property name="roles" value="ROLE_ADMIN,ROLE_USER"/>
                             </bean>
                         </list>
                     </property>

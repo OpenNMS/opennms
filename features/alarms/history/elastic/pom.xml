@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.alarms</groupId>
     <artifactId>org.opennms.features.alarms.history</artifactId>
-    <version>33.0.0-SNAPSHOT</version>
+    <version>34.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.alarms.history</groupId>
@@ -71,9 +71,9 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
-      <groupId>io.searchbox</groupId>
+      <groupId>org.opennms.features.jest</groupId>
       <artifactId>jest-complete-osgi</artifactId>
-      <version>${jestVersion}</version>
+      <version>${project.version}</version>
     </dependency>
     <dependency>
       <groupId>com.google.code.gson</groupId>
@@ -186,7 +186,7 @@
     <dependency>
       <groupId>org.opennms.core.test-api</groupId>
       <artifactId>org.opennms.core.test-api.elasticsearch</artifactId>
-      <version>33.0.0-SNAPSHOT</version>
+      <version>${project.version}</version>
     </dependency>
   </dependencies>
 </project>

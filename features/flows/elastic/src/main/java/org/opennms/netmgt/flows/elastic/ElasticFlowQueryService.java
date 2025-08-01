@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2020 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2020 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.flows.elastic;
 
 import java.util.Arrays;
@@ -39,6 +32,9 @@ import java.util.function.Function;
 import java.util.stream.Collector;
 import java.util.stream.Collectors;
 
+import org.opennms.features.elastic.client.ElasticRestClient;
+import org.opennms.features.elastic.client.model.SearchRequest;
+import org.opennms.features.elastic.client.model.SearchResponse;
 import org.opennms.features.jest.client.index.IndexSelector;
 import org.opennms.netmgt.flows.api.Directional;
 import org.opennms.netmgt.flows.api.FlowQueryService;
@@ -51,20 +47,13 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Table;
 
-import io.searchbox.action.Action;
-import io.searchbox.client.JestClient;
-import io.searchbox.client.JestResult;
-import io.searchbox.client.JestResultHandler;
-import io.searchbox.core.Search;
-import io.searchbox.core.SearchResult;
-
 public abstract class ElasticFlowQueryService implements FlowQueryService {
     private static final Logger LOG = LoggerFactory.getLogger(ElasticFlowQueryService.class);
 
-    private final JestClient client;
+    private final ElasticRestClient client;
     private final IndexSelector indexSelector;
 
-    public ElasticFlowQueryService(JestClient client, IndexSelector indexSelector) {
+    public ElasticFlowQueryService(ElasticRestClient client, IndexSelector indexSelector) {
         this.client = Objects.requireNonNull(client);
         this.indexSelector = Objects.requireNonNull(indexSelector);
     }
@@ -106,37 +95,20 @@ public abstract class ElasticFlowQueryService implements FlowQueryService {
                         .collect(collector));
     }
 
-    public CompletableFuture<SearchResult> searchAsync(String query, TimeRangeFilter timeRangeFilter) {
-        Search.Builder builder = new Search.Builder(query);
+    public CompletableFuture<SearchResponse> searchAsync(String query, TimeRangeFilter timeRangeFilter) {
+        final List<String> indices;
         if(timeRangeFilter != null) {
-            final List<String> indices = indexSelector.getIndexNames(timeRangeFilter.getStart(), timeRangeFilter.getEnd());
-            builder.addIndices(indices);
-            builder.setParameter("ignore_unavailable", "true"); // ignore unknown index
-
+            indices = indexSelector.getIndexNames(timeRangeFilter.getStart(), timeRangeFilter.getEnd());
             LOG.debug("Executing asynchronous query on {}: {}", indices, query);
         } else {
+            indices = List.of("netflow-*"); // Search all netflow indices
             LOG.debug("Executing asynchronous query on all indices: {}", query);
         }
-        return executeAsync(builder.build());
-    }
-
-    public <T extends JestResult> CompletableFuture<T> executeAsync(Action<T> action) {
-        final CompletableFuture<T> future = new CompletableFuture<>();
-        client.executeAsync(action, new JestResultHandler<T>() {
-            @Override
-            public void completed(T result) {
-                if (!result.isSucceeded()) {
-                    future.completeExceptionally(new Exception(result.getErrorMessage()));
-                } else {
-                    future.complete(result);
-                }
-            }
-            @Override
-            public void failed(Exception ex) {
-                future.completeExceptionally(ex);
-            }
-        });
-        return future;
+        
+        SearchRequest searchRequest = SearchRequest.forIndices(indices, query);
+        searchRequest.addParameter("ignore_unavailable", "true"); // ignore unknown index
+        
+        return client.searchAsync(searchRequest);
     }
 
 }

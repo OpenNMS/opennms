@@ -1,7 +1,7 @@
 
 = Usage Statistics
 
-By default, the Usage Statistics module collects anonymous use statistics.
+By default, the Usage Statistics module collects anonymous usage statistics.
 It publishes them to an aggregated list of statistics from all participating users (https://stats.opennms.com/[OpenNMS Usage Report]) when {page-component-title} starts, and every 24 hours after.
 
 (For information on usage statistics collection and user consent, see xref:deployment:core/getting-started.adoc#usage-statistics[usage statistics].)
@@ -97,5 +97,16 @@ To block the usage statistics feature from loading on future start ups, do the f
 In the core's `etc/featuresBoot.d` directory, create a file `disable_datachoices.boot` that contains the string `!datachoices` on a line by itself.
 
 
+[[disable-product-update-enrollment]]
+== Disable product update enrollment
 
+A related feature is Product Update Enrollment.
+On initial usage, a dialog will display allowing the user to enter some information in order to receive product update information from OpenNMS.
+The user can opt out by clicking "Opt Out".
+To disable the feature entirely, create a file in the `etc/opennms.properties.d` folder and add the following line.
+This will prevent the dialog from displaying and prevent any data being sent to OpenNMS.
 
+[source]
+----
+opennms.productUpdateEnrollment.show=false
+----

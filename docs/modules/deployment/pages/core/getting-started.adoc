@@ -18,6 +18,13 @@ ifeval::["{page-component-title}" == "Meridian"]
 endif::[]
 * Sign in to the web UI and change the `admin` account's default password.
 
+== DNS considerations
+
+If you are planning a large deployment, you may need to review your DNS configuration to ensure name lookups can be processed quickly.
+DNS lookups may be preformed by different processes, including while provisioning new nodes and when receiving syslog messages.
+It is vital that DNS lookups can be performed quickly to prevent them from becoming a bottleneck, which can happen if your deployment covers thousands of nodes.
+One way to mitigate DNS performance is to setup your {page-component-title} as a secondary DNS server so that it is able to self-host DNS records for your network.
+
 ifeval::["{page-component-title}" == "Horizon"]
 == Quick installation
 
@@ -42,7 +49,7 @@ The following components and settings are required to set up a new {page-compone
 ifeval::["{page-component-title}" == "Meridian"]
 * Credentials to access the Meridian repositories.
 endif::[]
-* A Linux physical server, or a virtual machine running a <<core/system-requirements.adoc#operating-systems-core, supported Linux operating system>>.
+* A Linux physical server, or a virtual machine running a <<./system-requirements.adoc#operating-systems-core, supported Linux operating system>>.
 * Internet access to download the installation packages.
 * A working DNS server, and a localhost and server name that resolve properly.
 * A system user with administrative permissions (`sudo`) to perform installation.

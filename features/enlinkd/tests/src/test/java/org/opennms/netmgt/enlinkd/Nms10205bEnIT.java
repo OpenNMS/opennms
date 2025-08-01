@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.enlinkd;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -490,7 +483,7 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> mumbaiospflinks = m_ospfLinkDao.findByNodeId(mumbai.getId());
         printOspfTopology(mumbaiospflinks);
         assertEquals(4,mumbaiospflinks.size());
-        Thread.sleep(1000);
+        Thread.sleep(200);
         
         assertTrue(m_linkd.runSingleSnmpCollection(delhi.getId()));
         OspfElement delhiospfelem = m_ospfElementDao.findByRouterId(DELHI_OSPF_ID);
@@ -501,7 +494,7 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> delhiospflinks = m_ospfLinkDao.findByNodeId(delhi.getId());
         printOspfTopology(delhiospflinks);
         assertEquals(3,delhiospflinks.size());
-        Thread.sleep(1000);
+        Thread.sleep(200);
 
         assertTrue(m_linkd.runSingleSnmpCollection(bangalore.getId()));
         OspfElement bangaloreospfelem = m_ospfElementDao.findByRouterId(BANGALORE_OSPF_ID);
@@ -512,7 +505,7 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> bangaloreospflinks = m_ospfLinkDao.findByNodeId(bangalore.getId());
         printOspfTopology(bangaloreospflinks);
         assertEquals(4,bangaloreospflinks.size());
-        Thread.sleep(1000);
+        Thread.sleep(200);
 
         assertTrue(m_linkd.runSingleSnmpCollection(bagmane.getId()));
         OspfElement bagmaneospfelem = m_ospfElementDao.findByRouterId(BAGMANE_OSPF_ID);
@@ -523,7 +516,7 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> bagmaneospflinks = m_ospfLinkDao.findByNodeId(bagmane.getId());
         printOspfTopology(bagmaneospflinks);
         assertEquals(4,bagmaneospflinks.size());
-        Thread.sleep(1000);
+        Thread.sleep(200);
 
         assertTrue(m_linkd.runSingleSnmpCollection(mysore.getId()));
         OspfElement mysoreospfelem = m_ospfElementDao.findByRouterId(MYSORE_OSPF_ID);
@@ -534,7 +527,7 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> mysoreosplinks = m_ospfLinkDao.findByNodeId(mysore.getId());
         printOspfTopology(mysoreosplinks);
         assertEquals(2,mysoreosplinks.size());
-        Thread.sleep(1000);
+        Thread.sleep(200);
 
         assertTrue(m_linkd.runSingleSnmpCollection(spaceexsw1.getId()));
         OspfElement spaceexsw1ospfelem = m_ospfElementDao.findByRouterId(SPACE_EX_SW1_OSPF_ID);
@@ -545,7 +538,7 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> spaceexsw1ospflinks = m_ospfLinkDao.findByNodeId(spaceexsw1.getId());
         printOspfTopology(spaceexsw1ospflinks);
         assertEquals(2,spaceexsw1ospflinks.size());
-        Thread.sleep(1000);
+        Thread.sleep(200);
 
         assertTrue(m_linkd.runSingleSnmpCollection(spaceexsw2.getId()));
         OspfElement spaceexsw2ospfelem = m_ospfElementDao.findByRouterId(SPACE_EX_SW2_OSPF_ID);
@@ -556,7 +549,7 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> spaceexsw2ospflinks = m_ospfLinkDao.findByNodeId(spaceexsw2.getId());
         printOspfTopology(spaceexsw2ospflinks);
         assertEquals(2,spaceexsw2ospflinks.size());
-        Thread.sleep(1000);
+        Thread.sleep(200);
 
         assertTrue(m_linkd.runSingleSnmpCollection(j635042.getId()));
         OspfElement j635042ospfelem = m_ospfElementDao.findByRouterId(J6350_42_OSPF_ID);
@@ -567,7 +560,7 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> j635042ospflinks = m_ospfLinkDao.findByNodeId(j635042.getId());
         printOspfTopology(j635042ospflinks);
         assertEquals(1,j635042ospflinks.size());
-        Thread.sleep(1000);
+        Thread.sleep(200);
 
         assertTrue(m_linkd.runSingleSnmpCollection(srx100.getId()));
         assertNull(m_ospfElementDao.findByNodeId(srx100.getId()));

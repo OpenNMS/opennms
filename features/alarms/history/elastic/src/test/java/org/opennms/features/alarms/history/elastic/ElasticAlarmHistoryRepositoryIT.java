@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2018-2023 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2023 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.features.alarms.history.elastic;
 
 import static org.awaitility.Awaitility.await;
@@ -107,7 +100,7 @@ public class ElasticAlarmHistoryRepositoryIT {
 
     @Test
     public void canGetAlarmAtTimestamp() {
-        OnmsAlarm a1 = createAlarm(1, 1L);
+        OnmsAlarm a1 = createAlarm(1, 1L, 1L);
 
         // An alarm that doesn't exist should return null
         assertThat(repo.getAlarmWithDbIdAt(a1.getId(), 0).orElse(null), nullValue());
@@ -131,7 +124,7 @@ public class ElasticAlarmHistoryRepositoryIT {
         PseudoClock.getInstance().advanceTime(1, TimeUnit.MILLISECONDS);
 
         // Update the alarm
-        updateAlarmWithEvent(a1, 2L);
+        updateAlarmWithEvent(a1, a1.getId(), 2L);
         indexer.handleNewOrUpdatedAlarm(a1);
 
         await().until(() -> repo.getAlarmWithDbIdAt(a1.getId(), 2).get().getCounter(), equalTo(2));
@@ -150,7 +143,7 @@ public class ElasticAlarmHistoryRepositoryIT {
 
     @Test
     public void canGetStatesForAlarmWithDbId() {
-        OnmsAlarm a1 = createAlarm(1, 1L);
+        OnmsAlarm a1 = createAlarm(1, 1L, 1L);
 
         // An alarm that doesn't exist should return an empty list
         assertThat(repo.getStatesForAlarmWithDbId(a1.getId()), empty());
@@ -170,7 +163,7 @@ public class ElasticAlarmHistoryRepositoryIT {
         PseudoClock.getInstance().advanceTime(1, TimeUnit.MILLISECONDS);
 
         // Update the alarm
-        updateAlarmWithEvent(a1, 2L);
+        updateAlarmWithEvent(a1, a1.getId(), 2L);
         indexer.handleNewOrUpdatedAlarm(a1);
 
         // Two state changes
@@ -200,7 +193,7 @@ public class ElasticAlarmHistoryRepositoryIT {
         PseudoClock.getInstance().advanceTime(1, TimeUnit.MILLISECONDS);
 
         // Index some alarm
-        OnmsAlarm a1 = createAlarm(1, 1L);
+        OnmsAlarm a1 = createAlarm(1, 1L, 1L);
         indexer.handleNewOrUpdatedAlarm(a1);
 
         // One alarm active
@@ -211,7 +204,7 @@ public class ElasticAlarmHistoryRepositoryIT {
         PseudoClock.getInstance().advanceTime(1, TimeUnit.MILLISECONDS);
 
         // Index another alarm
-        OnmsAlarm a2 = createAlarm(2, 2L);
+        OnmsAlarm a2 = createAlarm(2, 2L, 2L);
         indexer.handleNewOrUpdatedAlarm(a2);
 
         // Two alarms active
@@ -246,7 +239,7 @@ public class ElasticAlarmHistoryRepositoryIT {
 
         // Index a1
 
-        OnmsAlarm a1 = createAlarm(1, 1L);
+        OnmsAlarm a1 = createAlarm(1, 1L, 1L);
         indexer.handleNewOrUpdatedAlarm(a1);
 
         // t=2
@@ -257,7 +250,7 @@ public class ElasticAlarmHistoryRepositoryIT {
 
         // Index a2
 
-        OnmsAlarm a2 = createAlarm(2, 2L);
+        OnmsAlarm a2 = createAlarm(2, 2L, 2L);
         indexer.handleNewOrUpdatedAlarm(a2);
 
         // Wait until we have two results
@@ -274,7 +267,7 @@ public class ElasticAlarmHistoryRepositoryIT {
         assertThat(a2State.getDeletedTime(), nullValue());
     }
 
-    private static OnmsAlarm createAlarm(int id, long firstEventTime) {
+    private static OnmsAlarm createAlarm(int id, long eventid, long firstEventTime) {
         OnmsAlarm alarm = new OnmsAlarm();
         alarm.setId(id);
         alarm.setReductionKey("rkey-" + id);
@@ -282,15 +275,15 @@ public class ElasticAlarmHistoryRepositoryIT {
         alarm.setCounter(1);
 
         OnmsEvent lastEvent = new OnmsEvent();
-        lastEvent.setId(id);
+        lastEvent.setId(eventid);
         lastEvent.setEventTime(new Date(firstEventTime));
         alarm.setLastEvent(lastEvent);
         return alarm;
     }
 
-    private static void updateAlarmWithEvent(OnmsAlarm a, long lastEventTime) {
+    private static void updateAlarmWithEvent(OnmsAlarm a, long eventid, long lastEventTime) {
         OnmsEvent lastEvent = new OnmsEvent();
-        lastEvent.setId(a.getId());
+        lastEvent.setId(eventid);
         lastEvent.setEventTime(new Date(lastEventTime));
         a.setLastEvent(lastEvent);
         a.setCounter(a.getCounter() + 1);

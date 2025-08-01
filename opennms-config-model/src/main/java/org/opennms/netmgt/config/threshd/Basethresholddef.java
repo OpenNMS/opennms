@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
- * 
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
- * 
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- * 
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- * 
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- * 
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *     http://www.gnu.org/licenses/
- * 
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
+ *
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.config.threshd;
 
 
@@ -125,6 +118,12 @@ public abstract class Basethresholddef implements Serializable {
     @XmlAttribute(name = "ds-label")
     private String m_dsLabel;
 
+     /**
+     * An optional, human-readable label for an expression
+     */
+    @XmlAttribute(name = "expr-label")
+    private String m_exprLabel;
+
     /**
      * The UEI to send when this threshold is triggered. If not
      *  specified, defaults to standard threshold UEIs
@@ -220,6 +219,14 @@ public abstract class Basethresholddef implements Serializable {
         m_dsLabel = ConfigUtils.normalizeString(dsLabel);
     }
 
+    public Optional<String> getExprLabel() {
+        return Optional.ofNullable(m_exprLabel);
+    }
+
+    public void setExprLabel(final String exprLabel) {
+        m_exprLabel = ConfigUtils.normalizeString(exprLabel);
+    }
+
     public Optional<String> getTriggeredUEI() {
         return Optional.ofNullable(m_triggeredUEI);
     }
@@ -279,6 +286,7 @@ public abstract class Basethresholddef implements Serializable {
                             m_rearm, 
                             m_trigger, 
                             m_dsLabel, 
+                            m_exprLabel, 
                             m_triggeredUEI, 
                             m_rearmedUEI, 
                             m_filterOperator, 
@@ -307,6 +315,7 @@ public abstract class Basethresholddef implements Serializable {
                     && Objects.equals(this.m_rearm, that.m_rearm)
                     && Objects.equals(this.m_trigger, that.m_trigger)
                     && Objects.equals(this.m_dsLabel, that.m_dsLabel)
+                    && Objects.equals(this.m_exprLabel, that.m_exprLabel)
                     && Objects.equals(this.m_triggeredUEI, that.m_triggeredUEI)
                     && Objects.equals(this.m_rearmedUEI, that.m_rearmedUEI)
                     && Objects.equals(this.m_filterOperator, that.m_filterOperator)

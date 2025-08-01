@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2018-2018 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2018 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.smoketest.telemetry;
 
 import static org.awaitility.Awaitility.with;
@@ -43,6 +36,9 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import io.searchbox.client.JestResult;
+import io.searchbox.indices.template.GetTemplate;
+import org.opennms.features.elastic.client.DefaultElasticRestClient;
 import org.opennms.netmgt.flows.elastic.NetflowVersion;
 import org.opennms.features.jest.client.SearchResultUtils;
 import org.opennms.smoketest.utils.RestClient;
@@ -53,11 +49,9 @@ import com.google.gson.Gson;
 
 import io.searchbox.client.JestClient;
 import io.searchbox.client.JestClientFactory;
-import io.searchbox.client.JestResult;
 import io.searchbox.client.config.HttpClientConfig;
 import io.searchbox.core.Search;
 import io.searchbox.core.SearchResult;
-import io.searchbox.indices.template.GetTemplate;
 
 /**
  * Simple helper which sends a defined set of {@link FlowPacket}s to OpenNMS or Minion and afterwards verifies
@@ -97,6 +91,7 @@ public class FlowTester {
 
     private final InetSocketAddress elasticRestAddress;
     private final int totalFlowCount;
+    private DefaultElasticRestClient elasticRestClient;
 
     private JestClient client;
 
@@ -147,6 +142,7 @@ public class FlowTester {
                 .readTimeout(10000)
                 .multiThreaded(true).build());
 
+        elasticRestClient = new DefaultElasticRestClient(elasticRestUrl, null, null);
         try {
             client = factory.getObject();
             runBefore.forEach(rb -> rb.accept(this));
@@ -199,14 +195,24 @@ public class FlowTester {
 
             LOG.info("Ensuring that the index template was created...");
             verify(() -> {
-                final JestResult result = client.execute(new GetTemplate.Builder(TEMPLATE_NAME).build());
-                return result.isSucceeded() && result.getJsonObject().get(TEMPLATE_NAME) != null;
+                Map<String, String> indexTemplates = elasticRestClient.listTemplates();
+                boolean hasIndexTemplate = indexTemplates.keySet().stream()
+                        .anyMatch(name -> name.contains(TEMPLATE_NAME));
+                if (!hasIndexTemplate) {
+                    final JestResult result = client.execute(new GetTemplate.Builder(TEMPLATE_NAME).build());
+                    return result.isSucceeded() && result.getJsonObject().get(TEMPLATE_NAME) != null;
+                } else {
+                    return true;
+                }
             });
 
             runAfter.forEach(ra -> ra.accept(this));
         } finally {
             if (client != null) {
                 client.close();
+            }
+            if (elasticRestClient != null) {
+                elasticRestClient.close();
             }
         }
     }

@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms.features.telemetry.protocols</groupId>
     <artifactId>org.opennms.features.telemetry.protocols.jti</artifactId>
-    <version>33.0.0-SNAPSHOT</version>
+    <version>34.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.features.telemetry.protocols.jti</groupId>
@@ -39,7 +39,7 @@
               <configuration>
                 <protocArtifact>com.google.protobuf:protoc:${protobufVersion}:exe:${os.detected.classifier}</protocArtifact>
                 <pluginId>grpc-java</pluginId>
-                <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.56.1:exe:${os.detected.classifier}</pluginArtifact>
+                <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.68.2:exe:${os.detected.classifier}</pluginArtifact>
               </configuration>
               <executions>
                 <execution>

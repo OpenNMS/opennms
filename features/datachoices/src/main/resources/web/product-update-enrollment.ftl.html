@@ -1,0 +1,386 @@
+<!-- Product Update Enrollment form -->
+<style>
+    #product-update-enrollment-alert.alert {
+		/* ensure alert is above the geomap */
+		z-index: 1000;
+    }
+
+    #product-update-enrollment-alert h5.modal-title {
+        color: #265a87;
+    }
+
+    #product-update-enrollment-alert .modal-header {
+        background-color: #e9ecef;
+    }
+
+    #product-update-enrollment-alert .alert-dialog {
+       position: fixed;
+       top: 1rem;
+       right: auto;
+       left: max(calc(60% - 450px), 1px);
+       bottom: auto;
+       min-width: 600px;
+       max-width: 700px;
+       box-shadow: 1px 3px 3px #6c757d;
+    }
+
+    #product-update-enrollment-alert-body.modal-body {
+        padding: 0.25rem 1rem 1rem 1rem;
+    }
+
+    .alert-dialog .modal-content .modal-header {
+        border-bottom: none;
+    }
+
+    .product-update-enrollment-content, #product-update-enrollment-done {
+        color: #738198;
+        font-size: 0.875rem;
+    }
+
+    .pue-form-field {
+        margin-bottom: 1.2rem;
+    }
+
+    .pue-form-field label {
+        margin-bottom: 0.25rem;
+    }
+
+    .pue-form-required {
+        color: red;
+    }
+
+    .pue-fieldset-form-columns-1 .pue-form-field {
+        width: 100%;
+    }
+
+    .pue-fieldset-form-columns-2 .pue-form-field {
+        width: 50%;
+        float: left;
+    }
+
+    .pue-fieldset-form-columns-2 .pue-form-field.pue-form-field-left .pue-input-wrapper {
+        margin-right: 8px;
+    }
+
+    .pue-form-fieldset input.pue-input {
+        background-clip: padding-box;
+        background-color: #f5f8fa;
+        border: 1px solid #cbd6e2;
+        border-radius: 15px;
+        box-sizing: border-box;
+        color: #33475b;
+        height: 40px;
+        min-height: 27px;
+        max-width: 100%;
+        width: 100%;
+        font-size: 1.1rem;
+        font-weight: normal;
+        line-height: 1.2rem;
+        padding: 0 1.1rem;
+    }
+
+    .pue-form-fieldset input.pue-input:focus {
+        border-color: rgba(82, 168, 236, .8);
+        outline: none;
+    }
+
+    .pue-form-fieldset .pue-form-field span {
+        font-size: 1.1rem;
+        font-weight: 500;
+        line-height: 1.2rem;
+    }
+
+    .pue-required-msg {
+        color: red;
+        font-size: 1.1rem;
+        font-weight: normal;
+        line-height: 1.2rem;
+        margin-top: 0.25rem;
+    }
+
+    .pue-required-msg-hidden {
+        display: none;
+    }
+
+    .pue-legal-text {
+        color: #738198;
+        font-size: 0.75rem;
+    }
+
+    .pue-form-required.pue-legal-text,
+    .pue-legal-text.pue-required-msg {
+        color: red;
+    }
+
+    .pue-form-field input[type=checkbox] {
+        vertical-align: middle;
+    }
+
+    .product-update-enrollment-button {
+        border-radius: 0;
+		box-shadow: none;
+        font-size: 0.875rem;
+        font-weight: 700;
+        letter-spacing: 0.2em;
+        line-height: 1.25rem;
+        text-transform: uppercase;
+    }
+
+	.product-update-enrollment-submit-button, .product-update-enrollment-close-button {
+        background-color: #273180;
+        border: 2px solid transparent;
+        color: #fff;
+        margin-right: 1rem;
+    }
+
+    .product-update-enrollment-submit-button:hover, .product-update-enrollment-close-button:hover {
+        box-shadow: 3px 1px 2px #6c757d;
+        color: #fff;
+    }
+
+	.product-update-enrollment-dismiss-button {
+        border: 2px solid;
+        color: #273180;
+    }
+
+    .product-update-enrollment-dismiss-button:hover {
+        box-shadow: 3px 1px 2px #6c757d;
+    }
+
+    .product-update-enrollment-sending, .product-update-enrollment-error {
+        background-color: #e9ecef;
+        border: 1px solid #cbd6e2;
+        border-radius: 15px;
+        margin-top: 4px;
+        width: 100%;
+        font-size: 1.1rem;
+        line-height: 1.2rem;
+        padding: 4px;
+    }
+
+    .product-update-enrollment-sending .pue-sending-data {
+        color: #0c0;
+    }
+
+    .product-update-enrollment-error {
+        color: red;
+    }
+</style>
+
+<div class="alert alert-dismissable" id="product-update-enrollment-alert" tabindex="-1" role="alert">
+    <div class="alert-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Product Update Sign Up</h5>
+            </div>
+            <div id="product-update-enrollment-alert-body" class="modal-body">
+                <div class="product-update-enrollment-content">
+                    Now that you're part of the OpenNMS community, let's stay in touch!
+                    Share your info and we'll keep you up to date on the latest from
+                    OpenNMS Horizon and Meridian as well as our upcoming cloud hosted solution, Lokahi.
+
+                    This notice will only display once, but you can visit <a href="admin/product-update-enrollment/index.jsp">here</a> to re-enable sign up.
+                </div>
+                <br />
+                <div id="product-update-enrollment-form-wrapper">
+                    <form id="product-update-enrollment-form">
+                        <fieldset class="pue-form-fieldset pue-fieldset-form-columns-2">
+                            <div class="pue-form-field pue-form-field-left">
+                                <label for="pueFirstName">
+                                    <span>First Name</span>
+                                    <span class="pue-form-required">*</span>
+                                </label>
+                                <div class="pue-input-wrapper">
+                                    <input type="text" name="firstName" id="pueFirstName" class="pue-input"></input>
+                                </div>
+                                <div class="pue-required-msg pue-required-msg-hidden">Please complete this required field.</div>
+                            </div>
+                            <div class="pue-form-field">
+                                <label for="pueLastName">
+                                    <span>Last Name</span>
+                                    <span class="pue-form-required">*</span>
+                                </label>
+                                <div class="pue-input-wrapper">
+                                    <input type="text" name="lastName" id="pueLastName" class="pue-input"></input>
+                                </div>
+                                <div class="pue-required-msg pue-required-msg-hidden">Please complete this required field.</div>
+                            </div>
+                        </fieldset>
+                        <fieldset class="pue-form-fieldset pue-fieldset-form-columns-1">
+                            <div class="pue-form-field">
+                                <label for="pdcEmail">
+                                    <span>Email Address</span>
+                                    <span class="pue-form-required">*</span>
+                                </label>
+                                <div class="pue-input-wrapper">
+                                    <input type="text" name="email" id="pdcEmail" class="pue-input"></input>
+                                </div>
+                                <div class="pue-required-msg pue-required-msg-hidden">Please complete this required field.</div>
+                            </div>
+                        </fieldset>
+                        <fieldset class="pue-form-fieldset pue-fieldset-form-columns-1">
+                            <div class="pue-form-field">
+                                <label for="pueCompany">
+                                    <span>Company Name</span>
+                                    <span class="pue-form-required">*</span>
+                                </label>
+                                <div class="pue-input-wrapper">
+                                    <input type="text" name="company" id="pueCompany" class="pue-input"></input>
+                                </div>
+                                <div class="pue-required-msg pue-required-msg-hidden">Please complete this required field.</div>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <p class="pue-legal-text">${legalConsentCommunication}</p>
+                        </fieldset>
+                        <fieldset>
+                            <div class="pue-form-field">
+                                <input type="checkbox" name="consent" id="pueConsent"></input>
+                                <span class="pue-legal-text">${consentText}</span>
+                                <span class="pue-form-required pue-legal-text">*</span>
+                                <div class="pue-required-msg pue-legal-text pue-required-msg-hidden">Please complete this required field.</div>
+                            </div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="pue-legal-text">For more information, check out our <a href="https://www.opennms.com/privacy/">Privacy Policy</a>.</div>
+                        </fieldset>
+                        <fieldset>
+                            <div class="pue-legal-text">Required fields are marked with a <span class="pue-form-required pue-legal-text">*</span></div>
+                        </fieldset>
+                    </form>
+                </div>
+                <div id="product-update-enrollment-done" style="display: none;">
+                    <p>Thank you for submitting your information.</p>
+                    <p>Welcome to the Horizon Community! Feel free to browse our
+                    <a href="https://www.opennms.com/blog/">blog</a> or follow us on our socials.</p>
+                    <p>
+                        <a href="https://www.linkedin.com/company/the-opennms-group/">LinkedIn</a> |
+                        <a href="http://www.twitter.com/opennms">Twitter</a> |
+                        <a href="https://www.facebook.com/OpenNMS/">Facebook</a> |
+                        <a href="http://www.youtube.com/user/opennms">YouTube</a> |
+                        <a href="http://www.reddit.com/r/opennms">Reddit</a> |
+                        <a href="https://chat.opennms.com/">Mattermost Chat</a> |
+                        <a href="https://opennms.discourse.group/">Discourse</a>
+                    </p>
+                </div>
+                <div class="product-update-enrollment-sending" style="display: none;">
+                    <span class="pue-sending-data">Sending data...</span>
+                </div>
+                <div class="product-update-enrollment-error" style="display: none;">
+                    <span>There was an error processing your request. You may click Opt Out to close this window.</span>
+                </div>
+                <br />
+                <div class="product-update-enrollment-buttons">
+                    <input type="hidden" id="product-update-enrollment-opted-in" value="false"></input>
+                    <input type="hidden" id="product-update-enrollment-acked" value="false"></input>
+                    <button id="product-update-enrollment-notice-submit" type="button" class="btn product-update-enrollment-button product-update-enrollment-submit-button">Sign Up</button>
+                    <button id="product-update-enrollment-notice-dismiss" type="button" class="btn product-update-enrollment-button product-update-enrollment-dismiss-button" data-dismiss="alert">Opt Out</button>
+                    <button id="product-update-enrollment-notice-close" type="button" class="btn product-update-enrollment-button product-update-enrollment-close-button" style="display: none;" data-dismiss="alert">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+(function() {
+    function productUpdateEnrollmentAckInitialNotice() {
+        var acked = $('#product-update-enrollment-acked').val();
+
+        if (acked === 'true') {
+            // already acked
+            return;
+        }
+
+        var optedIn = $('#product-update-enrollment-opted-in').val();
+        var data = { optedIn: optedIn === 'true', noticeAcknowledged: true };
+
+        $.ajax({
+            url: 'rest/datachoices/productupdate/status',
+            method: 'POST',
+            dataType: null,
+            contentType: 'application/json',
+            processData: false,
+            data: JSON.stringify(data)
+        })
+        .done(function() {
+            console.log('Product Update Enrollment notice acknowledged, opt-in: ' + optedIn);
+        })
+        .fail(function() {
+            console.error('Product Update Enrollment notice acknowledgement failed, opt-in: ' + optedIn);
+        });
+    }
+
+    function productUpdateEnrollmentSubmitForm() {
+        $('.product-update-enrollment-error').hide();
+
+        var firstName = $('#pueFirstName').val();
+        var lastName = $('#pueLastName').val();
+        var email = $('#pdcEmail').val();
+        var company = $('#pueCompany').val();
+        var consent = $('#pueConsent').is(':checked');
+
+        if ([firstName, lastName, email, company, consent].some(function(x) { return !x; })) {
+            $('.pue-required-msg').removeClass('pue-required-msg-hidden');
+            return false;
+        }
+
+        $('.pue-required-msg').addClass('pue-required-msg-hidden');
+
+        var data = {
+            firstName: firstName,
+            lastName: lastName,
+            email: email,
+            company: company,
+            consent: true
+        };
+
+        $('.product-update-enrollment-sending').show();
+
+        $.ajax({
+            url: 'rest/datachoices/productupdate/submit',
+            method: 'POST',
+            dataType: null,
+            contentType: 'application/json',
+            processData: false,
+            data: JSON.stringify(data)
+        })
+        .done(function() {
+            $('#product-update-enrollment-opted-in').val('true');
+            $('.product-update-enrollment-content').hide();
+            $('#product-update-enrollment-form-wrapper').hide();
+            $('#product-update-enrollment-notice-submit').hide();
+            $('#product-update-enrollment-notice-dismiss').hide();
+
+            $('#product-update-enrollment-done').show();
+            $('#product-update-enrollment-notice-close').show();
+
+            productUpdateEnrollmentAckInitialNotice();
+            $('#product-update-enrollment-acked').val('true');
+        })
+        .fail(function() {
+            $('#product-update-enrollment-opted-in').val('false');
+            $('.product-update-enrollment-error').show();
+            alert('There was an error processing your request.');
+        })
+        .always(function() {
+            $('.product-update-enrollment-sending').hide();
+        });
+
+        return false;
+    }
+
+    $(document).ready(function() {
+        $('#product-update-enrollment-notice-dismiss').click(function() {
+            productUpdateEnrollmentAckInitialNotice();
+        });
+
+        $('#product-update-enrollment-notice-submit').click(function(e) {
+            e.preventDefault();
+            productUpdateEnrollmentSubmitForm();
+        });
+
+        $('#product-update-enrollment-alert').alert();
+    });
+})();
+</script>

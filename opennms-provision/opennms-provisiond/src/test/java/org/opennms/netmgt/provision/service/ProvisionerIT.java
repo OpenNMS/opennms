@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2006-2022 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2022 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.provision.service;
 
 import static org.junit.Assert.assertEquals;
@@ -40,10 +33,12 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Objects;
 import java.util.Properties;
 import java.util.concurrent.ExecutionException;
 
@@ -76,6 +71,7 @@ import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
+import org.opennms.netmgt.dao.api.RequisitionedCategoryAssociationDao;
 import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.dao.api.SnmpInterfaceDao;
 import org.opennms.netmgt.dao.mock.EventAnticipator;
@@ -98,6 +94,7 @@ import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeLabelSource;
 import org.opennms.netmgt.model.OnmsServiceType;
 import org.opennms.netmgt.model.OnmsSnmpInterface;
+import org.opennms.netmgt.model.RequisitionedCategoryAssociation;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.model.events.NodeLabelChangedEventBuilder;
 import org.opennms.netmgt.model.monitoringLocations.OnmsMonitoringLocation;
@@ -186,6 +183,9 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
     private CategoryDao m_categoryDao;
 
     @Autowired
+    private RequisitionedCategoryAssociationDao m_categoryAssociationDao;
+
+    @Autowired
     private MonitoringLocationDao m_locationDao;
 
     @Autowired
@@ -253,7 +253,7 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         m_provisioner.start();
 
         m_foreignSource = new ForeignSource();
-        m_foreignSource.setName("imported:");
+        m_foreignSource.setName("imported-");
         m_foreignSource.setScanInterval(Duration.standardDays(1));
 
         final PluginConfig policy = new PluginConfig("setCategory", NodeCategorySettingPolicy.class.getName());
@@ -376,6 +376,120 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         // Verify snmpInterface count
         assertEquals(6, getSnmpInterfaceDao().countAll());
 
+    }
+
+    @Test(timeout = 300000)
+    // 192.0.2.0/24 reserved by IANA for testing purposes
+    @JUnitSnmpAgent(host = "192.0.2.123", resource = "classpath:NMS-6452-brocade.properties")
+    public void testNMS6452() throws Exception {
+        importFromResource("classpath:/NMS-6452-brocade.xml", Boolean.TRUE.toString());
+        OnmsNode node = getNodeDao().findByForeignId("empty", "123");
+        assertEquals(1, getNodeDao().countAll());
+        //Verify ip interface count
+        assertEquals(1, getInterfaceDao().countAll());
+        //Verify if services count
+        assertEquals(3, getMonitoredServiceDao().countAll());
+        //Verify service count
+        assertEquals(3, getServiceTypeDao().countAll());
+        //Verify snmpInterface count
+        assertEquals(0, getSnmpInterfaceDao().countAll());
+
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation(), null);
+        runScan(scan);
+        assertEquals(1, getNodeDao().countAll());
+        //Verify ip interface count
+        assertEquals(2, getInterfaceDao().countAll());
+        //Verify if services count
+        assertEquals(3, getMonitoredServiceDao().countAll());
+        //Verify service count
+        assertEquals(3, getServiceTypeDao().countAll());
+        //Verify snmpInterface count
+        assertEquals(30, getSnmpInterfaceDao().countAll());
+    }
+
+    @Test(timeout = 300000)
+    // 192.0.2.0/24 reserved by IANA for testing purposes
+    @JUnitSnmpAgent(host = "192.0.2.123", resource = "classpath:NMS-18051.properties")
+    public void testNMS18051() throws Exception {
+        importFromResource("classpath:/NMS-18051.xml", Boolean.TRUE.toString());
+        OnmsNode node = getNodeDao().findByForeignId("empty", "1231");
+        assertEquals(1, getNodeDao().countAll());
+        //Verify ip interface count
+        assertEquals(1, getInterfaceDao().countAll());
+        //Verify if services count
+        assertEquals(3, getMonitoredServiceDao().countAll());
+        //Verify service count
+        assertEquals(3, getServiceTypeDao().countAll());
+        //Verify snmpInterface count
+        assertEquals(0, getSnmpInterfaceDao().countAll());
+       
+        // Don't resolve addresses 
+        final NodeScan scan = m_provisioner.createNodeScan(node.getId(), node.getForeignSource(), node.getForeignId(), node.getLocation(), null);
+        runScan(scan);
+
+        // Ensure that all IP interfaces were added correctly
+        List<String> actualAddrs = new ArrayList<>();
+        List<String> expectedAddrs = Arrays.asList(
+                "192.0.2.123",
+                "10.1.13.1",
+                "10.1.200.1",
+                "10.1.201.1",
+                "10.1.202.1",
+                "10.1.203.1",
+                "10.1.204.1",
+                "10.31.131.17",
+                "10.137.3.1",
+                "10.139.139.1",
+                "10.255.1.1",
+                "50.234.158.154",
+                "50.234.159.3",
+                "50.234.159.4",
+                "50.234.159.11",
+                "50.235.68.1",
+                "172.20.254.1",
+                "172.25.1.1",
+                "172.29.200.10",
+                "172.31.130.1",
+                "172.31.130.9",
+                "172.31.130.17",
+                "192.0.2.5",
+                "192.0.2.13",
+                "192.0.2.14",
+                "192.0.2.18",
+                "192.0.2.21",
+                "192.0.2.22",
+                "192.0.2.25",
+                "192.0.2.26",
+                "192.0.2.29",
+                "192.0.2.30",
+                "192.168.130.1",
+                "192.168.130.9",
+                "192.168.130.17",
+                "192.168.130.25",
+                "192.168.131.2",
+                "192.168.140.1",
+                "192.168.140.65",
+                "192.168.201.1",
+                "192.168.202.1",
+                "192.168.202.2",
+                "192.168.203.1",
+                "192.168.204.1",
+                "192.168.211.1",
+                "192.168.212.1",
+                "192.168.213.1",
+                "192.168.254.1",
+                "192.168.255.253"
+        );
+        for (OnmsIpInterface iface : getInterfaceDao().findAll()) {
+            actualAddrs.add(iface.getIpAddress().getHostAddress());
+        }
+        Collections.sort(actualAddrs);
+        Collections.sort(expectedAddrs);
+        System.out.println("Expected: " + expectedAddrs.toString());
+        System.out.println("Actual:   " + actualAddrs.toString());
+        assertEquals("Count of expected and actual IPAddresses does not match", expectedAddrs.size(), actualAddrs.size());
+        assertTrue("Expected and Actual IpInterfaces do not match", expectedAddrs.containsAll(actualAddrs));
+        assertTrue("Actual and Expected IpInterfaces do not match", actualAddrs.containsAll(expectedAddrs));
     }
 
     /**
@@ -1795,6 +1909,45 @@ public class ProvisionerIT extends ProvisioningITCase implements InitializingBea
         n = getNodeDao().get(nextNodeId);
 
         assertEquals(0, n.getCategories().size());
+    }
+
+    @Test(timeout = 300000)
+    public void testRequisitionedCategoriesThenRemoveCategoryByApi() throws Exception {
+        final int nextNodeId = m_nodeDao.getNextNodeId();
+
+        importFromResource("classpath:/provisioner-testCategories-ThreeCategories.xml", Boolean.TRUE.toString());
+
+        OnmsNode n = getNodeDao().get(nextNodeId);
+        assertEquals(3, n.getCategories().size());
+        assertTrue(n.hasCategory("NMS-16536"));
+
+        runPendingScans();
+
+        assertEquals(3, m_categoryAssociationDao.findAll().size());
+
+        OnmsCategory deleteCategory = n.getCategories().stream()
+                .filter(cat -> cat.getName().equals("NMS-16536")).findFirst().orElse(null);
+        m_categoryDao.delete(deleteCategory);
+        m_categoryDao.flush();
+
+        assertEquals(2, m_categoryDao.findAll().size());
+
+        RequisitionedCategoryAssociation deleteCategoryAssociation = m_categoryAssociationDao.findAll().stream()
+                .filter(cat -> cat.getCategory().getName().equals("NMS-16536")).findFirst().orElse(null);
+        m_categoryAssociationDao.delete(deleteCategoryAssociation);
+        m_categoryAssociationDao.flush();
+
+        assertEquals(2, m_categoryAssociationDao.findAll().size());
+
+        importFromResource("classpath:/provisioner-testCategories-ThreeCategories-oneDeleted.xml", Boolean.TRUE.toString());
+
+        m_provisionService.updateNodeAttributes(n);
+
+        assertEquals(2, m_categoryAssociationDao.findAll().size());
+
+        assertTrue(m_categoryAssociationDao.findByNodeId(n.getId()).stream().
+                noneMatch(cat ->
+                        cat.getCategory().getName().equals(Objects.requireNonNull(deleteCategory).getName())));
     }
 
     @Test(timeout = 300000)

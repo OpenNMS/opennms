@@ -21,13 +21,12 @@ commands:
 jobs:
   #jobs:build/build.index#
   #jobs:tarball-assembly-only#
-  #jobs:rpms/rpms.index#
-  #jobs:debian packages/deb.index#
   #jobs:oci/oci.index#
   #jobs:tests/integration/integration.index#
   #jobs:code-coverage#
   #jobs:tests/smoke/smoke-test.index#
   #jobs:create-merge-foundation-branch#
+  #jobs:create-merge-omega-branch#
   #jobs:merge-foundation-branch#
   #jobs:create-merge-meridian-branch#
   #jobs:merge-poweredby-branch#

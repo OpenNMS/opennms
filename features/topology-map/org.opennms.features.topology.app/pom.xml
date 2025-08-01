@@ -6,7 +6,7 @@
         <relativePath>../poms/compiled/</relativePath>
         <groupId>org.opennms.features.topology.build</groupId>
         <artifactId>compiled-bundle-settings</artifactId>
-        <version>33.0.0-SNAPSHOT</version>
+        <version>34.0.0-SNAPSHOT</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -129,7 +129,6 @@
         <dependency>
             <groupId>org.opennms.features.topology</groupId>
             <artifactId>org.opennms.features.topology.api</artifactId>
-            <version>${project.version}</version>
             <scope>provided</scope>
         </dependency>
         <dependency>
@@ -149,20 +148,12 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>net.sf.jung</groupId>
-            <artifactId>jung-api</artifactId>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>jung-shaded</artifactId>
         </dependency>
         <dependency>
-            <groupId>net.sf.jung</groupId>
-            <artifactId>jung-graph-impl</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.jung</groupId>
-            <artifactId>jung-algorithms</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>net.sf.jung</groupId>
-            <artifactId>jung-visualization</artifactId>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-collections4</artifactId>
         </dependency>
         <dependency>
             <groupId>javax.validation</groupId>

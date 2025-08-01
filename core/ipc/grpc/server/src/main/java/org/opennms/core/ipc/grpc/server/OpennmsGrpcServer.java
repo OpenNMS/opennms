@@ -1,31 +1,24 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2019 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2019 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.core.ipc.grpc.server;
 
 import static org.opennms.core.ipc.grpc.server.GrpcServerConstants.DEFAULT_GRPC_TTL;
@@ -126,14 +119,13 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
     private final GrpcIpcServer grpcIpcServer;
     private String location;
     private Identity identity;
-    private Properties properties;
     private long ttl;
     private MetricRegistry rpcMetrics;
     private MetricRegistry sinkMetrics;
     private JmxReporter rpcMetricsReporter;
     private JmxReporter sinkMetricsReporter;
     private TracerRegistry tracerRegistry;
-    private AtomicBoolean closed = new AtomicBoolean(false);
+    private final AtomicBoolean closed = new AtomicBoolean(false);
     private final ThreadFactory responseHandlerThreadFactory = new ThreadFactoryBuilder()
             .setNameFormat("rpc-response-handler-%d")
             .build();
@@ -152,14 +144,14 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
     private final Map<String, RpcResponseHandler> rpcResponseMap = new ConcurrentHashMap<>();
     // Delay queue maintains the priority queue of RPC requests and times out the requests if no response was received
     // within the delay specified.
-    private DelayQueue<RpcResponseHandler> rpcTimeoutQueue = new DelayQueue<>();
+    private final DelayQueue<RpcResponseHandler> rpcTimeoutQueue = new DelayQueue<>();
     // Maintains map of minionId and rpc handler for that minion. Used for directed RPC requests.
-    private Map<String, StreamObserver<RpcRequestProto>> rpcHandlerByMinionId = new HashMap<>();
+    private final Map<String, StreamObserver<RpcRequestProto>> rpcHandlerByMinionId = new HashMap<>();
     // Maintains multi element map of location and rpc handlers for that location.
     // Used to get one of the rpc handlers for a specific location.
-    private Multimap<String, StreamObserver<RpcRequestProto>> rpcHandlerByLocation = LinkedListMultimap.create();
+    private final Multimap<String, StreamObserver<RpcRequestProto>> rpcHandlerByLocation = LinkedListMultimap.create();
     // Maintains the state of iteration for the list of minions for a given location.
-    private Map<String, Iterator<StreamObserver<RpcRequestProto>>> rpcHandlerIteratorMap = new HashMap<>();
+    private final Map<String, Iterator<StreamObserver<RpcRequestProto>>> rpcHandlerIteratorMap = new HashMap<>();
     // Maintains the map of sink modules by it's id.
     private final Map<String, SinkModule<?, Message>> sinkModulesById = new ConcurrentHashMap<>();
     // Maintains the map of sink consumer executor and by module Id.
@@ -176,7 +168,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
             grpcIpcServer.startServer(new OpennmsIpcService());
             LOG.info("Added RPC/Sink Service to OpenNMS IPC Grpc Server");
 
-            properties = grpcIpcServer.getProperties();
+            Properties properties = grpcIpcServer.getProperties();
             ttl = PropertiesUtils.getProperty(properties, GRPC_TTL_PROPERTY, DEFAULT_GRPC_TTL);
             rpcTimeoutExecutor.execute(this::handleRpcTimeouts);
             rpcMetricsReporter = JmxReporter.forRegistry(getRpcMetrics())
@@ -235,7 +227,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
                 Long timeToLive = request.getTimeToLiveMs();
                 timeToLive = (timeToLive != null && timeToLive > 0) ? timeToLive : ttl;
                 long expirationTime = System.currentTimeMillis() + timeToLive;
-                RpcResponseHandlerImpl responseHandler = new RpcResponseHandlerImpl<S, T>(future,
+                RpcResponseHandlerImpl<S, T> responseHandler = new RpcResponseHandlerImpl<S, T>(future,
                         module, rpcId, request.getLocation(), expirationTime, span, loggingContext);
                 rpcResponseMap.put(rpcId, responseHandler);
                 rpcTimeoutQueue.offer(responseHandler);
@@ -243,6 +235,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
                         .setRpcId(rpcId)
                         .setLocation(request.getLocation())
                         .setModuleId(module.getId())
+                        .setExpirationTime(expirationTime)
                         .setRpcContent(ByteString.copyFrom(marshalRequest.getBytes()));
                 if (!Strings.isNullOrEmpty(request.getSystemId())) {
                     builder.setSystemId(request.getSystemId());
@@ -312,7 +305,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
         }
         // Handle response from the Minion.
         RpcResponseHandler responseHandler = rpcResponseMap.get(responseProto.getRpcId());
-        if (responseHandler != null && responseProto.getRpcContent() != null) {
+        if (responseHandler != null) {
             responseHandler.sendResponse(responseProto.getRpcContent().toStringUtf8());
         } else {
             LOG.debug("Received a response for request for module: {} with RpcId:{}, but no outstanding request was found with this id." +
@@ -543,7 +536,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
 
     private void dispatchSinkMessage(SinkMessage sinkMessage) {
         SinkModule<?, Message> sinkModule = sinkModulesById.get(sinkMessage.getModuleId());
-        if (sinkModule != null && sinkMessage.getContent() != null) {
+        if (sinkModule != null) {
             Message message = sinkModule.unmarshal(sinkMessage.getContent().toByteArray());
 
             MessageConsumerManager.updateMessageSize(getSinkMetrics(), sinkMessage.getLocation(),
@@ -588,7 +581,7 @@ public class OpennmsGrpcServer extends AbstractMessageConsumerManager implements
         private final Map<String, String> loggingContext;
         private boolean isProcessed = false;
         private final Long requestCreationTime;
-        private Span span;
+        private final Span span;
 
         private RpcResponseHandlerImpl(CompletableFuture<T> responseFuture, RpcModule<S, T> rpcModule, String rpcId,
                                        String location, long timeout, Span span, Map<String, String> loggingContext) {

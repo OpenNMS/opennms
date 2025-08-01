@@ -1,0 +1,76 @@
+<blueprint xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+           xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0" xmlns:ext="http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0"
+           xsi:schemaLocation="
+		http://www.osgi.org/xmlns/blueprint/v1.0.0
+		http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.1.0
+		http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.1.0.xsd
+		http://aries.apache.org/blueprint/xmlns/blueprint-ext/v1.1.0
+		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
+">
+    <!-- Configuration properties -->
+    <cm:property-placeholder id="cacheConfigProperties" persistent-id="org.opennms.features.telemetry.protocols.common" update-strategy="reload">
+        <cm:default-properties>
+            <cm:property name="nodeInfoCache.enabled" value="true" /> <!-- Set to false to disable caching -->
+            <cm:property name="nodeInfoCache.nodeMetadataEnabled" value="true" /> <!-- Set to false to disable caching -->
+            <cm:property name="nodeInfoCache.maximumSize" value="10000"/> <!-- Set value for unlimited size -->
+            <cm:property name="nodeInfoCache.expireAfterWrite" value="0"/> <!-- in seconds. Set to 0 to never evict elements -->
+            <cm:property name="nodeInfoCache.expireAfterRead" value="0"/> <!-- in seconds. Set to 0 to never evict elements -->
+            <cm:property name="nodeInfoCache.recordStats" value="true"/> <!-- Set to false to not expose cache statistics via jmx -->
+        </cm:default-properties>
+    </cm:property-placeholder>
+
+    <!-- Configure node cache -->
+    <bean id="nodeInfoCacheConfig" class="org.opennms.core.cache.CacheConfig">
+        <argument value="nodeInfoCache"/>
+        <property name="metricRegistry" ref="flowCacheMetricRegistry" />
+        <property name="enabled" value="${nodeInfoCache.enabled}" />
+        <property name="maximumSize" value="${nodeInfoCache.maximumSize}" />
+        <property name="expireAfterWrite" value="${nodeInfoCache.expireAfterWrite}" />
+        <property name="expireAfterRead" value="${nodeInfoCache.expireAfterRead}" />
+        <property name="recordStats" value="${nodeInfoCache.recordStats}" />
+    </bean>
+
+    <!-- Configure references -->
+    <reference id="nodeDao" interface="org.opennms.netmgt.dao.api.NodeDao" availability="mandatory" />
+    <reference id="ipInterfaceDao" interface="org.opennms.netmgt.dao.api.IpInterfaceDao" availability="mandatory" />
+    <reference id="interfaceToNodeCache" interface="org.opennms.netmgt.dao.api.InterfaceToNodeCache" availability="mandatory" />
+    <reference id="sessionUtils" interface="org.opennms.netmgt.dao.api.SessionUtils" availability="mandatory" />
+
+    <!-- Configure NodeInfoCache -->
+    <bean id="nodeInfoCache" class="org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCacheImpl">
+        <argument ref="nodeInfoCacheConfig"/>
+        <argument value="${nodeInfoCache.nodeMetadataEnabled}"/>
+        <argument ref="flowCacheMetricRegistry"/>
+        <argument ref="nodeDao"/>
+        <argument ref="ipInterfaceDao"/>
+        <argument ref="interfaceToNodeCache"/>
+        <argument ref="sessionUtils"/>
+    </bean>
+    <service ref="nodeInfoCache" interface="org.opennms.netmgt.telemetry.protocols.cache.NodeInfoCache">
+        <service-properties>
+            <entry key="registration.export" value="true" />
+        </service-properties>
+    </service>
+
+    <!-- Configure Metrics -->
+    <bean id="flowCacheMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
+    <service ref="flowCacheMetricRegistry" interface="com.codahale.metrics.MetricSet">
+        <service-properties>
+            <entry key="name" value="org.opennms.netmgt.telemetry.protocols.common.cache" />
+            <entry key="description" value="Node Caches" />
+        </service-properties>
+    </service>
+    <bean id="flowCacheMetricRegistryJmxReporterBuilder" class="com.codahale.metrics.jmx.JmxReporter" factory-method="forRegistry">
+        <argument ref="flowCacheMetricRegistry"/>
+    </bean>
+    <bean id="flowCacheMetricRegistryDomainedJmxReporterBuilder" factory-ref="flowCacheMetricRegistryJmxReporterBuilder" factory-method="inDomain">
+        <argument value="org.opennms.netmgt.flows"/>
+    </bean>
+    <bean id="flowCacheMetricRegistryJmxReporter"
+          factory-ref="flowCacheMetricRegistryDomainedJmxReporterBuilder"
+          factory-method="build"
+          init-method="start"
+          destroy-method="stop" />
+
+</blueprint>

@@ -1,38 +1,44 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2005-2014 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2014 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.poller.monitors;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 import java.net.UnknownHostException;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
+import org.junit.Test;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.events.api.model.IEvent;
+import org.opennms.netmgt.events.api.model.IParm;
+import org.opennms.netmgt.events.api.model.ImmutableEvent;
+import org.opennms.netmgt.events.api.model.ImmutableParm;
+import org.opennms.netmgt.events.api.model.ImmutableValue;
 import org.opennms.netmgt.passive.PassiveStatusKeeper;
 import org.opennms.netmgt.passive.PassiveStatusKeeperIT;
 import org.opennms.netmgt.poller.MonitoredService;
@@ -67,4 +73,59 @@ public class PassiveServiceMonitorIT extends PassiveStatusKeeperIT {
         return new PollableService(new PollableInterface(new PollableNode(new PollableNetwork(new MockPollContext()), nodeId, nodeLabel, nodeLocation), InetAddressUtils.addr(ipAddr)), serviceName);
     }
 
+    /**
+     * See NMS-14199, test case event with time set
+     */
+    @Test
+    public void testWithTimestamp() throws UnknownHostException {
+        final PassiveStatusKeeper psk = PassiveStatusKeeper.getInstance();
+        final List<IParm> parms = new ArrayList<>();
+        parms.add(ImmutableParm.newBuilder().setParmName("passiveNodeLabel").setValue(ImmutableValue.newBuilder().setContent("fooBar").build()).build());
+        parms.add(ImmutableParm.newBuilder().setParmName("passiveIpAddr").setValue(ImmutableValue.newBuilder().setContent("10.10.10.10").build()).build());
+        parms.add(ImmutableParm.newBuilder().setParmName("passiveServiceName").setValue(ImmutableValue.newBuilder().setContent("theService").build()).build());
+        parms.add(ImmutableParm.newBuilder().setParmName("passiveStatus").setValue(ImmutableValue.newBuilder().setContent("Up").build()).build());
+        parms.add(ImmutableParm.newBuilder().setParmName("passiveReasonCode").setValue(ImmutableValue.newBuilder().setContent("Some reason").build()).build());
+
+        final Date someMinutesAgo = Date.from(Instant.now().minus(Duration.ofMinutes(13)));
+
+        final IEvent e = ImmutableEvent.newBuilder()
+                .setUei("uei.opennms.org/services/passiveServiceStatus")
+                .setParms(parms)
+                .setTime(someMinutesAgo)
+                .build();
+
+        psk.onEvent(e);
+
+        final MonitoredService ms = createMonitoredService(1, "fooBar", null, "10.10.10.10", "theService");
+        final ServiceMonitor sm = new PassiveServiceMonitor();
+
+        assertEquals(someMinutesAgo, sm.poll(ms, new HashMap<>()).getTimestamp());
+    }
+
+    /**
+     * See NMS-14199, test case event without time set
+     */
+    @Test
+    public void testWithoutTimestamp() throws UnknownHostException {
+        final PassiveStatusKeeper psk = PassiveStatusKeeper.getInstance();
+        final List<IParm> parms = new ArrayList<>();
+        parms.add(ImmutableParm.newBuilder().setParmName("passiveNodeLabel").setValue(ImmutableValue.newBuilder().setContent("fooBar").build()).build());
+        parms.add(ImmutableParm.newBuilder().setParmName("passiveIpAddr").setValue(ImmutableValue.newBuilder().setContent("10.10.10.10").build()).build());
+        parms.add(ImmutableParm.newBuilder().setParmName("passiveServiceName").setValue(ImmutableValue.newBuilder().setContent("theService").build()).build());
+        parms.add(ImmutableParm.newBuilder().setParmName("passiveStatus").setValue(ImmutableValue.newBuilder().setContent("Up").build()).build());
+        parms.add(ImmutableParm.newBuilder().setParmName("passiveReasonCode").setValue(ImmutableValue.newBuilder().setContent("Some reason").build()).build());
+
+        final IEvent e = ImmutableEvent.newBuilder()
+                .setUei("uei.opennms.org/services/passiveServiceStatus")
+                .setParms(parms)
+                .build();
+
+        psk.onEvent(e);
+
+        final MonitoredService ms = createMonitoredService(1, "fooBar", null, "10.10.10.10", "theService");
+        final ServiceMonitor sm = new PassiveServiceMonitor();
+        final Date now = new Date();
+
+        assertTrue(sm.poll(ms, new HashMap<>()).getTimestamp().getTime() - now.getTime() < 1000);
+    }
 }

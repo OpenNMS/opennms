@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.opennms</groupId>
         <artifactId>org.opennms.container</artifactId>
-        <version>33.0.0-SNAPSHOT</version>
+        <version>34.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.container</groupId>
@@ -57,26 +57,26 @@
                         <feature>eventadmin</feature>
                     </startupFeatures>
                     <bootFeatures>
-                        <feature>wrap</feature>
                         <feature>aries-blueprint</feature>
-                        <feature>shell</feature>
-                        <feature>shell-compat</feature>
-                        <feature>feature</feature>
-                        <feature>jaas</feature>
-                        <feature>jasypt-encryption</feature>
-                        <feature>ssh/${karafSshdVersion}</feature>
-                        <feature>management</feature>
                         <feature>bundle</feature>
                         <feature>config</feature>
                         <feature>deployer</feature>
                         <feature>diagnostic</feature>
                         <feature>feature</feature>
                         <feature>instance</feature>
+                        <feature>jaas</feature>
+                        <feature>jaas-deployer</feature>
+                        <feature>jasypt-encryption</feature>
                         <feature>kar</feature>
                         <feature>log</feature>
+                        <feature>management</feature>
                         <feature>package</feature>
                         <feature>service</feature>
+                        <feature>shell</feature>
+                        <feature>shell-compat</feature>
+                        <feature>ssh/${karafSshdVersion}</feature>
                         <feature>system</feature>
+                        <feature>wrap</feature>
 
                         <!-- OPENNMS: Add http, http-whiteboard to the default list of features -->
                         <feature>opennms-http-whiteboard</feature>
@@ -105,7 +105,7 @@
                         <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activation-api-1.1/${karaf.servicemix.specs.version};type:=endorsed;export:=true</library>
                         <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.stax-api-1.2/${karaf.servicemix.specs.version};type:=endorsed;export:=true</library>
                         <library>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan/${xalanServicemixVersion};type:=endorsed;export:=true</library>
-                        <library>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan-serializer/${xalanServicemixVersion};type:=endorsed;export:=true</library>
+                        <library>mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xalan-serializer/${xalanSerializerServicemixVersion};type:=endorsed;export:=true</library>
                         <library>mvn:javax.annotation/javax.annotation-api/${javaxAnnotationApiVersion};type:=endorsed;export:=true</library>
 
                         <library>mvn:org.apache.servicemix.specs/org.apache.servicemix.specs.activator/${karaf.servicemix.specs.version};type:=default;export:=true</library>
@@ -123,6 +123,32 @@
                     </libraries>
                     <javase>1.8</javase>
                 </configuration>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-overrides</id>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.opennms.karaf</groupId>
+                                    <artifactId>opennms</artifactId>
+                                    <version>${project.version}</version>
+                                    <classifier>overrides</classifier>
+                                    <type>properties</type>
+                                    <outputDirectory>${project.build.directory}/assembly/etc</outputDirectory>
+                                    <destFileName>overrides.properties</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <plugin>
                 <groupId>net.nicoulaj.maven.plugins</groupId>

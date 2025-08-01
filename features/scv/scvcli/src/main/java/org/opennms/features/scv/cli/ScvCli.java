@@ -1,37 +1,29 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
-
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.features.scv.cli;
 
 import java.io.IOException;
 import java.util.Properties;
 import java.util.function.Function;
-
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -45,9 +37,13 @@ import org.opennms.features.scv.cli.commands.ListCommand;
 import org.opennms.features.scv.cli.commands.SetCommand;
 import org.opennms.features.scv.cli.commands.DeleteCommand;
 import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
+import org.opennms.features.scv.utils.ScvUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ScvCli {
 
+    public static final Logger LOG = LoggerFactory.getLogger(ScvCli.class);
     private final static String DEFAULT_PASSWORD_PROPERTY = "org.opennms.features.scv.cli.password";
 
     @Argument(required = true,
@@ -79,21 +75,66 @@ public class ScvCli {
 
     public SecureCredentialsVault getSecureCredentialsVault() {
         if (secureCredentialsVault == null) {
-            secureCredentialsVault = new JCEKSSecureCredentialsVault(this.keystore, this.password);
+            String keystoreType = lookupKeyStoreType();
+            secureCredentialsVault = new JCEKSSecureCredentialsVault(this.keystore, this.password, keystoreType);
         }
 
         return secureCredentialsVault;
     }
 
+    private  String lookupKeyStoreType() {
+        String keyStoreType = SecureCredentialsVault.KeyStoreType.JCEKS.toString();
+        try {
+
+            // Try to get the OpenNMS home directory from the environment variable
+            String opennmsHome = System.getenv("OPENNMS_HOME");
+            // Get the keystore type from SCV properties, if specified
+            Properties scvProps = ScvUtils.loadScvProperties(opennmsHome);
+            keyStoreType = scvProps.getProperty(ScvUtils.SCV_KEYSTORE_TYPE_PROPERTY);
+
+            // If the password is not set, try to get it from SCV properties
+            if (this.password == null || this.password.isEmpty()) {
+                password = scvProps.getProperty(JCEKSSecureCredentialsVault.KEYSTORE_KEY_PROPERTY);
+            }
+        } catch (Exception e) {
+            LOG.error("WARNING: unable to load properties files");
+        }
+
+        return keyStoreType;
+    }
+
     private static String lookupDefaultPassword() {
         Properties properties = new Properties();
-        try {
+        try{
+            String passowrd = lookupPasswordFromProperties();
+            if (passowrd != null && !passowrd.isEmpty()) {
+                return passowrd;
+            }
             properties.load(ScvCli.class.getResourceAsStream("/scvcli.properties"));
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return properties.getProperty(DEFAULT_PASSWORD_PROPERTY);
+    }
+
+    /**
+     * Loads the keystore password from the OpenNMS properties.
+     * <p>
+     * This method looks for a property with key {@code org.opennms.features.scv.jceks.key} in the
+     * OpenNMS properties configurations.
+     * </p>
+     *
+     * @return the keystore password from the properties file.
+     */
+    private static String lookupPasswordFromProperties(){
+        String keyStoreKey = null;
+        // Try to get the OpenNMS home directory from the environment variable
+        String opennmsHome = System.getenv("OPENNMS_HOME");
+        Properties scvProps = ScvUtils.loadScvProperties(opennmsHome);
+        keyStoreKey = scvProps.getProperty(ScvUtils.KEYSTORE_KEY_PROPERTY);
+        return keyStoreKey;
+
     }
 
     public static void main(final String args[]) {

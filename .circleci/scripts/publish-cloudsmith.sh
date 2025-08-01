@@ -56,6 +56,7 @@ export DOCKER_PASSWORD="${CLOUDSMITH_API_KEY}"
 # shellcheck disable=SC1091
 . "${MYDIR}/lib-docker.sh"
 
+# never do DCT on Cloudsmith, they don't support it
 export DOCKER_CONTENT_TRUST=0
 
 configure_cosign

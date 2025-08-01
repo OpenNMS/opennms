@@ -108,6 +108,8 @@ for change in changed_files:
         add_to_build_list("smoke_tests")
     elif "trivy-config/trivyignore" in change:
         add_to_build_list("trivy-scan")
+    elif "trivy-config/trivyignore" in change:
+        add_to_build_list("trivy-analyze")
     elif "opennms-container" in change:
         add_to_build_list("oci")
     elif ".circleci" in change and ".circleci/epoch" not in change:
@@ -127,9 +129,13 @@ if changed_files:
             print(" ", "*", item)
     print()
 
+
+combine_build_element = ""
+
 if What_to_build:
     print("What we want to build:")
     for item in What_to_build:
+        combine_build_element += item + ','
         print(" ", "*", item)
     print()
 
@@ -173,12 +179,12 @@ else:
         "ui": False,
         "integration": False,
         "smoke": False,
-        "smoke-flaky": False,
         "rpms": False,
         "debs": False,
         "oci": False,
         "build-publish": False,
         "trivy-scan": False,
+        "trivy-analyze": False,
         "experimental": False,
     }
 
@@ -204,6 +210,29 @@ if build_mappings["experimental"] or "experimentalPath" in git_keywords:
 
     build_mappings["experimental"] = True
 
+def should_proceed(item, What_to_build, combine_build_element):
+    # Check if the item is one of the specified values and if What_to_build has one item
+    is_single_item = (item in ["docs", "ui", "circleci_configuration"] and len(What_to_build) == 1)
+
+    # Check if any two of the specified values are present in combine_build_element
+    is_two_items = (
+        (("docs" in combine_build_element and "ui" in combine_build_element) or
+         ("docs" in combine_build_element and "circleci_configuration" in combine_build_element) or
+         ("circleci_configuration" in combine_build_element and "ui" in combine_build_element)) and
+        len(What_to_build) == 2
+    )
+
+    # Check if all three specified values are present and if What_to_build has three items
+    is_three_items = (
+        "docs" in combine_build_element and
+        "ui" in combine_build_element and
+        "circleci_configuration" in combine_build_element and
+        len(What_to_build) == 3
+    )
+
+    # Return True if any of the conditions are met
+    return is_single_item or is_two_items or is_three_items
+
 if "trigger-build" in mappings:
     if (
         "develop" in branch_name
@@ -211,9 +240,17 @@ if "trigger-build" in mappings:
         or "release-" in branch_name
         or "foundation-" in branch_name
     ) and "merge-foundation/" not in branch_name:
-        print("Executing workflow: build-publish")
-        build_mappings["build-publish"] = mappings["trigger-build"]
-        print()
+         for item in What_to_build:
+            if should_proceed(item, What_to_build, combine_build_element):
+              del mappings["trigger-build"]
+              What_to_build.clear()
+              del combine_build_element
+              break
+            else:
+              print("Executing workflow: build-publish")
+              build_mappings["build-publish"] = mappings["trigger-build"]
+              print()
+              break
     elif "merge-foundation/" in branch_name and not build_trigger_override_found:
         print("Execute workflow: merge-foundation")
         print()
@@ -236,14 +273,24 @@ if "trigger-build" in mappings:
         What_to_build.clear()
         build_mappings["master-branch"] = True
     elif not build_trigger_override_found and "merge-foundation/" not in branch_name:
-        print("Executing workflow: build-deploy")
-        print()
-        build_mappings["build-deploy"] = mappings["trigger-build"]
+        for item in What_to_build:
+            if should_proceed(item, What_to_build, combine_build_element):
+              del mappings["trigger-build"]
+              What_to_build.clear()
+              del combine_build_element
+              break
+            else:        
+              print("Executing workflow: build-deploy")
+              print()
+              build_mappings["build-deploy"] = mappings["trigger-build"]
+              break
 
 if "trigger-docs" in mappings:
+
     build_mappings["docs"] = mappings["trigger-docs"]
 
 if "trigger-ui" in mappings:
+
     build_mappings["ui"] = mappings["trigger-ui"]
 
 if "trigger-coverage" in mappings:
@@ -252,24 +299,12 @@ if "trigger-coverage" in mappings:
     What_to_build.clear()
     git_keywords.clear()
 
-if "trigger-flaky-smoke" in mappings:
-    if not build_mappings["smoke-flaky"]:
-        build_mappings["smoke-flaky"] = mappings["trigger-flaky-smoke"]
-
 if re.match(".*smoke.*", branch_name) and (
     not build_mappings["experimental"] or "experimentalPath" not in git_keywords
 ):
     print("Detected smoke in the branch name")
     build_mappings["smoke"] = True
     print()
-
-if re.match(".*flaky.*", branch_name) and (
-    not build_mappings["experimental"] or "experimentalPath" not in git_keywords
-):
-    print("Detected smoke in the branch name")
-    build_mappings["smoke-flaky"] = True
-    print()
-
 
 if git_keywords:
     print("Detected GIT keywords:")
@@ -297,10 +332,7 @@ for keyword in git_keywords:
         if "build-deploy" in keyword:
             build_mappings["build-deploy"] = True
         if "smoke" in keyword or "smoke_tests" in What_to_build:
-            if "flaky" in str(git_keywords):
-                build_mappings["smoke-flaky"] = True
-            else:
-                build_mappings["smoke"] = True
+            build_mappings["smoke"] = True
         if "rpms" in keyword:
             build_mappings["rpms"] = True
         if "debs" in keyword:
@@ -311,14 +343,13 @@ for keyword in git_keywords:
             build_mappings["build-publish"] = True
         if "trivy-scan" in keyword:
             build_mappings["trivy-scan"] = True
+        if "trivy-analyze" in keyword:
+            build_mappings["trivy-analyze"] = True
 
 
 
 if "smoke" in git_keywords or "smoke_tests" in What_to_build:
-    if "flaky" in str(git_keywords):
-        build_mappings["smoke-flaky"] = True
-    else:
-        build_mappings["smoke"] = True
+    build_mappings["smoke"] = True
 if "oci" in git_keywords:
     build_mappings["oci"] = True
 
@@ -327,6 +358,9 @@ if "rpms" in git_keywords:
 
 if "trivy-scan" in git_keywords:
     build_mappings["trivy-scan"] = True
+
+if "trivy-analyze" in git_keywords:
+    build_mappings["trivy-analyze"] = True
     
 if "debs" in git_keywords:
     build_mappings["debs"] = True

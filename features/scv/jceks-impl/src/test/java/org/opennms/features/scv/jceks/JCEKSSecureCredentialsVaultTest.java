@@ -1,35 +1,31 @@
-/*******************************************************************************
- * This file is part of OpenNMS(R).
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
  *
- * Copyright (C) 2016 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2016 The OpenNMS Group, Inc.
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
  *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
  *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- * OpenNMS(R) Licensing <license@opennms.org>
- *      http://www.opennms.org/
- *      http://www.opennms.com/
- *******************************************************************************/
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.features.scv.jceks;
 
+import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertFalse;
+import static org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault.KEYSTORE_KEY_PROPERTY;
 
 import java.io.File;
 import java.io.IOException;
@@ -42,8 +38,10 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
+import org.hamcrest.Matchers;
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
@@ -147,5 +145,30 @@ public class JCEKSSecureCredentialsVaultTest {
         latch.await();
         assertEquals(numberOfThreads + 1, scv2.getAliases().size());
         assertEquals(credentials1, scv2.getCredentials("http")) ;
+    }
+
+    @Test
+    public void testScvAccessFromDifferentInstances() throws IOException {
+        File keystoreFile = new File(tempFolder.newFolder("etc"), "scv.jce");
+        System.setProperty(KEYSTORE_KEY_PROPERTY, "testing123");
+        System.setProperty("opennms.home", tempFolder.getRoot().getAbsolutePath());
+
+        // Load scv indirectly through default system properties ( which is what scvcli does)
+        final SecureCredentialsVault scv = JCEKSSecureCredentialsVault.defaultScv();
+        final Map<String, String> attributes = Map.of("key1", "value1", "key2", "value2");
+        final Credentials credentials1 = new Credentials("adm1n", "p@ssw0rd", attributes);
+        scv.setCredentials("http", credentials1);
+
+        //Add a new vault by directly loading keystore file ( as Opennms UI does), this is using watcher.
+        final SecureCredentialsVault scv2 = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "testing123", true);
+        assertEquals(credentials1, scv2.getCredentials("http"));
+
+        // Update credentials from default scv ( assuming scvcli updates credentials)
+        final Credentials credentials2 = new Credentials("adm2n", "p@ssw0rd2", attributes);
+        scv.setCredentials("http", credentials2);
+
+        // watcher is asynchronous, so wait for few secs to validate loading of valid credentials
+        await().atMost(5, TimeUnit.SECONDS)
+                .until(() -> scv2.getCredentials("http"), Matchers.is(credentials2));
     }
 }

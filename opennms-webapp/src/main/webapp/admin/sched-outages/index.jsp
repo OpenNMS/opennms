@@ -1,38 +1,31 @@
 <%--
-/*******************************************************************************
- * This file is part of OpenNMS(R).
- *
- * Copyright (C) 2005-2017 The OpenNMS Group, Inc.
- * OpenNMS(R) is Copyright (C) 1999-2017 The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is a registered trademark of The OpenNMS Group, Inc.
- *
- * OpenNMS(R) is free software: you can redistribute it and/or modify
- * it under the terms of the GNU Affero General Public License as published
- * by the Free Software Foundation, either version 3 of the License,
- * or (at your option) any later version.
- *
- * OpenNMS(R) is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU Affero General Public License for more details.
- *
- * You should have received a copy of the GNU Affero General Public License
- * along with OpenNMS(R).  If not, see:
- *      http://www.gnu.org/licenses/
- *
- * For more information contact:
- *     OpenNMS(R) Licensing <license@opennms.org>
- *     http://www.opennms.org/
- *     http://www.opennms.com/
- *******************************************************************************/
+
+    Licensed to The OpenNMS Group, Inc (TOG) under one or more
+    contributor license agreements.  See the LICENSE.md file
+    distributed with this work for additional information
+    regarding copyright ownership.
+
+    TOG licenses this file to You under the GNU Affero General
+    Public License Version 3 (the "License") or (at your option)
+    any later version.  You may not use this file except in
+    compliance with the License.  You may obtain a copy of the
+    License at:
+
+         https://www.gnu.org/licenses/agpl-3.0.txt
+
+    Unless required by applicable law or agreed to in writing,
+    software distributed under the License is distributed on an
+    "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+    either express or implied.  See the License for the specific
+    language governing permissions and limitations under the
+    License.
 
 --%>
-
 <%@page language="java" contentType="text/html" session="true"
 	import="
 	java.util.*,
 	org.opennms.core.spring.BeanUtils,
+	org.opennms.core.utils.WebSecurityUtils,
 	org.opennms.netmgt.config.*,
 	org.opennms.netmgt.config.dao.outages.api.WriteablePollOutagesDao,
 	org.opennms.netmgt.config.dao.thresholding.api.WriteableThreshdDao,
@@ -70,37 +63,6 @@
 			WriteablePollOutagesDao.class);
 
 	NotifdConfigFactory.init(); //Must do this early on - if it fails, then just throw the exception to the web gui
-	String deleteName = request.getParameter("deleteOutage");
-	if (deleteName != null) {
-		pollOutagesDao.getWriteLock().lock();
-		try {
-			pollOutagesDao.getWriteableConfig().removeOutage(deleteName);
-			//Remove from all the package configurations as well
-			for (final org.opennms.netmgt.config.threshd.Package thisPackage : threshdDao.getWriteableConfig().getPackages()) {
-				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
-			}
-
-			for (final org.opennms.netmgt.config.poller.Package thisPackage : PollerConfigFactory.getInstance().getExtendedConfiguration().getPackages()) {
-				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
-			}
-
-			CollectdConfigFactory collectdConfig = new CollectdConfigFactory();
-			for (Package thisPackage : collectdConfig.getPackages()) {
-				thisPackage.removeOutageCalendar(deleteName); //Will quietly do nothing if outage doesn't exist
-			}
-
-			NotifdConfigFactory.getInstance().getConfiguration().removeOutageCalendar(deleteName);
-
-			pollOutagesDao.saveConfig();
-			NotifdConfigFactory.getInstance().saveCurrent();
-			threshdDao.saveConfig();
-			collectdConfig.saveCurrent();
-			PollerConfigFactory.getInstance().save();
-			sendOutagesChangedEvent();
-		} finally {
-			pollOutagesDao.getWriteLock().unlock();
-		}
-	}
 %>
 
 
@@ -129,6 +91,23 @@
     </form>
   </div> <!-- card-header -->
 <div class="card-body">
+
+<script type="text/javascript">
+	function DeleteAction(name) {
+		if (!confirm('Are you sure you wish to delete this outage?')) {
+			return false;
+		}
+
+		var xhttp = new XMLHttpRequest();
+		xhttp.onload = function() {
+			location.reload();
+		}
+		xhttp.open("DELETE", "/opennms/rest/sched-outages/" + encodeURIComponent(name), true);
+		xhttp.setRequestHeader("Content-type", "application/json");
+		xhttp.send(null);
+	}
+</script>
+
 <table id="outages" class="table table-sm table-striped">
 	<tr>
 		<th>Name</th>
@@ -185,14 +164,14 @@
 						String outageName = thisOutage.getName();
 	%>
 	<tr valign="top" class="<%=rowClass%>">
-		<td><%=outageName%></td>
+		<td><%=java.net.URLEncoder.encode(outageName, "UTF-8")%></td>
 		<td><%=pollOutagesDao.getOutageType(outageName)%></td>
 		<td><ul class="list-unstyled">
 		<%
 		    List<org.opennms.netmgt.config.poller.outages.Node> nodeList = pollOutagesDao.getNodeIds(outageName);
 						for (int j = 0; j < nodeList.size(); j++) {
 							OnmsNode elementNode = NetworkElementFactory.getInstance(getServletContext()).getNode(nodeList.get(j).getId());
-		%> <li><%=elementNode == null || elementNode.getType() == NodeType.DELETED ? "Node: Node ID " + nodeList.get(j).getId() + " Not Found" : "Node: " + elementNode.getLabel()%></li>
+		%> <li><%=elementNode == null || elementNode.getType() == NodeType.DELETED ? "Node: Node ID " + nodeList.get(j).getId() + " Not Found" : "Node: " + WebSecurityUtils.sanitizeString(elementNode.getLabel())%></li>
 		<%
 		    }
 						List<org.opennms.netmgt.config.poller.outages.Interface> interfaceList = pollOutagesDao.getInterfaces(outageName);
@@ -255,11 +234,10 @@
 			src="<%=(thresholdingOutages.contains(outageName))?outageOnImageUrl:outageOffImageUrl%>"></td>
 		<td align="center"><img
 			src="<%=(collectionOutages.contains(outageName))?outageOnImageUrl:outageOffImageUrl%>"></td>
-		<td><a id="<%=outageName%>.edit"
+		<td><a id="<%=java.net.URLEncoder.encode(outageName, "UTF-8")%>.edit"
 			href="admin/sched-outages/editoutage.jsp?name=<%=java.net.URLEncoder.encode(outageName, "UTF-8")%>">Edit</a></td>
-		<td><a id="<%=outageName%>.delete"
-			href="admin/sched-outages/index.jsp?deleteOutage=<%=java.net.URLEncoder.encode(outageName, "UTF-8")%>"
-			onClick="if(!confirm('Are you sure you wish to delete this outage?')) {return false;}">Delete</a></td>
+		<td><a id="<%=java.net.URLEncoder.encode(outageName, "UTF-8")%>.delete"
+			   href="javascript:DeleteAction('<%=outageName%>')">Delete</a></td>
 	</tr>
 
 	<%

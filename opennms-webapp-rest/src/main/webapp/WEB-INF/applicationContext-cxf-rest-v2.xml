@@ -33,8 +33,16 @@
     <bean id="dispatcherServletPath" class="java.lang.String">
         <constructor-arg value="${opennms.home}/jetty-webapps/opennms/WEB-INF/dispatcher-servlet.xml" />
     </bean>
+    <bean id="menuTemplatePath" class="java.lang.String">
+        <constructor-arg value="${opennms.home}/jetty-webapps/opennms/WEB-INF/menu-template.json" />
+    </bean>
     <bean id="menuProvider" class="org.opennms.web.rest.support.menu.MenuProvider">
-        <constructor-arg ref="dispatcherServletPath"/>
+        <constructor-arg ref="dispatcherServletPath" />
+        <constructor-arg ref="menuTemplatePath" />
+    </bean>
+    <bean id="legacyMenuProvider" class="org.opennms.web.rest.support.menu.MenuProviderLegacy">
+        <constructor-arg ref="dispatcherServletPath" />
+        <constructor-arg ref="menuTemplatePath" />
     </bean>
 
     <!-- CXF OpenApiFeature -->
@@ -68,6 +76,9 @@
         <property name="scannerClass" value="io.swagger.v3.jaxrs2.integration.JaxrsApplicationScanner"/>
     </bean>
 
+    <bean id="newsfeedProvider" class="org.opennms.web.rest.support.newsfeed.NewsFeedProvider">
+    </bean>
+
     <jaxrs:server id="cxf-rest-v2" address="/" basePackages="org.opennms.web.rest.v2,org.opennms.web.rest.v2.bsm,,org.opennms.web.rest.v2.status">
       <jaxrs:properties>
         <!-- Use the ResourceContextProvider defined above -->
@@ -92,8 +103,6 @@
         <ref bean="lenientJaxbProvider"/>
         <ref bean="jaxbProvider"/>
         <ref bean="jacksonJaxbJsonProvider"/>
-        <ref bean="atomEntryProvider"/>
-        <ref bean="atomFeedProvider"/>
         <!-- <ref bean="atomPojoProvider"/> -->
         <ref bean="searchContextProvider"/>
         <ref bean="noSuchElementProvider" />

@@ -94,3 +94,56 @@ This switch specifies the logic used when deciding whether to send a notice for 
 If the switch is `off`, notices will never be sent to the target.
 If the switch is `on`, notices will always be sent to the target.
 If the switch is set to `auto`, the system deploys heuristics aimed at "doing the right thing."
+
+== Variable bindings filters
+
+Event parameters can be used to filter which events trigger a notification.
+By defining the `vbname` and `vbvalue`, the notification will only be sent with if the event parameter matches the given value.
+
+Example 1:
+
+In this example, notifications would only be triggered on SNMP Link Down events that contain the string `Trunk`.
+
+.Example `notifications.xml` definition
+[source, xml]
+----
+   <notification name="Link down notification" status="off">
+      <uei>uei.opennms.org/translator/traps/SNMP_Link_Down</uei>
+      <rule>(IPADDR IPLIKE *.*.*.*)</rule>
+      <destinationPath>Email-Admin</destinationPath>
+      <text-message>%descr%</text-message>
+      <subject>Notice #%noticeid% - Link Down</subject>
+      <numeric-message>111-%noticeid%</numeric-message>
+      <varbind>
+         <vbname>ifAlias</vbname> <1>
+         <vbvalue>~^.*Trunk.*</vbvalue> <2>
+      </varbind>
+   </notification>
+----
+<1> Event parameter name to filter
+<2> Value to match for the specified event parameter.
+If the value starts with a `~`, it will be processed as a regular expression, otherwise it will be a string match.
+
+Example 2:
+
+In this example, Business Service Monitoring problem events would only trigger notifications if there is a parameter match with the specified business service name pattern.
+
+.Example `notifications.xml` definition
+[source, xml]
+----
+   <notification name="BusinessServiceMonitor notification" status="off" writeable="yes">
+      <uei>uei.opennms.org/bsm/serviceProblem</uei>
+      <rule>(ipaddr != '0.0.0.0')</rule>
+      <destinationPath>Email-Admin</destinationPath>
+      <text-message>BSM Root Cause Analysis: %parm[rootCause]%</text-message>
+      <subject>%parm[businessServiceName]% is impacted</subject>
+      <numeric-message>111-%noticeid%</numeric-message>
+      <varbind>
+         <vbname>businessServiceName</vbname> <1>
+         <vbvalue>~^MailCluster.*</vbvalue> <2>
+      </varbind>
+   </notification>
+----
+<1> Event parameter name to filter
+<2> Value to match for the specified event parameter.
+If the value starts with a `~`, it will be processed as a regular expression, otherwise it will be a string match.
