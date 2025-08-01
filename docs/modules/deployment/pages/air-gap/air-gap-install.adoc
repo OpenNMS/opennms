@@ -117,7 +117,7 @@ cd /mnt/02-postgresql
 rpm -ivh <directory>/*.rpm
 ```
 
-### Step 3: Install OpenNMS Core
+### Step 4: Install OpenNMS Core
 
 ```bash
 cd /mnt/04-opennms
