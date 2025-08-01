@@ -27,6 +27,7 @@
           .breadcrumb("Admin", "admin/index.jsp")
           .breadcrumb("Flow Classification")
           .ngApp("onms.classifications")
+          .includeLogoutForm()
           .build(request);
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />

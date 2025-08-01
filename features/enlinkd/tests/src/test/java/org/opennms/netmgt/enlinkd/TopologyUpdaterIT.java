@@ -94,7 +94,7 @@ public class TopologyUpdaterIT {
             @Override
             public OnmsTopology buildTopology() {
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     throw Throwables.propagate(e);
                 }

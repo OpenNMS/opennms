@@ -13,6 +13,7 @@ The events are called `uei.opennms.org/bmp/peerUp` and `uei.opennms.org/bmp/peer
 {page-component-title} uses the IP address exporting BMP messages to associate a router with the particular {page-component-title} node.
 In addition, the node's metadata can specify a BGP ID to associate routers.
 If the parameter `metaDataNodeLookup` is not empty, it will be interpreted as a `context:key` metadata name, used to look up a node that has stored the queried BGP ID as a value in the specified key.
+It is also possible to specify more than one associations by providing a comma-separated list of BGP IDs.
 
 == Facts
 

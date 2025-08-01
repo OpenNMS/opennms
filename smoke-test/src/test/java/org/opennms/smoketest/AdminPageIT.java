@@ -22,6 +22,7 @@
 package org.opennms.smoketest;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import com.google.common.base.Strings;
@@ -30,6 +31,7 @@ import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -70,15 +72,15 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         // Event Management
         new String[] { "Manually Send an Event", "//span[text()='Send Event to OpenNMS']" },
         new String[] { "Configure Notifications", "//span[text()='Configure Notifications']" },
-        new String[] { "Customize Event Configurations", "//div[@id='content']//iframe" },
+        new String[] { "Customize Event Configurations", "//div[@id='content']/iframe[@name='mib-compiler-events']" },
 
         // Service Monitoring
         new String[] { "Configure Scheduled Outages", "//form//input[@value='New Name']" },
         new String[] { "Manage and Unmanage Interfaces and Services", "//span[text()='Manage and Unmanage Interfaces and Services']" },
-        new String[] { "Manage Business Services", "//div[@id='content']//iframe" },
+        new String[] { "Manage Business Services", "//div[@id='content']/iframe[@name='bsm-admin-page']" },
 
         // Performance Measurement
-        new String[] { "Configure SNMP Collections and Data Collection Groups", "//div[@id='content']//iframe" },
+        new String[] { "Configure SNMP Collections and Data Collection Groups", "//div[@id='content']/iframe[@name='mib-compiler-snmp']" },
         new String[] { "Configure SNMP Data Collection per Interface", "//span[text()='Manage SNMP Data Collection per Interface']" },
         new String[] { "Configure Thresholds", "//span[text()='Threshold Configuration']" },
 
@@ -90,10 +92,10 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
         // Additional Tools
         new String[] { "Configure Grafana Endpoints (Reports only)", "//div/ul/li/a[contains(text(),'Grafana Endpoints')]" },
         new String[] { "Instrumentation Log Reader", "//span[text()='Filtering']" },
-        new String[] { "SNMP MIB Compiler", "//div[@id='content']//iframe" },
-        new String[] { "Ops Board Configuration", "//div[@id='content']//iframe" },
-        new String[] { "Surveillance Views Configuration", "//div[@id='content']//iframe" },
-        new String[] { "JMX Configuration Generator", "//div[@id='content']//iframe" },
+        new String[] { "SNMP MIB Compiler", "//div[@id='content']/iframe[@name='mib-compiler']" },
+        new String[] { "Ops Board Configuration", "//div[@id='content']/iframe[@name='wallboard-config']" },
+        new String[] { "Surveillance Views Configuration", "//div[@id='content']/iframe[@name='surveillance-views-config']" },
+        new String[] { "JMX Configuration Generator", "//div[@id='content']/iframe[@name='jmx-config-ui']" },
         new String[] { "Usage Statistics Sharing", "//div[contains(@class, 'card')]//span[text()='Usage Statistics Sharing']" },
         new String[] { "Product Update Enrollment", "//div[contains(@class, 'admin-product-update-enrollment-form-wrapper')]" }
     };
@@ -136,33 +138,47 @@ public class AdminPageIT extends OpenNMSSeleniumIT {
 
     @Test
     public void testAllLinks() throws Exception {
+        LOG.debug("In testAllLinks");
+
         adminPage();
         findElementById("content");
         findElementByXpath("//div[contains(@class,'card-body')]");
+
         final int count = countElementsMatchingCss("div.card-body > ul > li > a");
         assertEquals("We expect " + m_adminPageEntries.size() + " link entries on the admin page.", m_adminPageEntries.size(), count);
 
         for (final String[] entry : m_adminPageEntries) {
-            LOG.debug("clicking: '{}', expecting: '{}'", entry[0], entry[1]);
+            LOG.debug("Looking for link element: '{}', page with xpath: {}", entry[0], entry[1]);
+
             adminPage();
-            findElementByLink(entry[0]).click();
+
+            WebElement linkElement = findElementByLink(entry[0]);
+            assertNotNull("Did not find link element", linkElement);
+
+            scrollToElement(linkElement);
+            linkElement.click();
+
             waitForElement(By.xpath(entry[1]));
         }
     }
 
     @Test
     public void testCopyrightYear() {
-        LOG.info("Starting test");
+        LOG.info("Starting testCopyrightYear");
         login();
-        String footer = findElementById("footer").getText();
+        adminPage();
+
+        WebElement footerElem = findElementByXpath("//div[@id='content']/footer[@id='footer']");
+
+        assertNotNull("Did not find footer", footerElem);
+        String footer = footerElem.getText();
 
         Year thisYear = Year.now();
-
         Pattern pattern = Pattern.compile("\\d{4}-" + thisYear, Pattern.CASE_INSENSITIVE);
         Matcher matcher = pattern.matcher(footer);
         boolean matchFound = matcher.find();
 
-        assertTrue("Is the year in the footer is equals to current? - ", matchFound);
+        assertTrue("Is the year in the footer equal to current? - ", matchFound);
     }
 
     @Test

@@ -1,0 +1,56 @@
+#
+# DON'T EDIT THIS FILE :: GENERATED WITH CONFD
+#
+{{$promJmxPath := "/java/agent/prom-jmx-exporter" -}}
+startDelaySeconds: {{getv (print $promJmxPath "/startDelaySeconds") "0"}}
+lowercaseOutputName: {{getv (print $promJmxPath "/lowerCaseOutputName") "true"}}
+lowercaseOutputLabelNames: {{getv (print $promJmxPath "/lowercaseOutputLabelNames") "true"}}
+autoExcludeObjectNameAttributes: {{getv (print $promJmxPath "/autoExcludeObjectNameAttributes") "true"}}
+
+{{$ioSize := len (getvs (print $promJmxPath "/includeObjectNames/*")) -}}
+{{if gt $ioSize 0 -}}
+includeObjectNames:
+{{range getvs (print $promJmxPath "/includeObjectNames/*") -}}
+  - "{{.}}"
+{{end -}}
+{{else -}}
+includeObjectNames:
+  - "java.lang:*"
+  - "OpenNMS:*"
+  - "org.opennms.*:*"
+  - "org.opennms.newts:name=ring-buffer*"
+  - "org.opennms.newts:name=repository.samples-inserted*"
+  - "org.opennms.core.ipc.rpc:*"
+{{end -}}
+
+{{$boSize := len (getvs (print $promJmxPath "/excludeObjectNames/*")) -}}
+{{if gt $boSize 0 -}}
+excludeObjectNames:
+{{range getvs (print $promJmxPath "/excludeObjectNames/*") -}}
+- "{{.}}"
+{{end -}}
+{{end -}}
+
+# The specific list of scheduled objects for Pollerd and Collectd are not exposed to Prometheus.
+excludeObjectNameAttributes:
+  "OpenNMS:Name=Pollerd":
+    - "Schedule"
+  "OpenNMS:Name=Collectd":
+    - "Schedule"
+
+rules:
+  - pattern: "OpenNMS.*"
+  - pattern: "org.opennms.*"
+  - pattern: "com.zaxxer.hikari.*"
+  - pattern: "org.opennms.core.ipc.rpc<name=([^.,]*).([^.,]*).([^.,]*).*Count*"
+    name: org_opennms_core_ipc_rpc_count
+    labels:
+      destination: $1
+      type: $2
+      metric: $3
+  - pattern: "org.opennms.core.ipc.rpc<name=([^.,]*).([^.,]*).([^.,]*).*Mean*"
+    name: org_opennms_core_ipc_rpc_mean
+    labels:
+      destination: $1
+      type: $2
+      metric: $3

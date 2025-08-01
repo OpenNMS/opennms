@@ -28,6 +28,7 @@ import org.opennms.netmgt.enlinkd.service.api.Node;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocPortGetter;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocalGroupTracker;
 import org.opennms.netmgt.enlinkd.snmp.LldpRemTableTracker;
+import org.opennms.netmgt.enlinkd.snmp.LldpSnmpUtils;
 import org.opennms.netmgt.enlinkd.snmp.MtxrLldpRemTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.LldpLocalTableTracker;
 import org.opennms.netmgt.enlinkd.snmp.MtxrNeighborTableTracker;
@@ -253,7 +254,7 @@ public final class NodeDiscoveryLldp extends NodeCollector {
 
         for (MtxrLldpRemTableTracker.MtxrLldpRemRow mtxrLldpRemRow : mtxrlldprowss) {
             m_lldpTopologyService.store(getNodeId(),
-                    LldpLocalTableTracker.getLldpLink(
+                    LldpSnmpUtils.getLldpLink(
                             mtxrLldpRemRow,
                             mtxrNeighborMap.get(mtxrLldpRemRow.getMtxrNeighborIndex()),
                             mtxrLldpLocalPortMap

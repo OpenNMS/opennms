@@ -44,6 +44,13 @@ public class Bootstrap {
     private String ngApp;
     private String scrollSpy;
 
+    /**
+     * Some pages require that 'headerLogoutForm', which posts to 'j_spring_security_logout', exist on the page.
+     * Generally for logout we 'click' the Self Service menu on the Vue Menubar.
+     * But for some pages, we use Angular etc. to perform a logout and need this form.
+     */
+    private boolean includeLogoutForm;
+
     private Set<String> flags = new HashSet<>();
 
     private Bootstrap(final PageContext pageContext) {
@@ -62,6 +69,7 @@ public class Bootstrap {
         request.setAttribute("__bs_headTitles", this.headTitles);
         request.setAttribute("__bs_ngApp", this.ngApp);
         request.setAttribute("__bs_scrollSpy", this.scrollSpy);
+        request.setAttribute("__bs_includeLogoutForm", this.includeLogoutForm ? "true" : "false");
         request.setAttribute("__bs_breadcrumbs", this.breadcrumbs);
         request.setAttribute("__bs_flags", this.flags);
     }
@@ -95,6 +103,11 @@ public class Bootstrap {
 
     public Bootstrap ngApp(final String ngApp) {
         this.ngApp = ngApp;
+        return this;
+    }
+
+    public Bootstrap includeLogoutForm() {
+        this.includeLogoutForm = true;
         return this;
     }
 

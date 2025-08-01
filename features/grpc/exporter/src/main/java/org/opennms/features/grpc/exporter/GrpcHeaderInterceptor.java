@@ -41,16 +41,12 @@ public class GrpcHeaderInterceptor implements ClientInterceptor {
     private ZenithConnectPersistenceService zenithConnectPersistenceService;
     private final Metadata.Key authorizationKey = Metadata.Key.of("Authorization", Metadata.ASCII_STRING_MARSHALLER);
     private final Metadata.Key tenantIdKey = Metadata.Key.of("tenant-id", Metadata.ASCII_STRING_MARSHALLER);
-    private final Metadata.Key authorizationBypassKey = Metadata.Key.of("Bypass-Authorization", Metadata.ASCII_STRING_MARSHALLER);
     private final boolean zenithConnectEnabled;
 
     public GrpcHeaderInterceptor(String tenantId, boolean zenithEnabled) {
         metadata = new Metadata();
         metadata.put(tenantIdKey, tenantId);
         zenithConnectEnabled = zenithEnabled;
-        if (!zenithConnectEnabled) {
-            metadata.put(authorizationBypassKey, Boolean.TRUE.toString());
-        }
     }
 
     public GrpcHeaderInterceptor(String tenantId) {
@@ -87,13 +83,13 @@ public class GrpcHeaderInterceptor implements ClientInterceptor {
     }
 
     private void addAccessTokenInHeaders(Metadata headers) {
+        if (headers.containsKey(authorizationKey)) {
+            headers.removeAll(authorizationKey);
+        }
         if (zenithConnectPersistenceService != null) {
             try {
                 ZenithConnectRegistration registrations = zenithConnectPersistenceService.getRegistrations().first();
                 if (registrations != null) {
-                    if (headers.containsKey(authorizationKey)) {
-                        headers.removeAll(authorizationKey);
-                    }
                     headers.put(authorizationKey, "Bearer " + registrations.accessToken);
                 }
             } catch (ZenithConnectPersistenceException e) {

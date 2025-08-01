@@ -1,17 +1,20 @@
 
 [[install-jdbc-driver]]
 = Install JDBC Driver on Minion
-:description: How to install JDBC driver on an OpenNMS Minion with MySQL and Karaf.
 
-To detect, poll, or collect any JDBC service, you must install the corresponding JDBC driver.
-The driver for PostgreSQL is included on the Minion without any additional configuration needed.
-
-NOTE: This is an optional step and is only needed if you are monitoring a JDBC service that is not PostgreSQL.
+To detect, poll, or collect any JDBC service by a Minion, you must install the corresponding JDBC driver on that Minion.
 
 We reference the `repository directory` relative to the Minion home directory.
 Depending on your operating system, the home directory is `/usr/share/minion` for Debian and Ubuntu, or `/opt/minion` for CentOS and RHEL.
 
 . Download the JDBC driver JAR from a repository (for example, a public https://mvnrepository.com/artifact/mysql/mysql-connector-java/8.0.30[Maven repository]).
++
+.Alternately, you can download using Maven, which will create the required directory structure for you, in your local Maven repository (typically  ~/.m2/repository/).
+[source, console]
+----
+mvn dependency:get -Dartifact=mysql:mysql-connector-java:8.0.22
+----
+
 . Install the JAR file in the repository directory, following the Maven repository pattern.
 +
 For MySQL 8.0.30, the path would be `repositories/default/mysql/mysql-connector-java/8.0.30/mysql-connector-java-8.0.30.jar`.
@@ -60,6 +63,64 @@ feature:list | grep mysql
 
 .MySQL bundle is installed and available
 [source, output]
+[subs="verbatim,attributes"]
 ----
 mysql-bundle   | 8.0.22   | x        | Started     | opennms-{page-component-version}  |
 ----
+
+== Example features files for common JDBC drivers
+
+.MS SQLServer using 12.10.1.jre11
+[source, console]
+[subs="verbatim,attributes"]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="opennms-{page-component-version}"
+          xmlns="http://karaf.apache.org/xmlns/features/v1.4.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0">
+  <feature name="mssql-bundle" version="12.10.1.jre11" install="auto">
+    <bundle>wrap:mvn:com.microsoft.sqlserver/mssql-jdbc/12.10.1.jre11</bundle>
+  </feature>
+  <feature name="org.osgi.service.jdbc" version="1.1.0" install="auto">
+    <bundle>wrap:mvn:org.osgi/org.osgi.service.jdbc/1.1.0</bundle><1>
+  </feature>
+</features>
+----
+
+. The MSSQL JDBC driver has an additional dependency on `org.osgi.service.jdbc/1.1.0`
+
+.MariaDB using version 3.5.4
+[source, console]
+[subs="verbatim,attributes"]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<features name="opennms-{page-component-version}"
+          xmlns="http://karaf.apache.org/xmlns/features/v1.4.0"
+          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0">
+  <feature name="mariadb-bundle" version="3.5.4" install="auto">
+      <bundle>wrap:mvn:org.mariadb.jdbc/mariadb-java-client/3.5.4</bundle>
+  </feature>
+</features>
+----
+
+
+.Oracle JDBC using version 23.8.0.25.04
+[source, console]
+[subs="verbatim,attributes"]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<features
+        name="opennms-{page-component-version}"
+        xmlns="http://karaf.apache.org/xmlns/features/v1.4.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="http://karaf.apache.org/xmlns/features/v1.4.0 http://karaf.apache.org/xmlns/features/v1.4.0">
+    <feature name="oracle-bundle" version="23.8.0.25.04" install="auto">
+          <bundle>wrap:mvn:com.oracle.jdbc/jdbc/23.8.0.25.04</bundle><1>
+    </feature>
+</features>
+----
+. The Oracle JDBC driver jar must be renamed to `jdbc-${VERSION}.jar` in order to be resolved.
++
+The repository path for current Oracle JDBC is `com/oracle/jdbc/jdbc/${VERSION}/jdbc-${VERSION}.jar`

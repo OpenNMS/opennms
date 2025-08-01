@@ -22,11 +22,16 @@
 package org.opennms.netmgt.telemetry.protocols.netflow.adapter.common;
 
 import java.time.Instant;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.telemetry.protocols.netflow.transport.FlowMessage;
+import org.opennms.netmgt.telemetry.protocols.netflow.transport.Value;
 
 import static org.opennms.integration.api.v1.flows.Flow.Direction;
 import static org.opennms.integration.api.v1.flows.Flow.NetflowVersion;
@@ -269,6 +274,58 @@ public class NetflowMessage implements Flow {
     public String getNodeIdentifier() {
         if (!Strings.isNullOrEmpty(flowMessageProto.getNodeIdentifier())) {
             return flowMessageProto.getNodeIdentifier();
+        }
+        return null;
+    }
+
+    public Map<String, Object> getRawMessage() {
+        return flowMessageProto.getRawMessageList().stream().collect(Collectors.toMap(Value::getName, this::transformValue));
+    }
+
+    private Object transformValue(final Value value) {
+        if (value.hasBoolean()) {
+            return value.getBoolean().getBool().getValue();
+        }
+        if (value.hasDatetime()) {
+            return value.getDatetime().getUint64().getValue();
+        }
+        if (value.hasFloat()) {
+            return value.getFloat().getDouble().getValue();
+        }
+        if (value.hasIpv4Address()) {
+            return value.getIpv4Address().getString().getValue();
+        }
+        if (value.hasIpv6Address()) {
+            return value.getIpv6Address().getString().getValue();
+        }
+        if (value.hasList()) {
+            final List<Object> transformedList = new ArrayList<>();
+            final List<org.opennms.netmgt.telemetry.protocols.netflow.transport.List> listOfLists = value.getList().getListList();
+            for(final org.opennms.netmgt.telemetry.protocols.netflow.transport.List list : listOfLists) {
+                transformedList.add(list.getValueList().stream().map(this::transformValue).collect(Collectors.toList()));
+            }
+            return transformedList;
+        }
+        if (value.hasMacaddress()) {
+            return value.getMacaddress().getString().getValue();
+        }
+        if (value.hasNull()) {
+            return null;
+        }
+        if (value.hasOctetarray()) {
+            return value.getOctetarray().getBytes().getValue().asReadOnlyByteBuffer();
+        }
+        if (value.hasSigned()) {
+            return value.getSigned().getInt64().getValue();
+        }
+        if(value.hasString()) {
+            return value.getString().getString().getValue();
+        }
+        if (value.hasUndeclared()) {
+            return value.getUndeclared().getBytes().getValue().asReadOnlyByteBuffer();
+        }
+        if (value.hasUnsigned()) {
+            return value.getUnsigned().getUint64().getValue();
         }
         return null;
     }

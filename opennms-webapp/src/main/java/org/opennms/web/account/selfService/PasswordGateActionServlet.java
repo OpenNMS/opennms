@@ -70,7 +70,9 @@ public class PasswordGateActionServlet extends AbstractBasePasswordChangeActionS
         final RequestCache requestCache = new HttpSessionRequestCache();
         final DefaultSavedRequest savedRequest = (DefaultSavedRequest) requestCache.getRequest(request, response);
         final String servletPath = savedRequest != null ? savedRequest.getServletPath() : null;
-        final String path = servletPath != null && !servletPath.isEmpty() ? servletPath : "/index.jsp";
+        final String path = servletPath != null && !servletPath.isEmpty() &&
+                !servletPath.endsWith("/ui-components/assets/index.js")
+                ? servletPath : "/index.jsp";
 
         return request.getContextPath() + path;
     }

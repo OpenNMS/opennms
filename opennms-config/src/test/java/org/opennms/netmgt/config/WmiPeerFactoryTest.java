@@ -44,13 +44,14 @@ import org.opennms.core.spring.ContextRegistry;
  *
  */
 public class WmiPeerFactoryTest extends TestCase {
-    
+
     @Override
     protected void setUp() throws Exception {
         super.setUp();
         // Reload contexts to pick up test-specific beanRefContext.xml
         ContextRegistry.getInstance().reloadContexts();
     }
+
     private WmiPeerFactory getFactory(String amiConfigXml) throws IOException {
         WmiPeerFactory factory = new WmiPeerFactory(ConfigurationTestUtils.getResourceForConfigWithReplacements(amiConfigXml));
         factory.afterPropertiesSet();

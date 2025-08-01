@@ -7,7 +7,7 @@ export DEPLOY_FOLDER="/opt/usr-plugins"
 mkdir -p "$DEPLOY_FOLDER"
 
 microdnf -y install cpio python3-pip jq
-pip3 install --upgrade cloudsmith-cli 
+pip3 install --upgrade cloudsmith-cli
 
 mkdir ~/test
 cd ~/test || exit
