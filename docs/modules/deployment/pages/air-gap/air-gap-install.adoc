@@ -23,7 +23,7 @@ The basic process involves downloading the RPMs for OpenNMS {page-component-titl
 Create a base directory to organize all downloaded packages.  This directory will become the base directory and dependencies will be included inside sub-folders to aid in knowing what order to install them.
 
 ```bash
-mkdir ./install
+mkdir ./airgap_rpm_files
 ```
 
 ### Step 2: Install OpenNMS Repository
@@ -58,7 +58,7 @@ Download and install OpenJDK packages (OpenJDK 17 here but please refer to syste
 
 ```bash
 dnf install --downloadonly --downloaddir=/tmp/opennms_rpms java-17-openjdk-devel
-mv ./tmp/opennms_rpms ./install/01-openjdk
+mv ./tmp/opennms_rpms ./airgap_rpm_files/01-openjdk
 dnf install -y java-17-openjdk-devel
 ```
 
@@ -68,7 +68,7 @@ Download PostgreSQL server packages (please refer to system requirements for ver
 
 ```bash
 dnf install --downloadonly --downloaddir=/tmp/opennms_rpms postgresql-server
-mv ./tmp/opennms_rpms ./install/02-postgresql
+mv ./tmp/opennms_rpms ./airgap_rpm_files/02-postgresql
 dnf install -y postgresql-server
 ```
 
@@ -79,7 +79,7 @@ Download the basic OpenNMS packages. If you need other packages, this would be t
 ifeval::["{page-component-title}" == "Horizon"]
 ```bash
 dnf install --downloadonly --downloaddir=/tmp/opennms_rpms opennms-core opennms-webapp-jetty
-mv ./tmp/opennms_rpms ./install/04-opennms
+mv ./tmp/opennms_rpms ./airgap_rpm_files/04-opennms
 dnf install -y opennms-core opennms-webapp-jetty
 ```
 endif::[]
@@ -87,7 +87,7 @@ endif::[]
 ifeval::["{page-component-title}" == "Meridian"]
 ```bash
 dnf install --downloadonly --downloaddir=/tmp/opennms_rpms meridian-core meridian-webapp-jetty
-mv ./tmp/opennms_rpms ./install/04-opennms
+mv ./tmp/opennms_rpms ./airgap_rpm_files/04-opennms
 dnf install -y meridian-core meridian-webapp-jetty
 ```
 endif::[]
@@ -104,7 +104,7 @@ Transfer the files to your air-gapped system via USB, DVD, or link:https://www.r
 
 Locate the directory where the install files are located after you have transfered them.
 ```bash
-cd /mnt/opennms_transfer/install
+cd /mnt/opennms_transfer/airgap_rpm_files
 ```
 
 ### Step 2: Install OpenJDK
