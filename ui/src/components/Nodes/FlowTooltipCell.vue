@@ -5,9 +5,9 @@
     :placement="PopoverPlacement.top"
     v-slot="{ attrs, on }">
     <div v-if="hasIngressFlow(node) || hasEgressFlow(node)" v-bind="attrs" v-on="on" class="pointer">
-      <font-awesome-icon v-if="hasIngressFlow(node)" :icon="'fa-solid fa-long-arrow-left'"></font-awesome-icon>
+      <FeatherIcon v-if="hasIngressFlow(node)" :icon="ArrowBack" class="flow-icon" />
       <br v-if="hasIngressFlow(node) && hasEgressFlow(node)" style="height: 40px" />
-      <font-awesome-icon v-if="hasEgressFlow(node)" :icon="'fa-solid fa-long-arrow-right'"></font-awesome-icon>
+      <FeatherIcon v-if="hasEgressFlow(node)" :icon="ArrowBack" class="flow-icon egress" />
     </div>
   </FeatherTooltip>
 </template>
@@ -15,6 +15,8 @@
 <script setup lang="ts">
 import { PropType } from 'vue'
 import { FeatherTooltip, PointerAlignment, PopoverPlacement } from '@featherds/tooltip'
+import { FeatherIcon } from '@featherds/icon'
+import ArrowBack from '@featherds/icon/navigation/ArrowBack'
 import { hasIngressFlow, hasEgressFlow } from './utils'
 import { Node } from '@/types'
 
@@ -37,3 +39,14 @@ const flowTooltipTitle = (node: Node) => {
   return ''
 }
 </script>
+
+<style lang="scss" scoped>
+
+.flow-icon {
+  font-size: 1.5em;
+
+  &.egress {
+    transform: scaleX(-1);
+  }
+}
+</style>

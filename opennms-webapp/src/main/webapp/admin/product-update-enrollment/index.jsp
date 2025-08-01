@@ -60,8 +60,8 @@
 </style>
 
 <div>
-If you would like to receive more information about OpenNMS Horizon, Meridian and other products, please click
-Enable below and you will be redirected to the main page where you can enter your information.
+    <span>If you would like to receive more information about OpenNMS Horizon, Meridian and other products, please click
+    Enable below and you will be redirected to the main page where you can enter your information.</span>
 </div>
 <div class="admin-product-update-enrollment-form-wrapper">
     <form id="admin-product-update-enrollment-form">

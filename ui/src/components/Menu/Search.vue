@@ -1,25 +1,42 @@
 <template>
-  <div class="dropdown-wrapper">
-    <div class="onms-search-icon-wrapper">
-      <font-awesome-icon color="rgb(73, 80, 87)" class="onms-search-icon" icon="fa fa-search" />
-      <FeatherInput @update:modelValue="search" label="Search..." :modelValue="searchState.currentSearch" />
+  <div class="onms-search-control-wrapper" :id="props.searchId">
+    <div class="onms-search-input-wrapper">
+      <FeatherInput
+        label="Search..."
+        @update:modelValue="search"
+        :modelValue="searchState.currentSearch"
+      >
+        <template v-slot:pre>
+          <FeatherIcon :icon="SearchIcon" />
+        </template>
+      </FeatherInput>
     </div>
-    <div class="dropdown">
+    <div class="onms-search-dropdown-wrapper">
       <FeatherDropdown v-model="searchState.dropdownOpen">
         <template
           v-for="searchResultByContext, searchResultByContextKey in searchStore.searchResultsByContext"
-          :key="searchResultByContextKey">
+          :key="searchResultByContextKey"
+        >
           <FeatherDropdownItem v-if="searchResultByContext?.results">
             <SearchHeader>{{ searchResultByContext?.label }}</SearchHeader>
           </FeatherDropdownItem>
-          <template v-for="contextSearchResults, contextSearchResultsKey in searchResultByContext?.results"
-            :key="contextSearchResultsKey">
-            <FeatherDropdownItem v-for="searchResultItem, searchResultItemKey in contextSearchResults?.results"
-              :key="searchResultItemKey" :style="{ padding: '3px 5px' }">
+
+          <template
+             v-for="contextSearchResults, contextSearchResultsKey in searchResultByContext?.results"
+            :key="contextSearchResultsKey"
+          >
+            <FeatherDropdownItem
+              v-for="searchResultItem, searchResultItemKey in contextSearchResults?.results"
+              :key="searchResultItemKey"
+              class="onms-search-result-item"
+              :style="{ padding: '3px 5px' }"
+            >
               <!-- FeatherDropdownItem does not accept a class, so our extra padding has to be an inline style -->
-              <SearchResult :item="searchResultItem"
+              <SearchResult
+                :item="searchResultItem"
                 :iconClass="iconClasses?.[searchResultByContextKey]?.[searchResultItemKey]"
-                :itemClicked="itemClicked" />
+                :itemClicked="itemClicked"
+              />
             </FeatherDropdownItem>
           </template>
         </template>
@@ -33,6 +50,8 @@
   lang="ts"
 >
 import { reactive } from 'vue'
+import { FeatherIcon } from '@featherds/icon'
+import SearchIcon from '@featherds/icon/action/Search'
 import { FeatherInput } from '@featherds/input'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import SearchHeader from './SearchHeader.vue'
@@ -43,8 +62,14 @@ import { SearchResultItem } from '@/types'
 
 const menuStore = useMenuStore()
 const searchStore = useSearchStore()
-
 const iconClasses = ref<string[][]>([[]])
+
+const props = defineProps({
+  searchId: {
+    type: String,
+    required: false
+  }
+})
 
 interface SearchState {
   pausedSearch: string | number;
@@ -90,22 +115,14 @@ watchEffect(() => {
 })
 </script>
 
-<style
-  lang="scss"
-  scoped
->
+<style lang="scss" scoped>
 @import "@featherds/styles/themes/variables";
 
-.menubar-search {
-  width: 250px !important;
-  margin-right: 20px;
-}
-
-.dropdown-wrapper {
+.onms-search-control-wrapper {
   position: relative;
-  min-width: 250px;
+  min-width: 30em;
 
-  .dropdown {
+  .onms-search-dropdown-wrapper {
     position: absolute;
     min-width: 278px;
     max-width: 278px;
@@ -125,7 +142,8 @@ watchEffect(() => {
 
     :deep(.feather-menu-dropdown) {
       min-width: 100%;
-      max-width: 278px;
+      /* width for text in search result labels, so text does not get cut off */
+      max-width: 30em;
       position: absolute !important;
       bottom: unset !important;
       left: unset !important;
@@ -134,6 +152,14 @@ watchEffect(() => {
       width: auto !important;
       transform: translateY(-20px);
     }
+  }
+
+  :deep(.feather-input-wrapper-container .feather-input-border .pre-border) {
+    border-radius: 0;
+  }
+
+  :deep(.feather-input-wrapper-container .feather-input-border .post-border) {
+    border-radius: 0;
   }
 
   :deep(.feather-input-border) {
@@ -179,25 +205,26 @@ watchEffect(() => {
   }
 }
 
-.onms-search-icon-wrapper {
-  display:flex;
-  position:relative;
-  align-items:center;
-  width:100%;
+.onms-search-input-wrapper {
+  display: flex;
+  position: relative;
+  align-items: center;
+  width: 100%;
+
   .onms-search-icon {
-    left:18px;
+    left: 18px;
     position: absolute;
     z-index: 3;
   }
   :deep(.feather-input-container){
-    width:100%;
+    width: 100%;
   }
   :deep(.feather-input-label) {
-    padding-left:32px;
-    top:10px;
+    padding-left: 32px;
+    top: 10px;
   }
   :deep(.feather-input){
-    padding-left:32px;
+    padding-left: 32px;
   }
 }
 </style>
