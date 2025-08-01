@@ -59,7 +59,7 @@ import com.vaadin.ui.AbstractComponent;
     "theme://../opennms/assets/topology-init.vaadin.js"
 })
 @StyleSheet({
-  "theme://../opennms/assets/leaflet.css"
+    "theme://../opennms/assets/leaflet.css"
 })
 public class TopologyComponent extends AbstractComponent implements ChangeListener, ValueChangeListener, MapViewManagerListener {
 

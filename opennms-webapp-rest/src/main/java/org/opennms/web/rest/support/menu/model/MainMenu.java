@@ -19,14 +19,17 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.web.rest.support.menu;
+package org.opennms.web.rest.support.menu.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainMenu {
+    public String templateName;
     public String baseHref;
     public String homeUrl;
+    public String formattedDateTime;
+    public String formattedDate;
     public String formattedTime;
     public String noticeStatus;
     public String username;
@@ -34,20 +37,22 @@ public class MainMenu {
     public Boolean zenithConnectEnabled;
     public String zenithConnectBaseUrl;
     public String zenithConnectRelativeUrl;
+    public Boolean displayAddNodeButton;
+    public Boolean sideMenuInitialExpand;
     public String copyrightDates;
     public String version;
+
     final public List<TileProviderItem> userTileProviders = new ArrayList<>();
 
-    final public List<TopMenuEntry> menus = new ArrayList<>();
-    public TopMenuEntry helpMenu;
-    public TopMenuEntry selfServiceMenu;
-    public TopMenuEntry userNotificationMenu;
+    final public List<MenuEntry> menus = new ArrayList<>();
+    public MenuEntry helpMenu;
+    public MenuEntry selfServiceMenu;
+    public MenuEntry userNotificationMenu;
     public MenuEntry provisionMenu;
     public MenuEntry flowsMenu;
     public MenuEntry configurationMenu; // aka admin menu, the "cogs"
-    public Notices notices;
 
-    public void addTopMenu(TopMenuEntry entry) {
+    public void addTopMenu(MenuEntry entry) {
         this.menus.add(entry);
     }
 }

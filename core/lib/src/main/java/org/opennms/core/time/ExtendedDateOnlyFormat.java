@@ -19,12 +19,26 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.web.rest.support.menu;
 
-public class Notices {
-    public Integer countUser;
-    public Integer countNonUser;
-    public String linkUser;
-    public String linkNonUser;
-    public String status;
+package org.opennms.core.time;
+
+public class ExtendedDateOnlyFormat extends CentralizedDateTimeFormat {
+    public final static String SYSTEM_PROPERTY_UI_DATE_ONLY_FORMAT = "org.opennms.ui.dateonlyformat";
+
+    public final static String DEFAULT_DATE_ONLY_FORMAT_PATTERN = "yyyy-MM-dd";
+
+    public ExtendedDateOnlyFormat() {
+        super();
+    }
+
+    @Override
+    public String getFormatPattern() {
+        String format = System.getProperty(SYSTEM_PROPERTY_UI_DATE_ONLY_FORMAT);
+
+        if (format == null) {
+            format = DEFAULT_DATE_ONLY_FORMAT_PATTERN;
+        }
+
+        return format;
+    }
 }

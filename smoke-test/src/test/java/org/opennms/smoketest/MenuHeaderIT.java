@@ -22,16 +22,20 @@
 package org.opennms.smoketest;
 
 import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.notNullValue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertThat;
 
 import java.time.Duration;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.FixMethodOrder;
 import org.junit.Test;
 import org.junit.runners.MethodSorters;
+import org.opennms.smoketest.ui.framework.TextInput;
 import org.opennms.smoketest.ui.framework.search.CentralSearch;
 import org.opennms.smoketest.ui.framework.search.result.ContextSearchResult;
 import org.opennms.smoketest.ui.framework.search.result.SearchContext;
@@ -42,108 +46,322 @@ import org.openqa.selenium.interactions.Actions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.rnorth.ducttape.unreliables.Unreliables;
+import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class MenuHeaderIT extends OpenNMSSeleniumIT {
+    private static final Logger LOG = LoggerFactory.getLogger(MenuHeaderIT.class);
 
     @Test
     public void testMenuEntries() throws Exception {
-        clickMenuItem("Search", null, "element/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='Search for Nodes']");
+        // See opennms-webapp/src/main/webapp/WEB-INF/menu-template.json for the menu template
+        LOG.debug("testMenuEntries");
 
-        clickMenuItem("Info", "Nodes", "element/nodeList.htm");
-        findElementByXpath("//div[@class='btn-toolbar']/span[text()='Nodes' or text()='Availability']");
+        frontPage();
 
-        clickMenuItem("Info", "Assets", "asset/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='Search Asset Information']");
+        WebElement foundElement = null;
 
-        clickMenuItem("Info", "Path Outages", "pathOutage/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='All Path Outages']");
+        // Dashboards Menu
+        clickMenuItem("dashboardsMenu", "Dashboards");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='OpenNMS Dashboards']")));
 
-        clickMenuItem("Status", "Events", "event/index");
-        findElementByXpath("//div[@class='card-header']/span[text()='Event Queries']");
+        clickMenuItem("dashboardsMenu", "Wallboard");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[starts-with(@id, 'opennmsvaadinwallboard-')]")));
 
-        clickMenuItem("Status", "Alarms", "alarm/index.htm");
-        findElementByXpath("//div[@class='card-header']/span[text()='Alarm Queries']");
+        frontPage();
+        clickMenuItem("dashboardsMenu", "Heatmap");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/a[starts-with(text(), 'Alarm Heatmap')]")));
 
-        clickMenuItem("Status", "Notifications", "notification/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='Notification queries']");
+        clickMenuItem("dashboardsMenu", "Trends");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Trend']")));
 
-        clickMenuItem("Status", "Outages", "outage/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='Outage Menu']");
+        clickMenuItem("dashboardsMenu", "Charts");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.id("include-charts")));
 
-        clickMenuItem("Status", "Application", "application/index.jsp");
-        findElementByXpath("//li[text()='Application Status']");
+        clickMenuItem("dashboardsMenu", "Database Reports");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//a[@data-name='report-templates']")));
 
-        clickMenuItem("Status", "Surveillance", "surveillance-view.jsp");
-        // switchTo() by xpath is much faster than by ID
-        //driver.switchTo().frame("surveillance-view-ui");
+        clickMenuItem("dashboardsMenu", "Metrics Statistics (statsd)");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span")));
+
+        clickMenuItem("dashboardsMenu", "Metrics Dashboard (KSC Reports)");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Customized Reports']")));
+
+        clickMenuItem("dashboardsMenu", "Surveillance Dashboard");
         driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
+
         driver.switchTo().parentFrame();
         frontPage();
 
-        final String reportsMenuName = "name=nav-Reports-top";
-        clickMenuItem(reportsMenuName, "Charts", "charts/index.jsp");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("include-charts")));
+        // Inventory Menu
+        // Note, some items are below under Vue UI checks
+        clickMenuItem("inventoryMenu", "Nodes");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='btn-toolbar']/span[text()='Nodes' or text()='Availability']")));
 
-        clickMenuItem(reportsMenuName, "Resource Graphs", "graph/index.jsp");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//label[contains(text()[normalize-space()], 'Standard Resource')]")));
+        clickMenuItem("inventoryMenu", "Assets");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='content']//div[@class='card-header']/span[text()='Search Asset Information']")));
 
-        clickMenuItem(reportsMenuName, "KSC Reports", "KSC/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='Customized Reports']");
+        clickMenuItem("inventoryMenu", "Search Inventory");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Search for Nodes']")));
 
-        clickMenuItem(reportsMenuName, "Statistics", "statisticsReports/index.htm");
-        findElementByXpath("//div[@class='card-header']/span");
+        // Monitoring Menu
+        clickMenuItem("monitoringMenu", "Applications");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//li[text()='Application Status']")));
 
-        final String dashboardsMenuName = "name=nav-Dashboards-top";
-        clickMenuItem(dashboardsMenuName, "Dashboard", "dashboard.jsp");
+        clickMenuItem("monitoringMenu", "Alarms");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Alarm Queries']")));
+
+        clickMenuItem("monitoringMenu", "Outages");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Outage Menu']")));
+
+        clickMenuItem("monitoringMenu", "Events");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Event Queries']")));
+
+        clickMenuItem("monitoringMenu", "Path Outages");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='All Path Outages']")));
+
+        clickMenuItem("monitoringMenu", "Surveillance View");
         // switchTo() by xpath is much faster than by ID
-        //driver.switchTo().frame("surveillance-view-ui");
         driver.switchTo().frame(findElementByXpath("/html/body/div/iframe"));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//span[text()='Surveillance view: default']")));
         driver.switchTo().parentFrame();
         frontPage();
 
-        clickMenuItem(dashboardsMenuName, "Ops Board", "vaadin-wallboard");
-        findElementByXpath("//select[@class='v-select-select']");
+        // Metrics Menu
+        clickMenuItem("metricsMenu", "Resource Graphs");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Resource Graphs')]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//label[contains(text()[normalize-space()], 'Standard Resource Performance Reports')]")));
 
-        frontPage();
-        final String mapsMenuName = "name=nav-Maps-top";
-        clickMenuItem(mapsMenuName, "Topology", "topology");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[contains(text(), 'Selection Context')]")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='navbar']//a[@name='nav-Maps-top']")));
+        // Distributed Monitoring
+        clickMenuItem("distributedMonitoringMenu", "Manage Minions");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Manage Minions')]")));
 
-        frontPage();
-        findElementByXpath("//nav//a[contains(@title, 'Configure OpenNMS') and contains(@href, 'opennms/admin/index.jsp')]").click();
-        findElementByXpath("//div[@class='card-header']/span[text()='OpenNMS System']");
-        findElementByXpath("//div[@class='card-header']/span[text()='Provisioning']");
-        findElementByXpath("//div[@class='card-header']/span[text()='Event Management']");
-        findElementByXpath("//div[@class='card-header']/span[text()='Service Monitoring']");
-        findElementByXpath("//div[@class='card-header']/span[text()='Performance Measurement']");
-        findElementByXpath("//div[@class='card-header']/span[text()='Distributed Monitoring']");
+        clickMenuItem("distributedMonitoringMenu", "Manage Applications");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Applications')]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Applications']")));
 
-        frontPage();
-        final String helpMenuName = "nav-help-top";
-        clickMenuItemWithIcon(helpMenuName, "Help", "opennms/help/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='Documentation']");
-        clickMenuItemWithIcon(helpMenuName, "Support", "opennms/support/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='Commercial Support']");
-        clickMenuItemWithIcon(helpMenuName, "About", "opennms/about/index.jsp");
-        findElementByXpath("//div[@class='card-header']/span[text()='Version Details']");
+        clickMenuItem("distributedMonitoringMenu", "Manage Monitoring Locations");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Monitoring Locations')]")));
 
-        // Navigation to new Vue UI page from legacy menubar
+        // Manage Inventory Menu
+        clickMenuItem("manageInventoryMenu", "Provisioning Requisitions");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Provisioning Requisitions')]")));
+
+        clickMenuItem("manageInventoryMenu", "Scheduled Node Discovery");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Modify Configuration')]")));
+
+        clickMenuItem("manageInventoryMenu", "One-shot Node Discovery");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Create Discovery Scan')]")));
+
+        // quick-add node screen
+        clickMenuItem("manageInventoryMenu", "Add a Single Node");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Quick-Add Node')]")));
+
+        clickMenuItem("manageInventoryMenu", "Delete Nodes");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Delete Nodes']")));
+
+        clickMenuItem("manageInventoryMenu", "Manage Business Services");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Business Services')]")));
         frontPage();
-        clickMenuItemWithIcon("nav-Info-top", "Device Configs", "opennms/ui/index.html#/device-config-backup");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("app")));
-        findElementByXpath("//div[@id='app']//span[text()='Device Configuration']");
+
+        // User Management Menu
+        clickMenuItem("userManagementMenu", "Manage Users");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'User List')]")));
+
+        clickMenuItem("userManagementMenu", "Manage Groups");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Group List')]")));
+
+        clickMenuItem("userManagementMenu", "Manage On-call Roles");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Role List')]")));
+
+        // Integrations Menu
+        clickMenuItem("integrationsMenu", "SNMP Agent Configuration");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Configure SNMP by IP')]")));
+
+        clickMenuItem("integrationsMenu", "Geocoding Services");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Geocoder Configuration')]")));
+
+        clickMenuItem("integrationsMenu", "Grafana PDF Reporting");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Endpoint Configuration')]")));
+
+        // Omitting Zenith Connect for now
+
+        // Tools Menu
+        clickMenuItem("toolsMenu", "SNMP MIB Compiler");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'SNMP MIB Compiler')]")));
+
+        clickMenuItem("toolsMenu", "JMX Metric Configuration Generator");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'JMX Configuration Generator')]")));
+
+        clickMenuItem("toolsMenu", "Import/Export Node Asset Information");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Import/Export Assets')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Import and Export Assets']")));
+
+        clickMenuItem("toolsMenu", "Send Custom Events");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Send Event')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Send Event to OpenNMS']")));
+
+        // Administration Menu
+        clickMenuItem("administrationMenu", "Surveillance Categories");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Surveillance Categories']")));
+
+        clickMenuItem("administrationMenu", "Configure Thresholds");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Threshold Configuration']")));
+
+        // Omitting 'Flow Classification' for now - needs Flows role
+
+        clickMenuItem("administrationMenu", "Notifications");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Notification queries']")));
+
+        clickMenuItem("administrationMenu", "Customize Events");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Manage Events Configuration')]")));
+
+        clickMenuItem("administrationMenu", "Customize Data Collection Groups");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Manage SNMP Collections and Data Collection Groups')]")));
+
+        clickMenuItem("administrationMenu", "Manage SNMP Data Collection per Interface");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Manage SNMP Data Collection per Interface']")));
+
+        clickMenuItem("administrationMenu", "Scheduled Outages");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Scheduled Outages')]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/h4[text()='Scheduled Outages']")));
+
+        clickMenuItem("administrationMenu", "Wallboard Configuration");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Ops Board Configuration')]")));
+
+        clickMenuItem("administrationMenu", "Product Update Enrollment");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Product Update Enrollment')]")));
+
+        clickMenuItem("administrationMenu", "Configure OpenNMS");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='OpenNMS System']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Provisioning']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Event Management']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Service Monitoring']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Performance Measurement']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Distributed Monitoring']")));
+
+        // Internal Logs Menu
+        clickMenuItem("internalLogsMenu", "Instrumentation Log Reader");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Instrumentation Log Reader')]")));
+
+        // TODO: Fix this test!
+//        // User Profile Menu
+//        clickMenuItem("userProfileMenu", "Change Password");
+//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='form-input-wrapper']//label[contains(text()[normalize-space()], 'Change Password')]")));
+//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@id='btn_change_password']")));
+//        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//button[@id='btn_skip']")));
+
+        // API Documentation Menu
+        // Omit clicking for now, some of these are external links
+        foundElement = findMenuItemLink("apiDocumentationMenu", "REST Open API Documentation");
+        assertNotNull("apiDocumentationMenu / REST Open API Documentation", foundElement);
+
+        foundElement = findMenuItemLink("apiDocumentationMenu", "REST API Reference Documentation");
+        assertNotNull("apiDocumentationMenu / REST API Reference Documentation", foundElement);
+
+        foundElement = findMenuItemLink("apiDocumentationMenu", "Source Code");
+        assertNotNull("apiDocumentationMenu / Source Code", foundElement);
+
+        // Help Documentation menu
+        clickMenuItem("helpDocumentationMenu", "Help");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Help')]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Documentation']")));
+
+        clickMenuItem("helpDocumentationMenu", "About");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'About')]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Version Details']")));
+
+        clickMenuItem("helpDocumentationMenu", "Support");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Support')]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='Commercial Support']")));
+
+        // Support Menu
+        foundElement = findMenuItemLink("supportMenu", "Professional Support");
+        assertNotNull("supportMenu / Professional Support", foundElement);
+
+        foundElement = findMenuItemLink("supportMenu", "Chat");
+        assertNotNull("supportMenu / Chat", foundElement);
+
+        foundElement = findMenuItemLink("supportMenu", "Community Support (Discourse)");
+        assertNotNull("supportMenu / Community Support (Discourse)", foundElement);
+
+        foundElement = findMenuItemLink("supportMenu", "Public Issue Tracker");
+        assertNotNull("supportMenu / Public Issue Tracker", foundElement);
+
+        clickMenuItem("supportMenu", "Generate System Report");
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'System Reports')]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-body']//div[@class='form-group']/input[@type='submit' and @value='Generate System Report']")));
+
+        // Vaadin Topology page
+        frontPage();
+        clickMenuItem("topologiesMenu", "Topology");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[contains(text(), 'Selection Context')]")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[starts-with(@id, 'opennmstopology-')]")));
+
+        // Navigation on Vue UI pages
+        frontPage();
+        clickMenuItem("inventoryMenu", "Structured Node List");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Structured Node List']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//span[text()='Nodes']")));
+
+        clickMenuItem("inventoryMenu", "Device Configs");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Device Config Backup']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//span[text()='Device Configuration']")));
+
+        clickMenuItem("toolsMenu", "Secure Credentials Vault");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Secure Credentials Vault']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='scv-container']//p[text()='Add Credentials']")));
+
+        // Omitting for now - need ROLE_FILESYSTEM_EDITOR
+        // clickMenuItem("toolsMenu", "File Editor");
+        // wait.until(ExpectedConditions.presenceOfElementLocated(By.id("app")));
+        // wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//span[text()='File Editor']")));
+
+        clickMenuItem("integrationsMenu", "External Requisitions");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='External Requisitions and Thread Pools']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//h2[text()='External Requisitions and Thread Pools']")));
+
+        clickMenuItem("administrationMenu", "Usage Statistics Sharing");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Usage Statistics Collection']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='usage-stats-container']//span[text()='Usage Statistics Sharing']")));
+
+        clickMenuItem("internalLogsMenu", "Log Viewer");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Logs']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='logs-sidebar']")));
+
+        // Geographical map page
+        frontPage();
+        clickMenuItem("mapsMenu", "Geographical");
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='geo-map']")));
+
+        // Omitting this for now - it takes too long for the Swagger API page to display
+        // clickMenuItem("apiDocumentationMenu", "REST Open API Documentation");
+        // final WebDriverWait longerWait = new WebDriverWait(getDriver(), Duration.ofSeconds(2));
+        // longerWait.until(ExpectedConditions.presenceOfElementLocated(By.id("app")));
+        // wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Endpoints']")));
+        // wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@id='api-title' and contains(text()[normalize-space()], 'OpenNMS V2 RESTful API')]")));
 
         Unreliables.retryUntilSuccess(60, TimeUnit.SECONDS, () -> {
             frontPage();
             Thread.sleep(200);
-            final String userMenuName = "nav-user-top";
-            clickMenuItemWithIcon(userMenuName, "Log Out", "javascript:document.headerLogoutForm.submit()");
+
+            logout();
+
+            findElementById("input_j_username");
+            return null;
+        });
+    }
+
+    @Test
+    public void testLogout() {
+        Unreliables.retryUntilSuccess(60, TimeUnit.SECONDS, () -> {
+            frontPage();
+            Thread.sleep(200);
+
+            logout();
+
             findElementById("input_j_username");
             return null;
         });
@@ -160,7 +378,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         reportsPage();
         findElementByName("resourceGraphs");
         findElementByName("kscReports");
-
 
         // testAllLinks
         reportsPage();
@@ -186,23 +403,53 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
     @Test
     public void verifyCentralSearch() {
-        // Kick off search
-        final SearchResult searchResult = new CentralSearch(getDriver()).search("Configure");
-        assertThat(searchResult.size(), is(10L));
+        frontPage();
 
-        // Load more elements
-        final ContextSearchResult contextSearchResult = searchResult.forContext(SearchContext.Action);
-        assertThat(contextSearchResult.hasMore(), is(true));
-        contextSearchResult.loadMore();
-        assertThat(contextSearchResult.size(), is(14L));
+        // get the central search text input control and search for "Configure"
+        WebElement searchInput = findElementByXpath("//div[@id='onms-central-search-control']/div[@class='onms-search-input-wrapper']//div[@class='feather-input-wrapper']//input[@class='feather-input']");
+        TextInput ti = new TextInput(getDriver(), searchInput.getAttribute("id"));
+        ti.setInput("Configure");
 
-        // Select last element from the now loaded elements
-        contextSearchResult.getItem("Configure Users").click();
-        getDriver().getCurrentUrl().endsWith("/opennms/admin/userGroupView/users/list.jsp");
+        // Get the search results, including the search results header
+        List<WebElement> searchResults = findElementsByXpath("//div[@id='onms-central-search-control']/div[@class='onms-search-dropdown-wrapper']//ul[@class='feather-dropdown']/li");
 
-        // Go back to start page
-        new CentralSearch(getDriver()).search("Home").getSingleItem().click();
-        getDriver().getCurrentUrl().endsWith("/opennms/index.jsp");
+        // 10 actual results plus 1 header
+        assertThat(searchResults.size(), is(11));
+
+        List<WebElement> searchResultsHeader = findElementsByXpath("//div[@class='onms-search-result-header']");
+        assertThat(searchResultsHeader.size(), is(1));
+        assertThat(searchResultsHeader.get(0).getText(), is("Action"));
+
+        List<WebElement> searchResultItems = findElementsByXpath("//a[contains(@class, 'onms-search-result-item')]");
+        assertThat(searchResultItems.size(), is(10));
+
+        // TODO:
+        // - load more search results
+        // - possibly remove CentralSearch code (ui/framework/search) if no longer being used
+
+        frontPage();
+
+        // TODO: Will probably remove this code
+        if (false) {
+            // Kick off search
+            final SearchResult searchResult = new CentralSearch(getDriver()).search("Configure");
+            assertThat(searchResult.size(), is(10L));
+
+            // TODO!
+            // Load more elements
+            final ContextSearchResult contextSearchResult = searchResult.forContext(SearchContext.Action);
+            assertThat(contextSearchResult.hasMore(), is(true));
+            contextSearchResult.loadMore();
+            assertThat(contextSearchResult.size(), is(14L));
+
+            // Select last element from the now loaded elements
+            contextSearchResult.getItem("Configure Users").click();
+            getDriver().getCurrentUrl().endsWith("/opennms/admin/userGroupView/users/list.jsp");
+
+            // Go back to start page
+            new CentralSearch(getDriver()).search("Home").getSingleItem().click();
+            getDriver().getCurrentUrl().endsWith("/opennms/index.jsp");
+        }
     }
 
     // We need this helper method, as with the icon used in some menus the contains(text(),...) method does not work anymore
@@ -212,6 +459,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         // Repeat the process altering the offset slightly each time
         final AtomicInteger offset = new AtomicInteger(10);
         final WebDriverWait shortWait = new WebDriverWait(getDriver(), Duration.ofSeconds(1));
+
         try {
             setImplicitWait(5, TimeUnit.SECONDS);
             Unreliables.retryUntilSuccess(30, TimeUnit.SECONDS, () -> {

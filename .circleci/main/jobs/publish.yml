@@ -104,13 +104,27 @@ jobs:
               install \
               org.sonatype.central:central-publishing-maven-plugin:publish \
               || exit 1
-      - run:
-          name: Install Python3 and PIP3
-          command: |
+
             sudo apt update
-            sudo apt install -y python3 python3-pip
-      - cloudsmith/ensure-api-key
-      - cloudsmith/install-cli
-      - run:
-          name: Deploy to Cloudsmith
-          command: .circleci/scripts/publish-maven-cloudsmith.sh
+            sudo apt install -y python3 python3-pip python3-venv
+            
+            if [[ $(command -v cloudsmith) == "" ]]; then
+              cd /tmp
+              python3 -m venv venv
+              export PATH=/tmp/venv/bin:$PATH
+              /tmp/venv/bin/pip3 install cloudsmith-cli
+            else
+              echo "Cloudsmith CLI is already installed."
+            fi
+
+            ROOT_VERSION=$(~/project/.circleci/scripts/pom2version.sh ~/project/pom.xml || echo "0.0.0")
+
+            if [[ "$ROOT_VERSION" == *"-SNAPSHOT" ]]; then
+              ln -s ~/project/deploy/target/central-deferred ~/project/deploy/target/central-publishing
+              cd ~/project/deploy/target/central-deferred
+              zip -r "central-bundle.zip" org
+              rm -r org
+            fi
+            ~/project/.circleci/scripts/publish-maven-cloudsmith.sh
+            
+            
