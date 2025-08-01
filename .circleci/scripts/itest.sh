@@ -96,8 +96,7 @@ retry sudo apt update && \
                 "rrdtool=$RRDTOOL_VERSION" \
                 jrrd2 \
                 jicmp \
-                jicmp6 \
-                openjdk-11-jdk-headless \
+                jicmp6
             || exit 1
 
 export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
