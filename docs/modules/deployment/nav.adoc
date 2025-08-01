@@ -37,5 +37,7 @@
 * xref:upgrade/backup/introduction.adoc[]
 * xref:upgrade/restore/introduction.adoc[]
 
+* xref:air-gap/air-gap-install.adoc[]
+
 * xref:opentracing/jaeger-tracing.adoc[]
 * xref:prometheus-monitoring.adoc[]
