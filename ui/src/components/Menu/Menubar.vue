@@ -41,7 +41,7 @@ import { useOutsideClick } from '@featherds/composables/events/OutsideClick'
 import { FeatherAppBar, FeatherAppBarLink } from '@featherds/app-bar'
 import { FeatherButton } from '@featherds/button'
 
-import IconLogo from '@/assets/LogoHorizon.vue'
+import IconLogo from '@/assets/LogoBluebird.vue'
 import { useAppStore } from '@/stores/appStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { MainMenu } from '@/types/mainMenu'
