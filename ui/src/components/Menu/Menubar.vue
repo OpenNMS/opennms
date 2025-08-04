@@ -3,11 +3,6 @@
     <template v-slot:left>
       <div class="center-flex">
         <FeatherAppBarLink :icon="IconLogo" title="Home" class="logo-link home" type="home" :url="mainMenu.homeUrl || '/'" />
-
-        <div class="date-wrapper">
-          <div class="date-formatted-date">{{ formattedDate }}</div>
-          <div class="date-formatted-time">{{ formattedTime }}</div>
-        </div>
       </div>
     </template>
 
@@ -25,6 +20,10 @@
     </template>
 
     <template v-slot:right>
+      <div class="date-wrapper">
+        <div class="date-formatted-date">{{ formattedDate }}</div>
+        <div class="date-formatted-time">{{ formattedTime }}</div>
+      </div>
       <template v-if="mainMenu.username">
         <UserNotificationsMenuItem :ref="userNotificationsMenu" />
         <UserSelfServiceMenuItem />
@@ -220,18 +219,18 @@ onMounted(async () => {
 .date-wrapper {
   display: inline-flex;
   flex-direction: column;
-  margin-left: 1em;
+  margin-right: 1em;
 
   .date-formatted-date {
     display: flex;
-    justify-content: left;
+    justify-content: right;
     font-weight: 800;
     font-size: 1.25em;
   }
 
   .date-formatted-time {
     display: flex;
-    justify-content: left;
+    justify-content: right;
   }
 }
 </style>
