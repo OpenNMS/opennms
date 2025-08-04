@@ -38,7 +38,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "eventconf_events")
-public class EventConfEvents implements Serializable {
+public class EventConfEvent implements Serializable {
 
     private static final long serialVersionUID = 1L;
 

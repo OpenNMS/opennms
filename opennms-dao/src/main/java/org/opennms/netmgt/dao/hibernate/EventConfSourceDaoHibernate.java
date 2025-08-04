@@ -77,14 +77,6 @@ public class EventConfSourceDaoHibernate
     }
 
     @Override
-    public Integer getTotalEventCount(Long sourceId) {
-        Long count = findObjects(Long.class,
-                "select sum(s.eventCount) from EventConfSource s join s.events e where s.id = ?", sourceId)
-                .stream().findFirst().orElse(0L);
-        return count.intValue();
-    }
-
-    @Override
     public void saveOrUpdate(EventConfSource source) {
         super.saveOrUpdate(source);
     }

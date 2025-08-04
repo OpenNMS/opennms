@@ -84,9 +84,8 @@ public class EventConfSource implements Serializable {
         this.id = id;
     }
 
-    // One-to-Many mapping to events
     @OneToMany(mappedBy = "source", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EventConfEvents> events;
+    private List<EventConfEvent> events;
 
 
     public String getName() {
@@ -161,11 +160,11 @@ public class EventConfSource implements Serializable {
         this.uploadedBy = uploadedBy;
     }
 
-    public List<EventConfEvents> getEvents() {
+    public List<EventConfEvent> getEvents() {
         return events;
     }
 
-    public void setEvents(List<EventConfEvents> events) {
+    public void setEvents(List<EventConfEvent> events) {
         this.events = events;
     }
 }

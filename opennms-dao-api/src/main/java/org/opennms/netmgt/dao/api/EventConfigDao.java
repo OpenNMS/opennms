@@ -21,19 +21,19 @@
  */
 package org.opennms.netmgt.dao.api;
 
-import org.opennms.netmgt.model.EventConfEvents;
+import org.opennms.netmgt.model.EventConfEvent;
 
 import java.util.List;
 
-public interface EventConfigDao extends OnmsDao<EventConfEvents, Long> {
+public interface EventConfigDao extends OnmsDao<EventConfEvent, Long> {
 
-    EventConfEvents get(Long id);
+    EventConfEvent get(Long id);
 
-    List<EventConfEvents> findBySourceId(Long sourceId);
+    List<EventConfEvent> findBySourceId(Long sourceId);
 
-    EventConfEvents findByUei(String uei);
+    EventConfEvent findByUei(String uei);
 
-    List<EventConfEvents> findEnabledEvents();
+    List<EventConfEvent> findEnabledEvents();
 
     void deleteBySourceId(Long sourceId);
 }

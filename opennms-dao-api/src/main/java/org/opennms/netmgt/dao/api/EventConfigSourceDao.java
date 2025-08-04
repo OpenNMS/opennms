@@ -40,8 +40,6 @@ public interface EventConfigSourceDao extends OnmsDao<EventConfSource, Long> {
 
     Map<Long, String> getIdToNameMap();
 
-    Integer getTotalEventCount(Long sourceId);
-
     void saveOrUpdate(EventConfSource source);
 
     void delete(EventConfSource source);

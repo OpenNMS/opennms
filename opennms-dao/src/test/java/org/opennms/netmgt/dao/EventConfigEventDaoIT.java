@@ -29,7 +29,7 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.EventConfigDao;
 import org.opennms.netmgt.dao.api.EventConfigSourceDao;
-import org.opennms.netmgt.model.EventConfEvents;
+import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -53,7 +53,7 @@ import static org.junit.Assert.assertEquals;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class EventConfigEventsDaoIT implements InitializingBean {
+public class EventConfigEventDaoIT implements InitializingBean {
 
     @Autowired
     private EventConfigDao m_eventDao;
@@ -103,7 +103,7 @@ public class EventConfigEventsDaoIT implements InitializingBean {
 
 
     private void insertEvent(String uei, String label, String description, String severity) {
-        EventConfEvents event = new EventConfEvents();
+        EventConfEvent event = new EventConfEvent();
         event.setUei(uei);
         event.setEventLabel(label);
         event.setDescription(description);
@@ -120,8 +120,8 @@ public class EventConfigEventsDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testFindAllEventConfEvents() {
-        List<EventConfEvents> event = m_eventDao.findAll();
-        assertNotNull("Expected to find event by UEI and source ID", event);
+        List<EventConfEvent> event = m_eventDao.findAll();
+        assertNotNull("Expected to find all events", event);
         assertEquals(4, event.size());
 
     }
@@ -129,10 +129,10 @@ public class EventConfigEventsDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testGetById() {
-        List<EventConfEvents> events = m_eventDao.findAll();
+        List<EventConfEvent> events = m_eventDao.findAll();
         assertNotNull("Events should not be null", events);
         assertEquals(4, events.size());
-        EventConfEvents result = m_eventDao.get(events.get(0).getId());
+        EventConfEvent result = m_eventDao.get(events.get(0).getId());
         assertNotNull("Fetched event should not be null", result);
         assertEquals(events.get(0).getUei(), result.getUei());
     }
@@ -140,7 +140,7 @@ public class EventConfigEventsDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testFindBySourceId() {
-        List<EventConfEvents> events = m_eventDao.findBySourceId(m_source.getId());
+        List<EventConfEvent> events = m_eventDao.findBySourceId(m_source.getId());
         assertNotNull(events);
         assertFalse(events.isEmpty());
     }
@@ -148,7 +148,7 @@ public class EventConfigEventsDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testFindByUei() {
-        EventConfEvents event = m_eventDao.findByUei("uei.opennms.org/internal/discoveryConfigChange");
+        EventConfEvent event = m_eventDao.findByUei("uei.opennms.org/internal/discoveryConfigChange");
         assertNotNull("Event with matching UEI should be found", event);
         assertEquals("uei.opennms.org/internal/discoveryConfigChange", event.getUei());
     }
@@ -156,27 +156,27 @@ public class EventConfigEventsDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testFindEnabledEvents() {
-        List<EventConfEvents> enabledEvents = m_eventDao.findEnabledEvents();
+        List<EventConfEvent> enabledEvents = m_eventDao.findEnabledEvents();
         assertNotNull("Enabled events should be found", enabledEvents);
         assertEquals(4, enabledEvents.size());
 
-        EventConfEvents event = enabledEvents.get(0);
+        EventConfEvent event = enabledEvents.get(0);
         event.setEnabled(false);
         m_eventDao.saveOrUpdate(event);
 
-        List<EventConfEvents> updatedEnabled = m_eventDao.findEnabledEvents();
+        List<EventConfEvent> updatedEnabled = m_eventDao.findEnabledEvents();
         assertEquals(3, updatedEnabled.size());
     }
 
     @Test
     @Transactional
     public void testDeleteBySourceId() {
-        List<EventConfEvents> beforeDelete = m_eventDao.findBySourceId(m_source.getId());
+        List<EventConfEvent> beforeDelete = m_eventDao.findBySourceId(m_source.getId());
         assertEquals(4, beforeDelete.size());
 
         m_eventDao.deleteBySourceId(m_source.getId());
 
-        List<EventConfEvents> afterDelete = m_eventDao.findBySourceId(m_source.getId());
+        List<EventConfEvent> afterDelete = m_eventDao.findBySourceId(m_source.getId());
         assertEquals(0, afterDelete.size());
     }
 

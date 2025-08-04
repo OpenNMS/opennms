@@ -22,41 +22,41 @@
 package org.opennms.netmgt.dao.hibernate;
 
 import org.opennms.netmgt.dao.api.EventConfigDao;
-import org.opennms.netmgt.model.EventConfEvents;
+import org.opennms.netmgt.model.EventConfEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class EventConfEventDaoHibernate
-        extends AbstractDaoHibernate<EventConfEvents, Long>
+        extends AbstractDaoHibernate<EventConfEvent, Long>
         implements EventConfigDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventConfEventDaoHibernate.class);
 
     public EventConfEventDaoHibernate() {
-        super(EventConfEvents.class);
+        super(EventConfEvent.class);
     }
 
     @Override
-    public List<EventConfEvents> findBySourceId(Long sourceId) {
-        return find("from EventConfEvents e where e.source.id = ? order by e.createdTime desc", sourceId);
+    public List<EventConfEvent> findBySourceId(Long sourceId) {
+        return find("from EventConfEvent e where e.source.id = ? order by e.createdTime desc", sourceId);
     }
 
     @Override
-    public EventConfEvents findByUei(String uei) {
-        List<EventConfEvents> list = find("from EventConfEvents e where e.uei = ?", uei);
+    public EventConfEvent findByUei(String uei) {
+        List<EventConfEvent> list = find("from EventConfEvent e where e.uei = ?", uei);
         return list.isEmpty() ? null : list.get(0);
     }
 
     @Override
-    public List<EventConfEvents> findEnabledEvents() {
-        return find("from EventConfEvents e where e.enabled = true order by e.createdTime desc");
+    public List<EventConfEvent> findEnabledEvents() {
+        return find("from EventConfEvent e where e.enabled = true order by e.createdTime desc");
     }
 
     @Override
     public void deleteBySourceId(Long sourceId) {
-        getHibernateTemplate().bulkUpdate("delete from EventConfEvents e where e.source.id = ?", sourceId);
+        getHibernateTemplate().bulkUpdate("delete from EventConfEvent e where e.source.id = ?", sourceId);
     }
 
 }
