@@ -303,8 +303,7 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         // Navigation on Vue UI pages
         frontPage();
         clickMenuItem("inventoryMenu", "Structured Node List");
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Structured Node List']")));
-        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//span[text()='Nodes']")));
+        wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='card']//span[text()='Node List']")));
 
         clickMenuItem("inventoryMenu", "Device Configs");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Device Config Backup']")));
