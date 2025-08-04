@@ -223,14 +223,14 @@ onMounted(async () => {
 
   .date-formatted-date {
     display: flex;
-    justify-content: left;
+    justify-content: right;
     font-weight: 800;
     font-size: 1.25em;
   }
 
   .date-formatted-time {
     display: flex;
-    justify-content: left;
+    justify-content: right;
   }
 }
 </style>
