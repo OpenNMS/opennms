@@ -27,7 +27,7 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.api.EventConfigSourceDao;
+import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -56,7 +56,7 @@ import static org.junit.Assert.assertTrue;
 public class EventConfSourceDaoIT implements InitializingBean {
 
     @Autowired
-    private EventConfigSourceDao m_dao;
+    private EventConfSourceDao m_dao;
 
     private EventConfSource m_source;
 

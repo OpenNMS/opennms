@@ -61,7 +61,7 @@ public class EventConfEvent implements Serializable {
     private String description;
 
     @Column(nullable = false)
-    private Boolean enabled = true;
+    private Boolean enabled;
 
     @Column(name = "xml_content", columnDefinition = "text", nullable = false)
     private String xmlContent;

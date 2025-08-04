@@ -21,7 +21,7 @@
  */
 package org.opennms.netmgt.dao.hibernate;
 
-import org.opennms.netmgt.dao.api.EventConfigSourceDao;
+import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 public class EventConfSourceDaoHibernate
         extends AbstractDaoHibernate<EventConfSource, Long>
-        implements EventConfigSourceDao {
+        implements EventConfSourceDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventConfSourceDaoHibernate.class);
 
@@ -62,7 +62,7 @@ public class EventConfSourceDaoHibernate
     }
 
     @Override
-    public List<EventConfSource> findAllOrderedByFileOrder() {
+    public List<EventConfSource> findAllByFileOrder() {
         return find("from EventConfSource s order by s.fileOrder");
     }
 

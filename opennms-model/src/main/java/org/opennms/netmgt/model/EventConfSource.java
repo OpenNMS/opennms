@@ -76,6 +76,9 @@ public class EventConfSource implements Serializable {
     @Column(name = "uploaded_by", length = 256)
     private String uploadedBy;
 
+    @OneToMany(mappedBy = "source", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<EventConfEvent> events;
+
     public Long getId() {
         return id;
     }
@@ -83,10 +86,6 @@ public class EventConfSource implements Serializable {
     public void setId(Long id) {
         this.id = id;
     }
-
-    @OneToMany(mappedBy = "source", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<EventConfEvent> events;
-
 
     public String getName() {
         return name;

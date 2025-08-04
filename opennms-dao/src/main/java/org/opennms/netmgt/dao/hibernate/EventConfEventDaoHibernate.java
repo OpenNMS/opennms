@@ -21,7 +21,7 @@
  */
 package org.opennms.netmgt.dao.hibernate;
 
-import org.opennms.netmgt.dao.api.EventConfigDao;
+import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,7 +30,7 @@ import java.util.List;
 
 public class EventConfEventDaoHibernate
         extends AbstractDaoHibernate<EventConfEvent, Long>
-        implements EventConfigDao {
+        implements EventConfEventDao {
 
     private static final Logger LOG = LoggerFactory.getLogger(EventConfEventDaoHibernate.class);
 

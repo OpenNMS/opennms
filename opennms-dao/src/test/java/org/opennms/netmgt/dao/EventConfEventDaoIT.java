@@ -27,8 +27,8 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.api.EventConfigDao;
-import org.opennms.netmgt.dao.api.EventConfigSourceDao;
+import org.opennms.netmgt.dao.api.EventConfEventDao;
+import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -53,13 +53,13 @@ import static org.junit.Assert.assertEquals;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class EventConfigEventDaoIT implements InitializingBean {
+public class EventConfEventDaoIT implements InitializingBean {
 
     @Autowired
-    private EventConfigDao m_eventDao;
+    private EventConfEventDao m_eventDao;
 
     @Autowired
-    private EventConfigSourceDao m_eventSourceDao;
+    private EventConfSourceDao m_eventSourceDao;
 
     private EventConfSource m_source;
 
