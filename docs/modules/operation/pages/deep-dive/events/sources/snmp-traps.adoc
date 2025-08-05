@@ -355,7 +355,7 @@ To configure {page-component-title} to honor `snmpTrapAddress` when present, set
 <2> Don't create new nodes when receiving an SNMP trap with an unknown source IP address.
 <3> Try to use the identifier source IP address from the `snmpTrapAddress` varbind instead of the UDP source IP address.
 
-If you are using Minions to receive traps, edit the `${MINION_HOME}/etc/org.opennms.netmgt.trapd.cfg` file on each Minion to include the following setting:
+If you are using Minions to receive traps, edit the `$\{MINION_HOME}/etc/org.opennms.netmgt.trapd.cfg` file on each Minion to include the following setting:
 
 [source, properties]
 ----
