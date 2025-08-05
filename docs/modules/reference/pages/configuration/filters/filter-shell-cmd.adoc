@@ -1,0 +1,42 @@
+
+[filter-shell-command]
+= Testing filters
+
+You can test filters on the fly using the `opennms:filter` Karaf shell command.
+
+[source,console]
+----
+admin@opennms()> opennms:filter --help
+DESCRIPTION
+        opennms:filter
+
+        Enumerates nodes/interfaces that match a given filter
+
+SYNTAX
+        opennms:filter filterRule
+
+ARGUMENTS
+        filterRule
+                A filter Rule
+                (required)
+
+----
+
+== Example
+
+Return any nodes with an IP address between 192.168.1.1 and 192.158.1.250, with a service `HTTP` or `HTTPS`, and in a category named `Virtual`:
+
+[source, console]
+----
+admin@opennms()> opennms:filter '(IPADDR != "0.0.0.0" & (IPADDR IPLIKE 192.168.1.1-250) & (isHTTP | isHTTPS) & (categoryName == "Virtual"))'
+
+nodeId=33 nodeLabel=opennms.ad.example.com location=Default
+        categories:
+                Virtual IpAddresses:
+                192.168.1.219
+
+nodeId=42 nodeLabel=localhost location=Default
+        categories:
+                Virtual IpAddresses:
+                192.168.1.219
+----
