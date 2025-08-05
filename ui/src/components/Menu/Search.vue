@@ -1,68 +1,76 @@
 <template>
-  <div class="onms-search-control-wrapper" :id="props.searchId">
+  <div
+    class="onms-search-control-wrapper"
+    :id="props.searchId"
+  >
     <div class="onms-search-input-wrapper">
-      <FeatherInput
-        label="Search..."
-        @update:modelValue="search"
-        :modelValue="searchState.currentSearch"
-      >
-        <template v-slot:pre>
-          <FeatherIcon :icon="SearchIcon" />
-        </template>
-      </FeatherInput>
+      <div class="search-icon">
+        <FeatherIcon :icon="SearchIcon" />
+      </div>
+      <input
+        ref="searchInputRef"
+        type="text"
+        placeholder="Search..."
+        v-model="searchValue"
+        @input="handleSearch"
+        @keydown="onKeyDown"
+        class="search-input"
+      />
     </div>
-    <div class="onms-search-dropdown-wrapper">
-      <FeatherDropdown v-model="searchState.dropdownOpen">
-        <template
-          v-for="searchResultByContext, searchResultByContextKey in searchStore.searchResultsByContext"
-          :key="searchResultByContextKey"
+    <div
+      v-if="showResults && hasResults"
+      class="search-results-dropdown"
+      @mousedown.prevent
+    >
+      <template
+        v-for="(searchResultByContext, searchResultByContextKey) in filteredResults"
+        :key="searchResultByContextKey"
+      >
+        <div
+          v-if="searchResultByContext?.results"
+          class="search-category"
         >
-          <FeatherDropdownItem v-if="searchResultByContext?.results">
-            <SearchHeader>{{ searchResultByContext?.label }}</SearchHeader>
-          </FeatherDropdownItem>
-
-          <template
-             v-for="contextSearchResults, contextSearchResultsKey in searchResultByContext?.results"
-            :key="contextSearchResultsKey"
+          <SearchHeader>{{ searchResultByContext?.label }}</SearchHeader>
+        </div>
+        <template
+          v-for="contextSearchResults, contextSearchResultsKey in searchResultByContext?.results"
+          :key="contextSearchResultsKey"
+        >
+          <div
+            v-for="searchResultItem, searchResultItemKey in contextSearchResults?.results"
+            :key="searchResultItemKey"
+            class="search-result-item"
+            :class="{ 'keyboard-selected': isSelected(searchResultByContextKey, contextSearchResultsKey, searchResultItemKey) }"
+            @mousedown.prevent
+            @mouseenter="setSelectedIndex(searchResultByContextKey, contextSearchResultsKey, searchResultItemKey)"
           >
-            <FeatherDropdownItem
-              v-for="searchResultItem, searchResultItemKey in contextSearchResults?.results"
-              :key="searchResultItemKey"
-              class="onms-search-result-item"
-              :style="{ padding: '3px 5px' }"
-            >
-              <!-- FeatherDropdownItem does not accept a class, so our extra padding has to be an inline style -->
-              <SearchResult
-                :item="searchResultItem"
-                :iconClass="iconClasses?.[searchResultByContextKey]?.[searchResultItemKey]"
-                :itemClicked="itemClicked"
-              />
-            </FeatherDropdownItem>
-          </template>
+            <SearchResult
+              :ref="(el:any) => setSearchResultRef(el, searchResultByContextKey, contextSearchResultsKey, searchResultItemKey)"
+              :item="searchResultItem"
+              :iconClass="iconClasses?.[searchResultByContextKey]?.[searchResultItemKey]"
+              :itemClicked="handleItemClick"
+            />
+          </div>
         </template>
-      </FeatherDropdown>
+      </template>
     </div>
   </div>
 </template>
 
-<script
-  setup
-  lang="ts"
->
-import { reactive } from 'vue'
+<script setup lang="ts">
+import { ref, computed, watch, nextTick } from 'vue'
 import { FeatherIcon } from '@featherds/icon'
 import SearchIcon from '@featherds/icon/action/Search'
-import { FeatherInput } from '@featherds/input'
-import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import SearchHeader from './SearchHeader.vue'
 import SearchResult from './SearchResult.vue'
 import { useMenuStore } from '@/stores/menuStore'
 import { useSearchStore } from '@/stores/searchStore'
-import { SearchResultItem } from '@/types'
 
 const menuStore = useMenuStore()
 const searchStore = useSearchStore()
-const iconClasses = ref<string[][]>([[]])
+const iconClasses = ref<any>([[]])
+const searchInputRef = ref<any>(null)
+const searchResultRefs = ref<Map<string, any>>(new Map())
 
 const props = defineProps({
   searchId: {
@@ -71,136 +79,215 @@ const props = defineProps({
   }
 })
 
-interface SearchState {
-  pausedSearch: string | number;
-  currentSearch: string | number | undefined;
-  dropdownOpen: boolean;
-}
+const searchValue = ref('')
+const showResults = ref(false)
+const selectedIndex = ref(-1)
+const flatResults = ref<any[]>([])
 
-const searchState = reactive<SearchState>({
-  pausedSearch: '',
-  dropdownOpen: false,
-  currentSearch: ''
+let searchTimeout: any = null
+
+const filteredResults = computed(() => {
+  return Object.fromEntries(
+    Object.entries(searchStore.searchResultsByContext).filter(
+      ([, value]: any) => value?.label === 'Action'
+    )
+  )
 })
 
-const itemClicked = (item: SearchResultItem) => {
-  if (item && item.url) {
-    const baseHref = menuStore.mainMenu.baseHref
-    const fullPath = `${baseHref}${item.url}`
+const hasResults = computed(() => {
+  return searchStore.searchResultsByContext &&
+    Object.keys(searchStore.searchResultsByContext).length > 0
+})
 
+const createResultKey = (contextKey: string | number, subContextKey: string | number, itemIndex: number) => {
+  return `${contextKey}-${subContextKey}-${itemIndex}`
+}
+
+const setSearchResultRef = (el: any, contextKey: string | number, subContextKey: string | number, itemIndex: number) => {
+  if (el) {
+    const key = createResultKey(contextKey, subContextKey, itemIndex)
+    searchResultRefs.value.set(key, el)
+  }
+}
+
+const updateFlatResults = () => {
+  const results: any[] = []
+  searchResultRefs.value.clear()
+  
+  Object.entries(filteredResults.value).forEach(([contextKey, searchResultByContext]: any) => {
+    if (searchResultByContext?.results) {
+      Object.entries(searchResultByContext.results).forEach(([subContextKey, contextSearchResults]: any) => {
+        if (contextSearchResults?.results) {
+          contextSearchResults.results.forEach((item: any, itemIndex: number) => {
+            const resultKey = createResultKey(contextKey, subContextKey, itemIndex)
+            results.push({
+              item,
+              contextKey: String(contextKey),
+              subContextKey: String(subContextKey),
+              itemIndex,
+              resultKey,
+              flatIndex: results.length
+            })
+          })
+        }
+      })
+    }
+  })
+  
+  flatResults.value = results
+}
+
+// Watch for changes in filtered results to update flat results
+watch(filteredResults, () => {
+  updateFlatResults()
+  selectedIndex.value = -1 // Reset selection when results change
+}, { deep: true })
+
+const handleSearch = (event: any) => {
+  const stringValue = String(event.target?.value || '').trim()
+  searchValue.value = stringValue
+  if (searchTimeout) {
+    clearTimeout(searchTimeout)
+  }
+  if (stringValue.length > 0) {
+    showResults.value = true
+    searchTimeout = setTimeout(() => {
+      searchStore.search(stringValue)
+    }, 300)
+  } else {
+    showResults.value = false
+    selectedIndex.value = -1
+  }
+}
+
+const handleItemClick = (item: any) => {
+  showResults.value = false
+  selectedIndex.value = -1
+  if (item && (item.url || item.value)) {
+    const baseHref = menuStore.mainMenu?.baseHref || ''
+    const itemUrl = item.url || item.value || ''
+    const fullPath = `${baseHref}${itemUrl}`
     window.location.href = fullPath
   }
 }
 
-const loading = computed(() => searchStore.loading)
-
-const search = (userInput: string | number | undefined) => {
-  searchState.currentSearch = userInput
-
-  if (userInput && !loading.value) {
-    searchState.dropdownOpen = true
-    searchStore.search('' + userInput)
-  } else if (!userInput) {
-    searchState.dropdownOpen = false
-  } else if (userInput && loading.value) {
-    searchState.pausedSearch = userInput
-  } 
+const setSelectedIndex = (contextKey: string | number, subContextKey: string | number, itemIndex: number) => {
+  const foundIndex = flatResults.value.findIndex(result => 
+    result.contextKey === String(contextKey) && 
+    result.subContextKey === String(subContextKey) && 
+    result.itemIndex === itemIndex
+  )
+  if (foundIndex !== -1) {
+    selectedIndex.value = foundIndex
+  }
 }
 
-watchEffect(() => {
-  if (!loading.value && searchState.pausedSearch) {
-    search(searchState.pausedSearch)
-    searchState.pausedSearch = ''
+const isSelected = (contextKey: string | number, subContextKey: string | number, itemIndex: number) => {
+  if (selectedIndex.value === -1) return false
+  
+  const currentResult = flatResults.value[selectedIndex.value]
+  return currentResult && 
+         currentResult.contextKey === String(contextKey) && 
+         currentResult.subContextKey === String(subContextKey) && 
+         currentResult.itemIndex === itemIndex
+}
+
+const focusSelectedResult = async () => {
+  if (selectedIndex.value >= 0 && selectedIndex.value < flatResults.value.length) {
+    await nextTick()
   }
-})
+}
+
+const selectCurrentItem = () => {
+  if (selectedIndex.value >= 0 && selectedIndex.value < flatResults.value.length) {
+    const selectedResult = flatResults.value[selectedIndex.value]
+    handleItemClick(selectedResult.item)
+  }
+}
+
+const onKeyDown = async (event: KeyboardEvent) => {
+  if (!showResults.value || !hasResults.value) return
+  
+  if (['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(event.key)) {
+    event.preventDefault()
+    
+    switch (event.key) {
+      case 'ArrowDown':
+        if (selectedIndex.value < flatResults.value.length - 1) {
+          selectedIndex.value++
+        } else {
+          selectedIndex.value = 0
+        }
+        await focusSelectedResult()
+        break
+        
+      case 'ArrowUp':
+        if (selectedIndex.value > 0) {
+          selectedIndex.value--
+        } else {
+          selectedIndex.value = flatResults.value.length - 1
+        }
+        await focusSelectedResult()
+        break
+        
+      case 'Enter':
+        selectCurrentItem()
+        break
+        
+      case 'Escape':
+        showResults.value = false
+        selectedIndex.value = -1
+        break
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
+@import "@featherds/styles/mixins/typography";
+@import "@featherds/styles/mixins/elevation";
 @import "@featherds/styles/themes/variables";
 
 .onms-search-control-wrapper {
   position: relative;
   min-width: 30em;
-
-  .onms-search-dropdown-wrapper {
-    position: absolute;
-    min-width: 278px;
-    max-width: 278px;
-    height: 0;
-
-    :deep(.feather-dropdown) {
-      padding: 0;
-      border: #343a40 solid 1px;
-      border-radius: 4px;
-      max-height: none;
-    }
-
-    :deep(.feather-menu) {
-      max-width: 278px;
-      width: 100%;
-    }
-
-    :deep(.feather-menu-dropdown) {
-      min-width: 100%;
-      /* width for text in search result labels, so text does not get cut off */
-      max-width: 30em;
-      position: absolute !important;
-      bottom: unset !important;
-      left: unset !important;
-      top: unset !important;
-      right: unset !important;
-      width: auto !important;
-      transform: translateY(-20px);
-    }
-  }
-
-  :deep(.feather-input-wrapper-container .feather-input-border .pre-border) {
-    border-radius: 0;
-  }
-
-  :deep(.feather-input-wrapper-container .feather-input-border .post-border) {
-    border-radius: 0;
-  }
-
-  :deep(.feather-input-border) {
-    background: var($surface);
-  }
-
-  :deep(.feather-input-sub-text) {
-    display: none;
-  }
-
-  :deep(.feather-input-wrapper-container.raised .feather-input-label) {
-    display: none;
-  }
 }
 
-.label-wrapper {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  background-color: '#e9ecef';
-  color: '#495057';
-  font-weight: 500;
-  white-space: break-spaces;
-  padding: 0 3px;
+.search-results-dropdown {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  width: 100%;
+  background: var($surface);
+  border: 1px solid var($secondary);
+  border-radius: 4px;
+  max-height: 400px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  z-index: 1000;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
-  .visible {
-    display: block;
+  .search-category {
+    background-color: #f8f9fa;
+    padding: 8px 12px;
+    border-bottom: 1px solid #dee2e6;
+    font-weight: 500;
   }
 
-  .short {
-    font-size: 0.8em;
-    margin-left: 3px;
-  }
+  .search-result-item {
+    border-bottom: 1px solid #f1f3f4;
+    transition: background-color 0.15s ease;
 
-  span {
-    opacity: 0;
-  }
+    &:hover {
+      background-color: #f8f9fa;
+    }
 
-  &:hover {
-    span {
-      opacity: 1;
+    &.keyboard-selected {
+      background-color: #e9ecef;
+    }
+
+    &:last-child {
+      border-bottom: none;
     }
   }
 }
@@ -210,21 +297,54 @@ watchEffect(() => {
   position: relative;
   align-items: center;
   width: 100%;
-
-  .onms-search-icon {
-    left: 18px;
+  background-color: #f8f9fa;
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  
+  .search-icon {
     position: absolute;
-    z-index: 3;
+    left: 8px;
+    z-index: 1;
+    color: #6c757d;
+    pointer-events: none;
   }
-  :deep(.feather-input-container){
+  
+  .search-input {
     width: 100%;
+    padding: 8px 12px 8px 36px;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 14px;
+    color: black;
+
+    &::placeholder {
+      color: #0c0d0e;
+    }
+    
+    &:focus {
+      box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+    }
   }
-  :deep(.feather-input-label) {
-    padding-left: 32px;
-    top: 10px;
-  }
-  :deep(.feather-input){
-    padding-left: 32px;
-  }
+}
+
+:deep(.feather-input-wrapper-container .feather-input-border .pre-border) {
+  border-radius: 0 !important;
+}
+
+:deep(.feather-input-wrapper-container .feather-input-border .post-border) {
+  border-radius: 0 !important;
+}
+
+:deep(.feather-input-border) {
+  background: var(--surface);
+}
+
+:deep(.feather-input-sub-text) {
+  display: none !important;
+}
+
+:deep(.feather-input-wrapper-container.raised .feather-input-label) {
+  display: none !important;
 }
 </style>
