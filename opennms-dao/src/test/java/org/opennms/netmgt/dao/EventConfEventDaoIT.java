@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.dao;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -101,6 +102,16 @@ public class EventConfEventDaoIT implements InitializingBean {
                 "Warning");
     }
 
+    @After
+    @Transactional
+    public void tearDown() {
+        var listofConfig = m_eventDao.findAll();
+        var listOfSource = m_eventSourceDao.findAll();
+        m_eventDao.deleteAll(listofConfig);
+        m_eventSourceDao.deleteAll(listOfSource);
+        m_eventDao.flush();
+        m_eventSourceDao.flush();
+    }
 
     private void insertEvent(String uei, String label, String description, String severity) {
         EventConfEvent event = new EventConfEvent();

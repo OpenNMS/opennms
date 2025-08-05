@@ -26,6 +26,7 @@ import org.opennms.netmgt.model.EventConfSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -74,6 +75,11 @@ public class EventConfSourceDaoHibernate
                         row -> (Long) row[0],
                         row -> (String) row[1]
                 ));
+    }
+
+    @Override
+    public void deleteAll(final Collection<EventConfSource> list) {
+        super.deleteAll(list);
     }
 
     @Override

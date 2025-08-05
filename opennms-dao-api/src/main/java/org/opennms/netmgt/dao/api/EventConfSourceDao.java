@@ -23,6 +23,7 @@ package org.opennms.netmgt.dao.api;
 
 import org.opennms.netmgt.model.EventConfSource;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -43,4 +44,6 @@ public interface EventConfSourceDao extends OnmsDao<EventConfSource, Long> {
     void saveOrUpdate(EventConfSource source);
 
     void delete(EventConfSource source);
+
+    void deleteAll(final Collection<EventConfSource> list);
 }
