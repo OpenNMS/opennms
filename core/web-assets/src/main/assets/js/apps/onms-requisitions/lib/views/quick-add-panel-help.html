@@ -29,16 +29,26 @@ the OpenNMS system.
 requisitioned. If no values are specified here, OpenNMS' system-wide SNMP
 configuration will be used to determine the appropriate values for the IP
 address entered in the <em>Basic Attributes</em> section. If the node does not
-support SNMP, the "No SNMP" box should be checked. Configuring SNMPv3
+support SNMP, the "No SNMP" box should be checked.
+
+<!--
+Configuring SNMPv3
 parameters via the web UI is not supported; contact your OpenNMS administrator
 if this node requires SNMPv3 parameters that differ from those in the
 system-wide configuration.
+-->
 </p>
 
+<!--
 <p>
 <em>CLI Authentication Parameters</em> are optional and will be used only if one
 or more provisioning adapters are configured to use them. Typically this is the
 case if OpenNMS is integrated with an external configuration management system.
+</p>
+-->
+
+<p>
+If you need to add SNMPv3 authentication details, you can do so from the SNMP Agent Configuration page.
 </p>
 
 </div>
