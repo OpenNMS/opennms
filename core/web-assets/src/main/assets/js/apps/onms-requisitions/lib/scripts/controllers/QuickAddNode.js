@@ -36,7 +36,7 @@ const QuickNode = require('../model/QuickNode');
   const quickAddPanelBasicView = require('../../views/quick-add-panel-basic.html');
   const quickAddPanelSnmpView = require('../../views/quick-add-panel-snmp.html');
   const quickAddPanelCategoriesView = require('../../views/quick-add-panel-categories.html');
-  const quickAddPanelCliView = require('../../views/quick-add-panel-cli.html');
+  // const quickAddPanelCliView = require('../../views/quick-add-panel-cli.html');
   const quickAddPanelHelpView = require('../../views/quick-add-panel-help.html');
 
   angular.module('onms-requisitions')
@@ -61,7 +61,7 @@ const QuickNode = require('../model/QuickNode');
     $scope.quickAddPanelBasicView = quickAddPanelBasicView;
     $scope.quickAddPanelSnmpView = quickAddPanelSnmpView;
     $scope.quickAddPanelCategoriesView = quickAddPanelCategoriesView;
-    $scope.quickAddPanelCliView = quickAddPanelCliView;
+    // $scope.quickAddPanelCliView = quickAddPanelCliView;
     $scope.quickAddPanelHelpView = quickAddPanelHelpView;
 
     /**
