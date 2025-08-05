@@ -225,7 +225,7 @@ onMounted(async () => {
     display: flex;
     justify-content: right;
     font-weight: 800;
-    font-size: 1.25em;
+    font-size: 1em;
   }
 
   .date-formatted-time {
