@@ -12,7 +12,7 @@ It receives SNMP traps via the xref:reference:daemons/daemon-config-files/trapd.
 == Before you begin
 There are a few tasks you must complete before your server can receive SNMP traps:
 
-. Configure the port on which to receive SNMP traps (see xref:deployment:core/getting-started.adoc#receive-snmp-traps[Receive SNMP traps/informs]).
+. Configure the port on which to receive SNMP traps (see xref:reference:configuration/receive-snmp-traps.adoc[Receive SNMP traps/informs]).
 By default, {page-component-title} listens on a non-standard port for trap messages.
 . Ensure that SNMP-capable devices on your network are configured to send traps to {page-component-title}.
 
