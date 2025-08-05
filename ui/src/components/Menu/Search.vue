@@ -99,12 +99,10 @@ const hasResults = computed(() => {
     Object.keys(searchStore.searchResultsByContext).length > 0
 })
 
-// Create a unique key for each search result
 const createResultKey = (contextKey: string | number, subContextKey: string | number, itemIndex: number) => {
   return `${contextKey}-${subContextKey}-${itemIndex}`
 }
 
-// Set ref for each SearchResult component
 const setSearchResultRef = (el: any, contextKey: string | number, subContextKey: string | number, itemIndex: number) => {
   if (el) {
     const key = createResultKey(contextKey, subContextKey, itemIndex)
@@ -112,7 +110,6 @@ const setSearchResultRef = (el: any, contextKey: string | number, subContextKey:
   }
 }
 
-// Flatten results for easier navigation
 const updateFlatResults = () => {
   const results: any[] = []
   searchResultRefs.value.clear()
@@ -198,8 +195,6 @@ const isSelected = (contextKey: string | number, subContextKey: string | number,
 const focusSelectedResult = async () => {
   if (selectedIndex.value >= 0 && selectedIndex.value < flatResults.value.length) {
     await nextTick()
-    // Just update the visual state, don't actually focus the button
-    // The visual feedback is handled by the CSS class
   }
 }
 
@@ -211,7 +206,6 @@ const selectCurrentItem = () => {
 }
 
 const onKeyDown = async (event: KeyboardEvent) => {
-  // Only handle navigation keys when dropdown is visible
   if (!showResults.value || !hasResults.value) return
   
   if (['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(event.key)) {
@@ -323,7 +317,7 @@ const onKeyDown = async (event: KeyboardEvent) => {
     outline: none;
     font-size: 14px;
     color: black;
-    
+
     &::placeholder {
       color: #0c0d0e;
     }
