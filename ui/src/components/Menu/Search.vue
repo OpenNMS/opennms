@@ -4,19 +4,19 @@
     :id="props.searchId"
   >
     <div class="onms-search-input-wrapper">
-      <FeatherInput
+      <div class="search-icon">
+        <FeatherIcon :icon="SearchIcon" />
+      </div>
+      <input
         ref="searchInputRef"
-        label="Search..."
-        @update:modelValue="handleSearch"
-        :modelValue="searchValue"
+        type="text"
+        placeholder="Search..."
+        v-model="searchValue"
+        @input="handleSearch"
         @keydown="onKeyDown"
-      >
-        <template v-slot:pre>
-          <FeatherIcon :icon="SearchIcon" />
-        </template>
-      </FeatherInput>
+        class="search-input"
+      />
     </div>
-    <!-- Replace FeatherDropdown with simple div -->
     <div
       v-if="showResults && hasResults"
       class="search-results-dropdown"
@@ -40,10 +40,12 @@
             v-for="searchResultItem, searchResultItemKey in contextSearchResults?.results"
             :key="searchResultItemKey"
             class="search-result-item"
-            @click="handleItemClick(searchResultItem)"
+            :class="{ 'keyboard-selected': isSelected(searchResultByContextKey, contextSearchResultsKey, searchResultItemKey) }"
             @mousedown.prevent
+            @mouseenter="setSelectedIndex(searchResultByContextKey, contextSearchResultsKey, searchResultItemKey)"
           >
             <SearchResult
+              :ref="(el:any) => setSearchResultRef(el, searchResultByContextKey, contextSearchResultsKey, searchResultItemKey)"
               :item="searchResultItem"
               :iconClass="iconClasses?.[searchResultByContextKey]?.[searchResultItemKey]"
               :itemClicked="handleItemClick"
@@ -56,10 +58,9 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { FeatherIcon } from '@featherds/icon'
 import SearchIcon from '@featherds/icon/action/Search'
-import { FeatherInput } from '@featherds/input'
 import SearchHeader from './SearchHeader.vue'
 import SearchResult from './SearchResult.vue'
 import { useMenuStore } from '@/stores/menuStore'
@@ -69,6 +70,7 @@ const menuStore = useMenuStore()
 const searchStore = useSearchStore()
 const iconClasses = ref<any>([[]])
 const searchInputRef = ref<any>(null)
+const searchResultRefs = ref<Map<string, any>>(new Map())
 
 const props = defineProps({
   searchId: {
@@ -79,16 +81,73 @@ const props = defineProps({
 
 const searchValue = ref('')
 const showResults = ref(false)
+const selectedIndex = ref(-1)
+const flatResults = ref<any[]>([])
 
 let searchTimeout: any = null
+
+const filteredResults = computed(() => {
+  return Object.fromEntries(
+    Object.entries(searchStore.searchResultsByContext).filter(
+      ([, value]: any) => value?.label === 'Action'
+    )
+  )
+})
 
 const hasResults = computed(() => {
   return searchStore.searchResultsByContext &&
     Object.keys(searchStore.searchResultsByContext).length > 0
 })
 
-const handleSearch = (value: any) => {
-  const stringValue = String(value || '').trim()
+// Create a unique key for each search result
+const createResultKey = (contextKey: string | number, subContextKey: string | number, itemIndex: number) => {
+  return `${contextKey}-${subContextKey}-${itemIndex}`
+}
+
+// Set ref for each SearchResult component
+const setSearchResultRef = (el: any, contextKey: string | number, subContextKey: string | number, itemIndex: number) => {
+  if (el) {
+    const key = createResultKey(contextKey, subContextKey, itemIndex)
+    searchResultRefs.value.set(key, el)
+  }
+}
+
+// Flatten results for easier navigation
+const updateFlatResults = () => {
+  const results: any[] = []
+  searchResultRefs.value.clear()
+  
+  Object.entries(filteredResults.value).forEach(([contextKey, searchResultByContext]: any) => {
+    if (searchResultByContext?.results) {
+      Object.entries(searchResultByContext.results).forEach(([subContextKey, contextSearchResults]: any) => {
+        if (contextSearchResults?.results) {
+          contextSearchResults.results.forEach((item: any, itemIndex: number) => {
+            const resultKey = createResultKey(contextKey, subContextKey, itemIndex)
+            results.push({
+              item,
+              contextKey: String(contextKey),
+              subContextKey: String(subContextKey),
+              itemIndex,
+              resultKey,
+              flatIndex: results.length
+            })
+          })
+        }
+      })
+    }
+  })
+  
+  flatResults.value = results
+}
+
+// Watch for changes in filtered results to update flat results
+watch(filteredResults, () => {
+  updateFlatResults()
+  selectedIndex.value = -1 // Reset selection when results change
+}, { deep: true })
+
+const handleSearch = (event: any) => {
+  const stringValue = String(event.target?.value || '').trim()
   searchValue.value = stringValue
   if (searchTimeout) {
     clearTimeout(searchTimeout)
@@ -100,11 +159,13 @@ const handleSearch = (value: any) => {
     }, 300)
   } else {
     showResults.value = false
+    selectedIndex.value = -1
   }
 }
 
 const handleItemClick = (item: any) => {
   showResults.value = false
+  selectedIndex.value = -1
   if (item && (item.url || item.value)) {
     const baseHref = menuStore.mainMenu?.baseHref || ''
     const itemUrl = item.url || item.value || ''
@@ -113,21 +174,79 @@ const handleItemClick = (item: any) => {
   }
 }
 
-const onKeyDown = (event: KeyboardEvent) => {
-  if (['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(event.key)) {
-    if (event.key === 'Escape') {
-      showResults.value = false
-    }
+const setSelectedIndex = (contextKey: string | number, subContextKey: string | number, itemIndex: number) => {
+  const foundIndex = flatResults.value.findIndex(result => 
+    result.contextKey === String(contextKey) && 
+    result.subContextKey === String(subContextKey) && 
+    result.itemIndex === itemIndex
+  )
+  if (foundIndex !== -1) {
+    selectedIndex.value = foundIndex
   }
 }
 
-const filteredResults = computed(() => {
-  return Object.fromEntries(
-    Object.entries(searchStore.searchResultsByContext).filter(
-      ([, value]: any) => value?.label === 'Action'
-    )
-  )
-})
+const isSelected = (contextKey: string | number, subContextKey: string | number, itemIndex: number) => {
+  if (selectedIndex.value === -1) return false
+  
+  const currentResult = flatResults.value[selectedIndex.value]
+  return currentResult && 
+         currentResult.contextKey === String(contextKey) && 
+         currentResult.subContextKey === String(subContextKey) && 
+         currentResult.itemIndex === itemIndex
+}
+
+const focusSelectedResult = async () => {
+  if (selectedIndex.value >= 0 && selectedIndex.value < flatResults.value.length) {
+    await nextTick()
+    // Just update the visual state, don't actually focus the button
+    // The visual feedback is handled by the CSS class
+  }
+}
+
+const selectCurrentItem = () => {
+  if (selectedIndex.value >= 0 && selectedIndex.value < flatResults.value.length) {
+    const selectedResult = flatResults.value[selectedIndex.value]
+    handleItemClick(selectedResult.item)
+  }
+}
+
+const onKeyDown = async (event: KeyboardEvent) => {
+  // Only handle navigation keys when dropdown is visible
+  if (!showResults.value || !hasResults.value) return
+  
+  if (['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(event.key)) {
+    event.preventDefault()
+    
+    switch (event.key) {
+      case 'ArrowDown':
+        if (selectedIndex.value < flatResults.value.length - 1) {
+          selectedIndex.value++
+        } else {
+          selectedIndex.value = 0
+        }
+        await focusSelectedResult()
+        break
+        
+      case 'ArrowUp':
+        if (selectedIndex.value > 0) {
+          selectedIndex.value--
+        } else {
+          selectedIndex.value = flatResults.value.length - 1
+        }
+        await focusSelectedResult()
+        break
+        
+      case 'Enter':
+        selectCurrentItem()
+        break
+        
+      case 'Escape':
+        showResults.value = false
+        selectedIndex.value = -1
+        break
+    }
+  }
+}
 </script>
 
 <style lang="scss" scoped>
@@ -154,7 +273,6 @@ const filteredResults = computed(() => {
   z-index: 1000;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
-
   .search-category {
     background-color: #f8f9fa;
     padding: 8px 12px;
@@ -163,12 +281,15 @@ const filteredResults = computed(() => {
   }
 
   .search-result-item {
-    padding: 8px 12px;
-    cursor: pointer;
     border-bottom: 1px solid #f1f3f4;
+    transition: background-color 0.15s ease;
 
     &:hover {
       background-color: #f8f9fa;
+    }
+
+    &.keyboard-selected {
+      background-color: #e9ecef;
     }
 
     &:last-child {
@@ -183,18 +304,33 @@ const filteredResults = computed(() => {
   align-items: center;
   width: 100%;
   background-color: #f8f9fa;
-
-  :deep(.feather-input-container) {
+  border: 1px solid #dee2e6;
+  border-radius: 4px;
+  
+  .search-icon {
+    position: absolute;
+    left: 8px;
+    z-index: 1;
+    color: #6c757d;
+    pointer-events: none;
+  }
+  
+  .search-input {
     width: 100%;
-  }
-
-  :deep(.feather-input-label) {
-    padding-left: 32px;
-    top: 10px;
-  }
-
-  :deep(.feather-input) {
-    padding-left: 32px;
+    padding: 8px 12px 8px 36px;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 14px;
+    color: black;
+    
+    &::placeholder {
+      color: #0c0d0e;
+    }
+    
+    &:focus {
+      box-shadow: 0 0 0 2px rgba(33, 150, 243, 0.2);
+    }
   }
 }
 
@@ -218,4 +354,3 @@ const filteredResults = computed(() => {
   display: none !important;
 }
 </style>
-
