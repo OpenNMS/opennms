@@ -11,7 +11,7 @@ The {page-component-title} server makes REST queries to the https://www.opennms.
 This feature is enabled by default, but can be disabled using the configuration below.
 Disabling will remove the panel from the front page and the server will no longer make queries for the feed.
 
-If you would like to change the feed settings, you can set the following options in `${OPENNMS_HOME}/etc/opennms.properties.d/feed.properties`.
+If you would like to change the feed settings, you can set the following options in `$\{OPENNMS_HOME}/etc/opennms.properties.d/feed.properties`.
 
 [options="autowidth"]
 |===
