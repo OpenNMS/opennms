@@ -67,7 +67,20 @@ public class OpenNMSAuthSuccessHandler extends SimpleUrlAuthenticationSuccessHan
             } else {
                 String targetUrlParameter = this.getTargetUrlParameter();
 
-                if (!this.isAlwaysUseDefaultTargetUrl() && (targetUrlParameter == null || !StringUtils.hasText(request.getParameter(targetUrlParameter)))) {
+                boolean useSavedRequest = !this.isAlwaysUseDefaultTargetUrl() &&
+                    (targetUrlParameter == null || !StringUtils.hasText(request.getParameter(targetUrlParameter)));
+
+                // make sure we are redirecting to an actual page, not e.g. a URL to an asset
+                // TODO: Determine why assets are getting saved in the requestCache
+                if (useSavedRequest) {
+                    final String servletPathLower = savedRequest.getServletPath().toLowerCase();
+
+                    if (LoginModuleUtils.isInvalidSavedRequestUrl(servletPathLower)) {
+                        useSavedRequest = false;
+                    }
+                }
+
+                if (useSavedRequest) {
                     this.clearAuthenticationAttributes(request);
                     final String targetUrl = Util.calculateUrlBase(request, savedRequest.getServletPath() + (savedRequest.getQueryString() == null ? "" : "?" + savedRequest.getQueryString()));
                     this.logger.debug("Redirecting to DefaultSavedRequest Url: " + targetUrl);
