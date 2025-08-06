@@ -54,7 +54,6 @@ import org.snmp4j.CommandResponderEvent;
 import org.snmp4j.PDU;
 import org.snmp4j.PDUv1;
 import org.snmp4j.Snmp;
-import org.snmp4j.log.Log4jLogFactory;
 import org.snmp4j.log.LogFactory;
 import org.snmp4j.security.AuthMD5;
 import org.snmp4j.security.PrivDES;
@@ -70,7 +69,7 @@ public class Snmp4jTrapReceiverIT extends MockSnmpAgentITCase implements Command
 
     @BeforeClass
     public static void setupSnmp4jLogging() {
-        LogFactory.setLogFactory(new Log4jLogFactory());
+        LogFactory.setLogFactory(new Slf4jLogFactory());
         MockLogAppender.setupLogging(true, "DEBUG");
     }
 

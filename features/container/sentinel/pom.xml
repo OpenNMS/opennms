@@ -285,7 +285,7 @@
                         <karaf.clean.cache>true</karaf.clean.cache>
                         <karaf.local.user>admin</karaf.local.user>
                         <karaf.require.successful.features.boot>true</karaf.require.successful.features.boot>
-                        <snmp4j.LogFactory>org.snmp4j.log.Log4jLogFactory</snmp4j.LogFactory>
+                        <snmp4j.LogFactory>org.opennms.netmgt.snmp.snmp4j.Slf4jLogFactory</snmp4j.LogFactory>
                     </system>
 
                     <!-- repositories -->

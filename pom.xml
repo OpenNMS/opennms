@@ -1963,8 +1963,8 @@
     <slf4jVersion>1.7.36</slf4jVersion>
     <smackVersion>4.0.6</smackVersion>
     <snappyJavaVersion>1.1.10.5</snappyJavaVersion>
-    <snmp4jVersion>2.5.5</snmp4jVersion>
-    <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
+    <snmp4jVersion>2.8.15</snmp4jVersion>
+    <snmp4jagentVersion>2.7.9</snmp4jagentVersion>
     <sonarVersion>3.9.1.2184</sonarVersion>
     <spiflyVersion>1.3.6</spiflyVersion>
     <spockVersion>2.3-groovy-2.5</spockVersion>
