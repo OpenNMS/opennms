@@ -69,8 +69,6 @@ html {
   overflow-x: hidden;
 }
 .main-content {
-  margin-left: 3.5rem;
-
   table {
     width: 100%;
   }
