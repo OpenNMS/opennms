@@ -39,6 +39,12 @@
     background: -ms-linear-gradient(top, #d8d9da 0%, #e6e7e8 10%, #e0e1e2 100%);
 }
 
+/* Wallboard UI, make space for Vue top and side menus */
+.dashboard.v-app.wallboardui {
+    margin-top: 5em;
+    margin-left: 4em;
+}
+
 .debug {
     border: 1px dashed red;
 }

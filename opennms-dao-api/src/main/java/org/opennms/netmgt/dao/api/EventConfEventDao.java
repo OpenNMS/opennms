@@ -23,6 +23,7 @@ package org.opennms.netmgt.dao.api;
 
 import org.opennms.netmgt.model.EventConfEvent;
 
+import java.util.Collection;
 import java.util.List;
 
 public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
@@ -36,4 +37,6 @@ public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
     List<EventConfEvent> findEnabledEvents();
 
     void deleteBySourceId(Long sourceId);
+
+    void deleteAll(final Collection<EventConfEvent> list);
 }

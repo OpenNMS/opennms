@@ -26,6 +26,7 @@ import org.opennms.netmgt.model.EventConfEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Collection;
 import java.util.List;
 
 public class EventConfEventDaoHibernate
@@ -59,4 +60,8 @@ public class EventConfEventDaoHibernate
         getHibernateTemplate().bulkUpdate("delete from EventConfEvent e where e.source.id = ?", sourceId);
     }
 
+    @Override
+    public void deleteAll(final Collection<EventConfEvent> list) {
+        super.deleteAll(list);
+    }
 }

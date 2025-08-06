@@ -577,12 +577,13 @@ export interface NodeQueryFilter {
 }
 
 export interface NodePreferences {
-  nodeColumns: NodeColumnSelectionItem[]
+  nodeColumns?: NodeColumnSelectionItem[]
   nodeFilter?: NodeQueryFilter
 }
 
 export interface OpenNmsPreferences {
   nodePreferences: NodePreferences
+  isSideMenuExpanded?: boolean
 }
 
 export interface IpInterfaceInfo {

@@ -203,22 +203,6 @@ maintained
     <invoke at="stop" pass="0" method="stop"/>
   </service>
   <service>
-    <name>OpenNMS:Name=Reportd</name>
-    <class-name>org.opennms.netmgt.daemon.SimpleSpringContextJmxServiceDaemon</class-name>
-    <attribute>
-      <name>LoggingPrefix</name>
-      <value type="java.lang.String">reportd</value>
-    </attribute>
-    <attribute>
-      <name>SpringContext</name>
-      <value type="java.lang.String">reportdContext</value>
-    </attribute>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service>
     <name>OpenNMS:Name=Ackd</name>
     <class-name>org.opennms.netmgt.daemon.SimpleSpringContextJmxServiceDaemon</class-name>
     <attribute>
@@ -242,25 +226,9 @@ maintained
     <invoke at="status" pass="0" method="status"/>
     <invoke at="stop" pass="0" method="stop"/>
   </service>
-  <service enabled="false">
-    <name>OpenNMS:Name=Tl1d</name>
-    <class-name>org.opennms.netmgt.tl1d.jmx.Tl1d</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
   <service>
     <name>OpenNMS:Name=Syslogd</name>
     <class-name>org.opennms.netmgt.syslogd.jmx.Syslogd</class-name>
-    <invoke at="start" pass="0" method="init"/>
-    <invoke at="start" pass="1" method="start"/>
-    <invoke at="status" pass="0" method="status"/>
-    <invoke at="stop" pass="0" method="stop"/>
-  </service>
-  <service enabled="false">
-    <name>OpenNMS:Name=AsteriskGateway</name>
-    <class-name>org.opennms.netmgt.asterisk.agi.jmx.AsteriskGateway</class-name>
     <invoke at="start" pass="0" method="init"/>
     <invoke at="start" pass="1" method="start"/>
     <invoke at="status" pass="0" method="status"/>
