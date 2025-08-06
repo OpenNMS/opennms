@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+    <event>
+        <uei>uei.opennms.org/test/1</uei>
+        <event-label>Test Event 1</event-label>
+        <descr>This is a test event description 1</descr>
+        <severity>Major</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/test/2</uei>
+        <event-label>Test Event 2</event-label>
+        <descr>This is a test event description 2</descr>
+        <severity>Minor</severity>
+    </event>
+    <event>
+        <uei>uei.opennms.org/test/3</uei>
+        <event-label>Test Event 3</event-label>
+        <descr>This is a test event description 3</descr>
+        <severity>Critical</severity>
+    </event>
+</events>
