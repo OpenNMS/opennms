@@ -1,0 +1,151 @@
+
+= Air-Gap System Installation
+:description: Offline Installation directions for air-gapped environments
+
+Some scenarios for deploying OpenNMS {page-component-title} require that the installation run in an isolated or "air-gapped" network. This page provides a directions for an offline installation of {page-component-title} into such a network. As with any offline installation of software, the exact steps may vary depending upon the precise environment details. Before attempting, users should be familiar with the basic OpenNMS {page-component-title} installation steps from our xref:core/getting-started.adoc[Getting Started page].
+
+[[basic-process-outline]]
+== Basic Process Outline
+
+The basic process involves downloading the RPMs for OpenNMS {page-component-title} and any dependencies, transferring them to the air-gapped host, performing the installation, and then starting the install.
+
+## Prerequisites
+- A system with internet access to download packages
+- Target system running a compatible distribution
+- Sufficient disk space for package downloads
+- Administrative privileges on both systems
+
+
+## Part 1: Package Download (Internet-Connected System)
+
+### Step 1: Create a Temporary Package Directory
+
+Create a base directory to organize all downloaded packages.  This directory will become the base directory and dependencies will be included inside sub-folders to aid in knowing what order to install them.
+
+```bash
+mkdir ./airgap_rpm_files
+```
+
+### Step 2: Install OpenNMS Repository
+
+Add the {page-component-title} repository and import the GPG key:
+
+ifeval::["{page-component-title}" == "Horizon"]
+```bash
+dnf -y install https://yum.opennms.org/repofiles/opennms-repo-stable-rhel9.noarch.rpm
+rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+```
+endif::[]
+
+ifeval::["{page-component-title}" == "Meridian"]
+```bash
+cat << EOF | sudo tee /etc/yum.repos.d/opennms-meridian.repo
+[meridian]
+name=Meridian for Red Hat Enterprise Linux and CentOS
+baseurl=https://REPO_USER:REPO_PASS@meridian.opennms.com/packages/2024/stable/rhel$releasever
+gpgcheck=1
+gpgkey=http://yum.opennms.org/OPENNMS-GPG-KEY
+EOF
+
+sudo rpm --import https://yum.opennms.org/OPENNMS-GPG-KEY
+```
+endif::[]
+
+
+### Step 3: Download OpenJDK
+
+Download and install OpenJDK packages (OpenJDK 17 here but please refer to system requirements):
+
+```bash
+dnf install --downloadonly --downloaddir=/tmp/opennms_rpms java-17-openjdk-devel
+mv ./tmp/opennms_rpms ./airgap_rpm_files/01-openjdk
+dnf install -y java-17-openjdk-devel
+```
+
+### Step 4: Download PostgreSQL
+
+Download PostgreSQL server packages (please refer to system requirements for version support):
+
+```bash
+dnf install --downloadonly --downloaddir=/tmp/opennms_rpms postgresql-server
+mv ./tmp/opennms_rpms ./airgap_rpm_files/02-postgresql
+dnf install -y postgresql-server
+```
+
+### Step 5: Download OpenNMS Core Packages
+
+Download the basic OpenNMS packages. If you need other packages, this would be the step to add them in.
+
+ifeval::["{page-component-title}" == "Horizon"]
+```bash
+dnf install --downloadonly --downloaddir=/tmp/opennms_rpms opennms-core opennms-webapp-jetty
+mv ./tmp/opennms_rpms ./airgap_rpm_files/04-opennms
+dnf install -y opennms-core opennms-webapp-jetty
+```
+endif::[]
+
+ifeval::["{page-component-title}" == "Meridian"]
+```bash
+dnf install --downloadonly --downloaddir=/tmp/opennms_rpms meridian-core meridian-webapp-jetty
+mv ./tmp/opennms_rpms ./airgap_rpm_files/04-opennms
+dnf install -y meridian-core meridian-webapp-jetty
+```
+endif::[]
+
+### Step 6 (Optional): Plugin Support
+
+If you need additional OpenNMS plugins (e.g., for CIFS monitoring, Asset Inventory, etc), download these packages from the OpenNMS repositories and include them in your installation files.
+
+## Part 2: Installation on Air-Gapped System
+
+Transfer the files to your air-gapped system via USB, DVD, or link:https://www.rfc-editor.org/rfc/rfc2549.html[secure file transfer].
+
+### Step 1: Locate The Files
+
+Locate the directory where the install files are located after you have transfered them.
+```bash
+cd /mnt/opennms_transfer/airgap_rpm_files
+```
+
+### Step 2: Install OpenJDK
+
+```bash
+cd /mnt/01-openjdk
+rpm -ivh <directory>/*.rpm
+```
+
+### Step 3: Install PostgreSQL
+
+```bash
+cd /mnt/02-postgresql
+rpm -ivh <directory>/*.rpm
+```
+
+### Step 4: Install OpenNMS Core
+
+```bash
+cd /mnt/04-opennms
+rpm -ivh <directory>/*.rpm
+```
+
+## Post-Installation
+
+After completing the package installation, proceed with OpenNMS configuration as described in our xref:core/getting-started.adoc[Set up the core instance] documentation.
+
+## Additional Considerations
+
+### Version Compatibility
+
+Ensure all package versions are compatible with your target system. Pay special attention to:
+ - PostgreSQL version
+ - OpenJDK version
+ - RHEL/CentOS version compatibility
+
+## Troubleshooting
+
+### Common Issues
+
+- **GPG Key Errors**: Ensure the OpenNMS GPG key is properly imported before package installation
+- **Dependency Conflicts**: Verify all prerequisite packages are installed in the correct order
+- **Permission Issues**: Ensure you have administrative privileges for all installation steps
+- **FIPS Compliance Issues**: Reach out to OpenNMS Support for FIPS Compliance issues.
