@@ -18,10 +18,14 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 
-import javax.ws.rs.*;
+import javax.ws.rs.Consumes;
+import javax.ws.rs.POST;
+import javax.ws.rs.Path;
+import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.SecurityContext;
 import java.util.List;
 
@@ -32,7 +36,7 @@ public interface EventConfUploadRestApi {
     @POST
     @Path("/upload")
     @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces(MediaType.TEXT_HTML)
+    @Produces("application/json")
     @Operation(
             summary = "Upload eventconf files",
             description = "Upload one or more eventconf files including optional eventconf.xml to determine file order.",
@@ -43,6 +47,6 @@ public interface EventConfUploadRestApi {
             @ApiResponse(responseCode = "403", description = "User does not have FILESYSTEM_EDITOR role"),
             @ApiResponse(responseCode = "400", description = "Invalid eventconf.xml or request")
     })
-    Response uploadEventConfFiles(@Multipart("upload") List<Attachment> attachments,
+    Response uploadEventConfFiles(@Multipart("upload") List<Attachment> attachments,@QueryParam("comments") final String comments,
                                   @Context SecurityContext securityContext) throws Exception;
 }

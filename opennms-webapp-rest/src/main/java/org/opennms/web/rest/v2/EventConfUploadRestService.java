@@ -1,48 +1,98 @@
 package org.opennms.web.rest.v2;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
-import org.opennms.netmgt.config.DefaultEventConfDao;
+import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
+import org.opennms.netmgt.model.events.ParsedEventEntry;
 import org.opennms.web.rest.v2.api.EventConfUploadRestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
-import org.w3c.dom.*;
+import org.springframework.transaction.annotation.Transactional;
+import org.w3c.dom.Element;
+import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import org.w3c.dom.Node;
 
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.transform.*;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.InputStream;
+import java.io.Serializable;
 import java.io.StringWriter;
-import java.util.*;
+import java.util.Set;
+import java.util.List;
+import java.util.Date;
+import java.util.ArrayList;
+import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.stream.Collectors;
 
 @Component
 public class EventConfUploadRestService implements EventConfUploadRestApi {
 
     @Autowired
-    private DefaultEventConfDao eventConfDao;
+    private EventConfDao eventConfDao;
+    @Autowired
+    private EventConfPersistenceService eventConfPersistenceService;
+
 
     @Override
-    public Response uploadEventConfFiles(final List<Attachment> attachments, final SecurityContext securityContext) {
-        Map<String, List<ParsedEventEntry>> parsedFiles = parseUploadedEventFiles(attachments);
+    @Transactional
+    public Response uploadEventConfFiles(final List<Attachment> attachments,final String comments, final SecurityContext securityContext) {
+        final String username = getUsername(securityContext);
+        final Date now = new Date();
+        int fileOrder = 1;
 
-        StringBuilder sb = new StringBuilder("Parsed Event Entries:\n\n");
-        parsedFiles.forEach((filename, entries) -> {
-            sb.append("File: ").append(filename).append("\n");
-            entries.forEach(entry -> {
-                sb.append("  UEI         : ").append(entry.getUei()).append("\n");
-                sb.append("  Label       : ").append(entry.getEventLabel()).append("\n");
-                sb.append("  Description : ").append(entry.getDescription()).append("\n");
-                sb.append("  Enabled     : ").append(entry.getEnabled()).append("\n");
-                sb.append("--------------------------------------------------\n");
-            });
-            sb.append("\n");
-        });
+        List<Map<String, Object>> successList = new ArrayList<>();
+        List<Map<String, Object>> errorList = new ArrayList<>();
 
-        return null;
+        Map<String, List<ParsedEventEntry>> parsedFiles;
+        try {
+            parsedFiles = parseUploadedEventFiles(attachments);
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of(
+                            "error", "Failed to parse uploaded files",
+                            "details", e.getMessage()
+                    ))
+                    .build();
+        }
+
+        for (final Map.Entry<String, List<ParsedEventEntry>> entry : parsedFiles.entrySet()) {
+            final var  filename = entry.getKey();
+            final var  events = entry.getValue();
+            final var  vendor = events.get(0).getVendor();
+
+            try {
+                eventConfPersistenceService.persistEventConfFile(events, new EventConfSourceMetadataDto.Builder()
+                                .filename(filename)
+                                .eventCount(events.size())
+                                .fileOrder(fileOrder++)
+                                .username(username)
+                                .now(now)
+                                .vendor(vendor)
+                                .description(comments != null ? comments : "")
+                        .build());
+                successList.add(buildSuccessResponse(filename, events));
+            } catch (Exception ex) {
+                errorList.add(buildErrorResponse(filename, ex));
+            }
+        }
+
+
+        return Response.ok(Map.of(
+                "success", successList,
+                "errors", errorList
+        )).build();
     }
+
+
 
     private Map<String, List<ParsedEventEntry>> parseUploadedEventFiles(final List<Attachment> attachments) {
         Map<String, Attachment> fileMap = attachments.stream()
@@ -80,7 +130,7 @@ public class EventConfUploadRestService implements EventConfUploadRestApi {
                 // Normalize XML entries to match uploaded file names
                 List<String> fromXml = fromXmlRaw.stream()
                         .map(path -> path.contains("/") ? path.substring(path.lastIndexOf("/") + 1) : path)
-                        .collect(Collectors.toList());
+                        .toList();
 
                 ordered.addAll(fromXml);
 
@@ -107,11 +157,13 @@ public class EventConfUploadRestService implements EventConfUploadRestApi {
         List<ParsedEventEntry> entries = new ArrayList<>();
         for (int i = 0; i < eventNodes.getLength(); i++) {
             Element el = (Element) eventNodes.item(i);
+            final var uei = getTagText(el, "uei");
             entries.add(ParsedEventEntry.builder()
-                    .uei(getTagText(el, "uei"))
+                    .uei(uei)
                     .eventLabel(getTagText(el, "event-label"))
                     .description(getTagText(el, "descr"))
                     .enabled(true)
+                    .vendor(extractVendorFromUei(uei))
                     .xmlContent(nodeToString(el))
                     .build());
         }
@@ -155,67 +207,49 @@ public class EventConfUploadRestService implements EventConfUploadRestApi {
         }
     }
 
-    public static class ParsedEventEntry {
-        private final String uei;
-        private final String eventLabel;
-        private final String description;
-        private final Boolean enabled;
-        private final String xmlContent;
-
-        private ParsedEventEntry(Builder builder) {
-            this.uei = builder.uei;
-            this.eventLabel = builder.eventLabel;
-            this.description = builder.description;
-            this.enabled = builder.enabled;
-            this.xmlContent = builder.xmlContent;
-        }
-
-        public static Builder builder() {
-            return new Builder();
-        }
-
-        public static class Builder {
-            private String uei;
-            private String eventLabel;
-            private String description;
-            private Boolean enabled = true;
-            private String xmlContent;
-
-            public Builder uei(String uei) {
-                this.uei = uei;
-                return this;
-            }
-
-            public Builder eventLabel(String eventLabel) {
-                this.eventLabel = eventLabel;
-                return this;
-            }
-
-            public Builder description(String description) {
-                this.description = description;
-                return this;
-            }
-
-            public Builder enabled(Boolean enabled) {
-                this.enabled = enabled;
-                return this;
-            }
-
-            public Builder xmlContent(String xmlContent) {
-                this.xmlContent = xmlContent;
-                return this;
-            }
-
-            public ParsedEventEntry build() {
-                return new ParsedEventEntry(this);
-            }
-        }
-
-        // Getters if needed (can generate using Lombok as well)
-        public String getUei() { return uei; }
-        public String getEventLabel() { return eventLabel; }
-        public String getDescription() { return description; }
-        public Boolean getEnabled() { return enabled; }
-        public String getXmlContent() { return xmlContent; }
+    private String getUsername(final SecurityContext context) {
+        return (context != null && context.getUserPrincipal() != null)
+                ? context.getUserPrincipal().getName()
+                : "unknown";
     }
+    private Map<String, Object> buildSuccessResponse(String filename, List<ParsedEventEntry> events) {
+        Map<String, Object> entry = new LinkedHashMap<>();
+        entry.put("file", filename);
+        entry.put("eventCount", events.size());
+
+        List<Map<String, ? extends Serializable>> eventSummaries = events.stream().map(e -> Map.of(
+                "uei", e.getUei(),
+                "label", e.getEventLabel(),
+                "description", e.getDescription(),
+                "enabled", e.getEnabled()
+        )).collect(Collectors.toList());
+
+        entry.put("events", eventSummaries);
+        return entry;
+    }
+
+    private Map<String, Object> buildErrorResponse(String filename, Exception ex) {
+        Map<String, Object> entry = new LinkedHashMap<>();
+        entry.put("file", filename);
+        entry.put("error", ex.getClass().getSimpleName() + ": " + ex.getMessage());
+        return entry;
+    }
+
+    private String extractVendorFromUei(final String uei) {
+        if (uei == null || uei.isBlank()) {
+            return "unknown";
+        }
+
+        // Example format: uei.opennms.org/internal/topology/linkDown
+        if (uei.startsWith("uei.")) {
+            String[] segments = uei.split("\\.");
+            if (segments.length > 1 && !segments[1].isBlank()) {
+                return segments[1];
+            }
+        }
+
+        return "unknown";
+    }
+
+
 }
