@@ -2,7 +2,33 @@
 
 = What's New in OpenNMS Horizon 34
 
+
+== System requirements and Dependencies ==
+
+* Java 17: This version of OpenNMS runs on JDKs 17 only.
+* PostgreSQL 10 or higher: This version of Horizon requires any supported version of PostgreSQL from 10 up to (and including) 16.
+* Grafana: This version of OpenNMS is compatible with Grafana _.
+* Elastic Search: If you are using flows, this version will require Elastic Search _.
+
 == New features and important changes
+=== Time To Value Improvements to the Menu Structure ===
+
+One of our 2025-26 goals is to reduce the time it takes a new user, from learning about our product to discovering and visualizing the status of their network infrastructure. Our first step in this approach is the re-organization of the menu structure, with a responsive side menu that streamlines the IT Operator’s actions. Stay tuned for other inprovements in the near futrue such as: OVA Virtual Appliance Support, Adding Windows Management Interface Nodes right from the Quick Add Node, and better Structured Node List navigation.
+
+=== Service NOW Plugin (Meridian Subscription Required) ===
+
+For our Meridian customers, you can now forward your alarms to Service NOW. You can also populate an OpenNMS requisition with the configuration items (nodes) managed by Service NOW, avoiding blind spots in your management strategy.
+
+=== Support for Zenith and Zenith Connect (Meridian Subscription Required) ===
+
+For our Meridian customers, you can now enjoy our new Zenith single pane of glass, where you can view all of your alarms, from multiple Meridians or even 3rd party applications. From there you can direct these alarms to the appropiate IT Operator via our new Notifications Manager.
+
+This connection is TLS secured and authenticated.
+
+=== Cortex fixes ===
+Performance improvements.  Cortex and Prometheus-based databases recommended for systems with a large number of devices.
+
+=== Thanos ??? ===
 
 === Node Cache configuration
 
