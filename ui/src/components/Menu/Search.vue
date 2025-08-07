@@ -47,13 +47,14 @@
             <SearchResult
               :ref="(el:any) => setSearchResultRef(el, searchResultByContextKey, contextSearchResultsKey, searchResultItemKey)"
               :item="searchResultItem"
+              :contextLabel="searchResultByContext?.label"
               :iconClass="iconClasses?.[searchResultByContextKey]?.[searchResultItemKey]"
               :itemClicked="handleItemClick"
             />
           </div>
         </template>
       </template>
-    </div>
+   </div>
   </div>
 </template>
 
@@ -89,7 +90,9 @@ let searchTimeout: any = null
 const filteredResults = computed(() => {
   return Object.fromEntries(
     Object.entries(searchStore.searchResultsByContext).filter(
-      ([, value]: any) => value?.label === 'Action'
+      () => true
+      // Allow all contexts for now
+      // ([, value]: any) => value?.label === 'Action'
     )
   )
 })
@@ -144,15 +147,19 @@ watch(filteredResults, () => {
 }, { deep: true })
 
 const handleSearch = (event: any) => {
-  const stringValue = String(event.target?.value || '').trim()
+  const stringValue = String(event.target?.value || '')
   searchValue.value = stringValue
+
   if (searchTimeout) {
     clearTimeout(searchTimeout)
   }
-  if (stringValue.length > 0) {
+
+  const trimmedStringValue = stringValue.trim()
+
+  if (trimmedStringValue.length > 0) {
     showResults.value = true
     searchTimeout = setTimeout(() => {
-      searchStore.search(stringValue)
+      searchStore.search(trimmedStringValue)
     }, 300)
   } else {
     showResults.value = false
@@ -163,6 +170,7 @@ const handleSearch = (event: any) => {
 const handleItemClick = (item: any) => {
   showResults.value = false
   selectedIndex.value = -1
+
   if (item && (item.url || item.value)) {
     const baseHref = menuStore.mainMenu?.baseHref || ''
     const itemUrl = item.url || item.value || ''
@@ -177,15 +185,19 @@ const setSelectedIndex = (contextKey: string | number, subContextKey: string | n
     result.subContextKey === String(subContextKey) && 
     result.itemIndex === itemIndex
   )
+
   if (foundIndex !== -1) {
     selectedIndex.value = foundIndex
   }
 }
 
 const isSelected = (contextKey: string | number, subContextKey: string | number, itemIndex: number) => {
-  if (selectedIndex.value === -1) return false
+  if (selectedIndex.value === -1) {
+    return false
+  }
   
   const currentResult = flatResults.value[selectedIndex.value]
+
   return currentResult && 
          currentResult.contextKey === String(contextKey) && 
          currentResult.subContextKey === String(subContextKey) && 
@@ -206,10 +218,15 @@ const selectCurrentItem = () => {
 }
 
 const onKeyDown = async (event: KeyboardEvent) => {
-  if (!showResults.value || !hasResults.value) return
+  if (!showResults.value || !hasResults.value) {
+    return
+  }
   
   if (['ArrowDown', 'ArrowUp', 'Enter', 'Escape'].includes(event.key)) {
     event.preventDefault()
+    // prevent Escape from closing side menu
+    event.stopPropagation()
+    event.stopImmediatePropagation()
     
     switch (event.key) {
       case 'ArrowDown':
@@ -269,7 +286,7 @@ const onKeyDown = async (event: KeyboardEvent) => {
 
   .search-category {
     background-color: #f8f9fa;
-    padding: 8px 12px;
+    padding: 0.5em 0.75em;
     border-bottom: 1px solid #dee2e6;
     font-weight: 500;
   }
@@ -277,6 +294,7 @@ const onKeyDown = async (event: KeyboardEvent) => {
   .search-result-item {
     border-bottom: 1px solid #f1f3f4;
     transition: background-color 0.15s ease;
+    padding-left: 0.5em;
 
     &:hover {
       background-color: #f8f9fa;
