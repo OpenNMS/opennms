@@ -36,7 +36,7 @@ import static org.junit.Assert.assertNull;
 public class ExtendedDateOnlyFormatTest {
     @Test
     public void shouldOutputDateIncludingTimeZone() throws IOException {
-        test("yyyy-MM-dd", Instant.now());
+        test("LLLL d, yyyy", Instant.now());
     }
 
     @Test
