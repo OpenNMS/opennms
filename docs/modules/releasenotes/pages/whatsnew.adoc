@@ -4,10 +4,9 @@
 
 == New features and important changes
 
-=== Node Cache configuration
-
-Due to a refactoring to enable the collection of IPFix metrics, the node cache has been moved to another module.
-The configuration of the cache is now stored in the file `org.opennms.features.telemetry.protocols.common.cfg` and no longer in the file `org.opennms.features.flows.persistence.elastic.cfg`.
+=== Support for Composable Index Templates and Elasticsearch 8.x in Flow Processing
+OpenNMS Flow processing now supports Elasticsearch 8.x, ensuring compatibility with the latest versions of the Elastic stack.
+Additionally, support has been added for [composable templates](https://www.elastic.co/docs/manage-data/data-store/templates), enabling more flexible and modular configuration of Elasticsearch index settings for NetFlow data.
 
 === `install.sh` script clears data directory and restores Karaf-related configuration files
 To overcome common upgrading problems, the data directory is automatically pruned when invoking the `install.sh` script.
@@ -31,6 +30,9 @@ Support for `confd` has been added to the Sentinel container.
 
 An enhanced node list has been introduced with options for sorting and filtering.
 
+=== Enhanced Keystore Support in Secure Credentials Vault
+The Secure Credentials Vault now supports the PKCS12 keystore format in addition to the previously supported JCEKS format. This enhancement provides greater compatibility with modern security standards and tooling.
+
 == Breaking changes
 The default time series storage strategy is now by default RRDTool.
 
@@ -51,7 +53,6 @@ org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy
 The release of Horizon 34 will be the last version which supports reading and writing timeseries data using JRobin.
 The JRobin library and the JRobin timeseries strategy will be removed from Horizon 35+ moving forward.
 
-
 == Deprecation of Tl1d
 The Tl1d service has been deprecated and removed from service configuration due to low user adoption. The service code will be fully removed in the next Horizon/Meridian release.
 
@@ -62,18 +63,21 @@ The AsteriskGateway service has been deprecated and removed from service configu
 
 The Reportd service has been deprecated and removed from service configuration due to low user adoption. The service code will be fully removed in the next Horizon/Meridian release.
 
+=== Node Cache configuration
+
+Due to a refactoring to enable the collection of IPFix metrics, the node cache has been moved to another module.
+The configuration of the cache is now stored in the file `org.opennms.features.telemetry.protocols.common.cfg` and no longer in the file `org.opennms.features.flows.persistence.elastic.cfg`.
 
 === OpenNMS Minion environment variables changes
 The OpenNMS Minion Docker container no longer uses the KAFKA_SINK, KAFKA_RPC and KAFKA_TWIN prefixes to configure Kafka.
 Instead, only the KAFKA_IPC prefix is used, which ensures that all Kafka-related settings are set correctly for all features and that ActiveMQ is no longer installed incorrectly.
 
-=== Secure Credentials Vault changes
-The `Secure Credentials Vault` in `OpenNMS` traditionally supported the `JCEKS` keystore format. As of the latest enhancement,
-support has been added for the `PKCS12` keystore format.
+=== SNMP4J upgrade
+The SNMP4J library has been upgraded to version 2.8.15.
+As part of this upgrade, the SNMP4J logger configuration in opennms.properties has been updated to use the SLF4J logging implementation:
 
-Set `org.opennms.features.scv.keystore.type=PKCS12` in configuration file
- `$OPENNMS_HOME/etc/opennms.properties.d/scv.properties.`
+`snmp4j.LogFactory=org.opennms.netmgt.snmp.snmp4j.Slf4jLogFactory`
 
-If you want to convert the `PKCS12` keystore format instead of `JCEKS`, be sure to update the file extension to match the new format (e.g., use `.pk12` instead of `.jce`).
-You can convert a `JCEKS` file to `PKCS12` using the following command.
-`keytool -importkeystore -srckeystore $OPENNMS_HOME/etc/scv.jce -destkeystore $OPENNMS_HOME/etc/scv.pk12 -deststoretype pkcs12`.
+NOTE: If you are upgrading from an older version and have overridden this property (e.g., still using org.snmp4j.log.Log4jLogFactory), you must update it manually. Retaining the old value may cause OpenNMS to fail to start.
+
+
