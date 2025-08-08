@@ -60,7 +60,6 @@ import org.snmp4j.agent.mo.snmp.StorageType;
 import org.snmp4j.agent.mo.snmp.TransportDomains;
 import org.snmp4j.agent.mo.snmp.VacmMIB;
 import org.snmp4j.log.ConsoleLogFactory;
-import org.snmp4j.log.Log4jLogFactory;
 import org.snmp4j.log.LogAdapter;
 import org.snmp4j.log.LogFactory;
 import org.snmp4j.mp.MPv1;
@@ -101,7 +100,7 @@ public class MockSnmpAgent extends BaseAgent implements Runnable {
     static {
         try {
             Class.forName("org.apache.log4j.Logger");
-            LogFactory.setLogFactory(new Log4jLogFactory());
+            LogFactory.setLogFactory(new ConsoleLogFactory());
         } catch (Exception e) {
             LogFactory.setLogFactory(new ConsoleLogFactory());
         }
