@@ -49,6 +49,12 @@
           Add Column
         </FeatherButton>
         <FeatherButton
+          secondary
+          @click="resetColumns"
+        >
+          Reset Columns
+        </FeatherButton>
+        <FeatherButton
           primary
           @click="customizeTable"
         >
@@ -113,7 +119,12 @@ const customizeTable = async() => {
   saveNodePreferences(nodePrefs)
   nodeStructureStore.columnsDrawerState.visible = false
 }
-
+const resetColumns = async () => {
+  nodeStructureStore.columns = defaultColumns
+  const nodePrefs = await nodeStructureStore.getNodePreferences()
+  saveNodePreferences(nodePrefs)
+  nodeStructureStore.columnsDrawerState.visible = false
+}
 watch(() => nodeStructureStore.columns, (newColumns) => {
   initializeSelectedColumns(newColumns)
 }, { immediate: true, deep: true })
