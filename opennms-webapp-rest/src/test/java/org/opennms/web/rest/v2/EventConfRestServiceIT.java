@@ -35,6 +35,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.io.InputStream;
@@ -42,6 +43,7 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -95,7 +97,7 @@ public class EventConfRestServiceIT {
             attachments.add(att);
         }
 
-        Response resp = eventConfRestApi.uploadEventConfFiles(attachments, "With eventconf.xml file comment", securityContext);
+        Response resp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
         @SuppressWarnings("unchecked") Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
         @SuppressWarnings("unchecked") List<Map<String, Object>> success = (List<Map<String, Object>>) entity.get("success");
@@ -131,7 +133,7 @@ public class EventConfRestServiceIT {
             attachments.add(att);
         }
 
-        Response resp = eventConfRestApi.uploadEventConfFiles(attachments, "Without eventconf.xml file comment", securityContext);
+        Response resp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
         @SuppressWarnings("unchecked") Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
         @SuppressWarnings("unchecked") List<Map<String, Object>> success = (List<Map<String, Object>>) entity.get("success");
@@ -151,7 +153,7 @@ public class EventConfRestServiceIT {
     @Transactional
     public void testEmptyAttachments_ShouldReturnEmptyResults() throws Exception {
         List<Attachment> attachments = new ArrayList<>();
-        Response resp = eventConfRestApi.uploadEventConfFiles(attachments, "empty list", securityContext);
+        Response resp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
 
         Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
@@ -177,7 +179,7 @@ public class EventConfRestServiceIT {
 
         List<Attachment> attachments = List.of(att);
 
-        Response resp = eventConfRestApi.uploadEventConfFiles(attachments, "null security context", null);
+        Response resp = eventConfRestApi.uploadEventConfFiles(attachments, null);
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
         Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
         List<Map<String, Object>> success = (List<Map<String, Object>>) entity.get("success");
@@ -199,7 +201,7 @@ public class EventConfRestServiceIT {
 
         List<Attachment> attachments = List.of(att);
 
-        Response resp = eventConfRestApi.uploadEventConfFiles(attachments, "test malformed", securityContext);
+        Response resp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
         Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
         List<Map<String, Object>> success = (List<Map<String, Object>>) entity.get("success");

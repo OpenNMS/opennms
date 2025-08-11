@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 
@@ -22,7 +21,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.MediaType;
@@ -44,9 +42,8 @@ public interface EventConfRestApi {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Upload successful"),
-            @ApiResponse(responseCode = "403", description = "User does not have FILESYSTEM_EDITOR role"),
             @ApiResponse(responseCode = "400", description = "Invalid eventconf.xml or request")
     })
-    Response uploadEventConfFiles(@Multipart("upload") List<Attachment> attachments,@QueryParam("comments") final String comments,
+    Response uploadEventConfFiles(@Multipart("upload") List<Attachment> attachments,
                                   @Context SecurityContext securityContext) throws Exception;
 }
