@@ -230,8 +230,11 @@ const topPanels = computed<Panel[]>(() => {
 #opennms-sidemenu-vue-container {
   // put Sidenav below the top menu and make sure popover menus are over geomap
   :deep(.feather-dock) {
-    top: 3.75rem;     // --feather-header-height
     z-index: 2000;    // over the geomap
+  }
+
+  #opennms-sidebar-control {
+    --feather-dock-header-offset: 3.75rem;
   }
 
   // fix Sidenav toggle button placement

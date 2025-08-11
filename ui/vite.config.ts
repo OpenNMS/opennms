@@ -87,6 +87,14 @@ export default defineConfig({
   build: {
     emptyOutDir: true,
     outDir: './dist',
-    target: 'esnext'
+    target: 'esnext',
+    copyPublicDir: false,
+    rollupOptions: {
+      output: {
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/[name].[ext]'
+      }
+    }
   }
 })

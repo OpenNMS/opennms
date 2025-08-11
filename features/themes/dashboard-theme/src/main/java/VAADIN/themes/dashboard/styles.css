@@ -42,7 +42,8 @@
 /* Wallboard UI, make space for Vue top and side menus */
 .dashboard.v-app.wallboardui {
     margin-top: 5em;
-    margin-left: 4em;
+    /* margin-left: 4em; */
+    margin-left: 27em;
 }
 
 .debug {

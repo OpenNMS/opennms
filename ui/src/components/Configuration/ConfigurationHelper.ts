@@ -799,12 +799,12 @@ const validateHost = (host: string) => {
     || customHostnameRegex.test(host)
 
   const portMatch = host.match(/:(\d+)$/)
-    if (portMatch) {
-      const port = parseInt(portMatch[1], 10)
-      if (port < 0 || port > 65535) {
-        return ErrorStrings.InvalidHostname
-      }
+  if (portMatch) {
+    const port = parseInt(portMatch[1], 10)
+    if (port < 0 || port > 65535) {
+      return ErrorStrings.InvalidHostname
     }
+  }
 
   return !isHostValid ? ErrorStrings.InvalidHostname : ''
 }
