@@ -33,7 +33,6 @@ import java.util.concurrent.TimeUnit;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
@@ -115,7 +114,7 @@ public class DatabaseReportIT extends OpenNMSSeleniumIT {
         Assert.assertTrue(true);
     }
 
-    @Ignore("Need to fix")
+    @Test
     public void verifyReportExecution() {
         LOG.info("Verifying report '{}'", reportName);
 
