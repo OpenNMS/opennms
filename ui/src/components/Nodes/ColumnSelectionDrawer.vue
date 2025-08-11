@@ -120,7 +120,7 @@ const customizeTable = async() => {
   nodeStructureStore.columnsDrawerState.visible = false
 }
 const resetColumns = async () => {
-  nodeStructureStore.columns = defaultColumns
+  nodeStructureStore.columns = [...defaultColumns]
   const nodePrefs = await nodeStructureStore.getNodePreferences()
   saveNodePreferences(nodePrefs)
   nodeStructureStore.columnsDrawerState.visible = false
