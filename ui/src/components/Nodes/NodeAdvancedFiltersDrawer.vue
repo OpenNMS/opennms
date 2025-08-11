@@ -58,7 +58,7 @@
       <div class="footer">
         <FeatherButton
           primary
-          @click="applySelectedFilters()"
+          @click="applySelectedFilters"
         >
           Apply Filters
         </FeatherButton>
@@ -88,7 +88,6 @@ const selectedFilters = reactive({
   flows: [] as IAutocompleteItemType[],
   locations: [] as IAutocompleteItemType[]
 })
-
 
 const categoryResults = ref([] as IAutocompleteItemType[])
 const loading = ref(false)

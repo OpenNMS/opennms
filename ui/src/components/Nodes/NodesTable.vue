@@ -9,10 +9,16 @@
             :onJsonDownload="onJsonDownload"
           />
           <FeatherButton
-            secondary
+            primary
             @click="() => nodeStructureStore.openColumnsDrawerModal()"
           >
-            Customize
+            Customize Columns
+          </FeatherButton>
+          <FeatherButton
+            secondary
+            @click="() => nodeStructureStore.clearAllFilters()"
+          >
+            Clear Filters
           </FeatherButton>
         </div>
       </div>
@@ -20,22 +26,26 @@
       <div class="spacer-large"></div>
       <div class="search-container feather-col-12">
         <div class="feather-row">
-          <div class="search-filter-column">
-            <FeatherInput
-              v-model="currentSearch"
-              @update:modelValue="searchFilterHandler"
-              label="Search node label"
-            >
-              <template #pre>
-                <FeatherIcon :icon="Search" />
-              </template>
-            </FeatherInput>
-          </div>
-          <div class="filter-icon-wrapper">
-            <FeatherIcon
-              :icon="FilterAlt"
-              @click="() => nodeStructureStore.openInstancesDrawerModal()"
-            />
+          <div class="filter">
+            <div class="search-filter-column">
+              <FeatherInput
+                v-model="currentSearch"
+                @update:modelValue="searchFilterHandler"
+                label="Search node label"
+              >
+                <template #pre>
+                  <FeatherIcon :icon="Search" />
+                </template>
+              </FeatherInput>
+            </div>
+            <div>
+              <FeatherButton
+                icon="FilterAlt"
+                @click="() => nodeStructureStore.openInstancesDrawerModal()"
+              >
+                <FeatherIcon :icon="FilterAlt" />
+              </FeatherButton>
+            </div>
           </div>
           <div class="chip-container">
             <FeatherChipList label="Tags">
@@ -104,7 +114,7 @@
                   <div @click="navigateColumns(Direction.Left)">
                     <FeatherButton icon="Shift Left">
                       <FeatherIcon
-                        :icon="Code"
+                        :icon="ChevronLeft"
                         class="navigation-icon"
                       />
                     </FeatherButton>
@@ -136,7 +146,7 @@
                   >
                     <FeatherButton icon="Shift Right">
                       <FeatherIcon
-                        :icon="Code"
+                        :icon="ChevronRight"
                         class="navigation-icon"
                       />
                     </FeatherButton>
@@ -284,7 +294,8 @@ import Edit from '@featherds/icon/action/Edit'
 import FilterAlt from '@featherds/icon/action/FilterAlt'
 import Search from '@featherds/icon/action/Search'
 import Cancel from '@featherds/icon/navigation/Cancel'
-import Code from '@featherds/icon/network/Code'
+import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
+import ChevronRight from '@featherds/icon/navigation/ChevronRight'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
@@ -549,24 +560,32 @@ table {
   display: block;
 }
 
-.feather-col-11.search-filter-column {
-  padding-left: 1rem;
-  max-width: 60% !important;
-}
-
 .action-buttons-column {
   text-align: left;
 }
 
-.search-filter-column {
-  :deep(.feather-input-sub-text) {
-    display: none !important;
+.filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .search-filter-column {
+    :deep(.feather-input-sub-text) {
+      display: none !important;
+    }
+
+    .feather-input-container {
+      width: 450px !important;
+    }
   }
 
-  .feather-input-container {
-    width: 450px !important;
+  .btn.btn-icon{
+    border: 2px solid var($border-on-surface);
+    border-radius: 3px;
+    padding: 0 0.5rem;
+    height: 3rem;
+    width: 3rem;
   }
-
 }
 
 .chip-container {
@@ -583,18 +602,6 @@ table {
 
 .spacer-large {
   margin-bottom: 2rem;
-}
-
-.filter-icon-wrapper {
-  display: flex;
-  align-items: center;
-  margin-left: 10px;
-  padding: 0 0.5rem;
-  font-size: 1.5rem;
-  cursor: pointer;
-  border: 2px solid var($border-on-surface);
-  color: var($primary);
-  border-radius: 3px;
 }
 
 .title-bar {
