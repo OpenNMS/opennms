@@ -32,6 +32,9 @@ You can search for various things including node labels, IP addresses and action
 These can be customized via OpenNMS properties using Java `java.time.format.DateTimeFormatter` patterns.
 You can customize the time (top line) via the `org.opennms.ui.timeonlyformat` property; default is `HH:mm:ss 'UTC'x`.
 You can customize the date (bottom line) via the `org.opennms.ui.dateonlyformat` property; default is `LLLL d, yyyy`.
+
+See `opennms/etc/properties/opennms.properties` for an example. You should place any customizations in a `opennms/etc/opennms.properties.d/*.properties` file.
+
 See https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html for reference.
 
 | Notifications
