@@ -24,8 +24,7 @@ package org.opennms.core.time;
 
 public class ExtendedDateOnlyFormat extends CentralizedDateTimeFormat {
     public final static String SYSTEM_PROPERTY_UI_DATE_ONLY_FORMAT = "org.opennms.ui.dateonlyformat";
-
-    public final static String DEFAULT_DATE_ONLY_FORMAT_PATTERN = "yyyy-MM-dd";
+    public final static String DEFAULT_DATE_ONLY_FORMAT_PATTERN = "LLLL d, yyyy";
 
     public ExtendedDateOnlyFormat() {
         super();
