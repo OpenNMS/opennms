@@ -1,3 +1,24 @@
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
+ *
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.model.events;
 
 import java.util.Date;
@@ -23,62 +44,29 @@ public class EventConfSourceMetadataDto {
         this.description = builder.description;
     }
 
-    // Getters and setters
+    // Getters
     public String getFilename() {
         return filename;
     }
-
-    public void setFilename(String filename) {
-        this.filename = filename;
-    }
-
     public int getEventCount() {
         return eventCount;
     }
-
-    public void setEventCount(int eventCount) {
-        this.eventCount = eventCount;
-    }
-
     public int getFileOrder() {
         return fileOrder;
     }
-
-    public void setFileOrder(int fileOrder) {
-        this.fileOrder = fileOrder;
-    }
-
     public String getUsername() {
         return username;
     }
-
-    public void setUsername(String username) {
-        this.username = username;
-    }
-
     public Date getNow() {
         return now;
     }
-
-    public void setNow(Date now) {
-        this.now = now;
-    }
-
     public String getVendor() {
         return vendor;
     }
-
-    public void setVendor(String vendor) {
-        this.vendor = vendor;
-    }
-
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
 
     // Builder class
     public static class Builder {

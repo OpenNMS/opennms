@@ -1,11 +1,33 @@
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
+ *
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.web.rest.v2;
 
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
-import org.opennms.netmgt.model.events.ParsedEventEntry;
+import org.opennms.netmgt.xml.eventconf.Events;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
@@ -24,8 +46,7 @@ public class EventConfPersistenceService {
     private EventConfEventDao eventConfEventDao;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
-    public void persistEventConfFile(final List<ParsedEventEntry> events, final EventConfSourceMetadataDto eventConfSourceMetadataDto
-    ) {
+    public void persistEventConfFile(final Events events, final EventConfSourceMetadataDto eventConfSourceMetadataDto) {
         EventConfSource source = createOrUpdateSource(eventConfSourceMetadataDto);
         eventConfEventDao.deleteBySourceId(source.getId());
         saveEvents(source, events, eventConfSourceMetadataDto.getUsername(), eventConfSourceMetadataDto.getNow());
@@ -46,20 +67,19 @@ public class EventConfPersistenceService {
         source.setLastModified(eventConfSourceMetadataDto.getNow());
         source.setVendor(eventConfSourceMetadataDto.getVendor());
         source.setDescription(eventConfSourceMetadataDto.getDescription());
-
         eventConfSourceDao.saveOrUpdate(source);
         return eventConfSourceDao.get(source.getId());
     }
 
-    private void saveEvents(EventConfSource source, List<ParsedEventEntry> events, String username, Date now) {
-        List<EventConfEvent> eventEntities = events.stream().map(parsed -> {
+    private void saveEvents(EventConfSource source, Events events, String username, Date now) {
+        List<EventConfEvent> eventEntities = events.getEvents().stream().map(parsed -> {
             EventConfEvent event = new EventConfEvent();
             event.setSource(source);
             event.setUei(parsed.getUei());
             event.setEventLabel(parsed.getEventLabel());
-            event.setDescription(parsed.getDescription());
-            event.setEnabled(parsed.getEnabled());
-            event.setXmlContent(parsed.getXmlContent());
+            event.setDescription(parsed.getDescr());
+            event.setEnabled(true);
+            event.setXmlContent(JaxbUtils.marshal(parsed));
             event.setCreatedTime(now);
             event.setLastModified(now);
             event.setModifiedBy(username);

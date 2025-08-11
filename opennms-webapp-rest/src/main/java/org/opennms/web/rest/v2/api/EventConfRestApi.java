@@ -30,8 +30,8 @@ import javax.ws.rs.core.SecurityContext;
 import java.util.List;
 
 @Path("eventconf")
-@Tag(name = "EventConf", description = "EventConf Upload API")
-public interface EventConfUploadRestApi {
+@Tag(name = "EventConf", description = "EventConf API")
+public interface EventConfRestApi {
 
     @POST
     @Path("/upload")

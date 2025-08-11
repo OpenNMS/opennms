@@ -1,0 +1,30 @@
+<events xmlns="http://xmlns.opennms.org/xsd/eventconf">
+   <event>
+      <uei>uei.opennms.org/alarms/trigger</uei>
+      <event-label>Alarm: Generic Trigger</event-label>
+      <descr>A problem has been triggered.</descr>
+      <logmsg dest="logndisplay">A problem has been triggered on %parm[node]%/%parm[ip]%/%parm[service]%.</logmsg>
+      <severity>Warning</severity>
+      <alarm-data reduction-key="%uei%:%parm[node]%:%parm[ip]%:%parm[service]%" alarm-type="1" auto-clean="false">
+         <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
+   </event>
+   <event>
+      <uei>uei.opennms.org/alarms/clear</uei>
+      <event-label>Alarm: Generic Clear</event-label>
+      <descr>A problem has been cleared.</descr>
+      <logmsg dest="logndisplay">A problem has been cleared on %parm[node]%/%parm[ip]%/%parm[service]%.</logmsg>
+      <severity>Cleared</severity>
+      <alarm-data reduction-key="uei.opennms.org/alarms/trigger:%parm[node]%:%parm[ip]%:%parm[service]%" alarm-type="2" auto-clean="false">
+         <update-field field-name="severity" update-on-reduction="true"/>
+      </alarm-data>
+   </event>
+   <event>
+      <uei>uei.opennms.org/alarms/situation</uei>
+      <event-label>Alarm: Situation</event-label>
+      <descr>%parm[situationDescr]%</descr>
+      <logmsg dest="logndisplay">%parm[situationLogMsg]%</logmsg>
+      <severity>Normal</severity>
+      <alarm-data reduction-key="%uei%:%parm[situationId]%" alarm-type="3" auto-clean="true" />
+   </event>
+</events>
