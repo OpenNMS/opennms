@@ -103,13 +103,11 @@ The text value must be a comma-separated list of options.
 | Like
 | Select data where the defined attribute is like a given text value.
 This option is similar to the SQL `like` function, and is case-sensitive.
-| Database attribute
 | String
 | _None_
 
 | Limit
 | Limit the result set to a given number.
-| _None_
 | Integer
 | _None_
 
@@ -120,8 +118,9 @@ This option is similar to the SQL `like` function, and is case-sensitive.
 
 | OrderBy
 | Order the result set using the defined attribute.
+| Database attribute (String)
 | _None_
-| _None_
+
 |===
 
 TIP: For date values, you can specify an absolute value using ISO formatting (for example, `2019-06-20T20:45:15.123-05:00`).
