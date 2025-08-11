@@ -47,31 +47,6 @@
               </FeatherButton>
             </div>
           </div>
-          <!-- <div class="search-filter-column">
-            <FeatherInput
-              v-model="currentSearch"
-              @update:modelValue="searchFilterHandler"
-              label="Search node label"
-            >
-              <template #pre>
-                <FeatherIcon :icon="Search" />
-              </template>
-            </FeatherInput>
-          </div> -->
-          <!-- <div class="filter-icon-wrapper">
-            <FeatherIcon
-              :icon="FilterAlt"
-              @click="() => nodeStructureStore.openInstancesDrawerModal()"
-            />
-          </div> -->
-          <!-- <div>
-            <FeatherButton
-              icon="FilterAlt"
-              @click="() => nodeStructureStore.openInstancesDrawerModal()"
-            >
-              <FeatherIcon :icon="FilterAlt" />
-            </FeatherButton>
-          </div> -->
           <div class="chip-container">
             <FeatherChipList label="Tags">
               <FeatherChip
