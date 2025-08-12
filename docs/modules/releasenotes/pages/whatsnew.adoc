@@ -13,7 +13,6 @@
 == New features and important changes
 
 === Time To Value Improvements to the Menu Structure
-
 One of our 2025-26 goals is to reduce the time it takes a new user from learning about our product to discovering and visualizing the status of their network infrastructure.
 Our first step in this approach is the reorganization of the menu structure, with a responsive side menu that streamlines the IT Operator’s actions.
 Stay tuned for other improvements in the near future, including OVA Virtual Appliance Support, adding Windows Management Interface nodes right from the Quick Add Node page, and better Structured Node List navigation.
@@ -41,7 +40,6 @@ For our paid customers, you can now forward your events/alarms/tickets to Servic
 OpenNMS is now available as a Virtual Appliance delivered as an OVA image for rapid deployment and evaluation. This pre-configured solution allows users to quickly evaluate OpenNMS, reducing setup complexity and time-to-value for our network management platform.
 
 === Updates to Structured Node List
-
 We have made some updates to the Structured Node List. This will eventually replace the existing Node List page once we have feature equivalence.
 
 More information can be found xref:operation:deep-dive/structured-node-list/introduction.adoc[here].
