@@ -11,6 +11,13 @@ Additionally, support has been added for [composable templates](https://www.elas
 === Enhanced Keystore Support in Secure Credentials Vault
 The Secure Credentials Vault now supports the PKCS12 keystore format in addition to the previously supported JCEKS format. This enhancement provides greater compatibility with modern security standards and tooling.
 
+=== IPFix support for vendor-specific Information Elements
+OpenNMS now supports the definition of vendor-specific information elements.
+This allows users to collect additional metrics that are not part of the standard IPFix definitions, enabling customized data collection for specific devices or vendors.
+
+=== NetFlow Telemetry Adapters
+The new range of NetFlow telemetry adapters (v5, v9, IPFix) allows users to process NetFlow data using custom scripts, e.g. to store values from NetFlow datasets as metrics.
+
 == Breaking changes
 The default time series storage strategy is now by default RRDTool.
 
