@@ -79,6 +79,7 @@ const onGroupByOptionClick = (groupBy: string, value: string) => {
 
 <style scoped lang="scss">
 @import "@featherds/styles/mixins/typography";
+@import "@featherds/styles/themes/variables";
 
 .group-filters-container {
   display: flex;

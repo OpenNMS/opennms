@@ -70,7 +70,7 @@
     "sass-loader": "^13.3.2",
     "splitpanes": "^3.1.5",
     "vite-svg-loader": "^4.0.0",
-    "vue": "^3.3.4",
+    "vue": "^3.5.14",
     "vue-diff": "^1.2.4",
     "vue-router": "^4.2.4",
     "vue3-ace-editor": "^2.2.4"
@@ -96,7 +96,7 @@
     "eslint-plugin-vue": "^9.22.0",
     "happy-dom": "^9.20.3",
     "prettier": "^3.2.5",
-    "typescript": "^5.4.5",
+    "typescript": "5.1.6",
     "unplugin-auto-import": "^0.17.5",
     "unplugin-vue-components": "^0.26.0",
     "vite": "^4.3.9",
