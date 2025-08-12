@@ -11,20 +11,6 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.5.xsd
 ">
 
-
-    <bean id="openconfigDefinitionMap" class="java.util.HashMap">
-        <argument>
-            <map key-type="java.lang.String" value-type="java.lang.String">
-                <entry key="name" value="OpenConfig-Connector"/>
-                <entry key="class-name"
-                       value="org.opennms.netmgt.telemetry.protocols.openconfig.connector.OpenConfigConnector"/>
-                <entry key="queue" value="OpenConfig"/>
-                <entry key="service-name" value="OpenConfig"/>
-            </map>
-        </argument>
-    </bean>
-
-
     <reference id="distPollerDao" interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
     <reference id="messageDispatcherFactory" interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory" />
     <reference id="telemetryRegistry" interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" />
@@ -35,33 +21,10 @@
         <property name="bundleContext" ref="blueprintBundleContext"/>
         <property name="telemetryRegistry" ref="telemetryRegistry" />
     </bean>
-
-    <bean id="connectorListener"
-          class="org.opennms.netmgt.telemetry.distributed.minion.ConnectorManager"
-          init-method="start"
-          destroy-method="stop">
-        <property name="configMap" ref="openconfigDefinitionMap"/>
-        <property name="messageDispatcherFactory" ref="messageDispatcherFactory"/>
-        <property name="distPollerDao" ref="distPollerDao"/>
-        <property name="telemetryRegistry" ref="telemetryRegistry"/>
-        <property name="bundleContext" ref="blueprintBundleContext"/>
-    </bean>
-
-
     <service interface="org.osgi.service.cm.ManagedServiceFactory" ref="listenerManager">
         <service-properties>
             <entry key="service.pid" value="org.opennms.features.telemetry.listeners"/>
         </service-properties>
     </service>
     <service interface="org.opennms.netmgt.telemetry.api.TelemetryManager" ref="listenerManager" />
-
-    <service interface="org.osgi.service.cm.ManagedService"
-             ref="connectorListener">
-        <service-properties>
-            <entry key="service.pid"
-                   value="org.opennms.features.telemetry.openconfig"/>
-        </service-properties>
-    </service>
-
-
 </blueprint>
