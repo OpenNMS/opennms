@@ -73,6 +73,11 @@
       <groupId>com.swrve</groupId>
       <artifactId>rate-limited-logger</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.fileutils</artifactId>
+      <version>${project.version}</version>
+    </dependency>
 
     <!-- Test -->
     <dependency>

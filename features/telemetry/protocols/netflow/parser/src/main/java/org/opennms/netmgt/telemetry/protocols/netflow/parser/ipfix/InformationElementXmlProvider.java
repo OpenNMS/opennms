@@ -27,6 +27,24 @@
  *******************************************************************************/
 package org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix;
 
+import org.opennms.core.fileutils.DotDUpdateWatcher;
+import org.opennms.core.ipc.twin.api.TwinPublisher;
+import org.opennms.core.ipc.twin.api.TwinSubscriber;
+import org.opennms.distributed.core.api.Identity;
+import org.opennms.distributed.core.api.SystemType;
+import org.opennms.netmgt.snmp.TrapListenerConfig;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Semantics;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.xml.Element;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.xml.IpfixDotD;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.xml.IpfixElements;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import javax.xml.bind.DataBindingException;
+import javax.xml.bind.JAXB;
+import java.io.Closeable;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -37,35 +55,23 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import javax.xml.bind.DataBindingException;
-import javax.xml.bind.JAXB;
-
-import org.opennms.core.ipc.twin.api.TwinPublisher;
-import org.opennms.core.ipc.twin.api.TwinSubscriber;
-import org.opennms.distributed.core.api.Identity;
-import org.opennms.distributed.core.api.SystemType;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Semantics;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.xml.Element;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.xml.IpfixElements;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class InformationElementXmlProvider implements InformationElementDatabase.Provider {
-
     private static final Logger LOG = LoggerFactory.getLogger(InformationElementXmlProvider.class);
+    final String OPENNMS_HOME = System.getProperty("opennms.home");
 
     private InformationElementDatabase database;
+    private Identity identity;
+
+    private TwinPublisher twinPublisher;
+    private TwinSubscriber twinSubscriber;
+    private TwinPublisher.Session<IpfixDotD> twinSession;
+    private Closeable twinSubscription;
 
     public InformationElementXmlProvider(final Identity identity, final TwinPublisher twinPublisher, final TwinSubscriber twinSubscriber) {
-        if (identity.getType().equals(SystemType.Minion.name())) {
-            // Minion
-            LOG.error("BMRHGA: Type is MINION: twinPublisher={}, twinSubscriber={}", twinPublisher != null, twinSubscriber != null);
-        } else {
-            // Core or Sentinel
-            LOG.error("BMRHGA: Type is CORE/SENTINEL: twinPublisher={}, twinSubscriber={}", twinPublisher != null, twinSubscriber != null);
-        }
+        this.identity = identity;
+        this.twinPublisher = twinPublisher;
+        this.twinSubscriber = twinSubscriber;
     }
 
     @Override
@@ -90,15 +96,16 @@ public class InformationElementXmlProvider implements InformationElementDatabase
         }
     }
 
-    @Override
-    public void load(final InformationElementDatabase.Adder adder) {
+    private IpfixDotD loadIpfixDotDFiles() {
+        final IpfixDotD ipfixDotD = new IpfixDotD();
+
         final Set<File> files;
 
         try {
             files = getFiles();
         } catch (IOException e) {
             LOG.error("Error reading files in directory etc/ipfix.d", e);
-            return;
+            return ipfixDotD;
         }
 
         for (final File file : files) {
@@ -106,20 +113,63 @@ public class InformationElementXmlProvider implements InformationElementDatabase
 
             try {
                 ipfixElements = JAXB.unmarshal(file, IpfixElements.class);
+                ipfixDotD.getIpfixElements().add(ipfixElements);
             } catch (DataBindingException e) {
                 LOG.error("Cannot load file {}", file.getAbsolutePath(), e);
-                continue;
             }
+        }
+        return ipfixDotD;
+    }
 
-            LOG.debug("Processing file {}, {} entries", file.getAbsolutePath(), ipfixElements.getElements().size());
+    @Override
+    public void load(final InformationElementDatabase.Adder adder) {
+        if (identity.getType().equals(SystemType.Minion.name())) {
+            LOG.error("BMRHGA: TYPE MINION twinPublisher = " + (twinPublisher != null) + ", twinSubscriber = " + (twinSubscriber != null));
+            // get config via twin mechanism
+            twinSubscription = twinSubscriber.subscribe(TrapListenerConfig.TWIN_KEY, IpfixDotD.class, (config) -> {
+                applyConfig(adder, config);
+            });
+        } else {
+            LOG.error("BMRHGA: TYPE CORE twinPublisher = " + (twinPublisher != null) + ", twinSubscriber = " + (twinSubscriber != null));
+            // Core or Sentinel
+            reloadConfig(adder);
 
+            // setup watcher
+            try {
+                final DotDUpdateWatcher dotDUpdateWatcher = new DotDUpdateWatcher(OPENNMS_HOME + "/etc/ipfix.d", (dir, name) -> name.endsWith(".xml"), () -> {
+                    reloadConfig(adder);
+                });
+            } catch (Exception e) {
+                LOG.error("Error initializing DotDUpdateWatcher for directory {}", OPENNMS_HOME + "/etc/ipfix.d", e);
+            }
+        }
+    }
+
+    private void reloadConfig(final InformationElementDatabase.Adder adder) {
+        LOG.info("Loading information elements from XML files in {}", OPENNMS_HOME + "/etc/ipfix.d");
+        final IpfixDotD ipfixDotD = loadIpfixDotDFiles();
+        try {
+            if (twinSession == null) {
+                twinSession = this.twinPublisher.register("IpfixDotD", IpfixDotD.class);
+            }
+            twinSession.publish(ipfixDotD);
+        } catch (IOException e) {
+            LOG.error("Error publishing ipfix.d configuration files");
+        }
+        applyConfig(adder, ipfixDotD);
+    }
+
+    private void applyConfig(final InformationElementDatabase.Adder adder, final IpfixDotD ipfixDotD) {
+        adder.clear(getClass().getName());
+
+        for(final IpfixElements ipfixElements : ipfixDotD.getIpfixElements()) {
             final long vendor = ipfixElements.getScope().getPen();
 
             for (final Element element : ipfixElements.getElements()) {
                 final int id = element.getId();
                 final String name = element.getName();
                 final InformationElementDatabase.ValueParserFactory valueParserFactory = InformationElementProvider.TYPE_LOOKUP.get(element.getDataType());
-                adder.add(Protocol.IPFIX, Optional.of(vendor), id, valueParserFactory, name, Optional.of(Semantics.DEFAULT), this.database);
+                adder.add(Protocol.IPFIX, Optional.of(vendor), id, valueParserFactory, name, Optional.of(Semantics.DEFAULT), this.database, getClass().getName());
             }
         }
     }
