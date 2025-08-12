@@ -24,20 +24,20 @@ package org.opennms.netmgt.telemetry.daemon;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.ArrayList;
-import java.util.LinkedHashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import org.hibernate.ObjectNotFoundException;
+import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.FallbackScope;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceRef;
 import org.opennms.netmgt.dao.api.ServiceTracker;
+import org.opennms.netmgt.model.OnmsMetaData;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.telemetry.api.receiver.Connector;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.config.model.ConnectorConfig;
@@ -49,6 +49,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import javax.annotation.PostConstruct;
 
 /**
  * The ConnectorManager is responsible for starting/stopping connectors that connect to the target agents.
@@ -74,9 +79,28 @@ public class ConnectorManager {
     @Autowired
     private ServiceTracker serviceTracker;
 
+    @Autowired
+    private NodeDao nodeDao;
+
+    @Autowired
+    private PlatformTransactionManager txManager;
+
+    private TransactionTemplate readOnlyTxTemplate;
+
+    @Autowired
+    private TwinPublisher twinPublisher;
+    private TwinPublisher.Session<ConnectorTwinConfig> twinSession;
+
     private final Map<ConnectorKey, Connector> connectorsByKey = new LinkedHashMap<>();
 
     private final List<Closeable> serviceTrackerSessions = new LinkedList<>();
+
+    @PostConstruct
+    public void init() {
+        readOnlyTxTemplate = new TransactionTemplate(txManager);
+        readOnlyTxTemplate.setReadOnly(true);
+        readOnlyTxTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+    }
 
     private void startStreamingFor(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceRef serviceRef) {
         synchronized (connectorsByKey) {
@@ -125,17 +149,104 @@ public class ConnectorManager {
             final ConnectorKey key = toKey(connectorConfig, packageConfig, serviceRef);
             final Connector connector = connectorsByKey.remove(key);
             if (connector != null) {
-                try {
-                    LOG.debug("Closing connector for: {}", key);
-                    connector.close();
-                } catch (IOException e) {
-                    LOG.warn("Error closing connector: {}", key, e);
-                }
+             stopConnector( toStringKey(key));
             }
         }
     }
 
+    public void stopConnector(String key) {
+        try {
+            LOG.debug("Closing connector for: {}", key);
+            // connector.close();
+            twinSession.publish(new ConnectorTwinConfig(
+                    0,
+                    null,
+                     key,
+                    ConnectorState.STOP,
+                    null
+            ));
+        } catch (IOException e) {
+            LOG.warn("Error closing connector: {}", key, e);
+        }
+    }
+
+    private void startStreamingFor(
+            ConnectorConfig connectorConfig,
+            PackageConfig packageConfig,
+            ServiceRef serviceRef,
+            List<OnmsMetaData> metaDataList) {
+
+        synchronized (connectorsByKey) {
+            ConnectorKey key = toKey(connectorConfig, packageConfig, serviceRef);
+            if (connectorsByKey.containsKey(key)) {
+                LOG.debug("Connector already exists. Ignoring.");
+                return;
+            }
+
+            List<Map<String,String>> interpolatedMapList = groupMetaDataParams(metaDataList);
+            Connector connector = telemetryRegistry.getConnector(connectorConfig);
+            connectorsByKey.put(key, connector);
+            try {
+                twinSession.publish(new ConnectorTwinConfig(
+                        serviceRef.getNodeId(),
+                        serviceRef.getIpAddress().getHostAddress(),
+                        toStringKey(key),
+                        ConnectorState.START,
+                        interpolatedMapList
+                ));
+            } catch (IOException e) {
+                LOG.error("Failed to register twin for openconfig conector config", e);
+                // Add retry logic here if needed
+            }
+        }
+    }
+
+    private List<Map<String,String>> groupMetaDataParams(List<OnmsMetaData> metaDataList) {
+        Map<String, Map<String,String>> paramsByContext = metaDataList.stream()
+                .collect(Collectors.groupingBy(
+                        OnmsMetaData::getContext,
+                        Collectors.toMap(OnmsMetaData::getKey, OnmsMetaData::getValue,
+                                (first, second) -> second,
+                                LinkedHashMap::new)
+                ));
+        return new ArrayList<>(paramsByContext.values());
+    }
+
+    private NodeWithMetadata fetchNodeWithMetadata(int nodeId) {
+        return readOnlyTxTemplate.execute(status -> {
+            try {
+                OnmsNode node = nodeDao.get(nodeId);
+                if (node == null) {
+                    LOG.debug("Node {} not found", nodeId);
+                    return null;
+                }
+                List<OnmsMetaData> metadata = new ArrayList<>(node.getMetaData());
+                metadata.forEach(md -> {
+                    md.getContext();
+                    md.getKey();
+                    md.getValue();
+                });
+                return new NodeWithMetadata(node, metadata,node.getLocation().getLocationName());
+            } catch (ObjectNotFoundException e) {
+                LOG.warn("Node {} disappeared during fetch", nodeId, e);
+                return null;
+            }
+        });
+    }
+
     public void start(TelemetrydConfig config) {
+
+        try {
+            twinSession = twinPublisher.register(
+                    ConnectorTwinConfig.CONNECTOR_KEY,
+                    ConnectorTwinConfig.class,
+                    null
+            );
+        } catch (IOException e) {
+            LOG.error("Twin session initialization failed", e);
+            throw new IllegalStateException("Twin communication failure", e);
+        }
+
         for (ConnectorConfig connectorConfig : config.getConnectors()) {
             if (connectorConfig.getPackages().isEmpty()) {
                 // No packages defined
@@ -150,7 +261,8 @@ public class ConnectorManager {
                             new ServiceTracker.ServiceListener() {
                                 @Override
                                 public void onServiceMatched(ServiceRef serviceRef) {
-                                    startStreamingFor(connectorConfig, packageConfig, serviceRef);
+                                    NodeWithMetadata result = fetchNodeWithMetadata(serviceRef.getNodeId());
+                                    startStreamingFor(connectorConfig, packageConfig, serviceRef,result.metadata);
                                 }
 
                                 @Override
@@ -178,11 +290,7 @@ public class ConnectorManager {
         // Close the connectors
         synchronized (connectorsByKey) {
             connectorsByKey.forEach((key,connector) -> {
-                try {
-                    connector.close();
-                } catch (IOException e) {
-                    LOG.warn("Error closing connector: {}. Resources may not be properly recovered.", key, e);
-                }
+                stopConnector( toStringKey(key));
             });
         }
     }
@@ -234,5 +342,26 @@ public class ConnectorManager {
     @VisibleForTesting
     public void setEntityScopeProvider(EntityScopeProvider entityScopeProvider) {
         this.entityScopeProvider = entityScopeProvider;
+    }
+
+
+private  String toStringKey(ConnectorKey key) {
+    String sb;
+    sb = key.connectorName +
+            key.packageName +
+            key.interfaceAddress.getHostAddress() +
+            key.nodeId;
+    return sb;
+}
+    private static class NodeWithMetadata {
+        final OnmsNode node;
+        final List<OnmsMetaData> metadata;
+        final String location;
+
+        NodeWithMetadata(OnmsNode node, List<OnmsMetaData> metadata,String location) {
+            this.node = node;
+            this.metadata = Collections.unmodifiableList(metadata);
+            this.location = location;
+        }
     }
 }

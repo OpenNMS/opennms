@@ -19,11 +19,12 @@
  * language governing permissions and limitations under the
  * License.
  */
-
-package org.opennms.netmgt.telemetry.distributed.minion;
+package org.opennms.netmgt.telemetry.daemon;
 
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
+import org.opennms.core.ipc.twin.api.TwinSubscriber;
+import org.opennms.core.logging.Logging;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.telemetry.api.receiver.Connector;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
@@ -36,13 +37,14 @@ import org.osgi.service.cm.ConfigurationException;
 import org.osgi.service.cm.ManagedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+import org.springframework.beans.factory.annotation.Autowired;
+import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.*;
 
-public class ConnectorManager implements ManagedService, Connector {
+public class ConnectorStarter implements ManagedService, Connector {
     private static final Logger LOG = LoggerFactory.getLogger(ConnectorManager.class);
 
     Map<String, String> configMap;
@@ -55,101 +57,53 @@ public class ConnectorManager implements ManagedService, Connector {
 
     private BundleContext bundleContext;
 
-    final Entity entity = new Entity();
+    @Autowired
+    private TwinSubscriber m_twinSubscriber;
 
-    public ConnectorManager() {
-    }
+    private Closeable m_twinSubscription;
+
+    private Object configuredLock = new Object();
+
+   private MapBasedConnectorDef baseDef;
+
+    private Map<String, Entity> entities = new LinkedHashMap<>();
+
+    public ConnectorStarter() {}
 
     public void start() {
-        LOG.error(" connector listener is started");
+        final PropertyTree definition = PropertyTree.from(configMap);
+        baseDef = new MapBasedConnectorDef(definition);
+
     }
 
     public void stop() {
         LOG.info("ConnectorListener stopping…");
+        try {
+            m_twinSubscription.close();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
 
+        new ArrayList<>(this.entities.keySet()).forEach(pid -> delete(pid));
+    }
+
+    public void  delete(String key){
+        final Entity entity = this.entities.remove(key);
         if (entity.connector != null) {
+            LOG.info("Stopping listener for key: {}", key);
             try {
                 entity.connector.close();
             } catch (IOException e) {
-                LOG.warn("Error stopping connector", e);
+                throw new RuntimeException(e);
             }
         }
-
-        stopQueues(entity.queueNames);
-
+        if (entity.queueNames != null) {
+            stopQueues(entity.queueNames);
+        }
     }
-
+    Entity entity = new Entity();
     @Override
     public void updated(Dictionary<String, ?> props) throws ConfigurationException {
-        String enabledProp = props != null
-                ? (String) props.get("enabled")
-                : "false";
-        boolean enabled = Boolean.parseBoolean(enabledProp);
-
-
-        if (!enabled) {
-            stop();
-            LOG.info("Connector disabled – cleaned up and exiting updated()");
-            return;
-        }
-
-        stopQueues(entity.queueNames);
-
-        final PropertyTree definition = PropertyTree.from(configMap);
-        final MapBasedConnectorDef connectorDef = new MapBasedConnectorDef(definition);
-
-        if (telemetryRegistry.getDispatcher(connectorDef.getQueueName()) != null) {
-            throw new IllegalArgumentException("A queue with name " + connectorDef.getQueueName() + " is already defined. Bailing.");
-        }
-        final TelemetrySinkModule sinkModule = new TelemetrySinkModule(connectorDef);
-        sinkModule.setDistPollerDao(distPollerDao);
-        final AsyncDispatcher<TelemetryMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(sinkModule);
-        final String queueName = Objects.requireNonNull(connectorDef.getQueueName());
-        telemetryRegistry.registerDispatcher(queueName, dispatcher);
-        entity.queueNames.add(connectorDef.getQueueName());
-        entity.connector = telemetryRegistry.getConnector(connectorDef);
-
-        String nodeIdStr  = get(props, "nodeId",  "1");
-        String host       = get(props, "hostname", "127.0.0.1");
-        String portStr    = get(props, "port",     "0");
-        String mode       = get(props, "mode",     "jti");
-        String paths      = get(props, "paths",    "/interfaces/interface/state/counters");
-
-        int nodeId;
-        try {
-            nodeId = Integer.parseInt(nodeIdStr);
-        } catch (NumberFormatException e) {
-            throw new ConfigurationException("nodeId", "Invalid integer: " + nodeIdStr);
-        }
-
-        int port;
-        try {
-            port = Integer.parseInt(portStr);
-        } catch (NumberFormatException e) {
-            throw new ConfigurationException("port", "Invalid integer: " + portStr);
-        }
-
-        InetAddress ip;
-        try {
-            ip = InetAddress.getByName(host);
-        } catch (UnknownHostException e) {
-            throw new ConfigurationException("hostname", "Invalid host: " + host);
-        }
-
-        Map<String,String> entry = new HashMap<>();
-        entry.put("hostname", host);
-        entry.put("port",     Integer.toString(port));
-        entry.put("mode",     mode);
-        entry.put("paths",    paths);
-
-        List<Map<String,String>> paramList = List.of(entry);
-        entity.connector.stream(nodeId, ip, paramList);
-
-    }
-
-    String get(Dictionary<String,?> d, String key, String def) {
-        Object v = (d != null ? d.get(key) : null);
-        return (v != null ? v.toString() : def);
     }
 
 
@@ -158,7 +112,7 @@ public class ConnectorManager implements ManagedService, Connector {
         for (String queueName : queueNames) {
             try {
                 final AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(queueName);
-                if(dispatcher != null) {
+                if (dispatcher != null) {
                     dispatcher.close();
                 }
             } catch (Exception ex) {
@@ -169,26 +123,65 @@ public class ConnectorManager implements ManagedService, Connector {
         }
     }
 
-    public void connect(int nodeId, InetAddress ipAddress, List<Map<String, String>> pathList) {
-        entity.connector.stream(nodeId, ipAddress, pathList);
+    public void subscribe() {
+        m_twinSubscription = m_twinSubscriber.subscribe( ConnectorTwinConfig.CONNECTOR_KEY, ConnectorTwinConfig.class, this::onConfig);
+    }
+
+    private void onConfig(ConnectorTwinConfig request) {
+        try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(Telemetryd.LOG_PREFIX)) {
+            LOG.error("Got listener config update - reloading");
+            synchronized (configuredLock) {
+                if (ConnectorState.START == request.getStatus()) {
+                    if(entities.containsKey(request.getConnectionKey())) {
+                        LOG.warn("A connector is already registered with node '{}' ",request.getNodeId());
+                        return;
+                    }
+                    final Entity entity = new Entity();
+                    final TelemetrySinkModule sinkModule = new TelemetrySinkModule(baseDef);
+                    sinkModule.setDistPollerDao(distPollerDao);
+                    final AsyncDispatcher<TelemetryMessage> dispatcher = messageDispatcherFactory.createAsyncDispatcher(sinkModule);
+                    final String queueName = Objects.requireNonNull(baseDef.getQueueName());
+                    if (telemetryRegistry.getDispatcher(queueName) == null) {
+                        telemetryRegistry.registerDispatcher(queueName, dispatcher);
+                    }
+                    entity.queueNames.add(baseDef.getQueueName());
+                    entity.connector = telemetryRegistry.getConnector(baseDef);
+                    InetAddress ip = null;
+                    try {
+                        ip = InetAddress.getByName(request.getIpAddress());
+                    } catch (UnknownHostException ignored) {
+                        LOG.warn("Invalid ip address (hostname)  '{}' ",request.getIpAddress());
+                    }
+                    entity.connector.stream(request.getNodeId(), ip, request.getParameters());
+                    entities.put(request.getConnectionKey(), entity);
+                } else {
+                    delete(request.getConnectionKey());
+                }
+            }
+        }
     }
 
     @Override
     public void stream(int nodeId, InetAddress ipAddress, List<Map<String, String>> paramList) {
-        entity.connector.stream(nodeId, ipAddress, paramList);
+       // entity.connector.stream(nodeId, ipAddress, paramList);
     }
 
     @Override
-    public void close() throws IOException {
+    public void close() throws IOException { }
 
+    public void bind(TwinSubscriber twinSubscriber) {
+        m_twinSubscriber = twinSubscriber;
+        subscribe();
     }
 
+    public void unbind(TwinSubscriber twinSubscriber) {
+        m_twinSubscriber = null;
+    }
 
     private static class Entity {
         private Connector connector;
         private final Set<String> queueNames = new HashSet<>();
     }
-
 
     public Map<String, String> getConfigMap() {
         return configMap;
@@ -223,3 +216,4 @@ public class ConnectorManager implements ManagedService, Connector {
     }
 
 }
+
