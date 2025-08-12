@@ -24,6 +24,10 @@ package org.opennms.netmgt.collection.api;
 import org.opennms.netmgt.collection.support.DefaultTimeKeeper;
 import org.opennms.netmgt.model.ResourcePath;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * <p>CollectionResource interface.</p>
  *
@@ -35,6 +39,9 @@ public interface CollectionResource extends ResourceIdentifier, CollectionVisita
     public static final String RESOURCE_TYPE_NODE = "node";
     public static final String RESOURCE_TYPE_IF = "if";
     public static final String RESOURCE_TYPE_LATENCY = "latency";
+
+    // service property which will control addition of custom tags for time series data
+    public static final String INTERFACE_INFO_IN_TAGS = "interface-info-in-tags";
 
     /**
      * <p>rescanNeeded</p>
@@ -94,5 +101,15 @@ public interface CollectionResource extends ResourceIdentifier, CollectionVisita
      * @return a {@link org.opennms.netmgt.collection.api.TimeKeeper} object or null to indicate that {@link DefaultTimeKeeper} should be used.
      */
     TimeKeeper getTimeKeeper();
+
+    // Can be used to add additional tags required by TimeSeries like Prometheus
+    default Map<String, String> getTags() {
+        return Collections.emptyMap();
+    }
+
+    // Can be used to forward service parameters to persistence layer
+    default Map<String, String> getServiceParams() {
+        return Collections.emptyMap();
+    }
 
 }

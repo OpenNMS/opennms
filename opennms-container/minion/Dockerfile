@@ -26,9 +26,9 @@
 # To avoid issues, we rearrange the directories in pre-stage to avoid injecting these
 # as additional layers into the final image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.3.0.b265-jre-17"
+ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.6.0.b293-jre-17"
 
-FROM ${BASE_IMAGE} as minion-base
+FROM ${BASE_IMAGE} AS minion-base
 
 ADD --chown=10001:0 ./tarball-root/ /opt/minion/
 RUN rm /opt/minion/etc/org.opennms.features.telemetry.listeners-single-port-flows.cfg
@@ -49,7 +49,7 @@ RUN chmod -R g-w /opt/minion && \
 ##
 # Download plugins
 ##
-FROM ${BASE_IMAGE} as minion-plugins
+FROM ${BASE_IMAGE} AS minion-plugins
 
 COPY plugins.sh /tmp/plugins.sh 
 RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
@@ -88,6 +88,9 @@ RUN setcap cap_net_raw+ep $(readlink -f /usr/bin/java)
 # Install entrypoint wrapper and health check script
 COPY container-fs/entrypoint.sh /
 COPY container-fs/health.sh /
+
+# Install a default JMX Prometheus configuration
+COPY container-fs/prom-jmx-default-config.yaml /opt/prom-jmx-exporter/config.yaml
 
 # If you copy from /opt/minion to /opt/minion the permissions are not preserved
 # We would have 755 for minion:root instead of 775 and prevents writing lock files in /opt/minion

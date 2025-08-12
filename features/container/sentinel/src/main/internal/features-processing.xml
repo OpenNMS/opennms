@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<featuresProcessing
+  xmlns="http://karaf.apache.org/xmlns/features-processing/v1.0.0"
+  xmlns:f="http://karaf.apache.org/xmlns/features/v1.6.0"
+>
+
+  <blacklistedRepositories>
+    <!-- we use our overridden spring-legacy instead -->
+    <repository>mvn:org.apache.karaf.features/spring/*/xml/features</repository>
+    <repository>mvn:org.apache.karaf.features/spring-legacy/*/xml/features</repository>
+    <repository>mvn:org.apache.camel.karaf/apache-camel/RELEASE/xml/features</repository>
+  </blacklistedRepositories>
+
+  <blacklistedFeatures>
+    <!-- replaced by `spring-security-opennms` -->
+    <feature>spring-security</feature>
+  </blacklistedFeatures>
+
+  <blacklistedBundles>
+    <!-- newer asm doesn't have an `asm-all` bundle -->
+    <bundle>mvn:org.ow2.asm/asm-all</bundle>
+
+    <!-- pax-web 7.4 doesn't have the jaspi stuff, make sure 7.3 doesn't sneak it in -->
+    <bundle>mvn:org.apache.geronimo.specs/geronimo-jaspic_1.0_spec</bundle>
+    <bundle>mvn:org.eclipse.jetty/jetty-jaspi</bundle>
+    <bundle>mvn:org.apache.geronimo.components/geronimo-jaspi</bundle>
+  </blacklistedBundles>
+
+  <bundleReplacements>
+    <!-- Karaf internals -->
+    <bundle replacement="mvn:org.ops4j.pax.logging/pax-logging-api/${paxLoggingVersion}"
+            originalUri="mvn:org.ops4j.pax.logging/pax-logging-api/[2,${paxLoggingVersion})" mode="maven" />
+    <bundle replacement="mvn:org.ops4j.pax.logging/pax-logging-log4j2/${paxLoggingVersion}"
+            originalUri="mvn:org.ops4j.pax.logging/pax-logging-log4j2/[2,${paxLoggingVersion})" mode="maven" />
+    <bundle replacement="mvn:org.ops4j.pax.logging/pax-logging-logback/${paxLoggingVersion}"
+            originalUri="mvn:org.ops4j.pax.logging/pax-logging-logback/[2,${paxLoggingVersion})" mode="maven" />
+    <bundle replacement="mvn:org.apache.sshd/sshd/${minaSshdVersion}"
+            originalUri="mvn:org.apache.sshd/sshd/[2,${minaSshdVersion})" mode="maven" />
+    <bundle replacement="mvn:org.apache.sshd/sshd-common/${minaSshdVersion}"
+            originalUri="mvn:org.apache.sshd/sshd-common/[2,${minaSshdVersion})" mode="maven" />
+    <bundle replacement="mvn:org.apache.sshd/sshd-core/${minaSshdVersion}"
+            originalUri="mvn:org.apache.sshd/sshd-core/[2,${minaSshdVersion})" mode="maven" />
+    <bundle replacement="mvn:org.apache.sshd/sshd-osgi/${minaSshdVersion}"
+            originalUri="mvn:org.apache.sshd/sshd-osgi/[2,${minaSshdVersion})" mode="maven" />
+    <bundle replacement="mvn:org.apache.sshd/sshd-scp/${minaSshdVersion}"
+            originalUri="mvn:org.apache.sshd/sshd-scp/[2,${minaSshdVersion})" mode="maven" />
+    <bundle replacement="mvn:org.apache.sshd/sshd-sftp/${minaSshdVersion}"
+            originalUri="mvn:org.apache.sshd/sshd-sftp/[2,${minaSshdVersion})" mode="maven" />
+
+    <!-- Apache Commons -->
+    <bundle replacement="mvn:commons-beanutils/commons-beanutils/${commonsBeanutilsVersion}"
+            originalUri="mvn:commons-beanutils/commons-beanutils/[1,${commonsBeanutilsVersion})" mode="maven" />
+    <bundle replacement="mvn:commons-cli/commons-cli/${commonsCliVersion}"
+            originalUri="mvn:commons-cli/commons-cli/[1,${commonsCliVersion})" mode="maven" />
+    <bundle replacement="mvn:commons-codec/commons-codec/${commonsCodecVersion}"
+            originalUri="mvn:commons-codec/commons-codec/[1,${commonsCodecVersion})" mode="maven" />
+    <bundle replacement="mvn:commons-collections/commons-collections/${commonsCollectionsVersion}"
+            originalUri="mvn:commons-collections/commons-collections/[3,${commonsCollectionsVersion})" mode="maven" />
+    <bundle replacement="mvn:org.apache.commons/commons-compress/${commonsCompressVersion}"
+            originalUri="mvn:org.apache.commons/commons-compress/[1,${commonsCompressVersion})" mode="maven" />
+    <bundle replacement="mvn:commons-configuration/commons-configuration/${commonsConfigurationVersion}"
+            originalUri="mvn:commons-configuration/commons-configuration/[1,${commonsConfigurationVersion})" mode="maven" />
+    <bundle replacement="mvn:org.apache.commons/commons-csv/${commonsCsvVersion}"
+            originalUri="mvn:org.apache.commons/commons-csv/[1,${commonsCsvVersion})" mode="maven" />
+    <bundle replacement="mvn:commons-digester/commons-digester/${commonsDigesterVersion}"
+            originalUri="mvn:commons-digester/commons-digester/[2,${commonsDigesterVersion})" mode="maven" />
+    <bundle replacement="mvn:commons-exec/commons-exec/${commonsExecVersion}"
+            originalUri="mvn:commons-exec/commons-exec/[1,${commonsExecVersion})" mode="maven" />
+    <bundle replacement="mvn:commons-io/commons-io/${commonsIoVersion}"
+            originalUri="mvn:commons-io/commons-io/[2,${commonsIoVersion})" mode="maven" />
+    <bundle replacement="mvn:org.apache.commons/commons-jexl/${commonsJexlVersion}"
+            originalUri="mvn:org.apache.commons/commons-jexl/[2,${commonsJexlVersion})" mode="maven" />
+    <bundle replacement="mvn:org.apache.commons/commons-jexl3/${commonsJexl3Version}"
+            originalUri="mvn:org.apache.commons/commons-jexl3/[3,${commonsJexl3Version})" mode="maven" />
+    <bundle replacement="mvn:commons-jxpath/commons-jxpath/${commonsJxpathVersion}"
+            originalUri="mvn:commons-jxpath/commons-jxpath/[1,${commonsJxpathVersion})" mode="maven" />
+    <bundle replacement="mvn:commons-lang/commons-lang/${commonsLangVersion}"
+            originalUri="mvn:commons-lang/commons-lang/[2,${commonsLangVersion})" mode="maven" />
+    <bundle replacement="mvn:org.apache.commons/commons-lang3/${commonsLang3Version}"
+            originalUri="mvn:org.apache.commons/commons-lang3/[3,${commonsLang3Version})" mode="maven" />
+    <bundle replacement="mvn:commons-net/commons-net/${commonsNetVersion}"
+            originalUri="mvn:commons-net/commons-net/[3,${commonsNetVersion})" mode="maven" />
+    <bundle replacement="mvn:commons-pool/commons-pool/${commonsPoolVersion}"
+            originalUri="mvn:commons-pool/commons-pool/[1,${commonsPoolVersion})" mode="maven" />
+    <bundle replacement="mvn:org.apache.commons/commons-pool2/${commonsPool2Version}"
+            originalUri="mvn:org.apache.commons/commons-pool2/[2,${commonsPool2Version})" mode="maven" />
+
+    <!-- Just In Case (tm) make sure Jetty always gets only our vetted version -->
+    <bundle replacement="mvn:org.eclipse.jetty/jetty-client/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty/jetty-client/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty/jetty-continuation/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty/jetty-continuation/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty/jetty-deploy/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty/jetty-deploy/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty/jetty-http/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty/jetty-http/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty/jetty-io/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty/jetty-io/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty/jetty-jaas/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty/jetty-jaas/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty/jetty-jaspi/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty/jetty-jaspi/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty/jetty-jmx/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty/jetty-jmx/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty/jetty-jndi/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty/jetty-jndi/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty/jetty-plus/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty/jetty-plus/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty/jetty-rewrite/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty/jetty-rewrite/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty/jetty-security/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty/jetty-security/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty/jetty-server/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty/jetty-server/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty/jetty-servlet/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty/jetty-servlet/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty/jetty-servlets/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty/jetty-servlets/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty/jetty-util-ajax/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty/jetty-util-ajax/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty/jetty-util/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty/jetty-util/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty/jetty-webapp/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty/jetty-webapp/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty/jetty-xml/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty/jetty-xml/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty.websocket/javax-websocket-client-impl/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty.websocket/javax-websocket-client-impl/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty.websocket/javax-websocket-server-impl/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty.websocket/javax-websocket-server-impl/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty.websocket/websocket-api/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty.websocket/websocket-api/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty.websocket/websocket-client/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty.websocket/websocket-client/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty.websocket/websocket-common/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty.websocket/websocket-common/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty.websocket/websocket-server/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty.websocket/websocket-server/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.eclipse.jetty.websocket/websocket-servlet/${jettyVersion}"
+            originalUri="mvn:org.eclipse.jetty.websocket/websocket-servlet/[9,${jettyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/${spiflyVersion}"
+            originalUri="mvn:org.apache.aries.spifly/org.apache.aries.spifly.dynamic.bundle/[1,${spiflyVersion})" mode="maven" />
+    <bundle replacement="mvn:org.apache.aries/org.apache.aries.util/${ariesUtilVersion}"
+            originalUri="mvn:org.apache.aries/org.apache.aries.util/[1,${ariesUtilVersion})" mode="maven" />
+
+    <!-- jackson1 upgrades -->
+    <bundle replacement="mvn:org.codehaus.jackson/jackson-core-asl/${jacksonVersion}"
+            originalUri="mvn:org.codehaus.jackson/jackson-core-asl/[0,1.9.14]" mode="maven" />
+    <bundle replacement="mvn:org.codehaus.jackson/jackson-mapper-asl/${jacksonVersion}"
+            originalUri="mvn:org.codehaus.jackson/jackson-mapper-asl/[0,1.9.14]" mode="maven" />
+    <bundle replacement="mvn:org.codehaus.jackson/jackson-jaxrs/${jacksonVersion}"
+            originalUri="mvn:org.codehaus.jackson/jackson-jaxrs/[0,1.9.14]" mode="maven" />
+    <bundle replacement="mvn:org.codehaus.jackson/jackson-xc/${jacksonVersion}"
+            originalUri="mvn:org.codehaus.jackson/jackson-xc/[0,1.9.14]" mode="maven" />
+
+    <!-- jackson2 upgrades -->
+    <bundle replacement="mvn:com.datastax.cassandra/cassandra-driver-core/${cassandraVersion}"
+            originalUri="mvn:com.datastax.cassandra/cassandra-driver-core/[3,${cassandraVersion})" mode="maven" />
+    <bundle replacement="mvn:com.fasterxml.jackson.core/jackson-annotations/${jackson2Version}"
+            originalUri="mvn:com.fasterxml.jackson.core/jackson-annotations/[2,${jackson2Version})" mode="maven" />
+    <bundle replacement="mvn:com.fasterxml.jackson.core/jackson-core/${jackson2Version}"
+            originalUri="mvn:com.fasterxml.jackson.core/jackson-core/[2,${jackson2Version})" mode="maven" />
+    <bundle replacement="mvn:com.fasterxml.jackson.core/jackson-databind/${jackson2Version}"
+            originalUri="mvn:com.fasterxml.jackson.core/jackson-databind/[2,${jackson2Version})" mode="maven" />
+    <bundle replacement="mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-cbor/${jackson2Version}"
+            originalUri="mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-cbor/[2,${jackson2Version})" mode="maven" />
+    <bundle replacement="mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-csv/${jackson2Version}"
+            originalUri="mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-csv/[2,${jackson2Version})" mode="maven" />
+    <bundle replacement="mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-smile/${jackson2Version}"
+            originalUri="mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-smile/[2,${jackson2Version})" mode="maven" />
+    <bundle replacement="mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-xml/${jackson2Version}"
+            originalUri="mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-xml/[2,${jackson2Version})" mode="maven" />
+    <bundle replacement="mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/${jackson2Version}"
+            originalUri="mvn:com.fasterxml.jackson.dataformat/jackson-dataformat-yaml/[2,${jackson2Version})" mode="maven" />
+    <bundle replacement="mvn:com.fasterxml.jackson.datatype/jackson-datatype-guava/${jackson2Version}"
+            originalUri="mvn:com.fasterxml.jackson.datatype/jackson-datatype-guava/[2,${jackson2Version})" mode="maven" />
+    <bundle replacement="mvn:com.fasterxml.jackson.datatype/jackson-datatype-jdk8/${jackson2Version}"
+            originalUri="mvn:com.fasterxml.jackson.datatype/jackson-datatype-jdk8/[2,${jackson2Version})" mode="maven" />
+    <bundle replacement="mvn:com.fasterxml.jackson.datatype/jackson-datatype-joda/${jackson2Version}"
+            originalUri="mvn:com.fasterxml.jackson.datatype/jackson-datatype-joda/[2,${jackson2Version})" mode="maven" />
+    <bundle replacement="mvn:com.fasterxml.jackson.datatype/jackson-datatype-json-org/${jackson2Version}"
+            originalUri="mvn:com.fasterxml.jackson.datatype/jackson-datatype-json-org/[2,${jackson2Version})" mode="maven" />
+    <bundle replacement="mvn:com.fasterxml.jackson.datatype/jackson-datatype-jsr310/${jackson2Version}"
+            originalUri="mvn:com.fasterxml.jackson.datatype/jackson-datatype-jsr310/[2,${jackson2Version})" mode="maven" />
+    <bundle replacement="mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/${jackson2Version}"
+            originalUri="mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-base/[2,${jackson2Version})" mode="maven" />
+    <bundle replacement="mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/${jackson2Version}"
+            originalUri="mvn:com.fasterxml.jackson.jaxrs/jackson-jaxrs-json-provider/[2,${jackson2Version})" mode="maven" />
+    <bundle replacement="mvn:com.fasterxml.jackson.module/jackson-module-blackbird/${jackson2Version}"
+            originalUri="mvn:com.fasterxml.jackson.module/jackson-module-blackbird/[2,${jackson2Version})" mode="maven" />
+    <bundle replacement="mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/${jackson2Version}"
+            originalUri="mvn:com.fasterxml.jackson.module/jackson-module-jaxb-annotations/[2,${jackson2Version})" mode="maven" />
+    <bundle replacement="mvn:com.fasterxml.jackson.module/jackson-module-parameter-names/${jackson2Version}"
+            originalUri="mvn:com.fasterxml.jackson.module/jackson-module-parameter-names/[2,${jackson2Version})" mode="maven" />
+    <bundle replacement="mvn:com.fasterxml.jackson.module/jackson-module-scala/${jackson2Version}"
+            originalUri="mvn:com.fasterxml.jackson.module/jackson-module-scala/[2,${jackson2Version})" mode="maven" />
+
+    <!-- netty4 -->
+    <bundle replacement="mvn:io.netty/netty-buffer/${netty4Version}"
+            originalUri="mvn:io.netty/netty-buffer/[4,${netty4Version})" mode="maven" />
+    <bundle replacement="mvn:io.netty/netty-codec/${netty4Version}"
+            originalUri="mvn:io.netty/netty-codec/[4,${netty4Version})" mode="maven" />
+    <bundle replacement="mvn:io.netty/netty-codec-dns/${netty4Version}"
+            originalUri="mvn:io.netty/netty-codec-dns/[4,${netty4Version})" mode="maven" />
+    <bundle replacement="mvn:io.netty/netty-codec-http/${netty4Version}"
+            originalUri="mvn:io.netty/netty-codec-http/[4,${netty4Version})" mode="maven" />
+    <bundle replacement="mvn:io.netty/netty-common/${netty4Version}"
+            originalUri="mvn:io.netty/netty-common/[4,${netty4Version})" mode="maven" />
+    <bundle replacement="mvn:io.netty/netty-handler/${netty4Version}"
+            originalUri="mvn:io.netty/netty-handler/[4,${netty4Version})" mode="maven" />
+    <bundle replacement="mvn:io.netty/netty-resolver/${netty4Version}"
+            originalUri="mvn:io.netty/netty-resolver/[4,${netty4Version})" mode="maven" />
+    <bundle replacement="mvn:io.netty/netty-resolver-dns/${netty4Version}"
+            originalUri="mvn:io.netty/netty-resolver-dns/[4,${netty4Version})" mode="maven" />
+    <bundle replacement="mvn:io.netty/netty-transport/${netty4Version}"
+            originalUri="mvn:io.netty/netty-transport/[4,${netty4Version})" mode="maven" />
+    <bundle replacement="mvn:io.netty/netty-transport-classes-epoll/${netty4Version}"
+            originalUri="mvn:io.netty/netty-transport-classes-epoll/[4,${netty4Version})" mode="maven" />
+    <bundle replacement="mvn:io.netty/netty-transport-native-epoll/${netty4Version}"
+            originalUri="mvn:io.netty/netty-transport-native-epoll/[4,${netty4Version})" mode="maven" />
+    <bundle replacement="mvn:io.netty/netty-transport-native-epoll/${netty4Version}/jar/linux-aarch_64"
+            originalUri="mvn:io.netty/netty-transport-native-epoll/[4,${netty4Version})/jar/linux-aarch_64" mode="maven" />
+    <bundle replacement="mvn:io.netty/netty-transport-native-epoll/${netty4Version}/jar/linux-x86_64"
+            originalUri="mvn:io.netty/netty-transport-native-epoll/[4,${netty4Version})/jar/linux-x86_64" mode="maven" />
+    <bundle replacement="mvn:io.netty/netty-transport-classes-kqueue/${netty4Version}"
+            originalUri="mvn:io.netty/netty-transport-classes-kqueue/[4,${netty4Version})" mode="maven" />
+    <bundle replacement="mvn:io.netty/netty-transport-native-kqueue/${netty4Version}"
+            originalUri="mvn:io.netty/netty-transport-native-kqueue/[4,${netty4Version})" mode="maven" />
+    <bundle replacement="mvn:io.netty/netty-transport-native-unix-common/${netty4Version}"
+            originalUri="mvn:io.netty/netty-transport-native-unix-common/[4,${netty4Version})" mode="maven" />
+
+    <!-- standardize on the "final" version of jms-api 2.x -->
+    <bundle replacement="mvn:javax.jms/javax.jms-api/${jmsApiVersion}"
+            originalUri="mvn:org.apache.geronimo.specs/geronimo-jms_2.0_spec/[0,2)" mode="maven" />
+
+    <!-- other misc bundles -->
+    <bundle replacement="wrap:mvn:antlr/antlr/${antlr.version}$Bundle-SymbolicName=antlr&amp;Bundle-Version=${antlr.version}&amp;Import-Package=org.hibernate.hql.ast"
+            originalUri="mvn:antlr/antlr/[2,${antlr.version})" mode="maven" />
+    <bundle replacement="mvn:com.google.code.gson/gson/${gsonVersion}"
+            originalUri="mvn:com.google.code.gson/gson/[2,${gsonVersion})" mode="maven" />
+    <bundle replacement="wrap:mvn:com.google.errorprone/error_prone_annotations/${errorProneAnnotationsVersion}$Bundle-SymbolicName=com.google.errorprone.error-prone-annotations&amp;Bundle-Version=${errorProneAnnotationsVersion}"
+            originalUri="mvn:com.google.errorprone/error_prone_annotations/[2,${errorProneAnnotationsVersion})" mode="maven" />
+    <bundle replacement="wrap:mvn:com.google.guava/failureaccess/1.0.1$Bundle-SymbolicName=com.google.guava.failureaccess&amp;Bundle-Version=1.0.1"
+            originalUri="mvn:com.google.guava/failureaccess/[1,1.0.1)" mode="maven" />
+    <bundle replacement="mvn:javax.annotation/javax.annotation-api/${javaxAnnotationApiVersion}"
+            originalUri="mvn:javax.annotation/javax.annotation-api/[1,${javaxAnnotationApiVersion})" mode="maven" />
+    <bundle replacement="mvn:javax.servlet/javax.servlet-api/${servletApiVersion}"
+            originalUri="mvn:javax.servlet/javax.servlet-api/[3,${servletApiVersion})" mode="maven" />
+    <bundle replacement="mvn:joda-time/joda-time/${jodaTimeVersion}"
+            originalUri="mvn:joda-time/joda-time/[2,${jodaTimeVersion})" mode="maven" />
+    <bundle replacement="mvn:org.apache.qpid/proton-j/0.34.0"
+            originalUri="mvn:org.apache.qpid/proton-j/[0,1)" mode="maven" />
+    <bundle replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt/${jasyptVersion}_1"
+            originalUri="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt/[1,${jasyptVersion})" mode="maven" />
+    <bundle replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt-spring31/${jasyptVersion}_1"
+            originalUri="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.jasypt-spring31/[1,${jasyptVersion})" mode="maven" />
+    <bundle replacement="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xstream/${xstreamVersion}_1"
+            originalUri="mvn:org.apache.servicemix.bundles/org.apache.servicemix.bundles.xstream/[1,${xstreamVersion})" mode="maven" />
+    <bundle replacement="mvn:org.apache.ws.xmlschema/xmlschema-core/${xmlSchemaVersion}"
+            originalUri="mvn:org.apache.ws.xmlschema/xmlschema-core/[2,${xmlSchemaVersion})" mode="maven" />
+    <bundle replacement="mvn:org.apache.ws.xmlschema/xmlschema-walker/${xmlSchemaVersion}"
+            originalUri="mvn:org.apache.ws.xmlschema/xmlschema-walker/[2,${xmlSchemaVersion})" mode="maven" />
+    <bundle replacement="wrap:mvn:org.apache.zookeeper/zookeeper/${zookeeperVersion}"
+            originalUri="mvn:org.apache.zookeeper/zookeeper/[3,${zookeeperVersion})" mode="maven" />
+    <bundle replacement="wrap:mvn:org.apache.zookeeper/zookeeper-jute/${zookeeperVersion}"
+            originalUri="mvn:org.apache.zookeeper/zookeeper-jute/[3,${zookeeperVersion})" mode="maven" />
+    <bundle replacement="mvn:org.codehaus.jettison/jettison/${jettisonVersion}"
+            originalUri="mvn:org.codehaus.jettison/jettison/[1,${jettisonVersion})" mode="maven" />
+    <bundle replacement="mvn:io.dropwizard.metrics/metrics-core/${dropwizardMetricsVersion}"
+            originalUri="mvn:io.dropwizard.metrics/metrics-core/[3,${dropwizardMetricsVersion})" mode="maven" />
+    <bundle replacement="mvn:io.dropwizard.metrics/metrics-jvm/${dropwizardMetricsVersion}"
+            originalUri="mvn:io.dropwizard.metrics/metrics-jvm/[3,${dropwizardMetricsVersion})" mode="maven" />
+    <bundle replacement="wrap:mvn:org.dom4j/dom4j/${dom4jVersion}"
+            originalUri="mvn:dom4j/dom4j/[0,${dom4jVersion})" mode="maven" />
+    <bundle replacement="mvn:org.jolokia/jolokia-osgi/${jolokiaVersion}"
+            originalUri="mvn:org.jolokia/jolokia-osgi/[1,${jolokiaVersion})" mode="maven" />
+    <bundle replacement="mvn:org.jolokia/jolokia-client-java/${jolokiaVersion}"
+            originalUri="mvn:org.jolokia/jolokia-client-java/[1,${jolokiaVersion})" mode="maven" />
+    <bundle replacement="mvn:org.osgi/org.osgi.service.jdbc/${osgiServiceJdbcVersion}"
+            originalUri="mvn:org.osgi/org.osgi.service.jdbc/[1,${osgiServiceJdbcVersion})" mode="maven" />
+    <bundle replacement="mvn:org.ow2.asm/asm/${asmVersion}"
+            originalUri="mvn:org.ow2.asm/asm/[5,${asmVersion})" mode="maven" />
+    <bundle replacement="mvn:org.ow2.asm/asm-analysis/${asmVersion}"
+            originalUri="mvn:org.ow2.asm/asm-analysis/[5,${asmVersion})" mode="maven" />
+    <bundle replacement="mvn:org.ow2.asm/asm-commons/${asmVersion}"
+            originalUri="mvn:org.ow2.asm/asm-commons/[5,${asmVersion})" mode="maven" />
+    <bundle replacement="mvn:org.ow2.asm/asm-tree/${asmVersion}"
+            originalUri="mvn:org.ow2.asm/asm-tree/[5,${asmVersion})" mode="maven" />
+    <bundle replacement="mvn:org.ow2.asm/asm-util/${asmVersion}"
+            originalUri="mvn:org.ow2.asm/asm-util/[5,${asmVersion})" mode="maven" />
+    <bundle replacement="mvn:org.scala-lang/scala-library/${scalaLibraryVersion}"
+            originalUri="mvn:org.scala-lang/scala-library/[2,${scalaLibraryVersion})" mode="maven" />
+  </bundleReplacements>
+
+</featuresProcessing>

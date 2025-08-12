@@ -67,7 +67,9 @@ commands:
             docker container prune -f
             docker run --rm --privileged tonistiigi/binfmt:latest --install "<< parameters.architecture >>"
 
-            export DOCKER_CONTENT_TRUST=1
+            # Shouldn't need it for Foundation-2024+; Adding this line to resolve an issue with libc-bin segfault (NMS-17379)
+            # docker run --rm --privileged multiarch/qemu-user-static --reset -p yes -c yes
+
             cd opennms-container/<< parameters.container_dir >>
             export ARCH="$(printf "<< parameters.architecture >>" | tr / -)"
             export TAG="<< parameters.container_name >>-${ARCH}"

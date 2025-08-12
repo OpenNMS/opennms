@@ -26,12 +26,13 @@ package org.opennms.core.ipc.twin.model;
 
 /**
  * <pre>
+ *
  *Twin Request object used by Minion to make RPC Request.
  * </pre>
  *
  * Protobuf type {@code TwinRequestProto}
  */
-public  final class TwinRequestProto extends
+public final class TwinRequestProto extends
     com.google.protobuf.GeneratedMessageV3 implements
     // @@protoc_insertion_point(message_implements:TwinRequestProto)
     TwinRequestProtoOrBuilder {
@@ -47,79 +48,12 @@ private static final long serialVersionUID = 0L;
   }
 
   @java.lang.Override
-  public final com.google.protobuf.UnknownFieldSet
-  getUnknownFields() {
-    return this.unknownFields;
+  @SuppressWarnings({"unused"})
+  protected java.lang.Object newInstance(
+      UnusedPrivateParameter unused) {
+    return new TwinRequestProto();
   }
-  private TwinRequestProto(
-      com.google.protobuf.CodedInputStream input,
-      com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-      throws com.google.protobuf.InvalidProtocolBufferException {
-    this();
-    if (extensionRegistry == null) {
-      throw new java.lang.NullPointerException();
-    }
-    int mutable_bitField0_ = 0;
-    com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-        com.google.protobuf.UnknownFieldSet.newBuilder();
-    try {
-      boolean done = false;
-      while (!done) {
-        int tag = input.readTag();
-        switch (tag) {
-          case 0:
-            done = true;
-            break;
-          case 10: {
-            java.lang.String s = input.readStringRequireUtf8();
 
-            consumerKey_ = s;
-            break;
-          }
-          case 18: {
-            java.lang.String s = input.readStringRequireUtf8();
-
-            systemId_ = s;
-            break;
-          }
-          case 26: {
-            java.lang.String s = input.readStringRequireUtf8();
-
-            location_ = s;
-            break;
-          }
-          case 34: {
-            if (!((mutable_bitField0_ & 0x00000008) == 0x00000008)) {
-              tracingInfo_ = com.google.protobuf.MapField.newMapField(
-                  TracingInfoDefaultEntryHolder.defaultEntry);
-              mutable_bitField0_ |= 0x00000008;
-            }
-            com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
-            tracingInfo__ = input.readMessage(
-                TracingInfoDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-            tracingInfo_.getMutableMap().put(
-                tracingInfo__.getKey(), tracingInfo__.getValue());
-            break;
-          }
-          default: {
-            if (!parseUnknownFieldProto3(
-                input, unknownFields, extensionRegistry, tag)) {
-              done = true;
-            }
-            break;
-          }
-        }
-      }
-    } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-      throw e.setUnfinishedMessage(this);
-    } catch (java.io.IOException e) {
-      throw new com.google.protobuf.InvalidProtocolBufferException(
-          e).setUnfinishedMessage(this);
-    } finally {
-      this.unknownFields = unknownFields.build();
-      makeExtensionsImmutable();
-    }
-  }
   public static final com.google.protobuf.Descriptors.Descriptor
       getDescriptor() {
     return org.opennms.core.ipc.twin.model.TwinMessageProto.internal_static_TwinRequestProto_descriptor;
@@ -127,7 +61,7 @@ private static final long serialVersionUID = 0L;
 
   @SuppressWarnings({"rawtypes"})
   @java.lang.Override
-  protected com.google.protobuf.MapField internalGetMapField(
+  protected com.google.protobuf.MapFieldReflectionAccessor internalGetMapFieldReflection(
       int number) {
     switch (number) {
       case 4:
@@ -145,12 +79,14 @@ private static final long serialVersionUID = 0L;
             org.opennms.core.ipc.twin.model.TwinRequestProto.class, org.opennms.core.ipc.twin.model.TwinRequestProto.Builder.class);
   }
 
-  private int bitField0_;
   public static final int CONSUMER_KEY_FIELD_NUMBER = 1;
-  private volatile java.lang.Object consumerKey_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object consumerKey_ = "";
   /**
    * <code>string consumer_key = 1;</code>
+   * @return The consumerKey.
    */
+  @java.lang.Override
   public java.lang.String getConsumerKey() {
     java.lang.Object ref = consumerKey_;
     if (ref instanceof java.lang.String) {
@@ -165,7 +101,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string consumer_key = 1;</code>
+   * @return The bytes for consumerKey.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getConsumerKeyBytes() {
     java.lang.Object ref = consumerKey_;
@@ -181,10 +119,13 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int SYSTEM_ID_FIELD_NUMBER = 2;
-  private volatile java.lang.Object systemId_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object systemId_ = "";
   /**
    * <code>string system_id = 2;</code>
+   * @return The systemId.
    */
+  @java.lang.Override
   public java.lang.String getSystemId() {
     java.lang.Object ref = systemId_;
     if (ref instanceof java.lang.String) {
@@ -199,7 +140,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string system_id = 2;</code>
+   * @return The bytes for systemId.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getSystemIdBytes() {
     java.lang.Object ref = systemId_;
@@ -215,10 +158,13 @@ private static final long serialVersionUID = 0L;
   }
 
   public static final int LOCATION_FIELD_NUMBER = 3;
-  private volatile java.lang.Object location_;
+  @SuppressWarnings("serial")
+  private volatile java.lang.Object location_ = "";
   /**
    * <code>string location = 3;</code>
+   * @return The location.
    */
+  @java.lang.Override
   public java.lang.String getLocation() {
     java.lang.Object ref = location_;
     if (ref instanceof java.lang.String) {
@@ -233,7 +179,9 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <code>string location = 3;</code>
+   * @return The bytes for location.
    */
+  @java.lang.Override
   public com.google.protobuf.ByteString
       getLocationBytes() {
     java.lang.Object ref = location_;
@@ -260,6 +208,7 @@ private static final long serialVersionUID = 0L;
                 com.google.protobuf.WireFormat.FieldType.STRING,
                 "");
   }
+  @SuppressWarnings("serial")
   private com.google.protobuf.MapField<
       java.lang.String, java.lang.String> tracingInfo_;
   private com.google.protobuf.MapField<java.lang.String, java.lang.String>
@@ -270,22 +219,22 @@ private static final long serialVersionUID = 0L;
     }
     return tracingInfo_;
   }
-
   public int getTracingInfoCount() {
     return internalGetTracingInfo().getMap().size();
   }
   /**
    * <code>map&lt;string, string&gt; tracing_info = 4;</code>
    */
-
+  @java.lang.Override
   public boolean containsTracingInfo(
       java.lang.String key) {
-    if (key == null) { throw new java.lang.NullPointerException(); }
+    if (key == null) { throw new NullPointerException("map key"); }
     return internalGetTracingInfo().getMap().containsKey(key);
   }
   /**
    * Use {@link #getTracingInfoMap()} instead.
    */
+  @java.lang.Override
   @java.lang.Deprecated
   public java.util.Map<java.lang.String, java.lang.String> getTracingInfo() {
     return getTracingInfoMap();
@@ -293,18 +242,20 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>map&lt;string, string&gt; tracing_info = 4;</code>
    */
-
+  @java.lang.Override
   public java.util.Map<java.lang.String, java.lang.String> getTracingInfoMap() {
     return internalGetTracingInfo().getMap();
   }
   /**
    * <code>map&lt;string, string&gt; tracing_info = 4;</code>
    */
-
-  public java.lang.String getTracingInfoOrDefault(
+  @java.lang.Override
+  public /* nullable */
+java.lang.String getTracingInfoOrDefault(
       java.lang.String key,
-      java.lang.String defaultValue) {
-    if (key == null) { throw new java.lang.NullPointerException(); }
+      /* nullable */
+java.lang.String defaultValue) {
+    if (key == null) { throw new NullPointerException("map key"); }
     java.util.Map<java.lang.String, java.lang.String> map =
         internalGetTracingInfo().getMap();
     return map.containsKey(key) ? map.get(key) : defaultValue;
@@ -312,10 +263,10 @@ private static final long serialVersionUID = 0L;
   /**
    * <code>map&lt;string, string&gt; tracing_info = 4;</code>
    */
-
+  @java.lang.Override
   public java.lang.String getTracingInfoOrThrow(
       java.lang.String key) {
-    if (key == null) { throw new java.lang.NullPointerException(); }
+    if (key == null) { throw new NullPointerException("map key"); }
     java.util.Map<java.lang.String, java.lang.String> map =
         internalGetTracingInfo().getMap();
     if (!map.containsKey(key)) {
@@ -338,13 +289,13 @@ private static final long serialVersionUID = 0L;
   @java.lang.Override
   public void writeTo(com.google.protobuf.CodedOutputStream output)
                       throws java.io.IOException {
-    if (!getConsumerKeyBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(consumerKey_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 1, consumerKey_);
     }
-    if (!getSystemIdBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(systemId_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 2, systemId_);
     }
-    if (!getLocationBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(location_)) {
       com.google.protobuf.GeneratedMessageV3.writeString(output, 3, location_);
     }
     com.google.protobuf.GeneratedMessageV3
@@ -353,7 +304,7 @@ private static final long serialVersionUID = 0L;
         internalGetTracingInfo(),
         TracingInfoDefaultEntryHolder.defaultEntry,
         4);
-    unknownFields.writeTo(output);
+    getUnknownFields().writeTo(output);
   }
 
   @java.lang.Override
@@ -362,13 +313,13 @@ private static final long serialVersionUID = 0L;
     if (size != -1) return size;
 
     size = 0;
-    if (!getConsumerKeyBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(consumerKey_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, consumerKey_);
     }
-    if (!getSystemIdBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(systemId_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, systemId_);
     }
-    if (!getLocationBytes().isEmpty()) {
+    if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(location_)) {
       size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, location_);
     }
     for (java.util.Map.Entry<java.lang.String, java.lang.String> entry
@@ -381,7 +332,7 @@ private static final long serialVersionUID = 0L;
       size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(4, tracingInfo__);
     }
-    size += unknownFields.getSerializedSize();
+    size += getUnknownFields().getSerializedSize();
     memoizedSize = size;
     return size;
   }
@@ -396,17 +347,16 @@ private static final long serialVersionUID = 0L;
     }
     org.opennms.core.ipc.twin.model.TwinRequestProto other = (org.opennms.core.ipc.twin.model.TwinRequestProto) obj;
 
-    boolean result = true;
-    result = result && getConsumerKey()
-        .equals(other.getConsumerKey());
-    result = result && getSystemId()
-        .equals(other.getSystemId());
-    result = result && getLocation()
-        .equals(other.getLocation());
-    result = result && internalGetTracingInfo().equals(
-        other.internalGetTracingInfo());
-    result = result && unknownFields.equals(other.unknownFields);
-    return result;
+    if (!getConsumerKey()
+        .equals(other.getConsumerKey())) return false;
+    if (!getSystemId()
+        .equals(other.getSystemId())) return false;
+    if (!getLocation()
+        .equals(other.getLocation())) return false;
+    if (!internalGetTracingInfo().equals(
+        other.internalGetTracingInfo())) return false;
+    if (!getUnknownFields().equals(other.getUnknownFields())) return false;
+    return true;
   }
 
   @java.lang.Override
@@ -426,7 +376,7 @@ private static final long serialVersionUID = 0L;
       hash = (37 * hash) + TRACING_INFO_FIELD_NUMBER;
       hash = (53 * hash) + internalGetTracingInfo().hashCode();
     }
-    hash = (29 * hash) + unknownFields.hashCode();
+    hash = (29 * hash) + getUnknownFields().hashCode();
     memoizedHashCode = hash;
     return hash;
   }
@@ -475,11 +425,13 @@ private static final long serialVersionUID = 0L;
     return com.google.protobuf.GeneratedMessageV3
         .parseWithIOException(PARSER, input, extensionRegistry);
   }
+
   public static org.opennms.core.ipc.twin.model.TwinRequestProto parseDelimitedFrom(java.io.InputStream input)
       throws java.io.IOException {
     return com.google.protobuf.GeneratedMessageV3
         .parseDelimitedWithIOException(PARSER, input);
   }
+
   public static org.opennms.core.ipc.twin.model.TwinRequestProto parseDelimitedFrom(
       java.io.InputStream input,
       com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -523,6 +475,7 @@ private static final long serialVersionUID = 0L;
   }
   /**
    * <pre>
+   *
    *Twin Request object used by Minion to make RPC Request.
    * </pre>
    *
@@ -538,7 +491,7 @@ private static final long serialVersionUID = 0L;
     }
 
     @SuppressWarnings({"rawtypes"})
-    protected com.google.protobuf.MapField internalGetMapField(
+    protected com.google.protobuf.MapFieldReflectionAccessor internalGetMapFieldReflection(
         int number) {
       switch (number) {
         case 4:
@@ -549,7 +502,7 @@ private static final long serialVersionUID = 0L;
       }
     }
     @SuppressWarnings({"rawtypes"})
-    protected com.google.protobuf.MapField internalGetMutableMapField(
+    protected com.google.protobuf.MapFieldReflectionAccessor internalGetMutableMapFieldReflection(
         int number) {
       switch (number) {
         case 4:
@@ -569,28 +522,21 @@ private static final long serialVersionUID = 0L;
 
     // Construct using org.opennms.core.ipc.twin.model.TwinRequestProto.newBuilder()
     private Builder() {
-      maybeForceBuilderInitialization();
+
     }
 
     private Builder(
         com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       super(parent);
-      maybeForceBuilderInitialization();
-    }
-    private void maybeForceBuilderInitialization() {
-      if (com.google.protobuf.GeneratedMessageV3
-              .alwaysUseFieldBuilders) {
-      }
+
     }
     @java.lang.Override
     public Builder clear() {
       super.clear();
+      bitField0_ = 0;
       consumerKey_ = "";
-
       systemId_ = "";
-
       location_ = "";
-
       internalGetMutableTracingInfo().clear();
       return this;
     }
@@ -618,49 +564,59 @@ private static final long serialVersionUID = 0L;
     @java.lang.Override
     public org.opennms.core.ipc.twin.model.TwinRequestProto buildPartial() {
       org.opennms.core.ipc.twin.model.TwinRequestProto result = new org.opennms.core.ipc.twin.model.TwinRequestProto(this);
-      int from_bitField0_ = bitField0_;
-      int to_bitField0_ = 0;
-      result.consumerKey_ = consumerKey_;
-      result.systemId_ = systemId_;
-      result.location_ = location_;
-      result.tracingInfo_ = internalGetTracingInfo();
-      result.tracingInfo_.makeImmutable();
-      result.bitField0_ = to_bitField0_;
+      if (bitField0_ != 0) { buildPartial0(result); }
       onBuilt();
       return result;
     }
 
+    private void buildPartial0(org.opennms.core.ipc.twin.model.TwinRequestProto result) {
+      int from_bitField0_ = bitField0_;
+      if (((from_bitField0_ & 0x00000001) != 0)) {
+        result.consumerKey_ = consumerKey_;
+      }
+      if (((from_bitField0_ & 0x00000002) != 0)) {
+        result.systemId_ = systemId_;
+      }
+      if (((from_bitField0_ & 0x00000004) != 0)) {
+        result.location_ = location_;
+      }
+      if (((from_bitField0_ & 0x00000008) != 0)) {
+        result.tracingInfo_ = internalGetTracingInfo();
+        result.tracingInfo_.makeImmutable();
+      }
+    }
+
     @java.lang.Override
     public Builder clone() {
-      return (Builder) super.clone();
+      return super.clone();
     }
     @java.lang.Override
     public Builder setField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
         java.lang.Object value) {
-      return (Builder) super.setField(field, value);
+      return super.setField(field, value);
     }
     @java.lang.Override
     public Builder clearField(
         com.google.protobuf.Descriptors.FieldDescriptor field) {
-      return (Builder) super.clearField(field);
+      return super.clearField(field);
     }
     @java.lang.Override
     public Builder clearOneof(
         com.google.protobuf.Descriptors.OneofDescriptor oneof) {
-      return (Builder) super.clearOneof(oneof);
+      return super.clearOneof(oneof);
     }
     @java.lang.Override
     public Builder setRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
         int index, java.lang.Object value) {
-      return (Builder) super.setRepeatedField(field, index, value);
+      return super.setRepeatedField(field, index, value);
     }
     @java.lang.Override
     public Builder addRepeatedField(
         com.google.protobuf.Descriptors.FieldDescriptor field,
         java.lang.Object value) {
-      return (Builder) super.addRepeatedField(field, value);
+      return super.addRepeatedField(field, value);
     }
     @java.lang.Override
     public Builder mergeFrom(com.google.protobuf.Message other) {
@@ -676,19 +632,23 @@ private static final long serialVersionUID = 0L;
       if (other == org.opennms.core.ipc.twin.model.TwinRequestProto.getDefaultInstance()) return this;
       if (!other.getConsumerKey().isEmpty()) {
         consumerKey_ = other.consumerKey_;
+        bitField0_ |= 0x00000001;
         onChanged();
       }
       if (!other.getSystemId().isEmpty()) {
         systemId_ = other.systemId_;
+        bitField0_ |= 0x00000002;
         onChanged();
       }
       if (!other.getLocation().isEmpty()) {
         location_ = other.location_;
+        bitField0_ |= 0x00000004;
         onChanged();
       }
       internalGetMutableTracingInfo().mergeFrom(
           other.internalGetTracingInfo());
-      this.mergeUnknownFields(other.unknownFields);
+      bitField0_ |= 0x00000008;
+      this.mergeUnknownFields(other.getUnknownFields());
       onChanged();
       return this;
     }
@@ -703,17 +663,54 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
-      org.opennms.core.ipc.twin.model.TwinRequestProto parsedMessage = null;
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
       try {
-        parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              consumerKey_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000001;
+              break;
+            } // case 10
+            case 18: {
+              systemId_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000002;
+              break;
+            } // case 18
+            case 26: {
+              location_ = input.readStringRequireUtf8();
+              bitField0_ |= 0x00000004;
+              break;
+            } // case 26
+            case 34: {
+              com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+              tracingInfo__ = input.readMessage(
+                  TracingInfoDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+              internalGetMutableTracingInfo().getMutableMap().put(
+                  tracingInfo__.getKey(), tracingInfo__.getValue());
+              bitField0_ |= 0x00000008;
+              break;
+            } // case 34
+            default: {
+              if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                done = true; // was an endgroup tag
+              }
+              break;
+            } // default:
+          } // switch (tag)
+        } // while (!done)
       } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        parsedMessage = (org.opennms.core.ipc.twin.model.TwinRequestProto) e.getUnfinishedMessage();
         throw e.unwrapIOException();
       } finally {
-        if (parsedMessage != null) {
-          mergeFrom(parsedMessage);
-        }
-      }
+        onChanged();
+      } // finally
       return this;
     }
     private int bitField0_;
@@ -721,6 +718,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object consumerKey_ = "";
     /**
      * <code>string consumer_key = 1;</code>
+     * @return The consumerKey.
      */
     public java.lang.String getConsumerKey() {
       java.lang.Object ref = consumerKey_;
@@ -736,6 +734,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string consumer_key = 1;</code>
+     * @return The bytes for consumerKey.
      */
     public com.google.protobuf.ByteString
         getConsumerKeyBytes() {
@@ -752,37 +751,38 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string consumer_key = 1;</code>
+     * @param value The consumerKey to set.
+     * @return This builder for chaining.
      */
     public Builder setConsumerKey(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
+      if (value == null) { throw new NullPointerException(); }
       consumerKey_ = value;
+      bitField0_ |= 0x00000001;
       onChanged();
       return this;
     }
     /**
      * <code>string consumer_key = 1;</code>
+     * @return This builder for chaining.
      */
     public Builder clearConsumerKey() {
-      
       consumerKey_ = getDefaultInstance().getConsumerKey();
+      bitField0_ = (bitField0_ & ~0x00000001);
       onChanged();
       return this;
     }
     /**
      * <code>string consumer_key = 1;</code>
+     * @param value The bytes for consumerKey to set.
+     * @return This builder for chaining.
      */
     public Builder setConsumerKeyBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       consumerKey_ = value;
+      bitField0_ |= 0x00000001;
       onChanged();
       return this;
     }
@@ -790,6 +790,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object systemId_ = "";
     /**
      * <code>string system_id = 2;</code>
+     * @return The systemId.
      */
     public java.lang.String getSystemId() {
       java.lang.Object ref = systemId_;
@@ -805,6 +806,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string system_id = 2;</code>
+     * @return The bytes for systemId.
      */
     public com.google.protobuf.ByteString
         getSystemIdBytes() {
@@ -821,37 +823,38 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string system_id = 2;</code>
+     * @param value The systemId to set.
+     * @return This builder for chaining.
      */
     public Builder setSystemId(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
+      if (value == null) { throw new NullPointerException(); }
       systemId_ = value;
+      bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
     /**
      * <code>string system_id = 2;</code>
+     * @return This builder for chaining.
      */
     public Builder clearSystemId() {
-      
       systemId_ = getDefaultInstance().getSystemId();
+      bitField0_ = (bitField0_ & ~0x00000002);
       onChanged();
       return this;
     }
     /**
      * <code>string system_id = 2;</code>
+     * @param value The bytes for systemId to set.
+     * @return This builder for chaining.
      */
     public Builder setSystemIdBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       systemId_ = value;
+      bitField0_ |= 0x00000002;
       onChanged();
       return this;
     }
@@ -859,6 +862,7 @@ private static final long serialVersionUID = 0L;
     private java.lang.Object location_ = "";
     /**
      * <code>string location = 3;</code>
+     * @return The location.
      */
     public java.lang.String getLocation() {
       java.lang.Object ref = location_;
@@ -874,6 +878,7 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string location = 3;</code>
+     * @return The bytes for location.
      */
     public com.google.protobuf.ByteString
         getLocationBytes() {
@@ -890,37 +895,38 @@ private static final long serialVersionUID = 0L;
     }
     /**
      * <code>string location = 3;</code>
+     * @param value The location to set.
+     * @return This builder for chaining.
      */
     public Builder setLocation(
         java.lang.String value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  
+      if (value == null) { throw new NullPointerException(); }
       location_ = value;
+      bitField0_ |= 0x00000004;
       onChanged();
       return this;
     }
     /**
      * <code>string location = 3;</code>
+     * @return This builder for chaining.
      */
     public Builder clearLocation() {
-      
       location_ = getDefaultInstance().getLocation();
+      bitField0_ = (bitField0_ & ~0x00000004);
       onChanged();
       return this;
     }
     /**
      * <code>string location = 3;</code>
+     * @param value The bytes for location to set.
+     * @return This builder for chaining.
      */
     public Builder setLocationBytes(
         com.google.protobuf.ByteString value) {
-      if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-      
+      if (value == null) { throw new NullPointerException(); }
+      checkByteStringIsUtf8(value);
       location_ = value;
+      bitField0_ |= 0x00000004;
       onChanged();
       return this;
     }
@@ -928,7 +934,7 @@ private static final long serialVersionUID = 0L;
     private com.google.protobuf.MapField<
         java.lang.String, java.lang.String> tracingInfo_;
     private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-    internalGetTracingInfo() {
+        internalGetTracingInfo() {
       if (tracingInfo_ == null) {
         return com.google.protobuf.MapField.emptyMapField(
             TracingInfoDefaultEntryHolder.defaultEntry);
@@ -936,8 +942,7 @@ private static final long serialVersionUID = 0L;
       return tracingInfo_;
     }
     private com.google.protobuf.MapField<java.lang.String, java.lang.String>
-    internalGetMutableTracingInfo() {
-      onChanged();;
+        internalGetMutableTracingInfo() {
       if (tracingInfo_ == null) {
         tracingInfo_ = com.google.protobuf.MapField.newMapField(
             TracingInfoDefaultEntryHolder.defaultEntry);
@@ -945,24 +950,26 @@ private static final long serialVersionUID = 0L;
       if (!tracingInfo_.isMutable()) {
         tracingInfo_ = tracingInfo_.copy();
       }
+      bitField0_ |= 0x00000008;
+      onChanged();
       return tracingInfo_;
     }
-
     public int getTracingInfoCount() {
       return internalGetTracingInfo().getMap().size();
     }
     /**
      * <code>map&lt;string, string&gt; tracing_info = 4;</code>
      */
-
+    @java.lang.Override
     public boolean containsTracingInfo(
         java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
       return internalGetTracingInfo().getMap().containsKey(key);
     }
     /**
      * Use {@link #getTracingInfoMap()} instead.
      */
+    @java.lang.Override
     @java.lang.Deprecated
     public java.util.Map<java.lang.String, java.lang.String> getTracingInfo() {
       return getTracingInfoMap();
@@ -970,18 +977,20 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>map&lt;string, string&gt; tracing_info = 4;</code>
      */
-
+    @java.lang.Override
     public java.util.Map<java.lang.String, java.lang.String> getTracingInfoMap() {
       return internalGetTracingInfo().getMap();
     }
     /**
      * <code>map&lt;string, string&gt; tracing_info = 4;</code>
      */
-
-    public java.lang.String getTracingInfoOrDefault(
+    @java.lang.Override
+    public /* nullable */
+java.lang.String getTracingInfoOrDefault(
         java.lang.String key,
-        java.lang.String defaultValue) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+        /* nullable */
+java.lang.String defaultValue) {
+      if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetTracingInfo().getMap();
       return map.containsKey(key) ? map.get(key) : defaultValue;
@@ -989,10 +998,10 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>map&lt;string, string&gt; tracing_info = 4;</code>
      */
-
+    @java.lang.Override
     public java.lang.String getTracingInfoOrThrow(
         java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
       java.util.Map<java.lang.String, java.lang.String> map =
           internalGetTracingInfo().getMap();
       if (!map.containsKey(key)) {
@@ -1000,8 +1009,8 @@ private static final long serialVersionUID = 0L;
       }
       return map.get(key);
     }
-
     public Builder clearTracingInfo() {
+      bitField0_ = (bitField0_ & ~0x00000008);
       internalGetMutableTracingInfo().getMutableMap()
           .clear();
       return this;
@@ -1009,10 +1018,9 @@ private static final long serialVersionUID = 0L;
     /**
      * <code>map&lt;string, string&gt; tracing_info = 4;</code>
      */
-
     public Builder removeTracingInfo(
         java.lang.String key) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
       internalGetMutableTracingInfo().getMutableMap()
           .remove(key);
       return this;
@@ -1022,7 +1030,8 @@ private static final long serialVersionUID = 0L;
      */
     @java.lang.Deprecated
     public java.util.Map<java.lang.String, java.lang.String>
-    getMutableTracingInfo() {
+        getMutableTracingInfo() {
+      bitField0_ |= 0x00000008;
       return internalGetMutableTracingInfo().getMutableMap();
     }
     /**
@@ -1031,26 +1040,27 @@ private static final long serialVersionUID = 0L;
     public Builder putTracingInfo(
         java.lang.String key,
         java.lang.String value) {
-      if (key == null) { throw new java.lang.NullPointerException(); }
-      if (value == null) { throw new java.lang.NullPointerException(); }
+      if (key == null) { throw new NullPointerException("map key"); }
+      if (value == null) { throw new NullPointerException("map value"); }
       internalGetMutableTracingInfo().getMutableMap()
           .put(key, value);
+      bitField0_ |= 0x00000008;
       return this;
     }
     /**
      * <code>map&lt;string, string&gt; tracing_info = 4;</code>
      */
-
     public Builder putAllTracingInfo(
         java.util.Map<java.lang.String, java.lang.String> values) {
       internalGetMutableTracingInfo().getMutableMap()
           .putAll(values);
+      bitField0_ |= 0x00000008;
       return this;
     }
     @java.lang.Override
     public final Builder setUnknownFields(
         final com.google.protobuf.UnknownFieldSet unknownFields) {
-      return super.setUnknownFieldsProto3(unknownFields);
+      return super.setUnknownFields(unknownFields);
     }
 
     @java.lang.Override
@@ -1080,7 +1090,18 @@ private static final long serialVersionUID = 0L;
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
-      return new TwinRequestProto(input, extensionRegistry);
+      Builder builder = newBuilder();
+      try {
+        builder.mergeFrom(input, extensionRegistry);
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(builder.buildPartial());
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(e)
+            .setUnfinishedMessage(builder.buildPartial());
+      }
+      return builder.buildPartial();
     }
   };
 

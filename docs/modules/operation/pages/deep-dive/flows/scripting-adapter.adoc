@@ -1,0 +1,93 @@
+[[ga-flow-support-scripting-adapter]]
+= Scripting Adapter
+:description: Learn how to use the NetFlow scripting adapters in {page-component-title} to process data of your devices.
+
+Although the primary purpose of NetFlow and IPFIX is to analyze network flows, there are also cases where the collected data is to be analyzed in other ways.
+One example would be the use of manufacturer-specific metrics with the help of IPFIX that are not flow-related.
+These metrics can be evaluated using the telemetry scripting adapters and, if necessary, persisted as metrics.
+To enable this, the {page-component-title} Telemetryd parsers must be configured to parse and handle all flow data beside the flow-related values.
+
+== Enabling Raw Messages
+
+The `includeRawMessage` parameter configures a parser to send the unprocessed flow values to the corresponding adapters. 
+The following example shows a snippet of the `telemetryd-configuration.xml` file where `includeRawMessage` is enabled for the IPFIX parser.
+
+[source, xml]
+----
+...
+    <!-- Multi-port listener for Netflow v5, Netflow v9, IPFIX and SFlow -->
+    <listener name="Multi-UDP-9999" class-name="org.opennms.netmgt.telemetry.listeners.UdpListener" enabled="true">
+        <parameter key="port" value="9999"/>
+
+        <parser name="Netflow-5-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow5UdpParser" queue="Netflow-5">
+            <parameter key="includeRawMessage" value="false"/>
+        </parser>
+        <parser name="Netflow-9-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.Netflow9UdpParser" queue="Netflow-9">
+            <parameter key="includeRawMessage" value="false"/>
+        </parser>
+        <parser name="IPFIX-TCP-Parser" class-name="org.opennms.netmgt.telemetry.protocols.netflow.parser.IpfixUdpParser" queue="IPFIX">
+            <parameter key="includeRawMessage" value="true"/>
+        </parser>
+
+        <parser name="SFlow-Parser" class-name="org.opennms.netmgt.telemetry.protocols.sflow.parser.SFlowUdpParser" queue="SFlow" />
+    </listener>
+...
+----
+
+== Enabling Telemetry Scripting Adapter
+
+To process the additional data, an additional Telemetryd adapter must be configured and enabled.
+This adapter specifies the processing script to use for processing the data.
+To do so, enable a Telemetry Adapter of type `org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixTelemetryAdapter` and specifying a Groovy file by using the `script` parameter.
+The following example shows a snippet of the `telemetryd-configuration.xml` file in which the IPFIX-Telemetry adapter is enabled and is using the script `/opt/opennms/etc/telemetryd-adapters/netflow-telemetry.groovy`.
+
+[source,xml]
+----
+...
+    <queue name="IPFIX">
+        <adapter name="IPFIX-Adapter" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixAdapter" enabled="true">
+            <parameter key="applicationDataCollection" value="false"/>
+            <parameter key="applicationThresholding" value="false"/>
+            <package name="IPFIX-Default">
+                <rrd step="300">
+                    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+                    <rra>RRA:AVERAGE:0.5:288:366</rra>
+                    <rra>RRA:MAX:0.5:288:366</rra>
+                    <rra>RRA:MIN:0.5:288:366</rra>
+                </rrd>
+            </package>
+        </adapter>
+
+        <adapter name="IPFIX-Telemetry" class-name="org.opennms.netmgt.telemetry.protocols.netflow.adapter.ipfix.IpfixTelemetryAdapter" enabled="true">
+            <parameter key="script" value="/opt/opennms/etc/telemetryd-adapters/netflow-telemetry.groovy"/>
+            <package name="IPFIX-Default">
+                <rrd step="300">
+                    <rra>RRA:AVERAGE:0.5:1:2016</rra>
+                    <rra>RRA:AVERAGE:0.5:12:1488</rra>
+                    <rra>RRA:AVERAGE:0.5:288:366</rra>
+                    <rra>RRA:MAX:0.5:288:366</rra>
+                    <rra>RRA:MIN:0.5:288:366</rra>
+                </rrd>
+            </package>
+        </adapter>
+    </queue>
+...
+----
+
+== Example script
+
+The following example shows how to add a custom metric to the node-level resource.
+The raw message is passed as a key-value-map to the script.
+If unsure, which fields have been retrieved, just add a `System.out.println(msg.keySet());` to the script and gather the logs for the output of available fields.
+
+[source, groovy]
+----
+import org.opennms.netmgt.collection.support.builder.NodeLevelResource
+
+NodeLevelResource nodeLevelResource = new NodeLevelResource(agent.getNodeId())
+
+builder.withGauge(nodeLevelResource, "myMetricA", "myMetricA", (Long) msg.get("myMetricA"))
+builder.withGauge(nodeLevelResource, "myMetricB", "myMetricB", (Long) msg.get("myMetricB"))
+
+----

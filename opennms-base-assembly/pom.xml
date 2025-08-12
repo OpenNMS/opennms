@@ -64,7 +64,7 @@
                   <groupId>org.opennms.core</groupId>
                   <artifactId>org.opennms.core.cli</artifactId>
                   <version>${project.version}</version>
-                  <excludes>META-INF,META-INF/**/*</excludes>
+                  <includes>bin/*</includes>
                 </artifactItem>
               </artifactItems>
             </configuration>
@@ -860,6 +860,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.fileutils</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.ipc.rpc</groupId>
       <artifactId>org.opennms.core.ipc.rpc.jms-impl</artifactId>
       <version>${project.version}</version>
@@ -1286,4 +1291,15 @@
       </snapshots>
     </repository>
   </repositories>
+  
+  <pluginRepositories>
+    <pluginRepository>
+      <id>jaspersoft-third-party</id>
+      <name>OpenNMS Mega-Repository</name>
+      <url>https://maven.opennms.org/repository/everything/</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </pluginRepository>
+  </pluginRepositories>
 </project>

@@ -21,29 +21,27 @@
  */
 package org.opennms.netmgt.flows.elastic;
 
-import org.opennms.features.jest.client.template.DefaultTemplateInitializer;
+import org.opennms.features.elastic.client.ElasticRestClient;
 import org.opennms.features.jest.client.template.DefaultTemplateLoader;
 import org.opennms.features.jest.client.template.IndexSettings;
 import org.opennms.features.jest.client.template.MergingTemplateLoader;
 import org.osgi.framework.BundleContext;
 
-import io.searchbox.client.JestClient;
-
-public class AggregateIndexInitializer extends DefaultTemplateInitializer {
+public class AggregateIndexInitializer extends ElasticRestTemplateInitializer {
 
     public static final String TEMPLATE_RESOURCE = "/netflow_agg-template";
 
     private static final String FLOW_TEMPLATE_NAME = "netflow_agg";
 
-    public AggregateIndexInitializer(BundleContext bundleContext, JestClient client, IndexSettings indexSettings) {
+    public AggregateIndexInitializer(BundleContext bundleContext, ElasticRestClient client, IndexSettings indexSettings) {
         super(bundleContext, client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, indexSettings);
     }
 
-    public AggregateIndexInitializer(JestClient client, IndexSettings indexSettings) {
+    public AggregateIndexInitializer(ElasticRestClient client, IndexSettings indexSettings) {
         super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new MergingTemplateLoader(new DefaultTemplateLoader(), indexSettings), indexSettings);
     }
 
-    public AggregateIndexInitializer(JestClient client) {
+    public AggregateIndexInitializer(ElasticRestClient client) {
         super(client, TEMPLATE_RESOURCE, FLOW_TEMPLATE_NAME, new DefaultTemplateLoader(), new IndexSettings());
     }
 }

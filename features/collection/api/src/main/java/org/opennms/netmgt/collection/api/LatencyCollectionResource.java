@@ -41,6 +41,10 @@ public class LatencyCollectionResource implements CollectionResource {
     private final String m_location;
     private final Map<AttributeGroupType, AttributeGroup> m_attributeGroups = Maps.newLinkedHashMap();
 
+    private final Map<String, String> m_tags = Maps.newHashMap();
+
+    private final Map<String, String> m_serviceParams = Maps.newHashMap();
+
     /**
      * <p>Constructor for LatencyCollectionResource.</p>
      *
@@ -52,6 +56,13 @@ public class LatencyCollectionResource implements CollectionResource {
         m_serviceName = serviceName;
         m_ipAddress = ipAddress;
         m_location = location;
+    }
+
+    public LatencyCollectionResource(String serviceName, String ipAddress, String location, Map<String, String> tags) {
+        m_serviceName = serviceName;
+        m_ipAddress = ipAddress;
+        m_location = location;
+        m_tags.putAll(tags);
     }
 
     /**
@@ -196,5 +207,19 @@ public class LatencyCollectionResource implements CollectionResource {
     @Override
     public TimeKeeper getTimeKeeper() {
         return null;
+    }
+
+    @Override
+    public Map<String, String> getTags() {
+        return m_tags;
+    }
+
+    @Override
+    public Map<String, String> getServiceParams() {
+        return m_serviceParams;
+    }
+
+    public void addServiceParam(String name, String value) {
+        m_serviceParams.put(name, value);
     }
 }

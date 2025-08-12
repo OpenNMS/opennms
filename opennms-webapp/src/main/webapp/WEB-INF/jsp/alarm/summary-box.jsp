@@ -40,13 +40,13 @@
 <c:url var="headingLink" value="alarm/list.htm"/>
 <div class="card">
   <div class="card-header">
-    <span><a href="${headingLink}">Nodes with Pending Problems</a></span>
+    <span><a href="${headingLink}">Nodes with Pending Alarms</a></span>
   </div>
   <c:choose>
     <c:when test="${empty summaries}">
       <div class="card-body">
         <p class="mb-0">
-          There are no pending problems.
+          There are no pending alarms.
         </p>
       </div>
     </c:when>
@@ -66,7 +66,7 @@
       <c:if test="${moreCount > 0}">
         <div class="card-footer text-right">
           <c:url var="moreLink" value="alarm/list.htm"/>
-          <a href="${moreLink}">All pending problems...</a>
+          <a href="${moreLink}">All pending alarms...</a>
         </div>
       </c:if>
     </c:otherwise>

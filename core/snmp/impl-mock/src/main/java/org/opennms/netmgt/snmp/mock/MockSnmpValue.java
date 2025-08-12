@@ -94,7 +94,7 @@ public class MockSnmpValue extends AbstractSnmpValue {
         
                 @Override
         public boolean isDisplayable() {
-            return allBytesPlainAscii(getBytes());
+            return allBytesDisplayable(getBytes());
         }
 
     }

@@ -51,7 +51,9 @@ When set, this contains a comma-separated list of roles for the authenticated us
 
 == Enable pre-authorization
 
-Modify `$\{OPENNMS-HOME}/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml`, and set the following:
+Pre-Authorization is needed if users are not pre-registered within OpenNMS.
+
+Modify `$\{OPENNMS-HOME}/jetty-webapps/opennms/WEB-INF/applicationContext-spring-security.xml`, and set the following (replace the existing preauthAuthProvider bean):
 
 [source, xml]
 ----
@@ -62,7 +64,7 @@ Modify `$\{OPENNMS-HOME}/jetty-webapps/opennms/WEB-INF/applicationContext-spring
 </beans:bean>
 ----
 
-After the pre-authentication plugin is enabled and set up, use the following command to test its configuration:
+After the pre-authentication plugin is enabled and set up, use the following command to test the configuration (change the username if Pre-Authorization is not being used):
 
 [source, console]
 curl -H "X-Remote-User: myuser" -H "X-Remote-Roles: ROLE_USER,ROLE_REST" http://localhost:8980/opennms/rest/whoami

@@ -84,7 +84,7 @@ public class LldpLocPortGetter extends SnmpGetter {
             LOG.debug("get: setting default not found Values: portid=\"Not Found On lldpLocPortTable\"");
             lldplink.setLldpPortId("\"Not Found On lldpLocPortTable\"");
         } else {
-            lldplink.setLldpPortId(LldpRemTableTracker.decodeLldpPortId(lldplink.getLldpPortIdSubType().getValue(),
+            lldplink.setLldpPortId(LldpSnmpUtils.decodeLldpPortId(lldplink.getLldpPortIdSubType(),
                                                                         val.get(1)));
         }
         if (val.get(2) != null && !val.get(2).isError())

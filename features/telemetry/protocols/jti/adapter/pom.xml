@@ -39,7 +39,7 @@
               <configuration>
                 <protocArtifact>com.google.protobuf:protoc:${protobufVersion}:exe:${os.detected.classifier}</protocArtifact>
                 <pluginId>grpc-java</pluginId>
-                <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.56.1:exe:${os.detected.classifier}</pluginArtifact>
+                <pluginArtifact>io.grpc:protoc-gen-grpc-java:1.68.2:exe:${os.detected.classifier}</pluginArtifact>
               </configuration>
               <executions>
                 <execution>

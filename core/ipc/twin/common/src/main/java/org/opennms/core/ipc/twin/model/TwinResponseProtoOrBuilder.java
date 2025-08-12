@@ -30,56 +30,67 @@ public interface TwinResponseProtoOrBuilder extends
 
   /**
    * <code>string consumer_key = 1;</code>
+   * @return The consumerKey.
    */
   java.lang.String getConsumerKey();
   /**
    * <code>string consumer_key = 1;</code>
+   * @return The bytes for consumerKey.
    */
   com.google.protobuf.ByteString
       getConsumerKeyBytes();
 
   /**
    * <code>bytes twin_object = 2;</code>
+   * @return The twinObject.
    */
   com.google.protobuf.ByteString getTwinObject();
 
   /**
    * <code>string system_id = 3;</code>
+   * @return The systemId.
    */
   java.lang.String getSystemId();
   /**
    * <code>string system_id = 3;</code>
+   * @return The bytes for systemId.
    */
   com.google.protobuf.ByteString
       getSystemIdBytes();
 
   /**
    * <code>string location = 4;</code>
+   * @return The location.
    */
   java.lang.String getLocation();
   /**
    * <code>string location = 4;</code>
+   * @return The bytes for location.
    */
   com.google.protobuf.ByteString
       getLocationBytes();
 
   /**
    * <code>bool is_patch_object = 5;</code>
+   * @return The isPatchObject.
    */
   boolean getIsPatchObject();
 
   /**
    * <code>string session_id = 6;</code>
+   * @return The sessionId.
    */
   java.lang.String getSessionId();
   /**
    * <code>string session_id = 6;</code>
+   * @return The bytes for sessionId.
    */
   com.google.protobuf.ByteString
       getSessionIdBytes();
 
   /**
    * <code>int32 version = 7;</code>
+   * @return The version.
    */
   int getVersion();
 
@@ -106,14 +117,14 @@ public interface TwinResponseProtoOrBuilder extends
   /**
    * <code>map&lt;string, string&gt; tracing_info = 8;</code>
    */
-
-  java.lang.String getTracingInfoOrDefault(
+  /* nullable */
+java.lang.String getTracingInfoOrDefault(
       java.lang.String key,
-      java.lang.String defaultValue);
+      /* nullable */
+java.lang.String defaultValue);
   /**
    * <code>map&lt;string, string&gt; tracing_info = 8;</code>
    */
-
   java.lang.String getTracingInfoOrThrow(
       java.lang.String key);
 }

@@ -20,6 +20,7 @@
   <session-config>
     <cookie-config>
       <http-only>true</http-only>
+      <secure>false</secure>
       <comment>__SAME_SITE_STRICT__</comment>
     </cookie-config>
     <session-timeout>-1</session-timeout>
@@ -189,6 +190,10 @@
     <init-param>
       <param-name>cors.allowed.headers</param-name>
       <param-value>Accept,Access-Control-Request-Headers,Access-Control-Request-Method,Authorization,Content-Type,Origin,X-Requested-With</param-value>
+    </init-param>
+    <init-param>
+      <param-name>cors.exposed.headers</param-name>
+      <param-value>Content-Range</param-value>
     </init-param>
     <init-param>
       <param-name>cors.support.credentials</param-name>

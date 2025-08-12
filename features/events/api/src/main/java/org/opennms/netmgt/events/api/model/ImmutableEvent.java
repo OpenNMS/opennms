@@ -36,7 +36,7 @@ import java.util.*;
  */
 public final class ImmutableEvent implements IEvent {
     private final String uuid;
-    private final Integer dbId;
+    private final Long dbId;
     private final String distPoller;
     private final Date creationTime;
     private final String masterStation;
@@ -124,7 +124,7 @@ public final class ImmutableEvent implements IEvent {
 
     public static final class Builder {
         private String uuid;
-        private Integer dbId;
+        private Long dbId;
         private String distPoller;
         private Date creationTime;
         private String masterStation;
@@ -203,7 +203,7 @@ public final class ImmutableEvent implements IEvent {
             return this;
         }
 
-        public Builder setDbId(Integer dbId) {
+        public Builder setDbId(Long dbId) {
             this.dbId = dbId;
             return this;
         }
@@ -420,7 +420,7 @@ public final class ImmutableEvent implements IEvent {
     }
 
     @Override
-    public Integer getDbid() {
+    public Long getDbid() {
         return dbId == null ? 0 : dbId;
     }
 

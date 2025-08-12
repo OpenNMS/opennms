@@ -78,7 +78,7 @@ public final class MinionIpc {
   private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
-    String[] descriptorData = {
+    java.lang.String[] descriptorData = {
       "\n\tipc.proto\"\007\n\005Empty\"\364\001\n\017RpcRequestProto" +
       "\022\016\n\006rpc_id\030\001 \001(\t\022\023\n\013rpc_content\030\002 \001(\014\022\021\n" +
       "\tsystem_id\030\003 \001(\t\022\020\n\010location\030\004 \001(\t\022\021\n\tmo" +
@@ -91,16 +91,16 @@ public final class MinionIpc {
       "(\t\022\021\n\tmodule_id\030\005 \001(\t\0228\n\014tracing_info\030\006 " +
       "\003(\0132\".RpcResponseProto.TracingInfoEntry\032" +
       "2\n\020TracingInfoEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005valu" +
-      "e\030\002 \001(\t:\0028\001\"\300\001\n\013SinkMessage\022\022\n\nmessage_i" +
-      "d\030\001 \001(\t\022\017\n\007content\030\002 \001(\014\022\020\n\010location\030\003 \001" +
-      "(\t\022\021\n\tmodule_id\030\004 \001(\t\0223\n\014tracing_info\030\005 " +
-      "\003(\0132\035.SinkMessage.TracingInfoEntry\0322\n\020Tr" +
-      "acingInfoEntry\022\013\n\003key\030\001 \001(\t\022\r\n\005value\030\002 \001" +
-      "(\t:\0028\0012o\n\007OnmsIpc\0229\n\014RpcStreaming\022\020.RpcR" +
-      "equestProto\032\021.RpcResponseProto\"\000(\0010\001\022)\n\r" +
-      "SinkStreaming\022\014.SinkMessage\032\006.Empty\"\000(\001B" +
-      "/\n org.opennms.core.ipc.grpc.commonB\tMin" +
-      "ionIpcP\001b\006proto3"
+      "e\030\002 \001(\t:\0028\001\"\323\001\n\013SinkMessage\022\022\n\nmessage_i" +
+      "d\030\001 \001(\t\022\017\n\007content\030\002 \001(\014\022\021\n\tsystem_id\030\003 " +
+      "\001(\t\022\020\n\010location\030\004 \001(\t\022\021\n\tmodule_id\030\005 \001(\t" +
+      "\0223\n\014tracing_info\030\006 \003(\0132\035.SinkMessage.Tra" +
+      "cingInfoEntry\0322\n\020TracingInfoEntry\022\013\n\003key" +
+      "\030\001 \001(\t\022\r\n\005value\030\002 \001(\t:\0028\0012r\n\nOpenNMSIpc\022" +
+      "9\n\014RpcStreaming\022\021.RpcResponseProto\032\020.Rpc" +
+      "RequestProto\"\000(\0010\001\022)\n\rSinkStreaming\022\014.Si" +
+      "nkMessage\032\006.Empty\"\000(\001B/\n org.opennms.cor" +
+      "e.ipc.grpc.commonB\tMinionIpcP\001b\006proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -111,43 +111,43 @@ public final class MinionIpc {
     internal_static_Empty_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Empty_descriptor,
-        new String[] { });
+        new java.lang.String[] { });
     internal_static_RpcRequestProto_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_RpcRequestProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RpcRequestProto_descriptor,
-        new String[] { "RpcId", "RpcContent", "SystemId", "Location", "ModuleId", "ExpirationTime", "TracingInfo", });
+        new java.lang.String[] { "RpcId", "RpcContent", "SystemId", "Location", "ModuleId", "ExpirationTime", "TracingInfo", });
     internal_static_RpcRequestProto_TracingInfoEntry_descriptor =
       internal_static_RpcRequestProto_descriptor.getNestedTypes().get(0);
     internal_static_RpcRequestProto_TracingInfoEntry_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RpcRequestProto_TracingInfoEntry_descriptor,
-        new String[] { "Key", "Value", });
+        new java.lang.String[] { "Key", "Value", });
     internal_static_RpcResponseProto_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_RpcResponseProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RpcResponseProto_descriptor,
-        new String[] { "RpcId", "RpcContent", "SystemId", "Location", "ModuleId", "TracingInfo", });
+        new java.lang.String[] { "RpcId", "RpcContent", "SystemId", "Location", "ModuleId", "TracingInfo", });
     internal_static_RpcResponseProto_TracingInfoEntry_descriptor =
       internal_static_RpcResponseProto_descriptor.getNestedTypes().get(0);
     internal_static_RpcResponseProto_TracingInfoEntry_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RpcResponseProto_TracingInfoEntry_descriptor,
-        new String[] { "Key", "Value", });
+        new java.lang.String[] { "Key", "Value", });
     internal_static_SinkMessage_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_SinkMessage_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_SinkMessage_descriptor,
-        new String[] { "MessageId", "Content", "Location", "ModuleId", "TracingInfo", });
+        new java.lang.String[] { "MessageId", "Content", "SystemId", "Location", "ModuleId", "TracingInfo", });
     internal_static_SinkMessage_TracingInfoEntry_descriptor =
       internal_static_SinkMessage_descriptor.getNestedTypes().get(0);
     internal_static_SinkMessage_TracingInfoEntry_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_SinkMessage_TracingInfoEntry_descriptor,
-        new String[] { "Key", "Value", });
+        new java.lang.String[] { "Key", "Value", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

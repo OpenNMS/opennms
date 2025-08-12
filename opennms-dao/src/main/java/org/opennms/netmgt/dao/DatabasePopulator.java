@@ -24,8 +24,8 @@ package org.opennms.netmgt.dao;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.opennms.core.utils.InetAddressUtils;
@@ -40,6 +40,7 @@ import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoredServiceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
+import org.opennms.netmgt.dao.api.MonitoringSystemDao;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.NotificationDao;
 import org.opennms.netmgt.dao.api.OnmsDao;
@@ -59,6 +60,7 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.opennms.netmgt.model.OnmsEventParameter;
 import org.opennms.netmgt.model.OnmsIpInterface;
 import org.opennms.netmgt.model.OnmsMonitoredService;
+import org.opennms.netmgt.model.OnmsMonitoringSystem;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsNode.NodeType;
 import org.opennms.netmgt.model.OnmsNotification;
@@ -149,7 +151,6 @@ public class DatabasePopulator {
     private ApplicationDao applicationDao;
     private AcknowledgmentDao m_acknowledgmentDao;
     private TransactionOperations m_transOperation;
-
     private OnmsNode m_node1;
     private OnmsNode m_node2;
     private OnmsNode m_node3;
@@ -217,21 +218,49 @@ public class DatabasePopulator {
         }
     }
 
+    /**
+     * Populate a "main" DistPoller (an OnmsMonitoringSystem) entry in the database, if it doesn't already exist.
+     * This is for tests that need a MonitoringSystem with a different id or other fields than the
+     * default DistPoller.
+     * Those tests should call resetDatabase(true) before and after the tests.
+     */
+    public void populateMainDistPoller(String id, String label, String location) {
+        if (m_populateInSeparateTransaction) {
+            m_transOperation.execute(new TransactionCallbackWithoutResult() {
+                @Override
+                public void doInTransactionWithoutResult(final TransactionStatus status) {
+                    doPopulateMainDistPoller(id, label, location);
+                }
+            });
+        } else {
+            doPopulateMainDistPoller(id, label, location);
+        }
+    }
+
     public void resetDatabase() {
+        resetDatabase(false);
+    }
+
+    /**
+     * Reset the database, clear all rows.
+     * @param includingMonitoringSystems If true, also removes any MonitoringSystem entries.
+     */
+    public void resetDatabase(boolean includingMonitoringSystems) {
         if (m_resetInSeperateTransaction) {
             m_transOperation.execute(new TransactionCallbackWithoutResult() {
                 @Override
                 public void doInTransactionWithoutResult(final TransactionStatus status) {
-                    doResetDatabase();
+                    doResetDatabase(includingMonitoringSystems);
                 }
             });
         } else {
-            doResetDatabase();
+            doResetDatabase(includingMonitoringSystems);
         }
     }
 
-    private void doResetDatabase() {
+    private void doResetDatabase(boolean includingMonitoringSystems) {
         LOG.debug("==== DatabasePopulator Reset ====");
+
         for (final OnmsOutage outage : m_outageDao.findAll()) {
             m_outageDao.delete(outage);
         }
@@ -278,10 +307,17 @@ public class DatabasePopulator {
                 m_monitoringLocationDao.delete(location);
             }
         }
+
+        if (includingMonitoringSystems) {
+            for (final OnmsDistPoller system : m_distPollerDao.findAll()) {
+                m_distPollerDao.delete(system.getId());
+            }
+        }
+
         for (final OnmsCategory category : m_categoryDao.findAll()) {
             m_categoryDao.delete(category);
         }
-        
+
         LOG.debug("= DatabasePopulatorExtension Reset Starting =");
     	for (Extension eachExtension : extensions) {
     			DaoSupport daoSupport = eachExtension.getDaoSupport();
@@ -305,7 +341,8 @@ public class DatabasePopulator {
         m_nodeDao.flush();
         m_serviceTypeDao.flush();
         m_monitoringLocationDao.flush();
-        
+        m_distPollerDao.flush();
+
         LOG.debug("==== DatabasePopulator Reset Finished ====");
     }
 
@@ -431,6 +468,23 @@ public class DatabasePopulator {
         LOG.debug("==== DatabasePopulator Finished ====");
     }
 
+    private void doPopulateMainDistPoller(String id, String label, String location) {
+        // If main entry already exists, ignore
+        final OnmsDistPoller system = m_distPollerDao.whoami();
+
+        if (system == null) {
+            // Did not exist, add it
+            OnmsDistPoller newSystem = new OnmsDistPoller();
+            newSystem.setId(id);
+            newSystem.setLabel(label);
+            newSystem.setLocation(location);
+            newSystem.setType(OnmsMonitoringSystem.TYPE_OPENNMS);
+
+            m_distPollerDao.save(newSystem);
+            m_distPollerDao.flush();
+        }
+   }
+
     private OnmsCategory getCategory(final String categoryName) {
         OnmsCategory cat = m_categoryDao.findByName(categoryName, true);
         if (cat == null) {
@@ -463,6 +517,7 @@ public class DatabasePopulator {
             .setIfOperStatus(1)
             .setIfSpeed(10000000)
             .setIfDescr("ATM0")
+            .setIfName("atm0")
             .setIfAlias("Initial ifAlias value")
             .setIfType(37)
             .setPhysAddr("34E45604BB69")

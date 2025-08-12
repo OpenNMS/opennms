@@ -34,7 +34,7 @@ public class SNMPWalkWithTrackerBuilder extends AbstractSNMPRequestBuilder<Colle
     private final CollectionTracker m_tracker;
 
     public SNMPWalkWithTrackerBuilder(LocationAwareSnmpClientRpcImpl client, SnmpAgentConfig agent, CollectionTracker tracker) {
-        super(client, agent, Collections.emptyList(), buildWalkRequests(tracker));
+        super(client, agent, Collections.emptyList(), buildWalkRequests(tracker), Collections.emptyList());
         m_tracker = tracker;
     }
 

@@ -50,7 +50,7 @@ public abstract class DestinationPathManager {
 
     private DestinationPaths allPaths;
 
-    private Map<String, Path> m_destinationPaths;
+    private Map<String, Path> m_destinationPaths = new TreeMap<String, Path>();
 
     private Header oldHeader;
 
@@ -69,7 +69,6 @@ public abstract class DestinationPathManager {
     }
 
     private void initializeDestinationPaths() {
-        m_destinationPaths = new TreeMap<String, Path>();
         for (Path curPath : allPaths.getPaths()) {
             m_destinationPaths.put(curPath.getName(), curPath);
         }

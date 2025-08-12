@@ -42,6 +42,7 @@ Follow these steps to create the expression-based threshold:
 * Value: 1
 * Rearm: 1
 * Description: Too many logged-in users
+* Expression label: User limit above 1
 +
 .Example expression-based threshold configuration
 image::metadata/meta-expression1.png["Page displaying configuration settings for an example expression-based threshold"]

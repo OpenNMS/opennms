@@ -42,6 +42,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowMessage;
@@ -58,6 +59,12 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 public class Netflow9ConverterTest {
+
+
+    @BeforeClass
+    public static void beforeClass() {
+        System.setProperty("karaf.etc", "src/test/resources");
+    }
 
     @Test
     public void canParseNetflow9Flows() {

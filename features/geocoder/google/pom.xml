@@ -56,6 +56,17 @@
     <dependency>
       <groupId>org.opennms.features.geocoder</groupId>
       <artifactId>org.opennms.features.geocoder.api</artifactId>
+      <exclusions>
+        <exclusion>
+          <groupId>com.squareup.okio</groupId>
+          <artifactId>okio</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.squareup.okio</groupId>
+      <artifactId>okio</artifactId>
+      <version>${okioVersion}</version>
     </dependency>
      <!--https://mvnrepository.com/artifact/com.google.maps/google-maps-services-->
     <dependency>
@@ -67,7 +78,16 @@
           <groupId>commons-logging</groupId>
           <artifactId>commons-logging</artifactId>
         </exclusion>
+        <exclusion>
+          <groupId>com.google.code.gson</groupId>
+          <artifactId>gson</artifactId>
+        </exclusion>
       </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>com.google.code.gson</groupId>
+      <artifactId>gson</artifactId>
+      <version>${gsonVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.opennms.core</groupId>

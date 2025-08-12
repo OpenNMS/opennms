@@ -96,6 +96,13 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
                 return m;
             });
         }
+        for (SnmpSetRequestDTO setRequest : request.getSetRequest()) {
+            CompletableFuture<SnmpResponseDTO> future = set(request, setRequest);
+            combinedFuture = combinedFuture.thenCombine(future, (m, s) -> {
+                m.getResponses().add(s);
+                return m;
+            });
+        }
         if (request.getWalkRequest().size() > 0) {
             CompletableFuture<Collection<SnmpResponseDTO>> future = walk(request, request.getWalkRequest());
             combinedFuture = combinedFuture.thenCombine(future, (m, s) -> {
@@ -184,6 +191,30 @@ public class SnmpProxyRpcModule extends AbstractXmlRpcModule<SnmpRequestDTO, Snm
     private CompletableFuture<SnmpResponseDTO> get(SnmpRequestDTO request, SnmpGetRequestDTO get) {
         final SnmpObjId[] oids = get.getOids().toArray(new SnmpObjId[get.getOids().size()]);
         final CompletableFuture<SnmpValue[]> future = SnmpUtils.getAsync(request.getAgent(), oids);
+        return future.thenApply(values -> {
+            final List<SnmpResult> results = new ArrayList<>(oids.length);
+            if (values.length < oids.length) {
+                // Should never reach here, should have thrown exception in SnmpUtils.
+                LOG.warn("Received error response from SNMP for the agent {} for oids = {}", request.getAgent(), oids);
+                final SnmpResponseDTO responseDTO = new SnmpResponseDTO();
+                responseDTO.setCorrelationId(get.getCorrelationId());
+            } else {
+                for (int i = 0; i < oids.length; i++) {
+                    final SnmpResult result = new SnmpResult(oids[i], null, values[i]);
+                    results.add(result);
+                }
+            }
+            final SnmpResponseDTO responseDTO = new SnmpResponseDTO();
+            responseDTO.setCorrelationId(get.getCorrelationId());
+            responseDTO.setResults(results);
+            return responseDTO;
+        });
+    }
+
+    private CompletableFuture<SnmpResponseDTO> set(SnmpRequestDTO request, SnmpSetRequestDTO get) {
+        final SnmpObjId[] oids = get.getOids().toArray(new SnmpObjId[0]);
+        final SnmpValue[] value = get.getValues().toArray(new SnmpValue[0]);
+        final CompletableFuture<SnmpValue[]> future = SnmpUtils.setAsync(request.getAgent(), oids, value);
         return future.thenApply(values -> {
             final List<SnmpResult> results = new ArrayList<>(oids.length);
             if (values.length < oids.length) {

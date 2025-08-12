@@ -4,9 +4,9 @@ updates:
   - package-ecosystem: "npm"
     # Look for `package.json` and `lock` files in the `root` directory
     directory: "/ui"
-    target-branch: "release-33.x"
+    target-branch: "foundation-2024"
     reviewers:
-      - "synqotik"
+      - "OpenNMS/dependabot-reviewers-node"
     labels:
       - "dependency update"
     commit-message:
@@ -28,7 +28,7 @@ updates:
     target-branch: "foundation-2023"
     versioning-strategy: "increase-if-necessary"
     reviewers:
-      - "rangerrick"
+      - "OpenNMS/dependabot-reviewers-node"
     labels:
       - "dependency update"
     commit-message:
@@ -81,7 +81,7 @@ updates:
     directory: "/"
     target-branch: "foundation-2023"
     reviewers:
-      - "rangerrick"
+      - "OpenNMS/dependabot-reviewers-maven"
     labels:
       - "dependency update"
     commit-message:
@@ -94,7 +94,7 @@ updates:
     directory: "/"
     target-branch: "develop"
     reviewers:
-      - "rangerrick"
+      - "OpenNMS/dependabot-reviewers-maven"
     labels:
       - "dependency update"
     commit-message:

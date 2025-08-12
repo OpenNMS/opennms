@@ -62,6 +62,7 @@ import org.xbill.DNS.Name;
 import org.xbill.DNS.NameTooLongException;
 import org.xbill.DNS.OPTRecord;
 import org.xbill.DNS.Opcode;
+import org.xbill.DNS.RRSIGRecord;
 import org.xbill.DNS.RRset;
 import org.xbill.DNS.Rcode;
 import org.xbill.DNS.Record;

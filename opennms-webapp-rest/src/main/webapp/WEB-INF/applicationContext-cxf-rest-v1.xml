@@ -78,8 +78,6 @@
         <ref bean="lenientJaxbProvider"/>
         <ref bean="jaxbProvider"/>
         <ref bean="jacksonJaxbJsonProvider"/>
-        <ref bean="atomEntryProvider"/>
-        <ref bean="atomFeedProvider"/>
         <!-- <ref bean="atomPojoProvider"/> -->
         <ref bean="errorResponseProvider" />
         <ref bean="noSuchElementProvider" />

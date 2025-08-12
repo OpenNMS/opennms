@@ -58,6 +58,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.fileutils</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.features.flows.classification.engine</groupId>
       <artifactId>org.opennms.features.flows.classification.engine.api</artifactId>
       <version>${project.version}</version>
@@ -70,6 +75,16 @@
     <dependency>
       <groupId>org.opennms.features.telemetry.config</groupId>
       <artifactId>org.opennms.features.telemetry.config.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.cache</artifactId>
       <version>${project.version}</version>
     </dependency>
     <dependency>

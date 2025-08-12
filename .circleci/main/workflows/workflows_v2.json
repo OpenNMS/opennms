@@ -89,7 +89,8 @@
                 "build",
                 "integration-test-with-coverage",
                 "code-coverage",
-                "trivy-scan"
+                "trivy-scan",
+                "trivy-analyze"
             ]
         },
         "master-branch": {
@@ -100,12 +101,16 @@
         },
         "trivy-scan": {
             "extends": [
-                "horizon-image-single-arch-trivy",
-                "sentinel-image-single-arch-trivy",
-                "minion-image-single-arch-trivy",
                 "horizon-image-single-arch-linux-amd64-trivy",
                 "sentinel-image-single-arch-linux-amd64-trivy",
                 "minion-image-single-arch-linux-amd64-trivy"
+            ]
+        },
+        "trivy-analyze": {
+            "extends": [
+                "horizon-image-single-arch-linux-amd64-trivy-analyze",
+                "sentinel-image-single-arch-linux-amd64-trivy-analyze",
+                "minion-image-single-arch-linux-amd64-trivy-analyze"
             ]
         },
         "experimental": {
@@ -267,6 +272,16 @@
                 "tarball-assembly-only"
             ]
         },        
+        "minion-image-single-arch-linux-amd64-trivy-analyze": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "minion-image-single-arch-linux-amd64-trivy",
+                "horizon-image-single-arch-linux-amd64-trivy-analyze"
+            ]
+        },        
         "horizon-image-single-arch-linux-amd64": {
             "context": [
                 "CircleCI",
@@ -283,6 +298,15 @@
             ],
             "requires": [
                 "tarball-assembly-only"
+            ]
+        },        
+        "horizon-image-single-arch-linux-amd64-trivy-analyze": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "horizon-image-single-arch-linux-amd64-trivy"
             ]
         },        
         "sentinel-image-single-arch-linux-amd64": {
@@ -303,6 +327,17 @@
                 "tarball-assembly-only"
             ]
         },        
+        "sentinel-image-single-arch-linux-amd64-trivy-analyze": {
+            "context": [
+                "CircleCI",
+                "docker-publish-account"
+            ],
+            "requires": [
+                "sentinel-image-single-arch-linux-amd64-trivy",
+                "horizon-image-single-arch-linux-amd64-trivy-analyze",
+                "minion-image-single-arch-linux-amd64-trivy-analyze"
+            ]
+        },        
         "minion-image-single-arch": {
             "context": [
                 "CircleCI",
@@ -317,30 +352,6 @@
                 "smoke-test-sentinel"
             ]
         },
-        "minion-image-single-arch-trivy": {
-            "context": [
-                "CircleCI",
-                "docker-publish-account"
-            ],
-            "variations": [
-                "linux/arm64"
-            ],
-            "requires": [
-                "tarball-assembly-only"
-            ]
-        },        
-        "horizon-image-single-arch-trivy":{
-            "context": [
-                "CircleCI",
-                "docker-publish-account"
-            ],
-            "variations": [
-                "linux/arm64"
-            ],
-            "requires": [
-                "tarball-assembly-only"
-            ]
-        },
         "horizon-image-single-arch": {
             "context": [
                 "CircleCI",
@@ -353,18 +364,6 @@
                 "smoke-test-core",
                 "smoke-test-minion",
                 "smoke-test-sentinel"
-            ]
-        },
-        "sentinel-image-single-arch-trivy": {
-            "context": [
-                "CircleCI",
-                "docker-publish-account"
-            ],
-            "variations": [
-                "linux/arm64"
-            ],
-            "requires": [
-                "tarball-assembly-only"
             ]
         },
         "sentinel-image-single-arch": {
@@ -421,6 +420,22 @@
                 "user_overridable": false
             }
         },
+        "create-merge-omega-branch": {
+            "context": [
+                "CircleCI"
+            ],  
+            "requires": [
+                "tarball-assembly-only"
+            ],  
+            "filters": {
+                "branches": {
+                    "only": [
+                        "develop"
+                    ]
+                },
+                "user_overridable": false
+            }   
+        },      
         "create-merge-meridian-branch": {
             "context": [
                 "CircleCI"
@@ -492,6 +507,7 @@
         "publish-maven": {
             "context": [
                 "CircleCI",
+                "cloudsmith-publish-account",
                 "gpg-signing",
                 "OSSRH Principal"
             ],

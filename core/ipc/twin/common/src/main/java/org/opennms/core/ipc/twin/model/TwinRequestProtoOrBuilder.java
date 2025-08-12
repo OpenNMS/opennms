@@ -30,30 +30,36 @@ public interface TwinRequestProtoOrBuilder extends
 
   /**
    * <code>string consumer_key = 1;</code>
+   * @return The consumerKey.
    */
   java.lang.String getConsumerKey();
   /**
    * <code>string consumer_key = 1;</code>
+   * @return The bytes for consumerKey.
    */
   com.google.protobuf.ByteString
       getConsumerKeyBytes();
 
   /**
    * <code>string system_id = 2;</code>
+   * @return The systemId.
    */
   java.lang.String getSystemId();
   /**
    * <code>string system_id = 2;</code>
+   * @return The bytes for systemId.
    */
   com.google.protobuf.ByteString
       getSystemIdBytes();
 
   /**
    * <code>string location = 3;</code>
+   * @return The location.
    */
   java.lang.String getLocation();
   /**
    * <code>string location = 3;</code>
+   * @return The bytes for location.
    */
   com.google.protobuf.ByteString
       getLocationBytes();
@@ -81,14 +87,14 @@ public interface TwinRequestProtoOrBuilder extends
   /**
    * <code>map&lt;string, string&gt; tracing_info = 4;</code>
    */
-
-  java.lang.String getTracingInfoOrDefault(
+  /* nullable */
+java.lang.String getTracingInfoOrDefault(
       java.lang.String key,
-      java.lang.String defaultValue);
+      /* nullable */
+java.lang.String defaultValue);
   /**
    * <code>map&lt;string, string&gt; tracing_info = 4;</code>
    */
-
   java.lang.String getTracingInfoOrThrow(
       java.lang.String key);
 }

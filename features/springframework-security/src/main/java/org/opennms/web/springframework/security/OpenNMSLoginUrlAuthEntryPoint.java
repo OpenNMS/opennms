@@ -22,6 +22,8 @@
 package org.opennms.web.springframework.security;
 
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
@@ -73,28 +75,24 @@ public class OpenNMSLoginUrlAuthEntryPoint extends LoginUrlAuthenticationEntryPo
 
     @Override
     protected String buildRedirectUrlToLoginPage(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) {
-        String loginForm = determineUrlToUseForThisRequest(request, response, authException);
+        final String loginForm = determineUrlToUseForThisRequest(request, response, authException);
         if (UrlUtils.isAbsoluteUrl(loginForm)) {
             return loginForm;
         }
-        int serverPort = getPortResolver().getServerPort(request);
-        String scheme = request.getScheme();
-        RedirectUrlBuilder urlBuilder = new RedirectUrlBuilder();
-        urlBuilder.setScheme(scheme);
-        urlBuilder.setServerName(request.getServerName());
-        urlBuilder.setPort(serverPort);
-        urlBuilder.setContextPath(request.getContextPath());
-        urlBuilder.setPathInfo(loginForm);
-        if (isHttpsEnabled(request) && "http".equals(scheme)) {
-            Integer httpsPort = getPortMapper().lookupHttpsPort(serverPort);
-            if (httpsPort != null) {
-                // Overwrite scheme and port in the redirect URL
-                urlBuilder.setScheme("https");
-                urlBuilder.setPort(httpsPort);
-            } else {
-                logger.warn("Unable to redirect to HTTPS as no port mapping found for HTTP port {}", serverPort);
-            }
+
+        final URL url;
+
+        try {
+            url = new URL(Util.calculateUrlBase(request, loginForm));
+        } catch (MalformedURLException e) {
+            throw new RuntimeException(e);
         }
+        final RedirectUrlBuilder urlBuilder = new RedirectUrlBuilder();
+        urlBuilder.setScheme(url.getProtocol());
+        urlBuilder.setServerName(url.getHost());
+        urlBuilder.setPort(url.getPort() == -1 ? url.getDefaultPort() : url.getPort());
+        urlBuilder.setContextPath(url.getPath());
+        urlBuilder.setPathInfo(url.getQuery());
         return urlBuilder.getUrl();
     }
 

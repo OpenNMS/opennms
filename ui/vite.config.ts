@@ -26,6 +26,14 @@ import svgLoader from 'vite-svg-loader'
 import AutoImport from 'unplugin-auto-import/vite'
 
 export default defineConfig({
+  css: {
+    preprocessorOptions: {
+      scss: {
+        api: 'modern',
+        silenceDeprecations: ['color-functions', 'global-builtin', 'legacy-js-api', 'import']
+      }
+    }
+  },
   resolve: {
     alias: {
       '@/': new URL('./src/', import.meta.url).pathname,
@@ -56,6 +64,7 @@ export default defineConfig({
     'process.env': process.env
   },
   test: {
+    dir: './tests',
     globals: true,
     environment: 'happy-dom',
     css: {
@@ -71,7 +80,21 @@ export default defineConfig({
       }
     }
   },
+  root: './src/main',
+  // make sure we get environment variables from .env files in the main ui directory
+  // path is relative to 'root' defined just above
+  envDir: '../..',
   build: {
-    target: 'esnext'
+    emptyOutDir: true,
+    outDir: './dist',
+    target: 'esnext',
+    copyPublicDir: false,
+    rollupOptions: {
+      output: {
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/[name].[ext]'
+      }
+    }
   }
 })

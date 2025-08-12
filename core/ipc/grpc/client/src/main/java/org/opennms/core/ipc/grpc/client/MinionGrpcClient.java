@@ -121,8 +121,8 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
     private OpenNMSIpcGrpc.OpenNMSIpcStub asyncStub;
     private Properties properties;
     private BundleContext bundleContext;
-    private MinionIdentity minionIdentity;
-    private ConfigurationAdmin configAdmin;
+    private final MinionIdentity minionIdentity;
+    private final ConfigurationAdmin configAdmin;
     private StreamObserver<RpcResponseProto> rpcStream;
     private StreamObserver<SinkMessage> sinkStream;
     private ConnectivityState currentChannelState;
@@ -384,8 +384,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
     }
 
     private void processRpcRequest(RpcRequestProto requestProto) {
-        long currentTime = requestProto.getExpirationTime();
-        if (requestProto.getExpirationTime() < currentTime) {
+        if (requestProto.getExpirationTime() < System.currentTimeMillis()) {
             LOG.debug("ttl already expired for the request id = {}, won't process.", requestProto.getRpcId());
             return;
         }
@@ -445,8 +444,7 @@ public class MinionGrpcClient extends AbstractMessageDispatcherFactory<String> {
         // Initializer tracer and extract parent tracer context from TracingInfo
         final Tracer tracer = getTracer();
         Tracer.SpanBuilder spanBuilder;
-        Map<String, String> tracingInfoMap = new HashMap<>();
-        requestProto.getTracingInfoMap().forEach(tracingInfoMap::put);
+        Map<String, String> tracingInfoMap = new HashMap<>(requestProto.getTracingInfoMap());
         SpanContext context = tracer.extract(Format.Builtin.TEXT_MAP, new TextMapAdapter(tracingInfoMap));
         if (context != null) {
             spanBuilder = tracer.buildSpan(requestProto.getModuleId()).asChildOf(context);

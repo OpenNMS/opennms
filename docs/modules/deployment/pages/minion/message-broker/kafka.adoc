@@ -65,7 +65,7 @@ The following example uses SASL/SCRAM with TLS:
 ----
 config:edit org.opennms.core.ipc.kafka
 config:property-set bootstrap.servers my-kafka-ip-1:9096,my-kafka-ip-2:9096
-config:property-set security.protocol=SASL_SSL
+config:property-set security.protocol SASL_SSL
 config:property-set sasl.mechanism SCRAM-SHA-512
 config:property-set sasl.jaas.config 'org.apache.kafka.common.security.scram.ScramLoginModule required username="opennms-ipc" password="kafka";'
 config:update

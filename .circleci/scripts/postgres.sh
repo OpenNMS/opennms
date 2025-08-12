@@ -1,7 +1,7 @@
 #!/bin/bash -e
 echo "##### Starting Postgres"
-docker run --rm --name postgres-onms-itest -p 5432:5432 -d postgres:10.7-alpine \
-	-c 'shared_buffers=256MB' -c 'max_connections=200' -c 'fsync=off'
+docker run --rm --name postgres-onms-itest -p 5432:5432 -e POSTGRES_PASSWORD=postgres -d postgres:13-alpine \
+	-c 'shared_buffers=256MB' -c 'max_connections=200' -c 'fsync=off' 
 
 echo "##### Waiting for Postgres to start..."
 WAIT=0

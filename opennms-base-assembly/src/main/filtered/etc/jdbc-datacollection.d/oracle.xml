@@ -1,0 +1,222 @@
+<jdbc-datacollection-config xmlns="http://xmlns.opennms.org/xsd/config/jdbc-datacollection" rrdRepository="${install.share.dir}/rrd/snmp/">
+   
+   <!--
+   An example Collectd service configuration for this datacollection:
+
+   <service name="Oracle-JDBC" interval="300000" user-defined="false" status="on">
+      <parameter key="collection" value="Oracle-JDBC"/>
+      <parameter key="thresholding-enabled" value="true"/>
+      <parameter key="driver" value="oracle.jdbc.OracleDriver"/>
+      <parameter key="user" value="${scv:oracle:username}"/>
+      <parameter key="password" value="${scv:oracle:password}"/>
+      <parameter key="url" value="jdbc:oracle:thin:@OPENNMS_JDBC_HOSTNAME:1542:${interface:OraDatabaseName}"/>
+   </service>
+   NOTE: The OPENNMS_JDBC_HOSTNAME token is replaced with the IP or resolved hostname of the assigned interface.
+   -->
+       <jdbc-collection name="Oracle-JDBC">
+        <rrd step="300">
+            <rra>RRA:AVERAGE:0.5:1:2016</rra>
+            <rra>RRA:AVERAGE:0.5:12:1488</rra>
+            <rra>RRA:AVERAGE:0.5:288:366</rra>
+            <rra>RRA:MAX:0.5:288:366</rra>
+            <rra>RRA:MIN:0.5:288:366</rra>
+        </rrd>
+        <queries>
+            <query name="ora_archive_mode" ifType="all" resourceType="oraDBStats" instance-column="name">
+                <statement>
+                    <queryString>
+		      SELECT name, CASE WHEN log_mode='ARCHIVELOG' THEN 1 ELSE 0 END AS ora_log_mode FROM v$database
+                    </queryString>
+                </statement>
+                <columns>
+                    <column name="ora_log_mode" data-source-name="ora_log_mode" alias="ora_log_mode" type="gauge"/>
+                </columns>
+            </query>
+            <query name="ora_recoveryspace" ifType="all" resourceType="oraDBStats" instance-column="database_name">
+	            <statement>
+                   <queryString>
+		       SELECT d.name database_name, pctavail FROM (SELECT (100 - sum(percent_space_used)) + sum(percent_space_reclaimable) pctavail FROM v$flash_recovery_area_usage), v$database d UNION SELECT '1', 100 from DUAL
+                   </queryString>
+                </statement>
+                <columns>
+                     <column name="PCTAVAIL" data-source-name="PCTAVAIL" alias="fra_percent_avail" type="gauge"/>
+                </columns>
+            </query>
+              <query name="ora_blockcorruption" ifType="all"  resourceType="oraDBStats" instance-column="database_name">
+                <statement>
+                    <queryString>
+		      SELECT d.name database_name, badblocks FROM (SELECT count(*) BADBLOCKS FROM v$database_block_corruption ORDER BY file#, block#) , v$database d UNION SELECT '1', 0 from DUAL
+                    </queryString>
+                </statement>
+                <columns>
+                    <column name="BADBLOCKS" data-source-name="BADBLOCKS" alias="block_corruption" type="gauge"/>
+                </columns>
+            </query>
+              <query name="ora_accountexpiry" ifType="all" resourceType="oraAccountExp" instance-column="username">
+                <statement>
+                    <queryString>
+		      SELECT username, expiry_date, account_status, TRUNC(expiry_date - sysdate) when FROM dba_users WHERE account_status IN ('OPEN', 'EXPIRED(GRACE)') AND expiry_date IS NOT NULL ORDER BY username
+                    </queryString>
+                </statement>
+                <columns>
+                    <column name="username" data-source-name="username" alias="username" type="string"/>
+                    <column name="expiry_date" data-source-name="expiry_date" alias="expiry_date" type="string"/>
+                    <column name="account_status" data-source-name="account_status" alias="account_status" type="string"/>
+                    <column name="when" data-source-name="when" alias="exp_when" type="gauge"/>
+                </columns>
+            </query>
+              <query name="ora_failedlogins" ifType="ignore" resourceType="oraFailedLogins" instance-column="name">
+                <statement>
+                    <queryString>
+		      SELECT CONCAT(CONCAT(d.name,'\'), u.name) name, u.lcount lcount FROM sys.user$ u, v$database d WHERE u.lcount &gt; 0 and u.name != 'ODSSM'
+                    </queryString>
+                </statement>
+                <columns>
+                    <column name="NAME" data-source-name="NAME" alias="username" type="string"/>
+		    <column name="LCOUNT" data-source-name="LCOUNT" alias="fail_count" type="gauge"/>
+                </columns>
+            </query>
+              <query name="ora_recentbackup" ifType="all" resourceType="oraDBStats" instance-column="database_name">
+                <statement>
+                    <queryString>
+		      SELECT d.name database_name, backupsets FROM ( SELECT count(*) backupsets FROM v$backup_set_summary WHERE newest_backup_time &lt; SYSDATE - 1), v$database d UNION SELECT '1', 0 from DUAL
+                    </queryString>
+                </statement>
+                <columns>
+                    <column name="BACKUPSETS" data-source-name="BACKUPSETS" alias="orabackuplag_days" type="gauge"/>
+                </columns>
+            </query>
+              <query name="ora_InvalidObjects" ifType="all" resourceType="oraDBStats" instance-column="database_name">
+                <statement>
+                    <queryString>
+		      SELECT d.name database_name, total_invalidobj FROM ( select count(*) total_invalidobj FROM dba_objects WHERE status = 'INVALID'), v$database d UNION SELECT '1', 0 from DUAL
+                    </queryString>
+                </statement>
+                <columns>
+                    <column name="total_invalidobj" data-source-name="total_invalidobj" alias="total_invalidobj" type="gauge"/>
+                </columns>
+            </query>
+              <query name="ora_InvalidIndex" ifType="all" resourceType="oraDBStats" instance-column="database_name">
+                <statement>
+                    <queryString>
+		      SELECT d.name database_name, total_invalididx FROM ( select count(*) total_invalididx FROM dba_indexes WHERE status = 'UNUSABLE'), v$database d UNION SELECT '1', 0 from DUAL
+                    </queryString>
+                </statement>
+                <columns>
+                    <column name="total_invalididx" data-source-name="total_invalididx" alias="total_invalididx" type="gauge"/>
+                </columns>
+            </query>
+              <query name="ora_TmpTableSpace" ifType="all" resourceType="oraTableSpace" instance-column="tablespace_name">
+                <statement>
+                    <queryString>
+		     SELECT CONCAT(CONCAT(d.name, '\'), t.tablespace_name) tablespace_name, t.file_name, TRUNC(maxbytes / 1024 / 1024) maxbytes, (TRUNC(maxbytes / 1024 / 1024) - TRUNC(bytes / 1024 / 1024)) bytes, TRUNC(bytes/maxbytes * 100) pctused FROM dba_temp_files t, v$database d where maxbytes != 0 UNION SELECT '1', '2',1,1,0 FROM DUAL
+                    </queryString>
+                </statement>
+                <columns>
+                    <column name="tablespace_name" data-source-name="tablespace_name" alias="tablespace_name" type="string"/>
+                   <!-- <column name="file_name" data-source-name="file_name" alias="tmpts_file_name" type="string"/> -->
+                    <column name="maxbytes" data-source-name="maxbytes" alias="sizemb" type="gauge"/>
+                    <column name="bytes" data-source-name="bytes" alias="freemb" type="gauge"/>
+                    <column name="PCTUSED" data-source-name="PCTUSED" alias="pctused" type="gauge"/>
+                </columns>
+            </query>
+              <query name="ora_TableSpace" ifType="all" resourceType="oraTableSpace" instance-column="tablespace_name">
+                <statement>
+                    <queryString>
+		      select CONCAT(CONCAT(d.name, '\'), b.tablespace_name) tablespace_name, tbs_size SizeMb, a.free_space FreeMb, (100 - TRUNC(free_space/tbs_size * 100)) pctused
+			from
+				(select tablespace_name, round(sum(bytes)/1024/1024 ,2) as free_space from dba_free_space group by tablespace_name) a,
+				(select tablespace_name, sum(bytes)/1024/1024 as tbs_size from dba_data_files group by tablespace_name) b,
+				v$database d
+			where a.tablespace_name(+)=b.tablespace_name
+				AND b.tablespace_name not like '%UNDO%'
+				AND a.tablespace_name NOT LIKE '%UNDO%'
+                    </queryString>
+                </statement>
+                <columns>
+                    <column name="tablespace_name" data-source-name="tablespace_name" alias="tablespace_name" type="string"/>
+                    <column name="sizemb" data-source-name="sizemb" alias="sizemb" type="gauge"/>
+                    <column name="freemb" data-source-name="freemb" alias="freemb" type="gauge"/>
+                    <column name="pctused" data-source-name="pctused" alias="pctused" type="gauge"/>
+                </columns>
+            </query>
+              <query name="ora_UserCommits" ifType="ignore" resourceType="oraDBStats" instance-column="database_name">
+                <statement>
+                    <queryString>
+			select d.name database_name, n.name, s.value from v$database d, v$statname n,  v$sysstat s where n.statistic# = s.statistic# AND N.NAME='user commits' UNION SELECT TO_CHAR(1), TO_CHAR(2), 3 from DUAL
+                    </queryString>
+                </statement>
+                <columns>
+                    <column name="database_name" data-source-name="database_name" alias="database_name" type="string"/>
+                    <column name="ora_usrcommits" data-source-name="VALUE" alias="ora_usrcommits" type="counter"/>
+                </columns>
+            </query>
+              <query name="ora_Rollbacks" ifType="ignore" resourceType="oraDBStats" instance-column="database_name">
+                <statement>
+                    <queryString>
+                        select d.name database_name, n.name, s.value from v$database d,  v$statname n, v$sysstat s where n.statistic# = s.statistic# AND N.NAME='user rollbacks' UNION SELECT TO_CHAR(1), TO_CHAR(2), 3 from DUAL
+                    </queryString>
+                </statement>
+                <columns>
+                    <column name="database_name" data-source-name="database_name" alias="database_name" type="string"/>
+                    <column name="ora_rollbacks" data-source-name="VALUE" alias="ora_rollbacks" type="counter"/>
+                </columns>
+            </query>
+              <query name="ora_UserCalls" ifType="ignore" resourceType="oraDBStats" instance-column="database_name">
+                <statement>
+                    <queryString>
+                        select d.name database_name, n.name, s.value from v$database d, v$statname n,  v$sysstat s where n.statistic# = s.statistic# AND N.NAME='user calls' UNION SELECT TO_CHAR(1), TO_CHAR(2), 3 from DUAL
+                    </queryString>
+                </statement>
+                <columns>
+                    <column name="database_name" data-source-name="database_name" alias="database_name" type="string"/>
+                    <column name="ora_usrcalls" data-source-name="VALUE" alias="ora_usrcalls" type="counter"/>
+                </columns>
+            </query>
+              <query name="ora_RecursiveCalls" ifType="ignore" resourceType="oraDBStats" instance-column="database_name">
+                <statement>
+                    <queryString>
+                        select d.name database_name, n.name, s.value from v$database d, v$statname n,  v$sysstat s where n.statistic# = s.statistic# AND N.NAME='recursive calls' UNION SELECT TO_CHAR(1), TO_CHAR(2), 3 from DUAL
+                    </queryString>
+                </statement>
+                <columns>
+                    <column name="database_name" data-source-name="database_name" alias="database_name" type="string"/>
+                    <column name="ora_rcrsvcalls" data-source-name="VALUE" alias="ora_rcrsvcalls" type="counter"/>
+                </columns>
+            </query>
+              <query name="ora_PhysicalReadBytes" ifType="ignore" resourceType="oraDBStats" instance-column="database_name">
+                <statement>
+                    <queryString>
+                        select d.name database_name, n.name, s.value from v$database d, v$statname n,  v$sysstat s where n.statistic# = s.statistic# AND N.NAME='physical read bytes' UNION SELECT TO_CHAR(1), TO_CHAR(2), 3 from DUAL
+                    </queryString>
+                </statement>
+                <columns>
+                    <column name="database_name" data-source-name="database_name" alias="database_name" type="string"/>
+                    <column name="ora_readbytes" data-source-name="VALUE" alias="ora_readbytes" type="counter"/>
+                </columns>
+            </query>
+              <query name="ora_PhysicalWriteBytes" ifType="ignore" resourceType="oraDBStats" instance-column="database_name">
+                <statement>
+                    <queryString>
+                        select d.name database_name, n.name, s.value from v$database d, v$statname n, v$sysstat s where n.statistic# = s.statistic# AND N.NAME='physical write bytes' UNION SELECT TO_CHAR(1), TO_CHAR(2), 3 from DUAL
+                    </queryString>
+                </statement>
+                <columns>
+                    <column name="database_name" data-source-name="database_name" alias="database_name" type="string"/>
+                    <column name="ora_writebytes" data-source-name="VALUE" alias="ora_writebytes" type="counter"/>
+                </columns>
+            </query>
+              <query name="ora_RedoSize" ifType="ignore" resourceType="oraDBStats" instance-column="database_name">
+                <statement>
+                    <queryString>
+                        select d.name database_name, n.name, s.value from v$database d, v$statname n, v$sysstat s where n.statistic# = s.statistic# AND N.NAME='redo size' UNION SELECT TO_CHAR(1), TO_CHAR(2), 3 from DUAL
+                    </queryString>
+                </statement>
+                <columns>
+                    <column name="database_name" data-source-name="database_name" alias="database_name" type="string"/>
+                    <column name="ora_redosize" data-source-name="VALUE" alias="ora_redosize" type="counter"/>
+            </columns>
+         </query>
+      </queries>
+   </jdbc-collection>
+</jdbc-datacollection-config>

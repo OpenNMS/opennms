@@ -16,13 +16,6 @@ We recommend that you use the {page-component-title} web UI to update configurat
 |===
 | File  | Description   | Reload Event  | Restart Required
 
-ifeval::["{page-component-title}" == "Meridian"]
-| provisiond-configuration.xml
-| Sets requisition definitions for defined discovery of nodes and foreign sources.
-| Yes
-| Yes
-
-endif::[]
 | default-foreign-source.xml
 | List of xref:provisioning/detectors.adoc[detectors] and xref:provisioning/policies.adoc[policies] to apply when scanning requisitioned nodes.
 Does not exist by default. +

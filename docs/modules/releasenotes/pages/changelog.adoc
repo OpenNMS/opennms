@@ -2,6 +2,419 @@
 
 = Changelog
 
+[[releasenotes-changelog-33.1.8]]
+
+== Release 33.1.8
+
+Release 33.1.8 contains bug fixes, security updates and enhancements.
+
+The codename for Horizon 33.1.8 is https://wikipedia.org/wiki/$$Avocado$$[_Avocado_].
+
+=== Bug
+
+* Update commons-beanutils:commons-beanutils Library (Issue https://opennms.atlassian.net/browse/NMS-17996[NMS-17996])
+* Update org.apache.zookeeper:zookeeper Library (Issue https://opennms.atlassian.net/browse/NMS-18001[NMS-18001])
+* Update org.eclipse.jetty:jetty-server Library (Issue https://opennms.atlassian.net/browse/NMS-18002[NMS-18002])
+* Update org.owasp.esapi:esapi Library (Issue https://opennms.atlassian.net/browse/NMS-18003[NMS-18003])
+* Update pam Library (Issue https://opennms.atlassian.net/browse/NMS-18034[NMS-18034])
+* Update python3 Library (Issue https://opennms.atlassian.net/browse/NMS-18035[NMS-18035])
+* Update python3-libs Library (Issue https://opennms.atlassian.net/browse/NMS-18036[NMS-18036])
+* Reason "Unknown" for NTP Monitor (Issue https://opennms.atlassian.net/browse/NMS-18016[NMS-18016])
+* Not able to uninstall opennms flows feature from OpenNMS (Issue https://opennms.atlassian.net/browse/NMS-18020[NMS-18020])
+
+=== Enhancement
+
+* Remove the requirement to run fix-Karaf scripts manually after every update (Issue https://opennms.atlassian.net/browse/NMS-18008[NMS-18008])
+* Rename "Problems" for Application, Business services and Nodes to "Alarms" (Issue https://opennms.atlassian.net/browse/NMS-18021[NMS-18021])
+* Add Prometheus compatible metrics endpoint for Core server (Issue https://opennms.atlassian.net/browse/NMS-18041[NMS-18041])
+* Update OpenConfig gnmi telemetry groovy script with more examples (Issue https://opennms.atlassian.net/browse/NMS-18060[NMS-18060])
+
+=== Task
+
+* Use saved Zenith/Keycloak initial token in gRPC Connection (Issue https://opennms.atlassian.net/browse/NMS-17748[NMS-17748])
+
+[[releasenotes-changelog-33.1.7]]
+
+== Release 33.1.7
+
+Release 33.1.7 contains bug fixes, security updates and enhancements.
+
+The codename for Horizon 33.1.7 is https://wikipedia.org/wiki/$$Amur_Maple$$[_Amur Maple_].
+
+=== Bug
+
+* Update com.thoughtworks.xstream:xstream Library (Issue https://opennms.atlassian.net/browse/NMS-17056[NMS-17056])
+* Cannot Successfully Send an Email using "Send to Email Addresses" Field (Issue https://opennms.atlassian.net/browse/NMS-17911[NMS-17911])
+* Update org.eclipse.jetty:jetty-server Library (Issue https://opennms.atlassian.net/browse/NMS-17912[NMS-17912])
+* Horizon 33.1.6 changes KAFKA configuration environment variables (Issue https://opennms.atlassian.net/browse/NMS-17920[NMS-17920])
+* Duplicate Class Definitions for org.opennms.netmgt.snmp.SnmpObjIdTest (Issue https://opennms.atlassian.net/browse/NMS-17921[NMS-17921])
+* SCV doesn't work with custom key in the Installer (Issue https://opennms.atlassian.net/browse/NMS-17989[NMS-17989])
+
+=== Enhancement
+
+* Add support for "snappy" and "lz4" compression types for communication between OpenNMS <-> Minion (Issue https://opennms.atlassian.net/browse/NMS-17948[NMS-17948])
+
+=== Task
+
+* Move to latest WS-Man Client (Issue https://opennms.atlassian.net/browse/NMS-17988[NMS-17988])
+
+[[releasenotes-changelog-33.1.6]]
+
+== Release 33.1.6
+
+Release 33.1.6 contains bug fixes, security updates and enhancements.
+
+The codename for Horizon 33.1.6 is https://wikipedia.org/wiki/$$Basswood$$[_Basswood_].
+
+=== Bug
+
+* Changes in NMS-17726 are not properly merged in foundation-2023, foundation-2024 and horizon 33.x (Issue https://opennms.atlassian.net/browse/NMS-17734[NMS-17734])
+* Update the polyfill library (Issue https://opennms.atlassian.net/browse/NMS-17865[NMS-17865])
+* Enable secure parsing of XML files performing XSL transformation (Issue https://opennms.atlassian.net/browse/NMS-16414[NMS-16414])
+* gRPC messaging not working when Trapd is enabled on the Core server (Issue https://opennms.atlassian.net/browse/NMS-17732[NMS-17732])
+* Setting KAFKA_RPC_ and KAFKA_SINK_ variables insufficient to disable ActiveMQ for minion container (Issue https://opennms.atlassian.net/browse/NMS-17756[NMS-17756])
+* Unreachable code in Minion gRPC client (Issue https://opennms.atlassian.net/browse/NMS-17858[NMS-17858])
+* incorrectly extracts the IPs during discovery (Issue https://opennms.atlassian.net/browse/NMS-17873[NMS-17873])
+* Sanitize user provided inputs (Issue https://opennms.atlassian.net/browse/NMS-17875[NMS-17875])
+* Limit the columns for orderBy clause (Issue https://opennms.atlassian.net/browse/NMS-17876[NMS-17876])
+* SpogInventoryServiceSyncIT Failed to load ApplicationContext (Issue https://opennms.atlassian.net/browse/NMS-17896[NMS-17896])
+
+=== Enhancement
+
+* Create simple a shell script to gather and package data helpful to Client Services (Issue https://opennms.atlassian.net/browse/NMS-17077[NMS-17077])
+* Allow basic auth credentials / scv metadata in external requisition URL (Issue https://opennms.atlassian.net/browse/NMS-17318[NMS-17318])
+
+=== Story
+* Add a smoke test to validate installation of grpc exporter feature (Issue https://opennms.atlassian.net/browse/NMS-17869[NMS-17869])
+
+=== Task
+
+* FE: Display list of currently active Zenith registrations (Issue https://opennms.atlassian.net/browse/NMS-17749[NMS-17749])
+* Rest API for getting active Zenith registrations/connections (Issue https://opennms.atlassian.net/browse/NMS-17750[NMS-17750])
+* Add service to store/retrieve ZenithConnect registration info (Issue https://opennms.atlassian.net/browse/NMS-17851[NMS-17851])
+* Create GRPC server Side Tests (Issue https://opennms.atlassian.net/browse/NMS-17722[NMS-17722])
+* Create GRPC client Side Tests (Issue https://opennms.atlassian.net/browse/NMS-17723[NMS-17723])
+* Make grpc exporter compatible to run using in process server. (Issue https://opennms.atlassian.net/browse/NMS-17746[NMS-17746])
+* Update Jaeger Tracing endpoint in docs. (Issue https://opennms.atlassian.net/browse/NMS-17891[NMS-17891])
+
+[[releasenotes-changelog-33.1.5]]
+
+== Release 33.1.5
+
+Release 33.1.5 contains bug fixes, security updates and enhancements.
+
+The codename for Horizon 33.1.5 is https://wikipedia.org/wiki/$$Ilex_verticillata$$[_Winterberry_].
+
+=== Bug
+
+* ALEC installation on Sentinel Meridian (Issue https://opennms.atlassian.net/browse/NMS-15396[NMS-15396])
+* Deleting scheduled outage replayed by browser refresh (Issue https://opennms.atlassian.net/browse/NMS-15517[NMS-15517])
+* Horizon 33.0.2-1 on CentOS9 - Alarm/Event list paging filters issue (Issue https://opennms.atlassian.net/browse/NMS-16421[NMS-16421])
+* Java Heap settings are not applied when Minion is running in a container (Issue https://opennms.atlassian.net/browse/NMS-17725[NMS-17725])
+* Coretex timeseries metatags broken in 33.1.4 (Issue https://opennms.atlassian.net/browse/NMS-17753[NMS-17753])
+* Update cxf-core library (Issue https://opennms.atlassian.net/browse/NMS-17854[NMS-17854])
+* Remove R-core Reference from Installation Instructions (Issue https://opennms.atlassian.net/browse/NMS-17856[NMS-17856])
+* Update the Base image for Opennms-core, Minion and sentinel (Issue https://opennms.atlassian.net/browse/NMS-17735[NMS-17735])
+
+=== Enhancement
+
+* isInContainer KPI should recognize Azure, AWS, GCP container runtimes (Issue https://opennms.atlassian.net/browse/NMS-15676[NMS-15676])
+
+=== Story
+
+* Don't load snmp-metadata-adapter-configuration.xml by default (Issue https://opennms.atlassian.net/browse/NMS-17721[NMS-17721])
+* Add Heartbeat support for SPOG (Single Pane of Glass) (Issue https://opennms.atlassian.net/browse/NMS-17738[NMS-17738])
+* Grpc Exporter: SPOG doesn't show the new nodes that are added (Issue https://opennms.atlassian.net/browse/NMS-17857[NMS-17857])
+
+=== Task
+
+* Get Meridian system ID and return in Monitoring System API (Issue https://opennms.atlassian.net/browse/NMS-17751[NMS-17751])
+
+[[releasenotes-changelog-33.1.4]]
+
+== Release 33.1.4
+
+Release 33.1.4 contains bug fixes, security updates and enhancements.
+
+The codename for Horizon 33.1.4 is https://wikipedia.org/wiki/$$Thuja$$[_Arborvitae_].
+
+=== Bug
+
+* Device config backup ssh client throws key spec not recognised: class net.i2p.crypto.eddsa.spec.EdDSAPublicKeySpec (Issue https://issues.opennms.org/browse/NMS-16359[NMS-16359])
+* News Feed override URL should only apply to Rest service, not front end (Issue https://issues.opennms.org/browse/NMS-16373[NMS-16373])
+* Requisition file names with a colon \( : \) break resource graphs (Issue https://issues.opennms.org/browse/NMS-16537[NMS-16537])
+* Update neko-htmlunit Library (Issue https://issues.opennms.org/browse/NMS-16724[NMS-16724])
+* Asset table field userlastmodified length is too short (Issue https://issues.opennms.org/browse/NMS-17005[NMS-17005])
+* Update com.google.protobuf:protobuf-java Library (Issue https://issues.opennms.org/browse/NMS-17033[NMS-17033])
+* Update org.yaml:snakeyaml Library (Issue https://issues.opennms.org/browse/NMS-17048[NMS-17048])
+* Not possible to post graphs via the API - server returns 500 (Issue https://issues.opennms.org/browse/NMS-17073[NMS-17073])
+
+=== Story
+
+* Add support for Heartbeat in grpc exporter \( bsm\) (Issue https://issues.opennms.org/browse/NMS-17377[NMS-17377])
+* Grpc Exporter : Ability to disable BSM/ NMS-Inventory modules (Issue https://issues.opennms.org/browse/NMS-17727[NMS-17727])
+
+
+=== Enhancement
+
+* Poller log INFO message for "Another service is currently holding the lock", change to different Log Level (Issue https://issues.opennms.org/browse/NMS-16963[NMS-16963])
+* SCV metadata token replacement for system properties (Issue https://issues.opennms.org/browse/NMS-16989[NMS-16989])
+* Create simple a shell script to gather and package data helpful to Client Services (Issue https://issues.opennms.org/browse/NMS-17077[NMS-17077])
+
+=== Task
+
+* Add proto for NMS Inventory and Alarms (Issue https://issues.opennms.org/browse/NMS-16994[NMS-16994])
+* Refactoring existing GRPC client implementation and creation of new GRPC client for Alaram and Inventory (Issue https://issues.opennms.org/browse/NMS-16998[NMS-16998])
+* Replace Node to OnmsNode to pick up missing fields in proto (Issue https://issues.opennms.org/browse/NMS-17080[NMS-17080])
+* Update GRPC Routing using Sub-Domains (Issue https://issues.opennms.org/browse/NMS-17301[NMS-17301])
+* Add events updates in GRPC exporter (Issue https://issues.opennms.org/browse/NMS-17337[NMS-17337])
+
+[[releasenotes-changelog-33.1.3]]
+
+== Release 33.1.3
+
+Release 33.1.3 contains a couple of bug fixes and few enhancements.
+
+The codename for Horizon 33.1.3 is https://wikipedia.org/wiki/$$Dombeya_wallichii$$[_Pinkball_].
+
+=== Bug
+
+* DeviceConfig via Minion fails if sshScript output contains control characters (Issue https://issues.opennms.org/browse/NMS-15717[NMS-15717])
+* User tries to create an Alarm filter favorite, but the filter doesn't save the arguments of the filter (Issue https://issues.opennms.org/browse/NMS-16573[NMS-16573])
+* Update Node label component (Issue https://issues.opennms.org/browse/NMS-16585[NMS-16585])
+* Update owasp-java-html-sanitizer Library (Issue https://issues.opennms.org/browse/NMS-16637[NMS-16637])
+* Update com.google.code.gson-gson Library (Issue https://issues.opennms.org/browse/NMS-16706[NMS-16706])
+* Bug between Web UI and SCVCLI Command (Issue https://issues.opennms.org/browse/NMS-16943[NMS-16943])
+* Performance regression introduced in NMS-15647 (Issue https://issues.opennms.org/browse/NMS-16966[NMS-16966])
+* Update org.apache.mina Library (Issue https://issues.opennms.org/browse/NMS-17040[NMS-17040])
+
+=== Story
+
+* Configure tenant id for gRPC Exporter (Issue https://issues.opennms.org/browse/NMS-17003[NMS-17003])
+
+=== Enhancement
+
+* Move file utils to new library (Issue https://issues.opennms.org/browse/NMS-17074[NMS-17074])
+
+[[releasenotes-changelog-33.1.2]]
+
+== Release 33.1.2
+
+Release 33.1.2 contains a bug fix and a new feature.
+
+The codename for Horizon 33.1.2 is https://wikipedia.org/wiki/$$Cotinus$$[_Smoketree_].
+
+=== Bug
+
+* Update apache-commons-io (Issue https://issues.opennms.org/browse/NMS-16638[NMS-16638])
+* File name field in System Reports is not working (Issue https://issues.opennms.org/browse/NMS-16983[NMS-16983])
+
+=== Story
+
+* Move grpc exporter to OpenNMS repository (Issue https://issues.opennms.org/browse/NMS-16991[NMS-16991])
+
+[[releasenotes-changelog-33.1.1]]
+
+== Release 33.1.1
+
+Release 33.1.1 contains bug fixes, security updates and new features.
+
+The codename for Horizon 33.1.1 is https://wikipedia.org/wiki/$$Calliandra_haematocephala$$[_Powderpuff_].
+
+Note: Minion and OpenNMS must be on the same minor version because of changes introduced in https://issues.opennms.org/browse/NMS-16543[NMS-16543].
+
+=== Bug
+
+* 500 Server Error when sending events from GUI when OpenNMS has large number of Events configured (Issue https://issues.opennms.org/browse/NMS-16485[NMS-16485])
+* Provisioning fails when category has been deleted (Issue https://issues.opennms.org/browse/NMS-16536[NMS-16536])
+* With use-address-from-varbind traps are misassigned (Issue https://issues.opennms.org/browse/NMS-16543[NMS-16543])
+* Update protobuf (Issue https://issues.opennms.org/browse/NMS-16636[NMS-16636])
+* Update fop-core (Issue https://issues.opennms.org/browse/NMS-16961[NMS-16961])
+* Update cxf-core (Issue https://issues.opennms.org/browse/NMS-16962[NMS-16962])
+
+=== Task
+
+* DevOps: Stop including ALEC in containers (Issue https://issues.opennms.org/browse/NMS-16576[NMS-16576])
+
+=== Enhancement
+
+* Enable snmpinterface meta-data to be exposed in the time series integration layer for Pollerd metrics where possible (Issue https://issues.opennms.org/browse/NMS-16946[NMS-16946])
+
+=== New Feature
+
+* PTP implementation: Implement poller to check for desired port state (Issue https://issues.opennms.org/browse/NMS-16956[NMS-16956])
+* PTP implementation: add documentation (Issue https://issues.opennms.org/browse/NMS-16957[NMS-16957])
+
+=== Story
+
+* Include service status Integration API (Issue https://issues.opennms.org/browse/NMS-16972[NMS-16972])
+
+[[releasenotes-changelog-33.0.10]]
+
+== Release 33.0.10
+
+Release 33.0.10 contains a bunch of security updates, bug fix and enhancements.
+
+The codename for Horizon 33.0.10 is https://wikipedia.org/wiki/$$Amelanchier_arborea$$[_Downy Serviceberry_].
+
+=== Bug
+
+* Grafana reports endpoint failure (Issue https://issues.opennms.org/browse/NMS-16367[NMS-16367])
+* Version in about page points to invalid release notes (Issue https://issues.opennms.org/browse/NMS-16482[NMS-16482])
+* Structured Node List - some IP are missing (Issue https://issues.opennms.org/browse/NMS-16483[NMS-16483])
+* Installation instructions are broken and show an unresolved variable (Issue https://issues.opennms.org/browse/NMS-16490[NMS-16490])
+* Search does not return any results for Asset Search string Meridian 2024.1.3 (Issue https://issues.opennms.org/browse/NMS-16510[NMS-16510])
+* OpenNMS RESTful API provides incorrect URL in GUI after SSL enablement (Issue https://issues.opennms.org/browse/NMS-16530[NMS-16530])
+* Test case failures `org.opennms.features.newts.converter.`  numeric value is NaN (Issue https://issues.opennms.org/browse/NMS-16936[NMS-16936])
+* Test case failures: The markup in the document preceding the root element must be well-formed (Issue https://issues.opennms.org/browse/NMS-16949[NMS-16949])
+* Logging in TcpListener in Eventd is done with a foreign class (Issue https://issues.opennms.org/browse/NMS-16951[NMS-16951])
+
+=== Task
+
+* Replace babel/polyfill with core-js 3 (foundation-2021 branch) (Issue https://issues.opennms.org/browse/NMS-16477[NMS-16477])
+* Update dnsjava to version 3.6.0 if applicable (Issue https://issues.opennms.org/browse/NMS-16506[NMS-16506])
+* Update proton-j to 0.34 or latest for OSGI (Issue https://issues.opennms.org/browse/NMS-16549[NMS-16549])
+* Resolve jsoup version discrepancy seen in the dependency graph (Issue https://issues.opennms.org/browse/NMS-16552[NMS-16552])
+* Update Snakeyaml for indirect dependencies (Issue https://issues.opennms.org/browse/NMS-16570[NMS-16570])
+* Include nodeParentId in Rest API V2 returns for Node (Issue https://issues.opennms.org/browse/NMS-16571[NMS-16571])
+* Update linux UBI version to address security vulnerabilities (Issue https://issues.opennms.org/browse/NMS-16587[NMS-16587])
+
+=== Enhancement
+
+* Add Node Labels to timeseries data for pollerd services (Issue https://issues.opennms.org/browse/NMS-16497[NMS-16497])
+* Adding resourceLabels to TS data (Issue https://issues.opennms.org/browse/NMS-16498[NMS-16498])
+
+[[releasenotes-changelog-33.0.9]]
+
+== Release 33.0.9
+
+Release 33.0.9 contains a bunch of security updates, bug fix and an enhancement.
+
+The codename for Horizon 33.0.9 is https://wikipedia.org/wiki/$$Cartrema_americana$$[_Devilwood_].
+
+=== Task
+
+* Update grpc to to the next version to address CVEs (Issue https://issues.opennms.org/browse/NMS-16180[NMS-16180])
+* Update org.apache.kafka:kafka to version 3.6.2 or higher. (Issue https://issues.opennms.org/browse/NMS-16507[NMS-16507])
+* Purge jettison 1.4.x from the system directory (Issue https://issues.opennms.org/browse/NMS-16513[NMS-16513])
+* Update BouncyCastle bcpkix to 1.78 (Issue https://issues.opennms.org/browse/NMS-16514[NMS-16514])
+
+=== Bug
+
+* Usage statistics reporter throws an NPE in the stdout on startup (Issue https://issues.opennms.org/browse/NMS-16435[NMS-16435])
+
+=== Configuration
+
+* Need to Update the Example Event Forwarder Script (Issue https://issues.opennms.org/browse/NMS-16501[NMS-16501])
+
+[[releasenotes-changelog-33.0.8]]
+
+== Release 33.0.8
+
+Release 33.0.8 contains a bunch of bug fixes and an enhancement.
+
+The codename for Horizon 33.0.8 is https://wikipedia.org/wiki/$$Cassia_fistula$$[_Golden Shower tree_].
+
+=== Task
+
+* Alarm Resync (Issue https://issues.opennms.org/browse/NMS-16489[NMS-16489])
+* Update to Netty 4 (Issue https://issues.opennms.org/browse/NMS-16496[NMS-16496])
+* Update pgjdbc to version 42.5.5  (Postgres sql JDBC driver) (Issue https://issues.opennms.org/browse/NMS-16503[NMS-16503])
+* Update forked version of nekohtml parser to `>= 1.9.22.noko2`version of Nokogiri if applicable (Issue https://issues.opennms.org/browse/NMS-16504[NMS-16504])
+* Update Apache CXF to 4.0.4, 3.6.3 or 3.5.8 to fix CVE-2024-28752 (Issue https://issues.opennms.org/browse/NMS-16505[NMS-16505])
+
+=== Bug
+* Snakeyaml vulnerable to Stack overflow leading to denial of service (Issue https://issues.opennms.org/browse/NMS-15169[NMS-15169])
+
+[[releasenotes-changelog-33.0.7]]
+
+== Release 33.0.7
+
+Release 33.0.7 contains a bunch of security updates.
+
+The codename for Horizon 33.0.7 is https://wikipedia.org/wiki/$$Calliandra_surinamensis$$[_Pink powder puff_].
+
+=== Bug
+
+* Stored XSS on "Monitoring Locations" (Issue https://issues.opennms.org/browse/NMS-16443[NMS-16443])
+* Host Header Injection (Issue https://issues.opennms.org/browse/NMS-16450[NMS-16450])
+* [Web] - Missing Secure Flag on Session Cookie (Issue https://issues.opennms.org/browse/NMS-16451[NMS-16451])
+
+
+[[releasenotes-changelog-33.0.6]]
+
+== Release 33.0.6
+
+Release 33.0.6 contains a couple of bug fixes and an enhancement.
+
+The codename for Horizon 33.0.6 is https://wikipedia.org/wiki/$$Mangifera_indica$$[_Mango_].
+
+=== Task
+
+* Stalled threads in telemetryd parser (Issue https://issues.opennms.org/browse/NMS-16243[NMS-16243])
+
+=== Bug
+
+* Cross-Frame Scripting-CWE ID : 1021 Web scan vulnerability (Issue https://issues.opennms.org/browse/NMS-16369[NMS-16369])
+* Address CVE-2020-15522 (Issue https://issues.opennms.org/browse/NMS-16384[NMS-16384])
+* Querying Alarms by alarmId leads to a page that loses context on refresh (Issue https://issues.opennms.org/browse/NMS-16417[NMS-16417])
+* NMS-16243 fix missing from 33.x release series (Issue https://issues.opennms.org/browse/NMS-16441[NMS-16441])
+* Stored XSS on "MIB Compiler" (Issue https://issues.opennms.org/browse/NMS-16444[NMS-16444])
+* Stored XSS on "Scheduled Outages" (Issue https://issues.opennms.org/browse/NMS-16445[NMS-16445])
+* Missing Access Control on "Grafana Endpoints" (Issue https://issues.opennms.org/browse/NMS-16446[NMS-16446])
+* Missing Access Control on "Geocoder Configuration" (Issue https://issues.opennms.org/browse/NMS-16447[NMS-16447])
+* Stored XSS on "Node Label" (Issue https://issues.opennms.org/browse/NMS-16448[NMS-16448])
+* Detailed server configuration in the error (Issue https://issues.opennms.org/browse/NMS-16449[NMS-16449])
+* Services are deleted and recreated on each provisioning run (Issue https://issues.opennms.org/browse/NMS-16458[NMS-16458])
+
+[[releasenotes-changelog-33.0.5]]
+
+== Release 33.0.5
+
+Release 33.0.5 contains a bug fix and an enhancement.
+
+The codename for Horizon 33.0.5 is https://wikipedia.org/wiki/$$Pinus_nigra$$[_Black Pine_].
+
+=== Enhancement
+
+* Update Provisiond scan to remove old primary IP inteface (Issue https://issues.opennms.org/browse/NMS-16347[NMS-16347])
+
+=== Bug
+
+* Unable to set `collection` on detectors (Issue https://issues.opennms.org/browse/NMS-16360[NMS-16360])
+
+
+[[releasenotes-changelog-33.0.4]]
+
+== Release 33.0.4
+
+Release 33.0.4 contains a bunch of bug fixes and enhancements.
+
+The codename for Horizon 33.0.4 is https://wikipedia.org/wiki/$$Cordia_boissieri$$[_Anacahuita_].
+
+=== Bug
+
+* PostgreSQL monitor url parameter metadata cannot be resolved properly and collection fails consequently (Issue https://issues.opennms.org/browse/NMS-16374[NMS-16374])
+* Unable to display varbind's form feed characters and other control characters in events (Issue https://issues.opennms.org/browse/NMS-16395[NMS-16395])
+
+=== Enhancement
+
+* Allow fix-permissions and update-package-permissions scripts to set ownership for customized users (Issue https://issues.opennms.org/browse/NMS-16406[NMS-16406])
+
+[[releasenotes-changelog-33.0.3]]
+
+== Release 33.0.3
+
+Release 33.0.3 contains a number of bug fixes and a documentation update.
+
+The codename for Horizon 33.0.3 is https://www.gardenia.net/plant/fagus-sylvatica-pendula[_Weeping European Beech_].
+
+=== Bug
+
+* Running the config-tester -a throws an IllegalStateException for ActiveMQ context (Issue https://issues.opennms.org/browse/NMS-16355[NMS-16355])
+* CVE-2024-3094 investigation (Issue https://issues.opennms.org/browse/NMS-16396[NMS-16396])
+* Container image build fails with a wrong reference to deploy-base:ubi9-3.3.0.b265-jre-17 (Issue https://issues.opennms.org/browse/NMS-16399[NMS-16399])
+
 [[releasenotes-changelog-33.0.2]]
 
 == Release 33.0.2
@@ -124,7 +537,6 @@ The codename for Horizon 33.0.0 is https://wikipedia.org/wiki/$$Sequoia_sempervi
 * Convert deviceStore etc to pinia, remove vuex from project (Issue https://issues.opennms.org/browse/NMS-16156[NMS-16156])
 * DOCS: Document structured node list (Issue https://issues.opennms.org/browse/NMS-16210[NMS-16210])
 * Docs: Remove reference to 'opennms-cloud-plugin' plugin (Issue https://issues.opennms.org/browse/NMS-16231[NMS-16231])
-* Stalled threads in telemetryd parser (Issue https://issues.opennms.org/browse/NMS-16243[NMS-16243])
 
 === New Feature
 

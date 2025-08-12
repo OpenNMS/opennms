@@ -53,7 +53,7 @@ public final class RpcProto {
   private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
-    String[] descriptorData = {
+    java.lang.String[] descriptorData = {
       "\n\017kafka-rpc.proto\"\226\002\n\017RpcMessageProto\022\016\n" +
       "\006rpc_id\030\001 \001(\t\022\023\n\013rpc_content\030\002 \001(\014\022\021\n\tsy" +
       "stem_id\030\003 \001(\t\022\027\n\017expiration_time\030\004 \001(\004\022\034" +
@@ -64,30 +64,22 @@ public final class RpcProto {
       "\r\n\005value\030\002 \001(\t:\0028\001B2\n$org.opennms.core.i" +
       "pc.rpc.kafka.modelB\010RpcProtoP\001b\006proto3"
     };
-    com.google.protobuf.Descriptors.FileDescriptor.InternalDescriptorAssigner assigner =
-        new com.google.protobuf.Descriptors.FileDescriptor.    InternalDescriptorAssigner() {
-          public com.google.protobuf.ExtensionRegistry assignDescriptors(
-              com.google.protobuf.Descriptors.FileDescriptor root) {
-            descriptor = root;
-            return null;
-          }
-        };
-    com.google.protobuf.Descriptors.FileDescriptor
+    descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
         new com.google.protobuf.Descriptors.FileDescriptor[] {
-        }, assigner);
+        });
     internal_static_RpcMessageProto_descriptor =
       getDescriptor().getMessageTypes().get(0);
     internal_static_RpcMessageProto_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RpcMessageProto_descriptor,
-        new String[] { "RpcId", "RpcContent", "SystemId", "ExpirationTime", "CurrentChunkNumber", "TotalChunks", "TracingInfo", "ModuleId", });
+        new java.lang.String[] { "RpcId", "RpcContent", "SystemId", "ExpirationTime", "CurrentChunkNumber", "TotalChunks", "TracingInfo", "ModuleId", });
     internal_static_RpcMessageProto_TracingInfoEntry_descriptor =
       internal_static_RpcMessageProto_descriptor.getNestedTypes().get(0);
     internal_static_RpcMessageProto_TracingInfoEntry_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_RpcMessageProto_TracingInfoEntry_descriptor,
-        new String[] { "Key", "Value", });
+        new java.lang.String[] { "Key", "Value", });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

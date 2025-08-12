@@ -102,7 +102,7 @@ public class AlarmEventToIndexIT extends AbstractEventToIndexITCase {
 	// See HZN-1272
 	@Test
 	public void verifyJsonEventParameters() throws InterruptedException, IOException {
-		final int eventId = 17;
+		final long eventId = 17L;
 		final Event event = createDummyEvent(eventId);
 
 		final JsonObject addressObject = new JsonObject();
@@ -139,7 +139,7 @@ public class AlarmEventToIndexIT extends AbstractEventToIndexITCase {
 		assertEquals(jsonObject, jsonArray.get(0).getAsJsonObject().get("_source").getAsJsonObject().get("p_name").getAsJsonObject());
 	}
 
-	private static Event createDummyEvent(int eventId) {
+	private static Event createDummyEvent(long eventId) {
 		final Event event = new Event();
 		event.setUei(EventConstants.NODE_DOWN_EVENT_UEI);
 		event.setCreationTime(new Date());
@@ -150,7 +150,7 @@ public class AlarmEventToIndexIT extends AbstractEventToIndexITCase {
 		return event;
 	}
 
-	private static Event createDummyEventWithOids(int eventId) {
+	private static Event createDummyEventWithOids(long eventId) {
 		final Event event = createDummyEvent(eventId);
 		IntStream.range(1, 100).forEach(i -> {
 			Parm parm = new Parm();
@@ -161,7 +161,7 @@ public class AlarmEventToIndexIT extends AbstractEventToIndexITCase {
 		return event;
 	}
 
-	private static String buildSearchQuery(int eventId) {
+	private static String buildSearchQuery(long eventId) {
 		return "{\n"
 				+"\n       \"query\": {"
 				+ "\n         \"match\": {"

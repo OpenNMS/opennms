@@ -179,7 +179,7 @@ public class EventFactory {
      * @return a {@link org.opennms.web.event.Event} object.
      * @throws java.sql.SQLException if any.
      */
-    public static Event getEvent(int eventId) throws SQLException {
+    public static Event getEvent(long eventId) throws SQLException {
         Event event = null;
         final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(EventFactory.class, conn);
@@ -187,7 +187,7 @@ public class EventFactory {
         try {
             PreparedStatement stmt = conn.prepareStatement("SELECT events.*, monitoringsystems.id AS systemId, monitoringsystems.label AS systemLabel, monitoringsystems.location AS location, node.nodeLabel, service.serviceName FROM events LEFT OUTER JOIN monitoringsystems ON events.systemId=monitoringsystems.id LEFT OUTER JOIN node USING (nodeId) LEFT OUTER JOIN service USING (serviceId) WHERE eventId=? ");
             d.watch(stmt);
-            stmt.setInt(1, eventId);
+            stmt.setLong(1, eventId);
 
             ResultSet rs = stmt.executeQuery();
             d.watch(rs);
@@ -205,7 +205,7 @@ public class EventFactory {
         return event;
     }
 
-    public static Map<String, String> getParmsForEventId(int eventId) throws SQLException {
+    public static Map<String, String> getParmsForEventId(long eventId) throws SQLException {
         final Connection conn = DataSourceFactory.getInstance().getConnection();
         final DBUtils d = new DBUtils(EventFactory.class, conn);
 
@@ -214,7 +214,7 @@ public class EventFactory {
         try {
             PreparedStatement stmt = conn.prepareStatement("SELECT name, value FROM event_parameters WHERE eventid = ?");
             d.watch(stmt);
-            stmt.setInt(1, eventId);
+            stmt.setLong(1, eventId);
 
             ResultSet rs = stmt.executeQuery();
             d.watch(rs);
@@ -950,7 +950,7 @@ public class EventFactory {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        int[] ids = new int[events.length];
+        long[] ids = new long[events.length];
 
         for (int i = 0; i < ids.length; i++) {
             ids[i] = events[i].getId();
@@ -967,7 +967,7 @@ public class EventFactory {
      * @param user a {@link java.lang.String} object.
      * @throws java.sql.SQLException if any.
      */
-    public static void acknowledge(int[] eventIds, String user) throws SQLException {
+    public static void acknowledge(long[] eventIds, String user) throws SQLException {
         acknowledge(eventIds, user, new Date());
     }
 
@@ -979,7 +979,7 @@ public class EventFactory {
      * @param time a java$util$Date object.
      * @throws java.sql.SQLException if any.
      */
-    public static void acknowledge(int[] eventIds, String user, Date time) throws SQLException {
+    public static void acknowledge(long[] eventIds, String user, Date time) throws SQLException {
         if (eventIds == null || user == null || time == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
@@ -1120,7 +1120,7 @@ public class EventFactory {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }
 
-        int[] ids = new int[events.length];
+        long[] ids = new long[events.length];
 
         for (int i = 0; i < ids.length; i++) {
             ids[i] = events[i].getId();
@@ -1135,7 +1135,7 @@ public class EventFactory {
      * @param eventIds an array of int.
      * @throws java.sql.SQLException if any.
      */
-    public static void unacknowledge(int[] eventIds) throws SQLException {
+    public static void unacknowledge(long[] eventIds) throws SQLException {
         if (eventIds == null) {
             throw new IllegalArgumentException("Cannot take null parameters.");
         }

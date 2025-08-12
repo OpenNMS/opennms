@@ -7,29 +7,21 @@
   <div class="feather-row">
     <div class="feather-col-12">
       <div class="card">
-        <div class="feather-row">
-          <div class="feather-col-2">
-            <NodeStructurePanel />
-          </div>
-          <div :class="`feather-col-10`">
-            <NodesTable />
-          </div>
-        </div>
+        <NodesTable />
       </div>
     </div>
   </div>
 </template>
   
 <script setup lang="ts">
-import { useRoute, useRouter } from 'vue-router'
-import NodesTable from '@/components/Nodes/NodesTable.vue'
-import NodeStructurePanel from '@/components/Nodes/NodeStructurePanel.vue'
 import BreadCrumbs from '@/components/Layout/BreadCrumbs.vue'
 import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
+import NodesTable from '@/components/Nodes/NodesTable.vue'
 import { loadNodePreferences } from '@/services/localStorageService'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStructureStore } from '@/stores/nodeStructureStore'
 import { BreadCrumb, NodePreferences } from '@/types'
+import { useRoute, useRouter } from 'vue-router'
 
 const menuStore = useMenuStore()
 const nodeStructureStore = useNodeStructureStore()
@@ -86,5 +78,9 @@ watch (() => route.query, () => {
   
 <style lang="scss" scoped>
 @import "@featherds/styles/themes/variables";
+
+.card {
+  padding: 40px 50px 0px 50px;
+}
 
 </style>

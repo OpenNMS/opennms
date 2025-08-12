@@ -40,11 +40,14 @@
     </feature>
 
     <feature name="sentinel-core" description="OpenNMS :: Sentinel :: Core" version="${project.version}">
-        <feature>opennms-spring-extender</feature>
-
+        <!-- upstream features -->
         <feature>camel-core</feature>
         <feature>camel-blueprint</feature>
         <feature>camel-jaxb</feature>
+        <feature prerequisite="true">shell-compat</feature>
+
+        <!-- OpenNMS features -->
+        <feature>opennms-spring-extender</feature>
         <feature>opennms-health</feature>
         <feature>scv-api</feature>
 
@@ -62,6 +65,7 @@
         <bundle>mvn:org.opennms.features.sentinel/core/${project.version}</bundle>
 
         <!-- Useful Commands -->
+        <bundle start-level="${systemStartLevel}">mvn:org.apache.karaf.shell/org.apache.karaf.shell.core/${karafVersion}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.commands/${project.version}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.lib/${project.version}</bundle>
 
@@ -123,6 +127,7 @@
         <feature>dropwizard-metrics</feature>
         <feature version="${guavaOsgiVersion}" prerequisite="true">guava</feature>
         <feature>rate-limited-logger</feature>
+        <feature prerequisite="true">shell-compat</feature>
         <feature>sentinel-telemetry</feature>
         <feature>opennms-jest</feature>
         <feature>opennms-integration-api</feature>
@@ -131,16 +136,19 @@
         <feature>sentinel-kvstore-api</feature>
         <feature>opennms-kafka</feature>
         <feature>rate-limited-logger</feature>
-        <bundle>wrap:mvn:com.google.protobuf/protobuf-java-util/${protobufVersion}</bundle>
+        <feature>opennms-elastic-client</feature>
+        <bundle>wrap:wrap:mvn:com.google.protobuf/protobuf-java-util/${protobufVersion}$overwrite=merge&amp;Import-Package=javax.annotation;version=!,*</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.kafka-persistence/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.impl/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.elastic/${project.version}</bundle>
+        <bundle dependency="true">mvn:org.opennms.core/org.opennms.core.fileutils/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.processing/${project.version}</bundle>
         <bundle>wrap:mvn:org.freemarker/freemarker/${freemarkerVersion}$Bundle-SymbolicName=org.freemarker&amp;Bundle-Version=${freemarkerVersion}</bundle>
         <bundle>mvn:org.opennms.core/org.opennms.core.cache/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.transport/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.cache/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols/org.opennms.features.telemetry.protocols.flows/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.netflow/org.opennms.features.telemetry.protocols.netflow.adapter/${project.version}</bundle>

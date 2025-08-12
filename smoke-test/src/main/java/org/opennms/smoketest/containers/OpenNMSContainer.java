@@ -111,6 +111,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
     private static final int OPENNMS_GRPC_PORT = 8990;
     private static final int OPENNMS_BMP_PORT = 11019;
     private static final int OPENNMS_TFTP_PORT = 6969;
+    private static final int GRAFANA_PORT =3000;
 
     private static final boolean COLLECT_COVERAGE = "true".equals(System.getProperty("coverage", "false"));
 
@@ -127,6 +128,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
             .put(NetworkProtocol.GRPC, OPENNMS_GRPC_PORT)
             .put(NetworkProtocol.BMP, OPENNMS_BMP_PORT)
             .put(NetworkProtocol.TFTP, OPENNMS_TFTP_PORT)
+            .put(NetworkProtocol.GRAFANA,GRAFANA_PORT)
             .build();
 
     private final StackModel model;
@@ -163,7 +165,7 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
                 .mapToInt(Map.Entry::getValue)
                 .toArray();
 
-        String javaOpts = "-Xms2048m -Xmx2048m -Djava.security.egd=file:/dev/./urandom";
+        String javaOpts = "-Xms4g -Xmx4g -Djava.security.egd=file:/dev/./urandom";
         if (COLLECT_COVERAGE) {
             javaOpts += " -javaagent:/opt/opennms/agent/jacoco-agent.jar=output=none,jmx=true,excludes=org.drools.*";
         }
@@ -276,6 +278,8 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
             writeProps(etc.resolve("org.opennms.features.flows.persistence.elastic.cfg"),
                     ImmutableMap.<String,String>builder()
                             .put("elasticUrl", "http://" + ELASTIC_ALIAS + ":9200")
+                            // Try to use composable templates on OpenNMS
+                            .put("useComposableTemplates", "true")
                             .build());
 
             writeProps(etc.resolve("org.opennms.plugin.elasticsearch.rest.forwarder.cfg"),
@@ -370,6 +374,10 @@ public class OpenNMSContainer extends GenericContainer<OpenNMSContainer> impleme
 
     public Properties getSystemProperties() {
         final Properties props = new Properties();
+
+        if (!IpcStrategy.JMS.equals(model.getIpcStrategy())) {
+            props.put("org.opennms.activemq.broker.disable", "true");
+        }
 
         if (IpcStrategy.KAFKA.equals(model.getIpcStrategy())) {
             props.put("org.opennms.core.ipc.strategy", "kafka");

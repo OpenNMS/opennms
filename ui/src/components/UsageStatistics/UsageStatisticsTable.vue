@@ -80,16 +80,16 @@
 </template>
 
 <script setup lang="ts">
-import { FeatherSortHeader, SORT } from '@featherds/table'
 import { isNumber, isString } from '@/lib/utils'
 import { useUsageStatisticsStore } from '@/stores/usageStatisticsStore'
 import { FeatherSortObject } from '@/types'
-import UsageStatisticsModal from './UsageStatisticsModal.vue'
 import {
   UsageStatisticsData,
   UsageStatisticsMetadata,
   UsageStatisticsMetadataItem
 } from '@/types/usageStatistics'
+import { FeatherSortHeader, SORT } from '@featherds/table'
+import UsageStatisticsModal from './UsageStatisticsModal.vue'
 
 interface StatisticsItem {
   // this is just for sorting

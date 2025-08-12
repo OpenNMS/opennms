@@ -49,6 +49,7 @@ import {
 } from './deviceService'
 
 import { getMainMenu, getNotificationSummary } from './menuService'
+import { getMainMonitoringSystem } from './monitoringSystemService'
 import { getFileNames, getFile, getSnippets, postFile, deleteFile, getFileExtensions } from './configService'
 import { getAliases, getCredentialsByAlias, addCredentials, updateCredentials } from './scvService'
 
@@ -57,6 +58,7 @@ import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
 import { getIpInterfaces, getNodeIpInterfaceQuery } from './ipInterfaceService'
 import { search } from './searchService'
+import { performLogout } from './logoutService'
 import { getLogs, getLog } from './logsService'
 import { getWhoAmI } from './whoAmIService'
 import { getInfo } from './infoService'
@@ -69,6 +71,10 @@ import {
   getUsageStatisticsStatus,
   setUsageStatisticsStatus
 } from './usageStatisticsService'
+import {
+  addZenithRegistration,
+  getZenithRegistrations
+} from './zenithConnectService'
 
 export default {
   search,
@@ -97,6 +103,7 @@ export default {
   getSnippets,
   getMainMenu,
   getNotificationSummary,
+  getMainMonitoringSystem,
   getFileNames,
   getFileExtensions,
   getOpenApiV1,
@@ -123,5 +130,8 @@ export default {
   getUsageStatistics,
   getUsageStatisticsMetadata, 
   getUsageStatisticsStatus,
-  setUsageStatisticsStatus
+  setUsageStatisticsStatus,
+  addZenithRegistration,
+  getZenithRegistrations,
+  performLogout
 }

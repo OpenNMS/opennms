@@ -25,8 +25,6 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.hasSize;
 import static org.opennms.netmgt.telemetry.listeners.utils.BufferUtils.slice;
 
-import static org.opennms.integration.api.v1.flows.Flow.Direction;
-
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URISyntaxException;
@@ -39,6 +37,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.telemetry.protocols.netflow.adapter.Utils;
@@ -60,6 +59,11 @@ import io.netty.buffer.Unpooled;
  * This test validates netflow protobuf values against json output.
  */
 public class Netflow9ProtobufValidationTest {
+
+    @BeforeClass
+    public static void beforeClass() {
+        System.setProperty("karaf.etc", "src/test/resources");
+    }
 
     @Test
     public void canValidateNetflow9FlowsWithJsonOutput() {

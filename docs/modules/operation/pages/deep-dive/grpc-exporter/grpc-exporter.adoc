@@ -1,0 +1,64 @@
+= Grpc Exporter
+:description: Learn how the gRPC Exporter enables {page-component-title} to forward the status of monitored services to external applications.
+
+The Grpc Exporter feature allows {page-component-title} to forward the status of all monitored services to external applications via the gRPC protocol.
+
+These objects are encoded using link:https://developers.google.com/protocol-buffers/[Google Protocol Buffers (GPB)].
+See `monitored-services.proto` in the corresponding source distribution for the model definitions.
+
+== Configure gRPC Exporter
+
+[source, karaf]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:edit org.opennms.features.grpc.exporter
+admin@opennms()> config:property-set bsm.host bsm.onmshs.local:1443 <1>
+admin@opennms()> config:property-set spog.host nms-inventory.onmshs.local:1443 <2>
+admin@opennms()> config:property-set tenant.id opennms-prime <3>
+admin@opennms()> config:property-set tls.cert.path /opt/opennms/etc/tls.cert <4>
+admin@opennms()> config:update
+----
+
+<1> Set the hostname of the external gRPC application for the BSM
+<2> Set the hostname of the external gRPC application for the SPoG
+<3> Set tenant id for the data being sent, defaults to `opennms-prime`
+<4> Configure the path to the TLS certificate.
+
+=== Optional Configuration
+[source, karaf]
+----
+$ ssh -p 8101 admin@localhost
+...
+admin@opennms()> config:property-set tls.enabled false <1>
+admin@opennms()> config:property-set spog.enabled true <2>
+admin@opennms()> config:property-set snapshot.interval 3600 <3>
+admin@opennms()> config:property-set spog.alarms.export true <4>
+admin@opennms()> config:property-set spog.events.export true <5>
+admin@opennms()> config:property-set spog.inventory.export true <6>
+admin@opennms()> config:property-set zenith.connect.enabled false <7>
+----
+
+<1> TLS is enabled by default. For testing purposes, it can be disabled by setting this value to false.
+<2> SPoG (Service Provider over gRPC) is enabled by default. For testing purposes, it can be disabled by setting this value to false.
+<3> Update the interval (in seconds) at which the complete snapshot of services will be sent to the gRPC server,
+defaults to 3600 secs.
+<4> SPoG alarms export is enabled by default. For testing purposes, it can be disabled by setting this value to false.
+<5> SPoG events export is enabled by default. For testing purposes, it can be disabled by setting this value to false.
+<6> SPoG inventory export is enabled by default. For testing purposes, it can be disabled by setting this value to false.
+<7> The <<deep-dive/zenith-connect/introduction.adoc#zenith-connect-configuration, Zenith Connect>> feature is disabled by default for gRPC Exporter, it can be enabled by setting this value to true.
+
+== Enable gRPC Exporter
+
+Install the `opennms-grpc-exporter` feature from the same shell using:
+
+[source, karaf]
+----
+feature:install opennms-grpc-exporter
+----
+
+To ensure the feature is installed on subsequent restarts, add `opennms-grpc-exporter` to a file in featuresBoot.d:
+[source, console]
+----
+echo "opennms-grpc-exporter" | sudo tee ${OPENNMS_HOME}/etc/featuresBoot.d/grpc-exporter.boot
+----

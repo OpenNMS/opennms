@@ -21,7 +21,28 @@ CONFD_CONFIG_DIR="${MINION_HOME}/confd"
 CONFD_BIN="/usr/bin/confd"
 CONFD_CONFIG_FILE="${CONFD_CONFIG_DIR}/confd.toml"
 CACERTS="${MINION_HOME}/cacerts"
+export JAVA_OPTS="${JAVA_OPTS} -Xms${JAVA_MIN_MEM:-2g} -Xmx${JAVA_MAX_MEM:-2g}"
 
+# Prometheus JMX Exporter Configuration
+#
+# The JMX exporter allows Prometheus to scrape JMX metrics from the OpenNMS Minion applications.
+# The Prometheus JMX exporter needs to be enabled and is disabled by default.
+#
+# Requirements:
+# - PROM_JMX_EXPORTER_ENABLED=true
+# - All other settings are optional and have sensible defaults
+#
+# Default behavior:
+# - Configuration is managed via confd templates
+# - Template uses key/values from /java/agent/prom-jmx-exporter
+PROM_JMX_EXPORTER_ENABLED="${PROM_JMX_EXPORTER_ENABLED:-false}" # required
+PROM_JMX_EXPORTER_JAR="${PROM_JMX_EXPORTER_JAR:-/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar}"
+PROM_JMX_EXPORTER_PORT="${PROM_JMX_EXPORTER_PORT:-9299}"
+PROM_JMX_EXPORTER_CONFIG="${PROM_JMX_EXPORTER_CONFIG:-/opt/prom-jmx-exporter/config.yaml}"
+
+if [[ "${PROM_JMX_EXPORTER_ENABLED,,}" == "true" ]]; then
+  export JAVA_OPTS="${JAVA_OPTS} -javaagent:${PROM_JMX_EXPORTER_JAR}=${PROM_JMX_EXPORTER_PORT}:${PROM_JMX_EXPORTER_CONFIG}"
+fi
 
 export JAVA_OPTS="$JAVA_OPTS -Djava.locale.providers=CLDR,COMPAT"
 export JAVA_OPTS="$JAVA_OPTS $("${MINION_HOME}/bin/_module_opts.sh")"
@@ -95,25 +116,26 @@ function updateConfig() {
 function parseEnvironment() {
     # Configure additional features
     IFS=$'\n'
+
     for VAR in $(env)
     do
         env_var=$(echo "$VAR" | cut -d= -f1)
+        env_val=$(echo "$VAR" | cut -d= -f2)
 
-        if [[ $env_var =~ ^KAFKA_RPC_ ]]; then
-            rpc_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
-            updateConfig "$rpc_name" "${!env_var}" "${MINION_HOME}/etc/org.opennms.core.ipc.rpc.kafka.cfg"
-            if [[ "$rpc_name" == "bootstrap.servers" ]]; then
-                echo "!opennms-core-ipc-rpc-jms"   > ${MINION_HOME}/etc/featuresBoot.d/kafka-rpc.boot
-                echo "opennms-core-ipc-rpc-kafka" >> ${MINION_HOME}/etc/featuresBoot.d/kafka-rpc.boot
-            fi
+        if [ "${env_var}" == "JAVA_MIN_MEM" ]; then
+          export JAVA_OPTS="$JAVA_OPTS -Xms${env_val}"
+        fi
+        if [ "${env_var}" == "JAVA_MAX_MEM" ]; then
+          export JAVA_OPTS="$JAVA_OPTS -Xmx${env_val}"
         fi
 
-        if [[ $env_var =~ ^KAFKA_SINK_ ]]; then
-            sink_key=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
-            updateConfig "$sink_key" "${!env_var}" "${MINION_HOME}/etc/org.opennms.core.ipc.sink.kafka.cfg"
-            if [[ "$sink_key" == "bootstrap.servers" ]]; then
-                echo "!opennms-core-ipc-sink-camel" > ${MINION_HOME}/etc/featuresBoot.d/kafka-sink.boot
-                echo "opennms-core-ipc-sink-kafka" >> ${MINION_HOME}/etc/featuresBoot.d/kafka-sink.boot
+        if [[ $env_var =~ ^KAFKA_IPC_ ]]; then
+            ipc_name=$(echo "$env_var" | cut -d_ -f3- | tr '[:upper:]' '[:lower:]' | tr _ .)
+            updateConfig "$ipc_name" "${!env_var}" "${MINION_HOME}/etc/org.opennms.core.ipc.kafka.cfg"
+            if [[ "$ipc_name" == "bootstrap.servers" ]]; then
+                echo "opennms-core-ipc-kafka"   > ${MINION_HOME}/etc/featuresBoot.d/kafka.boot
+                echo "!minion-jms" > ${MINION_HOME}/etc/featuresBoot.d/disable-activemq.boot
+                echo "!opennms-core-ipc-jms" >> ${MINION_HOME}/etc/featuresBoot.d/disable-activemq.boot
             fi
         fi
     done
@@ -223,6 +245,10 @@ configure() {
     export JAVA_OPTS="$JAVA_OPTS -Djavax.net.ssl.trustStore=$CACERTS -Djavax.net.ssl.trustStorePassword=changeit"
     while read certid; do
       [[ $certid =~ ^#.* ]] && continue
+      # check if CA cert already exists and remove so re-adding doesn't error
+      if keytool -list -alias "$certid" -keystore "$CACERTS" -storepass changeit; then
+        keytool -delete -alias "$certid" -keystore "$CACERTS" -storepass changeit
+      fi
       keytool -importcert -file "/opt/minion/server-certs/$certid" -alias "$certid" -keystore "$CACERTS" -storepass changeit -noprompt
     done < "$MINION_SERVER_CERTS_CFG"
   fi

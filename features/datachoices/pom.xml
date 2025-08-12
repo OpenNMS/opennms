@@ -26,6 +26,12 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Karaf-Commands>*</Karaf-Commands>
+                    <!--    keep flows api import resolution optional to avoid the error while uninstalling the flows feature       -->
+                        <Import-Package>
+                            org.opennms.netmgt.flows.api;resolution:=optional,
+                            org.opennms.netmgt.flows.filter.api;resolution:=optional,
+                            *
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>
@@ -33,6 +39,16 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>com.github.oshi</groupId>
+            <artifactId>oshi-core</artifactId>
+            <version>${oshi.core.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.dependencies</groupId>
+            <artifactId>jna-dependencies</artifactId>
+            <type>pom</type>
+        </dependency>
         <dependency>
             <groupId>org.osgi</groupId>
             <artifactId>osgi.core</artifactId>
@@ -138,6 +154,11 @@
             <groupId>org.mockito</groupId>
             <artifactId>mockito-core</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.features.flows</groupId>
+            <artifactId>org.opennms.features.flows.api</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 </project>

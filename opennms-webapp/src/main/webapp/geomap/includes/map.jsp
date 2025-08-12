@@ -46,9 +46,17 @@
   final String mapId = getParameter(request, "mapId", "map");
 %>
 
+<%--
+  geomap-js already contains leaflet-js.
+  Including asset leaflet-js caused an issue where the global 'Map' object was being clobbered by
+  'Leaflet.Map'.
+--%>
+<%--
 <jsp:include page="/assets/load-assets.jsp" flush="false">
   <jsp:param name="asset" value="leaflet-js" />
 </jsp:include>
+--%>
+
 <jsp:include page="/assets/load-assets.jsp" flush="false">
   <jsp:param name="asset" value="geomap-js" />
 </jsp:include>

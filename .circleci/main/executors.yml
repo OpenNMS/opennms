@@ -4,7 +4,7 @@ executors:
       - image: cimg/base:stable-20.04
   build-executor:
     docker:
-      - image: opennms/build-env:circleci-ubuntu-jdk11
+      - image: opennms/build-env:circleci-ubuntu-jdk17
   coverage-executor:
     docker:
       - image: opennms/build-env:circleci-ubuntu-jdk17
@@ -19,4 +19,4 @@ executors:
       image: ubuntu-2204:current
   ui-executor:
     docker:
-      - image: cimg/node:18.18.1
+      - image: cimg/node:18.20.2

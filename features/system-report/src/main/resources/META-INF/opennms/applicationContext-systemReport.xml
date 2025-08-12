@@ -22,9 +22,21 @@
 	<bean name="osReportPlugin" class="org.opennms.systemreport.system.OSReportPlugin" />
 	<onmsgi:service id="osReportPluginService" ref="osReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
 
+	<!-- Hard Drive Capacity and Performance Details -->
+	<bean name="hardDriveReportPlugin" class="org.opennms.systemreport.system.HardDriveReportPlugin" />
+	<onmsgi:service id="hardDriveReportPluginService" ref="hardDriveReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
+
+	<!-- User Logins Details -->
+	<bean name="userLoginsReportPlugin" class="org.opennms.systemreport.system.UserLoginsReportPlugin" />
+	<onmsgi:service id="userLoginsReportPluginService" ref="userLoginsReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
+
 	<!-- OpenNMS information -->
 	<bean name="opennmsReportPlugin" class="org.opennms.systemreport.opennms.OpenNMSReportPlugin" />
 	<onmsgi:service id="opennmsReportPluginService" ref="opennmsReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
+
+	<!-- Node count information -->
+	<bean name="nodesBySysOidReportPlugin" class="org.opennms.systemreport.system.NodesBySysOidReportPlugin" />
+	<onmsgi:service id="nodesBySysOidReportPluginService" ref="nodesBySysOidReportPlugin" interface="org.opennms.systemreport.SystemReportPlugin" />
 
 	<!-- Thread Dump -->
 	<bean name="threadReportPlugin" class="org.opennms.systemreport.system.ThreadReportPlugin" />
@@ -89,5 +101,11 @@
 	<onmsgi:service id="usersPropertiesFileSanitizerService" ref="usersPropertiesFileSanitizer" interface="org.opennms.systemreport.sanitizer.ConfigFileSanitizer" />
 
 	<onmsgi:list id="configFileSanitizerList" interface="org.opennms.systemreport.sanitizer.ConfigFileSanitizer" />
+
+	<onmsgi:reference id="eventSubscriptionService" interface="org.opennms.netmgt.events.api.EventSubscriptionService"/>
+
+	<bean id="userLoginEventListener" class="org.opennms.systemreport.event.UserLoginEventListener" init-method="init" destroy-method="destroy">
+		<property name="eventSubscriptionService" ref="eventSubscriptionService" />
+	</bean>
 
 </beans>

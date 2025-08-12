@@ -50,7 +50,9 @@ public class UsageStatisticsReportDTO {
     private long m_snmpInterfacesWithFlows;
     private int m_monitoredServices;
     private int m_events;
+    private long m_eventsLastHours;
     private int m_alarms;
+    private long m_alarmsLastHours;
     private long m_situations;
     private int m_destinationPathCount;
     private Boolean m_notificationEnablementStatus;
@@ -60,6 +62,8 @@ public class UsageStatisticsReportDTO {
     private long m_minions;
     private String m_installedFeatures;
     private String m_installedOIAPlugins;
+    private String m_cpuUtilization;
+    private String m_memoryUtilization;
     private Integer m_availableProcessors;
     private Long m_freePhysicalMemorySize;
     private Long m_totalPhysicalMemorySize;
@@ -82,6 +86,7 @@ public class UsageStatisticsReportDTO {
     private long m_coreFlowsPersisted;
     private long m_coreNewtsSamplesInserted;
     private long m_coreQueuedUpdatesCompleted;
+    private long m_coreTssWritesCompleted;
     private int m_users;
     private int m_groups;
     private long m_dcbSucceed;
@@ -91,6 +96,7 @@ public class UsageStatisticsReportDTO {
     private int outages;
     private int notifications;
     private long m_onmsStartupTimeSeconds;
+    private long m_flowCountPerSecond;
 
     private Map<String, Long> m_applianceCounts = Collections.emptyMap();
 
@@ -205,6 +211,12 @@ public class UsageStatisticsReportDTO {
         return m_events;
     }
 
+    public void setEventsLastHours(long eventsLastHours) {
+        m_eventsLastHours = eventsLastHours;
+    }
+
+    public long getEventsLastHours() { return m_eventsLastHours; }
+
     public void setAlarms(int alarms) {
         m_alarms = alarms;
     }
@@ -212,6 +224,12 @@ public class UsageStatisticsReportDTO {
     public int getAlarms() {
         return m_alarms;
     }
+
+    public void setAlarmsLastHours(long alarmsLastHours) {
+        m_alarmsLastHours = alarmsLastHours;
+    }
+
+    public long getAlarmsLastHours() { return m_alarmsLastHours; }
 
     public long getSituations() {
         return m_situations;
@@ -255,6 +273,22 @@ public class UsageStatisticsReportDTO {
 
     public String getInstalledOIAPlugins() {
         return m_installedOIAPlugins;
+    }
+
+    public void setCpuUtilization(String cpuUtilization) {
+        this.m_cpuUtilization = cpuUtilization;
+    }
+
+    public String getCpuUtilization() {
+        return m_cpuUtilization;
+    }
+
+    public void setMemoryUtilization(String memoryUtilization) {
+        this.m_memoryUtilization = memoryUtilization;
+    }
+
+    public String getMemoryUtilization() {
+        return m_memoryUtilization;
     }
 
     public void setInstalledOIAPlugins(String plugins) {
@@ -436,6 +470,14 @@ public class UsageStatisticsReportDTO {
         this.m_coreQueuedUpdatesCompleted = coreQueuedUpdatesCompleted;
     }
 
+    public long getCoreTssWritesCompleted() {
+        return m_coreTssWritesCompleted;
+    }
+
+    public void setCoreTssWritesCompleted(long coreTssWritesCompleted) {
+        this.m_coreTssWritesCompleted = coreTssWritesCompleted;
+    }
+
     public void setSinkStrategy(String sinkStrategy) {
         this.m_sinkStrategy = sinkStrategy;
     }
@@ -526,6 +568,15 @@ public class UsageStatisticsReportDTO {
 
     public void setApplianceCounts(Map<String, Long> applianceCounts) {
         m_applianceCounts = applianceCounts;
+    }
+
+
+    public long getFlowCountPerSecond() {
+        return m_flowCountPerSecond;
+    }
+
+    public void setFlowCountPerSecond(long flowCountPerSecond) {
+        this.m_flowCountPerSecond = flowCountPerSecond;
     }
 
     public String toJson() {

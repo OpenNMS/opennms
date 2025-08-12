@@ -53,12 +53,26 @@ public class ProportionalSumAggregation extends Aggregation {
 
     private void parseBuckets(JsonArray bucketsSource) {
         for (JsonElement bucket : bucketsSource) {
-            Long time = bucket.getAsJsonObject().get(String.valueOf(KEY)).getAsLong();
-            String timeAsString = bucket.getAsJsonObject().get(String.valueOf(KEY_AS_STRING)).getAsString();
-            Long count = bucket.getAsJsonObject().get(String.valueOf(DOC_COUNT)).getAsLong();
-            Double value = bucket.getAsJsonObject().get(String.valueOf(AggregationField.VALUE)).getAsDouble();
+            JsonObject bucketObj = bucket.getAsJsonObject();
 
-            dateHistograms.add(new ProportionalSumAggregation.DateHistogram(bucket.getAsJsonObject(), time, timeAsString, value, count));
+            // Get key (time) - this should always exist
+            JsonElement keyElement = bucketObj.get(String.valueOf(KEY));
+            Long time = keyElement != null ? keyElement.getAsLong() : null;
+            if (time == null) {
+                continue; // Skip buckets without a key
+            }
+
+            // Get key_as_string
+            JsonElement keyAsStringElement = bucketObj.get(String.valueOf(KEY_AS_STRING));
+            String timeAsString = keyAsStringElement != null ? keyAsStringElement.getAsString() : String.valueOf(time);
+
+            JsonElement docCountElement = bucketObj.get(String.valueOf(DOC_COUNT));
+            Long count = docCountElement != null ? docCountElement.getAsLong() : 0L;
+            
+            JsonElement valueElement = bucketObj.get(String.valueOf(AggregationField.VALUE));
+            Double value = valueElement != null ? valueElement.getAsDouble() : 0.0;
+
+            dateHistograms.add(new ProportionalSumAggregation.DateHistogram(bucketObj, time, timeAsString, value, count));
         }
     }
 

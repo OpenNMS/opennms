@@ -36,8 +36,9 @@ public class BsmDatabasePopulator extends DatabasePopulator {
         super.populateDatabase();
     }
 
-    public void resetDatabase(boolean cleanUpNotInitializedBusinessServicesAsWell) {
-        resetDatabase();
+    public void resetDatabase(boolean includingMonitoringSystems, boolean cleanUpNotInitializedBusinessServicesAsWell) {
+        super.resetDatabase(includingMonitoringSystems);
+
         if (cleanUpNotInitializedBusinessServicesAsWell) {
             businessServiceDao.findAll().forEach(eachBs -> businessServiceDao.delete(eachBs));
         }

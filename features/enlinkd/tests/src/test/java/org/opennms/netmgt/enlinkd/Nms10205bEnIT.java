@@ -483,7 +483,7 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> mumbaiospflinks = m_ospfLinkDao.findByNodeId(mumbai.getId());
         printOspfTopology(mumbaiospflinks);
         assertEquals(4,mumbaiospflinks.size());
-        Thread.sleep(1000);
+        Thread.sleep(200);
         
         assertTrue(m_linkd.runSingleSnmpCollection(delhi.getId()));
         OspfElement delhiospfelem = m_ospfElementDao.findByRouterId(DELHI_OSPF_ID);
@@ -494,7 +494,7 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> delhiospflinks = m_ospfLinkDao.findByNodeId(delhi.getId());
         printOspfTopology(delhiospflinks);
         assertEquals(3,delhiospflinks.size());
-        Thread.sleep(1000);
+        Thread.sleep(200);
 
         assertTrue(m_linkd.runSingleSnmpCollection(bangalore.getId()));
         OspfElement bangaloreospfelem = m_ospfElementDao.findByRouterId(BANGALORE_OSPF_ID);
@@ -505,7 +505,7 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> bangaloreospflinks = m_ospfLinkDao.findByNodeId(bangalore.getId());
         printOspfTopology(bangaloreospflinks);
         assertEquals(4,bangaloreospflinks.size());
-        Thread.sleep(1000);
+        Thread.sleep(200);
 
         assertTrue(m_linkd.runSingleSnmpCollection(bagmane.getId()));
         OspfElement bagmaneospfelem = m_ospfElementDao.findByRouterId(BAGMANE_OSPF_ID);
@@ -516,7 +516,7 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> bagmaneospflinks = m_ospfLinkDao.findByNodeId(bagmane.getId());
         printOspfTopology(bagmaneospflinks);
         assertEquals(4,bagmaneospflinks.size());
-        Thread.sleep(1000);
+        Thread.sleep(200);
 
         assertTrue(m_linkd.runSingleSnmpCollection(mysore.getId()));
         OspfElement mysoreospfelem = m_ospfElementDao.findByRouterId(MYSORE_OSPF_ID);
@@ -527,7 +527,7 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> mysoreosplinks = m_ospfLinkDao.findByNodeId(mysore.getId());
         printOspfTopology(mysoreosplinks);
         assertEquals(2,mysoreosplinks.size());
-        Thread.sleep(1000);
+        Thread.sleep(200);
 
         assertTrue(m_linkd.runSingleSnmpCollection(spaceexsw1.getId()));
         OspfElement spaceexsw1ospfelem = m_ospfElementDao.findByRouterId(SPACE_EX_SW1_OSPF_ID);
@@ -538,7 +538,7 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> spaceexsw1ospflinks = m_ospfLinkDao.findByNodeId(spaceexsw1.getId());
         printOspfTopology(spaceexsw1ospflinks);
         assertEquals(2,spaceexsw1ospflinks.size());
-        Thread.sleep(1000);
+        Thread.sleep(200);
 
         assertTrue(m_linkd.runSingleSnmpCollection(spaceexsw2.getId()));
         OspfElement spaceexsw2ospfelem = m_ospfElementDao.findByRouterId(SPACE_EX_SW2_OSPF_ID);
@@ -549,7 +549,7 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> spaceexsw2ospflinks = m_ospfLinkDao.findByNodeId(spaceexsw2.getId());
         printOspfTopology(spaceexsw2ospflinks);
         assertEquals(2,spaceexsw2ospflinks.size());
-        Thread.sleep(1000);
+        Thread.sleep(200);
 
         assertTrue(m_linkd.runSingleSnmpCollection(j635042.getId()));
         OspfElement j635042ospfelem = m_ospfElementDao.findByRouterId(J6350_42_OSPF_ID);
@@ -560,7 +560,7 @@ Address          Interface              State     ID               Pri  Dead
         final List<OspfLink> j635042ospflinks = m_ospfLinkDao.findByNodeId(j635042.getId());
         printOspfTopology(j635042ospflinks);
         assertEquals(1,j635042ospflinks.size());
-        Thread.sleep(1000);
+        Thread.sleep(200);
 
         assertTrue(m_linkd.runSingleSnmpCollection(srx100.getId()));
         assertNull(m_ospfElementDao.findByNodeId(srx100.getId()));

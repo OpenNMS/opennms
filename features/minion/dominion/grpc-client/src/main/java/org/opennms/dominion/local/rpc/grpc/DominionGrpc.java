@@ -43,7 +43,7 @@ public final class DominionGrpc {
      * <code>string clientId = 1;</code>
      * @return The clientId.
      */
-    String getClientId();
+    java.lang.String getClientId();
     /**
      * <code>string clientId = 1;</code>
      * @return The bytes for clientId.
@@ -55,7 +55,7 @@ public final class DominionGrpc {
      * <code>string clientSecret = 2;</code>
      * @return The clientSecret.
      */
-    String getClientSecret();
+    java.lang.String getClientSecret();
     /**
      * <code>string clientSecret = 2;</code>
      * @return The bytes for clientSecret.
@@ -66,7 +66,7 @@ public final class DominionGrpc {
   /**
    * Protobuf type {@code dominion.v1.ClientCredentials}
    */
-  public  static final class ClientCredentials extends
+  public static final class ClientCredentials extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:dominion.v1.ClientCredentials)
       ClientCredentialsOrBuilder {
@@ -80,73 +80,19 @@ public final class DominionGrpc {
       clientSecret_ = "";
     }
 
-    @Override
+    @java.lang.Override
     @SuppressWarnings({"unused"})
-    protected Object newInstance(
+    protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
       return new ClientCredentials();
     }
 
-    @Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private ClientCredentials(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              String s = input.readStringRequireUtf8();
-
-              clientId_ = s;
-              break;
-            }
-            case 18: {
-              String s = input.readStringRequireUtf8();
-
-              clientSecret_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ClientCredentials_descriptor;
     }
 
-    @Override
+    @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ClientCredentials_fieldAccessorTable
@@ -155,19 +101,21 @@ public final class DominionGrpc {
     }
 
     public static final int CLIENTID_FIELD_NUMBER = 1;
-    private volatile Object clientId_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object clientId_ = "";
     /**
      * <code>string clientId = 1;</code>
      * @return The clientId.
      */
-    public String getClientId() {
-      Object ref = clientId_;
-      if (ref instanceof String) {
-        return (String) ref;
+    @java.lang.Override
+    public java.lang.String getClientId() {
+      java.lang.Object ref = clientId_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+        java.lang.String s = bs.toStringUtf8();
         clientId_ = s;
         return s;
       }
@@ -176,13 +124,14 @@ public final class DominionGrpc {
      * <code>string clientId = 1;</code>
      * @return The bytes for clientId.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getClientIdBytes() {
-      Object ref = clientId_;
-      if (ref instanceof String) {
+      java.lang.Object ref = clientId_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                (java.lang.String) ref);
         clientId_ = b;
         return b;
       } else {
@@ -191,19 +140,21 @@ public final class DominionGrpc {
     }
 
     public static final int CLIENTSECRET_FIELD_NUMBER = 2;
-    private volatile Object clientSecret_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object clientSecret_ = "";
     /**
      * <code>string clientSecret = 2;</code>
      * @return The clientSecret.
      */
-    public String getClientSecret() {
-      Object ref = clientSecret_;
-      if (ref instanceof String) {
-        return (String) ref;
+    @java.lang.Override
+    public java.lang.String getClientSecret() {
+      java.lang.Object ref = clientSecret_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+        java.lang.String s = bs.toStringUtf8();
         clientSecret_ = s;
         return s;
       }
@@ -212,13 +163,14 @@ public final class DominionGrpc {
      * <code>string clientSecret = 2;</code>
      * @return The bytes for clientSecret.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getClientSecretBytes() {
-      Object ref = clientSecret_;
-      if (ref instanceof String) {
+      java.lang.Object ref = clientSecret_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                (java.lang.String) ref);
         clientSecret_ = b;
         return b;
       } else {
@@ -227,7 +179,7 @@ public final class DominionGrpc {
     }
 
     private byte memoizedIsInitialized = -1;
-    @Override
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -237,37 +189,37 @@ public final class DominionGrpc {
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getClientIdBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(clientId_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, clientId_);
       }
-      if (!getClientSecretBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(clientSecret_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, clientSecret_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
-    @Override
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
-      if (!getClientIdBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(clientId_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, clientId_);
       }
-      if (!getClientSecretBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(clientSecret_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, clientSecret_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    @Override
-    public boolean equals(final Object obj) {
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
        return true;
       }
@@ -280,11 +232,11 @@ public final class DominionGrpc {
           .equals(other.getClientId())) return false;
       if (!getClientSecret()
           .equals(other.getClientSecret())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public int hashCode() {
       if (memoizedHashCode != 0) {
         return memoizedHashCode;
@@ -295,7 +247,7 @@ public final class DominionGrpc {
       hash = (53 * hash) + getClientId().hashCode();
       hash = (37 * hash) + CLIENTSECRET_FIELD_NUMBER;
       hash = (53 * hash) + getClientSecret().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -344,11 +296,13 @@ public final class DominionGrpc {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -370,7 +324,7 @@ public final class DominionGrpc {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    @Override
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -378,13 +332,13 @@ public final class DominionGrpc {
     public static Builder newBuilder(org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
-    @Override
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
     }
 
-    @Override
+    @java.lang.Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
@@ -402,7 +356,7 @@ public final class DominionGrpc {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ClientCredentials_descriptor;
       }
 
-      @Override
+      @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ClientCredentials_fieldAccessorTable
@@ -412,41 +366,35 @@ public final class DominionGrpc {
 
       // Construct using org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
+
       }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
-      }
-      @Override
+      @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         clientId_ = "";
-
         clientSecret_ = "";
-
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ClientCredentials_descriptor;
       }
 
-      @Override
+      @java.lang.Override
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials getDefaultInstanceForType() {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.getDefaultInstance();
       }
 
-      @Override
+      @java.lang.Override
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials build() {
         org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials result = buildPartial();
         if (!result.isInitialized()) {
@@ -455,48 +403,57 @@ public final class DominionGrpc {
         return result;
       }
 
-      @Override
+      @java.lang.Override
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials buildPartial() {
         org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials result = new org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials(this);
-        result.clientId_ = clientId_;
-        result.clientSecret_ = clientSecret_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @Override
+      private void buildPartial0(org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.clientId_ = clientId_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.clientSecret_ = clientSecret_;
+        }
+      }
+
+      @java.lang.Override
       public Builder clone() {
         return super.clone();
       }
-      @Override
+      @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return super.setField(field, value);
       }
-      @Override
+      @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
         return super.clearField(field);
       }
-      @Override
+      @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
         return super.clearOneof(oneof);
       }
-      @Override
+      @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, Object value) {
+          int index, java.lang.Object value) {
         return super.setRepeatedField(field, index, value);
       }
-      @Override
+      @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return super.addRepeatedField(field, value);
       }
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials) {
           return mergeFrom((org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials)other);
@@ -510,56 +467,82 @@ public final class DominionGrpc {
         if (other == org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.getDefaultInstance()) return this;
         if (!other.getClientId().isEmpty()) {
           clientId_ = other.clientId_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (!other.getClientSecret().isEmpty()) {
           clientSecret_ = other.clientSecret_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                clientId_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                clientSecret_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
+      private int bitField0_;
 
-      private Object clientId_ = "";
+      private java.lang.Object clientId_ = "";
       /**
        * <code>string clientId = 1;</code>
        * @return The clientId.
        */
-      public String getClientId() {
-        Object ref = clientId_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getClientId() {
+        java.lang.Object ref = clientId_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+          java.lang.String s = bs.toStringUtf8();
           clientId_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
@@ -568,11 +551,11 @@ public final class DominionGrpc {
        */
       public com.google.protobuf.ByteString
           getClientIdBytes() {
-        Object ref = clientId_;
+        java.lang.Object ref = clientId_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  (java.lang.String) ref);
           clientId_ = b;
           return b;
         } else {
@@ -585,12 +568,10 @@ public final class DominionGrpc {
        * @return This builder for chaining.
        */
       public Builder setClientId(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
         clientId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -599,8 +580,8 @@ public final class DominionGrpc {
        * @return This builder for chaining.
        */
       public Builder clearClientId() {
-        
         clientId_ = getDefaultInstance().getClientId();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -611,31 +592,29 @@ public final class DominionGrpc {
        */
       public Builder setClientIdBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         clientId_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
 
-      private Object clientSecret_ = "";
+      private java.lang.Object clientSecret_ = "";
       /**
        * <code>string clientSecret = 2;</code>
        * @return The clientSecret.
        */
-      public String getClientSecret() {
-        Object ref = clientSecret_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getClientSecret() {
+        java.lang.Object ref = clientSecret_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+          java.lang.String s = bs.toStringUtf8();
           clientSecret_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
@@ -644,11 +623,11 @@ public final class DominionGrpc {
        */
       public com.google.protobuf.ByteString
           getClientSecretBytes() {
-        Object ref = clientSecret_;
+        java.lang.Object ref = clientSecret_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  (java.lang.String) ref);
           clientSecret_ = b;
           return b;
         } else {
@@ -661,12 +640,10 @@ public final class DominionGrpc {
        * @return This builder for chaining.
        */
       public Builder setClientSecret(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
         clientSecret_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -675,8 +652,8 @@ public final class DominionGrpc {
        * @return This builder for chaining.
        */
       public Builder clearClientSecret() {
-        
         clientSecret_ = getDefaultInstance().getClientSecret();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -687,22 +664,20 @@ public final class DominionGrpc {
        */
       public Builder setClientSecretBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         clientSecret_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
-      @Override
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
-      @Override
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
@@ -724,12 +699,23 @@ public final class DominionGrpc {
 
     private static final com.google.protobuf.Parser<ClientCredentials>
         PARSER = new com.google.protobuf.AbstractParser<ClientCredentials>() {
-      @Override
+      @java.lang.Override
       public ClientCredentials parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new ClientCredentials(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -737,12 +723,12 @@ public final class DominionGrpc {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<ClientCredentials> getParserForType() {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -771,7 +757,7 @@ public final class DominionGrpc {
   /**
    * Protobuf type {@code dominion.v1.ScvSupportedAliasesRequest}
    */
-  public  static final class ScvSupportedAliasesRequest extends
+  public static final class ScvSupportedAliasesRequest extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:dominion.v1.ScvSupportedAliasesRequest)
       ScvSupportedAliasesRequestOrBuilder {
@@ -783,74 +769,19 @@ public final class DominionGrpc {
     private ScvSupportedAliasesRequest() {
     }
 
-    @Override
+    @java.lang.Override
     @SuppressWarnings({"unused"})
-    protected Object newInstance(
+    protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
       return new ScvSupportedAliasesRequest();
     }
 
-    @Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private ScvSupportedAliasesRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.Builder subBuilder = null;
-              if (clientCredentials_ != null) {
-                subBuilder = clientCredentials_.toBuilder();
-              }
-              clientCredentials_ = input.readMessage(org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(clientCredentials_);
-                clientCredentials_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvSupportedAliasesRequest_descriptor;
     }
 
-    @Override
+    @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvSupportedAliasesRequest_fieldAccessorTable
@@ -858,31 +789,35 @@ public final class DominionGrpc {
               org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesRequest.class, org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesRequest.Builder.class);
     }
 
+    private int bitField0_;
     public static final int CLIENTCREDENTIALS_FIELD_NUMBER = 1;
     private org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials clientCredentials_;
     /**
      * <code>.dominion.v1.ClientCredentials clientCredentials = 1;</code>
      * @return Whether the clientCredentials field is set.
      */
+    @java.lang.Override
     public boolean hasClientCredentials() {
-      return clientCredentials_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <code>.dominion.v1.ClientCredentials clientCredentials = 1;</code>
      * @return The clientCredentials.
      */
+    @java.lang.Override
     public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials getClientCredentials() {
       return clientCredentials_ == null ? org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.getDefaultInstance() : clientCredentials_;
     }
     /**
      * <code>.dominion.v1.ClientCredentials clientCredentials = 1;</code>
      */
+    @java.lang.Override
     public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentialsOrBuilder getClientCredentialsOrBuilder() {
-      return getClientCredentials();
+      return clientCredentials_ == null ? org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.getDefaultInstance() : clientCredentials_;
     }
 
     private byte memoizedIsInitialized = -1;
-    @Override
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -892,32 +827,32 @@ public final class DominionGrpc {
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (clientCredentials_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(1, getClientCredentials());
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
-    @Override
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
-      if (clientCredentials_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, getClientCredentials());
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    @Override
-    public boolean equals(final Object obj) {
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
        return true;
       }
@@ -931,11 +866,11 @@ public final class DominionGrpc {
         if (!getClientCredentials()
             .equals(other.getClientCredentials())) return false;
       }
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public int hashCode() {
       if (memoizedHashCode != 0) {
         return memoizedHashCode;
@@ -946,7 +881,7 @@ public final class DominionGrpc {
         hash = (37 * hash) + CLIENTCREDENTIALS_FIELD_NUMBER;
         hash = (53 * hash) + getClientCredentials().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -995,11 +930,13 @@ public final class DominionGrpc {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1021,7 +958,7 @@ public final class DominionGrpc {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    @Override
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -1029,13 +966,13 @@ public final class DominionGrpc {
     public static Builder newBuilder(org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesRequest prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
-    @Override
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
     }
 
-    @Override
+    @java.lang.Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
@@ -1053,7 +990,7 @@ public final class DominionGrpc {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvSupportedAliasesRequest_descriptor;
       }
 
-      @Override
+      @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvSupportedAliasesRequest_fieldAccessorTable
@@ -1074,32 +1011,33 @@ public final class DominionGrpc {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
+          getClientCredentialsFieldBuilder();
         }
       }
-      @Override
+      @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (clientCredentialsBuilder_ == null) {
-          clientCredentials_ = null;
-        } else {
-          clientCredentials_ = null;
+        bitField0_ = 0;
+        clientCredentials_ = null;
+        if (clientCredentialsBuilder_ != null) {
+          clientCredentialsBuilder_.dispose();
           clientCredentialsBuilder_ = null;
         }
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvSupportedAliasesRequest_descriptor;
       }
 
-      @Override
+      @java.lang.Override
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesRequest getDefaultInstanceForType() {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesRequest.getDefaultInstance();
       }
 
-      @Override
+      @java.lang.Override
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesRequest build() {
         org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesRequest result = buildPartial();
         if (!result.isInitialized()) {
@@ -1108,51 +1046,59 @@ public final class DominionGrpc {
         return result;
       }
 
-      @Override
+      @java.lang.Override
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesRequest buildPartial() {
         org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesRequest result = new org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesRequest(this);
-        if (clientCredentialsBuilder_ == null) {
-          result.clientCredentials_ = clientCredentials_;
-        } else {
-          result.clientCredentials_ = clientCredentialsBuilder_.build();
-        }
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @Override
+      private void buildPartial0(org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesRequest result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.clientCredentials_ = clientCredentialsBuilder_ == null
+              ? clientCredentials_
+              : clientCredentialsBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        result.bitField0_ |= to_bitField0_;
+      }
+
+      @java.lang.Override
       public Builder clone() {
         return super.clone();
       }
-      @Override
+      @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return super.setField(field, value);
       }
-      @Override
+      @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
         return super.clearField(field);
       }
-      @Override
+      @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
         return super.clearOneof(oneof);
       }
-      @Override
+      @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, Object value) {
+          int index, java.lang.Object value) {
         return super.setRepeatedField(field, index, value);
       }
-      @Override
+      @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return super.addRepeatedField(field, value);
       }
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesRequest) {
           return mergeFrom((org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesRequest)other);
@@ -1167,34 +1113,55 @@ public final class DominionGrpc {
         if (other.hasClientCredentials()) {
           mergeClientCredentials(other.getClientCredentials());
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesRequest parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                input.readMessage(
+                    getClientCredentialsFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
+      private int bitField0_;
 
       private org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials clientCredentials_;
       private com.google.protobuf.SingleFieldBuilderV3<
@@ -1204,7 +1171,7 @@ public final class DominionGrpc {
        * @return Whether the clientCredentials field is set.
        */
       public boolean hasClientCredentials() {
-        return clientCredentialsBuilder_ != null || clientCredentials_ != null;
+        return ((bitField0_ & 0x00000001) != 0);
       }
       /**
        * <code>.dominion.v1.ClientCredentials clientCredentials = 1;</code>
@@ -1226,11 +1193,11 @@ public final class DominionGrpc {
             throw new NullPointerException();
           }
           clientCredentials_ = value;
-          onChanged();
         } else {
           clientCredentialsBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -1240,11 +1207,11 @@ public final class DominionGrpc {
           org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.Builder builderForValue) {
         if (clientCredentialsBuilder_ == null) {
           clientCredentials_ = builderForValue.build();
-          onChanged();
         } else {
           clientCredentialsBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -1252,38 +1219,40 @@ public final class DominionGrpc {
        */
       public Builder mergeClientCredentials(org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials value) {
         if (clientCredentialsBuilder_ == null) {
-          if (clientCredentials_ != null) {
-            clientCredentials_ =
-              org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.newBuilder(clientCredentials_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000001) != 0) &&
+            clientCredentials_ != null &&
+            clientCredentials_ != org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.getDefaultInstance()) {
+            getClientCredentialsBuilder().mergeFrom(value);
           } else {
             clientCredentials_ = value;
           }
-          onChanged();
         } else {
           clientCredentialsBuilder_.mergeFrom(value);
         }
-
+        if (clientCredentials_ != null) {
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
         return this;
       }
       /**
        * <code>.dominion.v1.ClientCredentials clientCredentials = 1;</code>
        */
       public Builder clearClientCredentials() {
-        if (clientCredentialsBuilder_ == null) {
-          clientCredentials_ = null;
-          onChanged();
-        } else {
-          clientCredentials_ = null;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        clientCredentials_ = null;
+        if (clientCredentialsBuilder_ != null) {
+          clientCredentialsBuilder_.dispose();
           clientCredentialsBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
        * <code>.dominion.v1.ClientCredentials clientCredentials = 1;</code>
        */
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.Builder getClientCredentialsBuilder() {
-        
+        bitField0_ |= 0x00000001;
         onChanged();
         return getClientCredentialsFieldBuilder().getBuilder();
       }
@@ -1314,13 +1283,13 @@ public final class DominionGrpc {
         }
         return clientCredentialsBuilder_;
       }
-      @Override
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
-      @Override
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
@@ -1342,12 +1311,23 @@ public final class DominionGrpc {
 
     private static final com.google.protobuf.Parser<ScvSupportedAliasesRequest>
         PARSER = new com.google.protobuf.AbstractParser<ScvSupportedAliasesRequest>() {
-      @Override
+      @java.lang.Override
       public ScvSupportedAliasesRequest parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new ScvSupportedAliasesRequest(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -1355,12 +1335,12 @@ public final class DominionGrpc {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<ScvSupportedAliasesRequest> getParserForType() {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesRequest getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -1375,7 +1355,7 @@ public final class DominionGrpc {
      * <code>repeated string aliases = 1;</code>
      * @return A list containing the aliases.
      */
-    java.util.List<String>
+    java.util.List<java.lang.String>
         getAliasesList();
     /**
      * <code>repeated string aliases = 1;</code>
@@ -1387,7 +1367,7 @@ public final class DominionGrpc {
      * @param index The index of the element to return.
      * @return The aliases at the given index.
      */
-    String getAliases(int index);
+    java.lang.String getAliases(int index);
     /**
      * <code>repeated string aliases = 1;</code>
      * @param index The index of the value to return.
@@ -1399,7 +1379,7 @@ public final class DominionGrpc {
   /**
    * Protobuf type {@code dominion.v1.ScvSupportedAliasesResponse}
    */
-  public  static final class ScvSupportedAliasesResponse extends
+  public static final class ScvSupportedAliasesResponse extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:dominion.v1.ScvSupportedAliasesResponse)
       ScvSupportedAliasesResponseOrBuilder {
@@ -1409,77 +1389,23 @@ public final class DominionGrpc {
       super(builder);
     }
     private ScvSupportedAliasesResponse() {
-      aliases_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      aliases_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
     }
 
-    @Override
+    @java.lang.Override
     @SuppressWarnings({"unused"})
-    protected Object newInstance(
+    protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
       return new ScvSupportedAliasesResponse();
     }
 
-    @Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private ScvSupportedAliasesResponse(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              String s = input.readStringRequireUtf8();
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                aliases_ = new com.google.protobuf.LazyStringArrayList();
-                mutable_bitField0_ |= 0x00000001;
-              }
-              aliases_.add(s);
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        if (((mutable_bitField0_ & 0x00000001) != 0)) {
-          aliases_ = aliases_.getUnmodifiableView();
-        }
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvSupportedAliasesResponse_descriptor;
     }
 
-    @Override
+    @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvSupportedAliasesResponse_fieldAccessorTable
@@ -1488,7 +1414,9 @@ public final class DominionGrpc {
     }
 
     public static final int ALIASES_FIELD_NUMBER = 1;
-    private com.google.protobuf.LazyStringList aliases_;
+    @SuppressWarnings("serial")
+    private com.google.protobuf.LazyStringArrayList aliases_ =
+        com.google.protobuf.LazyStringArrayList.emptyList();
     /**
      * <code>repeated string aliases = 1;</code>
      * @return A list containing the aliases.
@@ -1509,7 +1437,7 @@ public final class DominionGrpc {
      * @param index The index of the element to return.
      * @return The aliases at the given index.
      */
-    public String getAliases(int index) {
+    public java.lang.String getAliases(int index) {
       return aliases_.get(index);
     }
     /**
@@ -1523,7 +1451,7 @@ public final class DominionGrpc {
     }
 
     private byte memoizedIsInitialized = -1;
-    @Override
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -1533,16 +1461,16 @@ public final class DominionGrpc {
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
       for (int i = 0; i < aliases_.size(); i++) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, aliases_.getRaw(i));
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
-    @Override
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
@@ -1556,13 +1484,13 @@ public final class DominionGrpc {
         size += dataSize;
         size += 1 * getAliasesList().size();
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    @Override
-    public boolean equals(final Object obj) {
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
        return true;
       }
@@ -1573,11 +1501,11 @@ public final class DominionGrpc {
 
       if (!getAliasesList()
           .equals(other.getAliasesList())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public int hashCode() {
       if (memoizedHashCode != 0) {
         return memoizedHashCode;
@@ -1588,7 +1516,7 @@ public final class DominionGrpc {
         hash = (37 * hash) + ALIASES_FIELD_NUMBER;
         hash = (53 * hash) + getAliasesList().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -1637,11 +1565,13 @@ public final class DominionGrpc {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -1663,7 +1593,7 @@ public final class DominionGrpc {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    @Override
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -1671,13 +1601,13 @@ public final class DominionGrpc {
     public static Builder newBuilder(org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesResponse prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
-    @Override
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
     }
 
-    @Override
+    @java.lang.Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
@@ -1695,7 +1625,7 @@ public final class DominionGrpc {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvSupportedAliasesResponse_descriptor;
       }
 
-      @Override
+      @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvSupportedAliasesResponse_fieldAccessorTable
@@ -1705,39 +1635,35 @@ public final class DominionGrpc {
 
       // Construct using org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesResponse.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
+
       }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
-      }
-      @Override
+      @java.lang.Override
       public Builder clear() {
         super.clear();
-        aliases_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        bitField0_ = 0;
+        aliases_ =
+            com.google.protobuf.LazyStringArrayList.emptyList();
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvSupportedAliasesResponse_descriptor;
       }
 
-      @Override
+      @java.lang.Override
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesResponse getDefaultInstanceForType() {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesResponse.getDefaultInstance();
       }
 
-      @Override
+      @java.lang.Override
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesResponse build() {
         org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesResponse result = buildPartial();
         if (!result.isInitialized()) {
@@ -1746,52 +1672,55 @@ public final class DominionGrpc {
         return result;
       }
 
-      @Override
+      @java.lang.Override
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesResponse buildPartial() {
         org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesResponse result = new org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesResponse(this);
-        int from_bitField0_ = bitField0_;
-        if (((bitField0_ & 0x00000001) != 0)) {
-          aliases_ = aliases_.getUnmodifiableView();
-          bitField0_ = (bitField0_ & ~0x00000001);
-        }
-        result.aliases_ = aliases_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @Override
+      private void buildPartial0(org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesResponse result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          aliases_.makeImmutable();
+          result.aliases_ = aliases_;
+        }
+      }
+
+      @java.lang.Override
       public Builder clone() {
         return super.clone();
       }
-      @Override
+      @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return super.setField(field, value);
       }
-      @Override
+      @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
         return super.clearField(field);
       }
-      @Override
+      @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
         return super.clearOneof(oneof);
       }
-      @Override
+      @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, Object value) {
+          int index, java.lang.Object value) {
         return super.setRepeatedField(field, index, value);
       }
-      @Override
+      @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return super.addRepeatedField(field, value);
       }
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesResponse) {
           return mergeFrom((org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesResponse)other);
@@ -1806,49 +1735,69 @@ public final class DominionGrpc {
         if (!other.aliases_.isEmpty()) {
           if (aliases_.isEmpty()) {
             aliases_ = other.aliases_;
-            bitField0_ = (bitField0_ & ~0x00000001);
+            bitField0_ |= 0x00000001;
           } else {
             ensureAliasesIsMutable();
             aliases_.addAll(other.aliases_);
           }
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesResponse parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                java.lang.String s = input.readStringRequireUtf8();
+                ensureAliasesIsMutable();
+                aliases_.add(s);
+                break;
+              } // case 10
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesResponse) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
 
-      private com.google.protobuf.LazyStringList aliases_ = com.google.protobuf.LazyStringArrayList.EMPTY;
+      private com.google.protobuf.LazyStringArrayList aliases_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
       private void ensureAliasesIsMutable() {
-        if (!((bitField0_ & 0x00000001) != 0)) {
+        if (!aliases_.isModifiable()) {
           aliases_ = new com.google.protobuf.LazyStringArrayList(aliases_);
-          bitField0_ |= 0x00000001;
-         }
+        }
+        bitField0_ |= 0x00000001;
       }
       /**
        * <code>repeated string aliases = 1;</code>
@@ -1856,7 +1805,8 @@ public final class DominionGrpc {
        */
       public com.google.protobuf.ProtocolStringList
           getAliasesList() {
-        return aliases_.getUnmodifiableView();
+        aliases_.makeImmutable();
+        return aliases_;
       }
       /**
        * <code>repeated string aliases = 1;</code>
@@ -1870,7 +1820,7 @@ public final class DominionGrpc {
        * @param index The index of the element to return.
        * @return The aliases at the given index.
        */
-      public String getAliases(int index) {
+      public java.lang.String getAliases(int index) {
         return aliases_.get(index);
       }
       /**
@@ -1889,12 +1839,11 @@ public final class DominionGrpc {
        * @return This builder for chaining.
        */
       public Builder setAliases(
-          int index, String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureAliasesIsMutable();
+          int index, java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        ensureAliasesIsMutable();
         aliases_.set(index, value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1904,12 +1853,11 @@ public final class DominionGrpc {
        * @return This builder for chaining.
        */
       public Builder addAliases(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  ensureAliasesIsMutable();
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
+        ensureAliasesIsMutable();
         aliases_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1919,10 +1867,11 @@ public final class DominionGrpc {
        * @return This builder for chaining.
        */
       public Builder addAllAliases(
-          Iterable<String> values) {
+          java.lang.Iterable<java.lang.String> values) {
         ensureAliasesIsMutable();
         com.google.protobuf.AbstractMessageLite.Builder.addAll(
             values, aliases_);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -1931,8 +1880,9 @@ public final class DominionGrpc {
        * @return This builder for chaining.
        */
       public Builder clearAliases() {
-        aliases_ = com.google.protobuf.LazyStringArrayList.EMPTY;
-        bitField0_ = (bitField0_ & ~0x00000001);
+        aliases_ =
+          com.google.protobuf.LazyStringArrayList.emptyList();
+        bitField0_ = (bitField0_ & ~0x00000001);;
         onChanged();
         return this;
       }
@@ -1943,22 +1893,21 @@ public final class DominionGrpc {
        */
       public Builder addAliasesBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         ensureAliasesIsMutable();
         aliases_.add(value);
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
-      @Override
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
-      @Override
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
@@ -1980,12 +1929,23 @@ public final class DominionGrpc {
 
     private static final com.google.protobuf.Parser<ScvSupportedAliasesResponse>
         PARSER = new com.google.protobuf.AbstractParser<ScvSupportedAliasesResponse>() {
-      @Override
+      @java.lang.Override
       public ScvSupportedAliasesResponse parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new ScvSupportedAliasesResponse(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -1993,12 +1953,12 @@ public final class DominionGrpc {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<ScvSupportedAliasesResponse> getParserForType() {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSupportedAliasesResponse getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -2028,7 +1988,7 @@ public final class DominionGrpc {
      * <code>string alias = 2;</code>
      * @return The alias.
      */
-    String getAlias();
+    java.lang.String getAlias();
     /**
      * <code>string alias = 2;</code>
      * @return The bytes for alias.
@@ -2039,7 +1999,7 @@ public final class DominionGrpc {
   /**
    * Protobuf type {@code dominion.v1.ScvGetCredentialsRequest}
    */
-  public  static final class ScvGetCredentialsRequest extends
+  public static final class ScvGetCredentialsRequest extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:dominion.v1.ScvGetCredentialsRequest)
       ScvGetCredentialsRequestOrBuilder {
@@ -2052,80 +2012,19 @@ public final class DominionGrpc {
       alias_ = "";
     }
 
-    @Override
+    @java.lang.Override
     @SuppressWarnings({"unused"})
-    protected Object newInstance(
+    protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
       return new ScvGetCredentialsRequest();
     }
 
-    @Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private ScvGetCredentialsRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.Builder subBuilder = null;
-              if (clientCredentials_ != null) {
-                subBuilder = clientCredentials_.toBuilder();
-              }
-              clientCredentials_ = input.readMessage(org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(clientCredentials_);
-                clientCredentials_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
-            case 18: {
-              String s = input.readStringRequireUtf8();
-
-              alias_ = s;
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvGetCredentialsRequest_descriptor;
     }
 
-    @Override
+    @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvGetCredentialsRequest_fieldAccessorTable
@@ -2133,43 +2032,49 @@ public final class DominionGrpc {
               org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsRequest.class, org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsRequest.Builder.class);
     }
 
+    private int bitField0_;
     public static final int CLIENTCREDENTIALS_FIELD_NUMBER = 1;
     private org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials clientCredentials_;
     /**
      * <code>.dominion.v1.ClientCredentials clientCredentials = 1;</code>
      * @return Whether the clientCredentials field is set.
      */
+    @java.lang.Override
     public boolean hasClientCredentials() {
-      return clientCredentials_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <code>.dominion.v1.ClientCredentials clientCredentials = 1;</code>
      * @return The clientCredentials.
      */
+    @java.lang.Override
     public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials getClientCredentials() {
       return clientCredentials_ == null ? org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.getDefaultInstance() : clientCredentials_;
     }
     /**
      * <code>.dominion.v1.ClientCredentials clientCredentials = 1;</code>
      */
+    @java.lang.Override
     public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentialsOrBuilder getClientCredentialsOrBuilder() {
-      return getClientCredentials();
+      return clientCredentials_ == null ? org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.getDefaultInstance() : clientCredentials_;
     }
 
     public static final int ALIAS_FIELD_NUMBER = 2;
-    private volatile Object alias_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object alias_ = "";
     /**
      * <code>string alias = 2;</code>
      * @return The alias.
      */
-    public String getAlias() {
-      Object ref = alias_;
-      if (ref instanceof String) {
-        return (String) ref;
+    @java.lang.Override
+    public java.lang.String getAlias() {
+      java.lang.Object ref = alias_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+        java.lang.String s = bs.toStringUtf8();
         alias_ = s;
         return s;
       }
@@ -2178,13 +2083,14 @@ public final class DominionGrpc {
      * <code>string alias = 2;</code>
      * @return The bytes for alias.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getAliasBytes() {
-      Object ref = alias_;
-      if (ref instanceof String) {
+      java.lang.Object ref = alias_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                (java.lang.String) ref);
         alias_ = b;
         return b;
       } else {
@@ -2193,7 +2099,7 @@ public final class DominionGrpc {
     }
 
     private byte memoizedIsInitialized = -1;
-    @Override
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -2203,38 +2109,38 @@ public final class DominionGrpc {
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (clientCredentials_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(1, getClientCredentials());
       }
-      if (!getAliasBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(alias_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, alias_);
       }
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
-    @Override
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
-      if (clientCredentials_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, getClientCredentials());
       }
-      if (!getAliasBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(alias_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, alias_);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    @Override
-    public boolean equals(final Object obj) {
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
        return true;
       }
@@ -2250,11 +2156,11 @@ public final class DominionGrpc {
       }
       if (!getAlias()
           .equals(other.getAlias())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public int hashCode() {
       if (memoizedHashCode != 0) {
         return memoizedHashCode;
@@ -2267,7 +2173,7 @@ public final class DominionGrpc {
       }
       hash = (37 * hash) + ALIAS_FIELD_NUMBER;
       hash = (53 * hash) + getAlias().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -2316,11 +2222,13 @@ public final class DominionGrpc {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -2342,7 +2250,7 @@ public final class DominionGrpc {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    @Override
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -2350,13 +2258,13 @@ public final class DominionGrpc {
     public static Builder newBuilder(org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsRequest prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
-    @Override
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
     }
 
-    @Override
+    @java.lang.Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
@@ -2374,7 +2282,7 @@ public final class DominionGrpc {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvGetCredentialsRequest_descriptor;
       }
 
-      @Override
+      @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvGetCredentialsRequest_fieldAccessorTable
@@ -2395,34 +2303,34 @@ public final class DominionGrpc {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
+          getClientCredentialsFieldBuilder();
         }
       }
-      @Override
+      @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (clientCredentialsBuilder_ == null) {
-          clientCredentials_ = null;
-        } else {
-          clientCredentials_ = null;
+        bitField0_ = 0;
+        clientCredentials_ = null;
+        if (clientCredentialsBuilder_ != null) {
+          clientCredentialsBuilder_.dispose();
           clientCredentialsBuilder_ = null;
         }
         alias_ = "";
-
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvGetCredentialsRequest_descriptor;
       }
 
-      @Override
+      @java.lang.Override
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsRequest getDefaultInstanceForType() {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsRequest.getDefaultInstance();
       }
 
-      @Override
+      @java.lang.Override
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsRequest build() {
         org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsRequest result = buildPartial();
         if (!result.isInitialized()) {
@@ -2431,52 +2339,62 @@ public final class DominionGrpc {
         return result;
       }
 
-      @Override
+      @java.lang.Override
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsRequest buildPartial() {
         org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsRequest result = new org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsRequest(this);
-        if (clientCredentialsBuilder_ == null) {
-          result.clientCredentials_ = clientCredentials_;
-        } else {
-          result.clientCredentials_ = clientCredentialsBuilder_.build();
-        }
-        result.alias_ = alias_;
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @Override
+      private void buildPartial0(org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsRequest result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.clientCredentials_ = clientCredentialsBuilder_ == null
+              ? clientCredentials_
+              : clientCredentialsBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.alias_ = alias_;
+        }
+        result.bitField0_ |= to_bitField0_;
+      }
+
+      @java.lang.Override
       public Builder clone() {
         return super.clone();
       }
-      @Override
+      @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return super.setField(field, value);
       }
-      @Override
+      @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
         return super.clearField(field);
       }
-      @Override
+      @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
         return super.clearOneof(oneof);
       }
-      @Override
+      @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, Object value) {
+          int index, java.lang.Object value) {
         return super.setRepeatedField(field, index, value);
       }
-      @Override
+      @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return super.addRepeatedField(field, value);
       }
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsRequest) {
           return mergeFrom((org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsRequest)other);
@@ -2493,36 +2411,63 @@ public final class DominionGrpc {
         }
         if (!other.getAlias().isEmpty()) {
           alias_ = other.alias_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsRequest parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                input.readMessage(
+                    getClientCredentialsFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                alias_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
+      private int bitField0_;
 
       private org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials clientCredentials_;
       private com.google.protobuf.SingleFieldBuilderV3<
@@ -2532,7 +2477,7 @@ public final class DominionGrpc {
        * @return Whether the clientCredentials field is set.
        */
       public boolean hasClientCredentials() {
-        return clientCredentialsBuilder_ != null || clientCredentials_ != null;
+        return ((bitField0_ & 0x00000001) != 0);
       }
       /**
        * <code>.dominion.v1.ClientCredentials clientCredentials = 1;</code>
@@ -2554,11 +2499,11 @@ public final class DominionGrpc {
             throw new NullPointerException();
           }
           clientCredentials_ = value;
-          onChanged();
         } else {
           clientCredentialsBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -2568,11 +2513,11 @@ public final class DominionGrpc {
           org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.Builder builderForValue) {
         if (clientCredentialsBuilder_ == null) {
           clientCredentials_ = builderForValue.build();
-          onChanged();
         } else {
           clientCredentialsBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -2580,38 +2525,40 @@ public final class DominionGrpc {
        */
       public Builder mergeClientCredentials(org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials value) {
         if (clientCredentialsBuilder_ == null) {
-          if (clientCredentials_ != null) {
-            clientCredentials_ =
-              org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.newBuilder(clientCredentials_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000001) != 0) &&
+            clientCredentials_ != null &&
+            clientCredentials_ != org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.getDefaultInstance()) {
+            getClientCredentialsBuilder().mergeFrom(value);
           } else {
             clientCredentials_ = value;
           }
-          onChanged();
         } else {
           clientCredentialsBuilder_.mergeFrom(value);
         }
-
+        if (clientCredentials_ != null) {
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
         return this;
       }
       /**
        * <code>.dominion.v1.ClientCredentials clientCredentials = 1;</code>
        */
       public Builder clearClientCredentials() {
-        if (clientCredentialsBuilder_ == null) {
-          clientCredentials_ = null;
-          onChanged();
-        } else {
-          clientCredentials_ = null;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        clientCredentials_ = null;
+        if (clientCredentialsBuilder_ != null) {
+          clientCredentialsBuilder_.dispose();
           clientCredentialsBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
        * <code>.dominion.v1.ClientCredentials clientCredentials = 1;</code>
        */
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.Builder getClientCredentialsBuilder() {
-        
+        bitField0_ |= 0x00000001;
         onChanged();
         return getClientCredentialsFieldBuilder().getBuilder();
       }
@@ -2643,21 +2590,21 @@ public final class DominionGrpc {
         return clientCredentialsBuilder_;
       }
 
-      private Object alias_ = "";
+      private java.lang.Object alias_ = "";
       /**
        * <code>string alias = 2;</code>
        * @return The alias.
        */
-      public String getAlias() {
-        Object ref = alias_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getAlias() {
+        java.lang.Object ref = alias_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+          java.lang.String s = bs.toStringUtf8();
           alias_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
@@ -2666,11 +2613,11 @@ public final class DominionGrpc {
        */
       public com.google.protobuf.ByteString
           getAliasBytes() {
-        Object ref = alias_;
+        java.lang.Object ref = alias_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  (java.lang.String) ref);
           alias_ = b;
           return b;
         } else {
@@ -2683,12 +2630,10 @@ public final class DominionGrpc {
        * @return This builder for chaining.
        */
       public Builder setAlias(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
         alias_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -2697,8 +2642,8 @@ public final class DominionGrpc {
        * @return This builder for chaining.
        */
       public Builder clearAlias() {
-        
         alias_ = getDefaultInstance().getAlias();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -2709,22 +2654,20 @@ public final class DominionGrpc {
        */
       public Builder setAliasBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         alias_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
-      @Override
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
-      @Override
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
@@ -2746,12 +2689,23 @@ public final class DominionGrpc {
 
     private static final com.google.protobuf.Parser<ScvGetCredentialsRequest>
         PARSER = new com.google.protobuf.AbstractParser<ScvGetCredentialsRequest>() {
-      @Override
+      @java.lang.Override
       public ScvGetCredentialsRequest parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new ScvGetCredentialsRequest(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -2759,12 +2713,12 @@ public final class DominionGrpc {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<ScvGetCredentialsRequest> getParserForType() {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsRequest getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -2779,7 +2733,7 @@ public final class DominionGrpc {
      * <code>string user = 1;</code>
      * @return The user.
      */
-    String getUser();
+    java.lang.String getUser();
     /**
      * <code>string user = 1;</code>
      * @return The bytes for user.
@@ -2791,7 +2745,7 @@ public final class DominionGrpc {
      * <code>string password = 2;</code>
      * @return The password.
      */
-    String getPassword();
+    java.lang.String getPassword();
     /**
      * <code>string password = 2;</code>
      * @return The bytes for password.
@@ -2807,36 +2761,36 @@ public final class DominionGrpc {
      * <code>map&lt;string, string&gt; attributes = 3;</code>
      */
     boolean containsAttributes(
-            String key);
+        java.lang.String key);
     /**
      * Use {@link #getAttributesMap()} instead.
      */
-    @Deprecated
-    java.util.Map<String, String>
+    @java.lang.Deprecated
+    java.util.Map<java.lang.String, java.lang.String>
     getAttributes();
     /**
      * <code>map&lt;string, string&gt; attributes = 3;</code>
      */
-    java.util.Map<String, String>
+    java.util.Map<java.lang.String, java.lang.String>
     getAttributesMap();
     /**
      * <code>map&lt;string, string&gt; attributes = 3;</code>
      */
-
-    String getAttributesOrDefault(
-            String key,
-            String defaultValue);
+    /* nullable */
+java.lang.String getAttributesOrDefault(
+        java.lang.String key,
+        /* nullable */
+java.lang.String defaultValue);
     /**
      * <code>map&lt;string, string&gt; attributes = 3;</code>
      */
-
-    String getAttributesOrThrow(
-            String key);
+    java.lang.String getAttributesOrThrow(
+        java.lang.String key);
   }
   /**
    * Protobuf type {@code dominion.v1.ScvGetCredentialsResponse}
    */
-  public  static final class ScvGetCredentialsResponse extends
+  public static final class ScvGetCredentialsResponse extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:dominion.v1.ScvGetCredentialsResponse)
       ScvGetCredentialsResponseOrBuilder {
@@ -2850,89 +2804,21 @@ public final class DominionGrpc {
       password_ = "";
     }
 
-    @Override
+    @java.lang.Override
     @SuppressWarnings({"unused"})
-    protected Object newInstance(
+    protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
       return new ScvGetCredentialsResponse();
     }
 
-    @Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private ScvGetCredentialsResponse(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              String s = input.readStringRequireUtf8();
-
-              user_ = s;
-              break;
-            }
-            case 18: {
-              String s = input.readStringRequireUtf8();
-
-              password_ = s;
-              break;
-            }
-            case 26: {
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                attributes_ = com.google.protobuf.MapField.newMapField(
-                    AttributesDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00000001;
-              }
-              com.google.protobuf.MapEntry<String, String>
-              attributes__ = input.readMessage(
-                  AttributesDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              attributes_.getMutableMap().put(
-                  attributes__.getKey(), attributes__.getValue());
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvGetCredentialsResponse_descriptor;
     }
 
     @SuppressWarnings({"rawtypes"})
-    @Override
-    protected com.google.protobuf.MapField internalGetMapField(
+    @java.lang.Override
+    protected com.google.protobuf.MapFieldReflectionAccessor internalGetMapFieldReflection(
         int number) {
       switch (number) {
         case 3:
@@ -2942,7 +2828,7 @@ public final class DominionGrpc {
               "Invalid map field number: " + number);
       }
     }
-    @Override
+    @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvGetCredentialsResponse_fieldAccessorTable
@@ -2951,19 +2837,21 @@ public final class DominionGrpc {
     }
 
     public static final int USER_FIELD_NUMBER = 1;
-    private volatile Object user_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object user_ = "";
     /**
      * <code>string user = 1;</code>
      * @return The user.
      */
-    public String getUser() {
-      Object ref = user_;
-      if (ref instanceof String) {
-        return (String) ref;
+    @java.lang.Override
+    public java.lang.String getUser() {
+      java.lang.Object ref = user_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+        java.lang.String s = bs.toStringUtf8();
         user_ = s;
         return s;
       }
@@ -2972,13 +2860,14 @@ public final class DominionGrpc {
      * <code>string user = 1;</code>
      * @return The bytes for user.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getUserBytes() {
-      Object ref = user_;
-      if (ref instanceof String) {
+      java.lang.Object ref = user_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                (java.lang.String) ref);
         user_ = b;
         return b;
       } else {
@@ -2987,19 +2876,21 @@ public final class DominionGrpc {
     }
 
     public static final int PASSWORD_FIELD_NUMBER = 2;
-    private volatile Object password_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object password_ = "";
     /**
      * <code>string password = 2;</code>
      * @return The password.
      */
-    public String getPassword() {
-      Object ref = password_;
-      if (ref instanceof String) {
-        return (String) ref;
+    @java.lang.Override
+    public java.lang.String getPassword() {
+      java.lang.Object ref = password_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+        java.lang.String s = bs.toStringUtf8();
         password_ = s;
         return s;
       }
@@ -3008,13 +2899,14 @@ public final class DominionGrpc {
      * <code>string password = 2;</code>
      * @return The bytes for password.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getPasswordBytes() {
-      Object ref = password_;
-      if (ref instanceof String) {
+      java.lang.Object ref = password_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                (java.lang.String) ref);
         password_ = b;
         return b;
       } else {
@@ -3025,18 +2917,19 @@ public final class DominionGrpc {
     public static final int ATTRIBUTES_FIELD_NUMBER = 3;
     private static final class AttributesDefaultEntryHolder {
       static final com.google.protobuf.MapEntry<
-          String, String> defaultEntry =
+          java.lang.String, java.lang.String> defaultEntry =
               com.google.protobuf.MapEntry
-              .<String, String>newDefaultInstance(
+              .<java.lang.String, java.lang.String>newDefaultInstance(
                   org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvGetCredentialsResponse_AttributesEntry_descriptor, 
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "",
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "");
     }
+    @SuppressWarnings("serial")
     private com.google.protobuf.MapField<
-        String, String> attributes_;
-    private com.google.protobuf.MapField<String, String>
+        java.lang.String, java.lang.String> attributes_;
+    private com.google.protobuf.MapField<java.lang.String, java.lang.String>
     internalGetAttributes() {
       if (attributes_ == null) {
         return com.google.protobuf.MapField.emptyMapField(
@@ -3044,62 +2937,64 @@ public final class DominionGrpc {
       }
       return attributes_;
     }
-
     public int getAttributesCount() {
       return internalGetAttributes().getMap().size();
     }
     /**
      * <code>map&lt;string, string&gt; attributes = 3;</code>
      */
-
+    @java.lang.Override
     public boolean containsAttributes(
-        String key) {
-      if (key == null) { throw new NullPointerException(); }
+        java.lang.String key) {
+      if (key == null) { throw new NullPointerException("map key"); }
       return internalGetAttributes().getMap().containsKey(key);
     }
     /**
      * Use {@link #getAttributesMap()} instead.
      */
-    @Deprecated
-    public java.util.Map<String, String> getAttributes() {
+    @java.lang.Override
+    @java.lang.Deprecated
+    public java.util.Map<java.lang.String, java.lang.String> getAttributes() {
       return getAttributesMap();
     }
     /**
      * <code>map&lt;string, string&gt; attributes = 3;</code>
      */
-
-    public java.util.Map<String, String> getAttributesMap() {
+    @java.lang.Override
+    public java.util.Map<java.lang.String, java.lang.String> getAttributesMap() {
       return internalGetAttributes().getMap();
     }
     /**
      * <code>map&lt;string, string&gt; attributes = 3;</code>
      */
-
-    public String getAttributesOrDefault(
-        String key,
-        String defaultValue) {
-      if (key == null) { throw new NullPointerException(); }
-      java.util.Map<String, String> map =
+    @java.lang.Override
+    public /* nullable */
+java.lang.String getAttributesOrDefault(
+        java.lang.String key,
+        /* nullable */
+java.lang.String defaultValue) {
+      if (key == null) { throw new NullPointerException("map key"); }
+      java.util.Map<java.lang.String, java.lang.String> map =
           internalGetAttributes().getMap();
       return map.containsKey(key) ? map.get(key) : defaultValue;
     }
     /**
      * <code>map&lt;string, string&gt; attributes = 3;</code>
      */
-
-    public String getAttributesOrThrow(
-        String key) {
-      if (key == null) { throw new NullPointerException(); }
-      java.util.Map<String, String> map =
+    @java.lang.Override
+    public java.lang.String getAttributesOrThrow(
+        java.lang.String key) {
+      if (key == null) { throw new NullPointerException("map key"); }
+      java.util.Map<java.lang.String, java.lang.String> map =
           internalGetAttributes().getMap();
       if (!map.containsKey(key)) {
-        throw new IllegalArgumentException();
+        throw new java.lang.IllegalArgumentException();
       }
       return map.get(key);
     }
 
     private byte memoizedIsInitialized = -1;
-    @Override
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -3109,13 +3004,13 @@ public final class DominionGrpc {
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (!getUserBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(user_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 1, user_);
       }
-      if (!getPasswordBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(password_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, password_);
       }
       com.google.protobuf.GeneratedMessageV3
@@ -3124,24 +3019,24 @@ public final class DominionGrpc {
           internalGetAttributes(),
           AttributesDefaultEntryHolder.defaultEntry,
           3);
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
-    @Override
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
-      if (!getUserBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(user_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, user_);
       }
-      if (!getPasswordBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(password_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, password_);
       }
-      for (java.util.Map.Entry<String, String> entry
+      for (java.util.Map.Entry<java.lang.String, java.lang.String> entry
            : internalGetAttributes().getMap().entrySet()) {
-        com.google.protobuf.MapEntry<String, String>
+        com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
         attributes__ = AttributesDefaultEntryHolder.defaultEntry.newBuilderForType()
             .setKey(entry.getKey())
             .setValue(entry.getValue())
@@ -3149,13 +3044,13 @@ public final class DominionGrpc {
         size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(3, attributes__);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    @Override
-    public boolean equals(final Object obj) {
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
        return true;
       }
@@ -3170,11 +3065,11 @@ public final class DominionGrpc {
           .equals(other.getPassword())) return false;
       if (!internalGetAttributes().equals(
           other.internalGetAttributes())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public int hashCode() {
       if (memoizedHashCode != 0) {
         return memoizedHashCode;
@@ -3189,7 +3084,7 @@ public final class DominionGrpc {
         hash = (37 * hash) + ATTRIBUTES_FIELD_NUMBER;
         hash = (53 * hash) + internalGetAttributes().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -3238,11 +3133,13 @@ public final class DominionGrpc {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -3264,7 +3161,7 @@ public final class DominionGrpc {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    @Override
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -3272,13 +3169,13 @@ public final class DominionGrpc {
     public static Builder newBuilder(org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsResponse prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
-    @Override
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
     }
 
-    @Override
+    @java.lang.Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
@@ -3297,7 +3194,7 @@ public final class DominionGrpc {
       }
 
       @SuppressWarnings({"rawtypes"})
-      protected com.google.protobuf.MapField internalGetMapField(
+      protected com.google.protobuf.MapFieldReflectionAccessor internalGetMapFieldReflection(
           int number) {
         switch (number) {
           case 3:
@@ -3308,7 +3205,7 @@ public final class DominionGrpc {
         }
       }
       @SuppressWarnings({"rawtypes"})
-      protected com.google.protobuf.MapField internalGetMutableMapField(
+      protected com.google.protobuf.MapFieldReflectionAccessor internalGetMutableMapFieldReflection(
           int number) {
         switch (number) {
           case 3:
@@ -3318,7 +3215,7 @@ public final class DominionGrpc {
                 "Invalid map field number: " + number);
         }
       }
-      @Override
+      @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvGetCredentialsResponse_fieldAccessorTable
@@ -3328,42 +3225,36 @@ public final class DominionGrpc {
 
       // Construct using org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsResponse.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
+
       }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
-      }
-      @Override
+      @java.lang.Override
       public Builder clear() {
         super.clear();
+        bitField0_ = 0;
         user_ = "";
-
         password_ = "";
-
         internalGetMutableAttributes().clear();
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvGetCredentialsResponse_descriptor;
       }
 
-      @Override
+      @java.lang.Override
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsResponse getDefaultInstanceForType() {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsResponse.getDefaultInstance();
       }
 
-      @Override
+      @java.lang.Override
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsResponse build() {
         org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsResponse result = buildPartial();
         if (!result.isInitialized()) {
@@ -3372,51 +3263,61 @@ public final class DominionGrpc {
         return result;
       }
 
-      @Override
+      @java.lang.Override
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsResponse buildPartial() {
         org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsResponse result = new org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsResponse(this);
-        int from_bitField0_ = bitField0_;
-        result.user_ = user_;
-        result.password_ = password_;
-        result.attributes_ = internalGetAttributes();
-        result.attributes_.makeImmutable();
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @Override
+      private void buildPartial0(org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsResponse result) {
+        int from_bitField0_ = bitField0_;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.user_ = user_;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.password_ = password_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.attributes_ = internalGetAttributes();
+          result.attributes_.makeImmutable();
+        }
+      }
+
+      @java.lang.Override
       public Builder clone() {
         return super.clone();
       }
-      @Override
+      @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return super.setField(field, value);
       }
-      @Override
+      @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
         return super.clearField(field);
       }
-      @Override
+      @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
         return super.clearOneof(oneof);
       }
-      @Override
+      @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, Object value) {
+          int index, java.lang.Object value) {
         return super.setRepeatedField(field, index, value);
       }
-      @Override
+      @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return super.addRepeatedField(field, value);
       }
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsResponse) {
           return mergeFrom((org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsResponse)other);
@@ -3430,59 +3331,94 @@ public final class DominionGrpc {
         if (other == org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsResponse.getDefaultInstance()) return this;
         if (!other.getUser().isEmpty()) {
           user_ = other.user_;
+          bitField0_ |= 0x00000001;
           onChanged();
         }
         if (!other.getPassword().isEmpty()) {
           password_ = other.password_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         internalGetMutableAttributes().mergeFrom(
             other.internalGetAttributes());
-        this.mergeUnknownFields(other.unknownFields);
+        bitField0_ |= 0x00000004;
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsResponse parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                user_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                password_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 26: {
+                com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+                attributes__ = input.readMessage(
+                    AttributesDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                internalGetMutableAttributes().getMutableMap().put(
+                    attributes__.getKey(), attributes__.getValue());
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsResponse) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
 
-      private Object user_ = "";
+      private java.lang.Object user_ = "";
       /**
        * <code>string user = 1;</code>
        * @return The user.
        */
-      public String getUser() {
-        Object ref = user_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getUser() {
+        java.lang.Object ref = user_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+          java.lang.String s = bs.toStringUtf8();
           user_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
@@ -3491,11 +3427,11 @@ public final class DominionGrpc {
        */
       public com.google.protobuf.ByteString
           getUserBytes() {
-        Object ref = user_;
+        java.lang.Object ref = user_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  (java.lang.String) ref);
           user_ = b;
           return b;
         } else {
@@ -3508,12 +3444,10 @@ public final class DominionGrpc {
        * @return This builder for chaining.
        */
       public Builder setUser(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
         user_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
@@ -3522,8 +3456,8 @@ public final class DominionGrpc {
        * @return This builder for chaining.
        */
       public Builder clearUser() {
-        
         user_ = getDefaultInstance().getUser();
+        bitField0_ = (bitField0_ & ~0x00000001);
         onChanged();
         return this;
       }
@@ -3534,31 +3468,29 @@ public final class DominionGrpc {
        */
       public Builder setUserBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         user_ = value;
+        bitField0_ |= 0x00000001;
         onChanged();
         return this;
       }
 
-      private Object password_ = "";
+      private java.lang.Object password_ = "";
       /**
        * <code>string password = 2;</code>
        * @return The password.
        */
-      public String getPassword() {
-        Object ref = password_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getPassword() {
+        java.lang.Object ref = password_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+          java.lang.String s = bs.toStringUtf8();
           password_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
@@ -3567,11 +3499,11 @@ public final class DominionGrpc {
        */
       public com.google.protobuf.ByteString
           getPasswordBytes() {
-        Object ref = password_;
+        java.lang.Object ref = password_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  (java.lang.String) ref);
           password_ = b;
           return b;
         } else {
@@ -3584,12 +3516,10 @@ public final class DominionGrpc {
        * @return This builder for chaining.
        */
       public Builder setPassword(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
         password_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -3598,8 +3528,8 @@ public final class DominionGrpc {
        * @return This builder for chaining.
        */
       public Builder clearPassword() {
-        
         password_ = getDefaultInstance().getPassword();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -3610,29 +3540,26 @@ public final class DominionGrpc {
        */
       public Builder setPasswordBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         password_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
 
       private com.google.protobuf.MapField<
-          String, String> attributes_;
-      private com.google.protobuf.MapField<String, String>
-      internalGetAttributes() {
+          java.lang.String, java.lang.String> attributes_;
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String>
+          internalGetAttributes() {
         if (attributes_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
               AttributesDefaultEntryHolder.defaultEntry);
         }
         return attributes_;
       }
-      private com.google.protobuf.MapField<String, String>
-      internalGetMutableAttributes() {
-        onChanged();;
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String>
+          internalGetMutableAttributes() {
         if (attributes_ == null) {
           attributes_ = com.google.protobuf.MapField.newMapField(
               AttributesDefaultEntryHolder.defaultEntry);
@@ -3640,63 +3567,67 @@ public final class DominionGrpc {
         if (!attributes_.isMutable()) {
           attributes_ = attributes_.copy();
         }
+        bitField0_ |= 0x00000004;
+        onChanged();
         return attributes_;
       }
-
       public int getAttributesCount() {
         return internalGetAttributes().getMap().size();
       }
       /**
        * <code>map&lt;string, string&gt; attributes = 3;</code>
        */
-
+      @java.lang.Override
       public boolean containsAttributes(
-          String key) {
-        if (key == null) { throw new NullPointerException(); }
+          java.lang.String key) {
+        if (key == null) { throw new NullPointerException("map key"); }
         return internalGetAttributes().getMap().containsKey(key);
       }
       /**
        * Use {@link #getAttributesMap()} instead.
        */
-      @Deprecated
-      public java.util.Map<String, String> getAttributes() {
+      @java.lang.Override
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String> getAttributes() {
         return getAttributesMap();
       }
       /**
        * <code>map&lt;string, string&gt; attributes = 3;</code>
        */
-
-      public java.util.Map<String, String> getAttributesMap() {
+      @java.lang.Override
+      public java.util.Map<java.lang.String, java.lang.String> getAttributesMap() {
         return internalGetAttributes().getMap();
       }
       /**
        * <code>map&lt;string, string&gt; attributes = 3;</code>
        */
-
-      public String getAttributesOrDefault(
-          String key,
-          String defaultValue) {
-        if (key == null) { throw new NullPointerException(); }
-        java.util.Map<String, String> map =
+      @java.lang.Override
+      public /* nullable */
+java.lang.String getAttributesOrDefault(
+          java.lang.String key,
+          /* nullable */
+java.lang.String defaultValue) {
+        if (key == null) { throw new NullPointerException("map key"); }
+        java.util.Map<java.lang.String, java.lang.String> map =
             internalGetAttributes().getMap();
         return map.containsKey(key) ? map.get(key) : defaultValue;
       }
       /**
        * <code>map&lt;string, string&gt; attributes = 3;</code>
        */
-
-      public String getAttributesOrThrow(
-          String key) {
-        if (key == null) { throw new NullPointerException(); }
-        java.util.Map<String, String> map =
+      @java.lang.Override
+      public java.lang.String getAttributesOrThrow(
+          java.lang.String key) {
+        if (key == null) { throw new NullPointerException("map key"); }
+        java.util.Map<java.lang.String, java.lang.String> map =
             internalGetAttributes().getMap();
         if (!map.containsKey(key)) {
-          throw new IllegalArgumentException();
+          throw new java.lang.IllegalArgumentException();
         }
         return map.get(key);
       }
-
       public Builder clearAttributes() {
+        bitField0_ = (bitField0_ & ~0x00000004);
         internalGetMutableAttributes().getMutableMap()
             .clear();
         return this;
@@ -3704,10 +3635,9 @@ public final class DominionGrpc {
       /**
        * <code>map&lt;string, string&gt; attributes = 3;</code>
        */
-
       public Builder removeAttributes(
-          String key) {
-        if (key == null) { throw new NullPointerException(); }
+          java.lang.String key) {
+        if (key == null) { throw new NullPointerException("map key"); }
         internalGetMutableAttributes().getMutableMap()
             .remove(key);
         return this;
@@ -3715,40 +3645,42 @@ public final class DominionGrpc {
       /**
        * Use alternate mutation accessors instead.
        */
-      @Deprecated
-      public java.util.Map<String, String>
-      getMutableAttributes() {
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String>
+          getMutableAttributes() {
+        bitField0_ |= 0x00000004;
         return internalGetMutableAttributes().getMutableMap();
       }
       /**
        * <code>map&lt;string, string&gt; attributes = 3;</code>
        */
       public Builder putAttributes(
-          String key,
-          String value) {
-        if (key == null) { throw new NullPointerException(); }
-        if (value == null) { throw new NullPointerException(); }
+          java.lang.String key,
+          java.lang.String value) {
+        if (key == null) { throw new NullPointerException("map key"); }
+        if (value == null) { throw new NullPointerException("map value"); }
         internalGetMutableAttributes().getMutableMap()
             .put(key, value);
+        bitField0_ |= 0x00000004;
         return this;
       }
       /**
        * <code>map&lt;string, string&gt; attributes = 3;</code>
        */
-
       public Builder putAllAttributes(
-          java.util.Map<String, String> values) {
+          java.util.Map<java.lang.String, java.lang.String> values) {
         internalGetMutableAttributes().getMutableMap()
             .putAll(values);
+        bitField0_ |= 0x00000004;
         return this;
       }
-      @Override
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
-      @Override
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
@@ -3770,12 +3702,23 @@ public final class DominionGrpc {
 
     private static final com.google.protobuf.Parser<ScvGetCredentialsResponse>
         PARSER = new com.google.protobuf.AbstractParser<ScvGetCredentialsResponse>() {
-      @Override
+      @java.lang.Override
       public ScvGetCredentialsResponse parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new ScvGetCredentialsResponse(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -3783,12 +3726,12 @@ public final class DominionGrpc {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<ScvGetCredentialsResponse> getParserForType() {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvGetCredentialsResponse getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -3818,7 +3761,7 @@ public final class DominionGrpc {
      * <code>string alias = 2;</code>
      * @return The alias.
      */
-    String getAlias();
+    java.lang.String getAlias();
     /**
      * <code>string alias = 2;</code>
      * @return The bytes for alias.
@@ -3830,7 +3773,7 @@ public final class DominionGrpc {
      * <code>string user = 3;</code>
      * @return The user.
      */
-    String getUser();
+    java.lang.String getUser();
     /**
      * <code>string user = 3;</code>
      * @return The bytes for user.
@@ -3842,7 +3785,7 @@ public final class DominionGrpc {
      * <code>string password = 4;</code>
      * @return The password.
      */
-    String getPassword();
+    java.lang.String getPassword();
     /**
      * <code>string password = 4;</code>
      * @return The bytes for password.
@@ -3858,36 +3801,36 @@ public final class DominionGrpc {
      * <code>map&lt;string, string&gt; attributes = 5;</code>
      */
     boolean containsAttributes(
-            String key);
+        java.lang.String key);
     /**
      * Use {@link #getAttributesMap()} instead.
      */
-    @Deprecated
-    java.util.Map<String, String>
+    @java.lang.Deprecated
+    java.util.Map<java.lang.String, java.lang.String>
     getAttributes();
     /**
      * <code>map&lt;string, string&gt; attributes = 5;</code>
      */
-    java.util.Map<String, String>
+    java.util.Map<java.lang.String, java.lang.String>
     getAttributesMap();
     /**
      * <code>map&lt;string, string&gt; attributes = 5;</code>
      */
-
-    String getAttributesOrDefault(
-            String key,
-            String defaultValue);
+    /* nullable */
+java.lang.String getAttributesOrDefault(
+        java.lang.String key,
+        /* nullable */
+java.lang.String defaultValue);
     /**
      * <code>map&lt;string, string&gt; attributes = 5;</code>
      */
-
-    String getAttributesOrThrow(
-            String key);
+    java.lang.String getAttributesOrThrow(
+        java.lang.String key);
   }
   /**
    * Protobuf type {@code dominion.v1.ScvSetCredentialsRequest}
    */
-  public  static final class ScvSetCredentialsRequest extends
+  public static final class ScvSetCredentialsRequest extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:dominion.v1.ScvSetCredentialsRequest)
       ScvSetCredentialsRequestOrBuilder {
@@ -3902,108 +3845,21 @@ public final class DominionGrpc {
       password_ = "";
     }
 
-    @Override
+    @java.lang.Override
     @SuppressWarnings({"unused"})
-    protected Object newInstance(
+    protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
       return new ScvSetCredentialsRequest();
     }
 
-    @Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private ScvSetCredentialsRequest(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new NullPointerException();
-      }
-      int mutable_bitField0_ = 0;
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            case 10: {
-              org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.Builder subBuilder = null;
-              if (clientCredentials_ != null) {
-                subBuilder = clientCredentials_.toBuilder();
-              }
-              clientCredentials_ = input.readMessage(org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.parser(), extensionRegistry);
-              if (subBuilder != null) {
-                subBuilder.mergeFrom(clientCredentials_);
-                clientCredentials_ = subBuilder.buildPartial();
-              }
-
-              break;
-            }
-            case 18: {
-              String s = input.readStringRequireUtf8();
-
-              alias_ = s;
-              break;
-            }
-            case 26: {
-              String s = input.readStringRequireUtf8();
-
-              user_ = s;
-              break;
-            }
-            case 34: {
-              String s = input.readStringRequireUtf8();
-
-              password_ = s;
-              break;
-            }
-            case 42: {
-              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
-                attributes_ = com.google.protobuf.MapField.newMapField(
-                    AttributesDefaultEntryHolder.defaultEntry);
-                mutable_bitField0_ |= 0x00000001;
-              }
-              com.google.protobuf.MapEntry<String, String>
-              attributes__ = input.readMessage(
-                  AttributesDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
-              attributes_.getMutableMap().put(
-                  attributes__.getKey(), attributes__.getValue());
-              break;
-            }
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvSetCredentialsRequest_descriptor;
     }
 
     @SuppressWarnings({"rawtypes"})
-    @Override
-    protected com.google.protobuf.MapField internalGetMapField(
+    @java.lang.Override
+    protected com.google.protobuf.MapFieldReflectionAccessor internalGetMapFieldReflection(
         int number) {
       switch (number) {
         case 5:
@@ -4013,7 +3869,7 @@ public final class DominionGrpc {
               "Invalid map field number: " + number);
       }
     }
-    @Override
+    @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvSetCredentialsRequest_fieldAccessorTable
@@ -4021,43 +3877,49 @@ public final class DominionGrpc {
               org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsRequest.class, org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsRequest.Builder.class);
     }
 
+    private int bitField0_;
     public static final int CLIENTCREDENTIALS_FIELD_NUMBER = 1;
     private org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials clientCredentials_;
     /**
      * <code>.dominion.v1.ClientCredentials clientCredentials = 1;</code>
      * @return Whether the clientCredentials field is set.
      */
+    @java.lang.Override
     public boolean hasClientCredentials() {
-      return clientCredentials_ != null;
+      return ((bitField0_ & 0x00000001) != 0);
     }
     /**
      * <code>.dominion.v1.ClientCredentials clientCredentials = 1;</code>
      * @return The clientCredentials.
      */
+    @java.lang.Override
     public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials getClientCredentials() {
       return clientCredentials_ == null ? org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.getDefaultInstance() : clientCredentials_;
     }
     /**
      * <code>.dominion.v1.ClientCredentials clientCredentials = 1;</code>
      */
+    @java.lang.Override
     public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentialsOrBuilder getClientCredentialsOrBuilder() {
-      return getClientCredentials();
+      return clientCredentials_ == null ? org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.getDefaultInstance() : clientCredentials_;
     }
 
     public static final int ALIAS_FIELD_NUMBER = 2;
-    private volatile Object alias_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object alias_ = "";
     /**
      * <code>string alias = 2;</code>
      * @return The alias.
      */
-    public String getAlias() {
-      Object ref = alias_;
-      if (ref instanceof String) {
-        return (String) ref;
+    @java.lang.Override
+    public java.lang.String getAlias() {
+      java.lang.Object ref = alias_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+        java.lang.String s = bs.toStringUtf8();
         alias_ = s;
         return s;
       }
@@ -4066,13 +3928,14 @@ public final class DominionGrpc {
      * <code>string alias = 2;</code>
      * @return The bytes for alias.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getAliasBytes() {
-      Object ref = alias_;
-      if (ref instanceof String) {
+      java.lang.Object ref = alias_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                (java.lang.String) ref);
         alias_ = b;
         return b;
       } else {
@@ -4081,19 +3944,21 @@ public final class DominionGrpc {
     }
 
     public static final int USER_FIELD_NUMBER = 3;
-    private volatile Object user_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object user_ = "";
     /**
      * <code>string user = 3;</code>
      * @return The user.
      */
-    public String getUser() {
-      Object ref = user_;
-      if (ref instanceof String) {
-        return (String) ref;
+    @java.lang.Override
+    public java.lang.String getUser() {
+      java.lang.Object ref = user_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+        java.lang.String s = bs.toStringUtf8();
         user_ = s;
         return s;
       }
@@ -4102,13 +3967,14 @@ public final class DominionGrpc {
      * <code>string user = 3;</code>
      * @return The bytes for user.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getUserBytes() {
-      Object ref = user_;
-      if (ref instanceof String) {
+      java.lang.Object ref = user_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                (java.lang.String) ref);
         user_ = b;
         return b;
       } else {
@@ -4117,19 +3983,21 @@ public final class DominionGrpc {
     }
 
     public static final int PASSWORD_FIELD_NUMBER = 4;
-    private volatile Object password_;
+    @SuppressWarnings("serial")
+    private volatile java.lang.Object password_ = "";
     /**
      * <code>string password = 4;</code>
      * @return The password.
      */
-    public String getPassword() {
-      Object ref = password_;
-      if (ref instanceof String) {
-        return (String) ref;
+    @java.lang.Override
+    public java.lang.String getPassword() {
+      java.lang.Object ref = password_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
       } else {
         com.google.protobuf.ByteString bs = 
             (com.google.protobuf.ByteString) ref;
-        String s = bs.toStringUtf8();
+        java.lang.String s = bs.toStringUtf8();
         password_ = s;
         return s;
       }
@@ -4138,13 +4006,14 @@ public final class DominionGrpc {
      * <code>string password = 4;</code>
      * @return The bytes for password.
      */
+    @java.lang.Override
     public com.google.protobuf.ByteString
         getPasswordBytes() {
-      Object ref = password_;
-      if (ref instanceof String) {
+      java.lang.Object ref = password_;
+      if (ref instanceof java.lang.String) {
         com.google.protobuf.ByteString b = 
             com.google.protobuf.ByteString.copyFromUtf8(
-                (String) ref);
+                (java.lang.String) ref);
         password_ = b;
         return b;
       } else {
@@ -4155,18 +4024,19 @@ public final class DominionGrpc {
     public static final int ATTRIBUTES_FIELD_NUMBER = 5;
     private static final class AttributesDefaultEntryHolder {
       static final com.google.protobuf.MapEntry<
-          String, String> defaultEntry =
+          java.lang.String, java.lang.String> defaultEntry =
               com.google.protobuf.MapEntry
-              .<String, String>newDefaultInstance(
+              .<java.lang.String, java.lang.String>newDefaultInstance(
                   org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvSetCredentialsRequest_AttributesEntry_descriptor, 
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "",
                   com.google.protobuf.WireFormat.FieldType.STRING,
                   "");
     }
+    @SuppressWarnings("serial")
     private com.google.protobuf.MapField<
-        String, String> attributes_;
-    private com.google.protobuf.MapField<String, String>
+        java.lang.String, java.lang.String> attributes_;
+    private com.google.protobuf.MapField<java.lang.String, java.lang.String>
     internalGetAttributes() {
       if (attributes_ == null) {
         return com.google.protobuf.MapField.emptyMapField(
@@ -4174,62 +4044,64 @@ public final class DominionGrpc {
       }
       return attributes_;
     }
-
     public int getAttributesCount() {
       return internalGetAttributes().getMap().size();
     }
     /**
      * <code>map&lt;string, string&gt; attributes = 5;</code>
      */
-
+    @java.lang.Override
     public boolean containsAttributes(
-        String key) {
-      if (key == null) { throw new NullPointerException(); }
+        java.lang.String key) {
+      if (key == null) { throw new NullPointerException("map key"); }
       return internalGetAttributes().getMap().containsKey(key);
     }
     /**
      * Use {@link #getAttributesMap()} instead.
      */
-    @Deprecated
-    public java.util.Map<String, String> getAttributes() {
+    @java.lang.Override
+    @java.lang.Deprecated
+    public java.util.Map<java.lang.String, java.lang.String> getAttributes() {
       return getAttributesMap();
     }
     /**
      * <code>map&lt;string, string&gt; attributes = 5;</code>
      */
-
-    public java.util.Map<String, String> getAttributesMap() {
+    @java.lang.Override
+    public java.util.Map<java.lang.String, java.lang.String> getAttributesMap() {
       return internalGetAttributes().getMap();
     }
     /**
      * <code>map&lt;string, string&gt; attributes = 5;</code>
      */
-
-    public String getAttributesOrDefault(
-        String key,
-        String defaultValue) {
-      if (key == null) { throw new NullPointerException(); }
-      java.util.Map<String, String> map =
+    @java.lang.Override
+    public /* nullable */
+java.lang.String getAttributesOrDefault(
+        java.lang.String key,
+        /* nullable */
+java.lang.String defaultValue) {
+      if (key == null) { throw new NullPointerException("map key"); }
+      java.util.Map<java.lang.String, java.lang.String> map =
           internalGetAttributes().getMap();
       return map.containsKey(key) ? map.get(key) : defaultValue;
     }
     /**
      * <code>map&lt;string, string&gt; attributes = 5;</code>
      */
-
-    public String getAttributesOrThrow(
-        String key) {
-      if (key == null) { throw new NullPointerException(); }
-      java.util.Map<String, String> map =
+    @java.lang.Override
+    public java.lang.String getAttributesOrThrow(
+        java.lang.String key) {
+      if (key == null) { throw new NullPointerException("map key"); }
+      java.util.Map<java.lang.String, java.lang.String> map =
           internalGetAttributes().getMap();
       if (!map.containsKey(key)) {
-        throw new IllegalArgumentException();
+        throw new java.lang.IllegalArgumentException();
       }
       return map.get(key);
     }
 
     private byte memoizedIsInitialized = -1;
-    @Override
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -4239,19 +4111,19 @@ public final class DominionGrpc {
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (clientCredentials_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         output.writeMessage(1, getClientCredentials());
       }
-      if (!getAliasBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(alias_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 2, alias_);
       }
-      if (!getUserBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(user_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 3, user_);
       }
-      if (!getPasswordBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(password_)) {
         com.google.protobuf.GeneratedMessageV3.writeString(output, 4, password_);
       }
       com.google.protobuf.GeneratedMessageV3
@@ -4260,31 +4132,31 @@ public final class DominionGrpc {
           internalGetAttributes(),
           AttributesDefaultEntryHolder.defaultEntry,
           5);
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
-    @Override
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
-      if (clientCredentials_ != null) {
+      if (((bitField0_ & 0x00000001) != 0)) {
         size += com.google.protobuf.CodedOutputStream
           .computeMessageSize(1, getClientCredentials());
       }
-      if (!getAliasBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(alias_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, alias_);
       }
-      if (!getUserBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(user_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(3, user_);
       }
-      if (!getPasswordBytes().isEmpty()) {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(password_)) {
         size += com.google.protobuf.GeneratedMessageV3.computeStringSize(4, password_);
       }
-      for (java.util.Map.Entry<String, String> entry
+      for (java.util.Map.Entry<java.lang.String, java.lang.String> entry
            : internalGetAttributes().getMap().entrySet()) {
-        com.google.protobuf.MapEntry<String, String>
+        com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
         attributes__ = AttributesDefaultEntryHolder.defaultEntry.newBuilderForType()
             .setKey(entry.getKey())
             .setValue(entry.getValue())
@@ -4292,13 +4164,13 @@ public final class DominionGrpc {
         size += com.google.protobuf.CodedOutputStream
             .computeMessageSize(5, attributes__);
       }
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    @Override
-    public boolean equals(final Object obj) {
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
        return true;
       }
@@ -4320,11 +4192,11 @@ public final class DominionGrpc {
           .equals(other.getPassword())) return false;
       if (!internalGetAttributes().equals(
           other.internalGetAttributes())) return false;
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public int hashCode() {
       if (memoizedHashCode != 0) {
         return memoizedHashCode;
@@ -4345,7 +4217,7 @@ public final class DominionGrpc {
         hash = (37 * hash) + ATTRIBUTES_FIELD_NUMBER;
         hash = (53 * hash) + internalGetAttributes().hashCode();
       }
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -4394,11 +4266,13 @@ public final class DominionGrpc {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsRequest parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsRequest parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -4420,7 +4294,7 @@ public final class DominionGrpc {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    @Override
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -4428,13 +4302,13 @@ public final class DominionGrpc {
     public static Builder newBuilder(org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsRequest prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
-    @Override
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
     }
 
-    @Override
+    @java.lang.Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
@@ -4453,7 +4327,7 @@ public final class DominionGrpc {
       }
 
       @SuppressWarnings({"rawtypes"})
-      protected com.google.protobuf.MapField internalGetMapField(
+      protected com.google.protobuf.MapFieldReflectionAccessor internalGetMapFieldReflection(
           int number) {
         switch (number) {
           case 5:
@@ -4464,7 +4338,7 @@ public final class DominionGrpc {
         }
       }
       @SuppressWarnings({"rawtypes"})
-      protected com.google.protobuf.MapField internalGetMutableMapField(
+      protected com.google.protobuf.MapFieldReflectionAccessor internalGetMutableMapFieldReflection(
           int number) {
         switch (number) {
           case 5:
@@ -4474,7 +4348,7 @@ public final class DominionGrpc {
                 "Invalid map field number: " + number);
         }
       }
-      @Override
+      @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvSetCredentialsRequest_fieldAccessorTable
@@ -4495,39 +4369,37 @@ public final class DominionGrpc {
       private void maybeForceBuilderInitialization() {
         if (com.google.protobuf.GeneratedMessageV3
                 .alwaysUseFieldBuilders) {
+          getClientCredentialsFieldBuilder();
         }
       }
-      @Override
+      @java.lang.Override
       public Builder clear() {
         super.clear();
-        if (clientCredentialsBuilder_ == null) {
-          clientCredentials_ = null;
-        } else {
-          clientCredentials_ = null;
+        bitField0_ = 0;
+        clientCredentials_ = null;
+        if (clientCredentialsBuilder_ != null) {
+          clientCredentialsBuilder_.dispose();
           clientCredentialsBuilder_ = null;
         }
         alias_ = "";
-
         user_ = "";
-
         password_ = "";
-
         internalGetMutableAttributes().clear();
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvSetCredentialsRequest_descriptor;
       }
 
-      @Override
+      @java.lang.Override
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsRequest getDefaultInstanceForType() {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsRequest.getDefaultInstance();
       }
 
-      @Override
+      @java.lang.Override
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsRequest build() {
         org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsRequest result = buildPartial();
         if (!result.isInitialized()) {
@@ -4536,57 +4408,72 @@ public final class DominionGrpc {
         return result;
       }
 
-      @Override
+      @java.lang.Override
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsRequest buildPartial() {
         org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsRequest result = new org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsRequest(this);
-        int from_bitField0_ = bitField0_;
-        if (clientCredentialsBuilder_ == null) {
-          result.clientCredentials_ = clientCredentials_;
-        } else {
-          result.clientCredentials_ = clientCredentialsBuilder_.build();
-        }
-        result.alias_ = alias_;
-        result.user_ = user_;
-        result.password_ = password_;
-        result.attributes_ = internalGetAttributes();
-        result.attributes_.makeImmutable();
+        if (bitField0_ != 0) { buildPartial0(result); }
         onBuilt();
         return result;
       }
 
-      @Override
+      private void buildPartial0(org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsRequest result) {
+        int from_bitField0_ = bitField0_;
+        int to_bitField0_ = 0;
+        if (((from_bitField0_ & 0x00000001) != 0)) {
+          result.clientCredentials_ = clientCredentialsBuilder_ == null
+              ? clientCredentials_
+              : clientCredentialsBuilder_.build();
+          to_bitField0_ |= 0x00000001;
+        }
+        if (((from_bitField0_ & 0x00000002) != 0)) {
+          result.alias_ = alias_;
+        }
+        if (((from_bitField0_ & 0x00000004) != 0)) {
+          result.user_ = user_;
+        }
+        if (((from_bitField0_ & 0x00000008) != 0)) {
+          result.password_ = password_;
+        }
+        if (((from_bitField0_ & 0x00000010) != 0)) {
+          result.attributes_ = internalGetAttributes();
+          result.attributes_.makeImmutable();
+        }
+        result.bitField0_ |= to_bitField0_;
+      }
+
+      @java.lang.Override
       public Builder clone() {
         return super.clone();
       }
-      @Override
+      @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return super.setField(field, value);
       }
-      @Override
+      @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
         return super.clearField(field);
       }
-      @Override
+      @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
         return super.clearOneof(oneof);
       }
-      @Override
+      @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, Object value) {
+          int index, java.lang.Object value) {
         return super.setRepeatedField(field, index, value);
       }
-      @Override
+      @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return super.addRepeatedField(field, value);
       }
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsRequest) {
           return mergeFrom((org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsRequest)other);
@@ -4603,44 +4490,92 @@ public final class DominionGrpc {
         }
         if (!other.getAlias().isEmpty()) {
           alias_ = other.alias_;
+          bitField0_ |= 0x00000002;
           onChanged();
         }
         if (!other.getUser().isEmpty()) {
           user_ = other.user_;
+          bitField0_ |= 0x00000004;
           onChanged();
         }
         if (!other.getPassword().isEmpty()) {
           password_ = other.password_;
+          bitField0_ |= 0x00000008;
           onChanged();
         }
         internalGetMutableAttributes().mergeFrom(
             other.internalGetAttributes());
-        this.mergeUnknownFields(other.unknownFields);
+        bitField0_ |= 0x00000010;
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsRequest parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              case 10: {
+                input.readMessage(
+                    getClientCredentialsFieldBuilder().getBuilder(),
+                    extensionRegistry);
+                bitField0_ |= 0x00000001;
+                break;
+              } // case 10
+              case 18: {
+                alias_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000002;
+                break;
+              } // case 18
+              case 26: {
+                user_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000004;
+                break;
+              } // case 26
+              case 34: {
+                password_ = input.readStringRequireUtf8();
+                bitField0_ |= 0x00000008;
+                break;
+              } // case 34
+              case 42: {
+                com.google.protobuf.MapEntry<java.lang.String, java.lang.String>
+                attributes__ = input.readMessage(
+                    AttributesDefaultEntryHolder.defaultEntry.getParserForType(), extensionRegistry);
+                internalGetMutableAttributes().getMutableMap().put(
+                    attributes__.getKey(), attributes__.getValue());
+                bitField0_ |= 0x00000010;
+                break;
+              } // case 42
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsRequest) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
       private int bitField0_;
@@ -4653,7 +4588,7 @@ public final class DominionGrpc {
        * @return Whether the clientCredentials field is set.
        */
       public boolean hasClientCredentials() {
-        return clientCredentialsBuilder_ != null || clientCredentials_ != null;
+        return ((bitField0_ & 0x00000001) != 0);
       }
       /**
        * <code>.dominion.v1.ClientCredentials clientCredentials = 1;</code>
@@ -4675,11 +4610,11 @@ public final class DominionGrpc {
             throw new NullPointerException();
           }
           clientCredentials_ = value;
-          onChanged();
         } else {
           clientCredentialsBuilder_.setMessage(value);
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -4689,11 +4624,11 @@ public final class DominionGrpc {
           org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.Builder builderForValue) {
         if (clientCredentialsBuilder_ == null) {
           clientCredentials_ = builderForValue.build();
-          onChanged();
         } else {
           clientCredentialsBuilder_.setMessage(builderForValue.build());
         }
-
+        bitField0_ |= 0x00000001;
+        onChanged();
         return this;
       }
       /**
@@ -4701,38 +4636,40 @@ public final class DominionGrpc {
        */
       public Builder mergeClientCredentials(org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials value) {
         if (clientCredentialsBuilder_ == null) {
-          if (clientCredentials_ != null) {
-            clientCredentials_ =
-              org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.newBuilder(clientCredentials_).mergeFrom(value).buildPartial();
+          if (((bitField0_ & 0x00000001) != 0) &&
+            clientCredentials_ != null &&
+            clientCredentials_ != org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.getDefaultInstance()) {
+            getClientCredentialsBuilder().mergeFrom(value);
           } else {
             clientCredentials_ = value;
           }
-          onChanged();
         } else {
           clientCredentialsBuilder_.mergeFrom(value);
         }
-
+        if (clientCredentials_ != null) {
+          bitField0_ |= 0x00000001;
+          onChanged();
+        }
         return this;
       }
       /**
        * <code>.dominion.v1.ClientCredentials clientCredentials = 1;</code>
        */
       public Builder clearClientCredentials() {
-        if (clientCredentialsBuilder_ == null) {
-          clientCredentials_ = null;
-          onChanged();
-        } else {
-          clientCredentials_ = null;
+        bitField0_ = (bitField0_ & ~0x00000001);
+        clientCredentials_ = null;
+        if (clientCredentialsBuilder_ != null) {
+          clientCredentialsBuilder_.dispose();
           clientCredentialsBuilder_ = null;
         }
-
+        onChanged();
         return this;
       }
       /**
        * <code>.dominion.v1.ClientCredentials clientCredentials = 1;</code>
        */
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ClientCredentials.Builder getClientCredentialsBuilder() {
-        
+        bitField0_ |= 0x00000001;
         onChanged();
         return getClientCredentialsFieldBuilder().getBuilder();
       }
@@ -4764,21 +4701,21 @@ public final class DominionGrpc {
         return clientCredentialsBuilder_;
       }
 
-      private Object alias_ = "";
+      private java.lang.Object alias_ = "";
       /**
        * <code>string alias = 2;</code>
        * @return The alias.
        */
-      public String getAlias() {
-        Object ref = alias_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getAlias() {
+        java.lang.Object ref = alias_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+          java.lang.String s = bs.toStringUtf8();
           alias_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
@@ -4787,11 +4724,11 @@ public final class DominionGrpc {
        */
       public com.google.protobuf.ByteString
           getAliasBytes() {
-        Object ref = alias_;
+        java.lang.Object ref = alias_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  (java.lang.String) ref);
           alias_ = b;
           return b;
         } else {
@@ -4804,12 +4741,10 @@ public final class DominionGrpc {
        * @return This builder for chaining.
        */
       public Builder setAlias(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
         alias_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
@@ -4818,8 +4753,8 @@ public final class DominionGrpc {
        * @return This builder for chaining.
        */
       public Builder clearAlias() {
-        
         alias_ = getDefaultInstance().getAlias();
+        bitField0_ = (bitField0_ & ~0x00000002);
         onChanged();
         return this;
       }
@@ -4830,31 +4765,29 @@ public final class DominionGrpc {
        */
       public Builder setAliasBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         alias_ = value;
+        bitField0_ |= 0x00000002;
         onChanged();
         return this;
       }
 
-      private Object user_ = "";
+      private java.lang.Object user_ = "";
       /**
        * <code>string user = 3;</code>
        * @return The user.
        */
-      public String getUser() {
-        Object ref = user_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getUser() {
+        java.lang.Object ref = user_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+          java.lang.String s = bs.toStringUtf8();
           user_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
@@ -4863,11 +4796,11 @@ public final class DominionGrpc {
        */
       public com.google.protobuf.ByteString
           getUserBytes() {
-        Object ref = user_;
+        java.lang.Object ref = user_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  (java.lang.String) ref);
           user_ = b;
           return b;
         } else {
@@ -4880,12 +4813,10 @@ public final class DominionGrpc {
        * @return This builder for chaining.
        */
       public Builder setUser(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
         user_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
@@ -4894,8 +4825,8 @@ public final class DominionGrpc {
        * @return This builder for chaining.
        */
       public Builder clearUser() {
-        
         user_ = getDefaultInstance().getUser();
+        bitField0_ = (bitField0_ & ~0x00000004);
         onChanged();
         return this;
       }
@@ -4906,31 +4837,29 @@ public final class DominionGrpc {
        */
       public Builder setUserBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         user_ = value;
+        bitField0_ |= 0x00000004;
         onChanged();
         return this;
       }
 
-      private Object password_ = "";
+      private java.lang.Object password_ = "";
       /**
        * <code>string password = 4;</code>
        * @return The password.
        */
-      public String getPassword() {
-        Object ref = password_;
-        if (!(ref instanceof String)) {
+      public java.lang.String getPassword() {
+        java.lang.Object ref = password_;
+        if (!(ref instanceof java.lang.String)) {
           com.google.protobuf.ByteString bs =
               (com.google.protobuf.ByteString) ref;
-          String s = bs.toStringUtf8();
+          java.lang.String s = bs.toStringUtf8();
           password_ = s;
           return s;
         } else {
-          return (String) ref;
+          return (java.lang.String) ref;
         }
       }
       /**
@@ -4939,11 +4868,11 @@ public final class DominionGrpc {
        */
       public com.google.protobuf.ByteString
           getPasswordBytes() {
-        Object ref = password_;
+        java.lang.Object ref = password_;
         if (ref instanceof String) {
           com.google.protobuf.ByteString b = 
               com.google.protobuf.ByteString.copyFromUtf8(
-                  (String) ref);
+                  (java.lang.String) ref);
           password_ = b;
           return b;
         } else {
@@ -4956,12 +4885,10 @@ public final class DominionGrpc {
        * @return This builder for chaining.
        */
       public Builder setPassword(
-          String value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  
+          java.lang.String value) {
+        if (value == null) { throw new NullPointerException(); }
         password_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
@@ -4970,8 +4897,8 @@ public final class DominionGrpc {
        * @return This builder for chaining.
        */
       public Builder clearPassword() {
-        
         password_ = getDefaultInstance().getPassword();
+        bitField0_ = (bitField0_ & ~0x00000008);
         onChanged();
         return this;
       }
@@ -4982,29 +4909,26 @@ public final class DominionGrpc {
        */
       public Builder setPasswordBytes(
           com.google.protobuf.ByteString value) {
-        if (value == null) {
-    throw new NullPointerException();
-  }
-  checkByteStringIsUtf8(value);
-        
+        if (value == null) { throw new NullPointerException(); }
+        checkByteStringIsUtf8(value);
         password_ = value;
+        bitField0_ |= 0x00000008;
         onChanged();
         return this;
       }
 
       private com.google.protobuf.MapField<
-          String, String> attributes_;
-      private com.google.protobuf.MapField<String, String>
-      internalGetAttributes() {
+          java.lang.String, java.lang.String> attributes_;
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String>
+          internalGetAttributes() {
         if (attributes_ == null) {
           return com.google.protobuf.MapField.emptyMapField(
               AttributesDefaultEntryHolder.defaultEntry);
         }
         return attributes_;
       }
-      private com.google.protobuf.MapField<String, String>
-      internalGetMutableAttributes() {
-        onChanged();;
+      private com.google.protobuf.MapField<java.lang.String, java.lang.String>
+          internalGetMutableAttributes() {
         if (attributes_ == null) {
           attributes_ = com.google.protobuf.MapField.newMapField(
               AttributesDefaultEntryHolder.defaultEntry);
@@ -5012,63 +4936,67 @@ public final class DominionGrpc {
         if (!attributes_.isMutable()) {
           attributes_ = attributes_.copy();
         }
+        bitField0_ |= 0x00000010;
+        onChanged();
         return attributes_;
       }
-
       public int getAttributesCount() {
         return internalGetAttributes().getMap().size();
       }
       /**
        * <code>map&lt;string, string&gt; attributes = 5;</code>
        */
-
+      @java.lang.Override
       public boolean containsAttributes(
-          String key) {
-        if (key == null) { throw new NullPointerException(); }
+          java.lang.String key) {
+        if (key == null) { throw new NullPointerException("map key"); }
         return internalGetAttributes().getMap().containsKey(key);
       }
       /**
        * Use {@link #getAttributesMap()} instead.
        */
-      @Deprecated
-      public java.util.Map<String, String> getAttributes() {
+      @java.lang.Override
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String> getAttributes() {
         return getAttributesMap();
       }
       /**
        * <code>map&lt;string, string&gt; attributes = 5;</code>
        */
-
-      public java.util.Map<String, String> getAttributesMap() {
+      @java.lang.Override
+      public java.util.Map<java.lang.String, java.lang.String> getAttributesMap() {
         return internalGetAttributes().getMap();
       }
       /**
        * <code>map&lt;string, string&gt; attributes = 5;</code>
        */
-
-      public String getAttributesOrDefault(
-          String key,
-          String defaultValue) {
-        if (key == null) { throw new NullPointerException(); }
-        java.util.Map<String, String> map =
+      @java.lang.Override
+      public /* nullable */
+java.lang.String getAttributesOrDefault(
+          java.lang.String key,
+          /* nullable */
+java.lang.String defaultValue) {
+        if (key == null) { throw new NullPointerException("map key"); }
+        java.util.Map<java.lang.String, java.lang.String> map =
             internalGetAttributes().getMap();
         return map.containsKey(key) ? map.get(key) : defaultValue;
       }
       /**
        * <code>map&lt;string, string&gt; attributes = 5;</code>
        */
-
-      public String getAttributesOrThrow(
-          String key) {
-        if (key == null) { throw new NullPointerException(); }
-        java.util.Map<String, String> map =
+      @java.lang.Override
+      public java.lang.String getAttributesOrThrow(
+          java.lang.String key) {
+        if (key == null) { throw new NullPointerException("map key"); }
+        java.util.Map<java.lang.String, java.lang.String> map =
             internalGetAttributes().getMap();
         if (!map.containsKey(key)) {
-          throw new IllegalArgumentException();
+          throw new java.lang.IllegalArgumentException();
         }
         return map.get(key);
       }
-
       public Builder clearAttributes() {
+        bitField0_ = (bitField0_ & ~0x00000010);
         internalGetMutableAttributes().getMutableMap()
             .clear();
         return this;
@@ -5076,10 +5004,9 @@ public final class DominionGrpc {
       /**
        * <code>map&lt;string, string&gt; attributes = 5;</code>
        */
-
       public Builder removeAttributes(
-          String key) {
-        if (key == null) { throw new NullPointerException(); }
+          java.lang.String key) {
+        if (key == null) { throw new NullPointerException("map key"); }
         internalGetMutableAttributes().getMutableMap()
             .remove(key);
         return this;
@@ -5087,40 +5014,42 @@ public final class DominionGrpc {
       /**
        * Use alternate mutation accessors instead.
        */
-      @Deprecated
-      public java.util.Map<String, String>
-      getMutableAttributes() {
+      @java.lang.Deprecated
+      public java.util.Map<java.lang.String, java.lang.String>
+          getMutableAttributes() {
+        bitField0_ |= 0x00000010;
         return internalGetMutableAttributes().getMutableMap();
       }
       /**
        * <code>map&lt;string, string&gt; attributes = 5;</code>
        */
       public Builder putAttributes(
-          String key,
-          String value) {
-        if (key == null) { throw new NullPointerException(); }
-        if (value == null) { throw new NullPointerException(); }
+          java.lang.String key,
+          java.lang.String value) {
+        if (key == null) { throw new NullPointerException("map key"); }
+        if (value == null) { throw new NullPointerException("map value"); }
         internalGetMutableAttributes().getMutableMap()
             .put(key, value);
+        bitField0_ |= 0x00000010;
         return this;
       }
       /**
        * <code>map&lt;string, string&gt; attributes = 5;</code>
        */
-
       public Builder putAllAttributes(
-          java.util.Map<String, String> values) {
+          java.util.Map<java.lang.String, java.lang.String> values) {
         internalGetMutableAttributes().getMutableMap()
             .putAll(values);
+        bitField0_ |= 0x00000010;
         return this;
       }
-      @Override
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
-      @Override
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
@@ -5142,12 +5071,23 @@ public final class DominionGrpc {
 
     private static final com.google.protobuf.Parser<ScvSetCredentialsRequest>
         PARSER = new com.google.protobuf.AbstractParser<ScvSetCredentialsRequest>() {
-      @Override
+      @java.lang.Override
       public ScvSetCredentialsRequest parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new ScvSetCredentialsRequest(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -5155,12 +5095,12 @@ public final class DominionGrpc {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<ScvSetCredentialsRequest> getParserForType() {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsRequest getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -5174,7 +5114,7 @@ public final class DominionGrpc {
   /**
    * Protobuf type {@code dominion.v1.ScvSetCredentialsResponse}
    */
-  public  static final class ScvSetCredentialsResponse extends
+  public static final class ScvSetCredentialsResponse extends
       com.google.protobuf.GeneratedMessageV3 implements
       // @@protoc_insertion_point(message_implements:dominion.v1.ScvSetCredentialsResponse)
       ScvSetCredentialsResponseOrBuilder {
@@ -5186,61 +5126,19 @@ public final class DominionGrpc {
     private ScvSetCredentialsResponse() {
     }
 
-    @Override
+    @java.lang.Override
     @SuppressWarnings({"unused"})
-    protected Object newInstance(
+    protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
       return new ScvSetCredentialsResponse();
     }
 
-    @Override
-    public final com.google.protobuf.UnknownFieldSet
-    getUnknownFields() {
-      return this.unknownFields;
-    }
-    private ScvSetCredentialsResponse(
-        com.google.protobuf.CodedInputStream input,
-        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
-        throws com.google.protobuf.InvalidProtocolBufferException {
-      this();
-      if (extensionRegistry == null) {
-        throw new NullPointerException();
-      }
-      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
-          com.google.protobuf.UnknownFieldSet.newBuilder();
-      try {
-        boolean done = false;
-        while (!done) {
-          int tag = input.readTag();
-          switch (tag) {
-            case 0:
-              done = true;
-              break;
-            default: {
-              if (!parseUnknownField(
-                  input, unknownFields, extensionRegistry, tag)) {
-                done = true;
-              }
-              break;
-            }
-          }
-        }
-      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-        throw e.setUnfinishedMessage(this);
-      } catch (java.io.IOException e) {
-        throw new com.google.protobuf.InvalidProtocolBufferException(
-            e).setUnfinishedMessage(this);
-      } finally {
-        this.unknownFields = unknownFields.build();
-        makeExtensionsImmutable();
-      }
-    }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
       return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvSetCredentialsResponse_descriptor;
     }
 
-    @Override
+    @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
       return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvSetCredentialsResponse_fieldAccessorTable
@@ -5249,7 +5147,7 @@ public final class DominionGrpc {
     }
 
     private byte memoizedIsInitialized = -1;
-    @Override
+    @java.lang.Override
     public final boolean isInitialized() {
       byte isInitialized = memoizedIsInitialized;
       if (isInitialized == 1) return true;
@@ -5259,25 +5157,25 @@ public final class DominionGrpc {
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      unknownFields.writeTo(output);
+      getUnknownFields().writeTo(output);
     }
 
-    @Override
+    @java.lang.Override
     public int getSerializedSize() {
       int size = memoizedSize;
       if (size != -1) return size;
 
       size = 0;
-      size += unknownFields.getSerializedSize();
+      size += getUnknownFields().getSerializedSize();
       memoizedSize = size;
       return size;
     }
 
-    @Override
-    public boolean equals(final Object obj) {
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
       if (obj == this) {
        return true;
       }
@@ -5286,18 +5184,18 @@ public final class DominionGrpc {
       }
       org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsResponse other = (org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsResponse) obj;
 
-      if (!unknownFields.equals(other.unknownFields)) return false;
+      if (!getUnknownFields().equals(other.getUnknownFields())) return false;
       return true;
     }
 
-    @Override
+    @java.lang.Override
     public int hashCode() {
       if (memoizedHashCode != 0) {
         return memoizedHashCode;
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (29 * hash) + unknownFields.hashCode();
+      hash = (29 * hash) + getUnknownFields().hashCode();
       memoizedHashCode = hash;
       return hash;
     }
@@ -5346,11 +5244,13 @@ public final class DominionGrpc {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
+
     public static org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsResponse parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
+
     public static org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsResponse parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
@@ -5372,7 +5272,7 @@ public final class DominionGrpc {
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
 
-    @Override
+    @java.lang.Override
     public Builder newBuilderForType() { return newBuilder(); }
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
@@ -5380,13 +5280,13 @@ public final class DominionGrpc {
     public static Builder newBuilder(org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsResponse prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
-    @Override
+    @java.lang.Override
     public Builder toBuilder() {
       return this == DEFAULT_INSTANCE
           ? new Builder() : new Builder().mergeFrom(this);
     }
 
-    @Override
+    @java.lang.Override
     protected Builder newBuilderForType(
         com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
       Builder builder = new Builder(parent);
@@ -5404,7 +5304,7 @@ public final class DominionGrpc {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvSetCredentialsResponse_descriptor;
       }
 
-      @Override
+      @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvSetCredentialsResponse_fieldAccessorTable
@@ -5414,37 +5314,32 @@ public final class DominionGrpc {
 
       // Construct using org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsResponse.newBuilder()
       private Builder() {
-        maybeForceBuilderInitialization();
+
       }
 
       private Builder(
           com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
         super(parent);
-        maybeForceBuilderInitialization();
+
       }
-      private void maybeForceBuilderInitialization() {
-        if (com.google.protobuf.GeneratedMessageV3
-                .alwaysUseFieldBuilders) {
-        }
-      }
-      @Override
+      @java.lang.Override
       public Builder clear() {
         super.clear();
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.internal_static_dominion_v1_ScvSetCredentialsResponse_descriptor;
       }
 
-      @Override
+      @java.lang.Override
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsResponse getDefaultInstanceForType() {
         return org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsResponse.getDefaultInstance();
       }
 
-      @Override
+      @java.lang.Override
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsResponse build() {
         org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsResponse result = buildPartial();
         if (!result.isInitialized()) {
@@ -5453,46 +5348,46 @@ public final class DominionGrpc {
         return result;
       }
 
-      @Override
+      @java.lang.Override
       public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsResponse buildPartial() {
         org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsResponse result = new org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsResponse(this);
         onBuilt();
         return result;
       }
 
-      @Override
+      @java.lang.Override
       public Builder clone() {
         return super.clone();
       }
-      @Override
+      @java.lang.Override
       public Builder setField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return super.setField(field, value);
       }
-      @Override
+      @java.lang.Override
       public Builder clearField(
           com.google.protobuf.Descriptors.FieldDescriptor field) {
         return super.clearField(field);
       }
-      @Override
+      @java.lang.Override
       public Builder clearOneof(
           com.google.protobuf.Descriptors.OneofDescriptor oneof) {
         return super.clearOneof(oneof);
       }
-      @Override
+      @java.lang.Override
       public Builder setRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          int index, Object value) {
+          int index, java.lang.Object value) {
         return super.setRepeatedField(field, index, value);
       }
-      @Override
+      @java.lang.Override
       public Builder addRepeatedField(
           com.google.protobuf.Descriptors.FieldDescriptor field,
-          Object value) {
+          java.lang.Object value) {
         return super.addRepeatedField(field, value);
       }
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
         if (other instanceof org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsResponse) {
           return mergeFrom((org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsResponse)other);
@@ -5504,41 +5399,54 @@ public final class DominionGrpc {
 
       public Builder mergeFrom(org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsResponse other) {
         if (other == org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsResponse.getDefaultInstance()) return this;
-        this.mergeUnknownFields(other.unknownFields);
+        this.mergeUnknownFields(other.getUnknownFields());
         onChanged();
         return this;
       }
 
-      @Override
+      @java.lang.Override
       public final boolean isInitialized() {
         return true;
       }
 
-      @Override
+      @java.lang.Override
       public Builder mergeFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsResponse parsedMessage = null;
+        if (extensionRegistry == null) {
+          throw new java.lang.NullPointerException();
+        }
         try {
-          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+          boolean done = false;
+          while (!done) {
+            int tag = input.readTag();
+            switch (tag) {
+              case 0:
+                done = true;
+                break;
+              default: {
+                if (!super.parseUnknownField(input, extensionRegistry, tag)) {
+                  done = true; // was an endgroup tag
+                }
+                break;
+              } // default:
+            } // switch (tag)
+          } // while (!done)
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsResponse) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
-          if (parsedMessage != null) {
-            mergeFrom(parsedMessage);
-          }
-        }
+          onChanged();
+        } // finally
         return this;
       }
-      @Override
+      @java.lang.Override
       public final Builder setUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.setUnknownFields(unknownFields);
       }
 
-      @Override
+      @java.lang.Override
       public final Builder mergeUnknownFields(
           final com.google.protobuf.UnknownFieldSet unknownFields) {
         return super.mergeUnknownFields(unknownFields);
@@ -5560,12 +5468,23 @@ public final class DominionGrpc {
 
     private static final com.google.protobuf.Parser<ScvSetCredentialsResponse>
         PARSER = new com.google.protobuf.AbstractParser<ScvSetCredentialsResponse>() {
-      @Override
+      @java.lang.Override
       public ScvSetCredentialsResponse parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new ScvSetCredentialsResponse(input, extensionRegistry);
+        Builder builder = newBuilder();
+        try {
+          builder.mergeFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          throw e.setUnfinishedMessage(builder.buildPartial());
+        } catch (com.google.protobuf.UninitializedMessageException e) {
+          throw e.asInvalidProtocolBufferException().setUnfinishedMessage(builder.buildPartial());
+        } catch (java.io.IOException e) {
+          throw new com.google.protobuf.InvalidProtocolBufferException(e)
+              .setUnfinishedMessage(builder.buildPartial());
+        }
+        return builder.buildPartial();
       }
     };
 
@@ -5573,12 +5492,12 @@ public final class DominionGrpc {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public com.google.protobuf.Parser<ScvSetCredentialsResponse> getParserForType() {
       return PARSER;
     }
 
-    @Override
+    @java.lang.Override
     public org.opennms.dominion.local.rpc.grpc.DominionGrpc.ScvSetCredentialsResponse getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
@@ -5638,7 +5557,7 @@ public final class DominionGrpc {
   private static  com.google.protobuf.Descriptors.FileDescriptor
       descriptor;
   static {
-    String[] descriptorData = {
+    java.lang.String[] descriptorData = {
       "\n\016dominion.proto\022\013dominion.v1\";\n\021ClientC" +
       "redentials\022\020\n\010clientId\030\001 \001(\t\022\024\n\014clientSe" +
       "cret\030\002 \001(\t\"W\n\032ScvSupportedAliasesRequest" +
@@ -5680,55 +5599,55 @@ public final class DominionGrpc {
     internal_static_dominion_v1_ClientCredentials_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_dominion_v1_ClientCredentials_descriptor,
-        new String[] { "ClientId", "ClientSecret", });
+        new java.lang.String[] { "ClientId", "ClientSecret", });
     internal_static_dominion_v1_ScvSupportedAliasesRequest_descriptor =
       getDescriptor().getMessageTypes().get(1);
     internal_static_dominion_v1_ScvSupportedAliasesRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_dominion_v1_ScvSupportedAliasesRequest_descriptor,
-        new String[] { "ClientCredentials", });
+        new java.lang.String[] { "ClientCredentials", });
     internal_static_dominion_v1_ScvSupportedAliasesResponse_descriptor =
       getDescriptor().getMessageTypes().get(2);
     internal_static_dominion_v1_ScvSupportedAliasesResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_dominion_v1_ScvSupportedAliasesResponse_descriptor,
-        new String[] { "Aliases", });
+        new java.lang.String[] { "Aliases", });
     internal_static_dominion_v1_ScvGetCredentialsRequest_descriptor =
       getDescriptor().getMessageTypes().get(3);
     internal_static_dominion_v1_ScvGetCredentialsRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_dominion_v1_ScvGetCredentialsRequest_descriptor,
-        new String[] { "ClientCredentials", "Alias", });
+        new java.lang.String[] { "ClientCredentials", "Alias", });
     internal_static_dominion_v1_ScvGetCredentialsResponse_descriptor =
       getDescriptor().getMessageTypes().get(4);
     internal_static_dominion_v1_ScvGetCredentialsResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_dominion_v1_ScvGetCredentialsResponse_descriptor,
-        new String[] { "User", "Password", "Attributes", });
+        new java.lang.String[] { "User", "Password", "Attributes", });
     internal_static_dominion_v1_ScvGetCredentialsResponse_AttributesEntry_descriptor =
       internal_static_dominion_v1_ScvGetCredentialsResponse_descriptor.getNestedTypes().get(0);
     internal_static_dominion_v1_ScvGetCredentialsResponse_AttributesEntry_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_dominion_v1_ScvGetCredentialsResponse_AttributesEntry_descriptor,
-        new String[] { "Key", "Value", });
+        new java.lang.String[] { "Key", "Value", });
     internal_static_dominion_v1_ScvSetCredentialsRequest_descriptor =
       getDescriptor().getMessageTypes().get(5);
     internal_static_dominion_v1_ScvSetCredentialsRequest_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_dominion_v1_ScvSetCredentialsRequest_descriptor,
-        new String[] { "ClientCredentials", "Alias", "User", "Password", "Attributes", });
+        new java.lang.String[] { "ClientCredentials", "Alias", "User", "Password", "Attributes", });
     internal_static_dominion_v1_ScvSetCredentialsRequest_AttributesEntry_descriptor =
       internal_static_dominion_v1_ScvSetCredentialsRequest_descriptor.getNestedTypes().get(0);
     internal_static_dominion_v1_ScvSetCredentialsRequest_AttributesEntry_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_dominion_v1_ScvSetCredentialsRequest_AttributesEntry_descriptor,
-        new String[] { "Key", "Value", });
+        new java.lang.String[] { "Key", "Value", });
     internal_static_dominion_v1_ScvSetCredentialsResponse_descriptor =
       getDescriptor().getMessageTypes().get(6);
     internal_static_dominion_v1_ScvSetCredentialsResponse_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_dominion_v1_ScvSetCredentialsResponse_descriptor,
-        new String[] { });
+        new java.lang.String[] { });
   }
 
   // @@protoc_insertion_point(outer_class_scope)

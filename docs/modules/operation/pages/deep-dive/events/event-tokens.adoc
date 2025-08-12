@@ -122,9 +122,10 @@ You can access these records using the `%asset%` token (for example, `%asset[tok
 A node may have additional hardware details stored in {page-component-title}.
 You can access these details using the `%hardware%` token (for example, `%hardware[token]%`, which returns the value of the `token` field from the node's hardware inventory).
 
+[[parameter-tokens]]
 == Parameter tokens
 
-Many events store additional information in their parameters (see <<deep-dive/events/event-definition.adoc#ga-events-anatomy-of-an-event, Anatomy of an event>>).
+Many events store additional information in their parameters (see <<./event-definition.adoc#ga-events-anatomy-of-an-event, Anatomy of an event>>).
 These parameters may start as SNMP variable bindings (varbinds).
 
 You can access event parameters using the `%parm%` token, which can take several forms:

@@ -127,6 +127,14 @@
 %>
 <jsp:directive.include file="/includes/bootstrap.jsp" />
 
+<script type="text/javascript">
+    let url = new URL(location.href);
+    if (!url.searchParams.has('id')) {
+        url.searchParams.set('id', '${alarmId}');
+        window.location.href = url.href;
+    }
+</script>
+
 <div class="card">
   <div class="card-header">
     <span><%= (alarm.isSituation() ? "Situation " : "Alarm ") + alarm.getId()%></span>

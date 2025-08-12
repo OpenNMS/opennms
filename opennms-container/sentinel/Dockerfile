@@ -23,9 +23,9 @@
 ##
 # Use Java base image and setup required RPMs as cacheable image.
 ##
-ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.3.0.b265-jre-17"
+ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.6.0.b293-jre-17"
 
-FROM ${BASE_IMAGE} as sentinel-tarball
+FROM ${BASE_IMAGE} AS sentinel-tarball
 
 ADD --chown=10001:0 ./tarball-root/ /opt/usr-share/sentinel/
 RUN chmod -R g-w /opt/usr-share/sentinel && \
@@ -42,7 +42,7 @@ RUN chmod -R g-w /opt/usr-share/sentinel && \
         /opt/usr-share/sentinel/repositories \
         -type d -print0 | xargs -0 chmod 2775
 
-FROM ${BASE_IMAGE} as sentinel-base
+FROM ${BASE_IMAGE} AS sentinel-base
 
 ARG REQUIRED_RPMS="hostname uuid"
 
@@ -54,13 +54,6 @@ SHELL ["/bin/bash", "-c"]
 RUN microdnf -y install ${REQUIRED_RPMS} && \
     rm -rf /var/cache/yum
 
-##
-# Download plugins
-##
-FROM ${BASE_IMAGE} as sentinel-plugins
-
-COPY plugins.sh /tmp/plugins.sh 
-RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
 
 ##
 # Install and setup OpenNMS Sentinel
@@ -70,8 +63,6 @@ FROM sentinel-base
 # If you copy from /usr/share/sentinel to /usr/share/sentinel the permissions are not preserved
 # We would have 755 for sentinel:root instead of 775 and prevents writing lock files in /usr/share/sentinel
 COPY --chown=10001:0 --from=sentinel-tarball /opt/usr-share /usr/share
-
-COPY --chown=10001:0 --from=sentinel-plugins /opt/usr-plugins /usr/share/opennms/deploy
 
 SHELL ["/bin/bash", "-c"]
 
@@ -107,6 +98,9 @@ RUN install -d -o 10001 -g 0 -m 775 \
 # Install entrypoint wrapper and health check script
 COPY container-fs/entrypoint.sh /
 COPY container-fs/health.sh /
+
+# Install a default JMX Prometheus configuration
+COPY container-fs/prom-jmx-default-config.yaml /opt/prom-jmx-exporter/config.yaml
 
 # Install confd.io configuration files and scripts and ensure they are executable
 COPY ./container-fs/confd/ /opt/sentinel/confd/

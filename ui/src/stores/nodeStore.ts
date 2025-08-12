@@ -20,7 +20,6 @@
 /// License.
 ///
 
-import { NodeQueryFilter } from './../types/index';
 import { defineStore } from 'pinia'
 import API from '@/services'
 import { IpInterface, Node, NodeAvailability, Outage, QueryParameters, SnmpInterface } from '@/types'
@@ -92,7 +91,7 @@ export const useNodeStore = defineStore('nodeStore', () => {
 
     const query = getNodeIpInterfaceQuery(nodeIds, managedOnly)
     const queryParameters = {
-      limit: nodeIds.length,
+      limit: 0,
       _s: query
     } as QueryParameters
 

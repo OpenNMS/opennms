@@ -27,4 +27,5 @@ public interface MonitoringSystemDao extends OnmsDao<OnmsMonitoringSystem, Strin
 
     long getNumMonitoringSystems(String type);
 
+    OnmsMonitoringSystem getMainMonitoringSystem();
 }

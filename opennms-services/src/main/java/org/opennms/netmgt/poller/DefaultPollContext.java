@@ -325,7 +325,7 @@ public class DefaultPollContext implements PollContext, EventListener, Initializ
         final Runnable r = new Runnable() {
             @Override
             public void run() {
-                final int eventId = svcLostEvent.getEventId();
+                final long eventId = svcLostEvent.getEventId();
                 if (eventId > 0) {
                     getQueryManager().updateOpenOutageWithEventId(outageId, eventId);
                 } else {
@@ -365,7 +365,7 @@ public class DefaultPollContext implements PollContext, EventListener, Initializ
         final Runnable r = new Runnable() {
             @Override
             public void run() {
-                final int eventId = svcRegainEvent.getEventId();
+                final long eventId = svcRegainEvent.getEventId();
                 if (eventId > 0) {
                     getQueryManager().updateResolvedOutageWithEventId(outageId, eventId);
                 } else {

@@ -80,7 +80,7 @@ const copyURLToClipboard = () => {
   if (floating.value && props.text) {
     ConfigurationHelper.copyToClipboard(props.text).then(() => {
       showSnackBar({
-        msg: `Copied: ${props.text.length > 70 ? props.text.substring(0, 70) + '...' : props.text}`,
+        msg: `Copied: ${props.text.length > 70 ? props.text.substring(0, 70) + '...' : props.text}`
       })
     }).catch((err) => {
       showSnackBar({
@@ -121,6 +121,7 @@ const timeoutIn = () => {
   scoped
 >
 @import "@featherds/styles/mixins/elevation";
+@import "@featherds/styles/themes/variables";
 
 .inner-short {
   cursor: pointer;
@@ -144,4 +145,3 @@ const timeoutIn = () => {
   z-index: 2;
 }
 </style>
-

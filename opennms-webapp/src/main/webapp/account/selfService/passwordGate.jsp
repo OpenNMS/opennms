@@ -35,6 +35,13 @@
   import="org.opennms.web.account.selfService.PasswordGateActionServlet"
 %>
 
+<%
+    // Horizon values - these are overridden in Meridian
+    String wallpaperBgImagePath = "images/wallpapers/background_dark.png";
+    String titleLogoImagePath = "images/opennms_horizon_title.svg";
+    String labelTextColor = "#fff";
+%>
+
 <style type="text/css">
   .login-page {
     position: absolute;
@@ -42,7 +49,7 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background-image: url('images/wallpapers/background_dark.png');
+    background-image: url('<%= wallpaperBgImagePath %>');
     background-size: cover;
   }
 
@@ -121,7 +128,7 @@
   }
 
   label.pg-text, span.pg-text {
-    color: #fff;
+    color: <%= labelTextColor %>;
   }
 
   a.pg-link, a.pg-link:visited {
@@ -184,7 +191,7 @@
 <div class="login-page">
     <div class="card login-form rounded">
         <div style="padding-bottom: 36px; padding-top: 60px">
-            <img src="images/opennms_horizon_title.svg" class="horizon" width="185px" />
+            <img src="<%= titleLogoImagePath %>" class="horizon" width="185px" />
         </div>
         <div class="form-content-wrapper">
             <form role="form" method="post" name="goForm" onSubmit="return verifyGoForm(event);" action="account/selfService/passwordGateAction">

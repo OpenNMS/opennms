@@ -33,9 +33,18 @@
     <bean id="dispatcherServletPath" class="java.lang.String">
         <constructor-arg value="${opennms.home}/jetty-webapps/opennms/WEB-INF/dispatcher-servlet.xml" />
     </bean>
-    <bean id="menuProvider" class="org.opennms.web.rest.support.menu.MenuProvider">
-        <constructor-arg ref="dispatcherServletPath"/>
+    <bean id="menuTemplatePath" class="java.lang.String">
+        <constructor-arg value="${opennms.home}/jetty-webapps/opennms/WEB-INF/menu-template.json" />
     </bean>
+    <bean id="menuProvider" class="org.opennms.web.rest.support.menu.MenuProvider">
+        <constructor-arg ref="dispatcherServletPath" />
+        <constructor-arg ref="menuTemplatePath" />
+    </bean>
+    <bean id="legacyMenuProvider" class="org.opennms.web.rest.support.menu.MenuProviderLegacy">
+        <constructor-arg ref="dispatcherServletPath" />
+        <constructor-arg ref="menuTemplatePath" />
+    </bean>
+
     <!-- CXF OpenApiFeature -->
     <bean id="securityScheme" class="io.swagger.v3.oas.models.security.SecurityScheme">
         <property name="type">
@@ -94,8 +103,6 @@
         <ref bean="lenientJaxbProvider"/>
         <ref bean="jaxbProvider"/>
         <ref bean="jacksonJaxbJsonProvider"/>
-        <ref bean="atomEntryProvider"/>
-        <ref bean="atomFeedProvider"/>
         <!-- <ref bean="atomPojoProvider"/> -->
         <ref bean="searchContextProvider"/>
         <ref bean="noSuchElementProvider" />

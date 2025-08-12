@@ -39,7 +39,7 @@ import com.google.common.collect.Maps;
 
 public class Interpolator {
     private static final String OUTER_REGEXP = "\\$\\{([^\\{\\}]+?:[^\\{\\}]+?)\\}";
-    private static final String INNER_REGEXP = "(?:([^\\|]+?:[^\\|]+)|([^\\|]+))";
+    private static final String INNER_REGEXP = "(?:([^\\|\"']+?:[^\\|]+)|('[^\\|]+')|(\"[^\\|]+\")|([^\\|]+))";
     private static final Pattern OUTER_PATTERN = Pattern.compile(OUTER_REGEXP);
     private static final Pattern INNER_PATTERN = Pattern.compile(INNER_REGEXP);
 
@@ -142,9 +142,17 @@ public class Interpolator {
                         parts.add(new ResultPart(outerMatcher.group(), innerMatcher.group(1), replacement.get()));
                         break;
                     }
-                } else if (innerMatcher.group(2) != null) {
-                    result = Matcher.quoteReplacement(innerMatcher.group(2));
-                    parts.add(new ResultPart(outerMatcher.group(), innerMatcher.group(2), new Scope.ScopeValue(Scope.ScopeName.DEFAULT, innerMatcher.group(2))));
+                } else if (innerMatcher.group(4) != null) {
+                    result = Matcher.quoteReplacement(innerMatcher.group(4));
+                    parts.add(new ResultPart(outerMatcher.group(), innerMatcher.group(4), new Scope.ScopeValue(Scope.ScopeName.DEFAULT, innerMatcher.group(4))));
+                    break;
+                } else if (innerMatcher.group(2) != null || innerMatcher.group(3) != null) {
+                    int index = innerMatcher.group(2) != null ? 2 : 3;
+                    String string = innerMatcher.group(index).trim();
+                    string = string.substring(1, string.length() - 1);
+
+                    result = string;
+                    parts.add(new ResultPart(outerMatcher.group(), string, new Scope.ScopeValue(Scope.ScopeName.DEFAULT, string)));
                     break;
                 }
             }
