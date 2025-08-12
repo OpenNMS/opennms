@@ -23,11 +23,16 @@ package org.opennms.systemreport.opennms;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.management.ManagementFactory;
+import java.lang.management.RuntimeMXBean;
+import java.time.Duration;
 import java.util.Map;
 import java.util.Properties;
 import java.util.TreeMap;
-
+import org.opennms.core.resource.Vault;
 import org.opennms.core.spring.BeanUtils;
+import org.opennms.core.utils.SystemInfoUtils;
+import org.opennms.core.utils.TimeSeries;
 import org.opennms.netmgt.dao.api.AlarmDao;
 import org.opennms.netmgt.dao.api.EventDao;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
@@ -72,6 +77,10 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
         return "OpenNMS core information, version, and basic configuration";
     }
 
+
+    @Override
+    public boolean isVisible() { return true; }
+
     @Override
     public int getPriority() {
         return 3;
@@ -80,17 +89,9 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
     @Override
     public Map<String, Resource> getEntries() {
         final TreeMap<String,Resource> map = new TreeMap<String,Resource>();
-        final InputStream is = this.getClass().getResourceAsStream("/version.properties");
-        if (is != null) {
-            Properties p = new Properties();
-            try {
-                p.load(is);
-                map.put("Version", getResource(p.getProperty("version.display")));
-            } catch (final IOException e) {
-                LOG.warn("Unable to load from version.properties", e);
-            }
-        }
-        
+        map.put("OpenNMS Home Dir",getResourceFromProperty("opennms.home"));
+        map.put("Version", getResource(Vault.getProperty("version.display")));
+
         if (m_nodeDao != null) {
             map.put("Number of Nodes", getResource(Integer.toString(m_nodeDao.countAll())));
         }
@@ -106,7 +107,38 @@ public class OpenNMSReportPlugin extends AbstractSystemReportPlugin implements I
         if (m_alarmDao != null) {
             map.put("Number of Alarms", getResource(Integer.toString(m_alarmDao.countAll())));
         }
+
+        RuntimeMXBean runtimeBean = getBean(ManagementFactory.RUNTIME_MXBEAN_NAME, RuntimeMXBean.class);
+        if (runtimeBean == null) {
+            LOG.info("falling back to local VM RuntimeMXBean");
+            runtimeBean = ManagementFactory.getRuntimeMXBean();
+        }
+        addGetters(runtimeBean, map);
+
+        map.put("OpenNMS Up Time",getResource( getOnmsUptimeAsString(runtimeBean) ));
+        map.put("Time-Series Strategy",getResource(TimeSeries.getTimeseriesStrategy().getName()));
+
         return map;
+    }
+
+    private String getOnmsUptimeAsString(RuntimeMXBean runtimeBean){
+
+        long startTimeMillis = runtimeBean.getStartTime();
+
+        // Get the current time (in milliseconds since epoch)
+        long currentTimeMillis = System.currentTimeMillis();
+
+        // Calculate uptime
+        long uptimeMillis = currentTimeMillis - startTimeMillis;
+
+        Duration uptimeDuration = Duration.ofMillis(uptimeMillis);
+
+        // Get hours, minutes, and seconds
+        long hours = uptimeDuration.toHours();
+        long minutes = uptimeDuration.toMinutes() % 60; // Get remaining minutes after hours
+        long seconds = uptimeDuration.getSeconds() % 60; // Get remaining seconds after minutes
+
+        return String.format("%d hours, %d minutes, %d seconds", hours, minutes, seconds);
     }
 
 }

@@ -121,6 +121,7 @@ const timeoutIn = () => {
   scoped
 >
 @import "@featherds/styles/mixins/elevation";
+@import "@featherds/styles/themes/variables";
 
 .inner-short {
   cursor: pointer;
@@ -144,4 +145,3 @@ const timeoutIn = () => {
   z-index: 2;
 }
 </style>
-

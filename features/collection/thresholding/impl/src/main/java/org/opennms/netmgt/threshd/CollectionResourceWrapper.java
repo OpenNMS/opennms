@@ -60,6 +60,7 @@ public class CollectionResourceWrapper {
     private final String m_hostAddress;
     private final String m_serviceName;
     private String m_dsLabel;
+    private String m_exprLabel;
     private final String m_iflabel;
     private final String m_ifindex;
     private final CollectionResource m_resource;
@@ -213,6 +214,24 @@ public class CollectionResourceWrapper {
      */
     public void setDsLabel(String dsLabel) {
         m_dsLabel = dsLabel;
+    }
+
+     /**
+     * <p>getExprLabel</p>
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getExprLabel() {
+        return m_exprLabel;
+    }
+
+    /**
+     * <p>setExprLabel</p>
+     *
+     * @param exprLabel a {@link java.lang.String} object.
+     */
+    public void setExprLabel(String exprLabel) {
+        m_exprLabel = exprLabel;
     }
 
     /**

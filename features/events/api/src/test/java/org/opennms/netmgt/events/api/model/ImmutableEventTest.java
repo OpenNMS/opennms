@@ -106,7 +106,7 @@ public class ImmutableEventTest {
     private static Event createEvent() {
         Event event = new Event();
         event.setUuid("test-uuid");
-        event.setDbid(100);
+        event.setDbid(100L);
         event.setDistPoller("test-dist-poller");
         event.setCreationTime(new Date());
         event.setMasterStation("test-master-station");

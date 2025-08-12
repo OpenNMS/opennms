@@ -46,7 +46,11 @@ public class DefaultZenithConnectRestService implements ZenithConnectRestService
         this.persistenceService = persistenceService;
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Get all registrations.
+     * Currently, there is only one registration at a time, so this will return a
+     * ZenithConnectRegistrations object with a single object in the registrations list.
+     */
     @Override
     public Response getRegistrations() {
         try {
@@ -58,19 +62,31 @@ public class DefaultZenithConnectRestService implements ZenithConnectRestService
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Add the given registration.
+     * This will throw a 400 Bad Request if the request is a duplicate of an existing registration.
+     * Throws a 500 Server Error if the request is malformed, or there was an error updating the database.
+     */
     @Override
     public Response addRegistration(ZenithConnectRegistration registration) {
         try {
-            var newRegistration = persistenceService.addRegistration(registration);
+            var newRegistration = persistenceService.addRegistration(registration, true);
             return Response.status(Response.Status.CREATED).entity(newRegistration).build();
         } catch (ZenithConnectPersistenceException e) {
-            LOG.error("Could not add registration: {}.", e.getMessage(), e);
+            LOG.error("Could not add registration: {}. Attempted to add duplicate: {}",
+                    e.getMessage(), e.isAttemptedToAddDuplicate(), e);
+
+            if (e.isAttemptedToAddDuplicate()) {
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+
             return Response.serverError().build();
         }
     }
 
-    /** {@inheritDoc} */
+    /**
+     * Update an existing registration. The id and registration.id must match an existing registration.
+     */
     @Override
     public Response updateRegistration(String id, ZenithConnectRegistration registration) {
         try {

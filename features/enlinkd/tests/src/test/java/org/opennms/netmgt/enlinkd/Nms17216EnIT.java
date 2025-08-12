@@ -168,22 +168,22 @@ public class Nms17216EnIT extends EnLinkdBuilderITCase {
         assertEquals(4, m_lldpLinkDao.countAll());
         assertEquals(1,m_lldpElementDao.countAll());
         
-        Thread.sleep(1000);
+        Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(switch2.getId()));
         assertEquals(10,m_lldpLinkDao.countAll());
         assertEquals(2,m_lldpElementDao.countAll());
 
-        Thread.sleep(1000);
+        Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(switch3.getId()));
         assertEquals(12,m_lldpLinkDao.countAll());
         assertEquals(3,m_lldpElementDao.countAll());
 
-        Thread.sleep(1000);
+        Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(switch4.getId()));
         assertEquals(12,m_lldpLinkDao.countAll());
         assertEquals(4,m_lldpElementDao.countAll());
 
-        Thread.sleep(1000);
+        Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(switch5.getId()));
         assertEquals(12,m_lldpLinkDao.countAll());
         assertEquals(5,m_lldpElementDao.countAll());

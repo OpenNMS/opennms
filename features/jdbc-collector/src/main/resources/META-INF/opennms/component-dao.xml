@@ -9,12 +9,7 @@
        >
 
   <context:annotation-config/>
-  
-  <bean id="jdbcDataCollectionConfigResourceLocation" class="java.lang.String">
-    <constructor-arg value="file:${opennms.home}/etc/jdbc-datacollection-config.xml" />
-  </bean>
 
-  <bean id="jdbcDataCollectionConfigDao" class="org.opennms.netmgt.dao.jaxb.JdbcDataCollectionConfigDaoJaxb">
-    <property name="configResource" ref="jdbcDataCollectionConfigResourceLocation" />
-  </bean>
+  <bean id="jdbcDataCollectionConfigDao" class="org.opennms.netmgt.dao.jaxb.JdbcDataCollectionConfigDaoJaxb" />
+
 </beans>

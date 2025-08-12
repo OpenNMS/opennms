@@ -25,7 +25,6 @@ import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -88,6 +87,12 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
         return false;
     }
 
+    @Override
+    public boolean isVisible() { return false; }
+
+    @Override
+    public String defaultFormat() { return ".txt";}
+
     protected ResourceLocator getResourceLocator() {
         return m_resourceLocator;
     }
@@ -143,9 +148,8 @@ public abstract class AbstractSystemReportPlugin implements SystemReportPlugin {
             is = p.getInputStream();
             isr = new InputStreamReader(is);
             br = new BufferedReader(isr);
-            while (br.ready()) {
-                final String line = br.readLine();
-                if (line == null) break;
+            String line=null;
+            while ((line = br.readLine()) != null) {
                 sb.append(line);
                 if (br.ready()) sb.append("\n");
             }

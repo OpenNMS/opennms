@@ -57,6 +57,8 @@ const displayContainer = computed(() => {
   
 <style scoped lang="scss">
 @import "@featherds/styles/mixins/typography";
+@import "@featherds/styles/themes/variables";
+
 .container {
   border: 2px solid var($shade-4);
   margin-bottom: 15px;

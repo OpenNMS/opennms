@@ -7,7 +7,7 @@
 %{!?package_epoch:%define package_epoch 1}
 %{!?my_epoch:%define my_epoch %{package_epoch}}
 %{!?my_release:%define my_release %{package_release}}
-%{!?dep_package:%define dep_package java-11-openjdk-devel}
+%{!?dep_package:%define dep_package java-17-openjdk-devel}
 
 Name:			jdk
 Summary:		OpenJDK compatible placeholder

@@ -3,12 +3,12 @@ Maintainer: Benjamin Reed <ranger@opennms.org>
 Section: contrib/net
 Priority: optional
 Standards-Version: 3.9.2
-Build-Depends: debhelper (>= 9), dpkg-dev, oracle-java11-installer | adoptopenjdk-11-openj9xl | adoptopenjdk-11-openj9 | adoptopenjdk-11-hotspot | openjdk-11-jdk-headless | openjdk-11-jdk | java11-jdk | temurin-11-jdk | oracle-java17-installer | jdk-17 | adoptopenjdk-17-openj9xl | adoptopenjdk-17-openj9 | adoptopenjdk-17-hotspot | openjdk-17-jdk-headless | openjdk-17-jdk | java17-jdk | temurin-17-jdk, rsync
+Build-Depends: debhelper (>= 9), dpkg-dev, oracle-java17-installer | jdk-17 | adoptopenjdk-17-openj9xl | adoptopenjdk-17-openj9 | adoptopenjdk-17-hotspot | openjdk-17-jdk-headless | openjdk-17-jdk | java17-jdk | temurin-17-jdk, rsync
 
 Package: opennms-sentinel
 Architecture: all
 Depends: adduser, openssh-client, uuid-runtime, sudo
-Recommends: openjdk-11-jre-headless | openjdk-11-jre | adoptopenjdk-11-openj9xl-jre | adoptopenjdk-11-openj9-jre | adoptopenjdk-11-hotspot-jre | temurin-11-jdk | openjdk-17-jre-headless | openjdk-17-jre | adoptopenjdk-17-openj9xl-jre | adoptopenjdk-17-openj9-jre | adoptopenjdk-17-hotspot-jre | temurin-17-jdk | jdk-17, haveged, jicmp (>= 2.0.0), jicmp6 (>= 2.0.0)
+Recommends: openjdk-17-jre-headless | openjdk-17-jre | adoptopenjdk-17-openj9xl-jre | adoptopenjdk-17-openj9-jre | adoptopenjdk-17-hotspot-jre | temurin-17-jdk | jdk-17, jicmp (>= 2.0.0), jicmp6 (>= 2.0.0)
 Provides: opennms-plugin-api (= OPA_VERSION)
 Description: horizontal scaling for OpenNMS
  OpenNMS Sentinel is a container for running a subset of OpenNMS

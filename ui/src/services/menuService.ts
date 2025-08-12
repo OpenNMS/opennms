@@ -22,9 +22,12 @@
 
 import { rest, v2 } from './axiosInstances'
 import { MainMenu, NotificationSummary } from '@/types/mainMenu'
+import { loadDefaultPreferences, loadPreferences, savePreferences } from '@/services/localStorageService'
 
 const menuEndpoint = 'menu'
 const notificationSummaryEndpoint = 'notifications/summary'
+// null if uninitialized
+const isSideMenuExpanded = ref<boolean | null>(null)
 
 const getMainMenu = async (): Promise<MainMenu | false> => {
   try {
@@ -44,7 +47,32 @@ const getNotificationSummary = async (): Promise<NotificationSummary | false> =>
   }
 }
 
+const loadIsSideMenuExpanded = () => {
+  const prefs = loadPreferences()
+  isSideMenuExpanded.value = prefs?.isSideMenuExpanded ?? false
+}
+
+const getIsSideMenuExpanded = () => {
+  if (isSideMenuExpanded.value === null) {
+    loadIsSideMenuExpanded()
+  }
+
+  return isSideMenuExpanded.value
+}
+
+const setIsSideMenuExpanded = (val: boolean) => {
+  isSideMenuExpanded.value = val
+
+  const prefs = loadPreferences() || loadDefaultPreferences()
+  prefs.isSideMenuExpanded = val
+
+  savePreferences(prefs)
+}
+
 export {
+  getIsSideMenuExpanded,
   getMainMenu,
-  getNotificationSummary
+  getNotificationSummary,
+  loadIsSideMenuExpanded,
+  setIsSideMenuExpanded
 }

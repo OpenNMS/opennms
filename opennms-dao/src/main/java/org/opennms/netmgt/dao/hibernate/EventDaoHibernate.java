@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.dao.hibernate;
 
+import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.Date;
 import java.util.List;
@@ -34,7 +35,7 @@ import org.opennms.netmgt.model.OnmsEvent;
 import org.springframework.dao.DataAccessException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 
-public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer> implements EventDao {
+public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Long> implements EventDao {
 
 	public EventDaoHibernate() {
 		super(OnmsEvent.class);
@@ -84,6 +85,20 @@ public class EventDaoHibernate extends AbstractDaoHibernate<OnmsEvent, Integer> 
 
                 return q.list();
             }
+        });
+    }
+
+    public long getNumEventsLastHours(int hours) {
+
+        if (hours <= 0) {
+            return 0L;  // Return 0 for negative and 0 hours instead of letting SQL handle it, SQL also returns 0.
+        }
+        return getHibernateTemplate().execute(s -> {
+            BigInteger result = (BigInteger) s.createSQLQuery("SELECT COUNT(*) FROM events WHERE eventtime >= NOW() " +
+                            "- (:hours * INTERVAL '1 hour')")
+                    .setParameter("hours", hours)
+                    .uniqueResult();
+            return result != null ? result.longValue() : 0L;
         });
     }
 }

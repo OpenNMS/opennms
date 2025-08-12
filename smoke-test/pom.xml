@@ -4,7 +4,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
   <artifactId>smoke-test</artifactId>
-  <version>33.1.8</version>
+  <version>34.0.0-SNAPSHOT</version>
   <name>OpenNMS Smoke Test</name>
   <url>http://opennms.org/</url>
   <description>Smoke Test APIs for OpenNMS</description>
@@ -62,8 +62,8 @@
          https://github.com/seleniumhq-community/docker-seleniarm/releases -->
     <seleniarm.version>4.6.0-20221104</seleniarm.version>
     <slf4jVersion>2.0.7</slf4jVersion>
-    <testcontainers.version>1.19.7</testcontainers.version>
-    <netty4Version>4.1.99.Final</netty4Version>
+    <testcontainers.version>1.19.6</testcontainers.version>
+    <netty4Version>4.1.100.Final</netty4Version>
     <jna.version>5.8.0</jna.version>
     <okhttpVersion>3.10.0</okhttpVersion>
     <test.fork.count>0</test.fork.count>
@@ -212,8 +212,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.11.0</version>
         <configuration>
-          <source>11</source>
-          <target>11</target>
+          <release>17</release>
           <encoding>UTF-8</encoding>
           <optimize>true</optimize>
         </configuration>
@@ -979,6 +978,12 @@
       <groupId>com.squareup.okhttp3</groupId>
       <artifactId>okhttp</artifactId>
       <version>${okhttpVersion}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.opennms.features.elastic</groupId>
+      <artifactId>org.opennms.features.elastic.client</artifactId>
+      <version>${project.version}</version>
     </dependency>
 
   </dependencies>

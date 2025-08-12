@@ -29,8 +29,8 @@ public class Outage {
     String m_ipAddr;
     int m_serviceId;
     String m_serviceName;
-    int m_lostEventId;
-    int m_regainedEventId;
+    long m_lostEventId;
+    long m_regainedEventId;
     Timestamp m_lostEventTime;
     Timestamp m_regainedEventTime;
 
@@ -44,12 +44,12 @@ public class Outage {
         this(svc.getNodeId(), svc.getIpAddr(), svc.getSvcId());
     }
 
-    public void setLostEvent(int eventId, Timestamp eventTime) {
+    public void setLostEvent(long eventId, Timestamp eventTime) {
         m_lostEventId = eventId;
         m_lostEventTime = eventTime;
     }
     
-    public void setRegainedEvent(int eventId, Timestamp eventTime) {
+    public void setRegainedEvent(long eventId, Timestamp eventTime) {
         m_regainedEventId = eventId;
         m_regainedEventTime = eventTime;
     }

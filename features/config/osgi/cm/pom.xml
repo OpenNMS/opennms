@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.opennms.features.config</groupId>
         <artifactId>org.opennms.features.config.osgi</artifactId>
-        <version>33.1.8</version>
+        <version>34.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.config.osgi</groupId>
@@ -83,8 +83,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
                 <configuration>
-                    <source>11</source>
-                    <target>11</target>
+                    <release>17</release>
                 </configuration>
             </plugin>
         </plugins>

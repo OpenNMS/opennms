@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.opennms.features</groupId>
         <artifactId>org.opennms.features.flows</artifactId>
-        <version>33.1.8</version>
+        <version>34.0.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.opennms.features.flows</groupId>
@@ -15,6 +15,8 @@
         <skipITs>true</skipITs>
         <nephronVersion>0.3.1</nephronVersion>
         <jsonSimpleVersion>1.1.1</jsonSimpleVersion>
+        <elasticsearchTargetVersion>8.18.2</elasticsearchTargetVersion>
+        <elasticsearchDriftPluginVersion>2.0.7</elasticsearchDriftPluginVersion>
     </properties>
     <build>
         <plugins>
@@ -43,6 +45,32 @@
                     <forkCount>1</forkCount>
                     <reuseForks>false</reuseForks>
                 </configuration>
+            </plugin>
+            <!-- Plugin to download Elasticsearch plugins -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>copy-elasticsearch-plugins</id>
+                        <phase>generate-test-resources</phase>
+                        <goals>
+                            <goal>copy</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.opennms.elasticsearch</groupId>
+                                    <artifactId>elasticsearch-drift-plugin-${elasticsearchTargetVersion}</artifactId>
+                                    <version>${elasticsearchDriftPluginVersion}</version>
+                                    <type>zip</type>
+                                    <outputDirectory>${project.build.directory}/elasticsearch-plugins</outputDirectory>
+                                    <destFileName>drift-plugin.zip</destFileName>
+                                </artifactItem>
+                            </artifactItems>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
             <!-- We create a key for 'localhost' for test purposes -->
             <plugin>
@@ -311,6 +339,25 @@
             <groupId>pl.pragmatists</groupId>
             <artifactId>JUnitParams</artifactId>
             <version>1.1.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
+            <version>1.17.6</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>elasticsearch</artifactId>
+            <version>1.17.6</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.awaitility</groupId>
+            <artifactId>awaitility</artifactId>
+            <version>4.2.0</version>
             <scope>test</scope>
         </dependency>
         <!-- used by test runtime SSL bits -->

@@ -211,8 +211,8 @@ public class DaoWebOutageRepository implements WebOutageRepository, Initializing
 
             // Event-related fields
             final OnmsEvent event = onmsOutage.getServiceLostEvent();
-            outage.lostServiceEventId = 0;
-            outage.regainedServiceEventId = 0;
+            outage.lostServiceEventId = 0L;
+            outage.regainedServiceEventId = 0L;
             if (event != null) {
                 outage.lostServiceEventId = onmsOutage.getServiceLostEvent().getId();
                 if (event.getDistPoller() != null) {

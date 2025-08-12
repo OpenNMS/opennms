@@ -29,6 +29,7 @@ import javax.servlet.http.HttpSession;
 import org.opennms.netmgt.config.UserFactory;
 import org.opennms.netmgt.config.UserManager;
 import org.opennms.netmgt.config.users.User;
+import org.opennms.web.springframework.security.LoginModuleUtils;
 import org.springframework.security.web.savedrequest.DefaultSavedRequest;
 import org.springframework.security.web.savedrequest.HttpSessionRequestCache;
 import org.springframework.security.web.savedrequest.RequestCache;
@@ -70,7 +71,9 @@ public class PasswordGateActionServlet extends AbstractBasePasswordChangeActionS
         final RequestCache requestCache = new HttpSessionRequestCache();
         final DefaultSavedRequest savedRequest = (DefaultSavedRequest) requestCache.getRequest(request, response);
         final String servletPath = savedRequest != null ? savedRequest.getServletPath() : null;
-        final String path = servletPath != null && !servletPath.isEmpty() ? servletPath : "/index.jsp";
+        final String path = servletPath != null && !servletPath.isEmpty() &&
+                !LoginModuleUtils.isInvalidSavedRequestUrl(servletPath)
+                ? servletPath : "/index.jsp";
 
         return request.getContextPath() + path;
     }

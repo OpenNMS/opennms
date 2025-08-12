@@ -558,6 +558,7 @@ public class OutageFactory extends Object {
             Outage outage = new Outage();
 
             Object element = null;
+            long longElement = -1L;
             int intElement = -1;
 
             // cannot be null
@@ -591,21 +592,21 @@ public class OutageFactory extends Object {
             }
 
             // can be null
-            intElement = rs.getInt("svcLostEventID");
+            longElement = rs.getLong("svcLostEventID");
             if (!rs.wasNull()) {
-                outage.lostServiceEventId = Integer.valueOf(intElement);
+                outage.lostServiceEventId = longElement;
             }
 
             // can be null
-            intElement = rs.getInt("svcRegainedEventID");
+            longElement = rs.getLong("svcRegainedEventID");
             if (!rs.wasNull()) {
-                outage.regainedServiceEventId = Integer.valueOf(intElement);
+                outage.regainedServiceEventId = longElement;
             }
 
             // can be null
             intElement = rs.getInt("notifyid");
             if (!rs.wasNull()) {
-                outage.lostServiceNotificationId = Integer.valueOf(intElement);
+                outage.lostServiceNotificationId = intElement;
             }
 
             // can be null

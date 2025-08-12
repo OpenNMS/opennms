@@ -67,6 +67,8 @@ public abstract class Bootstrap {
     protected static final String OPENNMS_PROPERTIES_NAME = "opennms.properties";
     protected static final String OPENNMS_PROPERTIES_D_NAME = "opennms.properties.d";
     protected static final String OPENNMS_HOME_PROPERTY = "opennms.home";
+    protected static final String DEFAULT_RRD_INTERFACE_JAR ="/usr/share/java/jrrd2.jar";
+    public static final String DEFAULT_RRD_STRATEGY_CLASS = "org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy";
 
     /**
      * Matches any file that is a directory.
@@ -496,9 +498,9 @@ public abstract class Bootstrap {
         if (System.getProperty("org.opennms.protocols.icmp.interfaceJar") != null) {
             dir += File.pathSeparator + System.getProperty("org.opennms.protocols.icmp.interfaceJar");
         }
-        
-        if (System.getProperty("org.opennms.rrd.interfaceJar") != null) {
-            dir += File.pathSeparator + System.getProperty("org.opennms.rrd.interfaceJar");
+
+        if (System.getProperty("org.opennms.rrd.strategyClass", DEFAULT_RRD_STRATEGY_CLASS).equals(DEFAULT_RRD_STRATEGY_CLASS)) {
+            dir += File.pathSeparator + System.getProperty("org.opennms.rrd.interfaceJar", DEFAULT_RRD_INTERFACE_JAR);
         }
 
         if (DEBUG) {

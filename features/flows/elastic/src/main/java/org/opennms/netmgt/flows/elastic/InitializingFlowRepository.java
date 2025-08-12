@@ -27,16 +27,16 @@ import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.opennms.features.elastic.client.ElasticRestClient;
 import org.opennms.features.jest.client.ConnectionPoolShutdownException;
-import org.opennms.features.jest.client.template.DefaultTemplateInitializer;
 import org.opennms.features.jest.client.template.IndexSettings;
+import org.opennms.features.jest.client.template.TemplateInitializer;
 import org.opennms.integration.api.v1.flows.Flow;
 import org.opennms.integration.api.v1.flows.FlowException;
 import org.opennms.integration.api.v1.flows.FlowRepository;
 import org.opennms.netmgt.flows.api.UnrecoverableFlowException;
 import org.osgi.framework.BundleContext;
 
-import io.searchbox.client.JestClient;
 
 /**
  * This {@link FlowRepository} wrapper will ensure that the repository has
@@ -44,21 +44,30 @@ import io.searchbox.client.JestClient;
  */
 public class InitializingFlowRepository implements FlowRepository {
 
-    private final List<DefaultTemplateInitializer> initializers;
+    private final List<TemplateInitializer> initializers;
     private final FlowRepository delegate;
     private final AtomicBoolean initialized = new AtomicBoolean(false);
+    private boolean useComposableTemplates = false;
 
-    public InitializingFlowRepository(final BundleContext bundleContext, final FlowRepository delegate, final JestClient client,
+    public InitializingFlowRepository(final BundleContext bundleContext,
+                                      final FlowRepository delegate,
+                                      final ElasticRestClient elasticRestClient,
                                       final IndexSettings rawIndexSettings,
-                                      final IndexSettings aggIndexSettings) {
-        this(delegate, new RawIndexInitializer(bundleContext, client, rawIndexSettings), new AggregateIndexInitializer(bundleContext, client, aggIndexSettings));
+                                      final IndexSettings aggIndexSettings,
+                                      final boolean useComposableTemplates,
+                                      final String templatesPath) {
+
+        this(delegate, new RawIndexInitializer(bundleContext, elasticRestClient, rawIndexSettings),
+                new AggregateIndexInitializer(bundleContext, elasticRestClient, aggIndexSettings),
+                new ComposableTemplateInitializer(elasticRestClient, templatesPath, useComposableTemplates));
+        this.useComposableTemplates = useComposableTemplates;
     }
 
-    protected InitializingFlowRepository(final FlowRepository delegate, final JestClient client) {
+    protected InitializingFlowRepository(final FlowRepository delegate, final ElasticRestClient client) {
         this(delegate, new RawIndexInitializer(client), new AggregateIndexInitializer(client));
     }
 
-    private InitializingFlowRepository(final FlowRepository delegate, final DefaultTemplateInitializer... initializers) {
+    private InitializingFlowRepository(final FlowRepository delegate, final TemplateInitializer... initializers) {
         this.delegate = Objects.requireNonNull(delegate);
         this.initializers = Arrays.asList(initializers);
     }
@@ -77,7 +86,12 @@ public class InitializingFlowRepository implements FlowRepository {
         if (initialized.get()) {
             return;
         }
-        for (DefaultTemplateInitializer initializer : initializers) {
+        for (TemplateInitializer initializer : initializers) {
+
+            // When using composable templates, only need to initialize ComposableTemplateInitializer.
+            if (useComposableTemplates && !initializer.isComposableTemplate()) {
+                continue;
+            }
             if (!initializer.isInitialized()) {
                 initializer.initialize();
             }

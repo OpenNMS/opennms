@@ -3,7 +3,7 @@
   <parent>
     <artifactId>opennms</artifactId>
     <groupId>org.opennms</groupId>
-    <version>33.1.8</version>
+    <version>34.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-webapp</artifactId>
@@ -54,6 +54,24 @@
                   <classifier>dist</classifier>
                   <overWrite>true</overWrite>
                   <outputDirectory>target/opennms-webapp-${project.version}/ui</outputDirectory>
+                </artifactItem>
+              </artifactItems>
+              <excludes>META-INF/**</excludes>
+            </configuration>
+          </execution>
+          <execution>
+            <id>unpack-ui-components</id>
+            <phase>process-resources</phase>
+            <goals><goal>unpack</goal></goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.opennms</groupId>
+                  <artifactId>org.opennms.ui</artifactId>
+                  <version>${project.version}</version>
+                  <classifier>dist-menu</classifier>
+                  <overWrite>true</overWrite>
+                  <outputDirectory>target/opennms-webapp-${project.version}/ui-components</outputDirectory>
                 </artifactItem>
               </artifactItems>
               <excludes>META-INF/**</excludes>
@@ -420,6 +438,14 @@
       <classifier>dist</classifier>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>org.opennms.ui</artifactId>
+      <version>${project.version}</version>
+      <classifier>dist-menu</classifier>
+      <scope>provided</scope>
+    </dependency>
+
     <!-- ...but this one contains code -->
     <dependency>
       <groupId>org.opennms.core</groupId>
@@ -777,7 +803,7 @@
     <dependency>
       <groupId>org.apache.poi</groupId>
       <artifactId>poi</artifactId>
-      <version>5.2.5</version>
+      <version>5.4.1</version>
       <exclusions>
         <exclusion>
           <groupId>commons-logging</groupId>
@@ -854,30 +880,15 @@
       </exclusions>
     </dependency>
     <dependency>
-        <groupId>net.sf.jung</groupId>
-        <artifactId>jung-api</artifactId>
-        <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-        <groupId>net.sf.jung</groupId>
-        <artifactId>jung-graph-impl</artifactId>
-        <scope>${onmsLibScope}</scope>
-    </dependency>
-    <dependency>
-        <groupId>net.sf.jung</groupId>
-        <artifactId>jung-algorithms</artifactId>
-        <scope>${onmsLibScope}</scope>
-        <exclusions>
-            <exclusion>
-                <groupId>concurrent</groupId>
-                <artifactId>concurrent</artifactId>
-            </exclusion>
-        </exclusions>
-    </dependency>
-    <dependency>
-        <groupId>net.sf.jung</groupId>
-        <artifactId>jung-visualization</artifactId>
-        <scope>${onmsLibScope}</scope>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jung-shaded</artifactId>
+      <scope>${onmsLibScope}</scope>
+      <exclusions>
+        <exclusion>
+          <groupId>concurrent</groupId>
+          <artifactId>concurrent</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.freemarker</groupId>

@@ -33,9 +33,8 @@ import java.util.Date;
 import org.junit.Test;
 
 public class CentralizedDateTimeFormatTest {
-
     @Test
-    public void shouldOutputeDateTimeIncludingTimeZone() throws IOException {
+    public void shouldOutputDateTimeIncludingTimeZone() throws IOException {
         test("yyyy-MM-dd'T'HH:mm:ssxxx", Instant.now());
     }
 
@@ -54,7 +53,6 @@ public class CentralizedDateTimeFormatTest {
     }
 
     public void test(String expectedPattern, Instant time) {
-
         String output = new CentralizedDateTimeFormat().format(time, ZoneId.systemDefault());
         assertEquals(DateTimeFormatter.ofPattern(expectedPattern).withZone(ZoneId.systemDefault()).format(time), output);
     }

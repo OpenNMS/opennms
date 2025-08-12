@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>33.1.8</version>
+    <version>34.0.0-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms</groupId>
@@ -47,6 +47,12 @@
             </fileset>
             <fileset>
               <directory>${project.basedir}/dist</directory>
+            </fileset>
+            <fileset>
+              <directory>${project.basedir}/src/main/dist</directory>
+            </fileset>
+            <fileset>
+              <directory>${project.basedir}/src/menu/dist-menu</directory>
             </fileset>
           </filesets>
         </configuration>
@@ -99,6 +105,17 @@
               <arguments>build</arguments>
             </configuration>
           </execution>
+          <execution>
+            <id>build-menu release</id>
+            <goals>
+              <goal>yarn</goal>
+            </goals>
+            <phase>compile</phase>
+            <configuration>
+              <skip>${skipNodeJSBuild}</skip>
+              <arguments>build:menu</arguments>
+            </configuration>
+          </execution>
         </executions>
       </plugin>
       <plugin>
@@ -107,6 +124,7 @@
         <configuration>
           <descriptors>
             <descriptor>src/assembly/dist.xml</descriptor>
+            <descriptor>src/assembly/dist-menu.xml</descriptor>
           </descriptors>
           <overrideUid>0</overrideUid>
           <overrideGid>0</overrideGid>
