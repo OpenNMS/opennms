@@ -2,6 +2,14 @@
 
 = What's New in OpenNMS Horizon 34
 
+
+== System requirements and Dependencies ==
+
+* Java 17: Horizon 34 requires JDK 17.
+* PostgreSQL 13 or higher: This version of Horizon requires a supported version of PostgreSQL.
+* Elasticsearch: Horizon 34 requires Elasticsearch 8 for flow processing.
+
+
 == New features and important changes
 
 === Support for Composable Index Templates and Elasticsearch 8.x in Flow Processing
@@ -17,6 +25,10 @@ This allows users to collect additional metrics that are not part of the standar
 
 === NetFlow Telemetry Adapters
 The new range of NetFlow telemetry adapters (v5, v9, IPFix) allows users to process NetFlow data using custom scripts, e.g. to store values from NetFlow datasets as metrics.
+
+=== ServiceNow Plugin (Paid Subscription Required) ===
+For our paid customers, you can now forward your events/alarms/tickets to ServiceNOW. You can also populate an OpenNMS requisition with the configuration items (nodes) managed by ServiceNow, avoiding blind spots in your management strategy.
+
 
 == Breaking changes
 The default time series storage strategy is now by default RRDTool.
