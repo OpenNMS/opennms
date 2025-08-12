@@ -31,7 +31,7 @@ import java.util.Map;
 
 public class ConnectorTwinConfig {
 
-    public static String CONNECTOR_KEY="";
+    public static String CONNECTOR_KEY="telemetry.connector.config";
 
     private int nodeId;
     private String ipAddress;

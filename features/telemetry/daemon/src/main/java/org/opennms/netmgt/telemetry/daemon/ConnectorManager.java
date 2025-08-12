@@ -196,7 +196,6 @@ public class ConnectorManager {
                 ));
             } catch (IOException e) {
                 LOG.error("Failed to register twin for openconfig conector config", e);
-                // Add retry logic here if needed
             }
         }
     }
