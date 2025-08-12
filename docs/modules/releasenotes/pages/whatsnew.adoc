@@ -29,6 +29,9 @@ The new range of NetFlow telemetry adapters (v5, v9, IPFix) allows users to proc
 === ServiceNow Plugin (Paid Subscription Required) ===
 For our paid customers, you can now forward your events/alarms/tickets to ServiceNOW. You can also populate an OpenNMS requisition with the configuration items (nodes) managed by ServiceNow, avoiding blind spots in your management strategy.
 
+=== OpenNMS as a Virtual Appliance
+OpenNMS is now available as a Virtual Appliance delivered as an OVA image for rapid deployment and evaluation. This pre-configured solution allows users to quickly evaluate OpenNMS, reducing setup complexity and time-to-value for our network management platform.
+
 
 == Breaking changes
 The default time series storage strategy is now by default RRDTool.
