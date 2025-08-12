@@ -104,6 +104,7 @@
           <table
             :class="tableCssClasses"
             summary="Nodes"
+            v-if="nodes.length > 0"
           >
             <thead>
               <tr>
@@ -248,10 +249,16 @@
               </tr>
             </tbody>
           </table>
+          <EmptyList
+            v-else
+            :content="emptyListContent"
+            data-test="empty-list"
+          />
         </div>
       </div>
     </div>
     <FeatherPagination
+      v-if="nodeStore.totalCount > 0"
       v-model="pageNumber"
       :pageSize="queryParameters.limit"
       :total="nodeStore.totalCount"
@@ -311,6 +318,7 @@ import NodeTooltipCell from './NodeTooltipCell.vue'
 import { useNodeExport } from './hooks/useNodeExport'
 import { useNodeQuery } from './hooks/useNodeQuery'
 import { getTableCssClasses } from './utils'
+import EmptyList from '../Common/EmptyList.vue'
 
 const menuStore = useMenuStore()
 const nodeStructureStore = useNodeStructureStore()
@@ -506,6 +514,10 @@ const updateQuery = (options?: { orderBy?: string, order?: SORT }) => {
   queryParameters.value = updatedParams
 
   nodeStore.getNodes(updatedParams, true)
+}
+
+const emptyListContent = {
+  msg: 'No results found.'
 }
 
 watch([() => nodeStructureStore.queryFilter], () => {
