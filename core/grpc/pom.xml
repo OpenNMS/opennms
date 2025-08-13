@@ -5,7 +5,7 @@
   <parent>
     <artifactId>org.opennms.core</artifactId>
     <groupId>org.opennms</groupId>
-    <version>34.0.0</version>
+    <version>34.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
