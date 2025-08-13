@@ -1,0 +1,30 @@
+<!--Cassandra examples for detectors-->
+<foreign-source xmlns="http://xmlns.opennms.org/xsd/config/foreign-source" name="cassandraDetectorExample">
+   <scan-interval>1d</scan-interval>
+   <detectors>
+		<detector name="JMX-Cassandra" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
+			<parameter key="port" value="7199"/>
+			<parameter key="retries" value="2"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="protocol" value="rmi"/>
+			<parameter key="urlPath" value="/jmxrmi"/>
+			<parameter key="factory" value="PASSWORD_CLEAR"/>
+			<parameter key="username" value="cassandra-username"/>
+			<parameter key="password" value="cassandra-password"/>
+			<parameter key="type" value="default"/>
+		</detector>
+		<detector name="JMX-Cassandra-Newts" class="org.opennms.netmgt.provision.detector.jmx.Jsr160Detector">
+			<parameter key="port" value="7199"/>
+			<parameter key="retries" value="2"/>
+			<parameter key="timeout" value="3000"/>
+			<parameter key="protocol" value="rmi"/>
+			<parameter key="urlPath" value="/jmxrmi"/>
+			<parameter key="factory" value="PASSWORD_CLEAR"/>
+			<parameter key="username" value="cassandra-username"/>
+			<parameter key="password" value="cassandra-password"/>
+			<parameter key="type" value="default"/>
+			<parameter key="object" value="org.apache.cassandra.db:type=ColumnFamilies,keyspace=newts,columnfamily=samples"/>
+		</detector>
+   </detectors>
+   <policies/>
+</foreign-source>

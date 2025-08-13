@@ -88,6 +88,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
     private static String DEFAULT_SNMP_POLICY = "Minion-SNMP-Policy";
 
     private static String DEFAULT_SNMP_DETECTOR = "SNMP";
+    private static String DEFAULT_JMX_DETECTOR = "JMX-Minion";
 
     private static final HeartbeatModule heartbeatModule = new HeartbeatModule();
 
@@ -228,7 +229,17 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
         policy.addParameter("action", "DO_NOT_PERSIST");
         policy.addParameter("matchBehavior", "ALL_PARAMETERS");
 
-        PluginConfig detector = new PluginConfig(DEFAULT_SNMP_DETECTOR, "org.opennms.netmgt.provision.detector.snmp.SnmpDetector");
+        PluginConfig snmpDetector = new PluginConfig(DEFAULT_SNMP_DETECTOR, "org.opennms.netmgt.provision.detector.snmp.SnmpDetector");
+        PluginConfig jmxDetector = new PluginConfig(DEFAULT_JMX_DETECTOR, "org.opennms.netmgt.provision.detector.jmx.Jsr160Detector");
+        jmxDetector.addParameter("port", "1299");
+        jmxDetector.addParameter("factory", "PASSWORD_CLEAR");
+        jmxDetector.addParameter("username", "admin");
+        jmxDetector.addParameter("password", "admin");
+        jmxDetector.addParameter("protocol", "rmi");
+        jmxDetector.addParameter("urlPath", "/karaf-minion");
+        jmxDetector.addParameter("timeout", "3000");
+        jmxDetector.addParameter("retries", "2");
+        jmxDetector.addParameter("type", "default");
 
         // Return if minion with this foreignId and location already exists.
         String foreignId = minion.getLabel() != null ? minion.getLabel() : minion.getId();
@@ -236,9 +247,10 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
         if (!nodes.isEmpty()) {
             //check for existing requisitions the policy and detectors are in place
             final ForeignSource foreignSource = deployedForeignSourceRepository.getForeignSource(prevForeignSource);
-            if (foreignSource.getPolicy(DEFAULT_SNMP_POLICY) == null || foreignSource.getDetector(DEFAULT_SNMP_DETECTOR) == null) {
+            if (foreignSource.getPolicy(DEFAULT_SNMP_POLICY) == null || foreignSource.getDetector(DEFAULT_SNMP_DETECTOR) == null || foreignSource.getDetector(DEFAULT_JMX_DETECTOR) == null ) {
                 foreignSource.addPolicy(policy);
-                foreignSource.addDetector(detector);
+                foreignSource.addDetector(snmpDetector);
+                foreignSource.addDetector(jmxDetector);
                 deployedForeignSourceRepository.save(foreignSource);
             }
             return;
@@ -264,9 +276,10 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
         // check that existing foreignId requisition have detectors and policies in place
         if (nextRequisition != null) {
             final ForeignSource foreignSource = deployedForeignSourceRepository.getForeignSource(nextForeignSource);
-            if (foreignSource.getPolicy(DEFAULT_SNMP_POLICY) == null || foreignSource.getDetector(DEFAULT_SNMP_DETECTOR) == null) {
+            if (foreignSource.getPolicy(DEFAULT_SNMP_POLICY) == null || foreignSource.getDetector(DEFAULT_SNMP_DETECTOR) == null || foreignSource.getDetector(DEFAULT_JMX_DETECTOR) == null ) {
                 foreignSource.addPolicy(policy);
-                foreignSource.addDetector(detector);
+                foreignSource.addDetector(snmpDetector);
+                foreignSource.addDetector(jmxDetector);
                 deployedForeignSourceRepository.save(foreignSource);
 
                 alteredForeignSources.add(nextForeignSource);
@@ -282,7 +295,7 @@ public class HeartbeatConsumer implements MessageConsumer<MinionIdentityDTO, Min
             // Remove and replace all policies and detectors from the foreign source with defaults
             // Default Snmp detector and policy for appliances
             final ForeignSource foreignSource = deployedForeignSourceRepository.getForeignSource(nextForeignSource);
-            foreignSource.setDetectors(List.of(detector));
+            foreignSource.setDetectors(List.of(snmpDetector,jmxDetector));
             foreignSource.setPolicies(List.of(policy));
 
             deployedForeignSourceRepository.save(foreignSource);
