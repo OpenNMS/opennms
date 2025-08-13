@@ -1,0 +1,5 @@
+{
+  "index_patterns": ["test-pattern-2-*"],
+  "composed_of": ["component-settings", "component-mappings"],
+  "priority": 700
+}

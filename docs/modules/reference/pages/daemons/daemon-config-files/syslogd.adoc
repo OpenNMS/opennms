@@ -5,6 +5,23 @@
 
 Handles processing of xref:operation:deep-dive/events/sources/syslog.adoc[syslog messages] into events.
 
+== Enabling Syslogd
+`Syslogd` is disabled by default on {page-component-title}. To enable it, edit the `$\{OPENNMS_HOME}/etc/service-configuration.xml` file by finding the `Syslogd` service section and setting `service enabled="true"`:
+
+[source, xml]
+----
+   <service enabled="true">
+      <name>OpenNMS:Name=Syslogd</name>
+      <class-name>org.opennms.netmgt.syslogd.jmx.Syslogd</class-name>
+      <invoke method="init" pass="0" at="start"/>
+      <invoke method="start" pass="1" at="start"/>
+      <invoke method="status" pass="0" at="status"/>
+      <invoke method="stop" pass="0" at="stop"/>
+   </service>
+----
+
+== Syslogd Configuration Reference
+
 .Syslogd configuration file overview
 [options="header"]
 [cols="2,3,1,1"]

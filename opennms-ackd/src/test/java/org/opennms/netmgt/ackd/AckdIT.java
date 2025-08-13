@@ -379,7 +379,7 @@ public class AckdIT implements InitializingBean {
     }
 
     class VerificationObject {
-        int m_eventID;
+        long m_eventID;
         int m_alarmId;
         int m_nodeId;
         int m_notifId;

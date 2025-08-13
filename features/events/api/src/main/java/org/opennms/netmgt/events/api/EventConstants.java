@@ -943,6 +943,11 @@ public abstract class EventConstants {
     public static final int STATE_ON = 1;
 
     /**
+     * login success UEI
+     */
+    public static final String AUTHENTICATION_SUCCESS_UEI = "uei.opennms.org/internal/authentication/successfulLogin";
+
+    /**
      * Enumerated value for the state(tticket and forward) when entry is not
      * active.
      */

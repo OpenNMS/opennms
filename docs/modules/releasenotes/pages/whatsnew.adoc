@@ -1,66 +1,94 @@
-[[releasenotes-33]]
+[[releasenotes-34]]
 
-= What's New in OpenNMS Horizon 33
+= What's New in OpenNMS Horizon 34
 
-== System requirements
 
-* *Java 11 and 17*: OpenNMS Horizon 33 runs on JDKs 11 and 17.
-* *PostgreSQL 10 or higher*: Horizon 33 requires any supported version of PostgreSQL from 10 up to (and including) 16.
+== System requirements and Dependencies ==
+
+* Java 17: Horizon 34 requires JDK 17.
+* PostgreSQL 13 or higher: This version of Horizon requires a supported version of PostgreSQL.
+* Elasticsearch: Horizon 34 requires Elasticsearch 8 for flow processing.
+
 
 == New features and important changes
 
-=== `install.sh` script clears data directory and restores Karaf-related configuration files
-To overcome common upgrading problems, the data directory is automatically pruned when invoking the `install.sh` script.
-Furthermore, all Karaf-related configuration files are restored to their pristine state.
+=== Time To Value Improvements to the Menu Structure
+One of our 2025-26 goals is to reduce the time it takes a new user from learning about our product to discovering and visualizing the status of their network infrastructure.
+Our first step in this approach is the reorganization of the menu structure, with a responsive side menu that streamlines the IT Operator’s actions.
+Coming soon: exciting new features to enhance your workflow, including the ability to add Windows Management Interface nodes directly from the Quick Add Node page and improved navigation within the Structured Node List.
 
-=== OpenNMS Plugin API
+See xref:operation:deep-dive/menu/introduction.adoc[menu documentation] for more information.
 
-The OpenNMS Plugin API has been updated to version 1.6.0, which includes some new APIs ported over from the Horizon codebase to simplify plugin development, as well as cleanups to dependencies.
-It also includes some fixes to the protocol list used by Enlinkd.
+=== Support for Composable Index Templates and Elasticsearch 8.x in Flow Processing
+OpenNMS Flow processing now supports Elasticsearch 8.x, ensuring compatibility with the latest versions of the Elastic stack.
+Additionally, support has been added for https://www.elastic.co/docs/manage-data/data-store/templates[composable templates], enabling more flexible and modular configuration of Elasticsearch index settings for NetFlow data.
 
-=== Expanded metadata support
+=== Enhanced Keystore Support in Secure Credentials Vault
+The Secure Credentials Vault now supports the PKCS12 keystore format in addition to the previously supported JCEKS format. This enhancement provides greater compatibility with modern security standards and tooling.
 
-It is now possible to use the metadata DSL in nearly all configuration files.
-For details on all of the subsystems that support the metadata DSL, see xref:operation:deep-dive/meta-data.adoc[the operation manual].
+=== IPFix support for vendor-specific Information Elements
+OpenNMS now supports the definition of vendor-specific information elements.
+This allows users to collect additional metrics that are not part of the standard IPFix definitions, enabling customized data collection for specific devices or vendors.
 
-=== Confd improvements
+=== NetFlow Telemetry Adapters
+The new range of NetFlow telemetry adapters (v5, v9, IPFix) allows users to process NetFlow data using custom scripts, e.g. to store values from NetFlow datasets as metrics.
 
-Support for `confd` has been added to the Sentinel container.
+=== ServiceNow Plugin (Paid Subscription Required) ===
+For our paid customers, you can now forward your events/alarms/tickets to ServiceNow. You can also populate an OpenNMS requisition with the configuration items (nodes) managed by ServiceNow, avoiding blind spots in your management strategy.
 
-=== UI: structured node list
+=== OpenNMS as a Virtual Appliance
+OpenNMS is now available as a Virtual Appliance delivered as an OVA image for rapid deployment and evaluation. This pre-configured solution allows users to quickly evaluate OpenNMS, reducing setup complexity and time-to-value for our network management platform.
 
-An enhanced node list has been introduced with options for sorting and filtering.
+=== Updates to Structured Node List
+We have made some updates to the Structured Node List. This will eventually replace the existing Node List page once we have feature equivalence.
+
+More information can be found xref:operation:deep-dive/structured-node-list/introduction.adoc[here].
 
 == Breaking changes
+The default time series storage strategy is now by default RRDTool.
+
+IMPORTANT: If you use JRobin, make sure you set the property.
+You can easily verify it by checking the file extension created in the directory  `$\{OPENNMS_HOME}/share/rrd/snmp`. The extension .jrb indicates JRobin and .rrd indicates RRDtool.
+If you miss this setting, all your timeseries files will be newely created as .rrd files and you won't have access to your JRobin files with your history.
+
+IMPORTANT: When you have .jrb files, ensure after upgrading to Horizon 34 you explicitly configure JRobin in a file like `$\{OPENNMS_HOME}/etc/opennms.properties.d/timeseries.properties`.
+
+.Configure explicitly JRobin for Horizon 34.x if required
+[source, console]
+----
+org.opennms.rrd.strategyClass=org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy
+----
+
+=== Deprecation of JRobin as timeseries storage
+
+The release of Horizon 34 will be the last version which supports reading and writing timeseries data using JRobin.
+The JRobin library and the JRobin timeseries strategy will be removed from Horizon 35+ moving forward.
+
+=== Deprecation of Tl1d
+The Tl1d service has been deprecated and removed from service configuration due to low user adoption. The service code will be fully removed in the next Horizon/Meridian release.
+
+=== Deprecation of AsteriskGateway
+The AsteriskGateway service has been deprecated and removed from service configuration due to low user adoption. The service code will be fully removed in the next Horizon/Meridian release.
+
+=== Deprecation of Reportd service
+
+The Reportd service has been deprecated and removed from service configuration due to low user adoption. The service code will be fully removed in the next Horizon/Meridian release.
+
+=== Node Cache configuration
+
+Due to a refactoring to enable the collection of IPFix metrics, the node cache has been moved to another module.
+The configuration of the cache is now stored in the file `org.opennms.features.telemetry.protocols.common.cfg` and no longer in the file `org.opennms.features.flows.persistence.elastic.cfg`.
 
 === OpenNMS Minion environment variables changes
 The OpenNMS Minion Docker container no longer uses the KAFKA_SINK, KAFKA_RPC and KAFKA_TWIN prefixes to configure Kafka.
 Instead, only the KAFKA_IPC prefix is used, which ensures that all Kafka-related settings are set correctly for all features and that ActiveMQ is no longer installed incorrectly.
 
-=== Passive Status Monitor
-The Passive Status Monitor previously used the time of the event's arrival as the timestamp of the status.
-As this is too imprecise for some use cases, the time field of the event is now also evaluated.
-If the field is set, it is adopted unchanged as the timestamp of the status.
-If no time is set, the timestamp is generated as before when the event arrives.
+=== SNMP4J upgrade
+The SNMP4J library has been upgraded to version 2.8.15.
+As part of this upgrade, the SNMP4J logger configuration has been updated to use the SLF4J logging implementation:
 
-=== SNMP Metadata Provisioning Adapter
-The SNMP Metadata Provisioning Adapter is not enabled by default anymore.
-Set `enabled="true"` in the configuration file `$OPENNMS_HOME/etc/snmp-metadata-adapter-configuration.xml` to enable it.
+`snmp4j.LogFactory=org.opennms.netmgt.snmp.snmp4j.Slf4jLogFactory`
 
-=== Docker image changes
+NOTE: If you are upgrading from an older version and have overridden this property (e.g., still using org.snmp4j.log.Log4jLogFactory), you must update it manually. Retaining the old value may cause OpenNMS to fail to start.
 
-The Docker images for the core, minion, and sentinel have been changed from being Ubuntu-based to using RedHat's link:https://www.redhat.com/en/blog/introducing-red-hat-universal-base-image[Universal Base Image].
-This move shrinks the image a bit, makes minimal updating easier, and should simplify running in restrictive OpenShift environments.
 
-The images are based on the `ubi9-minimal` image, which is essentially a stripped down version of RHEL 9.
-This means that things will have moved around a bit in the filesystem, and that you should use `microdnf` for package management.
-
-=== Important internal updates
-
-* Our embedded Karaf container and Karaf APIs have been updated to 4.3.10
-* The OpenNMS Plugin API has been updated to 1.6.0
-* Zookeeper APIs have been updated to 3.7.x
-* If you are performing automated tests, you may need to disable the new popup that shows on first launch.  To do so set `opennms.userDataCollection.show=false` in a properties file in `$OPENNMS_HOME/etc/opennms.properties.d/`.
-
-=== Stricter validation of requisition names
-Some characters (/, \, ?, &, *, ', “) may not be used in requisition names. The UI components have already enforced the validation of requisition names. This restriction is now also enforced when creating search requests via the OpenNMS ReST API.

@@ -16,11 +16,11 @@ parameters:
   main_branch:
     description: the auto-merge main branch
     type: string
-    default: release-33.x
+    default: release-34.x
   main_branch_label:
     description: the auto-merge main branch (escaped, no slashes)
     type: string
-    default: release-33.x
+    default: release-34.x
   next_branch:
     description: the auto-merge target branch
     type: string

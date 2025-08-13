@@ -68,4 +68,5 @@ public interface AlarmDao extends LegacyOnmsDao<OnmsAlarm, Integer> {
      */
     long getNumSituations();
 
+    long getNumAlarmsLastHours(int hours );
 }

@@ -32,6 +32,8 @@ yarn-error.log
 /features/topology-map/org.opennms.features.topology.app/www-test/
 /opennms-alarms/jms-northbounder/activemq-data/
 ui/dist/
+ui/src/main/dist/
+ui/src/menu/dist-menu/
 ui/node_modules/
 ui/package-lock.json
 ui/devConfig.ts

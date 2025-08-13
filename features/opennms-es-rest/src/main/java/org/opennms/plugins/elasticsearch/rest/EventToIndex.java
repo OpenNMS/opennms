@@ -215,8 +215,8 @@ public class EventToIndex implements AutoCloseable {
 	private Index createEventIndexFromEvent(final Event event) {
 		final JSONObject body = new JSONObject();
 
-		final Integer id = event.getDbid();
-		body.put("id", Integer.toString(id));
+		final Long id = event.getDbid();
+		body.put("id", Long.toString(id));
 		body.put("eventuei", event.getUei());
 
 		final Calendar cal=Calendar.getInstance();
@@ -300,7 +300,7 @@ public class EventToIndex implements AutoCloseable {
 		// document to the event's database ID. Otherwise, allow ES to
 		// generate a unique ID value.
 		if (id != null && id > 0) {
-			builder = builder.id(Integer.toString(id));
+			builder = builder.id(Long.toString(id));
 		}
 
 		Index index = builder.build();

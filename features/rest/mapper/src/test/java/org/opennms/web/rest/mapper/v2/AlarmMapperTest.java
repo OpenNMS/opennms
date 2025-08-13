@@ -190,7 +190,7 @@ public class AlarmMapperTest {
 
     private OnmsEvent getOnmsEvent(OnmsMonitoringSystem monitoringSystem, OnmsNode node, OnmsServiceType serviceType) throws UnknownHostException {
         OnmsEvent event = new OnmsEvent();
-        event.setId(2035);
+        event.setId(2035L);
         event.setEventUei("uei.opennms.org/nodes/interfaceDown");
         event.setEventTime(new Date(1503412443118L));
         event.setEventHost("noise");

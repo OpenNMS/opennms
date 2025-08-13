@@ -131,6 +131,10 @@ The resulting value is multiplied by 100 to calculate a percentage.
 | Optional text label.
 | _Leave blank._
 
+| Expression label
+| Optional concise text label the describes the expression.
+| Load Average Above 70% 
+
 | Value
 | Threshold value.
 Triggers an event when the five-minute CPU load average equals or exceeds the defined value.

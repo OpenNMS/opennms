@@ -4,7 +4,7 @@
        xmlns:onmsgi="http://xmlns.opennms.org/xsd/spring/onms-osgi"
        xsi:schemaLocation="
        http://www.springframework.org/schema/beans
-       http://www.springframework.org/schema/beans/spring-beans.xsd
+       http://www.springframework.org/schema/beans/spring-beans-4.2.xsd
        http://xmlns.opennms.org/xsd/spring/onms-osgi http://xmlns.opennms.org/xsd/spring/onms-osgi.xsd">
 
   <onmsgi:reference id="blobStore" interface="org.opennms.features.distributed.kvstore.api.BlobStore" />

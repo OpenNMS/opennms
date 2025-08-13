@@ -61,11 +61,13 @@ public class UsageStatisticsReportDTOTest {
         usageStatisticsReport.setGroups(0);
         usageStatisticsReport.setOnmsStartupTimeSeconds(1000L);
         usageStatisticsReport.setInContainer(false);
+        usageStatisticsReport.setFlowCountPerSecond(0l);
         String actualJson = usageStatisticsReport.toJson();
         System.err.println(actualJson);
 
         String expectedJson = "{" +
             "\"alarms\":0," +
+            "\"alarmsLastHours\":0," +
             "\"applianceCounts\":{}," +
             "\"applications\":0," +
             "\"availableProcessors\":null," +
@@ -74,6 +76,7 @@ public class UsageStatisticsReportDTOTest {
             "\"coreNewtsSamplesInserted\":0," +
             "\"coreQueuedUpdatesCompleted\":0," +
             "\"coreTssWritesCompleted\":0," +
+            "\"cpuUtilization\":null," +
             "\"databaseProductName\":null," +
             "\"databaseProductVersion\":null," +
             "\"dcbFailed\":0," +
@@ -82,12 +85,15 @@ public class UsageStatisticsReportDTOTest {
             "\"destinationPathCount\":-1," +
             "\"eventLogsProcessed\":0," +
             "\"events\":0," +
+            "\"eventsLastHours\":0," +
+            "\"flowCountPerSecond\":0," +
             "\"freePhysicalMemorySize\":null," +
             "\"groups\":0," +
             "\"inContainer\":false," +
             "\"installedFeatures\":null," +
             "\"installedOIAPlugins\":null," +
             "\"ipInterfaces\":0," +
+            "\"memoryUtilization\":null," +
             "\"minions\":0," +
             "\"monitoredServices\":0," +
             "\"monitoringLocations\":0," +

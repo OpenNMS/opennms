@@ -14,7 +14,8 @@ Any other JDBC drivers must be manually loaded to collect from other types of da
 | Class Name            | `org.opennms.netmgt.collectd.JdbcCollector`
 | Package               | core
 | Supported on Minion   | Yes (see limitations)
-| Configuration Files   | $OPENNMS_HOME/etc/jdbc-datacollection-config.xml
+| Configuration Files   | $OPENNMS_HOME/etc/jdbc-datacollection-config.xml +
+                          $OPENNMS_HOME/etc/jdbc-datacollection.d/*
 |===
 
 === Limitations on Minion
@@ -68,7 +69,7 @@ Instead, you must use the service parameters to set the JDBC connection settings
 
 Understanding xref:operation:deep-dive/performance-data-collection/resource-types.adoc#resource-types[resource types] helps when editing collector-specific configuration files.
 
-JDBC collections are defined in `$\{OPENNMS_HOME}/etc/jdbc-datacollection-config.xml`.
+JDBC collections are defined in `$\{OPENNMS_HOME}/etc/jdbc-datacollection.d/`.
 
 This snippet provides a sample collection definition named `opennms-stats`:
 

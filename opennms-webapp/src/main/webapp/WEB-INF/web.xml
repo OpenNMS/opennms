@@ -192,6 +192,10 @@
       <param-value>Accept,Access-Control-Request-Headers,Access-Control-Request-Method,Authorization,Content-Type,Origin,X-Requested-With</param-value>
     </init-param>
     <init-param>
+      <param-name>cors.exposed.headers</param-name>
+      <param-value>Content-Range</param-value>
+    </init-param>
+    <init-param>
       <param-name>cors.support.credentials</param-name>
       <param-value>true</param-value>
     </init-param>

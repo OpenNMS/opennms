@@ -7,6 +7,12 @@
             "datatype": "number"
         },
         {
+            "key": "alarmsLastHours",
+            "name": "Number of new alarms last 24 hours",
+            "description": "Number of new alarms generated in the last 24 hours",
+            "datatype": "number"
+        },
+        {
             "key": "applianceCounts",
             "name": "applianceCounts",
             "description": "",
@@ -23,6 +29,18 @@
             "name": "System CPU count",
             "description": "Number of CPU cores the core OS kernel sees",
             "datatype": "number"
+        },
+        {
+            "key": "cpuUtilization",
+            "name": "System CPU Utilization",
+            "description": "Current System CPU utilization percentage",
+            "datatype": "string"
+        },
+        {
+            "key": "memoryUtilization",
+            "name": "System Memory Utilization",
+            "description": "Current System Memory utilization percentage",
+            "datatype": "string"
         },
         {
             "key": "businessEdgeCount",
@@ -136,6 +154,18 @@
             "key": "events",
             "name": "Current event count",
             "description": "Count of events have been created since the system was installed",
+            "datatype": "number"
+        },
+        {
+            "key": "eventsLastHours",
+            "name": "Number of new events last 24 hours",
+            "description": "Number of new events generated in the last 24 hours",
+            "datatype": "number"
+        },
+        {
+            "key": "flowCountPerSecond",
+            "name": "Flow Count",
+            "description": "Number of Flows per Second (Last 24 Hours)",
             "datatype": "number"
         },
         {

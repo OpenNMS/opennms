@@ -20,6 +20,7 @@
         <cm:default-properties>
             <cm:property name="key" value="QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw"/>
             <cm:property name="enable.watcher" value="true"/>
+            <cm:property name="keystore.type" value="JCEKS"/>
         </cm:default-properties>
     </cm:property-placeholder>
 
@@ -27,6 +28,7 @@
         <argument value="$[karaf.etc]$[file.separator]scv.jce"/>
         <argument value="[[key]]"/>
         <argument value="[[enable.watcher]]" type="boolean"/>
+        <argument value="[[keystore.type]]"/>
     </bean>
 
     <service ref="jceksSecureCredentialsVault" interface="org.opennms.features.scv.api.SecureCredentialsVault">

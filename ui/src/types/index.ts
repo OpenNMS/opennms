@@ -103,6 +103,13 @@ export interface MonitoringLocationApiResponse extends ApiResponse {
   location: MonitoringLocation[]
 }
 
+export interface MonitoringSystemMainResponse {
+  id: string
+  label: string
+  location: string
+  type: string
+}
+
 export interface Node {
   location: string
   type: string
@@ -194,6 +201,11 @@ export interface MonitoringLocation {
   'monitoring-area': string
   name: string    // mapped from 'location-name' after API GET call response
   area: string    // mapped from 'monitoring-area' after API GET call response
+}
+
+export interface DrawerState {
+  visible: boolean;
+  isAdvanceFilterModal: boolean;
 }
 
 export interface SnmpInterface {
@@ -570,12 +582,13 @@ export interface NodeQueryFilter {
 }
 
 export interface NodePreferences {
-  nodeColumns: NodeColumnSelectionItem[]
+  nodeColumns?: NodeColumnSelectionItem[]
   nodeFilter?: NodeQueryFilter
 }
 
 export interface OpenNmsPreferences {
   nodePreferences: NodePreferences
+  isSideMenuExpanded?: boolean
 }
 
 export interface IpInterfaceInfo {
@@ -583,4 +596,15 @@ export interface IpInterfaceInfo {
   managed: boolean
   primaryLabel: string
   primaryType: string
+}
+
+export enum FilterTypeEnum {
+  Category = 'category',
+  Flow = 'flow',
+  Location = 'location'
+}
+
+export enum Direction {
+  Left = 'left',
+  Right = 'right',
 }

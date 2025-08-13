@@ -1,0 +1,11 @@
+{
+  "index_patterns": [
+    "netflow-*"
+  ],
+  "priority": 250,
+  "composed_of": [
+    "opennms-netflow-settings",
+    "opennms-netflow-mappings",
+    "opennms-netflow-aliases"
+  ]
+}

@@ -16,6 +16,10 @@
 
 * xref:deep-dive/introduction.adoc[]
 
+** Menu
+*** xref:deep-dive/menu/introduction.adoc[]
+*** xref:deep-dive/menu/menu-templates.adoc[]
+
 ** User Management
 *** xref:deep-dive/user-management/user-config.adoc[]
 *** xref:deep-dive/user-management/security-roles.adoc[]
@@ -189,6 +193,8 @@
 *** xref:deep-dive/flows/data-collection.adoc[]
 *** xref:deep-dive/flows/thresholding.adoc[]
 *** xref:deep-dive/flows/troubleshooting.adoc[]
+*** xref:deep-dive/flows/vendor-specific-ies.adoc[]
+*** xref:deep-dive/flows/scripting-adapter.adoc[]
 
 ** xref:deep-dive/geographical-map/introduction.adoc[]
 *** xref:deep-dive/geographical-map/searching.adoc[]
@@ -199,6 +205,7 @@
 *** xref:deep-dive/kafka-producer/shell-commands.adoc[]
 
 ** xref:deep-dive/grpc-exporter/grpc-exporter.adoc[]
+** xref:deep-dive/zenith-connect/introduction.adoc[]
 
 ** xref:deep-dive/alarm-correlation/situation-feedback.adoc[]
 ** xref:deep-dive/meta-data.adoc[]

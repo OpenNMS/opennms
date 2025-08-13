@@ -1,0 +1,18 @@
+<datacollection-group name="SQLServer-JDBC">
+
+    <resourceType name="msSQLstats" label="SQLServer Database Stats" resourceLabel="${name}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="msSQLspace" label="SQLServer Storage" resourceLabel="${mntpoint} - ${lvolname}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+
+    <resourceType name="msSQLvfsstats" label="SQLServer Database VFS Stats" resourceLabel="${name}:${physName}">
+      <persistenceSelectorStrategy class="org.opennms.netmgt.collection.support.PersistAllSelectorStrategy"/>
+      <storageStrategy class="org.opennms.netmgt.collection.support.IndexStorageStrategy"/>
+    </resourceType>
+
+</datacollection-group>

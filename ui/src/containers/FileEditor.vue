@@ -77,6 +77,8 @@ onMounted(() => {
 <style scoped lang="scss">
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/mixins/elevation";
+@import "@featherds/styles/themes/variables";
+
 .card {
   @include elevation(2);
   background: var($surface);

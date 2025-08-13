@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>opennms</artifactId>
-    <version>33.1.8</version>
+    <version>34.0.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>opennms-deploy</artifactId>
@@ -30,6 +30,7 @@
     <module>../features/bsm/rest/api</module>
     <module>../features/bsm/service/api</module>
     <module>../features/collection/api</module>
+    <module>../features/collection/client-rpc</module>
     <module>../features/collection/test-api</module>
     <module>../features/collection/thresholding/api</module>
     <module>../features/config/dao/api</module>

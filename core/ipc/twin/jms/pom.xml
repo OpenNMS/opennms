@@ -5,7 +5,7 @@
     <parent>
         <artifactId>org.opennms.core.ipc.twin</artifactId>
         <groupId>org.opennms.core.ipc</groupId>
-        <version>33.1.8</version>
+        <version>34.0.0</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 

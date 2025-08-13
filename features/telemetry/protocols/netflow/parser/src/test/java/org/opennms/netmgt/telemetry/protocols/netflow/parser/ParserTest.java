@@ -35,6 +35,7 @@ import java.nio.file.Paths;
 import java.util.Objects;
 import java.util.function.Consumer;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
@@ -48,6 +49,11 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 
 public class ParserTest {
+
+    @BeforeClass
+    public static void beforeClass() {
+        System.setProperty("karaf.etc", "src/test/resources");
+    }
 
     @Test
     public void canReadValidIPFIX() throws IOException, URISyntaxException {

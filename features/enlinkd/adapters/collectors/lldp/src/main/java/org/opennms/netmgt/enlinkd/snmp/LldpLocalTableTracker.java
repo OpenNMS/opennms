@@ -24,7 +24,6 @@ package org.opennms.netmgt.enlinkd.snmp;
 
 import org.opennms.core.utils.LldpUtils;
 import org.opennms.netmgt.enlinkd.model.LldpElement;
-import org.opennms.netmgt.enlinkd.model.LldpLink;
 import org.opennms.netmgt.snmp.SnmpObjId;
 import org.opennms.netmgt.snmp.TableTracker;
 import org.opennms.netmgt.snmp.SnmpRowResult;
@@ -34,7 +33,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
-import java.util.Map;
 
 public class LldpLocalTableTracker extends TableTracker {
     private final static Logger LOG = LoggerFactory.getLogger(LldpLocalTableTracker.class);
@@ -77,7 +75,7 @@ public class LldpLocalTableTracker extends TableTracker {
 	    }
 
 	    public String getLldpLocPortId() {
-	    	return LldpRemTableTracker.decodeLldpPortId(getLldpLocalPortIdSubtype().getValue(),getValue(LldpLocPortGetter.LLDP_LOC_PORTID_OID));
+	    	return LldpSnmpUtils.decodeLldpPortId(getLldpLocalPortIdSubtype(),getValue(LldpLocPortGetter.LLDP_LOC_PORTID_OID));
 	    }
 
 	    public String getLldpLocPortDesc() {
@@ -134,23 +132,6 @@ public class LldpLocalTableTracker extends TableTracker {
         }
         LOG.info("getLldpElement: {}", element);
         return element;
-    }
-
-    public static  LldpLink getLldpLink(MtxrLldpRemTableTracker.MtxrLldpRemRow mtxrlldprow, Integer mtxrIndex, Map<Integer, LldpLocalPortRow> mtxrLldpLocalPortMap) {
-        LldpLink lldpLink = mtxrlldprow.getLldpLink();
-        if (mtxrIndex != null && mtxrLldpLocalPortMap.containsKey(mtxrIndex)) {
-            lldpLink.setLldpPortIfindex(mtxrIndex);
-            lldpLink.setLldpPortIdSubType(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACENAME);
-            lldpLink.setLldpPortId(mtxrLldpLocalPortMap.get(mtxrIndex).getLldpLocPortDesc());
-            lldpLink.setLldpPortDescr(mtxrLldpLocalPortMap.get(mtxrIndex).getLldpLocPortDesc());
-            LOG.debug("getLldpLink: interfaceId {} -> portId {}", mtxrIndex,lldpLink.getLldpPortId());
-        } else {
-            lldpLink.setLldpPortIdSubType(LldpUtils.LldpPortIdSubType.LLDP_PORTID_SUBTYPE_INTERFACEALIAS);
-            lldpLink.setLldpPortId("\"Not Found On lldpLocPortTable\"");
-            lldpLink.setLldpPortDescr("");
-            LOG.debug("getLldpLink: setting default not found Values: portidtype \"InterfaceAlias\", portid=\"Not Found On lldpLocPortTable\"");
-        }
-        return lldpLink;
     }
 
 }

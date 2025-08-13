@@ -1121,6 +1121,14 @@ public class Installer {
             }
         }
 
+        if (Files.exists(Paths.get("/usr/lib64"))) {
+            searchPaths.add("/usr/lib64");
+        }
+
+        if (Files.exists(Paths.get("/usr/lib/jni"))) {
+            searchPaths.add("/usr/lib/jni");
+        }
+
         System.out.println("- searching for " + fullname + ":");
         for (String dirname : searchPaths) {
             File entry = new File(dirname);

@@ -7,7 +7,8 @@
     <relativePath>../../poms/compiled/</relativePath>
     <groupId>org.opennms.features.topology.build</groupId>
     <artifactId>compiled-bundle-settings</artifactId>
-    <version>33.1.8</version>
+    <version>34.0.0
+    </version>
   </parent>
   <properties>
     <bundle.symbolicName>org.opennms.features.topology.plugins.topo.pathoutage</bundle.symbolicName>
@@ -23,12 +24,9 @@
 
     <!-- Embedded in jar (not provided) -->
     <dependency>
-      <groupId>net.sf.jung</groupId>
-      <artifactId>jung-api</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>net.sf.jung</groupId>
-      <artifactId>jung-graph-impl</artifactId>
+      <groupId>org.opennms.dependencies</groupId>
+      <artifactId>jung-shaded</artifactId>
+      <scope>provided</scope>
     </dependency>
 
     <!-- Provided by runtime environment -->

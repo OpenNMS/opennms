@@ -101,6 +101,7 @@
 	<include file="foundation-2023/changelog.xml"/>
 	<include file="32.0.0/changelog.xml"/>
 	<include file="33.0.3/changelog.xml"/>
+	<include file="34.0.0/changelog.xml"/>
 
 	<include file="stored-procedures/getManagePercentAvailIntfWindow.xml" />
 	<include file="stored-procedures/getManagePercentAvailNodeWindow.xml" />

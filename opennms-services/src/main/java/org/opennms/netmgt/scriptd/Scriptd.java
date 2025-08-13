@@ -30,7 +30,6 @@ import org.opennms.netmgt.daemon.AbstractServiceDaemon;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.SessionUtils;
 import org.opennms.netmgt.events.api.EventConstants;
-import org.opennms.netmgt.events.api.annotations.EventHandler;
 import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.slf4j.Logger;
@@ -139,10 +138,4 @@ public final class Scriptd extends AbstractServiceDaemon {
         return m_singleton;
     }
 
-    @EventHandler(uei = EventConstants.RELOAD_DAEMON_CONFIG_UEI)
-    public void handleReloadConfigEvent(final IEvent event) {
-        if (Executor.isReloadConfigEvent(event)) {
-            m_executor.doReload();
-        }
-    }
 }

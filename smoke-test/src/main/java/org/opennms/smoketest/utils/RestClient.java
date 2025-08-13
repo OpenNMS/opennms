@@ -257,6 +257,11 @@ public class RestClient {
         return getBuilder(target).accept(MediaType.APPLICATION_XML).get(OnmsAlarmCollection.class);
     }
 
+    public OnmsAlarmCollection getAlarms() {
+        final WebTarget target = getTarget().path("alarms").queryParam("limit", 0);
+        return getBuilder(target).accept(MediaType.APPLICATION_XML).get(OnmsAlarmCollection.class);
+    }
+
     public OnmsAlarmCollection getAlarmsForNode(int nodeId) {
         final WebTarget target = getTarget().path("alarms").queryParam("node.id", nodeId);
         return getBuilder(target).accept(MediaType.APPLICATION_XML).get(OnmsAlarmCollection.class);

@@ -27,7 +27,7 @@ import java.util.Map;
 
 import org.opennms.netmgt.model.OnmsEvent;
 
-public interface EventDao extends LegacyOnmsDao<OnmsEvent, Integer> {
+public interface EventDao extends LegacyOnmsDao<OnmsEvent, Long> {
 
     int deletePreviousEventsForAlarm(final Integer id, final OnmsEvent e);
 
@@ -44,4 +44,5 @@ public interface EventDao extends LegacyOnmsDao<OnmsEvent, Integer> {
 
     List<OnmsEvent> getEventsForEventParameters(final Map<String, String> eventParameters);
 
+    long getNumEventsLastHours(int hours );
 }

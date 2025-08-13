@@ -22,8 +22,16 @@
 package org.opennms.features.zenithconnect.persistence.api;
 
 public class ZenithConnectPersistenceException extends Exception {
+    private boolean attemptedToAddDuplicate;
+
     public ZenithConnectPersistenceException() {
         super();
+    }
+
+    public ZenithConnectPersistenceException(boolean attemptedToAddDuplicate) {
+        super();
+
+        this.attemptedToAddDuplicate = attemptedToAddDuplicate;
     }
 
     public ZenithConnectPersistenceException(String message) {
@@ -32,5 +40,9 @@ public class ZenithConnectPersistenceException extends Exception {
 
     public ZenithConnectPersistenceException(String message, Throwable e) {
         super(message, e);
+    }
+
+    public boolean isAttemptedToAddDuplicate() {
+        return attemptedToAddDuplicate;
     }
 }

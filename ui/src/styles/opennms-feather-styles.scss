@@ -1,0 +1,26 @@
+@use "@featherds/styles/mixins/_typography.scss" as typo;
+
+/**
+* Add some additional base styles that weren't included in the base Feather typography.
+* These help override legacy OpenNMS Bootstrap styles so that all text on legacy pages
+* has a Feather font style.
+*/
+input,
+label,
+li,
+select,
+span,
+td,
+text,
+th {
+  @include typo.body-small();
+  color: inherit;
+  // Feather has the following, which seem a little too much. Legacy OpenNMS fonts were a bit narrower,
+  // so we adjust these a bit below.
+  // letter-spacing: var(--feather-body-small-letter-spacing);  // .25004px
+  // line-height: var(--feather-body-small-line-height);        // 1.5rem or 24px
+  //
+  // For p, we leave it alone as the slightly larger spacing is more readable for paragraphs of text.
+  letter-spacing: normal;
+  line-height: 1.3rem;
+}

@@ -173,6 +173,8 @@ onMounted(() => {
 
 <style lang="scss" scoped>
 @import "@featherds/table/scss/table";
+@import "@featherds/styles/themes/variables";
+
 #wrap {
   height: calc(100% - 29px);
   overflow: auto;
