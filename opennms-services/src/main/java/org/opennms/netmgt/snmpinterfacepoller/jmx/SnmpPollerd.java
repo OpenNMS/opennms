@@ -22,9 +22,6 @@
 package org.opennms.netmgt.snmpinterfacepoller.jmx;
 
 import org.opennms.netmgt.daemon.AbstractSpringContextJmxServiceDaemon;
-import org.opennms.netmgt.scheduler.LegacyScheduler;
-
-import java.util.concurrent.ThreadPoolExecutor;
 
 /**
  * <p>SnmpPollerd class.</p>
@@ -44,114 +41,6 @@ public class SnmpPollerd extends AbstractSpringContextJmxServiceDaemon<org.openn
     @Override
     protected String getSpringContext() {
         return "snmpinterfacepollerdContext";
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public long getActiveThreads() {
-        if (getThreadPoolStatsStatus()) {
-            return getExecutor().getActiveCount();
-        } else {
-            return 0L;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public long getTasksTotal() {
-        if (getThreadPoolStatsStatus()) {
-            return getExecutor().getTaskCount();
-        } else {
-            return 0L;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public long getTasksCompleted() {
-        if (getThreadPoolStatsStatus()) {
-            return getExecutor().getCompletedTaskCount();
-        } else {
-            return 0L;
-        }
-    }
-
-    public double getTaskCompletionRatio() {
-        if (getThreadPoolStatsStatus()) {
-            if (getExecutor().getTaskCount() > 0) {
-                return (double) getExecutor().getCompletedTaskCount() / (double) getExecutor().getTaskCount();
-            } else {
-                return 0;
-            }
-        } else {
-            return 0;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public long getNumPoolThreads() {
-        if (getThreadPoolStatsStatus()) {
-            return getExecutor().getPoolSize();
-        } else {
-            return 0L;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public long getPeakPoolThreads() {
-        if (getThreadPoolStatsStatus()) {
-            return getExecutor().getLargestPoolSize();
-        } else {
-            return 0L;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public long getCorePoolThreads() {
-        if (getThreadPoolStatsStatus()) {
-            return getExecutor().getCorePoolSize();
-        } else {
-            return 0L;
-        }
-    }
-
-    /** {@inheritDoc} */
-    @Override
-    public long getMaxPoolThreads() {
-        if (getThreadPoolStatsStatus()) {
-            return getExecutor().getMaximumPoolSize();
-        } else {
-            return 0L;
-        }
-    }
-
-    @Override
-    public long getTaskQueuePendingCount() {
-        if (getThreadPoolStatsStatus()) {
-            return getExecutor().getQueue().size();
-        } else {
-            return 0L;
-        }
-    }
-
-    @Override
-    public long getTaskQueueRemainingCapacity() {
-        if (getThreadPoolStatsStatus()) {
-            return getExecutor().getQueue().remainingCapacity();
-        } else {
-            return 0L;
-        }
-    }
-
-    private ThreadPoolExecutor getExecutor() {
-        return (ThreadPoolExecutor) ((LegacyScheduler) getDaemon().getScheduler()).getRunner();
-    }
-
-    private boolean getThreadPoolStatsStatus() {
-        return (getDaemon().getScheduler() instanceof LegacyScheduler);
     }
 
 }
