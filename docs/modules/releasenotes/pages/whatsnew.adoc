@@ -21,7 +21,7 @@ See xref:operation:deep-dive/menu/introduction.adoc[menu documentation] for more
 
 === Support for Composable Index Templates and Elasticsearch 8.x in Flow Processing
 OpenNMS Flow processing now supports Elasticsearch 8.x, ensuring compatibility with the latest versions of the Elastic stack.
-Additionally, support has been added for [composable templates](https://www.elastic.co/docs/manage-data/data-store/templates), enabling more flexible and modular configuration of Elasticsearch index settings for NetFlow data.
+Additionally, support has been added for https://www.elastic.co/docs/manage-data/data-store/templates[composable templates], enabling more flexible and modular configuration of Elasticsearch index settings for NetFlow data.
 
 === Enhanced Keystore Support in Secure Credentials Vault
 The Secure Credentials Vault now supports the PKCS12 keystore format in addition to the previously supported JCEKS format. This enhancement provides greater compatibility with modern security standards and tooling.
