@@ -66,7 +66,7 @@ export default defineConfig({
   test: {
     dir: './tests',
     globals: true,
-    environment: 'happy-dom',
+    environment: 'jsdom',
     css: {
       include: /.+/
     },
