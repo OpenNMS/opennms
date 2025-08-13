@@ -21,11 +21,8 @@
  */
 package org.opennms.netmgt.provision.requisition.command;
 
-import java.net.URISyntaxException;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.apache.http.client.utils.URIBuilder;
 import org.apache.karaf.shell.api.action.Action;
 import org.apache.karaf.shell.api.action.Argument;
@@ -40,16 +37,22 @@ import org.opennms.netmgt.events.api.EventListener;
 import org.opennms.netmgt.events.api.EventSubscriptionService;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.opennms.netmgt.model.events.EventBuilder;
+import org.opennms.netmgt.provision.persist.ForeignSourceRepository;
 
-import com.google.common.base.Strings;
-import com.google.common.collect.Lists;
 
-@Command(scope = "opennms", name = "import-requisition", description = "Sends an 'uei.opennms.org/internal/importer/reloadImport' event to import the requisition from a given url parameter")
+import java.net.URISyntaxException;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
+@Command(scope = "opennms", name = "synchronize-requisition", description = "Sends an 'uei.opennms.org/internal/importer/reloadImport' event to import the requisition from a given url parameter")
 @Service
-public class ImportRequisition implements Action {
+public class SynchronizeRequisition implements Action {
 
     public static final String EVENT_SOURCE = "karaf-shell";
-    public static final String URI_SCHEME = "requisition";
+
+    @Reference
+    private static ForeignSourceRepository deployedForeignSourceRepository;
 
     @Reference
     private EventForwarder eventForwarder;
@@ -63,12 +66,9 @@ public class ImportRequisition implements Action {
     @Option(name = "-r", aliases = "--rescan", description = "Specify rescanExisting value, valid values : 'true', 'false', 'dbonly'")
     private String rescanExisting;
 
-    @Argument(index = 0, name = "type", description = "Type of import handler", required = true)
-    @Completion(ProviderTypeNameCompleter.class)
-    private String type;
-
-    @Argument(index = 1, name = "parameters", description = "Provide parameters in key=value form", multiValued = true)
-    private List<String> parameters = new LinkedList<>();
+    @Argument(index = 0, name = "requisitionName", description = "Name of the requisition to import", required = true)
+    @Completion(RequisitionNameCompleter.class)
+    private String requisitionName;
 
     static class ImportEventListener implements EventListener {
         public final static List<String> UEIS = Lists.newArrayList(EventConstants.IMPORT_SUCCESSFUL_UEI, EventConstants.IMPORT_FAILED_UEI);
@@ -76,16 +76,7 @@ public class ImportRequisition implements Action {
         private String receivedUei;
 
         ImportEventListener(final String importResource) {
-            this.importResource = stripCredentials(importResource);
-        }
-
-        static String stripCredentials(final String string) {
-            if (string == null) {
-                return null;
-            } else {
-                return string.replaceAll("(username=)[^;&]*(;&)?", "$1***$2")
-                             .replaceAll("(password=)[^;&]*(;&)?", "$1***$2");
-            }
+            this.importResource = importResource;
         }
 
         @Override
@@ -115,14 +106,12 @@ public class ImportRequisition implements Action {
 
     @Override
     public Object execute() throws Exception {
-        return sendImportRequisitionEvent(eventForwarder, type, parameters, rescanExisting, wait, eventSubscriptionService);
+        return sendImportRequisitionEvent(eventForwarder, requisitionName, rescanExisting, wait, eventSubscriptionService);
     }
 
-    public static Object sendImportRequisitionEvent(EventForwarder eventForwarder, String type, List<String> parameters, String rescanExisting, boolean wait, EventSubscriptionService eventSubscriptionService) throws URISyntaxException {
+    public static Object sendImportRequisitionEvent(EventForwarder eventForwarder, String requisitionName, String rescanExisting, boolean wait, EventSubscriptionService eventSubscriptionService) throws URISyntaxException {
+        String url = deployedForeignSourceRepository.getRequisitionURL(requisitionName).toString();
         EventBuilder eventBuilder = new EventBuilder(EventConstants.RELOAD_IMPORT_UEI, EVENT_SOURCE);
-        URIBuilder builder = new URIBuilder().setScheme(URI_SCHEME).setHost(type);
-        parse(parameters, builder);
-        String url = builder.build().toString();
         eventBuilder.addParam(EventConstants.PARM_URL, url);
         if (!Strings.isNullOrEmpty(rescanExisting)) {
             List<String> validValues = Arrays.asList("true", "false", "dbonly");
@@ -164,20 +153,5 @@ public class ImportRequisition implements Action {
         }
 
         return null;
-    }
-
-    private static void parse(List<String> attributeList, URIBuilder builder) {
-        if (attributeList != null) {
-            for (String keyValue : attributeList) {
-                int splitAt = keyValue.indexOf("=");
-                if (splitAt <= 0) {
-                    throw new IllegalArgumentException("Invalid property " + keyValue);
-                } else {
-                    String key = keyValue.substring(0, splitAt);
-                    String value = keyValue.substring(splitAt + 1, keyValue.length());
-                    builder.addParameter(key, value);
-                }
-            }
-        }
     }
 }
