@@ -1,16 +1,25 @@
 <template>
-  <div>
-    <h1>Event Configuration</h1>
-    <p>This page is under construction.</p>
-    <p>For now, you can configure events using the OpenNMS web interface.</p>
-  </div>
-  <div>
-    <EventConfigurationTable />
+  <div class="event-config">
+    <div class="heading">
+      <h1>Event Configuration</h1>
+    </div>
+    <div class="tabs">
+      <EventConfigTabContainer />
+    </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import EventConfigurationTable from '@/components/EventConfiguration/EventConfigurationTable.vue'
+import EventConfigTabContainer from '@/components/EventConfiguration/EventConfigTabContainer.vue'
 </script>
 
-<style lang="scss" scoped></style>
+<style lang="scss" scoped>
+.event-config {
+  padding: 20px;
+
+  .heading {
+    margin-bottom: 10px;
+  }
+}
+</style>
+
