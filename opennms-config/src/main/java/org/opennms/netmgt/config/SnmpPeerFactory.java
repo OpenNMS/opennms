@@ -36,6 +36,7 @@ import java.net.InetAddress;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
@@ -43,9 +44,8 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.config.api.TextEncryptor;
-import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.Interpolator;
-import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.spring.FileReloadCallback;
 import org.opennms.core.spring.FileReloadContainer;
@@ -54,6 +54,8 @@ import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.utils.LocationUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.netmgt.config.api.SnmpAgentConfigFactory;
 import org.opennms.netmgt.config.snmp.AddressSnmpConfigVisitor;
 import org.opennms.netmgt.config.snmp.Configuration;
@@ -65,7 +67,6 @@ import org.opennms.netmgt.snmp.SnmpAgentConfig;
 import org.opennms.netmgt.snmp.SnmpConfiguration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.FatalBeanException;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 
@@ -121,7 +122,9 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
 
     private final Boolean encryptionEnabled = Boolean.getBoolean(ENCRYPTION_ENABLED);
 
-    private static Scope secureCredentialsVaultScope;
+    private final static SecureCredentialsVault secureCredentialsVault = JCEKSSecureCredentialsVault.defaultScv();
+
+    private static SecureCredentialsVaultScope secureCredentialsVaultScope;
 
     /**
      * <p>Constructor for SnmpPeerFactory.</p>
@@ -185,9 +188,6 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         }
     }
 
-    public static void setSecureCredentialsVaultScope(Scope secureCredentialsVaultScope) {
-        SnmpPeerFactory.secureCredentialsVaultScope = secureCredentialsVaultScope;
-    }
 
     /**
      * Load the config from the default config file and create the singleton instance of this factory.
@@ -278,22 +278,12 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         }
     }
 
-    private static synchronized Scope getSecureCredentialsScope() {
-        if (secureCredentialsVaultScope == null) {
-            try {
-                final EntityScopeProvider entityScopeProvider = BeanUtils.getBean("daoContext", "entityScopeProvider", EntityScopeProvider.class);
+    private static SecureCredentialsVaultScope getSecureCredentialsScope() {
+        return Objects.requireNonNullElseGet(secureCredentialsVaultScope, () -> new SecureCredentialsVaultScope(secureCredentialsVault));
+    }
 
-                if (entityScopeProvider != null) {
-                    secureCredentialsVaultScope = entityScopeProvider.getScopeForScv();
-                } else {
-                    LOG.warn("SnmpPeerFactory: EntityScopeProvider is null, SecureCredentialsVault not available for metadata interpolation");
-                }
-            } catch (FatalBeanException e) {
-                LOG.warn("SnmpPeerFactory: Error retrieving EntityScopeProvider bean");
-            }
-        }
-
-        return secureCredentialsVaultScope;
+    public static void setSecureCredentialsVaultScope(SecureCredentialsVaultScope secureCredentialsVaultScope) {
+        SnmpPeerFactory.secureCredentialsVaultScope = secureCredentialsVaultScope;
     }
 
     /**
@@ -335,19 +325,18 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         if (!metaDataInterpolation) {
             return agentConfig;
         } else {
-            final Scope scope = getSecureCredentialsScope();
-
-            if (scope != null) {
-                agentConfig.setSecurityName(Interpolator.interpolate(agentConfig.getSecurityName(), scope).output);
-                agentConfig.setReadCommunity(Interpolator.interpolate(agentConfig.getReadCommunity(), scope).output);
-                agentConfig.setWriteCommunity(Interpolator.interpolate(agentConfig.getWriteCommunity(), scope).output);
-                agentConfig.setAuthPassPhrase(Interpolator.interpolate(agentConfig.getAuthPassPhrase(), scope).output);
-                agentConfig.setPrivPassPhrase(Interpolator.interpolate(agentConfig.getPrivPassPhrase(), scope).output);
-            } else {
-                LOG.warn("Failed metadata interpolation for SNMP profile {}/{}", snmpProfile.getLabel(), InetAddressUtils.str(address));
-            }
+            agentConfig.setSecurityName(interpolateAttribute(agentConfig.getSecurityName()));
+            agentConfig.setReadCommunity(interpolateAttribute(agentConfig.getReadCommunity()));
+            agentConfig.setWriteCommunity(interpolateAttribute(agentConfig.getWriteCommunity()));
+            agentConfig.setAuthPassPhrase(interpolateAttribute(agentConfig.getAuthPassPhrase()));
+            agentConfig.setPrivPassPhrase(interpolateAttribute(agentConfig.getPrivPassPhrase()));
             return agentConfig;
         }
+    }
+
+    public String interpolateAttribute(final String value) {
+        final Interpolator.Result result = Interpolator.interpolate(value, getSecureCredentialsScope());
+        return result.output;
     }
 
     public SnmpAgentConfig getAgentConfig(final InetAddress agentInetAddress, final int requestedSnmpVersion) {
@@ -388,17 +377,11 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
             if (!metaDataInterpolation) {
                 return agentConfig;
             } else {
-                final Scope scope = getSecureCredentialsScope();
-
-                if (scope != null) {
-                    agentConfig.setSecurityName(Interpolator.interpolate(agentConfig.getSecurityName(), scope).output);
-                    agentConfig.setReadCommunity(Interpolator.interpolate(agentConfig.getReadCommunity(), scope).output);
-                    agentConfig.setWriteCommunity(Interpolator.interpolate(agentConfig.getWriteCommunity(), scope).output);
-                    agentConfig.setAuthPassPhrase(Interpolator.interpolate(agentConfig.getAuthPassPhrase(), scope).output);
-                    agentConfig.setPrivPassPhrase(Interpolator.interpolate(agentConfig.getPrivPassPhrase(), scope).output);
-                } else {
-                    LOG.warn("Failed metadata interpolation for agent config {}/{}/{}", location, InetAddressUtils.str(agentInetAddress), requestedSnmpVersion);
-                }
+                agentConfig.setSecurityName(interpolateAttribute(agentConfig.getSecurityName()));
+                agentConfig.setReadCommunity(interpolateAttribute(agentConfig.getReadCommunity()));
+                agentConfig.setWriteCommunity(interpolateAttribute(agentConfig.getWriteCommunity()));
+                agentConfig.setAuthPassPhrase(interpolateAttribute(agentConfig.getAuthPassPhrase()));
+                agentConfig.setPrivPassPhrase(interpolateAttribute(agentConfig.getPrivPassPhrase()));
                 return agentConfig;
             }
         } finally {

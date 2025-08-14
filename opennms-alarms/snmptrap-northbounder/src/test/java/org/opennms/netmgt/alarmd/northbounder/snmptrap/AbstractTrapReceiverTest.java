@@ -81,7 +81,6 @@ public abstract class AbstractTrapReceiverTest implements TrapNotificationListen
         final File keystoreFile = new File(tempFolder.getRoot(), "scv.jce");
         final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
         secureCredentialsVault.setCredentials("remote", new Credentials("john", "doe"));
-        SnmpPeerFactory.setSecureCredentialsVaultScope(new SecureCredentialsVaultScope(secureCredentialsVault));
 
         MockLogAppender.setupLogging();
         resetTrapsReceived();

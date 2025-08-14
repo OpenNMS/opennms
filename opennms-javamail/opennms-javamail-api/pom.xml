@@ -43,6 +43,11 @@
       <artifactId>opennms-config-model</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms.features.scv</groupId>
+      <artifactId>org.opennms.features.scv.jceks-impl</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
       <scope>test</scope>

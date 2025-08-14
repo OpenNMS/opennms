@@ -27,12 +27,14 @@ import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.TreeMap;
 
 import org.apache.commons.codec.binary.Base64;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.core.utils.IPLike;
@@ -40,6 +42,7 @@ import org.opennms.core.utils.InetAddressComparator;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.core.xml.AbstractWritableJaxbConfigDao;
 import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.opennms.netmgt.config.wmi.WmiAgentConfig;
 import org.opennms.netmgt.config.wmi.agent.Definition;
 import org.opennms.netmgt.config.wmi.agent.Range;
@@ -80,7 +83,10 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
      */
     private static boolean m_loaded = false;
 
-    private Scope secureCredentialsVaultScope;
+
+    private final static SecureCredentialsVault secureCredentialsVault = JCEKSSecureCredentialsVault.defaultScv();
+
+    private static SecureCredentialsVaultScope secureCredentialsVaultScope;
 
     public WmiPeerFactory() {
         super(WmiConfig.class, "WMI peer configuration");
@@ -102,28 +108,6 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
         setConfigResource(resource);
     }
 
-    private synchronized Scope getSecureCredentialsScope() {
-        if (secureCredentialsVaultScope == null) {
-            try {
-                final EntityScopeProvider entityScopeProvider = BeanUtils.getBean("daoContext", "entityScopeProvider", EntityScopeProvider.class);
-
-                if (entityScopeProvider != null) {
-                    secureCredentialsVaultScope = entityScopeProvider.getScopeForScv();
-                } else {
-                    LOG.warn("WmiPeerFactory: EntityScopeProvider is null, SecureCredentialsVault not available for metadata interpolation");
-                }
-            } catch (FatalBeanException e) {
-                e.printStackTrace();
-                LOG.warn("WmiPeerFactory: Error retrieving EntityScopeProvider bean");
-            }
-        }
-
-        return secureCredentialsVaultScope;
-    }
-
-    public void setSecureCredentialsVaultScope(final Scope secureCredentialsVaultScope) {
-        this.secureCredentialsVaultScope = secureCredentialsVaultScope;
-    }
 
     /**
      * Load the config from the default config file and create the singleton
@@ -435,8 +419,22 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
      * @return a string containing the username. will return the default if none is set.
      */
     private String determineUsername(final Definition def) {
-        return Interpolator.interpolate(def.getUsername().orElse(getConfig().getUsername().orElse(WmiAgentConfig.DEFAULT_USERNAME)), getSecureCredentialsScope()).output;
+        return interpolateAttribute(def.getUsername().orElse(getConfig().getUsername().orElse(WmiAgentConfig.DEFAULT_USERNAME)));
     }
+
+    public String interpolateAttribute(final String value) {
+        final Interpolator.Result result = Interpolator.interpolate(value, getSecureCredentialsScope());
+        return result.output;
+    }
+
+    private static SecureCredentialsVaultScope getSecureCredentialsScope() {
+        return Objects.requireNonNullElseGet(secureCredentialsVaultScope, () -> new SecureCredentialsVaultScope(secureCredentialsVault));
+    }
+
+    public static void setSecureCredentialsVaultScope(SecureCredentialsVaultScope secureCredentialsVaultScope) {
+        WmiPeerFactory.secureCredentialsVaultScope = secureCredentialsVaultScope;
+    }
+
 
     /**
      * Helper method to search the wmi-config for the appropriate domain/workgroup.
@@ -457,7 +455,7 @@ public class WmiPeerFactory extends AbstractWritableJaxbConfigDao<WmiConfig,WmiC
         if (literalPass.endsWith("===")) {
             return new String(Base64.decodeBase64(literalPass));
         }
-        return Interpolator.interpolate(literalPass, getSecureCredentialsScope()).output;
+        return interpolateAttribute(literalPass);
     }
 
     /**
