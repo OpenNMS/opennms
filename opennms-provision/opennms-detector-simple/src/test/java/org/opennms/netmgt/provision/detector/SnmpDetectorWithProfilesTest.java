@@ -88,7 +88,6 @@ public class SnmpDetectorWithProfilesTest {
         final File keystoreFile = new File(temporaryFolder.getRoot(), "scv.jce");
         final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
         secureCredentialsVault.setCredentials("communityv1", new Credentials("username", "public"));
-        SnmpPeerFactory.setSecureCredentialsVaultScope(new SecureCredentialsVaultScope(secureCredentialsVault));
     }
 
     @Test(timeout = 30000)

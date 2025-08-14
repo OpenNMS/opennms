@@ -82,7 +82,6 @@ public abstract class AbstractTrapReceiverTest implements TrapNotificationListen
         final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
         secureCredentialsVault.setCredentials("remote", new Credentials("john", "doe"));
         SnmpPeerFactory.setSecureCredentialsVaultScope(new SecureCredentialsVaultScope(secureCredentialsVault));
-
         MockLogAppender.setupLogging();
         resetTrapsReceived();
         System.setProperty("opennms.home", "src/test/resources");

@@ -25,15 +25,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Objects;
 import java.util.Properties;
 
 import org.opennms.core.mate.api.EmptyScope;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.mate.api.Scope;
+import org.opennms.core.mate.api.SecureCredentialsVaultScope;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.utils.ConfigFileConstants;
 import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.jceks.JCEKSSecureCredentialsVault;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.FatalBeanException;
@@ -47,24 +50,11 @@ public abstract class JavaMailerConfig {
 
     private static Scope secureCredentialsVaultScope;
 
-    private static synchronized Scope getSecureCredentialsScope() {
-        if (secureCredentialsVaultScope == null) {
-            try {
-                final EntityScopeProvider entityScopeProvider = BeanUtils.getBean("daoContext", "entityScopeProvider", EntityScopeProvider.class);
+    private final static SecureCredentialsVault secureCredentialsVault = JCEKSSecureCredentialsVault.defaultScv();
 
-                if (entityScopeProvider != null) {
-                    secureCredentialsVaultScope = entityScopeProvider.getScopeForScv();
-                } else {
-                    LOG.warn("JavaMailConfig: EntityScopeProvider is null, SecureCredentialsVault not available for metadata interpolation");
-                }
-            } catch (FatalBeanException e) {
-                e.printStackTrace();
-                LOG.warn("JavaMailConfig: Error retrieving EntityScopeProvider bean");
-                secureCredentialsVaultScope = EmptyScope.EMPTY;
-            }
-        }
 
-        return secureCredentialsVaultScope;
+    private static Scope getSecureCredentialsScope() {
+        return Objects.requireNonNullElseGet(secureCredentialsVaultScope, () -> new SecureCredentialsVaultScope(secureCredentialsVault));
     }
 
     public static void setSecureCredentialsVaultScope(final Scope secureCredentialsVaultScope) {
@@ -121,6 +111,6 @@ public abstract class JavaMailerConfig {
             return string;
         }
 
-        return Interpolator.interpolate(string, scope).output;
+        return Interpolator.interpolate(string, getSecureCredentialsScope()).output;
     }
 }
