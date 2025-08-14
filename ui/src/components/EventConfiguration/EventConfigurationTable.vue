@@ -74,6 +74,7 @@
                 primary
                 icon="View Details"
                 data-test="view-button"
+                @click="onEventClick(config.fileOrder)"
               >
                 <FeatherIcon :icon="ViewDetails"> </FeatherIcon>
               </FeatherButton>
@@ -116,6 +117,7 @@ import { FeatherSortHeader, SORT } from '@featherds/table'
 import TableCard from '../Common/TableCard.vue'
 import { FeatherPagination } from '@featherds/pagination'
 
+const router = useRouter() // <-- get router instance
 const store = useEventConfigStore()
 const emptyListContent = {
   msg: 'No results found.'
@@ -128,7 +130,12 @@ const columns = computed(() => [
   { id: 'vendor', label: 'Vendor' },
   { id: 'eventCount', label: 'Event Count' }
 ])
-
+const onEventClick = (fileOrder: number) => {
+  router.push({
+    name: 'Event Configuration Details',
+    params: { id: fileOrder }
+  })
+}
 const sort = reactive({
   fileName: SORT.NONE,
   description: SORT.NONE,
