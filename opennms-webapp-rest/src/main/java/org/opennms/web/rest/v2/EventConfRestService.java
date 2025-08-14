@@ -25,6 +25,8 @@ package org.opennms.web.rest.v2;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfEventDto;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
@@ -86,6 +88,30 @@ public class EventConfRestService implements EventConfRestApi {
         }
 
         return Response.ok(Map.of("success", successList, "errors", errorList)).build();
+    }
+
+    @Override
+    public Response filterEventConf(String uei, String vendor, String sourceName, SecurityContext securityContext) {
+        boolean noFilters = (uei == null || uei.trim().isEmpty()) &&
+                (vendor == null || vendor.trim().isEmpty()) &&
+                (sourceName == null || sourceName.trim().isEmpty());
+
+        if (noFilters) {
+            // 204 No Content → means request was valid, but there’s nothing to return
+            return Response.noContent().build();
+        }
+        // Call the persistence service
+        List<EventConfEvent> results = eventConfPersistenceService.findEventConfByFilters(uei, vendor, sourceName);
+        if (results == null || results.isEmpty()) {
+            // Return 204 No Content if no matching records found
+            return Response.noContent().build();
+        }
+
+        List<EventConfEventDto> dtoList = EventConfEventDto.fromEntity(results);
+
+
+        // Return the matching results
+        return Response.ok(dtoList).build();
     }
 
     private List<String> determineFileOrder(final Attachment eventconfXmlAttachment, final Set<String> uploadedFiles) {
