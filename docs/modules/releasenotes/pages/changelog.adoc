@@ -112,6 +112,7 @@ It contains a bunch of changes, including improvements to menu structure, update
 * Update OpenConfig gnmi telemetry groovy script with more examples (Issue https://opennms.atlassian.net/browse/NMS-18060[NMS-18060])
 * Merge 'Vendor neutral performance metrics via IPFIX' to develop (Issue https://opennms.atlassian.net/browse/NMS-18062[NMS-18062])
 * FE: Add actions to reset the columns config and filters (Issue https://opennms.atlassian.net/browse/NMS-18203[NMS-18203])
+* Move jdbc-datacollection to the AbstractMergingJaxbConfigDao (Issue https://opennms.atlassian.net/browse/NMS-16950[NMS-16950])
 
 === Task
 

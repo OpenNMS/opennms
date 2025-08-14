@@ -91,4 +91,6 @@ As part of this upgrade, the SNMP4J logger configuration has been updated to use
 
 NOTE: If you are upgrading from an older version and have overridden this property (e.g., still using org.snmp4j.log.Log4jLogFactory), you must update it manually. Retaining the old value may cause OpenNMS to fail to start.
 
+=== Improvements to JDBC Collection configuration
+The `jdbc-datacollection-config.xml` has been broken down into individual files, which now reside in `$OPENNMS_HOME/etc/jdbc-datacollection.d/`. Additionally, we have added new collections for Oracle and Microsoft SQL Server.
 
