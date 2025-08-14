@@ -271,6 +271,11 @@ const router = createRouter({
       component: () => import('@/containers/EventConfiguration.vue')
     },
     {
+      path: '/event-config/event/:id',
+      name: 'Event Configuration Details',
+      component: () => import('@/components/EventConfiguration/EventConfigDetails.vue')
+    },
+    {
       path: '/:pathMatch(.*)*', // catch other paths and redirect
       redirect: '/'
     }
