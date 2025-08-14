@@ -1,6 +1,18 @@
   #jobs:oci/horizon-image-single-arch#
+  #jobs:oci/horizon-image-single-arch-trivy#
+  #jobs:oci/horizon-image-single-arch-trivy-analyze#
   #jobs:oci/sentinel-image-single-arch#
+  #jobs:oci/sentinel-image-single-arch-trivy#
+  #jobs:oci/sentinel-image-single-arch-trivy-analyze#
   #jobs:oci/minion-image-single-arch#
+  #jobs:oci/minion-image-single-arch-trivy#
+  #jobs:oci/minion-image-single-arch-trivy-analyze#
   #jobs:oci/minion-image-single-arch-linux-amd64#
+  #jobs:oci/minion-image-single-arch-linux-amd64-trivy#
+  #jobs:oci/minion-image-single-arch-linux-amd64-trivy-analyze#
   #jobs:oci/horizon-image-single-arch-linux-amd64#
+  #jobs:oci/horizon-image-single-arch-linux-amd64-trivy#
+  #jobs:oci/horizon-image-single-arch-linux-amd64-trivy-analyze#
   #jobs:oci/sentinel-image-single-arch-linux-amd64#
+  #jobs:oci/sentinel-image-single-arch-linux-amd64-trivy#
+  #jobs:oci/sentinel-image-single-arch-linux-amd64-trivy-analyze#
