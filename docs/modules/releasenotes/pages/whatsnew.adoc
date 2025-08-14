@@ -8,28 +8,6 @@
 OpenNMS Flow processing now supports Elasticsearch 8.x, ensuring compatibility with the latest versions of the Elastic stack.
 Additionally, support has been added for [composable templates](https://www.elastic.co/docs/manage-data/data-store/templates), enabling more flexible and modular configuration of Elasticsearch index settings for NetFlow data.
 
-=== `install.sh` script clears data directory and restores Karaf-related configuration files
-To overcome common upgrading problems, the data directory is automatically pruned when invoking the `install.sh` script.
-Furthermore, all Karaf-related configuration files are restored to their pristine state.
-
-=== OpenNMS Plugin API
-
-The OpenNMS Plugin API has been updated to version 1.6.0, which includes some new APIs ported over from the Horizon codebase to simplify plugin development, as well as cleanups to dependencies.
-It also includes some fixes to the protocol list used by Enlinkd.
-
-=== Expanded metadata support
-
-It is now possible to use the metadata DSL in nearly all configuration files.
-For details on all of the subsystems that support the metadata DSL, see xref:operation:deep-dive/meta-data.adoc[the operation manual].
-
-=== Confd improvements
-
-Support for `confd` has been added to the Sentinel container.
-
-=== UI: structured node list
-
-An enhanced node list has been introduced with options for sorting and filtering.
-
 === Enhanced Keystore Support in Secure Credentials Vault
 The Secure Credentials Vault now supports the PKCS12 keystore format in addition to the previously supported JCEKS format. This enhancement provides greater compatibility with modern security standards and tooling.
 

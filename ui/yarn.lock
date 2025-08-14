@@ -296,6 +296,11 @@
   resolved "https://registry.yarnpkg.com/@esbuild/win32-x64/-/win32-x64-0.25.8.tgz#610d7ea539d2fcdbe39237b5cc175eb2c4451f9c"
   integrity sha512-cn3Yr7+OaaZq1c+2pe+8yxC8E144SReCQjN6/2ynubzYjvyqZjTXfQJpAcQpsdJq3My7XADANiYGHoFC69pLQw==
 
+"@esbuild/win32-x64@0.21.5":
+  version "0.21.5"
+  resolved "https://registry.yarnpkg.com/@esbuild/win32-x64/-/win32-x64-0.21.5.tgz#acad351d582d157bb145535db2a6ff53dd514b5c"
+  integrity sha512-tQd/1efJuzPC6rCFwEvLtci/xNFcTZknmXs98FYDfGE4wP9ClFV98nyKrzJKVPMhdDnjzLhdUyMX4PsQAPjwIw==
+
 "@eslint-community/eslint-utils@^4.2.0", "@eslint-community/eslint-utils@^4.4.0":
   version "4.7.0"
   resolved "https://registry.yarnpkg.com/@eslint-community/eslint-utils/-/eslint-utils-4.7.0.tgz#607084630c6c033992a082de6e6fbc1a8b52175a"
@@ -626,6 +631,10 @@
   resolved "https://registry.yarnpkg.com/@featherds/ripple/-/ripple-0.12.40.tgz#703aaba05c89a7f1c50151dab891ff5b10bbe80d"
   integrity sha512-gMjpgI7QNLCVzds1SJeqzgOmrpRa35WA2w26uIt8zQNYNI3frA6qFjkE7liWheEcfkBqMbvyeR7tJqNr2IpX/Q==
   dependencies:
+    "@featherds/composables" "^0.12.40"
+    "@featherds/input-helper" "^0.12.40"
+    "@featherds/ripple" "^0.12.40"
+    "@featherds/styles" "^0.12.40"
     vue "^3.1.0-0"
 
 "@featherds/select@0.12.40", "@featherds/select@^0.12.40":
