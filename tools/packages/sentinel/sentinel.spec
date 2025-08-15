@@ -30,8 +30,8 @@
 %define __os_install_post %{nil}
 %define __find_requires %{nil}
 %define __perl_requires %{nil}
-%define _source_filedigest_algorithm 4
-%define _binary_filedigest_algorithm 4
+%define _source_filedigest_algorithm 8
+%define _binary_filedigest_algorithm 8
 %define _source_payload w0.bzdio
 %define _binary_payload w0.bzdio
 %global _binaries_in_noarch_packages_terminate_build 0
