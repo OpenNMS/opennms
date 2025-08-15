@@ -26,6 +26,7 @@ import org.opennms.netmgt.model.EventConfEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -48,6 +49,28 @@ public class EventConfEventDaoHibernate
     public EventConfEvent findByUei(String uei) {
         List<EventConfEvent> list = find("from EventConfEvent e where e.uei = ?", uei);
         return list.isEmpty() ? null : list.get(0);
+    }
+
+    public List<EventConfEvent> filterEventConf(String uei, String vendor, String sourceName) {
+        List<Object> queryParamList = new ArrayList<>();
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("from EventConfEvent e where 1=1 ");
+        if (uei != null && !uei.isEmpty()) {
+            queryBuilder.append(" and e.uei = ? ");
+            queryParamList.add(uei);
+        }
+        if (vendor != null && !vendor.isEmpty()) {
+            queryBuilder.append(" and e.source.vendor = ? ");
+            queryParamList.add(vendor);
+        }
+        if (sourceName != null && !sourceName.isEmpty()) {
+            queryBuilder.append(" and e.source.name = ? ");
+            queryParamList.add(sourceName);
+        }
+
+        queryBuilder.append(" order by e.createdTime desc ");
+
+        return find(queryBuilder.toString(), queryParamList.toArray());
     }
 
     @Override

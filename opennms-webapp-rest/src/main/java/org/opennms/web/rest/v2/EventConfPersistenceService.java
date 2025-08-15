@@ -52,6 +52,10 @@ public class EventConfPersistenceService {
         saveEvents(source, events, eventConfSourceMetadataDto.getUsername(), eventConfSourceMetadataDto.getNow());
     }
 
+    public List<EventConfEvent>  findEventConfByFilters(String uei, String vendor, String sourceName) {
+        return eventConfEventDao.filterEventConf(uei, vendor, sourceName);
+    }
+
     private EventConfSource createOrUpdateSource(final EventConfSourceMetadataDto eventConfSourceMetadataDto) {
         EventConfSource source = eventConfSourceDao.findByName(eventConfSourceMetadataDto.getFilename());
         if (source == null) {

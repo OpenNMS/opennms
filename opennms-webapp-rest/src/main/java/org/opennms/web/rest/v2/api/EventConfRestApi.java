@@ -10,6 +10,7 @@
  */
 package org.opennms.web.rest.v2.api;
 
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -17,6 +18,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 
+
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -46,4 +49,26 @@ public interface EventConfRestApi {
     })
     Response uploadEventConfFiles(@Multipart("upload") List<Attachment> attachments,
                                   @Context SecurityContext securityContext) throws Exception;
+
+    @POST
+    @Path("filter")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(
+            summary = "Filter EventConf Records",
+            description = "Fetch EventConf records based on provided filters such as UEI, vendor, source and name.",
+            operationId = "filterEventConf"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "EventConf records retrieved successfully",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "No matching EventConf records found",
+                    content = @Content),
+            @ApiResponse(responseCode = "204", description = "No Content if no matching records found",
+                    content = @Content)
+    })
+    Response filterEventConf(
+            @QueryParam("uei") String uei,
+            @QueryParam("vendor") String vendor,
+            @QueryParam("sourceName") String sourceName,
+            @Context SecurityContext securityContext );
 }
