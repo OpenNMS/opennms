@@ -8,6 +8,7 @@ export type EventConfSourceMetadata = {
   now: Date;
   vendor: string;
   description: string;
+  id:number
 };
 
 export type EventConfigState = {

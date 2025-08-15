@@ -8,7 +8,8 @@ export const data: EventConfSourceMetadata[] = [
     username: 'admin',
     now: new Date(),
     vendor: 'OpenNMS',
-    description: 'Example event configuration file for demonstration purposes.'
+    description: 'Example event configuration file for demonstration purposes.',
+    id:1
   },
   {
     filename: 'another-event-config.xml',
@@ -17,7 +18,8 @@ export const data: EventConfSourceMetadata[] = [
     username: 'user1',
     now: new Date(),
     vendor: 'OpenNMS',
-    description: 'Another event configuration file with different settings.'
+    description: 'Another event configuration file with different settings.',
+    id:2
   },
   {
     filename: 'custom-event-config.xml',
@@ -26,6 +28,7 @@ export const data: EventConfSourceMetadata[] = [
     username: 'user2',
     now: new Date(),
     vendor: 'CustomVendor',
-    description: 'Custom event configuration file for specific vendor requirements.'
+    description: 'Custom event configuration file for specific vendor requirements.',
+    id:3
   }
 ]
