@@ -31,7 +31,7 @@ const id = route.params.id
 const config = ref<EventConfSourceMetadata | null>(null)
 
 const loadEventConfigDetails = () => {
-  config.value = store.eventConfigs.find(c => c.fileOrder === Number(id)) || null
+  config.value = store.eventConfigs.find(c => c.id === Number(id)) || null
 }
 
 onMounted(() => {
