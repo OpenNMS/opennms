@@ -100,7 +100,6 @@ public class OpenConfigClientImpl implements OpenConfigClient {
     private Integer retries;
     private List<Map<String,String>> paramList = new ArrayList<>();
     private AtomicBoolean closed = new AtomicBoolean(false);
-    private final AtomicBoolean enabled = new AtomicBoolean(true);
     private AtomicBoolean scheduled = new AtomicBoolean(false);
     private ExecutorService executor = Executors.newSingleThreadExecutor();
     private ScheduledExecutorService scheduledExecutor = Executors.newSingleThreadScheduledExecutor();
@@ -121,11 +120,6 @@ public class OpenConfigClientImpl implements OpenConfigClient {
 
     @Override
     public void subscribe(OpenConfigClient.Handler handler) {
-        if (!enabled.get()) {
-            LOG.info("Subscription skipped: client is disabled");
-            return;
-        }
-
         boolean succeeded = trySubscribing(handler);
         if (!succeeded) {
             close();
@@ -250,10 +244,6 @@ public class OpenConfigClientImpl implements OpenConfigClient {
 
 
     private void scheduleSubscription(OpenConfigClient.Handler handler) {
-        if (!enabled.get()) {
-            LOG.debug("Rescheduling skipped: client is disabled");
-            return;
-        }
         if (scheduled.get()) {
             // Task is already scheduled.
             return;
@@ -277,7 +267,7 @@ public class OpenConfigClientImpl implements OpenConfigClient {
 
         int retries = this.retries != null ? this.retries : DEFAULT_INTERNAL_RETRIES;
         int interval = this.interval != null ? this.interval : DEFAULT_INTERVAL_IN_SEC;
-        while (!closed.get() && enabled.get()) {
+        while (!closed.get()) {
             ScheduledFuture<Boolean> future = scheduledExecutor.schedule(() -> trySubscribing(handler), interval, TimeUnit.SECONDS);
             try {
                 succeeded = future.get();
@@ -300,10 +290,8 @@ public class OpenConfigClientImpl implements OpenConfigClient {
 
     @Override
     public void shutdown() {
-        closed.set(true);
-        enabled.set(false);
-
         close();
+        closed.set(true);
         if (scheduledExecutor != null) {
             scheduledExecutor.shutdown();
         }
@@ -333,10 +321,6 @@ public class OpenConfigClientImpl implements OpenConfigClient {
 
         @Override
         public void onNext(OpenConfigData value) {
-            if (!enabled.get()) {
-                LOG.debug("Dropping message: client disabled");
-                return;
-            }
             handler.accept(host, port, value.toByteArray());
         }
 
@@ -345,9 +329,7 @@ public class OpenConfigClientImpl implements OpenConfigClient {
             LOG.error("Received error on stream for host {}", InetAddressUtils.str(host), t);
             handler.onError(t.getMessage());
             close();
-            if(!closed.get() && enabled.get()) {
-                executor.execute(() -> scheduleSubscription(handler));
-            }
+            executor.execute(() -> scheduleSubscription(handler));
         }
 
         @Override
@@ -355,9 +337,7 @@ public class OpenConfigClientImpl implements OpenConfigClient {
             LOG.info("Response stream closed for host {}", InetAddressUtils.str(host));
             handler.onError("OpenConfig Server closed connection for host " + InetAddressUtils.str(host));
             close();
-            if(!closed.get() && enabled.get()) {
-                executor.execute(() -> scheduleSubscription(handler));
-            }
+            executor.execute(() -> scheduleSubscription(handler));
         }
     }
 
@@ -376,10 +356,6 @@ public class OpenConfigClientImpl implements OpenConfigClient {
 
         @Override
         public void onNext(Gnmi.SubscribeResponse subscribeResponse) {
-            if (!enabled.get()) {
-                LOG.debug("Dropping message: client disabled");
-                return;
-            }
             if(subscribeResponse != null) {
                 handler.accept(host, port, subscribeResponse.toByteArray());
             }
@@ -390,9 +366,7 @@ public class OpenConfigClientImpl implements OpenConfigClient {
             LOG.error("Received error on stream for host {}", InetAddressUtils.str(host), t);
             handler.onError(t.getMessage());
             close();
-            if(!closed.get() && enabled.get()) {
-                executor.execute(() -> scheduleSubscription(handler));
-            }
+            executor.execute(() -> scheduleSubscription(handler));
         }
 
         @Override
@@ -400,9 +374,7 @@ public class OpenConfigClientImpl implements OpenConfigClient {
             LOG.info("Response stream closed for host {}", InetAddressUtils.str(host));
             handler.onError("OpenConfig Server closed connection for host " + InetAddressUtils.str(host));
             close();
-            if(!closed.get() && enabled.get()) {
-                executor.execute(() -> scheduleSubscription(handler));
-            }
+            executor.execute(() -> scheduleSubscription(handler));
         }
     }
 

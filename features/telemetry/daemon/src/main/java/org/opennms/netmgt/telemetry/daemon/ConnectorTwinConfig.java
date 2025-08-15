@@ -37,7 +37,7 @@ public class ConnectorTwinConfig {
     private String ipAddress;
     private List<Map<String, String>> parameters;
     private String connectionKey;
-    private ConnectorState status;
+    private boolean enabled;
     public ConnectorTwinConfig() {
     }
 
@@ -46,13 +46,13 @@ public class ConnectorTwinConfig {
             @JsonProperty("nodeId") int nodeId,
             @JsonProperty("ipAddress") String ipAddress,
             @JsonProperty("connectionKey") String connectionKey,
-            @JsonProperty("status") ConnectorState status,
+            @JsonProperty("enabled") boolean enabled,
             @JsonProperty("parameters") List<Map<String, String>> parameters) {
 
         this.nodeId = nodeId;
         this.ipAddress = ipAddress;
         this.connectionKey = connectionKey;
-        this.status = status;
+        this.enabled = enabled;
         this.parameters = parameters != null
                 ? Collections.unmodifiableList(new ArrayList<>(parameters))
                 : Collections.emptyList();
@@ -78,9 +78,8 @@ public class ConnectorTwinConfig {
     public List<Map<String, String>> getParameters() {
         return parameters;
     }
-    @JsonProperty("status")
-    public ConnectorState getStatus() {
-        return status;
+    @JsonProperty("enabled")
+    public boolean isEnabled() {
+        return enabled;
     }
-
 }
