@@ -131,7 +131,7 @@ public class ConnectorStarter implements ManagedService, Connector {
         try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable(Telemetryd.LOG_PREFIX)) {
             LOG.error("Got listener config update - reloading");
             synchronized (configuredLock) {
-                if (ConnectorState.START == request.getStatus()) {
+                if (request.isEnabled()) {
                     if(entities.containsKey(request.getConnectionKey())) {
                         LOG.warn("A connector is already registered with node '{}' ",request.getNodeId());
                         return;

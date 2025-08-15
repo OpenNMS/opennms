@@ -24,7 +24,15 @@ package org.opennms.netmgt.telemetry.daemon;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Objects;
+import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import org.hibernate.ObjectNotFoundException;
@@ -89,9 +97,14 @@ public class ConnectorManager {
 
     @Autowired
     private TwinPublisher twinPublisher;
-    private TwinPublisher.Session<ConnectorTwinConfig> twinSession;
 
-    private final Map<ConnectorKey, Connector> connectorsByKey = new LinkedHashMap<>();
+    private final Map<String, TwinPublisher.Session<ConnectorTwinConfig>> locationToTwinSessionMap = new ConcurrentHashMap<>();
+
+    private final ConcurrentHashMap<String, AtomicInteger> locationRefCounts = new ConcurrentHashMap<>();
+
+    // this will hold the key-> connector key for identification and value-> location
+    // when node is removed then we have no way to find its location just to stop its  connector at minion side
+    private final Map<ConnectorKey, String> connectorsByKey = new LinkedHashMap<>();
 
     private final List<Closeable> serviceTrackerSessions = new LinkedList<>();
 
@@ -107,14 +120,49 @@ public class ConnectorManager {
             final ConnectorKey key = toKey(connectorConfig, packageConfig, serviceRef);
             if (connectorsByKey.containsKey(key)) {
                 LOG.debug("Connector already exists. Ignoring.");
+                return;
             }
-            List<Map<String, String>> interpolatedMapList = getGroupedParams(packageConfig, serviceRef);
-            // Create a new connector
-            LOG.debug("Starting connector for: {}", key);
-            final Connector connector = telemetryRegistry.getConnector(connectorConfig);
-            connectorsByKey.put(key, connector);
-            connector.stream(serviceRef.getNodeId(), serviceRef.getIpAddress(), interpolatedMapList);
+
+            NodeWithMetadata result = fetchNodeWithMetadata(serviceRef.getNodeId());
+
+            List<Map<String, String>> interpolatedMapList = groupMetaDataParams(result.metadata);
+
+            AtomicInteger ai = locationRefCounts.compute(result.location, (loc, existing) -> {
+                if (existing != null) {
+                    existing.incrementAndGet();
+                    return existing;
+                }
+
+                try {
+                    LOG.info("Initializing twin session for location: {}", loc);
+                    TwinPublisher.Session<ConnectorTwinConfig> session = twinPublisher.register(
+                            ConnectorTwinConfig.CONNECTOR_KEY,
+                            ConnectorTwinConfig.class,
+                            loc
+                    );
+                    locationToTwinSessionMap.put(loc, session);
+                    return new AtomicInteger(1);
+                } catch (IOException e) {
+                    LOG.error("Twin session initialization failed for location: {}", loc, e);
+                    throw new IllegalStateException("Twin communication failure for location: " + loc, e);
+                }
+            });
+
+            try {
+                TwinPublisher.Session<ConnectorTwinConfig> session = locationToTwinSessionMap.get(result.location);
+                session.publish(new ConnectorTwinConfig(
+                        serviceRef.getNodeId(),
+                        serviceRef.getIpAddress().getHostAddress(),
+                        toStringKey(key),
+                        true,
+                        interpolatedMapList
+                ));
+            } catch (IOException e) {
+                LOG.error("Failed to register twin for openconfig conector config", e);
+            }
+            connectorsByKey.putIfAbsent(key,result.location);
         }
+
     }
 
     List<Map<String, String>> getGroupedParams(PackageConfig packageConfig, ServiceRef serviceRef) {
@@ -147,56 +195,56 @@ public class ConnectorManager {
     private void stopStreamingFor(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceRef serviceRef) {
         synchronized (connectorsByKey) {
             final ConnectorKey key = toKey(connectorConfig, packageConfig, serviceRef);
-            final Connector connector = connectorsByKey.remove(key);
-            if (connector != null) {
-             stopConnector( toStringKey(key));
-            }
+              String location =  connectorsByKey.get(key);
+              stopConnector(toStringKey(key),location);
+              releasesPublisher(location);
         }
     }
 
-    public void stopConnector(String key) {
+    public void stopConnector(String key,String location) {
+        TwinPublisher.Session<ConnectorTwinConfig> session = locationToTwinSessionMap.get(location);
         try {
-            LOG.debug("Closing connector for: {}", key);
-            // connector.close();
-            twinSession.publish(new ConnectorTwinConfig(
+            session.publish(new ConnectorTwinConfig(
                     0,
                     null,
-                     key,
-                    ConnectorState.STOP,
+                    key,
+                    false,
                     null
             ));
         } catch (IOException e) {
-            LOG.warn("Error closing connector: {}", key, e);
+            LOG.error("Failed to register twin for openconfig conector config", e);
         }
     }
 
-    private void startStreamingFor(
-            ConnectorConfig connectorConfig,
-            PackageConfig packageConfig,
-            ServiceRef serviceRef,
-            List<OnmsMetaData> metaDataList) {
+    public void releasesPublisher(String location) {
+        AtomicInteger ai = locationRefCounts.get(location);
+        if (ai == null) {
+            LOG.debug("No twin session refcount found for location {}", location);
+            return;
+        }
 
-        synchronized (connectorsByKey) {
-            ConnectorKey key = toKey(connectorConfig, packageConfig, serviceRef);
-            if (connectorsByKey.containsKey(key)) {
-                LOG.debug("Connector already exists. Ignoring.");
-                return;
-            }
+        int remaining = ai.decrementAndGet();
+        if (remaining > 0) {
+            LOG.debug("Decremented twin session refcount for location {} -> {}", location, remaining);
+            return;
+        }
 
-            List<Map<String,String>> interpolatedMapList = groupMetaDataParams(metaDataList);
-            Connector connector = telemetryRegistry.getConnector(connectorConfig);
-            connectorsByKey.put(key, connector);
+        boolean removed = locationRefCounts.remove(location, ai);
+        if (!removed) {
+            LOG.debug("Refcount for location {} changed concurrently; skip closing session", location);
+            return;
+        }
+
+        TwinPublisher.Session<ConnectorTwinConfig> session = locationToTwinSessionMap.remove(location);
+        if (session != null) {
             try {
-                twinSession.publish(new ConnectorTwinConfig(
-                        serviceRef.getNodeId(),
-                        serviceRef.getIpAddress().getHostAddress(),
-                        toStringKey(key),
-                        ConnectorState.START,
-                        interpolatedMapList
-                ));
+                session.close();
+                LOG.info("Twin session closed for location {}", location);
             } catch (IOException e) {
-                LOG.error("Failed to register twin for openconfig conector config", e);
+                LOG.warn("Failed to close twin session for location {}: {}", location, e.getMessage(), e);
             }
+        } else {
+            LOG.debug("No twin session present to close for location {}", location);
         }
     }
 
@@ -235,17 +283,6 @@ public class ConnectorManager {
 
     public void start(TelemetrydConfig config) {
 
-        try {
-            twinSession = twinPublisher.register(
-                    ConnectorTwinConfig.CONNECTOR_KEY,
-                    ConnectorTwinConfig.class,
-                    null
-            );
-        } catch (IOException e) {
-            LOG.error("Twin session initialization failed", e);
-            throw new IllegalStateException("Twin communication failure", e);
-        }
-
         for (ConnectorConfig connectorConfig : config.getConnectors()) {
             if (connectorConfig.getPackages().isEmpty()) {
                 // No packages defined
@@ -260,10 +297,8 @@ public class ConnectorManager {
                             new ServiceTracker.ServiceListener() {
                                 @Override
                                 public void onServiceMatched(ServiceRef serviceRef) {
-                                    NodeWithMetadata result = fetchNodeWithMetadata(serviceRef.getNodeId());
-                                    startStreamingFor(connectorConfig, packageConfig, serviceRef,result.metadata);
+                                    startStreamingFor(connectorConfig, packageConfig, serviceRef);
                                 }
-
                                 @Override
                                 public void onServiceStoppedMatching(ServiceRef serviceRef) {
                                     stopStreamingFor(connectorConfig, packageConfig, serviceRef);
@@ -286,12 +321,18 @@ public class ConnectorManager {
         });
         serviceTrackerSessions.clear();
 
-        // Close the connectors
-        synchronized (connectorsByKey) {
-            connectorsByKey.forEach((key,connector) -> {
-                stopConnector( toStringKey(key));
-            });
-        }
+        connectorsByKey.clear();
+        locationToTwinSessionMap.forEach((loc, session) -> {
+            try {
+                if (session != null) session.close();
+                LOG.info("closed twin session for location {}", loc);
+            } catch (IOException e) {
+                LOG.warn("Failed to close twin session for location {}: {}", loc, e.getMessage(), e);
+            }
+        });
+
+        locationToTwinSessionMap.clear();
+        locationRefCounts.clear();
     }
 
     private static ConnectorKey toKey(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceRef serviceRef) {
