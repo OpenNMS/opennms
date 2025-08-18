@@ -3,4 +3,26 @@ SCRIPT_PATH="$(cd "$(dirname "$0")" && pwd)"
 KEYSTORE_PATH="$SCRIPT_PATH/../etc"
 OPENNMS_HOME="$SCRIPT_PATH/.."
 export OPENNMS_HOME
-cd $KEYSTORE_PATH && java -jar $SCRIPT_PATH/org.opennms.features.scv.cli.jar "${@}" && cd $SCRIPT_PATH
+detect_fips() {
+  # RHEL
+  if [ -f /proc/sys/crypto/fips_enabled ]; then
+    if [ "$(cat /proc/sys/crypto/fips_enabled)" == "1" ]; then
+      return 0
+    fi
+  fi
+
+  # Ubuntu
+  if command -v fips-mode-setup &> /dev/null; then
+    fips-mode-setup --check | grep -q "enabled" && return 0
+  fi
+
+  return 1
+}
+
+if detect_fips; then
+	   FIPS_FLAG="-Dcom.redhat.fips=true"
+else
+	   FIPS_FLAG=""
+fi
+
+cd $KEYSTORE_PATH && java "${FIPS_FLAG}" -jar $SCRIPT_PATH/org.opennms.features.scv.cli.jar "${@}" && cd $SCRIPT_PATH
