@@ -59,6 +59,7 @@
               org.opennms.netmgt.config.kscReports.*;version="${project.version}",
               org.opennms.netmgt.config.mailtransporttest.*;version="${project.version}",
               org.opennms.netmgt.config.map.adapter.*;version="${project.version}",
+              org.opennms.netmgt.config.menu.*;version="${project.version}",
               org.opennms.netmgt.config.microblog.*;version="${project.version}",
               org.opennms.netmgt.model.monitoringLocations.*;version="${project.version}",
               org.opennms.netmgt.config.notifd.*;version="${project.version}",

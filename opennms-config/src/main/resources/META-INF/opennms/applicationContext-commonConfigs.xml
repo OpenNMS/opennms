@@ -85,7 +85,15 @@
   <bean id="userManager" class="org.opennms.netmgt.config.UserFactory" depends-on="userManager-init" factory-method="getInstance"/>
   
   <onmsgi:service interface="org.opennms.netmgt.config.api.UserConfig" ref="userManager" />
-  
+
+  <bean id="menuTemplateManager-init" class="org.springframework.beans.factory.config.MethodInvokingFactoryBean">
+    <property name="staticMethod"><value>org.opennms.netmgt.config.MenuTemplateFactory.init</value></property>
+  </bean>
+
+  <bean id="menuTemplateManager" class="org.opennms.netmgt.config.MenuTemplateFactory" depends-on="menuTemplateManager-init" factory-method="getInstance"/>
+
+  <onmsgi:service interface="org.opennms.netmgt.config.api.MenuTemplateConfig" ref="menuTemplateManager" />
+
   <bean id="discoveryFactory" class="org.opennms.netmgt.config.DiscoveryConfigFactory" />
   
   <onmsgi:service interface="org.opennms.netmgt.config.api.DiscoveryConfigurationFactory" ref="discoveryFactory" />

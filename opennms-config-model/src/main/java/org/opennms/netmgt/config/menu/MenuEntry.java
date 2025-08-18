@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.web.rest.support.menu.model;
+package org.opennms.netmgt.config.menu;
 
 import java.util.ArrayList;
 import java.util.List;

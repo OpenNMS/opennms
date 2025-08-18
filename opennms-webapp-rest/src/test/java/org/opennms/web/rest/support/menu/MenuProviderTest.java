@@ -21,29 +21,24 @@
  */
 package org.opennms.web.rest.support.menu;
 
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
-import com.google.common.base.Strings;
 import org.junit.Assert;
-
+import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import org.junit.Test;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.startsWith;
 
-import org.opennms.web.rest.support.menu.model.MainMenu;
-import org.opennms.web.rest.support.menu.model.MenuEntry;
+import org.opennms.netmgt.config.menu.MainMenu;
+import org.opennms.netmgt.config.menu.MenuEntry;
 
 public class MenuProviderTest {
-    final static String RESOURCE_PATH = "src/test/resources/dispatcher-servlet.xml";
     final static String MENU_TEMPLATE_PATH = "src/test/resources/menu-template.json";
 
     final static String[] ADMIN_ROLES = new String[] { "ROLE_ADMIN", "ROLE_FLOW_MANAGER" };
@@ -73,15 +68,20 @@ public class MenuProviderTest {
         // not testing mainMenu.version, it's probably null in test environment
 
         // Check top level menus and names
-        assertNotNull(mainMenu.menus);
-        assertEquals(8, mainMenu.menus.size());
-
-        List<String> menuNames = mainMenu.menus.stream().map(m -> m.name).toList();
-
         final String[] expectedMenuNames = new String[] {
-            "Search", "Info", "Status", "Reports", "Dashboards", "Maps", "Administration", "Support"
+            "Dashboards", "Inventory", "Monitoring", "Maps", "Topologies", "Metrics (Resource Graphs)",
+            "Distributed Monitoring", "Manage Inventory", "User Management", "Integrations",
+            "Tools", "Administration", "Internal Logs", "User Profile", "API Documentation",
+            "Help", "Support"
         };
-        assertThat(menuNames, containsInAnyOrder(expectedMenuNames));
+
+        assertNotNull(mainMenu.menus);
+
+        // +2: there are 2 separator menu items
+        assertEquals(expectedMenuNames.length + 2, mainMenu.menus.size());
+
+        List<String> actualMenuNames = mainMenu.menus.stream().filter(m -> m.name != null).map(m -> m.name).toList();
+        assertThat(actualMenuNames, containsInAnyOrder(expectedMenuNames));
 
         assertNotNull(mainMenu.configurationMenu);
         assertNotNull(mainMenu.flowsMenu);
@@ -91,11 +91,10 @@ public class MenuProviderTest {
         assertNotNull(mainMenu.userNotificationMenu);
 
         // Check names in sub-menus under the Info menu
-        MenuEntry infoMenu = getMenuEntry(mainMenu.menus, "Info");
+        MenuEntry infoMenu = getMenuEntry(mainMenu.menus, "Inventory");
 
         final String[] expectedNames = new String[] {
-                "Nodes", "Structured Node List", "Assets", "Path Outages", "Device Configs", "External Requisitions",
-                "Logs", "Secure Credentials Vault", "Connect to Zenith"
+                "Nodes", "Structured Node List", "Device Configs", "Assets", "Search Inventory"
         };
         List<String> actualNames = getMenuNames(infoMenu);
         assertEquals(expectedNames.length, actualNames.size());
@@ -118,11 +117,10 @@ public class MenuProviderTest {
         assertNotNull(mainMenu);
 
         // Check names in sub-menus under the Info menu
-        MenuEntry infoMenu = getMenuEntry(mainMenu.menus, "Info");
+        MenuEntry infoMenu = getMenuEntry(mainMenu.menus, "Inventory");
 
         final String[] expectedNames = new String[] {
-                "Nodes", "Structured Node List", "Assets", "Path Outages", "Device Configs", "External Requisitions",
-                "Logs", "Secure Credentials Vault"
+            "Nodes", "Structured Node List", "Device Configs", "Assets", "Search Inventory"
         };
 
         List<String> actualNames = getMenuNames(infoMenu);
@@ -135,12 +133,33 @@ public class MenuProviderTest {
         MainMenu mainMenu = parseMainMenu(false, USER_ROLES);
         assertNotNull(mainMenu);
 
-        // Check names in sub-menus under the Info menu
-        MenuEntry infoMenu = getMenuEntry(mainMenu.menus, "Info");
+        // Check names in sub-menus under the Tools menu
+        MenuEntry infoMenu = getMenuEntry(mainMenu.menus, "Tools");
 
-        // Should not have any admin-only roles
+        // There is an ADMIN and FILESYSTEM_EDITOR role, should not show up here
+        final String[] expectedNames = new String[]{
+            "SNMP MIB Compiler", "JMX Metric Configuration Generator",
+            "Import/Export Node Asset Information", "Send Custom Events"
+        };
+
+        List<String> actualNames = getMenuNames(infoMenu);
+        assertEquals(expectedNames.length, actualNames.size());
+        assertThat(actualNames, containsInAnyOrder(expectedNames));
+    }
+
+    @Test
+    public void testParseMainMenuWithAdminRole() {
+        MainMenu mainMenu = parseMainMenu(false, ADMIN_ROLES);
+        assertNotNull(mainMenu);
+
+        // Check names in sub-menus under the Tools menu
+        MenuEntry infoMenu = getMenuEntry(mainMenu.menus, "Tools");
+
+        // There is an ADMIN and FILESYSTEM_EDITOR role, should include the ADMIN one (SCV)
         final String[] expectedNames = new String[] {
-            "Nodes", "Structured Node List", "Assets", "Path Outages"
+                "SNMP MIB Compiler", "JMX Metric Configuration Generator",
+                "Import/Export Node Asset Information", "Send Custom Events",
+                "Secure Credentials Vault"
         };
 
         List<String> actualNames = getMenuNames(infoMenu);
@@ -153,22 +172,20 @@ public class MenuProviderTest {
         MainMenu mainMenu = parseMainMenu(false, FILESYSTEM_EDITOR_ROLES);
         assertNotNull(mainMenu);
 
-        // Check names in sub-menus under the Info menu
-        MenuEntry infoMenu = getMenuEntry(mainMenu.menus, "Info");
+        // Check names in sub-menus under the Tools menu
+        MenuEntry toolsMenu = getMenuEntry(mainMenu.menus, "Tools");
 
-        // Should not have any admin-only roles, but should have file system manager roles
+        // There is an ADMIN and FILESYSTEM_EDITOR role, should include the FILESYSTEM_EDITOR one (File Editor)
+        // but not the ADMIN one (SCV)
         final String[] expectedNames = new String[] {
-            "Nodes", "Structured Node List", "Assets", "Path Outages", "File Editor"
+                "SNMP MIB Compiler", "JMX Metric Configuration Generator",
+                "Import/Export Node Asset Information", "Send Custom Events",
+                "File Editor"
         };
 
-        List<String> actualNames = getMenuNames(infoMenu);
+        List<String> actualNames = getMenuNames(toolsMenu);
         assertEquals(expectedNames.length, actualNames.size());
         assertThat(actualNames, containsInAnyOrder(expectedNames));
-    }
-
-    private String getResourcePath() {
-        Path p = Paths.get(RESOURCE_PATH);
-        return p.toFile().getAbsolutePath();
     }
 
     private MainMenu parseMainMenu(boolean isZenithConnectEnabled, String[] roles) {
@@ -176,7 +193,7 @@ public class MenuProviderTest {
         List<String> roleList = Arrays.stream(roles).toList();
 
         try {
-            MenuProvider provider = new MenuProvider(getResourcePath(), MENU_TEMPLATE_PATH);
+            MenuProvider provider = new MenuProvider(null, MENU_TEMPLATE_PATH);
 
             provider.setMenuRequestContext(
                     new MenuProviderTest.TestMenuRequestContext(isZenithConnectEnabled, roleList));
@@ -189,7 +206,7 @@ public class MenuProviderTest {
     }
 
     private MenuEntry getMenuEntry(List<MenuEntry> menus, String menuName) {
-        Optional<MenuEntry> menuOpt = menus.stream().filter(m -> m.name.equals(menuName)).findFirst();
+        Optional<MenuEntry> menuOpt = menus.stream().filter(m -> m.name != null && m.name.equals(menuName)).findFirst();
         assertTrue(menuOpt.isPresent());
 
         MenuEntry menuEntry = menuOpt.get();
@@ -224,15 +241,11 @@ public class MenuProviderTest {
         }
 
         public boolean isUserInRole(String role) {
-            return userRoles.isEmpty() || userRoles.stream().anyMatch(r -> r.equals(role));
+            return userRoles.stream().anyMatch(r -> r.equals(role));
         }
 
         public boolean isUserInAnyRole(List<String> roles) {
-            if (userRoles.isEmpty()) {
-                return true;
-            }
-
-            return userRoles.stream().anyMatch(userRole -> roles.stream().anyMatch(r -> r.equals(userRole)));
+            return roles.stream().anyMatch(this::isUserInRole);
         }
 
         public String getFormattedDateTime() {
@@ -257,14 +270,14 @@ public class MenuProviderTest {
                     return this.isZenithConnectEnabled ? "true": "false";
                 }
                 case MenuProvider.ZENITH_CONNECT_BASE_URL_KEY -> {
-                    return "https://zenith.opennms.com";
+                    return this.isZenithConnectEnabled ? "https://zenith.opennms.com" : "";
                 }
                 case MenuProvider.ZENITH_CONNECT_RELATIVE_URL_KEY -> {
-                    return "/zenith-connect";
+                    return this.isZenithConnectEnabled ? "/zenith-connect" : "";
                 }
             }
 
-            return Strings.nullToEmpty(System.getProperty(name, def));
+            return "";
         }
     }
 }

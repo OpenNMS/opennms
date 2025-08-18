@@ -19,11 +19,25 @@
  * language governing permissions and limitations under the
  * License.
  */
-@XmlSchema(
-    namespace="http://www.springframework.org/schema/beans",
-    elementFormDefault = XmlNsForm.QUALIFIED
-)
-package org.opennms.web.rest.support.menu.xml;
 
-import javax.xml.bind.annotation.XmlNsForm;
-import javax.xml.bind.annotation.XmlSchema;
+package org.opennms.netmgt.config;
+
+import org.opennms.netmgt.config.api.MenuTemplateConfig;
+import org.opennms.netmgt.config.menu.MainMenu;
+
+import java.io.FileNotFoundException;
+import java.io.IOException;
+
+public abstract class MenuTemplateManager implements MenuTemplateConfig {
+
+    /** Return a clone of the MainMenu object. This prevents the cached copy from being clobbered by calling code. */
+    public abstract MainMenu cloneMainMenu() throws IOException;
+
+    public final void update() throws IOException {
+        doUpdate();
+    }
+
+    protected abstract void doUpdate() throws IOException, FileNotFoundException;
+    public abstract boolean isUpdateNeeded();
+    public abstract void reload() throws IOException, FileNotFoundException;
+}

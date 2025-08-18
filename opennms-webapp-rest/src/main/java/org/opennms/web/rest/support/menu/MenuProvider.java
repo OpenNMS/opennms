@@ -21,51 +21,42 @@
  */
 package org.opennms.web.rest.support.menu;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.fasterxml.jackson.databind.DatabindException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.opennms.core.resource.Vault;
-import org.opennms.web.api.Authentication;
-import org.opennms.web.rest.support.menu.model.MainMenu;
-import org.opennms.web.rest.support.menu.model.MenuEntry;
-import org.opennms.web.rest.support.menu.model.TileProviderItem;
-
+import org.opennms.netmgt.config.menu.MainMenu;
+import org.opennms.netmgt.config.menu.MenuEntry;
+import org.opennms.netmgt.config.menu.TileProviderItem;
+import org.opennms.netmgt.config.MenuTemplateFactory;
+import org.opennms.netmgt.config.MenuTemplateManager;
 import com.google.common.base.Strings;
-import com.google.common.collect.ImmutableSet;
 
 /**
  * Creates a MainMenu object that is used by the MenuRestService, which provides this data to the
  * new Vue UI Menubar.
  *
- * Reads menu-template.json to determine most of the menu structure. Makes additional modifications
+ * Reads menu-template.json (via MenuConfigFactory) to determine most of the menu structure. Makes additional modifications
  * due to runtime data and role or system property evaluation.
  */
 public class MenuProvider {
-    /** Fully qualified classname of RoleBasedNavBarEntry class, from opennms-webapp. */
-    private final String ROLE_BASED_NAV_BAR_ENTRY_CLASS = "org.opennms.web.navigate.RoleBasedNavBarEntry";
-
-    private final String ADMIN_ROLE_ICON = "fa-cogs";
-
     public static final String ZENITH_CONNECT_ENABLED_KEY = "opennms.zenithConnect.enabled";
     public static final String ZENITH_CONNECT_BASE_URL_KEY = "opennms.zenithConnect.zenithBaseUrl";
     public static final String ZENITH_CONNECT_RELATIVE_URL_KEY = "opennms.zenithConnect.zenithRelativeUrl";
 
-    private static final ImmutableSet<String> ADMIN_ROLES = ImmutableSet.of(
-        Authentication.ROLE_ADMIN,
-        Authentication.ROLE_FILESYSTEM_EDITOR
-    );
-
-    /** Full file path to menu-template.json file, see "applicationContext-cxf-rest-v2.xml" */
+    /**
+     * Full file path to menu-template.json file.
+     * This is only used in tests, otherwise this comes from MenuTemplateFactory.
+     */
     private String menuTemplateFilePath;
 
     /** Context that must be set before using the MenuProvider. */
     private MenuRequestContext menuRequestContext;
+
+    public MenuProvider() {
+    }
 
     public MenuProvider(String dispatcherServletPath, String menuTemplateFilePath) {
         this.menuTemplateFilePath = menuTemplateFilePath;
@@ -75,6 +66,7 @@ public class MenuProvider {
         this.menuRequestContext = context;
     }
 
+    // TODO: remove these when legacy code removed.
     public String getDispatcherServletPath() {
         return "";
     }
@@ -82,6 +74,7 @@ public class MenuProvider {
     public void setDispatcherServletPath(String path) {
     }
 
+    // This is used in tests
     public String getMenuTemplateFilePath() {
         return this.menuTemplateFilePath;
     }
@@ -99,13 +92,10 @@ public class MenuProvider {
     }
 
     public MainMenu generateMenuFromTemplate() throws Exception, IOException {
-        return generateMenuFromTemplate(null);
-    }
+        MenuTemplateFactory.init(menuTemplateFilePath);
+        MenuTemplateManager menuTemplateManager = MenuTemplateFactory.getInstance();
 
-    public MainMenu generateMenuFromTemplate(String menuTemplateFile) throws Exception, IOException {
-        final String templatePath = menuTemplateFile != null ? menuTemplateFile : this.menuTemplateFilePath;
-
-        MainMenu mainMenu = parseMenuTemplate(templatePath);
+        MainMenu mainMenu = menuTemplateManager.cloneMainMenu();
 
         if (mainMenu == null) {
             return null;
@@ -155,7 +145,6 @@ public class MenuProvider {
             mainMenu.selfServiceMenu.name = menuRequestContext.getRemoteUser();
 
             // User notification User menu needs the username in the url
-            // TODO: user should be url encoded
             MenuEntry userMenu = mainMenu.userNotificationMenu.items.stream()
                     .filter(i -> i.id != null && i.id.equals("userNotificationUser"))
                     .findFirst().orElse(null);
@@ -181,34 +170,6 @@ public class MenuProvider {
         }
 
         return mainMenu;
-    }
-
-    public MainMenu parseMenuTemplate() {
-        return parseMenuTemplate(null);
-    }
-
-    public MainMenu parseMenuTemplate(String menuTemplateFile) {
-        final String MENU_TEMPLATE_FILE = "./menu-template.json";
-
-        var objectMapper = new ObjectMapper();
-        MainMenu template = null;
-        String path = menuTemplateFile != null ? menuTemplateFile : MENU_TEMPLATE_FILE;
-
-        try (var fis = new FileInputStream(path)) {
-            template = objectMapper.readValue(fis, MainMenu.class);
-        } catch (FileNotFoundException fnfe) {
-            // TODO: Log error and return null
-            System.out.println("ERROR: FileNotFoundException: " + fnfe.getMessage());
-            return null;
-        } catch (DatabindException dbex) {
-            System.out.println("ERROR: DatabindException: " + dbex.getMessage());
-            return null;
-        } catch (Exception e) {
-            System.out.println("ERROR: Exception: " + e.getMessage());
-            return null;
-        }
-
-        return template;
     }
 
     private void ensureContext() throws Exception {
@@ -248,7 +209,7 @@ public class MenuProvider {
     }
 
     private boolean evaluateRoleBasedMenuEntry(MenuEntry menuEntry) {
-        if (menuEntry.roles != null && !menuEntry.roles.isEmpty()) {
+        if (menuEntry != null && menuEntry.roles != null && !menuEntry.roles.isEmpty()) {
             return menuRequestContext.isUserInAnyRole(menuEntry.roles);
         }
 
@@ -256,7 +217,7 @@ public class MenuProvider {
     }
 
     private boolean evaluateRequiredSystemProperties(MenuEntry menuEntry) {
-        if (menuEntry.requiredSystemProperties != null && !menuEntry.requiredSystemProperties.isEmpty()) {
+        if (menuEntry != null && menuEntry.requiredSystemProperties != null && !menuEntry.requiredSystemProperties.isEmpty()) {
             return menuEntry.requiredSystemProperties.stream()
                     .allMatch(p -> evaluateSystemPropertyMenuEntry(p.name, p.value));
         }
