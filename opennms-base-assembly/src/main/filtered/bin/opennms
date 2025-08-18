@@ -847,7 +847,7 @@ else
 	JAVA_CMD+=("--add-exports" "org.apache.karaf.specs/org.apache.karaf.specs.locator=java.xml,ALL-UNNAMED")
 
 	if detect_fips; then
-	   JAVA_CMD+=("-Dcom.redhat.fips=true")
+	   JAVA_CMD+=("-Dcom.redhat.fips=false")
 	fi
 
 	# see NMS-12261 -- use backwards-compatible locale provider by default

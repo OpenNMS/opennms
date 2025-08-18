@@ -20,7 +20,7 @@ detect_fips() {
 }
 
 if detect_fips; then
-	   FIPS_FLAG="-Dcom.redhat.fips=true"
+	   FIPS_FLAG="-Dcom.redhat.fips=false"
 else
 	   FIPS_FLAG=""
 fi
