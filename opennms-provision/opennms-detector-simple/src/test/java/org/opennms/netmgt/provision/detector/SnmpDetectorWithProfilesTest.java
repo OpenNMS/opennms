@@ -30,6 +30,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Collections;
 import java.util.HashMap;
 
@@ -38,6 +41,7 @@ import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.opennms.core.mate.api.SecureCredentialsVaultScope;
+import org.opennms.core.sysprops.SystemProperties;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.snmp.ProxySnmpAgentConfigFactory;
@@ -75,6 +79,8 @@ public class SnmpDetectorWithProfilesTest {
 
     private DetectRequest m_request;
 
+    private SecureCredentialsVault secureCredentialsVault;
+
     @Before
     public void setUp() throws InterruptedException, IOException {
         MockLogAppender.setupLogging();
@@ -86,7 +92,7 @@ public class SnmpDetectorWithProfilesTest {
         final TemporaryFolder temporaryFolder = new TemporaryFolder();
         temporaryFolder.create();
         final File keystoreFile = new File(temporaryFolder.getRoot(), "scv.jce");
-        final SecureCredentialsVault secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
+        secureCredentialsVault = new JCEKSSecureCredentialsVault(keystoreFile.getAbsolutePath(), "notRealPassword");
         secureCredentialsVault.setCredentials("communityv1", new Credentials("username", "public"));
     }
 
@@ -96,6 +102,8 @@ public class SnmpDetectorWithProfilesTest {
         URL url = getClass().getResource("/org/opennms/netmgt/provision/detector/snmp-config-with-profiles.xml");
         try (InputStream configStream = url.openStream()) {
             SnmpPeerFactory snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension(configStream);
+            // SnmpPeerFactory now loads SCV through static loading. So need to set this scv
+            SnmpPeerFactory.setSecureCredentialsVaultScope(new SecureCredentialsVaultScope(secureCredentialsVault));
             // This is to not override snmp-config from etc
             SnmpPeerFactory.setFile(new File(url.getFile()));
             m_detectorFactory.setAgentConfigFactory(snmpPeerFactory);
@@ -111,6 +119,8 @@ public class SnmpDetectorWithProfilesTest {
         URL url = getClass().getResource("/org/opennms/netmgt/provision/detector/snmp-config-with-invalid-profiles.xml");
         try (InputStream configStream = url.openStream()) {
             SnmpPeerFactory snmpPeerFactory = new ProxySnmpAgentConfigFactoryExtension(configStream);
+            // SnmpPeerFactory now loads SCV through static loading. So need to set this scv
+            SnmpPeerFactory.setSecureCredentialsVaultScope(new SecureCredentialsVaultScope(secureCredentialsVault));
             // This is to not override snmp-config from etc
             SnmpPeerFactory.setFile(new File(url.getFile()));
             m_detectorFactory.setAgentConfigFactory(snmpPeerFactory);

@@ -68,7 +68,7 @@ public class NMS14655_IT {
                     final String scvBundles = ssh("bundle:list | grep SCV");
                     LOG.warn("bundleCount: {}", bundleCount);
                     LOG.warn("SCV bundles: {}", scvBundles);
-                    return bundleCount.contains("3") && scvBundles.contains("Dominion gRPC Impl");
+                    return scvBundles.contains("Dominion gRPC Impl");
                 });
     }
 

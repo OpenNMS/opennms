@@ -282,6 +282,7 @@ public class SnmpPeerFactory implements SnmpAgentConfigFactory {
         return Objects.requireNonNullElseGet(secureCredentialsVaultScope, () -> new SecureCredentialsVaultScope(secureCredentialsVault));
     }
 
+    @VisibleForTesting
     public static void setSecureCredentialsVaultScope(SecureCredentialsVaultScope secureCredentialsVaultScope) {
         SnmpPeerFactory.secureCredentialsVaultScope = secureCredentialsVaultScope;
     }
