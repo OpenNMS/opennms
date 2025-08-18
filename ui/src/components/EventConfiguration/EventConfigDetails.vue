@@ -5,13 +5,9 @@
     </div>
 
     <div v-if="config">
-      <p><strong>Name:</strong> {{ config.filename }}</p>
-      <p><strong>Description:</strong> {{ config.description }}</p>
-      <p><strong>File Order:</strong> {{ config.fileOrder }}</p>
-      <p><strong>Vendor:</strong> {{ config.vendor }}</p>
-      <p><strong>Event Count:</strong> {{ config.eventCount }}</p>
+      <EventConfigFileEditor/>
     </div>
-
+    
     <div v-else>
       <p>No details found.</p>
     </div>
@@ -23,6 +19,7 @@ import { ref, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfSourceMetadata } from '@/types/eventConfig'
+import EventConfigFileEditor from './EventConfigFileEditor.vue'
 
 const route = useRoute()
 const store = useEventConfigStore()
