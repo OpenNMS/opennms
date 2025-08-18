@@ -84,6 +84,7 @@ It contains a bunch of changes, including improvements to menu structure, update
 * Fix login redirecting to css file (Issue https://opennms.atlassian.net/browse/NMS-18175[NMS-18175])
 * Avoid UsageStatisticsReporter throwing error in output.log (Issue https://opennms.atlassian.net/browse/NMS-18177[NMS-18177])
 * SNMP Configuration page has bad formatting (Issue https://opennms.atlassian.net/browse/NMS-18186[NMS-18186])
+* Upgrade snmp4j to 2.8.15 (Issue https://opennms.atlassian.net/browse/NMS-18160[NMS-18160])
 
 === Enhancement
 
