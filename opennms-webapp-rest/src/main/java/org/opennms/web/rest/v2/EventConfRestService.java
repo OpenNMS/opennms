@@ -91,24 +91,21 @@ public class EventConfRestService implements EventConfRestApi {
     }
 
     @Override
-    public Response filterEventConf(String uei, String vendor, String sourceName, SecurityContext securityContext) {
-        boolean noFilters = (uei == null || uei.trim().isEmpty()) &&
-                (vendor == null || vendor.trim().isEmpty()) &&
-                (sourceName == null || sourceName.trim().isEmpty());
+    public Response filterEventConf(String uei, String vendor, String sourceName, int offset, int limit, SecurityContext securityContext) {
 
-        if (noFilters) {
-            // 204 No Content → means request was valid, but there’s nothing to return
-            return Response.noContent().build();
+        // Return 400 Bad Request if offset is negative or limit is less than 1
+        if (offset < 0 || limit < 1) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
         }
+
         // Call the persistence service
-        List<EventConfEvent> results = eventConfPersistenceService.findEventConfByFilters(uei, vendor, sourceName);
+        List<EventConfEvent> results = eventConfPersistenceService.findEventConfByFilters(uei, vendor, sourceName, offset, limit);
         if (results == null || results.isEmpty()) {
             // Return 204 No Content if no matching records found
             return Response.noContent().build();
         }
 
         List<EventConfEventDto> dtoList = EventConfEventDto.fromEntity(results);
-
 
         // Return the matching results
         return Response.ok(dtoList).build();

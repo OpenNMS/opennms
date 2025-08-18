@@ -238,7 +238,7 @@ public class EventConfRestServiceIT {
         assertEquals(Response.Status.OK.getStatusCode(), uploadResp.getStatus());
 
         // Step 2: Call the filter API
-        Response resp = eventConfRestApi.filterEventConf(null, "Cisco", null, securityContext);
+        Response resp = eventConfRestApi.filterEventConf(null, "Cisco", null, 0, 10, securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
 
         List<EventConfEventDto> results = (List<EventConfEventDto>) resp.getEntity();
@@ -254,7 +254,7 @@ public class EventConfRestServiceIT {
     @Transactional
     public void testFilterEventConf_NoFilters_ShouldReturnNoContent() {
         // Call without any filters
-        Response resp = eventConfRestApi.filterEventConf(null, null, null,  securityContext);
+        Response resp = eventConfRestApi.filterEventConf(null, null, null,0, 10,  securityContext);
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), resp.getStatus());
     }
 

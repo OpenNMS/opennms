@@ -40,5 +40,5 @@ public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
 
     void deleteAll(final Collection<EventConfEvent> list);
 
-    List<EventConfEvent> filterEventConf(String uei, String vendor, String sourceName);
+    List<EventConfEvent> filterEventConf(String uei, String vendor, String sourceName, int offset, int limit);
 }

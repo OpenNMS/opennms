@@ -200,7 +200,9 @@ public class EventConfPersistenceServiceIT {
         List<EventConfEvent> filteredResults = eventConfPersistenceService.findEventConfByFilters(
                 null, // uei
                 "Cisco", // vendor
-                null  // sourceName
+                null,  // sourceName
+                0, //offset
+                10 //limit
         );
 
         // Assert
@@ -215,7 +217,7 @@ public class EventConfPersistenceServiceIT {
     @Test
     public void filter_shouldReturnEmptyList_whenNoMatchesFound() {
         List<EventConfEvent> results = eventConfPersistenceService
-                .findEventConfByFilters("nonexistent-uei", "nonexistent-vendor", "nonexistent-source");
+                .findEventConfByFilters("nonexistent-uei", "nonexistent-vendor", "nonexistent-source", 0, 10);
 
         Assert.assertNotNull(results);
         Assert.assertTrue(results.isEmpty());

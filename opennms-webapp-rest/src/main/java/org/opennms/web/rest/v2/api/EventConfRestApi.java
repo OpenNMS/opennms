@@ -21,6 +21,7 @@ import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -50,7 +51,7 @@ public interface EventConfRestApi {
     Response uploadEventConfFiles(@Multipart("upload") List<Attachment> attachments,
                                   @Context SecurityContext securityContext) throws Exception;
 
-    @POST
+    @GET
     @Path("filter")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Operation(
@@ -61,14 +62,16 @@ public interface EventConfRestApi {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "EventConf records retrieved successfully",
                     content = @Content),
-            @ApiResponse(responseCode = "400", description = "No matching EventConf records found",
+            @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
                     content = @Content),
-            @ApiResponse(responseCode = "204", description = "No Content if no matching records found",
+            @ApiResponse(responseCode = "204", description = "No matching EventConf records found for the given criteria",
                     content = @Content)
     })
     Response filterEventConf(
             @QueryParam("uei") String uei,
             @QueryParam("vendor") String vendor,
             @QueryParam("sourceName") String sourceName,
+            @QueryParam("offset") int offset,
+            @QueryParam("limit") int limit,
             @Context SecurityContext securityContext );
 }

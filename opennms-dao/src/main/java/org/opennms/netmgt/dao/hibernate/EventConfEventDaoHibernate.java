@@ -51,26 +51,28 @@ public class EventConfEventDaoHibernate
         return list.isEmpty() ? null : list.get(0);
     }
 
-    public List<EventConfEvent> filterEventConf(String uei, String vendor, String sourceName) {
+    public List<EventConfEvent> filterEventConf(String uei, String vendor, String sourceName, int limit, int offset) {
         List<Object> queryParamList = new ArrayList<>();
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("from EventConfEvent e where 1=1 ");
         if (uei != null && !uei.isEmpty()) {
-            queryBuilder.append(" and e.uei = ? ");
-            queryParamList.add(uei);
+            queryBuilder.append(" and e.uei like ? ");
+            queryParamList.add("%" + uei.trim() + "%"); // contains match
         }
+
         if (vendor != null && !vendor.isEmpty()) {
-            queryBuilder.append(" and e.source.vendor = ? ");
-            queryParamList.add(vendor);
+            queryBuilder.append(" and e.source.vendor like ? ");
+            queryParamList.add("%" + vendor.trim() + "%");
         }
+
         if (sourceName != null && !sourceName.isEmpty()) {
-            queryBuilder.append(" and e.source.name = ? ");
-            queryParamList.add(sourceName);
+            queryBuilder.append(" and e.source.name like ? ");
+            queryParamList.add("%" + sourceName.trim() + "%");
         }
 
         queryBuilder.append(" order by e.createdTime desc ");
 
-        return find(queryBuilder.toString(), queryParamList.toArray());
+        return findWithPagination(queryBuilder.toString(), queryParamList.toArray(), offset, limit);
     }
 
     @Override
