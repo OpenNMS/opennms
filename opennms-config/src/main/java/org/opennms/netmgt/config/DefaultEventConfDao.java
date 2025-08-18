@@ -21,7 +21,9 @@
  */
 package org.opennms.netmgt.config;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -36,6 +38,8 @@ import java.util.stream.Collectors;
 import org.opennms.core.config.api.ConfigReloadContainer;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.dao.api.EventConfEventDao;
+import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.EventLabelComparator;
 import org.opennms.netmgt.xml.eventconf.EventMatchers;
@@ -76,6 +80,8 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	private ConfigReloadContainer<Events> m_extContainer;
 
+	private List<EventConfEvent> confEventList = new ArrayList<>();
+
 	public String getProgrammaticStoreRelativeUrl() {
 		return m_programmaticStoreRelativePath;
 	}
@@ -99,11 +105,20 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		}
 	}
 
+	private List<EventConfEvent>  loadFromDB(){
+		ServiceLookupFactory.withService(EventConfEventDao.class, lookup -> {
+			 confEventList = lookup.findAllEvents();
+		});
+		return confEventList;
+	}
+
 	@Override
 	public void reload() throws DataAccessException {
 		validateConfig(m_configResource);
 		try {
-		    reloadConfig();
+			loadFromDB();
+			processEventFromDb();
+//		    reloadConfig();
 		} catch (Exception e) {
 			throw new DataRetrievalFailureException("Unable to load " + m_configResource, e);
 		}
@@ -259,7 +274,9 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws DataAccessException {
-		loadConfig();
+//		loadConfig();
+		loadFromDB();
+		processEventFromDb();
         initExtensions();
 	}
 
@@ -286,6 +303,23 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 			return m_field.get(matchingEvent);
 		}
 
+	}
+
+	private void processEventFromDb(){
+		Events dbEvents = new Events();
+
+		for (EventConfEvent record : confEventList) {
+			String eventXml = record.getXmlContent(); // From DB column
+			try {
+				Event event = JaxbUtils.unmarshal(Event.class,
+						new ByteArrayInputStream(eventXml.getBytes(StandardCharsets.UTF_8)));
+				dbEvents.addEvent(event);
+			} catch (Exception e) {
+				LOG.warn("Failed to unmarshal event XML for record ID {}: {}", record.getId(), e.getMessage(), e);
+			}
+		}
+
+		m_events = dbEvents;
 	}
 
     private synchronized void reloadConfig() throws DataAccessException {

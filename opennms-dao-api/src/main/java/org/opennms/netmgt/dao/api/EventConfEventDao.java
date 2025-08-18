@@ -39,4 +39,6 @@ public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
     void deleteBySourceId(Long sourceId);
 
     void deleteAll(final Collection<EventConfEvent> list);
+
+     List<EventConfEvent> findAllEvents();
 }
