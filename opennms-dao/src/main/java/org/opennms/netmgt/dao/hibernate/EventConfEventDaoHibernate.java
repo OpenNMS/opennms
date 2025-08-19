@@ -56,18 +56,18 @@ public class EventConfEventDaoHibernate
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("from EventConfEvent e where 1=1 ");
         if (uei != null && !uei.isEmpty()) {
-            queryBuilder.append(" and e.uei like ? ");
-            queryParamList.add("%" + uei.trim() + "%"); // contains match
+            queryBuilder.append(" and lower(e.uei) like ? ");
+            queryParamList.add("%" + uei.trim().toLowerCase() + "%"); // contains match
         }
 
         if (vendor != null && !vendor.isEmpty()) {
-            queryBuilder.append(" and e.source.vendor like ? ");
-            queryParamList.add("%" + vendor.trim() + "%");
+            queryBuilder.append(" and lower(e.source.vendor) like ? ");
+            queryParamList.add("%" + vendor.trim().toLowerCase() + "%");
         }
 
         if (sourceName != null && !sourceName.isEmpty()) {
-            queryBuilder.append(" and e.source.name like ? ");
-            queryParamList.add("%" + sourceName.trim() + "%");
+            queryBuilder.append(" and lower(e.source.name) like ? ");
+            queryParamList.add("%" + sourceName.trim().toLowerCase() + "%");
         }
 
         queryBuilder.append(" order by e.createdTime desc ");
