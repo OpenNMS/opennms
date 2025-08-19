@@ -55,17 +55,17 @@ public class EventConfEventDaoHibernate
         List<Object> queryParamList = new ArrayList<>();
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("from EventConfEvent e where 1=1 ");
-        if (uei != null && !uei.isEmpty()) {
+        if (uei != null && !uei.trim().isEmpty()) {
             queryBuilder.append(" and lower(e.uei) like ? ");
             queryParamList.add("%" + uei.trim().toLowerCase() + "%"); // contains match
         }
 
-        if (vendor != null && !vendor.isEmpty()) {
+        if (vendor != null && !vendor.trim().isEmpty()) {
             queryBuilder.append(" and lower(e.source.vendor) like ? ");
             queryParamList.add("%" + vendor.trim().toLowerCase() + "%");
         }
 
-        if (sourceName != null && !sourceName.isEmpty()) {
+        if (sourceName != null && !sourceName.trim().isEmpty()) {
             queryBuilder.append(" and lower(e.source.name) like ? ");
             queryParamList.add("%" + sourceName.trim().toLowerCase() + "%");
         }
