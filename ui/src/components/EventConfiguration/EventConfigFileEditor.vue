@@ -10,25 +10,17 @@
       <div class="card">
         <TopBar v-if="false" />
         <div class="feather-row">
-          <transition name="fade">
-            <div class="feather-col-3" v-if="true">
-              <FileSidebar />
+          <div class="feather-col-3 ">
+            <div class="save">
+              <FeatherButton primary>Save</FeatherButton>
             </div>
-          </transition>
-          <div :class="`feather-col-${showHelp ? 8 : 9} editor-area`">
+            <div class="reset">
+              <FeatherButton primary>Reset</FeatherButton>
+            </div>
+          </div>
+          <div class="feather-col-9 editor-area">
             <Editor />
           </div>
-          <div>
-             <transition name="fade">
-            <div class="feather-col-4" v-if="showHelp">
-              <Help />
-            </div>
-          </transition>
-            <FeatherButton class="help-btn" text @click="!showHelp">
-              Help
-            </FeatherButton>
-          </div>
-
         </div>
       </div>
     </div>
@@ -36,21 +28,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
 import BreadCrumbs from '../Layout/BreadCrumbs.vue';
 import { breadcrumbItems } from './data';
 import TopBar from '../FileEditor/TopBar.vue';
-import FileSidebar from '../FileEditor/FileSidebar.vue';
 import { FeatherButton } from '@featherds/button';
 import Editor from '../FileEditor/Editor.vue';
-import Help from '../FileEditor/Help.vue';
-
-const showHelp = ref(false)
 </script>
 
 <style scoped lang="scss">
-@import "@featherds/styles/mixins/typography";
+@import "@featherds/dropdown/scss/mixins";
 @import "@featherds/styles/mixins/elevation";
+@import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/themes/variables";
 
 .card {
@@ -64,9 +52,15 @@ const showHelp = ref(false)
   padding: 10px;
 }
 
-.help-btn {
-  position: absolute;
-  right: 30px;
-  top: 0px;
+.save,
+.reset {
+  margin-left: 10px;
+  button {
+    margin-top: 5px;
+    margin-bottom: 0px;
+    width: 40%;
+  }
 }
+
 </style>
+
