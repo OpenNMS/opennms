@@ -51,7 +51,7 @@ public class EventConfEventDaoHibernate
         return list.isEmpty() ? null : list.get(0);
     }
 
-    public List<EventConfEvent> filterEventConf(String uei, String vendor, String sourceName, int limit, int offset) {
+    public List<EventConfEvent> filterEventConf(final String uei, final String vendor, final String sourceName, final int offset, final int limit) {
         List<Object> queryParamList = new ArrayList<>();
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("from EventConfEvent e where 1=1 ");
