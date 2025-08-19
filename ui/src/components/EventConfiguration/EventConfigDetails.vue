@@ -1,7 +1,7 @@
 <template>
   <div class="event-config-container">
     <div class="header">
-      <h1>Home / Event Configuration</h1>
+      <h1>Event Configuration Details</h1>
     </div>
 
     <div class="config-details-box">
@@ -60,20 +60,20 @@ const config = ref<Config | null>({
 })
 </script>
 
-<style scoped>
+<style scoped lang="scss">
+@import "@featherds/styles/mixins/typography";
+@import "@featherds/styles/themes/variables";
+
 .event-config-container {
   margin: 0 auto;
-}
+  padding: 20px;
 
-.header h1 {
-  font-size: 18px;
-  font-weight: normal;
+}
+.header {
   margin-bottom: 20px;
-  color: #333;
 }
-
 .config-details-box {
-  border: 1px solid #ddd;
+  border: 1px solid var($primary);
   border-radius: 4px;
   padding: 20px;
   background: white;
@@ -120,7 +120,7 @@ const config = ref<Config | null>({
 }
 
 .editor-section {
-  border: 1px solid #ddd;
+  border-bottom: 1px solid var($primary);
   border-radius: 4px;
   padding: 20px;
   background: white;
