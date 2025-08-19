@@ -1,0 +1,56 @@
+<blueprint
+        xmlns="http://www.osgi.org/xmlns/blueprint/v1.0.0"
+        xmlns:cm="http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="
+      http://www.osgi.org/xmlns/blueprint/v1.0.0
+        http://www.osgi.org/xmlns/blueprint/v1.0.0/blueprint.xsd
+      http://aries.apache.org/blueprint/xmlns/blueprint-cm/v1.3.0
+        http://aries.apache.org/schemas/blueprint-cm/blueprint-cm-1.3.0.xsd">
+
+
+    <reference id="messageDispatcherFactory"
+               interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory"/>
+    <reference id="distPollerDao"
+               interface="org.opennms.netmgt.dao.api.DistPollerDao"/>
+    <reference id="telemetryRegistry"
+               interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry"/>
+
+    <bean id="openconfigDefinitionMap" class="java.util.HashMap">
+        <argument>
+            <map key-type="java.lang.String" value-type="java.lang.String">
+                <entry key="name"         value="OpenConfig"/>
+                <entry key="class-name"   value="org.opennms.netmgt.telemetry.protocols.openconfig.connector.OpenConfigConnector"/>
+                <entry key="queue"        value="OpenConfig"/>
+                <entry key="service-name" value="OpenConfig"/>
+            </map>
+        </argument>
+    </bean>
+
+        <bean id="connectorListener"
+              class="org.opennms.netmgt.telemetry.connectors.ConnectorStarter"
+              init-method="start"
+              destroy-method="stop">
+            <property name="configMap" ref="openconfigDefinitionMap"/>
+            <property name="messageDispatcherFactory" ref="messageDispatcherFactory"/>
+            <property name="distPollerDao" ref="distPollerDao"/>
+            <property name="telemetryRegistry" ref="telemetryRegistry"/>
+            <property name="bundleContext" ref="blueprintBundleContext"/>
+        </bean>
+
+
+        <reference-list id="twinSubscriberRef" interface="org.opennms.core.ipc.twin.api.TwinSubscriber" availability="optional">
+            <reference-listener bind-method="bind" unbind-method="unbind" ref="connectorListener"/>
+        </reference-list>
+
+        <service interface="org.osgi.service.cm.ManagedService"
+                 ref="connectorListener">
+            <service-properties>
+                <entry key="service.pid"
+                       value="org.opennms.features.telemetry.openconfig"/>
+            </service-properties>
+        </service>
+
+</blueprint>
+
+

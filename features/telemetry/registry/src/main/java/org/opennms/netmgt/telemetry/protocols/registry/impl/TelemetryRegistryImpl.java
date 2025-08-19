@@ -128,6 +128,11 @@ public class TelemetryRegistryImpl implements TelemetryRegistry {
         this.parserRegistryDelegate = parserRegistryDelegate;
     }
 
+    public void setConnectorRegistryDelegate(TelemetryServiceRegistry<ConnectorDefinition, Connector> connectorRegistryDelegate) {
+        this.connectorRegistryDelegate = connectorRegistryDelegate;
+    }
+
+
     @Override
     public MetricRegistry getMetricRegistry() {
         return metricRegistry;

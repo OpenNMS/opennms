@@ -25,6 +25,11 @@
         <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="parserRegistry" />
     </reference-list>
 
+    <bean id="connectorRegistry" class="org.opennms.netmgt.telemetry.protocols.registry.impl.TelemetryConnectorRegistryImpl" />
+    <reference-list interface="org.opennms.netmgt.telemetry.api.receiver.ConnectorFactory" availability="optional">
+        <reference-listener bind-method="onBind" unbind-method="onUnbind" ref="connectorRegistry" />
+    </reference-list>
+
     <!-- Metrics -->
     <bean id="telemetryMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
     <service ref="telemetryMetricRegistry" interface="com.codahale.metrics.MetricSet">
@@ -50,6 +55,7 @@
         <property name="listenerRegistryDelegate" ref="listenerRegistry"/>
         <property name="parserRegistryDelegate" ref="parserRegistry"/>
         <property name="metricRegistry" ref="telemetryMetricRegistry"/>
+        <property name="connectorRegistryDelegate" ref="connectorRegistry"/>
     </bean>
     <service interface="org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry" ref="telemetryRegistry" />
 </blueprint>
