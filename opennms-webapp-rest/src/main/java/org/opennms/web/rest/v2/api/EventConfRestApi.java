@@ -16,10 +16,12 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
+import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PATCH;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
@@ -46,4 +48,18 @@ public interface EventConfRestApi {
     })
     Response uploadEventConfFiles(@Multipart("upload") List<Attachment> attachments,
                                   @Context SecurityContext securityContext) throws Exception;
+
+    @PATCH
+    @Path("/sources/status")
+    @Produces("application/json")
+    @Operation(
+            summary = "Enable/Disable EventConf Sources",
+            description = "Enable or disable one or more sources (and optionally cascade to their events)",
+            operationId = "enableDisableEventConfSources"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
+    Response enableDisableEventConfSources(final EventConfSrcEnableDisablePayload eventConfSrcEnableDisablePayload, @Context SecurityContext securityContext) throws Exception;
 }

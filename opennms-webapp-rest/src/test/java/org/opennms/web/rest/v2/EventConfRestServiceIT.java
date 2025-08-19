@@ -29,6 +29,11 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.api.EventConfEventDao;
+import org.opennms.netmgt.dao.api.EventConfSourceDao;
+import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfSource;
+import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,12 +46,12 @@ import javax.ws.rs.core.SecurityContext;
 import java.io.InputStream;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -69,6 +74,12 @@ public class EventConfRestServiceIT {
     private EventConfRestApi eventConfRestApi;
 
     private SecurityContext securityContext;
+
+    @Autowired
+    private EventConfSourceDao eventConfSourceDao;
+
+    @Autowired
+    private EventConfEventDao eventConfEventDao;
 
     @Before
     public void setUp() {
@@ -212,4 +223,47 @@ public class EventConfRestServiceIT {
         assertEquals(filename, errors.get(0).get("file"));
         assertTrue(errors.get(0).get("error").toString().contains("Exception"));
     }
+
+    @Test
+    public void testEventConfSourcesEnabledDisabled() throws Exception {
+        String[] filenames = {"eventconf.xml", "opennms.alarm.events.xml", "Cisco.airespace.xml"};
+        List<Attachment> attachments = new ArrayList<>();
+
+        for (final var name : filenames) {
+            final var path = "/EVENTS-CONF/" + name;
+            final var is = getClass().getResourceAsStream(path);
+            Attachment att = mock(Attachment.class);
+            ContentDisposition cd = mock(ContentDisposition.class);
+            when(cd.getParameter("filename")).thenReturn(name);
+            when(att.getContentDisposition()).thenReturn(cd);
+            when(att.getObject(InputStream.class)).thenReturn(is);
+            attachments.add(att);
+        }
+        eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        List<Long> sourcesIds = eventConfSourceDao.findAll().stream().map(EventConfSource::getId).toList();
+        // Disable eventConfSources and eventConfEvents.
+        EventConfSrcEnableDisablePayload eventConfSrcDisablePayload = new EventConfSrcEnableDisablePayload(false, true, sourcesIds);
+        eventConfRestApi.enableDisableEventConfSources(eventConfSrcDisablePayload, securityContext);
+        List<EventConfSource> eventConfSources = eventConfSourceDao.findAll();
+        assertTrue(eventConfSources.stream().noneMatch(EventConfSource::getEnabled));
+        List<EventConfEvent> eventConfEvents = eventConfEventDao.findAll();
+        assertTrue(eventConfEvents.stream().noneMatch(EventConfEvent::getEnabled));
+
+        // Enable eventConfSources and eventConfEvents.
+        EventConfSrcEnableDisablePayload eventConfSrcEnablePayload = new EventConfSrcEnableDisablePayload(true, true, sourcesIds);
+        eventConfRestApi.enableDisableEventConfSources(eventConfSrcEnablePayload, securityContext);
+        List<EventConfSource> enableEventConfSources = eventConfSourceDao.findAll();
+        assertFalse(enableEventConfSources.stream().noneMatch(EventConfSource::getEnabled));
+        List<EventConfEvent> enableEventConfEvents = eventConfEventDao.findAll();
+        assertFalse(enableEventConfEvents.stream().noneMatch(EventConfEvent::getEnabled));
+    }
+
+    @Test
+    public void testEnableDisableEventConfSources_InvalidPayload() throws Exception {
+        EventConfSrcEnableDisablePayload payload = new EventConfSrcEnableDisablePayload(null, null, Collections.emptyList());
+        Response response = eventConfRestApi.enableDisableEventConfSources(payload, null);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        assertTrue(((String) response.getEntity()).contains("enabled"));
+    }
+
 }

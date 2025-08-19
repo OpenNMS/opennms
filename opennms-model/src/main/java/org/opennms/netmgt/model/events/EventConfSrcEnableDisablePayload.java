@@ -19,33 +19,32 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.model.events;
 
-import org.opennms.netmgt.model.EventConfSource;
-
-import java.util.Collection;
 import java.util.List;
-import java.util.Map;
 
-public interface EventConfSourceDao extends OnmsDao<EventConfSource, Long> {
+public class EventConfSrcEnableDisablePayload {
+    private final Boolean enabled;
+    private final Boolean cascadeToEvents;
+    private final List<Long> sourceIds;
 
-    EventConfSource get(Long id);
+    public EventConfSrcEnableDisablePayload(Boolean enabled, Boolean cascadeToEvents, List<Long> sourceIds) {
+        this.enabled = enabled;
+        this.cascadeToEvents = cascadeToEvents;
+        this.sourceIds = sourceIds;
+    }
 
-    EventConfSource findByName(String name);
+    public Boolean getEnabled() {
+        return enabled;
+    }
 
-    List<EventConfSource> findAllEnabled();
+    public List<Long> getSourceIds() {
+        return sourceIds;
+    }
 
-    List<EventConfSource> findByVendor(String vendor);
+    public Boolean getCascadeToEvents() {
+        return cascadeToEvents;
+    }
 
-    List<EventConfSource> findAllByFileOrder();
 
-    Map<Long, String> getIdToNameMap();
-
-    void saveOrUpdate(EventConfSource source);
-
-    void delete(EventConfSource source);
-
-    void deleteAll(final Collection<EventConfSource> list);
-
-    void updateEnabledFlag(final Collection<Long> sourceIds, boolean enabled, boolean cascadeToEvents);
 }

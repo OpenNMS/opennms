@@ -26,12 +26,14 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
+import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.io.InputStream;
@@ -87,6 +89,34 @@ public class EventConfRestService implements EventConfRestApi {
 
         return Response.ok(Map.of("success", successList, "errors", errorList)).build();
     }
+
+    @Override
+    @Transactional
+    public Response enableDisableEventConfSources(final EventConfSrcEnableDisablePayload payload, SecurityContext securityContext) throws Exception {
+
+        if (payload == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
+        }
+
+        if (payload.getEnabled() == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("The 'enabled' flag must be provided (true/false).").build();
+        }
+
+        if (payload.getSourceIds() == null || payload.getSourceIds().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("At least one sourceId must be provided.").build();
+        }
+
+        try {
+            eventConfPersistenceService.updateSourceAndEventEnabled(payload);
+            return Response.ok().entity("EventConf sources updated successfully.").build();
+
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND).entity("One or more sourceIds were not found: " + ex.getMessage()).build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+        }
+    }
+
 
     private List<String> determineFileOrder(final Attachment eventconfXmlAttachment, final Set<String> uploadedFiles) {
         List<String> ordered = new ArrayList<>();
