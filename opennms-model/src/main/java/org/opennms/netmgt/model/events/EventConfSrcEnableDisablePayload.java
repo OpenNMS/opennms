@@ -24,14 +24,30 @@ package org.opennms.netmgt.model.events;
 import java.util.List;
 
 public class EventConfSrcEnableDisablePayload {
-    private final Boolean enabled;
-    private final Boolean cascadeToEvents;
-    private final List<Long> sourceIds;
+    private Boolean enabled;
+    private Boolean cascadeToEvents;
+    private List<Long> sourceIds;
+
+    public EventConfSrcEnableDisablePayload() {
+
+    }
 
     public EventConfSrcEnableDisablePayload(Boolean enabled, Boolean cascadeToEvents, List<Long> sourceIds) {
         this.enabled = enabled;
         this.cascadeToEvents = cascadeToEvents;
         this.sourceIds = sourceIds;
+    }
+
+    public void setCascadeToEvents(Boolean cascadeToEvents) {
+        this.cascadeToEvents = cascadeToEvents;
+    }
+
+    public void setSourceIds(List<Long> sourceIds) {
+        this.sourceIds = sourceIds;
+    }
+
+    public void setEnabled(Boolean enabled) {
+        this.enabled = enabled;
     }
 
     public Boolean getEnabled() {

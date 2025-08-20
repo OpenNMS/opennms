@@ -52,6 +52,7 @@ public interface EventConfRestApi {
     @PATCH
     @Path("/sources/status")
     @Produces("application/json")
+    @Consumes("application/json")
     @Operation(
             summary = "Enable/Disable EventConf Sources",
             description = "Enable or disable one or more sources (and optionally cascade to their events)",
@@ -61,5 +62,5 @@ public interface EventConfRestApi {
             @ApiResponse(responseCode = "200", description = "Updated successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request")
     })
-    Response enableDisableEventConfSources(final EventConfSrcEnableDisablePayload eventConfSrcEnableDisablePayload, @Context SecurityContext securityContext) throws Exception;
+    Response enableDisableEventConfSources(EventConfSrcEnableDisablePayload eventConfSrcEnableDisablePayload, @Context SecurityContext securityContext) throws Exception;
 }
