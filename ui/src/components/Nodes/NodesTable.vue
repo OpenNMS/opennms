@@ -16,7 +16,7 @@
           </FeatherButton>
           <FeatherButton
             secondary
-            @click="() => nodeStructureStore.clearAllFilters()"
+            @click="() => nodeStructureStore.clearAllFiltersAndSelections()"
           >
             Clear Filters
           </FeatherButton>
@@ -31,7 +31,7 @@
               <FeatherInput
                 v-model="currentSearch"
                 @update:modelValue="searchFilterHandler"
-                label="Search node label"
+                label="Search node label or full IP address"
               >
                 <template #pre>
                   <FeatherIcon :icon="Search" />
@@ -48,7 +48,7 @@
             </div>
           </div>
           <div class="chip-container">
-            <FeatherChipList label="Tags">
+            <FeatherChipList label="SearchParams">
               <FeatherChip
                 v-for="(cat, index) in nodeStructureStore.selectedCategories"
                 :key="`cat-${index}`"
@@ -74,7 +74,7 @@
                     @click="removeItem(flow, FilterTypeEnum.Flow)"
                   />
                 </template>
-                {{ `FLow: ${flow._text}` }}
+                {{ `Flow: ${flow._text}` }}
               </FeatherChip>
 
               <FeatherChip
@@ -85,10 +85,23 @@
                   <FeatherIcon
                     :icon="cancelIcon"
                     class="icon"
-                    @click="removeItem(loc, FilterTypeEnum.Location)"
+                    @click="removeItem(loc, FilterTypeEnum.MonitoringLocation)"
                   />
                 </template>
                 {{ `Location: ${loc.name}` }}
+              </FeatherChip>
+
+              <FeatherChip
+                v-if="hasExtendedSearchParams"
+              >
+                <template #icon>
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                    @click="removeExtendedSearchItem"
+                  />
+                </template>
+                {{ 'Extended Search' }}
               </FeatherChip>
             </FeatherChipList>
           </div>
@@ -104,6 +117,7 @@
           <table
             :class="tableCssClasses"
             summary="Nodes"
+            v-if="nodes.length > 0"
           >
             <thead>
               <tr>
@@ -248,10 +262,16 @@
               </tr>
             </tbody>
           </table>
+          <EmptyList
+            v-else
+            :content="emptyListContent"
+            data-test="empty-list"
+          />
         </div>
       </div>
     </div>
     <FeatherPagination
+      v-if="nodeStore.totalCount > 0"
       v-model="pageNumber"
       :pageSize="queryParameters.limit"
       :total="nodeStore.totalCount"
@@ -311,13 +331,14 @@ import NodeTooltipCell from './NodeTooltipCell.vue'
 import { useNodeExport } from './hooks/useNodeExport'
 import { useNodeQuery } from './hooks/useNodeQuery'
 import { getTableCssClasses } from './utils'
+import EmptyList from '../Common/EmptyList.vue'
 
 const menuStore = useMenuStore()
 const nodeStructureStore = useNodeStructureStore()
 const nodeStore = useNodeStore()
 const { showSnackBar } = useSnackbar()
 const { generateBlob, generateDownload, getExportData } = useNodeExport()
-const { buildUpdatedNodeStructureQueryParameters } = useNodeQuery()
+const { buildUpdatedNodeStructureQueryParameters, hasAnyExtendedSearchValues } = useNodeQuery()
 const visibleColumnStart = ref(0)
 const visibleColumnsCount = 5
 
@@ -379,7 +400,6 @@ const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 
 const dialogVisible = ref(false)
 const dialogNode = ref<Node>()
-// const preferencesVisible = ref(false)
 const tableCssClasses = computed<string[]>(() => getTableCssClasses(nodeStructureStore.columns))
 const queryParameters = ref<QueryParameters>(nodeStore.nodeQueryParameters)
 const pageNumber = ref(1)
@@ -457,10 +477,6 @@ const onNodeInfo = (node: Node) => {
   dialogVisible.value = true
 }
 
-// const openPreferences = () => {
-//   preferencesVisible.value = true
-// }
-
 const computeNodeLink = (nodeId: number | string) => {
   return `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}${nodeId}`
 }
@@ -473,6 +489,10 @@ const onNodeLinkClick = (nodeId: number | string) => {
   window.location.assign(computeNodeLink(nodeId))
 }
 
+const hasExtendedSearchParams = computed(() => {
+  return hasAnyExtendedSearchValues(nodeStructureStore.queryFilter.extendedSearch)
+})
+
 const removeItem = (item: IAutocompleteItemType, type: FilterTypeEnum) => {
   switch (type) {
     case FilterTypeEnum.Category:
@@ -481,12 +501,16 @@ const removeItem = (item: IAutocompleteItemType, type: FilterTypeEnum) => {
     case FilterTypeEnum.Flow:
       nodeStructureStore.removeFlow(item)
       break
-    case FilterTypeEnum.Location:
-      nodeStructureStore.removeLocation(item)
+    case FilterTypeEnum.MonitoringLocation:
+      nodeStructureStore.removeMonitoringLocation(item)
       break
     default:
       console.warn(`Unknown filter type: ${type}`)
   }
+}
+
+const removeExtendedSearchItem = () => {
+  nodeStructureStore.removeExtendedSearch()
 }
 
 const updateQuery = (options?: { orderBy?: string, order?: SORT }) => {
@@ -506,6 +530,10 @@ const updateQuery = (options?: { orderBy?: string, order?: SORT }) => {
   queryParameters.value = updatedParams
 
   nodeStore.getNodes(updatedParams, true)
+}
+
+const emptyListContent = {
+  msg: 'No results found.'
 }
 
 watch([() => nodeStructureStore.queryFilter], () => {

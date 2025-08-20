@@ -20,7 +20,7 @@
         label="Categories"
         type="multi"
         v-model="selectedFilters.categories"
-        :loading="loading"
+        :loading="categoriesLoading"
         :results="categoryResults"
         @search="handleCategorySearch"
         :allow-new="false"
@@ -74,13 +74,23 @@
 </template>
 
 <script lang="ts" setup>
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { FeatherAutocomplete, IAutocompleteItemType } from '@featherds/autocomplete'
 import { FeatherDrawer } from '@featherds/drawer'
 import { FeatherButton } from '@featherds/button'
 import { ref } from 'vue'
-import { FeatherAutocomplete, IAutocompleteItemType } from '@featherds/autocomplete'
-import { MonitoringLocation } from '@/types'
 import ExtendedSearchPanel from './ExtendedSearchPanel.vue'
+import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+
+const searchTimeout = ref<number>(-1)
+const categoriesLoading = ref(false)
+const categoryResults = ref([] as IAutocompleteItemType[])
+const flowsLoading = ref(false)
+const flowResults = ref<IAutocompleteItemType[]>([])
+const locationsLoading = ref(false)
+const locationResults = ref<IAutocompleteItemType[]>([])
+// we already have items in memory, don't really need to use setTimeout at all,
+// but will keep it just to have the pattern. Timeout can be minimal (5ms)
+const TIMEOUT = 5
 
 const nodeStructureStore = useNodeStructureStore()
 const selectedFilters = reactive({
@@ -89,24 +99,8 @@ const selectedFilters = reactive({
   locations: [] as IAutocompleteItemType[]
 })
 
-const categoryResults = ref([] as IAutocompleteItemType[])
-const loading = ref(false)
-const searchTimeout = ref<number>(-1)
-const flowsLoading = ref(false)
-const flowResults = ref<IAutocompleteItemType[]>([])
-const locationsLoading = ref(false)
-const locationResults = ref<IAutocompleteItemType[]>([])
-
-watch(() => nodeStructureStore.drawerState.visible, (visible) => {
-  if (visible) {
-    selectedFilters.categories = [...nodeStructureStore.selectedCategories]
-    selectedFilters.flows = [...nodeStructureStore.selectedFlows]
-    selectedFilters.locations = [...nodeStructureStore.selectedLocations]
-  }
-})
-
 const handleCategorySearch = (query: string) => {
-  loading.value = true
+  categoriesLoading.value = true
   clearTimeout(searchTimeout.value)
 
   searchTimeout.value = window.setTimeout(() => {
@@ -123,8 +117,8 @@ const handleCategorySearch = (query: string) => {
         _value: category.id
       } as IAutocompleteItemType))
     categoryResults.value = filteredCategories
-    loading.value = false
-  }, 500)
+    categoriesLoading.value = false
+  }, TIMEOUT)
 }
 
 const handleFlowSearch = (query: string) => {
@@ -137,7 +131,7 @@ const handleFlowSearch = (query: string) => {
       { _text: 'Ingress', _value: 'lastIngressFlow' }
     ].filter(flow => flow._text.toLowerCase().includes(query.toLowerCase()))
     flowsLoading.value = false
-  }, 500)
+  }, TIMEOUT)
 }
 
 const handleLocationSearch = (query: string) => {
@@ -150,16 +144,11 @@ const handleLocationSearch = (query: string) => {
       .map(location => ({
         _text: location.name,
         _value: location.name,
-        longitude: location.longitude,
-        latitude: location.latitude,
-        geolocation: location.geolocation,
-        tags: location.tags,
-        priority: location.priority,
-        'location-name': location['location-name'],
-        'monitoring-area': location['monitoring-area']
+        name: location.name
       }))
+
     locationsLoading.value = false
-  }, 500)
+  }, TIMEOUT)
 }
 
 const updateFilter = (key: keyof typeof selectedFilters, items: IAutocompleteItemType[]) => {
@@ -167,23 +156,22 @@ const updateFilter = (key: keyof typeof selectedFilters, items: IAutocompleteIte
 }
 
 const applySelectedFilters = () => {
-  nodeStructureStore.setSelectedCategories(selectedFilters.categories)
-  nodeStructureStore.setSelectedFlows(selectedFilters.flows)
-  const monitoringLocations = selectedFilters.locations.map(item => ({
-    name: item._text,
-    longitude: item.longitude,
-    latitude: item.latitude,
-    geolocation: item.geolocation,
-    tags: item.tags,
-    priority: item.priority,
-    'location-name': item['location-name'],
-    'monitoring-area': item['monitoring-area']
-  } as MonitoringLocation))
+  nodeStructureStore.updateSelectedCategories(selectedFilters.categories)
+  nodeStructureStore.updateSelectedFlows(selectedFilters.flows)
 
-  nodeStructureStore.setSelectedLocations(monitoringLocations)
+  nodeStructureStore.updateSelectedMonitoringLocations(selectedFilters.locations)
   nodeStructureStore.closeInstancesDrawerModal()
 }
+
+watch(() => nodeStructureStore.drawerState.visible, (visible) => {
+  if (visible) {
+    selectedFilters.categories = [...nodeStructureStore.selectedCategories]
+    selectedFilters.flows = [...nodeStructureStore.selectedFlows]
+    selectedFilters.locations = [...nodeStructureStore.selectedMonitoringLocations]
+  }
+})
 </script>
+
 <style lang="scss" scoped>
 @import "@featherds/table/scss/table";
 @import "@featherds/styles/mixins/elevation";
@@ -192,6 +180,8 @@ const applySelectedFilters = () => {
 
 .feather-drawer-custom-padding {
   padding: 20px;
+  height: 100%;
+  overflow: auto;
 }
 
 .spacer-large {
@@ -225,4 +215,3 @@ const applySelectedFilters = () => {
   }
 }
 </style>
-
