@@ -273,8 +273,8 @@ public class EventConfSourceDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testLoadAndPersistMultipleEventConfFilesAndUpdateEnabledFlag() throws Exception {
-        String[] xmlFiles = {"eventconf-test-1.xml",  // has 9 events
-                "eventconf-test-2.xml"   // assume it has 3 events
+        String[] xmlFiles = {"eventconf-test-1.xml",
+                "eventconf-test-2.xml"
         };
 
         int totalExpectedEventCount = 0;
@@ -283,7 +283,6 @@ public class EventConfSourceDaoIT implements InitializingBean {
         for (int i = 0; i < xmlFiles.length; i++) {
             String file = xmlFiles[i];
 
-            // Create EventConfSource per file
             EventConfSource source = new EventConfSource();
             source.setName("test-source-" + i);
             source.setEnabled(true);
@@ -304,7 +303,6 @@ public class EventConfSourceDaoIT implements InitializingBean {
             m_dao.flush();
             allSourceIds.add(source.getId());
 
-            // Persist events
             for (var xmlEvent : events.getEvents()) {
                 EventConfEvent jpaEvent = new EventConfEvent();
                 jpaEvent.setUei(xmlEvent.getUei());
@@ -320,42 +318,34 @@ public class EventConfSourceDaoIT implements InitializingBean {
             }
             m_eventDao.flush();
 
-            // Verify events for this source
             List<EventConfEvent> savedForSource = m_eventDao.findBySourceId(source.getId());
             assertEquals("Event count mismatch for " + file, eventCount, savedForSource.size());
         }
 
-        // Verify all events persisted
         List<EventConfEvent> allEvents = m_eventDao.findAll();
         assertEquals("Total event count mismatch across all files", totalExpectedEventCount, allEvents.size());
 
-        // ✅ Now test the updateEnabledFlag method
-        // 1. Disable sources WITHOUT cascading to events
         m_dao.updateEnabledFlag(allSourceIds, false, false);
         sessionFactory.getCurrentSession().clear();
         for (Long sourceId : allSourceIds) {
             final var source = m_dao.get(sourceId);
             assertFalse("Source should be disabled", source.getEnabled());
 
-            // Events should remain enabled
             List<EventConfEvent> events = m_eventDao.findBySourceId(sourceId);
             assertFalse("Events should still be enabled when cascade=false", events.isEmpty() && events.stream().anyMatch(EventConfEvent::getEnabled));
         }
 
-        // 2. Enable sources WITH cascading to events
         m_dao.updateEnabledFlag(allSourceIds, true, true);
         sessionFactory.getCurrentSession().clear();
-        for (final var  sourceId : allSourceIds) {
+        for (final var sourceId : allSourceIds) {
             final var source = m_dao.get(sourceId);
             assertTrue("Source should be enabled", source.getEnabled());
 
-            // Events should also be enabled
             List<EventConfEvent> events = m_eventDao.findBySourceId(sourceId);
             assertFalse("Events should not be empty", events.isEmpty());
             assertTrue("All events should be enabled when cascade=true", events.stream().allMatch(EventConfEvent::getEnabled));
         }
     }
-
 
 
     @Override
