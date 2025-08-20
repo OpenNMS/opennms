@@ -15,5 +15,6 @@ export type EventConfigState = {
   eventConfigs: EventConfSourceMetadata[],
   eventConfigPagination: Pagination,
   selectedEventConfig: EventConfSourceMetadata | null,
-  isLoading: boolean
+  isLoading: boolean,
+  activeTab: number
 }

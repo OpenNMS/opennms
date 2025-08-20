@@ -11,7 +11,8 @@ export const useEventConfigStore = defineStore('eventConfigStore', {
       total: 0
     },
     selectedEventConfig: null,
-    isLoading: false
+    isLoading: false,
+    activeTab: 0
   }),
   actions: {
     async fetchEventConfigs() {
@@ -33,6 +34,9 @@ export const useEventConfigStore = defineStore('eventConfigStore', {
     },
     onEventConfigPageSizeChange(pageSize: number) {
       this.eventConfigPagination.pageSize = pageSize
+    },
+    resetActiveTab(){
+      this.activeTab = 0
     }
   }
 })

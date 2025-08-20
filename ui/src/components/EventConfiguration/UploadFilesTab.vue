@@ -40,13 +40,20 @@
             data-test="event-conf-upload-input"
             ref="eventConfFileInput"
           />
-          <FeatherButton @click="openFileDialog"> Choose files to upload </FeatherButton>
+          <FeatherButton
+            @click="openFileDialog"
+            :disabled="isLoading"
+          >
+            Choose files to upload
+          </FeatherButton>
           <FeatherButton
             primary
-            :disabled="eventFiles.length === 0"
+            :disabled="eventFiles.length === 0 || isLoading"
+            @click="uploadFiles"
             data-test="upload-button"
           >
-            Upload
+            <FeatherSpinner v-if="isLoading" />
+            <span v-else>Upload Files</span>
           </FeatherButton>
         </div>
       </div>
@@ -55,14 +62,16 @@
 </template>
 
 <script setup lang="ts">
+import { uploadEventConfigFiles } from '@/services/eventConfigService'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Delete from '@featherds/icon/action/Delete'
 import Text from '@featherds/icon/file/Text'
-import { ref } from 'vue'
+import { FeatherSpinner } from '@featherds/progress'
 
 const eventConfFileInput = ref<HTMLInputElement | null>(null)
 const eventFiles = ref<File[]>([])
+const isLoading = ref(false)
 
 const handleEventConfUpload = (e: Event) => {
   const input = e.target as HTMLInputElement
@@ -79,6 +88,28 @@ const openFileDialog = () => {
 
 const removeFile = (index: number) => {
   eventFiles.value.splice(index, 1)
+}
+
+const uploadFiles = async () => {
+  // You can add further processing of the files here, like uploading them to a server
+  if (eventFiles.value.length === 0) {
+    console.warn('No files to upload')
+    return
+  }
+  if (!eventFiles.value.every(file => file.name.endsWith('.xml'))) {
+    console.error('All files must be XML files')
+    return
+  }
+  isLoading.value = true
+  try {
+    await uploadEventConfigFiles(eventFiles.value)
+  } catch (err) {
+    console.error(err)
+  } finally {
+    isLoading.value = false
+    eventFiles.value = [] // Clear the files after upload
+    eventConfFileInput.value!.value = '' // Reset the input field
+  }
 }
 </script>
 
@@ -151,6 +182,11 @@ const removeFile = (index: number) => {
       button {
         width: 100%;
         margin-left: 0;
+
+        :deep(.spinner) {
+          height: 1.5rem !important;
+          width: 1.5rem !important;
+        }
       }
     }
   }
