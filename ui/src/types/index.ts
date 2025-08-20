@@ -43,21 +43,21 @@ export interface SearchResultResponse {
 }
 
 export interface SearchResultMatch {
-    label: string;
-    value: string;
+  label: string
+  value: string
 }
 
 export interface SearchResultItem {
-    identifier: string
-    icon: string;
-    label: string;
-    url: string;
-    properties: any;
-    matches: SearchResultMatch[];
-    weight: number;
+  identifier: string
+  icon: string
+  label: string
+  url: string
+  properties: any
+  matches: SearchResultMatch[]
+  weight: number
 }
 
-export type SearchResultsByContext = Array<{label: string, results: SearchResultResponse[]}>
+export type SearchResultsByContext = Array<{ label: string; results: SearchResultResponse[] }>
 
 export interface ApiResponse {
   count: number
@@ -126,7 +126,7 @@ export interface Node {
   createTime: number
   foreignId: string
   foreignSource: string
-  lastEgressFlow: number      // timestamp
+  lastEgressFlow: number // timestamp
   lastIngressFlow: number
   labelSource: string
   lastCapabilitiesScan: string
@@ -199,8 +199,13 @@ export interface MonitoringLocation {
   priority: number
   'location-name': string
   'monitoring-area': string
-  name: string    // mapped from 'location-name' after API GET call response
-  area: string    // mapped from 'monitoring-area' after API GET call response
+  name: string // mapped from 'location-name' after API GET call response
+  area: string // mapped from 'monitoring-area' after API GET call response
+}
+
+export interface DrawerState {
+  visible: boolean
+  isAdvanceFilterModal: boolean
 }
 
 export interface SnmpInterface {
@@ -591,4 +596,21 @@ export interface IpInterfaceInfo {
   managed: boolean
   primaryLabel: string
   primaryType: string
+}
+
+export enum FilterTypeEnum {
+  Category = 'category',
+  Flow = 'flow',
+  Location = 'location'
+}
+
+export enum Direction {
+  Left = 'left',
+  Right = 'right'
+}
+
+export type Pagination = {
+  page: number
+  pageSize: number
+  total: number
 }

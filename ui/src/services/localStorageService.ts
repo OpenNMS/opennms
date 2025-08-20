@@ -58,7 +58,9 @@ const loadDefaultPreferences = () => {
 const saveNodePreferences = (data: NodePreferences) => {
   const prefs = loadPreferences() || defaultPreferences()
   prefs.nodePreferences = data
-
+  if (prefs.nodePreferences.nodeFilter) {
+    prefs.nodePreferences.nodeFilter.searchTerm = ''
+  }
   savePreferences(prefs)
 }
 

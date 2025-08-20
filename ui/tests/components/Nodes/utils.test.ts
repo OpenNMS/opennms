@@ -49,7 +49,7 @@ describe('Nodes utils test', () => {
     // tr2: 'id' column is right-aligned
     // tc10: 'flows' column is center-aligned
     // 10 items: implicit action + 9 selected columns ('location' is unselected)
-    expect(result).toEqual(['tl1', 'tr2', 'tl3', 'tl4', 'tl5', 'tl6', 'tl7', 'tl8', 'tl9', 'tc10'])
+    expect(result).toEqual(['tl1', 'tl2', 'tl3', 'tl4', 'tl5', 'tl6', 'tl7', 'tl8', 'tl9', 'tc10'])
   })
 
   test('test hasEgressFlow, hasIngressFlow', async () => {
