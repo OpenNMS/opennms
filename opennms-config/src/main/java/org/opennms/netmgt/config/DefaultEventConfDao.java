@@ -105,20 +105,12 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		}
 	}
 
-	private List<EventConfEvent>  loadFromDB(){
-		ServiceLookupFactory.withService(EventConfEventDao.class, lookup -> {
-			 confEventList = lookup.findAllEvents();
-		});
-		return confEventList;
-	}
-
 	@Override
 	public void reload() throws DataAccessException {
 		validateConfig(m_configResource);
 		try {
-			loadFromDB();
-			processEventFromDb();
-//		    reloadConfig();
+		    reloadConfig();
+            processAndLoadEventFromDb();
 		} catch (Exception e) {
 			throw new DataRetrievalFailureException("Unable to load " + m_configResource, e);
 		}
@@ -274,9 +266,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws DataAccessException {
-//		loadConfig();
-		loadFromDB();
-		processEventFromDb();
+		loadConfig();
         initExtensions();
 	}
 
@@ -303,23 +293,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 			return m_field.get(matchingEvent);
 		}
 
-	}
-
-	private void processEventFromDb(){
-		Events dbEvents = new Events();
-
-		for (EventConfEvent record : confEventList) {
-			String eventXml = record.getXmlContent(); // From DB column
-			try {
-				Event event = JaxbUtils.unmarshal(Event.class,
-						new ByteArrayInputStream(eventXml.getBytes(StandardCharsets.UTF_8)));
-				dbEvents.addEvent(event);
-			} catch (Exception e) {
-				LOG.warn("Failed to unmarshal event XML for record ID {}: {}", record.getId(), e.getMessage(), e);
-			}
-		}
-
-		m_events = dbEvents;
 	}
 
     private synchronized void reloadConfig() throws DataAccessException {
@@ -378,6 +351,26 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 			throw new DataRetrievalFailureException("Unabled to load " + m_configResource, e);
 		}
 	}
+
+    private synchronized void processAndLoadEventFromDb(){
+        ServiceLookupFactory.withService(EventConfEventDao.class, lookup -> {
+            confEventList = lookup.findAllEvents();
+        });
+        Events dbEvents = new Events();
+
+        for (EventConfEvent record : confEventList) {
+            String eventXml = record.getXmlContent(); // From DB column
+            try {
+                Event event = JaxbUtils.unmarshal(Event.class,
+                        new ByteArrayInputStream(eventXml.getBytes(StandardCharsets.UTF_8)));
+                dbEvents.addEvent(event);
+            } catch (Exception e) {
+                LOG.warn("Failed to unmarshal event XML for record ID {}: {}", record.getId(), e.getMessage(), e);
+            }
+        }
+
+        m_events = dbEvents;
+    }
 
     private void initExtensions() {
         m_extContainer = new ConfigReloadContainer.Builder<>(Events.class)
