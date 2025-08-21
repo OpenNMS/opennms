@@ -1,3 +1,4 @@
+import { BreadCrumb } from '@/types'
 import { EventConfSourceMetadata } from '@/types/eventConfig'
 
 export const data: EventConfSourceMetadata[] = [
@@ -30,5 +31,19 @@ export const data: EventConfSourceMetadata[] = [
     vendor: 'CustomVendor',
     description: 'Custom event configuration file for specific vendor requirements.',
     id:3
+  }
+]
+
+export const breadcrumbItems: BreadCrumb[] = [
+  { 
+    label: 'Home', 
+    to: '/', 
+    isAbsoluteLink: false 
+  },
+  { 
+    label: 'File Editor', 
+    to: '#', 
+    isAbsoluteLink: false,
+    position: 'last' 
   }
 ]
