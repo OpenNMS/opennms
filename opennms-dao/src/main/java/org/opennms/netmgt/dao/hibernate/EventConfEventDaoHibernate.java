@@ -82,7 +82,7 @@ public class EventConfEventDaoHibernate
      * @param input the input string
      * @return the escaped string
      */
-    private static String escapeLike(String input) {
+    private String escapeLike(String input) {
         return input
                 .replace("\\", "\\\\")
                 .replace("%", "\\%")
