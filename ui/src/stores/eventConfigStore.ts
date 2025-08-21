@@ -12,7 +12,10 @@ export const useEventConfigStore = defineStore('eventConfigStore', {
     },
     selectedEventConfig: null,
     isLoading: false,
-    activeTab: 0
+    activeTab: 0,
+    uploadedFilesReportModalState: {
+      visible: false
+    }
   }),
   actions: {
     async fetchEventConfigs() {
