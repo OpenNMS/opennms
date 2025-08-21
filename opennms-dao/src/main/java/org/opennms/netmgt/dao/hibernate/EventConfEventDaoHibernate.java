@@ -64,4 +64,10 @@ public class EventConfEventDaoHibernate
     public void deleteAll(final Collection<EventConfEvent> list) {
         super.deleteAll(list);
     }
+
+    @Override
+    public List<EventConfEvent> findAllEvents() {
+        return (List<EventConfEvent>) getHibernateTemplate().find("from EventConfEvent");
+    }
+
 }

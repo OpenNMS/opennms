@@ -19,26 +19,24 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.config;
+import org.opennms.core.soa.lookup.ServiceLookup;
+import org.opennms.core.soa.lookup.ServiceLookupBuilder;
+import org.opennms.core.soa.lookup.ServiceRegistryLookup;
+import org.opennms.core.soa.support.DefaultServiceRegistry;
 
-import org.opennms.netmgt.model.EventConfEvent;
+public class ServiceLookupFactory {
 
-import java.util.Collection;
-import java.util.List;
+    private static final ServiceLookup<Class<?>, String> serviceLookup = new ServiceLookupBuilder(new ServiceRegistryLookup(DefaultServiceRegistry.INSTANCE))
+            .blocking()
+            .build();
 
-public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
+    private ServiceLookupFactory() { super(); }
 
-    EventConfEvent get(Long id);
-
-    List<EventConfEvent> findBySourceId(Long sourceId);
-
-    EventConfEvent findByUei(String uei);
-
-    List<EventConfEvent> findEnabledEvents();
-
-    void deleteBySourceId(Long sourceId);
-
-    void deleteAll(final Collection<EventConfEvent> list);
-
-     List<EventConfEvent> findAllEvents();
+    public static <T> void withService(Class<T> clazz, java.util.function.Consumer<T> callback) {
+        T service = serviceLookup.lookup(clazz, null);
+        if (service != null) {
+            callback.accept(service);
+        }
+    }
 }
