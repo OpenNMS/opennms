@@ -53,6 +53,11 @@ public class ServiceConfig1701MigratorOffline extends AbstractOnmsUpgrade {
      */
     private File configFile;
 
+    /**
+     * Flag to skip the upgrade if the installed version is 1.13 or higher.
+     */
+    private boolean skipMe = false;
+
     private final List<String> oldServices = Arrays.asList(new String[] {
             ":Name=HttpAdaptor",
             ":Name=HttpAdaptorMgmt",
@@ -109,6 +114,11 @@ public class ServiceConfig1701MigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void preExecute() throws OnmsUpgradeException {
+        if (isInstalledVersionGreaterOrEqual(1, 13, 0)) {
+            log("This upgrade procedure should only run against systems older than 1.13.0; the current version is " + getOpennmsVersion() + "\n");
+            skipMe = true;
+            return;
+        }
         try {
             log("Backing up %s\n", configFile);
             zipFile(configFile);
@@ -122,6 +132,7 @@ public class ServiceConfig1701MigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void postExecute() throws OnmsUpgradeException {
+        if (skipMe) return;
         File zip = new File(configFile.getAbsolutePath() + ZIP_EXT);
         if (zip.exists()) {
             log("Removing backup %s\n", zip);
@@ -134,6 +145,7 @@ public class ServiceConfig1701MigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void rollback() throws OnmsUpgradeException {
+        if (skipMe) return;
         log("Restoring backup %s\n", configFile);
         File zip = new File(configFile.getAbsolutePath() + ZIP_EXT);
         FileUtils.deleteQuietly(configFile);
@@ -145,6 +157,7 @@ public class ServiceConfig1701MigratorOffline extends AbstractOnmsUpgrade {
      */
     @Override
     public void execute() throws OnmsUpgradeException {
+        if (skipMe) return;
         try {
             ServiceConfiguration currentCfg = JaxbUtils.unmarshal(ServiceConfiguration.class, configFile);
 
