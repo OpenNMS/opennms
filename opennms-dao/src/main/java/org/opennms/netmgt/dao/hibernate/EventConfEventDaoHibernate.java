@@ -76,7 +76,7 @@ public class EventConfEventDaoHibernate
     }
 
     /**
-     * Escapes special characters (% , _ , \, ., /) in a string
+     * Escapes special characters (% , _ , \, ., /, [, ]) in a string
      * to make it safe for SQL LIKE queries.
      *
      * @param input the input string
@@ -88,7 +88,9 @@ public class EventConfEventDaoHibernate
                 .replace("%", "\\%")
                 .replace("_", "\\_")
                 .replace("@", "\\@")
-                .replace("@", "\\/")
+                .replace("/", "\\/")
+                .replace("[", "\\[")
+                .replace("]", "\\]")
                 .replace(".", "\\.");
     }
 
