@@ -56,23 +56,40 @@ public class EventConfEventDaoHibernate
         StringBuilder queryBuilder = new StringBuilder();
         queryBuilder.append("from EventConfEvent e where 1=1 ");
         if (uei != null && !uei.trim().isEmpty()) {
-            queryBuilder.append(" and lower(e.uei) like ? ");
-            queryParamList.add("%" + uei.trim().toLowerCase() + "%"); // contains match
+            queryBuilder.append(" and lower(e.uei) like ? escape '\\' ");
+            queryParamList.add("%" + escapeLike(uei.trim().toLowerCase()) + "%"); // contains match
         }
 
         if (vendor != null && !vendor.trim().isEmpty()) {
-            queryBuilder.append(" and lower(e.source.vendor) like ? ");
-            queryParamList.add("%" + vendor.trim().toLowerCase() + "%");
+            queryBuilder.append(" and lower(e.source.vendor) like ? escape '\\' ");
+            queryParamList.add("%" + escapeLike(vendor.trim().toLowerCase()) + "%");
         }
 
         if (sourceName != null && !sourceName.trim().isEmpty()) {
-            queryBuilder.append(" and lower(e.source.name) like ? ");
-            queryParamList.add("%" + sourceName.trim().toLowerCase() + "%");
+            queryBuilder.append(" and lower(e.source.name) like ? escape '\\' ");
+            queryParamList.add("%" + escapeLike(sourceName.trim().toLowerCase()) + "%");
         }
 
         queryBuilder.append(" order by e.createdTime desc ");
 
         return findWithPagination(queryBuilder.toString(), queryParamList.toArray(), offset, limit);
+    }
+
+    /**
+     * Escapes special characters (% , _ , \, ., /) in a string
+     * to make it safe for SQL LIKE queries.
+     *
+     * @param input the input string
+     * @return the escaped string
+     */
+    private static String escapeLike(String input) {
+        return input
+                .replace("\\", "\\\\")
+                .replace("%", "\\%")
+                .replace("_", "\\_")
+                .replace("@", "\\@")
+                .replace("@", "\\/")
+                .replace(".", "\\.");
     }
 
     @Override
