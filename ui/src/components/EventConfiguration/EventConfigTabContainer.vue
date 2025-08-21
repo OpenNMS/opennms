@@ -3,14 +3,13 @@
     <FeatherTabContainer class="tabs">
       <template v-slot:tabs>
         <FeatherTab>View</FeatherTab>
-        <FeatherTab>Event Configuration Details</FeatherTab>
+        <FeatherTab>Upload Files</FeatherTab>
       </template>
       <FeatherTabPanel>
         <EventConfigurationTable />
       </FeatherTabPanel>
       <FeatherTabPanel>
-        <p>This page is under construction.</p>
-        <p>For now, you can configure events using the OpenNMS web interface.</p>
+        <UploadFilesTab />
       </FeatherTabPanel>
     </FeatherTabContainer>
   </div>
@@ -19,6 +18,7 @@
 <script lang="ts" setup>
 import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
 import EventConfigurationTable from './EventConfigurationTable.vue'
+import UploadFilesTab from './UploadFilesTab.vue'
 </script>
 
 <style lang="scss" scoped></style>
