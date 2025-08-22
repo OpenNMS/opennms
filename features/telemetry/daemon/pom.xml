@@ -67,5 +67,13 @@
       <artifactId>hamcrest-library</artifactId>
       <scope>test</scope>
     </dependency>
+
+      <dependency>
+          <groupId>org.opennms.core.ipc.twin</groupId>
+          <artifactId>org.opennms.core.ipc.twin.api</artifactId>
+          <version>${project.version}</version>
+      </dependency>
+
+
   </dependencies>
 </project>

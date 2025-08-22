@@ -21,5 +21,6 @@
     <module>protocols</module>
     <module>registry</module>
     <module>shell</module>
+      <module>connectors</module>
   </modules>
 </project>

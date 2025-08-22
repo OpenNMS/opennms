@@ -30,14 +30,22 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Collections;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
 
+import org.hibernate.ObjectNotFoundException;
+import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.FallbackScope;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceRef;
 import org.opennms.netmgt.dao.api.ServiceTracker;
+import org.opennms.netmgt.model.OnmsMetaData;
+import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.telemetry.api.receiver.Connector;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.config.model.ConnectorConfig;
@@ -49,6 +57,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.annotations.VisibleForTesting;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionDefinition;
+import org.springframework.transaction.support.TransactionTemplate;
+
+import javax.annotation.PostConstruct;
 
 /**
  * The ConnectorManager is responsible for starting/stopping connectors that connect to the target agents.
@@ -73,23 +86,69 @@ public class ConnectorManager {
 
     @Autowired
     private ServiceTracker serviceTracker;
-
-    private final Map<ConnectorKey, Connector> connectorsByKey = new LinkedHashMap<>();
+    // this will hold the key-> connector key for identification and value-> location
+    // when node is removed then we have no way to find its location just to stop its  connector at minion side
+    private final ConcurrentMap<ConnectorKey, String> connectorsByKey = new ConcurrentHashMap<>();
 
     private final List<Closeable> serviceTrackerSessions = new LinkedList<>();
+
+
+
+    @Autowired
+    private NodeDao nodeDao;
+
+    @Autowired
+    private PlatformTransactionManager txManager;
+
+    private TransactionTemplate readOnlyTxTemplate;
+
+    @Autowired
+    private TwinPublisher twinPublisher;
+
+    private LocationPublisherManager locationPublisherManager;
+
+    @PostConstruct
+    public void init() {
+        readOnlyTxTemplate = new TransactionTemplate(txManager);
+        readOnlyTxTemplate.setReadOnly(true);
+        readOnlyTxTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
+        this.locationPublisherManager = new LocationPublisherManager(twinPublisher);
+    }
+
 
     private void startStreamingFor(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceRef serviceRef) {
         synchronized (connectorsByKey) {
             final ConnectorKey key = toKey(connectorConfig, packageConfig, serviceRef);
-            if (connectorsByKey.containsKey(key)) {
-                LOG.debug("Connector already exists. Ignoring.");
+
+            NodeWithMetadata result = fetchNodeWithMetadata(serviceRef.getNodeId());
+
+            String prev = connectorsByKey.putIfAbsent(key, result.location); // adjust ServiceRef to provide location
+            if (prev != null) {
+                LOG.debug("Connector already exists. Ignoring: {}", key);
+                return;
             }
-            List<Map<String, String>> interpolatedMapList = getGroupedParams(packageConfig, serviceRef);
-            // Create a new connector
-            LOG.debug("Starting connector for: {}", key);
-            final Connector connector = telemetryRegistry.getConnector(connectorConfig);
-            connectorsByKey.put(key, connector);
-            connector.stream(serviceRef.getNodeId(), serviceRef.getIpAddress(), interpolatedMapList);
+
+            List<Map<String, String>> interpolatedMapList = groupMetaDataParams(result.metadata);
+
+            String location = result.location;
+
+            LocationPublisher lp = locationPublisherManager.getOrCreate(location);
+
+            ConnectorTwinConfig.ConnectorConfig cfg = new ConnectorTwinConfig.ConnectorConfig(
+                    serviceRef.getNodeId(),
+                    serviceRef.getIpAddress().getHostAddress(),
+                    key.stringKey(),
+                    true,
+                    interpolatedMapList
+            );
+            try {
+                lp.addConfigAndPublish(cfg);
+            } catch (IOException e) {
+                LOG.error("Failed to publish config for {}: {}", location, e.getMessage(), e);
+            }
+
+//            connectorsByKey.put(key, connector);
+//            connector.stream(serviceRef.getNodeId(), serviceRef.getIpAddress(), interpolatedMapList);
         }
     }
 
@@ -123,15 +182,16 @@ public class ConnectorManager {
     private void stopStreamingFor(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceRef serviceRef) {
         synchronized (connectorsByKey) {
             final ConnectorKey key = toKey(connectorConfig, packageConfig, serviceRef);
-            final Connector connector = connectorsByKey.remove(key);
-            if (connector != null) {
-                try {
-                    LOG.debug("Closing connector for: {}", key);
-                    connector.close();
-                } catch (IOException e) {
-                    LOG.warn("Error closing connector: {}", key, e);
-                }
+            String location = connectorsByKey.remove(key);
+            if (location == null) return;
+
+            LocationPublisher lp = locationPublisherManager.getOrCreate(location);
+            try {
+                lp.removeConfigAndPublish(key.stringKey());
+            } catch (IOException e) {
+                LOG.error("Failed to remove config for {}: {}", location, e.getMessage(), e);
             }
+            locationPublisherManager.removeIfEmpty(location);
         }
     }
 
@@ -175,16 +235,6 @@ public class ConnectorManager {
         });
         serviceTrackerSessions.clear();
 
-        // Close the connectors
-        synchronized (connectorsByKey) {
-            connectorsByKey.forEach((key,connector) -> {
-                try {
-                    connector.close();
-                } catch (IOException e) {
-                    LOG.warn("Error closing connector: {}. Resources may not be properly recovered.", key, e);
-                }
-            });
-        }
     }
 
     private static ConnectorKey toKey(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceRef serviceRef) {
@@ -229,10 +279,66 @@ public class ConnectorManager {
                     ", interfaceAddress=" + interfaceAddress +
                     '}';
         }
+        public String stringKey() {
+            String sb;
+            sb = connectorName +
+                    packageName +
+                    interfaceAddress.getHostAddress() +
+                    nodeId;
+            return sb;
+        }
     }
 
     @VisibleForTesting
     public void setEntityScopeProvider(EntityScopeProvider entityScopeProvider) {
         this.entityScopeProvider = entityScopeProvider;
     }
+
+    private List<Map<String,String>> groupMetaDataParams(List<OnmsMetaData> metaDataList) {
+        Map<String, Map<String,String>> paramsByContext = metaDataList.stream()
+                .collect(Collectors.groupingBy(
+                        OnmsMetaData::getContext,
+                        Collectors.toMap(OnmsMetaData::getKey, OnmsMetaData::getValue,
+                                (first, second) -> second,
+                                LinkedHashMap::new)
+                ));
+        return new ArrayList<>(paramsByContext.values());
+    }
+
+
+    private NodeWithMetadata fetchNodeWithMetadata(int nodeId) {
+        return readOnlyTxTemplate.execute(status -> {
+            try {
+                OnmsNode node = nodeDao.get(nodeId);
+                if (node == null) {
+                    LOG.debug("Node {} not found", nodeId);
+                    return null;
+                }
+                List<OnmsMetaData> metadata = new ArrayList<>(node.getMetaData());
+                metadata.forEach(md -> {
+                    md.getContext();
+                    md.getKey();
+                    md.getValue();
+                });
+                return new NodeWithMetadata(node, metadata,node.getLocation().getLocationName());
+            } catch (ObjectNotFoundException e) {
+                LOG.warn("Node {} disappeared during fetch", nodeId, e);
+                return null;
+            }
+        });
+    }
+
+
+    private static class NodeWithMetadata {
+        final OnmsNode node;
+        final List<OnmsMetaData> metadata;
+        final String location;
+
+        NodeWithMetadata(OnmsNode node, List<OnmsMetaData> metadata,String location) {
+            this.node = node;
+            this.metadata = Collections.unmodifiableList(metadata);
+            this.location = location;
+        }
+    }
+
 }
