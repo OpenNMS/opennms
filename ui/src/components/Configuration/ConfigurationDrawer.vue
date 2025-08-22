@@ -222,6 +222,7 @@ const toggleHelp = () => {
 >
 @import "@featherds/styles/mixins/typography";
 @import "@featherds/styles/mixins/elevation";
+@import "@featherds/styles/themes/variables";
 
 .flex {
   display: flex;
