@@ -63,6 +63,27 @@
       <scope>test</scope>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core.ipc.twin</groupId>
+      <artifactId>org.opennms.core.ipc.twin.api</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi.cmpn</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.osgi</groupId>
+      <artifactId>osgi.core</artifactId>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.distributed</groupId>
+      <artifactId>org.opennms.features.telemetry.distributed.common</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.hamcrest</groupId>
       <artifactId>hamcrest-library</artifactId>
       <scope>test</scope>

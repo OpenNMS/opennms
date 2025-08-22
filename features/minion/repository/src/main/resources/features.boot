@@ -28,3 +28,4 @@ scv-shell
 opennms-health-rest-service
 minion-health-check
 minion-api-layer
+minion-telemetryd-connectors
