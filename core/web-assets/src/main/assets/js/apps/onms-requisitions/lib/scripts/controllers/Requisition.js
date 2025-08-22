@@ -188,7 +188,7 @@ require('../services/Synchronize');
     * @returns {string} URL suffix for vertical layout if enabled.
     */
     $scope.getVerticalLayout = function() {
-      var isVertical = $cookies.get('use_requisitions_node_vertical_layout');
+      const isVertical = $cookies.get('use_requisitions_node_vertical_layout');
       return isVertical === 'true' ? '/vertical' : '';
     };
 
@@ -230,8 +230,8 @@ require('../services/Synchronize');
           RequisitionsService.startTiming();
           RequisitionsService.deleteNode(node).then(
             function() { // success
-              var index = -1;
-              for(var i = 0; i < $scope.filteredNodes.length; i++) {
+              let index = -1;
+              for(let i = 0; i < $scope.filteredNodes.length; i++) {
                 if ($scope.filteredNodes[i].foreignId === node.foreignId) {
                   index = i;
                 }
@@ -316,7 +316,7 @@ require('../services/Synchronize');
     * @param {function} customHandler An optional method to be called after the initialization is done.
     */
     $scope.initialize = function(customHandler) {
-      var value = $cookies.get('requisitions_page_size');
+      const value = $cookies.get('requisitions_page_size');
       if (value) {
         $scope.pageSize = value;
       }
