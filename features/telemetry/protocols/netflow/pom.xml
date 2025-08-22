@@ -14,5 +14,6 @@
     <module>parser</module>
     <module>adapter</module>
     <module>transport</module>
+    <module>xml-provider</module>
   </modules>
 </project>

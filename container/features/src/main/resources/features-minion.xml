@@ -159,6 +159,7 @@
       <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.parser/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.minion/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.protocols.netflow.xml/org.opennms.features.telemetry.protocols.netflow.xml.minion/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-core-ipc-grpc-client" description="OpenNMS :: Core :: IPC :: GRPC :: Client" version="${project.version}">

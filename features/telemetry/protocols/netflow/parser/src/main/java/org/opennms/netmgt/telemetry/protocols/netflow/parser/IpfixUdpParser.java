@@ -35,8 +35,8 @@ import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.telemetry.listeners.Dispatchable;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.UdpParser;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.RecordProvider;
-import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
@@ -52,14 +52,17 @@ import io.netty.buffer.ByteBuf;
 public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatchable {
 
     private final IpFixMessageBuilder messageBuilder = new IpFixMessageBuilder();
+    private final InformationElementDatabase informationElementDatabase;
 
     public IpfixUdpParser(final String name,
                           final AsyncDispatcher<TelemetryMessage> dispatcher,
                           final EventForwarder eventForwarder,
                           final Identity identity,
                           final DnsResolver dnsResolver,
-                          final MetricRegistry metricRegistry) {
+                          final MetricRegistry metricRegistry,
+                          final InformationElementDatabase informationElementDatabase) {
         super(Protocol.IPFIX, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+        this.informationElementDatabase = informationElementDatabase;
     }
 
     public IpFixMessageBuilder getMessageBuilder() {
@@ -70,7 +73,7 @@ public class IpfixUdpParser extends UdpParserBase implements UdpParser, Dispatch
     protected RecordProvider parse(final Session session,
                                    final ByteBuf buffer) throws Exception {
         final Header header = new Header(slice(buffer, Header.SIZE));
-        final Packet packet = new Packet(session, header, slice(buffer, header.payloadLength()));
+        final Packet packet = new Packet(informationElementDatabase, session, header, slice(buffer, header.payloadLength()));
 
         detectClockSkew(header.exportTime * 1000L, session.getRemoteAddress());
 

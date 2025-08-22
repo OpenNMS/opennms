@@ -27,6 +27,7 @@ import java.util.Objects;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElement;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
 
@@ -75,7 +76,7 @@ public class UndeclaredValue extends Value<byte[]> {
                                             final int informationElementId) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final Session.Resolver resolver, final ByteBuf buffer) {
+            public Value<?> parse(final InformationElementDatabase database, final Session.Resolver resolver, final ByteBuf buffer) {
                 return new UndeclaredValue(enterpriseNumber, informationElementId, bytes(buffer, buffer.readableBytes()));
             }
 

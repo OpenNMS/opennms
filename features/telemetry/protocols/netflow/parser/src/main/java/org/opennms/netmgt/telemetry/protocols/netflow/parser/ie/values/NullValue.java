@@ -24,6 +24,7 @@ package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values;
 import java.util.Optional;
 
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElement;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Semantics;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Session;
@@ -50,10 +51,11 @@ public class NullValue extends Value<Void> {
                 .toString();
     }
 
-    public static InformationElement parser(final String name, final Optional<Semantics> semantics) {
+    public static InformationElement parser(final InformationElementDatabase database, final String name, final Optional<Semantics> semantics) {
         return new InformationElement() {
             @Override
-            public Value<?> parse(final Session.Resolver resolver,
+            public Value<?> parse(final InformationElementDatabase database,
+                                  final Session.Resolver resolver,
                                   final ByteBuf buffer) {
                 return new NullValue(name, semantics);
             }
