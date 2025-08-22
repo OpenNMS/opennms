@@ -23,6 +23,7 @@ package org.opennms.web.springframework.security;
 
 import java.io.IOException;
 import java.security.Principal;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Map;
@@ -40,9 +41,14 @@ import org.opennms.netmgt.config.users.User;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.util.StringUtils;
 
 public abstract class LoginModuleUtils {
     public static volatile Logger LOG = LoggerFactory.getLogger(LoginModuleUtils.class);
+
+    private static final String[] INVALID_SAVED_REQUEST_URL_SUFFIXES = new String[] {
+        ".css", ".js", ".ttf"
+    };
 
     protected LoginModuleUtils() {}
 
@@ -132,5 +138,18 @@ public abstract class LoginModuleUtils {
             principals.addAll(ps);
         }
         return principals;
+    }
+
+    /**
+     * Do not save asset files in the saved request cache.
+     */
+    public static boolean isInvalidSavedRequestUrl(String url) {
+        if (StringUtils.isEmpty(url)) {
+            return true;
+        }
+
+        String urlLower = url.toLowerCase();
+
+        return Arrays.stream(INVALID_SAVED_REQUEST_URL_SUFFIXES).anyMatch(urlLower::endsWith);
     }
 }

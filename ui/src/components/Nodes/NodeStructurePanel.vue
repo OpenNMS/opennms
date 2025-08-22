@@ -122,19 +122,19 @@ const onCategorySwitchClick = () => {
 }
 
 const onClearCategories = () => {
-  nodeStructureStore.setSelectedCategories([])
+  // nodeStructureStore.setSelectedCategories([])
 }
 
 const onClearFlows = () => {
-  nodeStructureStore.setSelectedFlows([])
+  // nodeStructureStore.setSelectedFlows([])
 }
 
 const onClearLocations = () => {
-  nodeStructureStore.setSelectedMonitoringLocations([])
+  nodeStructureStore.updateSelectedMonitoringLocations([])
 }
 
 const onClearAll = () => {
-  nodeStructureStore.clearAllFilters(SetOperator.Union)
+  nodeStructureStore.clearAllFiltersAndSelections()
 }
 
 /**
@@ -156,17 +156,17 @@ const getNewSelection = <T,>(item: T, isSelected: boolean, existingItems: T[], d
 
 const onCategoryClick = (cat: Category) => {
   const newSelection = getNewSelection(cat, isCategorySelected(cat), nodeStructureStore.queryFilter.selectedCategories, c => c.id !== cat.id)
-  nodeStructureStore.setSelectedCategories(newSelection)
+  // nodeStructureStore.setSelectedCategories(newSelection)
 }
 
 const onFlowClick = (flow: string) => {
   const newSelection = getNewSelection(flow, isFlowSelected(flow), nodeStructureStore.queryFilter.selectedFlows, f => f !== flow)
-  nodeStructureStore.setSelectedFlows(newSelection)
+  // nodeStructureStore.setSelectedFlows(newSelection)
 }
 
 const onLocationClick = (loc: MonitoringLocation) => {
   const newSelection = getNewSelection(loc, isLocationSelected(loc), nodeStructureStore.queryFilter.selectedMonitoringLocations, x => x.name !== loc.name)
-  nodeStructureStore.setSelectedMonitoringLocations(newSelection)
+  nodeStructureStore.updateSelectedMonitoringLocations(newSelection)
 }
 </script>
 

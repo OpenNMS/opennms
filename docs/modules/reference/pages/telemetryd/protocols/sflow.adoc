@@ -11,7 +11,7 @@ See <<operation:deep-dive/flows/introduction.adoc#ga-flow-support-introduction, 
 [[telemetryd-sflow-parser-udp]]
 == sFlow UDP Parser
 
-The sFlow UDP parser accepts packets received by a <deep-dive/<telemetryd/listeners/udp.adoc#telemetryd-listener-udp, UDP listener>> and must forward them to a <<deep-dive/telemetryd-sflow-adapter, sFlow adapter>>.
+The sFlow UDP parser accepts packets received by a <<telemetryd/listeners/udp.adoc#telemetryd-listener-udp, UDP listener>> and must forward them to a <<deep-dive/telemetryd-sflow-adapter, sFlow adapter>>.
 
 The sFlow UDP parser supports protocol detection.
 

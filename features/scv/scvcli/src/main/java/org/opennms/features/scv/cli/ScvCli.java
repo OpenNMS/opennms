@@ -24,7 +24,6 @@ package org.opennms.features.scv.cli;
 import java.io.IOException;
 import java.util.Properties;
 import java.util.function.Function;
-
 import org.kohsuke.args4j.Argument;
 import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
@@ -85,17 +84,18 @@ public class ScvCli {
 
     private  String lookupKeyStoreType() {
         String keyStoreType = SecureCredentialsVault.KeyStoreType.JCEKS.toString();
-        Properties properties = new Properties();
         try {
-            properties.load(ScvCli.class.getResourceAsStream("/scvcli-filtered.properties"));
-            String opennmsHome = properties.getProperty("install.dir");
+
+            // Try to get the OpenNMS home directory from the environment variable
+            String opennmsHome = System.getenv("OPENNMS_HOME");
+            // Get the keystore type from SCV properties, if specified
             Properties scvProps = ScvUtils.loadScvProperties(opennmsHome);
             keyStoreType = scvProps.getProperty(ScvUtils.SCV_KEYSTORE_TYPE_PROPERTY);
 
-            if(this.password==null || this.password.isEmpty()){
+            // If the password is not set, try to get it from SCV properties
+            if (this.password == null || this.password.isEmpty()) {
                 password = scvProps.getProperty(JCEKSSecureCredentialsVault.KEYSTORE_KEY_PROPERTY);
             }
-
         } catch (Exception e) {
             LOG.error("WARNING: unable to load properties files");
         }
@@ -128,17 +128,11 @@ public class ScvCli {
      * @return the keystore password from the properties file.
      */
     private static String lookupPasswordFromProperties(){
-        Properties scvFilteredProps = new Properties();
         String keyStoreKey = null;
-        try {
-            scvFilteredProps.load(ScvCli.class.getResourceAsStream("/scvcli-filtered.properties"));
-            String opennmsHome = scvFilteredProps.getProperty("install.dir");
-            Properties scvProps = ScvUtils.loadScvProperties(opennmsHome);
-            keyStoreKey = scvProps.getProperty(ScvUtils.KEYSTORE_KEY_PROPERTY);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
+        // Try to get the OpenNMS home directory from the environment variable
+        String opennmsHome = System.getenv("OPENNMS_HOME");
+        Properties scvProps = ScvUtils.loadScvProperties(opennmsHome);
+        keyStoreKey = scvProps.getProperty(ScvUtils.KEYSTORE_KEY_PROPERTY);
         return keyStoreKey;
 
     }
