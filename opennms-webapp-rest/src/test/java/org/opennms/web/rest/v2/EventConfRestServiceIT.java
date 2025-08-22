@@ -29,6 +29,10 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.api.EventConfEventDao;
+import org.opennms.netmgt.dao.api.EventConfSourceDao;
+import org.opennms.netmgt.model.EventConfSource;
+import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -41,6 +45,7 @@ import javax.ws.rs.core.SecurityContext;
 import java.io.InputStream;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -64,6 +69,12 @@ import static org.mockito.Mockito.when;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class EventConfRestServiceIT {
+
+    @Autowired
+    private EventConfSourceDao eventConfSourceDao;
+
+    @Autowired
+    private EventConfEventDao eventConfEventDao;
 
     @Autowired
     private EventConfRestApi eventConfRestApi;
@@ -211,5 +222,44 @@ public class EventConfRestServiceIT {
         assertEquals(1, errors.size());
         assertEquals(filename, errors.get(0).get("file"));
         assertTrue(errors.get(0).get("error").toString().contains("Exception"));
+    }
+
+    @Test
+    public void testDeleteEventConfSources_Success() throws Exception {
+        String[] filenames = {"eventconf.xml", "opennms.alarm.events.xml", "Cisco.airespace.xml"};
+        List<Attachment> attachments = new ArrayList<>();
+
+        for (final var name : filenames) {
+            final var path = "/EVENTS-CONF/" + name;
+            final var is = getClass().getResourceAsStream(path);
+            Attachment att = mock(Attachment.class);
+            ContentDisposition cd = mock(ContentDisposition.class);
+            when(cd.getParameter("filename")).thenReturn(name);
+            when(att.getContentDisposition()).thenReturn(cd);
+            when(att.getObject(InputStream.class)).thenReturn(is);
+            attachments.add(att);
+        }
+        eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        List<Long> sourcesIds = eventConfSourceDao.findAll().stream().map(EventConfSource::getId).toList();
+        // Delete eventConfSources.
+        EventConfSourceDeletePayload payload = new EventConfSourceDeletePayload();
+        payload.setSourceIds(sourcesIds);
+
+        eventConfRestApi.deleteEventConfSources(payload, securityContext);
+        List<EventConfSource> eventConfSources = eventConfSourceDao.findAll();
+        assertEquals(0, eventConfSources.size());
+
+    }
+
+    @Test
+    public void testDeleteEventConfSources_EmptySourceIds() throws Exception {
+        EventConfSourceDeletePayload payload = new EventConfSourceDeletePayload();
+        payload.setSourceIds(Collections.emptyList());
+
+        Response response = eventConfRestApi.deleteEventConfSources(payload, securityContext);
+
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        assertTrue(((String) response.getEntity()).contains("At least one sourceId"));
+
     }
 }

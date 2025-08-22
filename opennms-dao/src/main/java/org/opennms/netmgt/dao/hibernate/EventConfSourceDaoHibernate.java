@@ -83,6 +83,18 @@ public class EventConfSourceDaoHibernate
     }
 
     @Override
+    public void deleteBySourceIds(List<Long> sourceIds) {
+        String placeholders = sourceIds.stream()
+                .map(id -> "?")
+                .collect(Collectors.joining(", "));
+
+        String hql = "delete from EventConfSource s where s.id in (" + placeholders + ")";
+
+        int deletedCount = getHibernateTemplate().bulkUpdate(hql, sourceIds.toArray());
+        LOG.info("Deleted {} EventConfSource(s) with IDs: {}", deletedCount, sourceIds);
+    }
+
+    @Override
     public void saveOrUpdate(EventConfSource source) {
         super.saveOrUpdate(source);
     }
