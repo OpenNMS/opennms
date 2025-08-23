@@ -7,7 +7,40 @@
       <div class="section">
         <div class="selected-files-section">
           <div v-if="eventFiles.length > 0">
-            <div
+            <Draggable
+              v-model="eventFiles"
+              item-key="value"
+              handle=".drag-handle"
+              class="columns-drag-container"
+            >
+              <template #item="{ element, index }">
+                <div class="file">
+                  <div class="file-icon">
+                    <FeatherIcon :icon="Text" />
+                    <span>{{ element.name }}</span>
+                  </div>
+                  <div class="actions">
+                    <FeatherButton
+                      icon="Apps"
+                      text
+                    >
+                      <FeatherIcon
+                        class="close-icon drag-handle"
+                        :icon="Apps"
+                      />
+                    </FeatherButton>
+                    <FeatherButton
+                      icon="Trash"
+                      data-test="remove-files-button"
+                      @click="removeFile(index)"
+                    >
+                      <FeatherIcon :icon="Delete" />
+                    </FeatherButton>
+                  </div>
+                </div>
+              </template>
+            </Draggable>
+            <!-- <div
               v-for="(file, index) in eventFiles"
               class="file"
               :key="file.name"
@@ -25,7 +58,7 @@
                   <FeatherIcon :icon="Delete" />
                 </FeatherButton>
               </div>
-            </div>
+            </div> -->
           </div>
           <div v-else>
             <p>No files selected</p>
@@ -40,29 +73,46 @@
             data-test="event-conf-upload-input"
             ref="eventConfFileInput"
           />
-          <FeatherButton @click="openFileDialog"> Choose files to upload </FeatherButton>
+          <FeatherButton
+            @click="openFileDialog"
+            :disabled="isLoading"
+          >
+            Choose files to upload
+          </FeatherButton>
           <FeatherButton
             primary
-            :disabled="eventFiles.length === 0"
+            :disabled="eventFiles.length === 0 || isLoading"
+            @click="uploadFiles"
             data-test="upload-button"
           >
-            Upload
+            <FeatherSpinner v-if="isLoading" />
+            <span v-else>Upload Files</span>
           </FeatherButton>
         </div>
       </div>
     </div>
+    <EventConfigFilesUploadReportModal :report="uploadFilesReport" />
   </div>
 </template>
 
 <script setup lang="ts">
+import { uploadEventConfigFiles } from '@/services/eventConfigService'
+import { useEventConfigStore } from '@/stores/eventConfigStore'
+import { EventConfigFilesUploadReponse } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import Delete from '@featherds/icon/action/Delete'
 import Text from '@featherds/icon/file/Text'
-import { ref } from 'vue'
+import Apps from '@featherds/icon/navigation/Apps'
+import { FeatherSpinner } from '@featherds/progress'
+import Draggable from 'vuedraggable'
+import EventConfigFilesUploadReportModal from './Modal/EventConfigFilesUploadReportModal.vue'
 
 const eventConfFileInput = ref<HTMLInputElement | null>(null)
+const uploadFilesReport = ref<EventConfigFilesUploadReponse>({} as EventConfigFilesUploadReponse)
+const store = useEventConfigStore()
 const eventFiles = ref<File[]>([])
+const isLoading = ref(false)
 
 const handleEventConfUpload = (e: Event) => {
   const input = e.target as HTMLInputElement
@@ -79,6 +129,33 @@ const openFileDialog = () => {
 
 const removeFile = (index: number) => {
   eventFiles.value.splice(index, 1)
+}
+
+const uploadFiles = async () => {
+  // You can add further processing of the files here, like uploading them to a server
+  if (eventFiles.value.length === 0) {
+    console.warn('No files to upload')
+    return
+  }
+  if (!eventFiles.value.every(file => file.name.endsWith('.xml'))) {
+    console.error('All files must be XML files')
+    return
+  }
+  isLoading.value = true
+  try {
+    const response = await uploadEventConfigFiles(eventFiles.value)
+    uploadFilesReport.value = response
+    isLoading.value = false
+    eventFiles.value = [] // Clear the files after upload
+    eventConfFileInput.value!.value = '' // Reset the input field
+    store.uploadedFilesReportModalState.visible = true // Show the modal with the report
+  } catch (err) {
+    console.error(err)
+  } finally {
+    // isLoading.value = false
+    // eventFiles.value = [] // Clear the files after upload
+    // eventConfFileInput.value!.value = '' // Reset the input field
+  }
 }
 </script>
 
@@ -134,6 +211,16 @@ const removeFile = (index: number) => {
             font-size: 1rem;
           }
         }
+
+        .actions {
+          display: flex;
+          align-items: center;
+          gap: 10px;
+
+          button {
+            margin: 0px;
+          }
+        }
       }
     }
 
@@ -151,6 +238,11 @@ const removeFile = (index: number) => {
       button {
         width: 100%;
         margin-left: 0;
+
+        :deep(.spinner) {
+          height: 1.5rem !important;
+          width: 1.5rem !important;
+        }
       }
     }
   }
