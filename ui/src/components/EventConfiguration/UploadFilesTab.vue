@@ -106,6 +106,7 @@
 import { uploadEventConfigFiles } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigFilesUploadReponse } from '@/types/eventConfig'
+import { validateEventConfigFile,isDuplicateFile } from './eventConfigXmlValidator' 
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import { FeatherTooltip } from '@featherds/tooltip'
@@ -131,81 +132,27 @@ const handleEventConfUpload = async (e: Event) => {
     const files = Array.from(input.files)
 
     for (const file of files) {
-      if (
-        eventFiles.value.find(f => f.name === file.name) ||
-        invalidFiles.value.find(f => f.name === file.name)
-      ) {
+      if (isDuplicateFile(file.name, eventFiles.value, invalidFiles.value)) {
         continue
       }
+
       try {
-        const text = await file.text()
-        const parser = new DOMParser()
-        const xmlDoc = parser.parseFromString(text, 'application/xml')
-        if (xmlDoc.querySelector('parsererror')) {
-          invalidFiles.value.push({ name: file.name, reason: 'Invalid XML format - file contains syntax errors' })
-          continue
-        }
-
-        const eventsElement = xmlDoc.querySelector('events')
-        const eventElements = xmlDoc.querySelectorAll('event')
-        const validationErrors: string[] = []
-        if (!eventsElement) {
-          validationErrors.push('Missing <events> root element')
-        } else {
-          const xmlns = eventsElement.getAttribute('xmlns') || ''
-          if (!xmlns.includes('opennms.org')) {
-            validationErrors.push('Missing or invalid OpenNMS namespace in <events> element')
-          }
-        }
-
-        if (eventElements.length === 0) {
-          validationErrors.push('No <event> entries found within <events> element')
-        }
-        if (eventsElement && eventElements.length === 0) {
-          const childElements = eventsElement.children
-          if (childElements.length === 0) {
-            validationErrors.push('Empty <events> element - no content found')
-          } else {
-            const childNames = Array.from(childElements).map(el => `<${el.tagName}>`).join(', ')
-            validationErrors.push(`<events> element contains ${childNames} but no <event> elements`)
-          }
-        }
-        if (eventElements.length > 0) {
-          eventElements.forEach((event, idx) => {
-            const uei = event.querySelector('uei')?.textContent?.trim()
-            const label = event.querySelector('event-label')?.textContent?.trim()
-            const severity = event.querySelector('severity')?.textContent?.trim()
-
-            const eventErrors: string[] = []
-            if (!uei) eventErrors.push('missing <uei>')
-            if (!label) eventErrors.push('missing <event-label>')
-            if (!severity) eventErrors.push('missing <severity>')
-            
-            if (eventErrors.length > 0) {
-              validationErrors.push(`Event ${idx + 1}: ${eventErrors.join(', ')}`)
-            }
-          })
-        }
-        if (!file.name.endsWith('.events.xml') && !file.name.includes('event')) {
-          validationErrors.push('File does not appear to be an event configuration file (expected .events.xml extension)')
-        }
-        if (text.trim().length === 0) {
-          validationErrors.push('File is empty')
-        }
-        if (validationErrors.length > 0) {
-          invalidFiles.value.push({
-            name: file.name,
-            reason: validationErrors.join('; ')
-          })
-        } else {
+        const validationResult = await validateEventConfigFile(file)
+        
+        if (validationResult.isValid) {
           eventFiles.value.push(file)
+        } else {
+          invalidFiles.value.push({ 
+            name: file.name, 
+            reason: validationResult.errors.join('; ') 
+          })
         }
         
       } catch (error) {
         console.error(`Error processing file ${file.name}:`, error)
         invalidFiles.value.push({ 
           name: file.name, 
-          reason: `Error reading file content: ${error instanceof Error ? error.message : 'Unknown error'}` 
+          reason: `Unexpected error processing file: ${error instanceof Error ? error.message : 'Unknown error'}` 
         })
       }
     }
