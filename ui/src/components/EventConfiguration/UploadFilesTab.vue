@@ -6,7 +6,7 @@
       </div>
       <div class="section">
         <div class="selected-files-section">
-          <div v-if="eventFiles.length > 0 || invalidFiles.length > 0">
+          <div v-if="eventFiles.length > 0">
             <Draggable
               v-model="eventFiles"
               item-key="value"
@@ -40,32 +40,25 @@
                 </div>
               </template>
             </Draggable>
-            <div
-              v-for="(file, index) in invalidFiles"
+            <!-- <div
+              v-for="(file, index) in eventFiles"
               class="file"
               :key="file.name"
             >
               <div class="file-icon">
                 <FeatherIcon :icon="Text" />
-                <span class="invalid-text">{{ file.name }}</span>
+                <span>{{ file.name }}</span>
               </div>
-              <div class="actions">
-                <FeatherTooltip :title="file.reason" v-slot="{ attrs, on }">
-                  <FeatherIcon
-                    :icon="Info"
-                    v-bind="attrs"
-                    v-on="on"
-                    class="info-icon"
-                  />
-                </FeatherTooltip>
+              <div class="remove">
                 <FeatherButton
                   icon="Trash"
-                  @click="removeInvalidFile(index)"
+                  data-test="remove-files-button"
+                  @click="removeFile(index)"
                 >
                   <FeatherIcon :icon="Delete" />
                 </FeatherButton>
               </div>
-            </div>
+            </div> -->
           </div>
           <div v-else>
             <p>No files selected</p>
@@ -108,107 +101,23 @@ import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigFilesUploadReponse } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
-import { FeatherTooltip } from '@featherds/tooltip'
-import { FeatherSpinner } from '@featherds/progress'
 import Delete from '@featherds/icon/action/Delete'
 import Text from '@featherds/icon/file/Text'
 import Apps from '@featherds/icon/navigation/Apps'
-import Info from '@featherds/icon/action/Info'
+import { FeatherSpinner } from '@featherds/progress'
 import Draggable from 'vuedraggable'
 import EventConfigFilesUploadReportModal from './Modal/EventConfigFilesUploadReportModal.vue'
-import { ref } from 'vue'
 
 const eventConfFileInput = ref<HTMLInputElement | null>(null)
 const uploadFilesReport = ref<EventConfigFilesUploadReponse>({} as EventConfigFilesUploadReponse)
 const store = useEventConfigStore()
 const eventFiles = ref<File[]>([])
-const invalidFiles = ref<{ name: string; reason: string }[]>([])
 const isLoading = ref(false)
 
-const handleEventConfUpload = async (e: Event) => {
+const handleEventConfUpload = (e: Event) => {
   const input = e.target as HTMLInputElement
   if (input.files && input.files.length > 0) {
-    const files = Array.from(input.files)
-
-    for (const file of files) {
-      if (
-        eventFiles.value.find(f => f.name === file.name) ||
-        invalidFiles.value.find(f => f.name === file.name)
-      ) {
-        continue
-      }
-      try {
-        const text = await file.text()
-        const parser = new DOMParser()
-        const xmlDoc = parser.parseFromString(text, 'application/xml')
-        if (xmlDoc.querySelector('parsererror')) {
-          invalidFiles.value.push({ name: file.name, reason: 'Invalid XML format - file contains syntax errors' })
-          continue
-        }
-
-        const eventsElement = xmlDoc.querySelector('events')
-        const eventElements = xmlDoc.querySelectorAll('event')
-        const validationErrors: string[] = []
-        if (!eventsElement) {
-          validationErrors.push('Missing <events> root element')
-        } else {
-          const xmlns = eventsElement.getAttribute('xmlns') || ''
-          if (!xmlns.includes('opennms.org')) {
-            validationErrors.push('Missing or invalid OpenNMS namespace in <events> element')
-          }
-        }
-
-        if (eventElements.length === 0) {
-          validationErrors.push('No <event> entries found within <events> element')
-        }
-        if (eventsElement && eventElements.length === 0) {
-          const childElements = eventsElement.children
-          if (childElements.length === 0) {
-            validationErrors.push('Empty <events> element - no content found')
-          } else {
-            const childNames = Array.from(childElements).map(el => `<${el.tagName}>`).join(', ')
-            validationErrors.push(`<events> element contains ${childNames} but no <event> elements`)
-          }
-        }
-        if (eventElements.length > 0) {
-          eventElements.forEach((event, idx) => {
-            const uei = event.querySelector('uei')?.textContent?.trim()
-            const label = event.querySelector('event-label')?.textContent?.trim()
-            const severity = event.querySelector('severity')?.textContent?.trim()
-
-            const eventErrors: string[] = []
-            if (!uei) eventErrors.push('missing <uei>')
-            if (!label) eventErrors.push('missing <event-label>')
-            if (!severity) eventErrors.push('missing <severity>')
-            
-            if (eventErrors.length > 0) {
-              validationErrors.push(`Event ${idx + 1}: ${eventErrors.join(', ')}`)
-            }
-          })
-        }
-        if (!file.name.endsWith('.events.xml') && !file.name.includes('event')) {
-          validationErrors.push('File does not appear to be an event configuration file (expected .events.xml extension)')
-        }
-        if (text.trim().length === 0) {
-          validationErrors.push('File is empty')
-        }
-        if (validationErrors.length > 0) {
-          invalidFiles.value.push({
-            name: file.name,
-            reason: validationErrors.join('; ')
-          })
-        } else {
-          eventFiles.value.push(file)
-        }
-        
-      } catch (error) {
-        console.error(`Error processing file ${file.name}:`, error)
-        invalidFiles.value.push({ 
-          name: file.name, 
-          reason: `Error reading file content: ${error instanceof Error ? error.message : 'Unknown error'}` 
-        })
-      }
-    }
+    eventFiles.value = Array.from(new Set([...eventFiles.value, ...Array.from(input.files)]))    // You can add further processing of the file here, like uploading it to a server
   } else {
     console.warn('No files selected')
   }
@@ -222,45 +131,36 @@ const removeFile = (index: number) => {
   eventFiles.value.splice(index, 1)
 }
 
-const removeInvalidFile = (index: number) => {
-  invalidFiles.value.splice(index, 1)
-}
-
 const uploadFiles = async () => {
+  // You can add further processing of the files here, like uploading them to a server
   if (eventFiles.value.length === 0) {
     console.warn('No files to upload')
     return
   }
-  if (!eventFiles.value.every(file => file.name.endsWith('.events.xml'))) {
+  if (!eventFiles.value.every(file => file.name.endsWith('.xml'))) {
     console.error('All files must be XML files')
     return
   }
   isLoading.value = true
   try {
     const response = await uploadEventConfigFiles(eventFiles.value)
-    uploadFilesReport.value = {
-      errors: [...response.errors],
-      success: [...response.success],
-      invalid: invalidFiles.value.map(f => ({
-        file: f.name,
-        reason: f.reason
-      }))
-    }
+    uploadFilesReport.value = response
     isLoading.value = false
-    eventFiles.value = [] 
-    invalidFiles.value = []
-    eventConfFileInput.value!.value = ''
-    store.uploadedFilesReportModalState.visible = true
+    eventFiles.value = [] // Clear the files after upload
+    eventConfFileInput.value!.value = '' // Reset the input field
+    store.uploadedFilesReportModalState.visible = true // Show the modal with the report
   } catch (err) {
     console.error(err)
-    isLoading.value = false
+  } finally {
+    // isLoading.value = false
+    // eventFiles.value = [] // Clear the files after upload
+    // eventConfFileInput.value!.value = '' // Reset the input field
   }
 }
 </script>
 
 <style scoped lang="scss">
 @use "@featherds/styles/themes/variables";
-@import "@featherds/styles/themes/variables";
 
 .upload-files-tab {
   background: var(variables.$surface);
@@ -310,10 +210,6 @@ const uploadFiles = async () => {
           span {
             font-size: 1rem;
           }
-
-          .invalid-text {
-            color: var($error);
-          }
         }
 
         .actions {
@@ -323,13 +219,6 @@ const uploadFiles = async () => {
 
           button {
             margin: 0px;
-          }
-
-          .info-icon {
-            color: var(variables.$error);
-            cursor: pointer;
-            height: 1.5em;
-            width: 1.5em;
           }
         }
       }
@@ -359,3 +248,4 @@ const uploadFiles = async () => {
   }
 }
 </style>
+
