@@ -148,6 +148,87 @@ public class EventConfPersistenceServiceIT {
 
     @Test
     @JUnitTemporaryDatabase
+    @Transactional
+    public void testFilterEventConf_ShouldReturnFilteredResults() {
+        // Arrange: Persist multiple events with different vendors, UEIs, and source names
+        String filename1 = "vendor-cisco.xml";
+        String filename2 = "vendor-hp.xml";
+        String username = "filter_test_user";
+        Date now = new Date();
+
+        // First metadata (Cisco vendor)
+        EventConfSourceMetadataDto ciscoMetadata = new EventConfSourceMetadataDto.Builder()
+                .filename(filename1)
+                .eventCount(1)
+                .fileOrder(1)
+                .username(username)
+                .now(now)
+                .vendor("Cisco")
+                .description("Cisco events")
+                .build();
+
+        Event ciscoEvent = new Event();
+        ciscoEvent.setUei("uei.opennms.org/vendor/cisco");
+        ciscoEvent.setEventLabel("Cisco Event");
+        ciscoEvent.setDescr("Cisco test event");
+        ciscoEvent.setSeverity("Normal");
+
+        Events ciscoEvents = new Events();
+        ciscoEvents.getEvents().add(ciscoEvent);
+
+        eventConfPersistenceService.persistEventConfFile(ciscoEvents, ciscoMetadata);
+
+        // Second metadata (HP vendor)
+        EventConfSourceMetadataDto hpMetadata = new EventConfSourceMetadataDto.Builder()
+                .filename(filename2)
+                .eventCount(1)
+                .fileOrder(2)
+                .username(username)
+                .now(now)
+                .vendor("HP")
+                .description("HP events")
+                .build();
+
+        Event hpEvent = new Event();
+        hpEvent.setUei("uei.opennms.org/vendor/hp");
+        hpEvent.setEventLabel("HP Event");
+        hpEvent.setDescr("HP test event");
+        hpEvent.setSeverity("Normal");
+
+        Events hpEvents = new Events();
+        hpEvents.getEvents().add(hpEvent);
+
+        eventConfPersistenceService.persistEventConfFile(hpEvents, hpMetadata);
+
+        // Act: Filter only Cisco events
+        List<EventConfEvent> filteredResults = eventConfPersistenceService.findEventConfByFilters(
+                null, // uei
+                "Cisco", // vendor
+                null,  // sourceName
+                0, //offset
+                10 //limit
+        );
+
+        // Assert
+        Assert.assertNotNull(filteredResults);
+        Assert.assertFalse(filteredResults.isEmpty());
+        Assert.assertTrue(filteredResults.stream()
+                .allMatch(e -> "Cisco".equals(e.getSource().getVendor())));
+        Assert.assertTrue(filteredResults.stream()
+                .anyMatch(e -> e.getUei().contains("cisco")));
+    }
+
+    @Test
+    public void filter_shouldReturnEmptyList_whenNoMatchesFound() {
+        List<EventConfEvent> results = eventConfPersistenceService
+                .findEventConfByFilters("nonexistent-uei", "nonexistent-vendor", "nonexistent-source", 0, 10);
+
+        Assert.assertNotNull(results);
+        Assert.assertTrue(results.isEmpty());
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
     public void testUpdateSourceAndEventEnabled() {
         String username = "test_user";
         Date now = new Date();

@@ -25,6 +25,8 @@ package org.opennms.web.rest.v2;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.EventConfEventDto;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -88,6 +90,27 @@ public class EventConfRestService implements EventConfRestApi {
         }
 
         return Response.ok(Map.of("success", successList, "errors", errorList)).build();
+    }
+
+    @Override
+    public Response filterEventConf(String uei, String vendor, String sourceName, int offset, int limit, SecurityContext securityContext) {
+
+        // Return 400 Bad Request if offset is negative or limit is less than 1
+        if (offset < 0 || limit < 1) {
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        }
+
+        // Call the persistence service
+        List<EventConfEvent> results = eventConfPersistenceService.findEventConfByFilters(uei, vendor, sourceName, offset, limit);
+        if (results == null || results.isEmpty()) {
+            // Return 204 No Content if no matching records found
+            return Response.noContent().build();
+        }
+
+        List<EventConfEventDto> dtoList = EventConfEventDto.fromEntity(results);
+
+        // Return the matching results
+        return Response.ok(dtoList).build();
     }
 
     @Override

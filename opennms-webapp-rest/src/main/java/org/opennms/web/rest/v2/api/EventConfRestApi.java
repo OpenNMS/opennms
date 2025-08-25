@@ -10,6 +10,7 @@
  */
 package org.opennms.web.rest.v2.api;
 
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -18,7 +19,10 @@ import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 
+
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PATCH;
@@ -48,6 +52,30 @@ public interface EventConfRestApi {
     })
     Response uploadEventConfFiles(@Multipart("upload") List<Attachment> attachments,
                                   @Context SecurityContext securityContext) throws Exception;
+
+    @GET
+    @Path("filter")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(
+            summary = "Filter EventConf Records",
+            description = "Fetch EventConf records based on provided filters such as UEI, vendor, source and name.",
+            operationId = "filterEventConf"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "EventConf records retrieved successfully",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
+                    content = @Content),
+            @ApiResponse(responseCode = "204", description = "No matching EventConf records found for the given criteria",
+                    content = @Content)
+    })
+    Response filterEventConf(
+            @QueryParam("uei") String uei,
+            @QueryParam("vendor") String vendor,
+            @QueryParam("sourceName") String sourceName,
+            @QueryParam("offset") int offset,
+            @QueryParam("limit") int limit,
+            @Context SecurityContext securityContext );
 
     @PATCH
     @Path("/sources/status")
