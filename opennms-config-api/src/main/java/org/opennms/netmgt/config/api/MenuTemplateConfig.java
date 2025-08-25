@@ -19,14 +19,17 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.web.rest.support.menu.model;
+
+package org.opennms.netmgt.config.api;
+
+import org.opennms.netmgt.config.menu.MainMenu;
+import java.io.IOException;
 
 /**
- * Geographical Map tile provider info for adding additional tile maps.
- */
-public class TileProviderItem {
-    public String name;
-    public String url;
-    public String attribution;
-    public Boolean userDefinedAsDefault;
+ * An interface for getting menu template configuration.
+ *
+*/
+public interface MenuTemplateConfig {
+    /** Return a clone of the MainMenu object. This prevents the cached copy from being clobbered by calling code. */
+    MainMenu cloneMainMenu() throws IOException;
 }

@@ -292,6 +292,25 @@
     </dependency>
 
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config-api</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config-model</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-config</artifactId>
+      <version>${project.version}</version>
+      <scope>${onmsLibScope}</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.opennms.features.timeformat</groupId>
       <artifactId>org.opennms.features.timeformat.impl</artifactId>
       <version>${project.version}</version>

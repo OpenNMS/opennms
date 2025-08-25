@@ -34,7 +34,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.web.rest.support.menu.HttpMenuRequestContext;
-import org.opennms.web.rest.support.menu.model.MainMenu;
+import org.opennms.netmgt.config.menu.MainMenu;
 import org.opennms.web.rest.support.menu.MenuProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
