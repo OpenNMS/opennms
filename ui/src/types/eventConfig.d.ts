@@ -33,5 +33,9 @@ export type EventConfigFilesUploadReponse = {
     {
       file: string
     }
-  ]
+  ],
+   invalid?: {
+    file: string;
+    reason: string;
+  }[];
 }
