@@ -26,6 +26,7 @@ import org.opennms.netmgt.model.EventConfEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
@@ -48,6 +49,49 @@ public class EventConfEventDaoHibernate
     public EventConfEvent findByUei(String uei) {
         List<EventConfEvent> list = find("from EventConfEvent e where e.uei = ?", uei);
         return list.isEmpty() ? null : list.get(0);
+    }
+
+    public List<EventConfEvent> filterEventConf(final String uei, final String vendor, final String sourceName, final int offset, final int limit) {
+        List<Object> queryParamList = new ArrayList<>();
+        StringBuilder queryBuilder = new StringBuilder();
+        queryBuilder.append("from EventConfEvent e where 1=1 ");
+        if (uei != null && !uei.trim().isEmpty()) {
+            queryBuilder.append(" and lower(e.uei) like ? escape '\\' ");
+            queryParamList.add("%" + escapeLike(uei.trim().toLowerCase()) + "%"); // contains match
+        }
+
+        if (vendor != null && !vendor.trim().isEmpty()) {
+            queryBuilder.append(" and lower(e.source.vendor) like ? escape '\\' ");
+            queryParamList.add("%" + escapeLike(vendor.trim().toLowerCase()) + "%");
+        }
+
+        if (sourceName != null && !sourceName.trim().isEmpty()) {
+            queryBuilder.append(" and lower(e.source.name) like ? escape '\\' ");
+            queryParamList.add("%" + escapeLike(sourceName.trim().toLowerCase()) + "%");
+        }
+
+        queryBuilder.append(" order by e.createdTime desc ");
+
+        return findWithPagination(queryBuilder.toString(), queryParamList.toArray(), offset, limit);
+    }
+
+    /**
+     * Escapes special characters (% , _ , \, ., /, [, ]) in a string
+     * to make it safe for SQL LIKE queries.
+     *
+     * @param input the input string
+     * @return the escaped string
+     */
+    private String escapeLike(String input) {
+        return input
+                .replace("\\", "\\\\")
+                .replace("%", "\\%")
+                .replace("_", "\\_")
+                .replace("@", "\\@")
+                .replace("/", "\\/")
+                .replace("[", "\\[")
+                .replace("]", "\\]")
+                .replace(".", "\\.");
     }
 
     @Override
