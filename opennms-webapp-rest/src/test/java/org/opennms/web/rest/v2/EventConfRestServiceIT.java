@@ -29,6 +29,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.model.EventConfEventDto;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfSource;
@@ -49,6 +50,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
@@ -223,6 +226,49 @@ public class EventConfRestServiceIT {
         assertEquals(filename, errors.get(0).get("file"));
         assertTrue(errors.get(0).get("error").toString().contains("Exception"));
     }
+
+    @Test
+    @Transactional
+    public void testFilterEventConf_ShouldReturnFilteredResults() throws Exception {
+        // Step 1: Seed DB with events from known XMLs
+        String[] filenames = {"opennms.alarm.events.xml", "Cisco.airespace.xml"};
+        List<Attachment> attachments = new ArrayList<>();
+
+        for (final var name : filenames) {
+            final var path = "/EVENTS-CONF/" + name;
+            final var is = getClass().getResourceAsStream(path);
+            assertNotNull("Resource not found: " + path, is);
+            Attachment att = mock(Attachment.class);
+            ContentDisposition cd = mock(ContentDisposition.class);
+            when(cd.getParameter("filename")).thenReturn(name);
+            when(att.getContentDisposition()).thenReturn(cd);
+            when(att.getObject(InputStream.class)).thenReturn(is);
+            attachments.add(att);
+        }
+        Response uploadResp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), uploadResp.getStatus());
+
+        // Step 2: Call the filter API
+        Response resp = eventConfRestApi.filterEventConf(null, "Cisco", null, 0, 10, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+
+        List<EventConfEventDto> results = (List<EventConfEventDto>) resp.getEntity();
+
+        // Step 3: Assertions
+        assertNotNull(results);
+        assertFalse(results.isEmpty());
+        assertTrue(results.stream()
+                .allMatch(e -> "Cisco".equals(e.getVendor())));
+    }
+
+    @Test
+    @Transactional
+    public void testFilterEventConf_NoFilters_ShouldReturnNoContent() {
+        // Call without any filters
+        Response resp = eventConfRestApi.filterEventConf(null, null, null,0, 10,  securityContext);
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), resp.getStatus());
+    }
+
 
     @Test
     public void testDeleteEventConfSources_Success() throws Exception {

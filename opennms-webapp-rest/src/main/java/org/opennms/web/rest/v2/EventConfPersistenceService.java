@@ -53,6 +53,10 @@ public class EventConfPersistenceService {
         saveEvents(source, events, eventConfSourceMetadataDto.getUsername(), eventConfSourceMetadataDto.getNow());
     }
 
+    public List<EventConfEvent>  findEventConfByFilters(String uei, String vendor, String sourceName, int offset, int limit) {
+        return eventConfEventDao.filterEventConf(uei, vendor, sourceName, offset, limit);
+    }
+
     @Transactional
     public void deleteEventConfSources(EventConfSourceDeletePayload eventConfSourceDeletePayload) throws Exception {
         eventConfSourceDao.deleteBySourceIds(eventConfSourceDeletePayload.getSourceIds());
