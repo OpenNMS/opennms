@@ -4,7 +4,6 @@
 
 The menu organization is configured by the use of JSON menu templates.
 Currently these can be found in the `opennms/jetty-webapps/opennms/WEB-INF` folder in your {page-component-title} installation.
-Eventually these will be moved to the `opennms/etc` folder.
 
 The `menu-template.json` file controls the menu configuration.
 It is read by the Rest API v2 Menu service and displayed by the UI.
@@ -38,7 +37,8 @@ The menu template structure can be found in the Java code in: `org.opennms.web.r
 
 | baseHref, homeUrl, formattedDateTime, formattedDate, formattedTime,
 noticeStatus, username, baseNodeUrl, zenithConnectEnabled, zenithConnectBaseUrl,
-zenithConnectRelativeUrl, copyrightDates, version
+zenithConnectRelativeUrl, copyrightDates, version,
+userTileProviders
 | These are filled in at runtime with values. Any values you enter will be ignored.
 
 | displayAddNodeButton
@@ -46,10 +46,6 @@ zenithConnectRelativeUrl, copyrightDates, version
 
 | sideMenuInitialExpand
 | Whether the side menu is initially expanded.
-
-| userTileProviders
-| Tile provider information for the Geographical Map.
-We strongly suggest using the values provided in the existing templates.
 
 | helpMenu, selfServiceMenu, userNotificationMenu, provisionMenu, flowsMenu, configurationMenu
 | Control some specific menus. Most of these are deprecated and may be removed in a future version, we suggest not editing them.
