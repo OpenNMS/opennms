@@ -50,7 +50,6 @@ export const useEventConfigStore = defineStore('eventConfigStore', {
       this.deleteEventConfigSourceModalState.eventConfigSource = eventConfigSource
     },
     hideDeleteEventConfigSourceModal() {
-      console.log('hiding modal')
       this.deleteEventConfigSourceModalState.visible = false
       this.deleteEventConfigSourceModalState.eventConfigSource = null
     }

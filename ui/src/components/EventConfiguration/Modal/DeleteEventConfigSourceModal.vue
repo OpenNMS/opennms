@@ -42,7 +42,6 @@ const labels = {
 }
 
 const deleteEventConfigSource = async () => {
-  console.log('deleting event config source')
   try {
     // Call API to delete the event configuration source
     // await api.deleteEventConfigSource(store.deleteEventConfigSourceModalState.eventConfigSource.id);
