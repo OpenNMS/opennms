@@ -699,6 +699,15 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         });
     }
 
+    /**
+     * Click a WebElement using JavascriptExecutor since WebElement.click() does not
+     * always work when it is necessary to scroll.
+     */
+    public void clickElementUsingScript(WebElement element) {
+        LOG.debug("clicking element using script, element: {}");
+        ((JavascriptExecutor) getDriver()).executeScript("arguments[0].click();", element);
+    }
+
     public WebElement waitForElement(final By by) {
         return waitForElement(wait, by);
     }

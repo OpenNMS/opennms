@@ -75,7 +75,7 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumIT {
             new Check(
                     "admin/classification/index.jsp",
                     () -> pageContainsText("Classification rules defined by the user"),
-                    () -> findElementById("action.refresh").click(),
+                    () -> driver.findElement(By.xpath("//button[starts-with(@id, 'action.refresh')]")).click(),
                     null,
                     () -> validateRedirectedToLoginPage()),
             new Check(

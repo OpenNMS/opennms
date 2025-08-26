@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans
+        http://www.springframework.org/schema/beans/spring-beans-4.2.xsd" default-lazy-init="true">
+
+    <!-- Parent context (no dependencies) -->        
+    <bean id="daemonContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+        <constructor-arg>
+            <list>
+                <value>META-INF/opennms/applicationContext-daemon.xml</value>
+            </list>
+        </constructor-arg>
+    </bean>
+
+    <!-- Child context depending on daemonContext -->
+    <bean id="daoContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+        <constructor-arg>
+            <list>
+                <value>META-INF/opennms/applicationContext-dao.xml</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg ref="daemonContext" />
+    </bean>
+
+    <!-- Grandchild context depending on daoContext -->
+    <bean id="alarmdContext" class="org.springframework.context.support.ClassPathXmlApplicationContext">
+        <constructor-arg>
+            <list>
+                <value>META-INF/opennms/applicationContext-alarmd.xml</value>
+            </list>
+        </constructor-arg>
+        <constructor-arg ref="daoContext" />
+    </bean>
+
+</beans>
