@@ -11,7 +11,7 @@
 
     <reference id="twinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber" availability="mandatory"/>
 
-    <bean id="minionInformationElementXmlProvider" class="org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.MinionInformationElementXmlProvider">
+    <bean id="minionInformationElementXmlProvider" class="org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.xml.minion.MinionInformationElementXmlProvider">
         <argument ref="twinSubscriber"/>
     </bean>
 

@@ -9,10 +9,10 @@
 		http://aries.apache.org/schemas/blueprint-ext/blueprint-ext-1.1.xsd
 ">
 
-    <reference id="twinPublisher" interface="org.opennms.core.ipc.twin.api.TwinPublisher" availability="optional"/>
+    <reference id="twinPublisher" interface="org.opennms.core.ipc.twin.api.TwinPublisher" availability="mandatory"/>
     <reference id="twinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber" availability="mandatory"/>
 
-    <bean id="coreInformationElementXmlProvider" class="org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.CoreInformationElementXmlProvider">
+    <bean id="coreInformationElementXmlProvider" class="org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.xml.core.CoreInformationElementXmlProvider">
         <argument ref="twinPublisher"/>
         <argument ref="twinSubscriber"/>
     </bean>
@@ -22,5 +22,4 @@
             <entry key="registration.export" value="true" />
         </service-properties>
     </service>
-
 </blueprint>

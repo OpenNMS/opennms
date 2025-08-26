@@ -1,8 +1,9 @@
-package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie;
+package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.xml.core;
 
 import org.opennms.core.fileutils.DotDUpdateWatcher;
 import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.xml.IpfixDotD;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.xml.IpfixElements;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.AbstractInformationElementXmlProvider;
@@ -25,8 +26,7 @@ public class CoreInformationElementXmlProvider extends AbstractInformationElemen
     private static final Logger LOG = LoggerFactory.getLogger(CoreInformationElementXmlProvider.class);
     final String OPENNMS_HOME = System.getProperty("opennms.home");
 
-    private TwinPublisher twinPublisher;
-    private Closeable twinSubscription;
+    private final TwinPublisher twinPublisher;
     private InformationElementDatabase.Adder adder;
 
     public CoreInformationElementXmlProvider(final TwinPublisher twinPublisher, final TwinSubscriber twinSubscriber) {

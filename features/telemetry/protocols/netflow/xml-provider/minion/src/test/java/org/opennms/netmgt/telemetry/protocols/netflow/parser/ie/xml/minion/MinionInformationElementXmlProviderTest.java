@@ -1,4 +1,4 @@
-package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie;
+package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.xml.minion;
 
 import org.awaitility.Awaitility;
 import org.junit.Assert;
@@ -9,6 +9,7 @@ import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.core.ipc.twin.memory.MemoryTwinPublisher;
 import org.opennms.core.ipc.twin.memory.MemoryTwinSubscriber;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.xml.Element;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.xml.IpfixDotD;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.xml.IpfixElements;

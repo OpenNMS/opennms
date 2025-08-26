@@ -25,7 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie;
+package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.xml.core;
 
 import org.awaitility.Awaitility;
 import org.junit.Assert;
@@ -35,6 +35,7 @@ import org.junit.rules.TemporaryFolder;
 import org.opennms.core.ipc.twin.memory.MemoryTwinPublisher;
 import org.opennms.core.ipc.twin.memory.MemoryTwinSubscriber;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.Protocol;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.xml.Element;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.xml.IpfixElements;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.xml.Scope;

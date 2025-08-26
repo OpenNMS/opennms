@@ -1,6 +1,7 @@
-package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie;
+package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.xml.minion;
 
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.AbstractInformationElementXmlProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
