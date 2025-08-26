@@ -234,7 +234,7 @@ onMounted(async () => {
 
         .action-container {
           display: flex;
-          justify-content: center;
+          align-items: center;
           gap: 5px;
 
           button {
