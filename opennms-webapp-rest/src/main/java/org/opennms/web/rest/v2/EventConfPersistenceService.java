@@ -112,7 +112,7 @@ public class EventConfPersistenceService {
 
     private void saveEventsToDatabase(){
 
-        Map<String, Events> fileEventsMap = eventConfDao.getRootEvents().getM_loadedEventFiles();
+        Map<String, Events> fileEventsMap = eventConfDao.getRootEvents().getLoadedEventFiles();
         int fileOrder = 1;
         for (Map.Entry<String, Events> entry : fileEventsMap.entrySet()) {
             String fileName = entry.getKey();
@@ -122,8 +122,10 @@ public class EventConfPersistenceService {
             }
             Events events = entry.getValue();
 
+            if(fileName.contains("opennms.hyperic.events.xml")) continue;
+
             if (fileName.startsWith("opennms")) {
-                EventConfSourceMetadataDto metadataDto = new EventConfSourceMetadataDto.Builder().filename(fileName).now(new Date()).vendor(StringUtils.substringBefore(fileName, ".")).username("Opennms").description("").eventCount(events.getEvents().size()).fileOrder(fileOrder++).build();
+                EventConfSourceMetadataDto metadataDto = new EventConfSourceMetadataDto.Builder().filename(fileName).now(new Date()).vendor(StringUtils.substringBefore(fileName, ".")).username("system-migration").description("").eventCount(events.getEvents().size()).fileOrder(fileOrder++).build();
                 persistEventConfFile(events, metadataDto);
             }
         }

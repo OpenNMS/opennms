@@ -470,7 +470,7 @@ public class Events implements Serializable {
         return m_loadedEventFiles.get(relativePath);
     }
 
-    public Map<String, Events> getM_loadedEventFiles() {
+    public Map<String, Events> getLoadedEventFiles() {
         return m_loadedEventFiles;
     }
 
