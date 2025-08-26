@@ -95,4 +95,4 @@ The older/legacy JSP and Vaadin pages have a Vue menu app embedded into them con
 The organization of the side menu is controlled by JSON menu templates and
 is user-customizable.
 
-See the xref:operation:deep-dive/menu/menu-templates.adoc[menu templates documentation].
+See the xref:development:menu/menu-templates.adoc[menu templates documentation].

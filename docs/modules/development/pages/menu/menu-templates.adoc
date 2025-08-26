@@ -4,7 +4,6 @@
 
 The menu organization is configured by the use of JSON menu templates.
 Currently these can be found in the `opennms/jetty-webapps/opennms/WEB-INF` folder in your {page-component-title} installation.
-Eventually these will be moved to the `opennms/etc` folder.
 
 The `menu-template.json` file controls the menu configuration.
 It is read by the Rest API v2 Menu service and displayed by the UI.
