@@ -70,14 +70,24 @@
             <td>{{ config.vendor }}</td>
             <td>{{ config.eventCount }}</td>
             <td>
-              <FeatherButton
-                primary
-                icon="View Details"
-                data-test="view-button"
-                @click="onEventClick(config.id)"
-              >
-                <FeatherIcon :icon="ViewDetails"> </FeatherIcon>
-              </FeatherButton>
+              <div class="action-container">
+                <FeatherButton
+                  primary
+                  icon="View Details"
+                  data-test="view-button"
+                  @click="onEventClick(config.id)"
+                >
+                  <FeatherIcon :icon="ViewDetails"> </FeatherIcon>
+                </FeatherButton>
+                <FeatherButton
+                  primary
+                  icon="Delete"
+                  data-test="delete-source-button"
+                  @click="store.showDeleteEventConfigSourceModal(config)"
+                >
+                  <FeatherIcon :icon="Delete"> </FeatherIcon>
+                </FeatherButton>
+              </div>
             </td>
           </tr>
         </TransitionGroup>
@@ -101,6 +111,7 @@
         />
       </div>
     </div>
+    <DeleteEventConfigSourceModal />
   </TableCard>
 </template>
 
@@ -108,14 +119,16 @@
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
+import Delete from '@featherds/icon/action/Delete'
 import DownloadFile from '@featherds/icon/action/DownloadFile'
 import Search from '@featherds/icon/action/Search'
 import ViewDetails from '@featherds/icon/action/ViewDetails'
 import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
+import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import TableCard from '../Common/TableCard.vue'
-import { FeatherPagination } from '@featherds/pagination'
+import DeleteEventConfigSourceModal from './Modal/DeleteEventConfigSourceModal.vue'
 
 const router = useRouter()
 const store = useEventConfigStore()
@@ -217,6 +230,16 @@ onMounted(async () => {
         div {
           border-radius: 5px;
           padding: 0px 5px 0px 5px;
+        }
+
+        .action-container {
+          display: flex;
+          justify-content: center;
+          gap: 5px;
+
+          button {
+            margin: 0px;
+          }
         }
       }
     }

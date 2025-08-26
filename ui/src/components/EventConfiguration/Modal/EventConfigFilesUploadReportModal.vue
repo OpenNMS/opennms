@@ -3,6 +3,7 @@
     v-model="store.uploadedFilesReportModalState.visible"
     :labels="{ title: 'Upload Report', close: 'Close' }"
     hide-close
+    @hidden="closeDialog"
   >
     <div>
       <h4>Message:</h4>

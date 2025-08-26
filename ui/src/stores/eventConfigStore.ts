@@ -15,6 +15,10 @@ export const useEventConfigStore = defineStore('eventConfigStore', {
     activeTab: 0,
     uploadedFilesReportModalState: {
       visible: false
+    },
+    deleteEventConfigSourceModalState: {
+      visible: false,
+      eventConfigSource: null
     }
   }),
   actions: {
@@ -40,6 +44,15 @@ export const useEventConfigStore = defineStore('eventConfigStore', {
     },
     resetActiveTab(){
       this.activeTab = 0
+    },
+    showDeleteEventConfigSourceModal(eventConfigSource: EventConfSourceMetadata) {
+      this.deleteEventConfigSourceModalState.visible = true
+      this.deleteEventConfigSourceModalState.eventConfigSource = eventConfigSource
+    },
+    hideDeleteEventConfigSourceModal() {
+      console.log('hiding modal')
+      this.deleteEventConfigSourceModalState.visible = false
+      this.deleteEventConfigSourceModalState.eventConfigSource = null
     }
   }
 })

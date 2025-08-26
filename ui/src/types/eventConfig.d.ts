@@ -19,6 +19,10 @@ export type EventConfigState = {
   activeTab: number
   uploadedFilesReportModalState: {
     visible: boolean
+  },
+  deleteEventConfigSourceModalState: {
+    visible: boolean,
+    eventConfigSource: EventConfSourceMetadata | null
   }
 }
 
