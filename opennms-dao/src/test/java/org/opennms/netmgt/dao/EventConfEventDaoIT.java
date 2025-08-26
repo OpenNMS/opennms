@@ -133,7 +133,7 @@ public class EventConfEventDaoIT implements InitializingBean {
     public void testFindAllEventConfEvents() {
         List<EventConfEvent> event = m_eventDao.findAll();
         assertNotNull("Expected to find all events", event);
-        assertEquals(4, event.size());
+        assertEquals(162, event.size());
 
     }
 
@@ -142,7 +142,7 @@ public class EventConfEventDaoIT implements InitializingBean {
     public void testGetById() {
         List<EventConfEvent> events = m_eventDao.findAll();
         assertNotNull("Events should not be null", events);
-        assertEquals(4, events.size());
+        assertEquals(162, events.size());
         EventConfEvent result = m_eventDao.get(events.get(0).getId());
         assertNotNull("Fetched event should not be null", result);
         assertEquals(events.get(0).getUei(), result.getUei());
@@ -169,14 +169,14 @@ public class EventConfEventDaoIT implements InitializingBean {
     public void testFindEnabledEvents() {
         List<EventConfEvent> enabledEvents = m_eventDao.findEnabledEvents();
         assertNotNull("Enabled events should be found", enabledEvents);
-        assertEquals(4, enabledEvents.size());
+        assertEquals(162, enabledEvents.size());
 
         EventConfEvent event = enabledEvents.get(0);
         event.setEnabled(false);
         m_eventDao.saveOrUpdate(event);
 
         List<EventConfEvent> updatedEnabled = m_eventDao.findEnabledEvents();
-        assertEquals(3, updatedEnabled.size());
+        assertEquals(161, updatedEnabled.size());
     }
 
     @Test

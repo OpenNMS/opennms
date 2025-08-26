@@ -252,10 +252,10 @@ public class EventConfRestServiceIT {
 
     @Test
     @Transactional
-    public void testFilterEventConf_NoFilters_ShouldReturnNoContent() {
+    public void testFilterEventConf_NoFilters_ShouldReturnAllResults() {
         // Call without any filters
         Response resp = eventConfRestApi.filterEventConf(null, null, null,0, 10,  securityContext);
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), resp.getStatus());
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
     }
 
 }
