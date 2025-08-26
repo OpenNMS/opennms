@@ -470,6 +470,10 @@ public class Events implements Serializable {
         return m_loadedEventFiles.get(relativePath);
     }
 
+    public Map<String, Events> getM_loadedEventFiles() {
+        return m_loadedEventFiles;
+    }
+
     public void addLoadedEventFile(final String relativePath, final Events events) {
         if (!m_eventFiles.contains(relativePath)) {
             m_eventFiles.add(relativePath);

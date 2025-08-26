@@ -21,7 +21,9 @@
  */
 package org.opennms.web.rest.v2;
 
+import org.apache.commons.lang.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
@@ -33,8 +35,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class EventConfPersistenceService {
@@ -45,6 +49,12 @@ public class EventConfPersistenceService {
     @Autowired
     private EventConfEventDao eventConfEventDao;
 
+    @Autowired
+    private EventConfDao eventConfDao;
+    @PostConstruct
+    public void initService(){
+     //   saveEventsToDatabase();
+    }
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void persistEventConfFile(final Events events, final EventConfSourceMetadataDto eventConfSourceMetadataDto) {
         EventConfSource source = createOrUpdateSource(eventConfSourceMetadataDto);
@@ -91,5 +101,25 @@ public class EventConfPersistenceService {
         }).toList();
 
         eventEntities.forEach(eventConfEventDao::save);
+    }
+
+    private void saveEventsToDatabase(){
+
+        Map<String, Events> fileEventsMap = eventConfDao.getRootEvents().getM_loadedEventFiles();
+        int fileOrder = 1;
+        for (Map.Entry<String, Events> entry : fileEventsMap.entrySet()) {
+            String fileName = entry.getKey();
+            if(fileName.startsWith("events/")) {
+                String[] parts = fileName.split("/");
+                 fileName = parts[parts.length - 1];
+            }
+            Events events = entry.getValue();
+
+            if (fileName.startsWith("opennms")) {
+                EventConfSourceMetadataDto metadataDto = new EventConfSourceMetadataDto.Builder().filename(fileName).now(new Date()).vendor(StringUtils.substringBefore(fileName, ".")).username("Opennms").description("").eventCount(events.getEvents().size()).fileOrder(fileOrder++).build();
+                persistEventConfFile(events, metadataDto);
+            }
+        }
+
     }
 }
