@@ -38,7 +38,7 @@ import { FeatherDialog } from '@featherds/dialog'
 
 const store = useEventConfigStore()
 const labels = {
-  title: 'Delete EventConf Source'
+  title: 'Delete Event Configuration Source'
 }
 
 const deleteEventConfigSource = async () => {
