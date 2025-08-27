@@ -28,28 +28,19 @@
     </bean>
 
         <bean id="connectorListener"
-              class="org.opennms.netmgt.telemetry.daemon.ConnectorStarter"
+              class="org.opennms.netmgt.telemetry.connectors.ConnectorStarter"
               init-method="start"
               destroy-method="stop">
             <property name="configMap" ref="openconfigDefinitionMap"/>
             <property name="messageDispatcherFactory" ref="messageDispatcherFactory"/>
             <property name="distPollerDao" ref="distPollerDao"/>
             <property name="telemetryRegistry" ref="telemetryRegistry"/>
-            <property name="bundleContext" ref="blueprintBundleContext"/>
         </bean>
 
 
         <reference-list id="twinSubscriberRef" interface="org.opennms.core.ipc.twin.api.TwinSubscriber" availability="optional">
             <reference-listener bind-method="bind" unbind-method="unbind" ref="connectorListener"/>
         </reference-list>
-
-        <service interface="org.osgi.service.cm.ManagedService"
-                 ref="connectorListener">
-            <service-properties>
-                <entry key="service.pid"
-                       value="org.opennms.features.telemetry.openconfig"/>
-            </service-properties>
-        </service>
 
 </blueprint>
 

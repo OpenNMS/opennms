@@ -157,9 +157,10 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
     
     private static class FilterResultsImpl implements FilterResults {
         private final Map<Integer, Map<InetAddress, Set<String>>> nodeIpServiceMap;
-
-        public FilterResultsImpl(Map<Integer, Map<InetAddress, Set<String>>> nodeIpServiceMap) {
+        Map<Integer, String> nodeLocations;
+        public FilterResultsImpl(Map<Integer, Map<InetAddress, Set<String>>> nodeIpServiceMap, Map<Integer, String> nodeLocations) {
             this.nodeIpServiceMap = Objects.requireNonNull(nodeIpServiceMap);
+            this.nodeLocations = Objects.requireNonNull(nodeLocations);
         }
 
         @Override
@@ -175,7 +176,7 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
                 for (Map.Entry<InetAddress, Set<String>> interfaceEntry : nodeEntry.getValue().entrySet()) {
                     InetAddress interfaceAddress = interfaceEntry.getKey();
                     if (interfaceEntry.getValue().contains(serviceName)) {
-                        serviceRefs.add(new ServiceRef(nodeId, interfaceAddress, serviceName));
+                        serviceRefs.add(new ServiceRef(nodeId, interfaceAddress, serviceName,nodeLocations.get(nodeId)));
                     }
                 }
             }
@@ -218,7 +219,7 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
             lastRefreshedMs = System.currentTimeMillis();
             LOG.debug("Refreshing results for filter rule: {}", rule);
             FilterResults newFilterResults = sessionUtils.withReadOnlyTransaction(() ->
-                    new FilterResultsImpl(filterDao.getNodeIPAddressServiceMap(rule)));
+                    new FilterResultsImpl(filterDao.getNodeIPAddressServiceMap(rule),filterDao.getNodeLocations()));
             LOG.debug("Done refreshing results for rule.");
 
             final FilterResults lastFilterResults = lastFilterResultsRef.get();

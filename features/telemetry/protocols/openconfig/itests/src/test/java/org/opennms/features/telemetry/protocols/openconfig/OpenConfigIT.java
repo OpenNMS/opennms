@@ -27,6 +27,8 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -39,6 +41,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
+import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -49,9 +52,12 @@ import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
+import org.opennms.netmgt.telemetry.api.receiver.Connector;
+import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.config.dao.TelemetrydConfigDao;
 import org.opennms.netmgt.telemetry.config.model.AdapterConfig;
 import org.opennms.netmgt.telemetry.config.model.ConnectorConfig;
+import org.opennms.netmgt.telemetry.config.model.ConnectorTwinConfig;
 import org.opennms.netmgt.telemetry.config.model.PackageConfig;
 import org.opennms.netmgt.telemetry.config.model.Parameter;
 import org.opennms.netmgt.telemetry.config.model.QueueConfig;
@@ -118,6 +124,11 @@ public class OpenConfigIT {
     private File rrdBaseDir;
 
     private int port;
+    @Autowired
+    private TwinSubscriber memoryTwinSubscriberDefault;
+    @Autowired
+    private TelemetryRegistry telemetryRegistry;
+
 
     @Before
     public void setUp() throws IOException {
@@ -130,6 +141,10 @@ public class OpenConfigIT {
                 .setForeignId("1")
                 .setType(OnmsNode.NodeType.ACTIVE);
         nb.addInterface("127.0.0.1");
+        nb.setNodeMetaDataEntry("device","oc.port","50054");
+        nb.setNodeMetaDataEntry("device","oc.mode","jti");
+        nb.setNodeMetaDataEntry("device","oc.mode","/network-instances/network-instance[instance-name='master'],/protocols/protocol/bgp");
+
         OnmsServiceType onmsServiceType = new OnmsServiceType("OpenConfig");
         serviceTypeDao.save(onmsServiceType);
         nb.addService(onmsServiceType);
@@ -146,9 +161,12 @@ public class OpenConfigIT {
     public void testOpenConfigForJti() throws Exception {
 
         // Use custom configuration to enable openconfig.
-        updateDaoWithConfig(getConfig(true));
+        TelemetrydConfig config = getConfig(true);
+        updateDaoWithConfig(config);
         // Start the daemon
         telemetryd.start();
+
+        subscribeAndStream(config);
         // Wait until the JRB archive is created
         await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
                 .resolve(Paths.get("1", "eth0", "ifInOctets.jrb")).toFile().canRead(), equalTo(true));
@@ -158,9 +176,13 @@ public class OpenConfigIT {
     public void testOpenConfigForGnmi() throws Exception {
 
         // Use custom configuration to enable openconfig.
-        updateDaoWithConfig(getConfig(false));
+        TelemetrydConfig config = getConfig(false);
+        updateDaoWithConfig(config);
         // Start the daemon
         telemetryd.start();
+
+        subscribeAndStream(config);
+
         // Wait until the JRB archive is created
         await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
                 .resolve(Paths.get("1", "eth1", "ifInOctets.jrb")).toFile().canRead(), equalTo(true));
@@ -253,5 +275,25 @@ public class OpenConfigIT {
         }
         telemetryd.destroy();
     }
+    private void subscribeAndStream(TelemetrydConfig config) {
+        ConnectorConfig connectorConfig = config.getConnectors().stream()
+                .filter(ConnectorConfig::isEnabled)
+                .findFirst()
+                .orElseThrow(() -> new IllegalStateException("No enabled connector found in test config"));
+
+        final Connector connector = telemetryRegistry.getConnector(connectorConfig);
+
+        memoryTwinSubscriberDefault.subscribe(ConnectorTwinConfig.CONNECTOR_KEY, ConnectorTwinConfig.class, cg -> {
+            ConnectorTwinConfig.ConnectorConfig connectorConfigs = cg.getConfigurations().get(0);
+            try {
+                InetAddress ip = InetAddress.getByName(connectorConfigs.getIpAddress());
+                connector.stream(connectorConfigs.getNodeId(), ip, connectorConfigs.getParameters());
+            } catch (UnknownHostException e) {
+                throw new RuntimeException("Invalid IP address in test connector config: " + connectorConfigs.getIpAddress(), e);
+            }
+        });
+    }
+
+
 
 }

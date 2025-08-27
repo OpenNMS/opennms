@@ -30,6 +30,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Response;
@@ -148,6 +149,11 @@ public class AgentConfigurationResourceTest {
         @Override
         public List<InetAddress> getActiveIPAddressList(final String rule) throws FilterParseException {
             return m_activeAddresses;
+        }
+
+        @Override
+        public Map<Integer, String> getNodeLocations() {
+            return Map.of();
         }
     }
     

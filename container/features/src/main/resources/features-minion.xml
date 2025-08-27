@@ -162,8 +162,8 @@
     </feature>
 
     <feature name="minion-telemetryd-connectors" description="Minion :: Telemetry :: Conectors" version="${project.version}">
+        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.connectors/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.common/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.telemetry/org.opennms.features.telemetry.daemon/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.openconfig/org.opennms.features.openconfig.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.common/${project.version}</bundle>
         <bundle>mvn:org.opennms.core.grpc/org.opennms.core.grpc.osgi/${project.version}</bundle>

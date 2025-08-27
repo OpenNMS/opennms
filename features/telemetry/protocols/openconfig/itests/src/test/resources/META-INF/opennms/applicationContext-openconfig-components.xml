@@ -24,6 +24,35 @@
 
   <onmsgi:service interface="org.opennms.netmgt.telemetry.api.receiver.ConnectorFactory" ref="connectorFactory" />
 
+    <bean id="locationPublisherManager"
+          class="org.opennms.netmgt.telemetry.daemon.LocationPublisherManager"/>
+
+
+    <bean id="openConfigTwinPublisher"
+          class="org.opennms.netmgt.telemetry.daemon.OpenConfigTwinPublisherImpl">
+        <constructor-arg ref="locationPublisherManager"/>
+    </bean>
+    <bean name="memoryTwinSubscriber" class="org.opennms.core.ipc.twin.memory.MemoryTwinSubscriber">
+        <constructor-arg index="0" ref="memoryTwinPublisher"/>
+        <constructor-arg index="1" value="Default"/>
+    </bean>
+
+    <bean name="memoryTwinSubscriberDefault" class="org.opennms.core.ipc.twin.memory.MemoryTwinSubscriber">
+        <constructor-arg index="0" ref="memoryTwinPublisher"/>
+        <constructor-arg index="1" value="Default"/>
+    </bean>
+
+    <bean name="memoryTwinSubscriberRemote" class="org.opennms.core.ipc.twin.memory.MemoryTwinSubscriber">
+        <constructor-arg index="0" ref="memoryTwinPublisher"/>
+        <constructor-arg index="1" value="Remote"/>
+    </bean>
+    <bean name="memoryTwinPublisher" class="org.opennms.core.ipc.twin.memory.MemoryTwinPublisher">
+    </bean>
+
+    <bean name="memoryTwinSubscriberLOC-TEST" class="org.opennms.core.ipc.twin.memory.MemoryTwinSubscriber">
+        <constructor-arg index="0" ref="memoryTwinPublisher"/>
+        <constructor-arg index="1" value="LOC-TEST"/>
+    </bean>
 
 
 </beans>

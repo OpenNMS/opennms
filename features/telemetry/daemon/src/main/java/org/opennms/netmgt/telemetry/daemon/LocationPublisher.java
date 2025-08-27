@@ -22,22 +22,24 @@
 package org.opennms.netmgt.telemetry.daemon;
 
 import org.opennms.core.ipc.twin.api.TwinPublisher;
+import org.opennms.netmgt.telemetry.config.model.ConnectorTwinConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
 
 
 public class LocationPublisher {
     private static final Logger LOG = LoggerFactory.getLogger(LocationPublisher.class);
-
     private final String location;
     private final TwinPublisher twinPublisher;
     private final ReentrantLock lock = new ReentrantLock();
     private TwinPublisher.Session<ConnectorTwinConfig> session;
-    private final AtomicInteger refCount = new AtomicInteger(0);
+    private final Map<String, ConnectorTwinConfig.ConnectorConfig> configs = new HashMap<>();
 
     public LocationPublisher(String location, TwinPublisher twinPublisher) {
         this.location = location;
@@ -45,76 +47,66 @@ public class LocationPublisher {
     }
 
 
-    public void acquireAndPublishStart(ConnectorTwinConfig cfg) throws IOException {
+    public void addConfigAndPublish(ConnectorTwinConfig.ConnectorConfig cfg) throws IOException {
         lock.lock();
         try {
-            if (session == null) {
-                LOG.info("Initializing twin session for location: {}", location);
-                session = twinPublisher.register(
-                        ConnectorTwinConfig.CONNECTOR_KEY,
-                        ConnectorTwinConfig.class,
-                        location
-                );
-            }
-
-            refCount.incrementAndGet();
-            session.publish(cfg);
+            configs.put(cfg.getNodeConnectorKey(), cfg);
+            publishCurrentConfigs();
         } finally {
             lock.unlock();
         }
     }
 
-    public void publishStopAndMaybeClose(ConnectorTwinConfig stopCfg) {
+    public void removeConfigAndPublish(String connectionKey) throws IOException {
         lock.lock();
         try {
-            if (session != null) {
-                try {
-                    session.publish(stopCfg);
-                } catch (IOException e) {
-                    LOG.error("Failed to publish stop for location {}: {}", location, e.getMessage(), e);
-                }
-            } else {
-                LOG.debug("No session for location {} while publishing stop", location);
-            }
-
-            int remaining = refCount.decrementAndGet();
-
-            if (remaining <= 0) {
-                try {
-                    if (session != null) {
-                        session.close();
-                        LOG.info("Twin session closed for location {}", location);
-                    }
-                } catch (IOException e) {
-                    LOG.warn("Failed to close twin session for location {}: {}", location, e.getMessage(), e);
-                } finally {
-                    session = null;
-                    refCount.set(0);
+            if (configs.remove(connectionKey) != null) {
+                publishCurrentConfigs();
+                if (configs.isEmpty()) {
+                    closeSession();
                 }
             }
         } finally {
             lock.unlock();
+        }
+    }
+
+    private void publishCurrentConfigs() throws IOException {
+        if (session == null) {
+            session = twinPublisher.register(
+                    ConnectorTwinConfig.CONNECTOR_KEY,
+                    ConnectorTwinConfig.class,
+                    location
+            );
+        }
+        session.publish(new ConnectorTwinConfig(new ArrayList<>(configs.values())));
+    }
+
+    private void closeSession() throws IOException {
+        if (session != null) {
+            session.close();
+            session = null;
         }
     }
 
     public void forceClose() {
         lock.lock();
         try {
-            if (session != null) {
-                try {
-                    session.close();
-                    LOG.info("Closed twin session for location {} (force)", location);
-                } catch (IOException e) {
-                    LOG.warn("Failed to force-close twin session for location {}: {}", location, e.getMessage(), e);
-                } finally {
-                    session = null;
-                    refCount.set(0);
-                }
-            }
+            configs.clear();
+            closeSession();
+        } catch (IOException e) {
+            LOG.warn("Failed to close session for {}: {}", location, e.getMessage(), e);
         } finally {
             lock.unlock();
         }
     }
 
-    public int getRefCount() { return refCount.get(); }
+    public boolean hasConfigs() {
+        lock.lock();
+        try {
+            return !configs.isEmpty();
+        } finally {
+            lock.unlock();
+        }
+    }
 }

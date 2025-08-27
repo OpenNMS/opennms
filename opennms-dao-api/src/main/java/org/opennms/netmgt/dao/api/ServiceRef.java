@@ -37,11 +37,13 @@ public class ServiceRef {
     private final int nodeId;
     private final InetAddress ipAddress;
     private final String serviceName;
-
+    private final String location;
     public ServiceRef(final int nodeId,
                    final InetAddress ipAddress,
-                   final String serviceName) {
+                   final String serviceName,
+                      final String location) {
         this.nodeId = nodeId;
+        this.location = location;
         this.ipAddress = Objects.requireNonNull(ipAddress);
         this.serviceName = Objects.requireNonNull(serviceName);
     }
@@ -51,11 +53,11 @@ public class ServiceRef {
         final String ipAddress = event.getInterface();
         final String serviceName = event.getService();
 
-        return new ServiceRef(nodeId, InetAddressUtils.addr(ipAddress), serviceName);
+        return new ServiceRef(nodeId, InetAddressUtils.addr(ipAddress), serviceName,null);
     }
 
     public static ServiceRef fromIpInterface(OnmsIpInterface ipInterface, String serviceName) {
-        return new ServiceRef(ipInterface.getNodeId(), ipInterface.getIpAddress(), serviceName);
+        return new ServiceRef(ipInterface.getNodeId(), ipInterface.getIpAddress(), serviceName,null);
     }
 
     public int getNodeId() {
@@ -70,6 +72,7 @@ public class ServiceRef {
         return serviceName;
     }
 
+    public String getLocation() { return location;}
     @Override
     public boolean equals(Object o) {
         if (this == o) {

@@ -24,27 +24,20 @@ package org.opennms.netmgt.telemetry.daemon;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.List;
-import java.util.Map;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
-import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Objects;
-import java.util.Collections;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
 import java.util.stream.Collectors;
-import org.hibernate.ObjectNotFoundException;
-import org.opennms.core.ipc.twin.api.TwinPublisher;
+
 import org.opennms.core.mate.api.EntityScopeProvider;
 import org.opennms.core.mate.api.FallbackScope;
 import org.opennms.core.mate.api.Interpolator;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.dao.api.ServiceRef;
 import org.opennms.netmgt.dao.api.ServiceTracker;
-import org.opennms.netmgt.model.OnmsMetaData;
-import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.telemetry.api.receiver.Connector;
 import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.config.model.ConnectorConfig;
@@ -54,12 +47,8 @@ import org.opennms.netmgt.telemetry.config.model.TelemetrydConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import com.google.common.annotations.VisibleForTesting;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.TransactionDefinition;
-import org.springframework.transaction.support.TransactionTemplate;
 
-import javax.annotation.PostConstruct;
+import com.google.common.annotations.VisibleForTesting;
 
 /**
  * The ConnectorManager is responsible for starting/stopping connectors that connect to the target agents.
@@ -86,64 +75,25 @@ public class ConnectorManager {
     private ServiceTracker serviceTracker;
 
     @Autowired
-    private NodeDao nodeDao;
-
-    @Autowired
-    private PlatformTransactionManager txManager;
-
-    private TransactionTemplate readOnlyTxTemplate;
-
-    @Autowired
-    private TwinPublisher twinPublisher;
-
-    // this will hold the key-> connector key for identification and value-> location
-    // when node is removed then we have no way to find its location just to stop its  connector at minion side
-    private final ConcurrentMap<ConnectorKey, String> connectorsByKey = new ConcurrentHashMap<>();
+    private OpenConfigTwinPublisher openConfigTwinPublisher;
+    private final Map<ConnectorKey, Connector> connectorsByKey = new LinkedHashMap<>();
 
     private final List<Closeable> serviceTrackerSessions = new LinkedList<>();
-    private LocationPublisherManager locationPublisherManager;
-
-    @PostConstruct
-    public void init() {
-        readOnlyTxTemplate = new TransactionTemplate(txManager);
-        readOnlyTxTemplate.setReadOnly(true);
-        readOnlyTxTemplate.setPropagationBehavior(TransactionDefinition.PROPAGATION_REQUIRED);
-        this.locationPublisherManager = new LocationPublisherManager(twinPublisher);
-    }
 
     private void startStreamingFor(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceRef serviceRef) {
         synchronized (connectorsByKey) {
             final ConnectorKey key = toKey(connectorConfig, packageConfig, serviceRef);
-
-            NodeWithMetadata result = fetchNodeWithMetadata(serviceRef.getNodeId());
-
-            String prev = connectorsByKey.putIfAbsent(key, result.location); // adjust ServiceRef to provide location
-            if (prev != null) {
-                LOG.debug("Connector already exists. Ignoring: {}", key);
-                return;
+            if (connectorsByKey.containsKey(key)) {
+                LOG.debug("Connector already exists. Ignoring.");
             }
-
-            List<Map<String, String>> interpolatedMapList = groupMetaDataParams(result.metadata);
-
-            String location = result.location;
-            LocationPublisher lp = locationPublisherManager.getOrCreate(location);
-
-            ConnectorTwinConfig cfg = new ConnectorTwinConfig(
-                    serviceRef.getNodeId(),
-                    serviceRef.getIpAddress().getHostAddress(),
-                    key.stringKey(), // implement stringKey() on ConnectorKey
-                    true,
-                    interpolatedMapList
-            );
+            List<Map<String, String>> interpolatedMapList = getGroupedParams(packageConfig, serviceRef);
 
             try {
-                lp.acquireAndPublishStart(cfg);
+                openConfigTwinPublisher.publishConfig(serviceRef,interpolatedMapList,key.stringKey());
             } catch (IOException e) {
-                LOG.error("Failed to initialize/publish twin for location {}: {}", location, e.getMessage(), e);
-                connectorsByKey.remove(key, location);
+                LOG.error("Failed to publish config for connector: {}", key, e);
             }
         }
-
     }
 
     List<Map<String, String>> getGroupedParams(PackageConfig packageConfig, ServiceRef serviceRef) {
@@ -174,61 +124,17 @@ public class ConnectorManager {
     }
 
     private void stopStreamingFor(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceRef serviceRef) {
-        final ConnectorKey key = toKey(connectorConfig, packageConfig, serviceRef);
-        String location = connectorsByKey.remove(key);
-        if (location == null) {
-            LOG.debug("No active connector found for key {}", key);
-            return;
-        }
-        LocationPublisher lp = locationPublisherManager.getOrCreate(location);
-
-        ConnectorTwinConfig stopCfg = new ConnectorTwinConfig(
-                0,
-                null,
-                key.stringKey(),
-                false,
-                null
-        );
-        lp.publishStopAndMaybeClose(stopCfg);
-        locationPublisherManager.maybeRemove(location);
-    }
-
-
-    private List<Map<String,String>> groupMetaDataParams(List<OnmsMetaData> metaDataList) {
-        Map<String, Map<String,String>> paramsByContext = metaDataList.stream()
-                .collect(Collectors.groupingBy(
-                        OnmsMetaData::getContext,
-                        Collectors.toMap(OnmsMetaData::getKey, OnmsMetaData::getValue,
-                                (first, second) -> second,
-                                LinkedHashMap::new)
-                ));
-        return new ArrayList<>(paramsByContext.values());
-    }
-
-    private NodeWithMetadata fetchNodeWithMetadata(int nodeId) {
-        return readOnlyTxTemplate.execute(status -> {
+        synchronized (connectorsByKey) {
+            final ConnectorKey key = toKey(connectorConfig, packageConfig, serviceRef);
             try {
-                OnmsNode node = nodeDao.get(nodeId);
-                if (node == null) {
-                    LOG.debug("Node {} not found", nodeId);
-                    return null;
-                }
-                List<OnmsMetaData> metadata = new ArrayList<>(node.getMetaData());
-                metadata.forEach(md -> {
-                    md.getContext();
-                    md.getKey();
-                    md.getValue();
-                });
-                return new NodeWithMetadata(node, metadata,node.getLocation().getLocationName());
-            } catch (ObjectNotFoundException e) {
-                LOG.warn("Node {} disappeared during fetch", nodeId, e);
-                return null;
+                openConfigTwinPublisher.removeConfig(serviceRef, key.stringKey());
+            } catch (IOException e) {
+                LOG.warn("Error closing connector: {}.", key, e);
             }
-        });
+        }
     }
 
     public void start(TelemetrydConfig config) {
-
         for (ConnectorConfig connectorConfig : config.getConnectors()) {
             if (connectorConfig.getPackages().isEmpty()) {
                 // No packages defined
@@ -245,6 +151,7 @@ public class ConnectorManager {
                                 public void onServiceMatched(ServiceRef serviceRef) {
                                     startStreamingFor(connectorConfig, packageConfig, serviceRef);
                                 }
+
                                 @Override
                                 public void onServiceStoppedMatching(ServiceRef serviceRef) {
                                     stopStreamingFor(connectorConfig, packageConfig, serviceRef);
@@ -267,8 +174,11 @@ public class ConnectorManager {
         });
         serviceTrackerSessions.clear();
 
-        locationPublisherManager.forceCloseAll();
-        connectorsByKey.clear();
+        try {
+            openConfigTwinPublisher.close();
+        } catch (IOException e) {
+            LOG.error("Stopping Twin Location publishers and configs :", e);
+        }
     }
 
     private static ConnectorKey toKey(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceRef serviceRef) {
@@ -327,17 +237,5 @@ public class ConnectorManager {
     @VisibleForTesting
     public void setEntityScopeProvider(EntityScopeProvider entityScopeProvider) {
         this.entityScopeProvider = entityScopeProvider;
-    }
-
-    private static class NodeWithMetadata {
-        final OnmsNode node;
-        final List<OnmsMetaData> metadata;
-        final String location;
-
-        NodeWithMetadata(OnmsNode node, List<OnmsMetaData> metadata,String location) {
-            this.node = node;
-            this.metadata = Collections.unmodifiableList(metadata);
-            this.location = location;
-        }
     }
 }

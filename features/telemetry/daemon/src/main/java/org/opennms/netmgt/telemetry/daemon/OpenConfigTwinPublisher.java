@@ -19,35 +19,17 @@
  * language governing permissions and limitations under the
  * License.
  */
-
 package org.opennms.netmgt.telemetry.daemon;
 
-import org.opennms.core.ipc.twin.api.TwinPublisher;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.opennms.netmgt.dao.api.ServiceRef;
 
-import java.util.concurrent.ConcurrentHashMap;
+import java.io.IOException;
+import java.util.List;
+import java.util.Map;
 
+public interface OpenConfigTwinPublisher {
+    void publishConfig(ServiceRef serviceRef, List<Map<String, String>> interpolatedMapList,String nodeConnectorKey) throws IOException;
+    void removeConfig(ServiceRef serviceRef,String nodeConnectorKey) throws IOException;
 
-public class LocationPublisherManager {
-
-    @Autowired
-    private  TwinPublisher twinPublisher;
-
-    private final ConcurrentHashMap<String, LocationPublisher> publishers = new ConcurrentHashMap<>();
-
-    public LocationPublisher getOrCreate(String location) {
-        return publishers.computeIfAbsent(location, loc -> new LocationPublisher(loc, twinPublisher));
-    }
-
-    public void removeIfEmpty(String location) {
-        LocationPublisher lp = publishers.get(location);
-        if (lp != null && !lp.hasConfigs()) {
-            publishers.remove(location, lp);
-        }
-    }
-
-    public void forceCloseAll() {
-        publishers.forEach((loc, lp) -> lp.forceClose());
-        publishers.clear();
-    }
+    void close() throws IOException;
 }
