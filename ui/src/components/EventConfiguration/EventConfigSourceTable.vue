@@ -39,7 +39,7 @@
       <table
         class="data-table"
         aria-label="SNMP Interfaces Table"
-        v-if="store.eventConfigs.length"
+        v-if="store.sources.length"
       >
         <thead>
           <tr>
@@ -61,8 +61,8 @@
           tag="tbody"
         >
           <tr
-            v-for="config in store.eventConfigs"
-            :key="config.filename"
+            v-for="config in store.sources"
+            :key="config.id"
           >
             <td>{{ config.filename }}</td>
             <td>{{ config.description }}</td>
@@ -74,7 +74,7 @@
                 primary
                 icon="View Details"
                 data-test="view-button"
-                @click="onEventClick(config.id)"
+                @click="onEventClick(config)"
               >
                 <FeatherIcon :icon="ViewDetails"> </FeatherIcon>
               </FeatherButton>
@@ -84,17 +84,17 @@
       </table>
       <div class="alerts-pagination">
         <FeatherPagination
-          :modelValue="store.eventConfigPagination.page"
-          :pageSize="store.eventConfigPagination.pageSize"
-          :total="store.eventConfigPagination.total"
+          :modelValue="store.sourcesPagination.page"
+          :pageSize="store.sourcesPagination.pageSize"
+          :total="store.sourcesPagination.total"
           :pageSizes="[10, 20, 50]"
-          @update:modelValue="store.onEventConfigPageChange"
-          @update:pageSize="store.onEventConfigPageSizeChange"
+          @update:modelValue="store.onSourcePageChange"
+          @update:pageSize="store.onSourcePageSizeChange"
           data-test="FeatherPagination"
-          v-if="store.eventConfigs.length"
+          v-if="store.sources.length"
         />
       </div>
-      <div v-if="!store.eventConfigs.length">
+      <div v-if="!store.sources.length">
         <EmptyList
           :content="emptyListContent"
           data-test="empty-list"
@@ -116,6 +116,8 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import TableCard from '../Common/TableCard.vue'
 import { FeatherPagination } from '@featherds/pagination'
+import { EventConfSourceMetadata } from '@/types/eventConfig'
+import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 
 const router = useRouter()
 const store = useEventConfigStore()
@@ -130,12 +132,7 @@ const columns = computed(() => [
   { id: 'vendor', label: 'Vendor' },
   { id: 'eventCount', label: 'Event Count' }
 ])
-const onEventClick = (id: number) => {
-  router.push({
-    name: 'Event Configuration Details',
-    params: { id: id }
-  })
-}
+
 const sort = reactive({
   fileName: SORT.NONE,
   description: SORT.NONE,
@@ -143,6 +140,15 @@ const sort = reactive({
   vendor: SORT.NONE,
   eventCount: SORT.NONE
 }) as any
+
+const onEventClick = (source: EventConfSourceMetadata) => {
+  const eventDetailsStore = useEventConfigDetailStore()
+  eventDetailsStore.setSelectedEventConfigSource(source)
+  router.push({
+    name: 'Event Configuration Details',
+    params: { id: source.id }
+  })
+}
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
   for (const prop in sort) {
