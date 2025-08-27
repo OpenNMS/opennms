@@ -82,7 +82,7 @@ const gotoViewTab = () => {
 
 <style scoped lang="scss">
 @import "@featherds/styles/themes/variables";
-
+ 
 .text-danger {
   color: var($error);
 }
