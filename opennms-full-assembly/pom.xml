@@ -495,6 +495,7 @@
                 <feature>opennms-core-tracing-jaeger</feature>
                 <feature>opennms-karaf-health</feature>
                 <feature>opennms-core-ipc-grpc-server</feature>
+                <feature>opennms-core-ipc-twin-kafka-publisher</feature>
                 <feature>opennms-inmemory-ticketer</feature>
                 <feature>scv-api</feature>
                 <feature>scv-jceks-impl</feature>

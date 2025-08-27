@@ -1930,6 +1930,11 @@
         <feature>opennms-core-ipc-twin-kafka</feature>
     </feature>
 
+    <feature name="opennms-core-ipc-twin-kafka-publisher" version="${project.version}" description="OpenNMS :: Core :: IPC :: Twin :: Kafka :: Publisher">
+        <feature>opennms-core-ipc-twin-kafka</feature>
+        <bundle>mvn:org.opennms.core.ipc.twin.kafka/org.opennms.core.ipc.twin.kafka.publisher/${project.version}</bundle>
+    </feature>
+
     <feature name="opennms-core-ipc-twin-kafka-common" version="${project.version}" description="OpenNMS :: Core :: IPC :: Twin :: Kafka :: Common">
         <feature>opennms-kafka</feature>
         <feature>opennms-core-ipc-twin-common</feature>
