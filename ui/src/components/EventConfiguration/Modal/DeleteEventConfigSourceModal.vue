@@ -12,7 +12,7 @@
           <strong>{{ store.deleteEventConfigSourceModalState.eventConfigSource?.filename }}</strong>
         </p>
         <p>
-          <strong>Note:</strong> This EventConf source has
+          <strong>Note:</strong> This event configuration source has
           <strong>{{ store.deleteEventConfigSourceModalState.eventConfigSource?.eventCount }}</strong> events associated
           with it and will be deleted.
         </p>
@@ -43,7 +43,7 @@ const labels = {
 
 const deleteEventConfigSource = async () => {
   try {
-    // Call API to delete the event configuration source
+    // TODO: Call API to delete the event configuration source
     // await api.deleteEventConfigSource(store.deleteEventConfigSourceModalState.eventConfigSource.id);
 
     // After successful deletion, hide the modal and refresh the list

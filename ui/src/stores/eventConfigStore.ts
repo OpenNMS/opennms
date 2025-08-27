@@ -1,5 +1,5 @@
 import { eventConfigSources } from '@/components/EventConfiguration/data'
-import { EventConfigStoreState } from '@/types/eventConfig'
+import { EventConfigStoreState, EventConfSourceMetadata } from '@/types/eventConfig'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
