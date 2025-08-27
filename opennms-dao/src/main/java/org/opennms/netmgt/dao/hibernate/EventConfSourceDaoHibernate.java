@@ -83,6 +83,31 @@ public class EventConfSourceDaoHibernate
     }
 
     @Override
+    public void updateEnabledFlag(Collection<Long> sourceIds, boolean enabled, boolean cascadeToEvents) {
+        if (sourceIds == null || sourceIds.isEmpty()) {
+            return;
+        }
+        String hqlSource = "update EventConfSource s set s.enabled = :enabled where s.id in (:ids)";
+        getSessionFactory().getCurrentSession()
+                .createQuery(hqlSource)
+                .setParameter("enabled", enabled)
+                .setParameterList("ids", sourceIds)
+                .executeUpdate();
+
+        if (cascadeToEvents) {
+            String hqlEvents = "update EventConfEvent e set e.enabled = :enabled where e.source.id in (:ids)";
+            getSessionFactory().getCurrentSession()
+                    .createQuery(hqlEvents)
+                    .setParameter("enabled", enabled)
+                    .setParameterList("ids", sourceIds)
+                    .executeUpdate();
+        }
+
+        LOG.info("Set enabled={} for sources {} (cascadeToEvents={})", enabled, sourceIds, cascadeToEvents);
+    }
+
+
+    @Override
     public void deleteBySourceIds(List<Long> sourceIds) {
         String placeholders = sourceIds.stream()
                 .map(id -> "?")

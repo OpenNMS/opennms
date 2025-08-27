@@ -1,0 +1,98 @@
+
+[[menu-overview]]
+= Menu Overview
+:description: Learn about the top and side menus in {page-component-title}, which lets users quickly navigate to most of the pages.
+
+The web UI contains top and side menus to help you access much of the functionality in {page-component-title}.
+
+.Top and side menus - menu collapsed
+image::menu/menu-overview.png["{page-component-title} web UI showing the top and side menus."]
+
+.Top and side menus - menu expanded
+image::menu/menu-overview-expanded.png["{page-component-title} web UI showing the top and side menus with menu expanded."]
+
+
+== Top menu
+
+The top menu contains information and functionality that is common across all {page-component-title} pages.
+
+[cols="1,2"]
+|===
+| Item                   | Description
+
+| Logo
+| The OpenNMS {page-component-title} logo. Click on this go to the main page.
+
+| Search Bar
+| The central search bar.
+You can search for various things including node labels, IP addresses and actions.
+
+| Time/Date
+| The current time and date, on 2 lines.
+These can be customized via OpenNMS properties using Java `java.time.format.DateTimeFormatter` patterns.
+You can customize the time (top line) via the `org.opennms.ui.timeonlyformat` property; default is `HH:mm:ss 'UTC'x`.
+You can customize the date (bottom line) via the `org.opennms.ui.dateonlyformat` property; default is `LLLL d, yyyy`.
+
+See `opennms/etc/properties/opennms.properties` for an example. You should place any customizations in a `opennms/etc/opennms.properties.d/*.properties` file.
+
+See https://docs.oracle.com/en/java/javase/17/docs/api/java.base/java/time/format/DateTimeFormatter.html for reference.
+
+| Notifications
+| This section displays the number of notifications assigned to you or your team, and whether notifications are currently enabled or not.
+Clicking or hovering will display the Notifications Menu where you can
+navigate to view the notifications.
+
+| Self Service Menu
+| This menu allows you to perform some self-service actions such as
+changing your password or logging out.
+|===
+
+
+== Side menu
+
+The side menu is where most of the menu functionality can be found.
+
+[cols="1,2"]
+|===
+| Item                   | Description
+
+| Expand icon
+| This icon expands or collapses the side menu.
+
+| Top-level menu items
+| Top level items with an icon and a name.
+Clicking on them opens a flyout menu with the individual menu items.
+
+| Separators
+| Horizontal lines that separate the menu into different sections.
+The provided `default` menu, for example, has operations more often
+performed by users at the top; more advanced options below;
+administrative options below that; and the Lock Menu option at the bottom.
+
+| Lock Menu
+| Clicking on this will lock/unlock the menu.
+Locking means it will stay expanded even when navigating to different
+pages.
+|===
+
+== Legacy vs. non-legacy pages
+
+{page-component-title} contains pages built using several different technologies.
+
+- Java JSP - the majority of the pages
+- Vaadin - a responsive technology used on pages such as BSM, Topology, Wallboards
+- Vue.js - newer and future pages, built using the Vue Javascript framework as a Single Page Application
+
+The top and side menus are built using Vue.js and the Feather Design System.
+
+The newer Vue pages have the menus "built-in" to the Vue SPA application.
+
+The older/legacy JSP and Vaadin pages have a Vue menu app embedded into them containing just the menu components (same components as in the SPA).
+
+
+== Menu templates
+
+The organization of the side menu is controlled by JSON menu templates and
+is user-customizable.
+
+See the xref:operation:deep-dive/menu/menu-templates.adoc[menu templates documentation].

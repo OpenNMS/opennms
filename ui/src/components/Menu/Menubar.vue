@@ -21,8 +21,8 @@
 
     <template v-slot:right>
       <div class="date-wrapper">
-        <div class="date-formatted-date">{{ formattedDate }}</div>
         <div class="date-formatted-time">{{ formattedTime }}</div>
+        <div class="date-formatted-date">{{ formattedDate }}</div>
       </div>
       <template v-if="mainMenu.username">
         <UserNotificationsMenuItem :ref="userNotificationsMenu" />
@@ -224,13 +224,13 @@ onMounted(async () => {
   .date-formatted-date {
     display: flex;
     justify-content: right;
-    font-weight: 800;
-    font-size: 1em;
   }
 
   .date-formatted-time {
     display: flex;
     justify-content: right;
+    font-weight: 800;
+    font-size: 1em;
   }
 }
 </style>

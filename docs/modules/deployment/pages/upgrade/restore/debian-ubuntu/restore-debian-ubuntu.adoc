@@ -46,7 +46,7 @@ sudo runuser -l postgres -c 'psql -f /tmp/opennms-postgres.dmp postgres'
 .Install OpenJDK
 [source, console]
 ----
-apt-get install openjdk-11-jdk
+apt-get install openjdk-17-jdk
 sudo /usr/share/opennms/bin/runjava -s
 ----
 

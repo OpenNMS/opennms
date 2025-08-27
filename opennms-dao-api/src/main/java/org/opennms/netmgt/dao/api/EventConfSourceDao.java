@@ -47,5 +47,7 @@ public interface EventConfSourceDao extends OnmsDao<EventConfSource, Long> {
 
     void deleteAll(final Collection<EventConfSource> list);
 
+    void updateEnabledFlag(final Collection<Long> sourceIds, boolean enabled, boolean cascadeToEvents);
+
     void deleteBySourceIds(List<Long> sourceIds);
 }

@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
+import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 
 
@@ -25,6 +26,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PATCH;
 import javax.ws.rs.Produces;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.core.Context;
@@ -76,6 +78,21 @@ public interface EventConfRestApi {
             @QueryParam("offset") int offset,
             @QueryParam("limit") int limit,
             @Context SecurityContext securityContext );
+
+    @PATCH
+    @Path("/sources/status")
+    @Produces("application/json")
+    @Consumes("application/json")
+    @Operation(
+            summary = "Enable/Disable EventConf Sources",
+            description = "Enable or disable one or more sources (and optionally cascade to their events)",
+            operationId = "enableDisableEventConfSources"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Updated successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request")
+    })
+    Response enableDisableEventConfSources(EventConfSrcEnableDisablePayload eventConfSrcEnableDisablePayload, @Context SecurityContext securityContext) throws Exception;
 
     @DELETE
     @Path("/sources")

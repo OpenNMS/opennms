@@ -32,6 +32,7 @@ import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
+import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -43,6 +44,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -99,7 +101,7 @@ public class EventConfPersistenceServiceIT {
         Assert.assertEquals("uei.opennms.org/test/it", persistedEvent.getUei());
         Assert.assertEquals("IT Event", persistedEvent.getEventLabel());
         Assert.assertEquals("This is an integration test event.", persistedEvent.getDescription());
-        assertTrue(persistedEvent.getEnabled());
+        Assert.assertTrue(persistedEvent.getEnabled());
         Assert.assertEquals(username, persistedEvent.getModifiedBy());
     }
 
@@ -225,6 +227,76 @@ public class EventConfPersistenceServiceIT {
         Assert.assertNotNull(results);
         Assert.assertTrue(results.isEmpty());
     }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testUpdateSourceAndEventEnabled() {
+        String username = "test_user";
+        Date now = new Date();
+
+        String filename1 = "source-file-1.xml";
+        EventConfSourceMetadataDto metadata1 = new EventConfSourceMetadataDto.Builder()
+                .filename(filename1)
+                .eventCount(1)
+                .fileOrder(1)
+                .username(username)
+                .now(now)
+                .vendor("vendor-1")
+                .description("first entry")
+                .build();
+
+        Event event1 = new Event();
+        event1.setUei("uei.opennms.org/test/update/1");
+        event1.setEventLabel("Event One");
+        event1.setDescr("Description for Event One");
+        event1.setSeverity("Normal");
+
+        Events events1 = new Events();
+        events1.getEvents().add(event1);
+
+        eventConfPersistenceService.persistEventConfFile(events1, metadata1);
+
+        String filename2 = "source-file-2.xml";
+        EventConfSourceMetadataDto metadata2 = new EventConfSourceMetadataDto.Builder()
+                .filename(filename2)
+                .eventCount(1)
+                .fileOrder(2)
+                .username(username)
+                .now(now)
+                .vendor("vendor-2")
+                .description("second entry")
+                .build();
+
+        Event event2 = new Event();
+        event2.setUei("uei.opennms.org/test/update/2");
+        event2.setEventLabel("Event Two");
+        event2.setDescr("Description for Event Two");
+        event2.setSeverity("Warning");
+
+        Events events2 = new Events();
+        events2.getEvents().add(event2);
+
+        eventConfPersistenceService.persistEventConfFile(events2, metadata2);
+
+        List<Long> sourcesIds = eventConfSourceDao.findAll()
+                .stream().map(EventConfSource::getId).toList();
+        // Disable eventConfSources and eventConfEvents.
+        EventConfSrcEnableDisablePayload eventConfSrcDisablePayload = new EventConfSrcEnableDisablePayload(false, true, sourcesIds);
+        eventConfPersistenceService.updateSourceAndEventEnabled(eventConfSrcDisablePayload);
+        List<EventConfSource> eventConfSources = eventConfSourceDao.findAll();
+        assertTrue(eventConfSources.stream().noneMatch(EventConfSource::getEnabled));
+        List<EventConfEvent> eventConfEvents = eventConfEventDao.findAll();
+        assertTrue(eventConfEvents.stream().noneMatch(EventConfEvent::getEnabled));
+
+        // Enable eventConfSources and eventConfEvents.
+        EventConfSrcEnableDisablePayload eventConfSrcEnablePayload = new EventConfSrcEnableDisablePayload(true, true, sourcesIds);
+        eventConfPersistenceService.updateSourceAndEventEnabled(eventConfSrcEnablePayload);
+        List<EventConfSource> enableEventConfSources = eventConfSourceDao.findAll();
+        assertFalse(enableEventConfSources.stream().noneMatch(EventConfSource::getEnabled));
+        List<EventConfEvent> enableEventConfEvents = eventConfEventDao.findAll();
+        assertFalse(enableEventConfEvents.stream().noneMatch(EventConfEvent::getEnabled));
+    }
+
 
 
     @Test
