@@ -109,13 +109,11 @@ public class EventConfSourceDaoHibernate
 
     @Override
     public void deleteBySourceIds(List<Long> sourceIds) {
-        String placeholders = sourceIds.stream()
-                .map(id -> "?")
-                .collect(Collectors.joining(", "));
-
-        String hql = "delete from EventConfSource s where s.id in (" + placeholders + ")";
-
-        int deletedCount = getHibernateTemplate().bulkUpdate(hql, sourceIds.toArray());
+        int deletedCount = getHibernateTemplate().execute(session ->
+                session.createQuery("delete from EventConfSource s where s.id in (:ids)")
+                        .setParameterList("ids", sourceIds)
+                        .executeUpdate()
+        );
         LOG.info("Deleted {} EventConfSource(s) with IDs: {}", deletedCount, sourceIds);
     }
 
