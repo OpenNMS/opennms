@@ -1767,7 +1767,7 @@
     <commonsDbcpVersion>1.4</commonsDbcpVersion>
     <commonsDigesterVersion>2.1</commonsDigesterVersion>
     <commonsExecVersion>1.4.0</commonsExecVersion>
-    <commonsFileuploadVersion>1.5</commonsFileuploadVersion>
+    <commonsFileuploadVersion>1.6.0</commonsFileuploadVersion>
     <commonsJexlVersion>2.1.1</commonsJexlVersion>
     <commonsJexl3Version>3.3</commonsJexl3Version>
     <commonsJxpathVersion>1.3</commonsJxpathVersion>
@@ -1933,7 +1933,7 @@
     <okhttpVersion>4.9.3</okhttpVersion>
     <okioVersion>3.6.0</okioVersion>
     <okhttp3Version>3.10.0</okhttp3Version>
-    <okioGrafanaVersion>1.14.0</okioGrafanaVersion>
+    <okioGrafanaVersion>1.17.6</okioGrafanaVersion>
     <openid4javaVersion>0.9.6</openid4javaVersion>
     <opennmsApiVersion>1.6.1</opennmsApiVersion>
     <opennmsApiVersionOsgi>1.6.1</opennmsApiVersionOsgi>

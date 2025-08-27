@@ -28,11 +28,11 @@
 </template>
 
 <script setup lang="ts">
-import BreadCrumbs from '../Layout/BreadCrumbs.vue'
-import { breadcrumbItems } from './data'
-import TopBar from '../FileEditor/TopBar.vue'
 import { FeatherButton } from '@featherds/button'
 import Editor from '../FileEditor/Editor.vue'
+import TopBar from '../FileEditor/TopBar.vue'
+import BreadCrumbs from '../Layout/BreadCrumbs.vue'
+import { breadcrumbItems } from './data'
 </script>
 
 <style scoped lang="scss">

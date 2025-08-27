@@ -11,10 +11,24 @@ export type EventConfSourceMetadata = {
   id: number
 }
 
-export type EventConfigState = {
-  eventConfigs: EventConfSourceMetadata[]
-  eventConfigPagination: Pagination
-  selectedEventConfig: EventConfSourceMetadata | null
+export type EventConfigEvent = {
+  id: number
+  uei: string
+  eventLabel: string
+  description: string
+  enabled: boolean
+  xmlContent: string
+  createdTime: Date
+  lastModified: Date
+  modifiedBy: string
+  sourceName: string
+  vendor: string
+  fileOrder: number
+}
+
+export type EventConfigStoreState = {
+  sources: EventConfSourceMetadata[]
+  sourcesPagination: Pagination
   isLoading: boolean
   activeTab: number
   uploadedFilesReportModalState: {
@@ -26,10 +40,17 @@ export type EventConfigState = {
   }
 }
 
+export type EventConfigDetailStoreState = {
+  events: EventConfigEvent[]
+  eventsPagination: Pagination
+  selectedSource: EventConfSourceMetadata | null
+  isLoading: boolean
+}
+
 export type EventConfigFilesUploadReponse = {
   errors: [
     {
-      file: string,
+      file: string
       error: string
     }
   ]
@@ -39,3 +60,4 @@ export type EventConfigFilesUploadReponse = {
     }
   ]
 }
+

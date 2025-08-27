@@ -16,6 +16,10 @@
 
 * xref:deep-dive/introduction.adoc[]
 
+** Menu
+*** xref:deep-dive/menu/introduction.adoc[]
+*** xref:deep-dive/menu/menu-templates.adoc[]
+
 ** User Management
 *** xref:deep-dive/user-management/user-config.adoc[]
 *** xref:deep-dive/user-management/security-roles.adoc[]
