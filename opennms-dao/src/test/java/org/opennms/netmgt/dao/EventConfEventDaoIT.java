@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.dao;
 
+import org.hibernate.SessionFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,16 +43,12 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {
-        "classpath:/META-INF/opennms/applicationContext-soa.xml",
-        "classpath:/META-INF/opennms/applicationContext-dao.xml",
-        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
-        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
-})
+@ContextConfiguration(locations = {"classpath:/META-INF/opennms/applicationContext-soa.xml", "classpath:/META-INF/opennms/applicationContext-dao.xml", "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml", "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class EventConfEventDaoIT implements InitializingBean {
@@ -63,6 +60,9 @@ public class EventConfEventDaoIT implements InitializingBean {
     private EventConfSourceDao m_eventSourceDao;
 
     private EventConfSource m_source;
+
+    @Autowired
+    private SessionFactory sessionFactory;
 
     @Before
     @Transactional
@@ -81,25 +81,13 @@ public class EventConfEventDaoIT implements InitializingBean {
         m_eventSourceDao.saveOrUpdate(m_source);
         m_eventSourceDao.flush();
 
-        insertEvent("uei.opennms.org/internal/discoveryConfigChange",
-                "Discovery configuration changed",
-                "The discovery configuration has been changed and should be reloaded",
-                "Normal");
+        insertEvent("uei.opennms.org/internal/discoveryConfigChange", "Discovery configuration changed", "The discovery configuration has been changed and should be reloaded", "Normal");
 
-        insertEvent("uei.opennms.org/internal/discovery/hardwareInventoryFailed",
-                "Hardware discovery failed",
-                "The hardware discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.",
-                "Minor");
+        insertEvent("uei.opennms.org/internal/discovery/hardwareInventoryFailed", "Hardware discovery failed", "The hardware discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.", "Minor");
 
-        insertEvent("uei.opennms.org/internal/discovery/hardwareInventorySuccessful",
-                "Hardware discovery successful",
-                "The hardware discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has been completed successfully.",
-                "Normal");
+        insertEvent("uei.opennms.org/internal/discovery/hardwareInventorySuccessful", "Hardware discovery successful", "The hardware discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has been completed successfully.", "Normal");
 
-        insertEvent("uei.opennms.org/internal/discovery/newSuspect",
-                "New suspect discovered",
-                "A new interface (%interface%) has been discovered in location %parm[location]% and is being queued for a services scan.",
-                "Warning");
+        insertEvent("uei.opennms.org/internal/discovery/newSuspect", "New suspect discovered", "A new interface (%interface%) has been discovered in location %parm[location]% and is being queued for a services scan.", "Warning");
     }
 
     @After
@@ -189,6 +177,36 @@ public class EventConfEventDaoIT implements InitializingBean {
 
         List<EventConfEvent> afterDelete = m_eventDao.findBySourceId(m_source.getId());
         assertEquals(0, afterDelete.size());
+    }
+
+    @Test
+    @Transactional
+    public void testUpdateEventEnabledFlag() {
+
+        EventConfSource source = m_eventSourceDao.findByName("test-source");
+
+        EventConfEvent discoveryEvent = m_eventDao.findByUei("uei.opennms.org/internal/discoveryConfigChange");
+        EventConfEvent hardwareEvent = m_eventDao.findByUei("uei.opennms.org/internal/discovery/hardwareInventoryFailed");
+
+        // disable events
+        m_eventDao.updateEventEnabledFlag(source.getId(), List.of(discoveryEvent.getId(), hardwareEvent.getId()), false);
+        sessionFactory.getCurrentSession().clear();
+
+        // verify disabled state
+        EventConfEvent refreshedDiscoveryEvent = m_eventDao.findByUei("uei.opennms.org/internal/discoveryConfigChange");
+        EventConfEvent refreshedHardwareEvent = m_eventDao.findByUei("uei.opennms.org/internal/discovery/hardwareInventoryFailed");
+        assertFalse(refreshedDiscoveryEvent.getEnabled());
+        assertFalse(refreshedHardwareEvent.getEnabled());
+
+        // enable events
+        m_eventDao.updateEventEnabledFlag(source.getId(), List.of(discoveryEvent.getId(), hardwareEvent.getId()), true);
+        sessionFactory.getCurrentSession().clear();
+
+        // verify enabled state
+        refreshedDiscoveryEvent = m_eventDao.findByUei("uei.opennms.org/internal/discoveryConfigChange");
+        refreshedHardwareEvent = m_eventDao.findByUei("uei.opennms.org/internal/discovery/hardwareInventoryFailed");
+        assertTrue(refreshedDiscoveryEvent.getEnabled());
+        assertTrue(refreshedHardwareEvent.getEnabled());
     }
 
     @Override
