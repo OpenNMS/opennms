@@ -1,16 +1,17 @@
-import { data } from '@/components/EventConfiguration/data'
-import { EventConfigState, EventConfSourceMetadata } from '@/types/eventConfig'
+import { eventConfigSources } from '@/components/EventConfiguration/data'
+import { EventConfigStoreState } from '@/types/eventConfig'
 import { defineStore } from 'pinia'
 
-export const useEventConfigStore = defineStore('eventConfigStore', {
-  state: (): EventConfigState => ({
-    eventConfigs: [],
-    eventConfigPagination: {
-      page: 1,
-      pageSize: 10,
-      total: 0
-    },
-    selectedEventConfig: null,
+const defaultPagination = {
+  page: 1,
+  pageSize: 10,
+  total: 0
+}
+
+export const useEventConfigStore = defineStore('useEventConfigStore', {
+  state: (): EventConfigStoreState => ({
+    sources: [],
+    sourcesPagination: { ...defaultPagination },
     isLoading: false,
     activeTab: 0,
     uploadedFilesReportModalState: {
@@ -21,22 +22,19 @@ export const useEventConfigStore = defineStore('eventConfigStore', {
     async fetchEventConfigs() {
       this.isLoading = true
       try {
-        this.eventConfigs = data // Using static data for now
-        this.eventConfigPagination.total = this.eventConfigs.length
+        this.sources = eventConfigSources // Using static data for now
+        this.sourcesPagination.total = this.sources.length
       } catch (error) {
         console.error('Error fetching event configurations:', error)
       } finally {
         this.isLoading = false
       }
     },
-    selectEventConfig(eventConfig: EventConfSourceMetadata) {
-      this.selectedEventConfig = eventConfig
+    onSourcePageChange(page: number) {
+      this.sourcesPagination.page = page
     },
-    onEventConfigPageChange(page: number) {
-      this.eventConfigPagination.page = page
-    },
-    onEventConfigPageSizeChange(pageSize: number) {
-      this.eventConfigPagination.pageSize = pageSize
+    onSourcePageSizeChange(pageSize: number) {
+      this.sourcesPagination.pageSize = pageSize
     },
     resetActiveTab(){
       this.activeTab = 0
