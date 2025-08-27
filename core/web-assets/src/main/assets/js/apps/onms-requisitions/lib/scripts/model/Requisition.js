@@ -38,6 +38,7 @@ const Requisition = function Requisition(requisition, isDeployed) {
 
   'use strict';
 
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
 
   /**
@@ -95,7 +96,7 @@ const Requisition = function Requisition(requisition, isDeployed) {
   self.nodes = [];
 
   angular.forEach(requisition.node, function(node) {
-    var requisitionNode = new RequisitionNode(self.foreignSource, node, isDeployed);
+    const requisitionNode = new RequisitionNode(self.foreignSource, node, isDeployed);
     self.nodes.push(requisitionNode);
   });
 
@@ -142,7 +143,7 @@ const Requisition = function Requisition(requisition, isDeployed) {
   * @returns {integer} the index (-1 if the foreign ID doesn't exist)
   */
   self.indexOf = function(foreignId) {
-    for(var i = 0; i < self.nodes.length; i++) {
+    for(let i = 0; i < self.nodes.length; i++) {
       if (self.nodes[i].foreignId === foreignId) {
         return i;
       }
@@ -160,7 +161,7 @@ const Requisition = function Requisition(requisition, isDeployed) {
   * @returns {object} the node object.
   */
   self.getNode = function(foreignId) {
-    var idx = self.indexOf(foreignId);
+    const idx = self.indexOf(foreignId);
     return idx < 0 ? null : self.nodes[idx];
   };
 
@@ -173,7 +174,7 @@ const Requisition = function Requisition(requisition, isDeployed) {
   * @methodOf Requisition
   */
   self.setNode = function(node) {
-    var idx = self.indexOf(node.foreignId);
+    const idx = self.indexOf(node.foreignId);
     if (idx < 0) {
       self.nodes.push(node);
       self.nodesDefined++;
