@@ -192,7 +192,7 @@ public class Installer {
          * JniRrdStrategy is enabled.
          */
 
-        boolean using_jni_rrd_strategy = System.getProperty("org.opennms.rrd.strategyClass", "")
+        boolean using_jni_rrd_strategy = System.getProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy")
                 .contains("JniRrdStrategy");
 
         if (using_jni_rrd_strategy) {
