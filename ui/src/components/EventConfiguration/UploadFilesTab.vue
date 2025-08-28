@@ -6,7 +6,7 @@
       </div>
       <div class="section">
         <div class="selected-files-section">
-          <div v-if="eventFiles.length > 0">
+          <div v-if="eventFiles.length > 0 || invalidFiles.length > 0">
             <Draggable
               v-model="eventFiles"
               item-key="value"
@@ -40,25 +40,32 @@
                 </div>
               </template>
             </Draggable>
-            <!-- <div
-              v-for="(file, index) in eventFiles"
+            <div
+              v-for="(file, index) in invalidFiles"
               class="file"
               :key="file.name"
             >
               <div class="file-icon">
                 <FeatherIcon :icon="Text" />
-                <span>{{ file.name }}</span>
+                <span class="invalid-text">{{ file.name }}</span>
               </div>
-              <div class="remove">
+              <div class="actions">
+                <FeatherTooltip :title="file.reason" v-slot="{ attrs, on }">
+                  <FeatherIcon
+                    :icon="Info"
+                    v-bind="attrs"
+                    v-on="on"
+                    class="info-icon"
+                  />
+                </FeatherTooltip>
                 <FeatherButton
                   icon="Trash"
-                  data-test="remove-files-button"
-                  @click="removeFile(index)"
+                  @click="removeInvalidFile(index)"
                 >
                   <FeatherIcon :icon="Delete" />
                 </FeatherButton>
               </div>
-            </div> -->
+            </div>
           </div>
           <div v-else>
             <p>No files selected</p>
@@ -99,25 +106,56 @@
 import { uploadEventConfigFiles } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigFilesUploadReponse } from '@/types/eventConfig'
+import { validateEventConfigFile,isDuplicateFile } from './eventConfigXmlValidator' 
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
+import { FeatherTooltip } from '@featherds/tooltip'
+import { FeatherSpinner } from '@featherds/progress'
 import Delete from '@featherds/icon/action/Delete'
 import Text from '@featherds/icon/file/Text'
 import Apps from '@featherds/icon/navigation/Apps'
-import { FeatherSpinner } from '@featherds/progress'
+import Info from '@featherds/icon/action/Info'
 import Draggable from 'vuedraggable'
 import EventConfigFilesUploadReportModal from './Modal/EventConfigFilesUploadReportModal.vue'
+import { ref } from 'vue'
 
 const eventConfFileInput = ref<HTMLInputElement | null>(null)
 const uploadFilesReport = ref<EventConfigFilesUploadReponse>({} as EventConfigFilesUploadReponse)
 const store = useEventConfigStore()
 const eventFiles = ref<File[]>([])
+const invalidFiles = ref<{ name: string; reason: string }[]>([])
 const isLoading = ref(false)
 
-const handleEventConfUpload = (e: Event) => {
+const handleEventConfUpload = async (e: Event) => {
   const input = e.target as HTMLInputElement
   if (input.files && input.files.length > 0) {
-    eventFiles.value = Array.from(new Set([...eventFiles.value, ...Array.from(input.files)]))    // You can add further processing of the file here, like uploading it to a server
+    const files = Array.from(input.files)
+
+    for (const file of files) {
+      if (isDuplicateFile(file.name, eventFiles.value, invalidFiles.value)) {
+        continue
+      }
+
+      try {
+        const validationResult = await validateEventConfigFile(file)
+        
+        if (validationResult.isValid) {
+          eventFiles.value.push(file)
+        } else {
+          invalidFiles.value.push({ 
+            name: file.name, 
+            reason: validationResult.errors.join('; ') 
+          })
+        }
+        
+      } catch (error) {
+        console.error(`Error processing file ${file.name}:`, error)
+        invalidFiles.value.push({ 
+          name: file.name, 
+          reason: `Unexpected error processing file: ${error instanceof Error ? error.message : 'Unknown error'}` 
+        })
+      }
+    }
   } else {
     console.warn('No files selected')
   }
@@ -131,36 +169,45 @@ const removeFile = (index: number) => {
   eventFiles.value.splice(index, 1)
 }
 
+const removeInvalidFile = (index: number) => {
+  invalidFiles.value.splice(index, 1)
+}
+
 const uploadFiles = async () => {
-  // You can add further processing of the files here, like uploading them to a server
   if (eventFiles.value.length === 0) {
     console.warn('No files to upload')
     return
   }
-  if (!eventFiles.value.every(file => file.name.endsWith('.xml'))) {
+  if (!eventFiles.value.every(file => file.name.endsWith('.events.xml'))) {
     console.error('All files must be XML files')
     return
   }
   isLoading.value = true
   try {
     const response = await uploadEventConfigFiles(eventFiles.value)
-    uploadFilesReport.value = response
+    uploadFilesReport.value = {
+      errors: [...response.errors],
+      success: [...response.success],
+      invalid: invalidFiles.value.map(f => ({
+        file: f.name,
+        reason: f.reason
+      }))
+    }
     isLoading.value = false
-    eventFiles.value = [] // Clear the files after upload
-    eventConfFileInput.value!.value = '' // Reset the input field
-    store.uploadedFilesReportModalState.visible = true // Show the modal with the report
+    eventFiles.value = [] 
+    invalidFiles.value = []
+    eventConfFileInput.value!.value = ''
+    store.uploadedFilesReportModalState.visible = true
   } catch (err) {
     console.error(err)
-  } finally {
-    // isLoading.value = false
-    // eventFiles.value = [] // Clear the files after upload
-    // eventConfFileInput.value!.value = '' // Reset the input field
+    isLoading.value = false
   }
 }
 </script>
 
 <style scoped lang="scss">
 @use "@featherds/styles/themes/variables";
+@import "@featherds/styles/themes/variables";
 
 .upload-files-tab {
   background: var(variables.$surface);
@@ -210,6 +257,10 @@ const uploadFiles = async () => {
           span {
             font-size: 1rem;
           }
+
+          .invalid-text {
+            color: var($error);
+          }
         }
 
         .actions {
@@ -219,6 +270,13 @@ const uploadFiles = async () => {
 
           button {
             margin: 0px;
+          }
+
+          .info-icon {
+            color: var(variables.$error);
+            cursor: pointer;
+            height: 1.5em;
+            width: 1.5em;
           }
         }
       }
@@ -248,4 +306,3 @@ const uploadFiles = async () => {
   }
 }
 </style>
-
