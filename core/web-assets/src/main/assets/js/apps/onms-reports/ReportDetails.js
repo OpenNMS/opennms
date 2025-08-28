@@ -152,15 +152,15 @@ export default class ReportDetails {
                 this.errors[contextError.context] = contextError.message;
                 return;
             } else if (contextError.context === 'cronExpression' && this.scheduleOptions.type !== Types.CUSTOM) {
-                throw new Error("Generated cronExpression was not parsable by backend. If this happens contact OpenNMS support");
+                throw new Error('Generated cronExpression was not parsable by backend. If this happens contact OpenNMS support');
             }
         }
-        throw new Error("Provided contextError must be of type ContextError")
+        throw new Error('Provided contextError must be of type ContextError')
     }
 
     isGrafanaEndpointSelected() {
         if (!this.isGrafanaReport()) {
-            throw new Error("Report is not a Grafana Report");
+            throw new Error('Report is not a Grafana Report');
         }
         const endpointUid = this.parametersByName['GRAFANA_ENDPOINT_UID'];
         const dashboardUid = this.parametersByName['GRAFANA_DASHBOARD_UID'];

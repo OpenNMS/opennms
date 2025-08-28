@@ -21,7 +21,7 @@
  */
 export default class CronDefinition {
     constructor(input) {
-        let options = typeof input !== 'undefined' ? input : {};
+        const options = typeof input !== 'undefined' ? input : {};
         this.seconds = typeof options.seconds !== 'undefined' ? options.seconds : {};
         this.minutes = typeof options.minutes !== 'undefined' ? options.minutes : {};
         this.hours = typeof options.hours !== 'undefined' ? options.hours : {};
