@@ -1,4 +1,5 @@
 import { eventConfigEvents } from '@/components/EventConfiguration/data'
+import { changeEventConfigEventStatus } from '@/services/eventConfigService'
 import { EventConfigDetailStoreState, EventConfigEvent, EventConfSourceMetadata } from '@/types/eventConfig'
 import { defineStore } from 'pinia'
 
@@ -49,6 +50,20 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     hideDeleteEventConfigEventModal() {
       this.deleteEventConfigEventModalState.visible = false
       this.deleteEventConfigEventModalState.eventConfigEvent = null
+    },
+    async disableEventConfigEvent(eventId: number) {
+      // Placeholder for disabling event logic
+      const response = await changeEventConfigEventStatus(eventId, this.selectedSource?.id || 0, false)
+      if (response) {
+        await this.fetchEventsBySourceId()
+      }
+    },
+    async enableEventConfigEvent(eventId: number) {
+      // Placeholder for enabling event logic
+      const response = await changeEventConfigEventStatus(eventId, this.selectedSource?.id || 0, true)
+      if (response) {
+        await this.fetchEventsBySourceId()
+      }
     }
   }
 })

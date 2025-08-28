@@ -67,7 +67,15 @@
             <td>{{ event.uei }}</td>
             <td>{{ event.eventLabel }}</td>
             <td>{{ event.description }}</td>
-            <td>{{ event.enabled === true ? 'Enabled' : 'Disabled' }}</td>
+            <td>
+              <FeatherToggleButton
+                :selected="event.enabled ? 1 : 0"
+                :buttons="buttons"
+                :disabled="false"
+                :id="`event-enabled-toggle-${event.id}`"
+                @toggle-button-click="toogledStatus(event)"
+              />
+            </td>
             <td>
               <FeatherButton
                 icon="Edit"
@@ -113,6 +121,8 @@
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
+import Cancel from '@featherds/icon/action/Cancel'
+import CheckCircle from '@featherds/icon/action/CheckCircle'
 import Delete from '@featherds/icon/action/Delete'
 import DownloadFile from '@featherds/icon/action/DownloadFile'
 import Edit from '@featherds/icon/action/Edit'
@@ -121,13 +131,20 @@ import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
+import { FeatherToggleButton } from '@featherds/toggle-button'
 import TableCard from '../Common/TableCard.vue'
 import DeleteEventConfigEventModal from './Modal/DeleteEventConfigEventModal.vue'
+import { EventConfigEvent } from '@/types/eventConfig'
 
 const store = useEventConfigDetailStore()
 const emptyListContent = {
   msg: 'No results found.'
 }
+
+const buttons: { label: string; icon: any; disabled: boolean }[] = [
+  { label: 'Disabled', icon: Cancel, disabled: false },
+  { label: 'Enabled', icon: CheckCircle, disabled: false }
+]
 
 const columns = computed(() => [
   { id: 'uei', label: 'UEI' },
@@ -149,6 +166,14 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
     sort[prop] = SORT.NONE
   }
   sort[sortObj.property] = sortObj.value
+}
+
+const toogledStatus = async (event: EventConfigEvent) => {
+  if (event.enabled) {
+    await store.disableEventConfigEvent(event.id)
+  } else {
+    await store.enableEventConfigEvent(event.id)
+  }
 }
 </script>
 

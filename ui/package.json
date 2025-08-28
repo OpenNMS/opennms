@@ -50,6 +50,7 @@
     "@featherds/table": "0.12.40",
     "@featherds/tabs": "0.12.40",
     "@featherds/textarea": "0.12.40",
+    "@featherds/toggle-button": "^0.12.40",
     "@featherds/tooltip": "0.12.40",
     "@featherds/utils": "0.12.40",
     "@vueuse/core": "^9.13.0",
