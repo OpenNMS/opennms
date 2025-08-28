@@ -62,7 +62,7 @@ const config = ref<EventConfSourceMetadata>()
 onMounted(async () => {
   if (Number(router.params.id) === store.selectedSource?.id) {
     config.value = store.selectedSource
-    await store.fetchEventsBySourceId(store.selectedSource.id)
+    await store.fetchEventsBySourceId()
   }
 })
 </script>

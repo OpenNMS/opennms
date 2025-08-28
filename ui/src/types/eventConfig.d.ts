@@ -44,7 +44,11 @@ export type EventConfigDetailStoreState = {
   events: EventConfigEvent[]
   eventsPagination: Pagination
   selectedSource: EventConfSourceMetadata | null
-  isLoading: boolean
+  isLoading: boolean,
+  deleteEventConfigEventModalState: {
+    visible: boolean,
+    eventConfigEvent: EventConfigEvent | null
+  }
 }
 
 export type EventConfigFilesUploadReponse = {
