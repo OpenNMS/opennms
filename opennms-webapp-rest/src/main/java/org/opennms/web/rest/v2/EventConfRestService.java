@@ -25,6 +25,7 @@ package org.opennms.web.rest.v2;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
@@ -50,6 +51,8 @@ public class EventConfRestService implements EventConfRestApi {
     @Autowired
     private EventConfPersistenceService eventConfPersistenceService;
 
+    private EventConfDao eventConfDao;
+
     @Override
     @Transactional
     public Response uploadEventConfFiles(final List<Attachment> attachments, final SecurityContext securityContext) {
@@ -60,7 +63,9 @@ public class EventConfRestService implements EventConfRestApi {
         List<Map<String, Object>> successList = new ArrayList<>();
         List<Map<String, Object>> errorList = new ArrayList<>();
 
-        Map<String, Attachment> fileMap = attachments.stream().collect(Collectors.toMap(a -> a.getContentDisposition().getParameter("filename"), a -> a, (a1, a2) -> a1, LinkedHashMap::new));
+        Map<String, Attachment> fileMap = attachments.stream().collect(Collectors.toMap(a ->
+                        a.getContentDisposition().getParameter("filename"),
+                        a -> a, (a1, a2) -> a1, LinkedHashMap::new));
 
         final var eventconfXml = fileMap.remove("eventconf.xml");
         final var orderedFiles = determineFileOrder(eventconfXml, fileMap.keySet());
@@ -78,7 +83,14 @@ public class EventConfRestService implements EventConfRestApi {
             }
 
             try {
-                eventConfPersistenceService.persistEventConfFile(fileEvents, new EventConfSourceMetadataDto.Builder().filename(fileName).eventCount(fileEvents.getEvents().size()).fileOrder(fileOrder++).username(username).now(now).vendor(StringUtils.substringBefore(fileName, ".")).description("").build());
+                eventConfPersistenceService.persistEventConfFile(fileEvents, new EventConfSourceMetadataDto.Builder()
+                        .filename(fileName)
+                        .eventCount(fileEvents.getEvents().size())
+                        .fileOrder(fileOrder++).username(username)
+                        .now(now)
+                        .vendor(StringUtils.substringBefore(fileName, "."))
+                        .description("")
+                        .build());
                 successList.add(buildSuccessResponse(fileName, fileEvents));
             } catch (Exception ex) {
                 errorList.add(buildErrorResponse(fileName, ex));
@@ -94,10 +106,12 @@ public class EventConfRestService implements EventConfRestApi {
         if (eventconfXmlAttachment != null) {
             try (InputStream stream = eventconfXmlAttachment.getObject(InputStream.class)) {
                 List<String> fromXmlRaw = parseOrderingFromEventconfXml(stream);
-                List<String> fromXml = fromXmlRaw.stream().map(path -> path.contains("/") ? path.substring(path.lastIndexOf("/") + 1) : path).toList();
+                List<String> fromXml = fromXmlRaw.stream().map(path -> path.contains("/") ?
+                        path.substring(path.lastIndexOf("/") + 1) : path).toList();
 
                 // Identify files not listed in eventconf.xml
-                List<String> extraFiles = uploadedFiles.stream().filter(f -> !fromXml.contains(f)).collect(Collectors.toList());
+                List<String> extraFiles = uploadedFiles.stream().filter(f -> !fromXml.contains(f))
+                        .collect(Collectors.toList());
 
                 // Add extra files first, then the ones in eventconf.xml
                 ordered.addAll(extraFiles);
@@ -132,7 +146,9 @@ public class EventConfRestService implements EventConfRestApi {
         entry.put("file", filename);
         entry.put("eventCount", events.getEvents().size());
         entry.put("vendor", StringUtils.substringBefore(filename, "."));
-        List<Map<String, ? extends Serializable>> eventSummaries = events.getEvents().stream().map(e -> Map.of("uei", e.getUei(), "label", e.getEventLabel(), "description", e.getEventLabel(), "enabled", true)).collect(Collectors.toList());
+        List<Map<String, ? extends Serializable>> eventSummaries = events.getEvents().stream().map(e ->
+                Map.of("uei", e.getUei(), "label", e.getEventLabel(), "description", e.getEventLabel(), "enabled", true))
+                .collect(Collectors.toList());
         entry.put("events", eventSummaries);
 
         return entry;

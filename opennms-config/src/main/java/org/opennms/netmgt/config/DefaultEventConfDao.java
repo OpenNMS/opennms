@@ -31,22 +31,12 @@ import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeMap;
 import java.util.TreeSet;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.ThreadFactory;
 import java.util.stream.Collectors;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opennms.core.config.api.ConfigReloadContainer;
-import org.opennms.core.soa.lookup.ServiceLookup;
-import org.opennms.core.soa.lookup.ServiceLookupBuilder;
-import org.opennms.core.soa.lookup.ServiceRegistryLookup;
-import org.opennms.core.soa.support.DefaultServiceRegistry;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
-import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.EventLabelComparator;
@@ -88,19 +78,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	private ConfigReloadContainer<Events> m_extContainer;
 
-	private EventConfEventDao eventConfEventDao;
-
-	private static ServiceLookup<Class<?>, String> SERVICE_LOOKUP  = new ServiceLookupBuilder(new ServiceRegistryLookup(DefaultServiceRegistry.INSTANCE))
-			.blocking()
-                .build();
-
-	private final ThreadFactory eventConfThreadFactory = new ThreadFactoryBuilder()
-			.setNameFormat("load-eventConf-%d")
-			.build();
-
-	private ScheduledExecutorService retryExecutor = Executors.newSingleThreadScheduledExecutor(eventConfThreadFactory);
-
-	private ExecutorService eventConfExecutor = Executors.newSingleThreadExecutor(eventConfThreadFactory);
 
 	public String getProgrammaticStoreRelativeUrl() {
 		return m_programmaticStoreRelativePath;
@@ -132,15 +109,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		    reloadConfig();
 		} catch (Exception e) {
 			throw new DataRetrievalFailureException("Unable to load " + m_configResource, e);
-		}
-	}
-
-	public void shutdown() {
-		if (eventConfExecutor != null) {
-			eventConfExecutor.shutdown();
-		}
-		if (retryExecutor != null) {
-			retryExecutor.shutdown();
 		}
 	}
 
@@ -293,6 +261,53 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		return m_events;
 	}
 
+	@Override
+	public void loadEventsFromDB(List<EventConfEvent> dbEvents) {
+		// Group events by source and sort by source fileOrder
+		Map<String, List<EventConfEvent>> eventsBySource = dbEvents.stream()
+				.collect(Collectors.groupingBy(
+						event -> event.getSource().getName(),
+						LinkedHashMap::new,
+						Collectors.toList()
+				));
+		// Sort sources by fileOrder
+		List<Map.Entry<String, List<EventConfEvent>>> sortedSources = eventsBySource.entrySet().stream()
+				.sorted(Map.Entry.comparingByValue((events1, events2) -> {
+					Integer order1 = events1.get(0).getSource().getFileOrder();
+					Integer order2 = events2.get(0).getSource().getFileOrder();
+					return Integer.compare(order1 != null ? order1 : 0, order2 != null ? order2 : 0);
+				}))
+				.toList();
+
+		Events rootEvents = new Events();
+
+		// Create Events objects per source and add to m_loadedEventFiles
+		for (Map.Entry<String, List<EventConfEvent>> sourceEntry : sortedSources) {
+			String sourceName = sourceEntry.getKey();
+			List<EventConfEvent> sourceEvents = sourceEntry.getValue();
+
+			Events eventsForSource = new Events();
+
+			for (EventConfEvent dbEvent : sourceEvents) {
+				String xmlContent = dbEvent.getXmlContent();
+				if (xmlContent != null && !xmlContent.trim().isEmpty()) {
+					try {
+						Event event = JaxbUtils.unmarshal(Event.class, xmlContent);
+						eventsForSource.addEvent(event);
+					} catch (Exception e) {
+						LOG.warn("Failed to parse event XML content for UEI {}: {}", dbEvent.getUei(), e.getMessage());
+					}
+				}
+			}
+
+			rootEvents.addLoadedEventFile(sourceName, eventsForSource);
+		}
+
+		m_partition = new EnterpriseIdPartition();
+		rootEvents.initialize(m_partition, new EventOrdering());
+		m_events = rootEvents;
+	}
+
 	public void setConfigResource(Resource configResource) throws IOException {
 		m_configResource = configResource;
 	}
@@ -301,8 +316,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	public void afterPropertiesSet() throws DataAccessException {
 		loadConfig();
 		initExtensions();
-		// Load event conf from DB asynchronously as we may not have Dao at this time of bean initialization
-		eventConfExecutor.execute(this::loadEventConfFromDB);
 	}
 
 	private static class EnterpriseIdPartition implements Partition {
@@ -384,74 +397,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 			m_events = events;
 		} catch (Exception e) {
 			throw new DataRetrievalFailureException("Unabled to load " + m_configResource, e);
-		}
-	}
-
-	private synchronized void loadEventConfFromDB() {
-		try {
-			if (this.eventConfEventDao == null) {
-				this.eventConfEventDao = SERVICE_LOOKUP.lookup(EventConfEventDao.class, null);
-			}
-			if (eventConfEventDao == null) {
-				// Schedule retry after 30 seconds if DAO is not available yet
-				retryExecutor.schedule(this::loadEventConfFromDB, 30, java.util.concurrent.TimeUnit.SECONDS);
-				return;
-			}
-			List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
-
-			// Group events by source and sort by source fileOrder
-			Map<String, List<EventConfEvent>> eventsBySource = dbEvents.stream()
-					.collect(Collectors.groupingBy(
-							event -> event.getSource().getName(),
-							LinkedHashMap::new,
-							Collectors.toList()
-					));
-
-			// Sort sources by fileOrder
-			List<Map.Entry<String, List<EventConfEvent>>> sortedSources = eventsBySource.entrySet().stream()
-					.sorted(Map.Entry.comparingByValue((events1, events2) -> {
-						Integer order1 = events1.get(0).getSource().getFileOrder();
-						Integer order2 = events2.get(0).getSource().getFileOrder();
-						return Integer.compare(order1 != null ? order1 : 0, order2 != null ? order2 : 0);
-					}))
-					.toList();
-
-			Events rootEvents = new Events();
-
-			// Create Events objects per source and add to m_loadedEventFiles
-			for (Map.Entry<String, List<EventConfEvent>> sourceEntry : sortedSources) {
-				String sourceName = sourceEntry.getKey();
-				List<EventConfEvent> sourceEvents = sourceEntry.getValue();
-
-				Events eventsForSource = new Events();
-
-				for (EventConfEvent dbEvent : sourceEvents) {
-					String xmlContent = dbEvent.getXmlContent();
-					if (xmlContent != null && !xmlContent.trim().isEmpty()) {
-						try {
-							Event event = JaxbUtils.unmarshal(Event.class, xmlContent);
-							eventsForSource.addEvent(event);
-						} catch (Exception e) {
-							LOG.warn("Failed to parse event XML content for UEI {}: {}", dbEvent.getUei(), e.getMessage());
-						}
-					}
-				}
-
-				rootEvents.addLoadedEventFile(sourceName, eventsForSource);
-			}
-
-			m_partition = new EnterpriseIdPartition();
-			rootEvents.initialize(m_partition, new EventOrdering());
-			m_events = rootEvents;
-
-		} catch (Exception e) {
-			LOG.error("Failed to load event configuration from database", e);
-		}
-	}
-
-	public void shutdownRetryExecutor() {
-		if (retryExecutor != null && !retryExecutor.isShutdown()) {
-			retryExecutor.shutdown();
 		}
 	}
 

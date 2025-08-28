@@ -64,7 +64,7 @@
 	  <constructor-arg value="file:${opennms.home}/etc/eventconf.xml" />
 	</bean>
 	
-	<bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao" destroy-method="shutdown">
+	<bean id="eventConfDao" class="org.opennms.netmgt.config.DefaultEventConfDao">
 		<property name="configResource" ref="eventConfResourceLocation"/>
 	</bean>
 

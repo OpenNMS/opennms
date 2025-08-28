@@ -21,7 +21,9 @@
  */
 package org.opennms.web.rest.v2;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
@@ -33,8 +35,13 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 @Service
 public class EventConfPersistenceService {
@@ -45,11 +52,33 @@ public class EventConfPersistenceService {
     @Autowired
     private EventConfEventDao eventConfEventDao;
 
+    @Autowired
+    private EventConfDao eventConfDao;
+
+    private final ThreadFactory eventConfThreadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("load-eventConf-%d")
+            .build();
+
+    private final ExecutorService eventConfExecutor = Executors.newSingleThreadExecutor(eventConfThreadFactory);
+
+    @PostConstruct
+    public void init() {
+        // Asynchronously load events from DB.
+        eventConfExecutor.execute(this::reloadEvents);
+    }
+
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void persistEventConfFile(final Events events, final EventConfSourceMetadataDto eventConfSourceMetadataDto) {
         EventConfSource source = createOrUpdateSource(eventConfSourceMetadataDto);
         eventConfEventDao.deleteBySourceId(source.getId());
         saveEvents(source, events, eventConfSourceMetadataDto.getUsername(), eventConfSourceMetadataDto.getNow());
+        // Asynchronously load events from DB.
+        eventConfExecutor.execute(this::reloadEvents);
+    }
+
+    private synchronized void reloadEvents() {
+        List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
+        eventConfDao.loadEventsFromDB(dbEvents);
     }
 
     private EventConfSource createOrUpdateSource(final EventConfSourceMetadataDto eventConfSourceMetadataDto) {
@@ -87,5 +116,10 @@ public class EventConfPersistenceService {
         }).toList();
 
         eventEntities.forEach(eventConfEventDao::save);
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        eventConfExecutor.shutdown();
     }
 }

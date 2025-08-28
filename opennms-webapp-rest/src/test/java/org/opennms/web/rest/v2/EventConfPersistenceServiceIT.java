@@ -277,14 +277,8 @@ public class EventConfPersistenceServiceIT {
         List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
         Assert.assertEquals("Should have 7 events total", 7, dbEvents.size());
 
-        // Now test the DefaultEventConfDao loadEventConfFromDB method
         DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
-        // Set a minimal config resource to satisfy loadConfig() requirement
-        try (java.io.ByteArrayInputStream bis = new java.io.ByteArrayInputStream(
-            "<?xml version=\"1.0\"?><events xmlns=\"http://xmlns.opennms.org/xsd/eventconf\"></events>".getBytes())) {
-            eventConfDao.setConfigResource(new org.springframework.core.io.InputStreamResource(bis));
-            eventConfDao.afterPropertiesSet();
-        }
+        eventConfDao.loadEventsFromDB(dbEvents);
 
 
         // Wait for async loading to complete
