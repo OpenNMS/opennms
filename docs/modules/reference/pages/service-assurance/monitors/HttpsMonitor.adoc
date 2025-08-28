@@ -3,7 +3,8 @@
 :description: Learn about the HttpsMonitor in OpenNMS {page-component-title} that tests the response of an SSL-enabled HTTP server.
 
 The HTTPS monitor tests the response of an SSL-enabled HTTP server.
-It is an SSL-enabled extension of the HTTP monitor with a default TCP port value of 443.
+It is an SSL-enabled extension of the HTTP monitor with a default TCP port value of 443. This implementation is not SNI aware - requests will always go to the defined IP address, and depending on the configuration sending Host headers. If you experience problems with stricter endpoints that reply with HTTP 421, consider switching to PageSequenceMonitor.
+
 All HttpMonitor parameters apply; refer to <<service-assurance/monitors/HttpMonitor.adoc#poller-http-monitor, HttpMonitor>> for more information.
 
 This monitor implements <<reference:service-assurance/introduction.adoc#ref-service-assurance-monitors-placeholder-substitution-parameters, placeholder substitution in parameter values>>.
