@@ -13,10 +13,11 @@
     <reference id="identity" interface="org.opennms.distributed.core.api.Identity" />
     <reference id="dnsResolver" interface="org.opennms.netmgt.dnsresolver.api.DnsResolver" availability="mandatory" />
 
-    <reference id="twinPublisher" interface="org.opennms.core.ipc.twin.api.TwinPublisher" availability="optional"/>
-    <reference id="twinSubscriber" interface="org.opennms.core.ipc.twin.api.TwinSubscriber" availability="mandatory"/>
+    <reference-list id="twinSubscriberRef" interface="org.opennms.core.ipc.twin.api.TwinSubscriber" availability="optional">
+        <reference-listener bind-method="bind" unbind-method="unbind" ref="informationElementXmlProvider"/>
+    </reference-list>
 
-    <reference id="informationElementXmlProvider" interface="org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementXmlProvider" availability="mandatory" />
+    <bean id="informationElementXmlProvider" class="org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.InformationElementXmlProviderImpl"/>
 
     <bean id="informationElementDatabase" class="org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase">
         <argument ref="informationElementXmlProvider" />

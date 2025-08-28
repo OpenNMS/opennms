@@ -1188,6 +1188,11 @@
       <artifactId>org.opennms.features.telemetry.shell</artifactId>
       <version>${project.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.features.telemetry.protocols.netflow.xml</groupId>
+      <artifactId>org.opennms.features.telemetry.protocols.netflow.xml.core</artifactId>
+      <version>${project.version}</version>
+    </dependency>
     <!-- Topologies -->
     <dependency>
       <groupId>org.opennms.features.topologies</groupId>

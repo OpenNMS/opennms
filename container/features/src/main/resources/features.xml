@@ -1184,7 +1184,7 @@
         <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.parser/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.adapter/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification/org.opennms.features.flows.classification.shell/${project.version}</bundle>
-        <bundle>mvn:org.opennms.features.telemetry.protocols.netflow.xml/org.opennms.features.telemetry.protocols.netflow.xml.core/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols.netflow.xml/org.opennms.features.telemetry.protocols.netflow.xml.config/${project.version}</bundle>
     </feature>
     <feature name="opennms-api-layer" version="${project.version}" description="OpenNMS :: Features :: API Layer">
         <feature>opennms-health</feature>
@@ -1930,11 +1930,6 @@
         <feature>opennms-core-ipc-twin-kafka</feature>
     </feature>
 
-    <feature name="opennms-core-ipc-twin-kafka-publisher" version="${project.version}" description="OpenNMS :: Core :: IPC :: Twin :: Kafka :: Publisher">
-        <feature>opennms-core-ipc-twin-kafka</feature>
-        <bundle>mvn:org.opennms.core.ipc.twin.kafka/org.opennms.core.ipc.twin.kafka.publisher/${project.version}</bundle>
-    </feature>
-
     <feature name="opennms-core-ipc-twin-kafka-common" version="${project.version}" description="OpenNMS :: Core :: IPC :: Twin :: Kafka :: Common">
         <feature>opennms-kafka</feature>
         <feature>opennms-core-ipc-twin-common</feature>
@@ -1950,6 +1945,7 @@
 
     <feature name="opennms-core-ipc-twin-shell" description="OpenNMS :: Core :: IPC :: Twin :: Shell" version="${project.version}">
         <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.shell/${project.version}</bundle>
+        <bundle>mvn:org.opennms.features.telemetry.protocols.netflow.xml/org.opennms.features.telemetry.protocols.netflow.xml.config/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-deviceconfig-deps" description="OpenNMS :: Features :: Device Config :: Deps" version="${project.version}">

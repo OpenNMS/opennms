@@ -37,8 +37,8 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
-            <groupId>org.opennms.features.telemetry.protocols.netflow</groupId>
-            <artifactId>org.opennms.features.telemetry.protocols.netflow.parser</artifactId>
+            <groupId>org.opennms.features.telemetry.protocols.netflow.xml</groupId>
+            <artifactId>org.opennms.features.telemetry.protocols.netflow.xml.config</artifactId>
             <version>${project.version}</version>
         </dependency>
         <dependency>

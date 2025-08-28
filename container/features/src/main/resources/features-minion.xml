@@ -140,6 +140,7 @@
       <feature version="${netty4Version}">netty</feature>
       <feature>opennms-dnsresolver-api</feature>
       <feature>opennms-util</feature>
+      <feature dependency="true">opennms-core-ipc-twin-common</feature>
       <bundle>wrap:mvn:com.google.protobuf/protobuf-java/${protobufVersion}</bundle>
       <bundle>mvn:com.google.code.gson/gson/${gsonVersion}</bundle>
       <bundle>wrap:mvn:io.pkts/pkts-core/${pktsVersion}$Bundle-SymbolicName=io.pkts.core&amp;Bundle-Version=${pktsVersion}</bundle>
@@ -159,7 +160,7 @@
       <bundle>mvn:org.opennms.features.telemetry.protocols.sflow/org.opennms.features.telemetry.protocols.sflow.parser/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.common/${project.version}</bundle>
       <bundle>mvn:org.opennms.features.telemetry.distributed/org.opennms.features.telemetry.distributed.minion/${project.version}</bundle>
-      <bundle>mvn:org.opennms.features.telemetry.protocols.netflow.xml/org.opennms.features.telemetry.protocols.netflow.xml.minion/${project.version}</bundle>
+      <bundle>mvn:org.opennms.features.telemetry.protocols.netflow.xml/org.opennms.features.telemetry.protocols.netflow.xml.config/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-core-ipc-grpc-client" description="OpenNMS :: Core :: IPC :: GRPC :: Client" version="${project.version}">
