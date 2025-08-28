@@ -80,7 +80,6 @@ export const validateEventConfigFile = async (file: File) => {
       `Error reading file content: ${error instanceof Error ? error.message : 'Unknown error'}`
     )
   }
-
   return {
     isValid: validationErrors.length === 0,
     errors: validationErrors
