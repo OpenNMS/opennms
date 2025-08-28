@@ -1,5 +1,5 @@
 import { eventConfigSources } from '@/components/EventConfiguration/data'
-import { EventConfigStoreState } from '@/types/eventConfig'
+import { EventConfigStoreState, EventConfSourceMetadata } from '@/types/eventConfig'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
@@ -16,6 +16,10 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     activeTab: 0,
     uploadedFilesReportModalState: {
       visible: false
+    },
+    deleteEventConfigSourceModalState: {
+      visible: false,
+      eventConfigSource: null
     }
   }),
   actions: {
@@ -38,6 +42,14 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     },
     resetActiveTab(){
       this.activeTab = 0
+    },
+    showDeleteEventConfigSourceModal(eventConfigSource: EventConfSourceMetadata) {
+      this.deleteEventConfigSourceModalState.visible = true
+      this.deleteEventConfigSourceModalState.eventConfigSource = eventConfigSource
+    },
+    hideDeleteEventConfigSourceModal() {
+      this.deleteEventConfigSourceModalState.visible = false
+      this.deleteEventConfigSourceModalState.eventConfigSource = null
     }
   }
 })
