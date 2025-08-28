@@ -1,5 +1,5 @@
 import { eventConfigEvents } from '@/components/EventConfiguration/data'
-import { EventConfigDetailStoreState, EventConfSourceMetadata } from '@/types/eventConfig'
+import { EventConfigDetailStoreState, EventConfigEvent, EventConfSourceMetadata } from '@/types/eventConfig'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
@@ -14,11 +14,16 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     events: [],
     eventsPagination: { ...defaultPagination },
     selectedSource: null,
-    isLoading: false
+    isLoading: false,
+    deleteEventConfigEventModalState: {
+      visible: false,
+      eventConfigEvent: null
+    }
   }),
   actions: {
-    async fetchEventsBySourceId(id: number) {
+    async fetchEventsBySourceId() {
       this.isLoading = true
+      const id = this.selectedSource?.id
       try {
         this.events = eventConfigEvents // Using static data for now
         this.eventsPagination.total = this.events.length
@@ -36,6 +41,14 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     },
     onEventsPageSizeChange(pageSize: number) {
       this.eventsPagination.pageSize = pageSize
+    },
+    showDeleteEventConfigEventModal(eventConfigSource: EventConfigEvent) {
+      this.deleteEventConfigEventModalState.visible = true
+      this.deleteEventConfigEventModalState.eventConfigEvent = eventConfigSource
+    },
+    hideDeleteEventConfigEventModal() {
+      this.deleteEventConfigEventModalState.visible = false
+      this.deleteEventConfigEventModalState.eventConfigEvent = null
     }
   }
 })
