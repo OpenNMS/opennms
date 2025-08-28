@@ -166,7 +166,7 @@ public class OpenConfigIT {
         // Start the daemon
         telemetryd.start();
 
-        subscribeAndStream(config);
+
         // Wait until the JRB archive is created
         await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
                 .resolve(Paths.get("1", "eth0", "ifInOctets.jrb")).toFile().canRead(), equalTo(true));
@@ -181,7 +181,6 @@ public class OpenConfigIT {
         // Start the daemon
         telemetryd.start();
 
-        subscribeAndStream(config);
 
         // Wait until the JRB archive is created
         await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
@@ -275,25 +274,4 @@ public class OpenConfigIT {
         }
         telemetryd.destroy();
     }
-    private void subscribeAndStream(TelemetrydConfig config) {
-        ConnectorConfig connectorConfig = config.getConnectors().stream()
-                .filter(ConnectorConfig::isEnabled)
-                .findFirst()
-                .orElseThrow(() -> new IllegalStateException("No enabled connector found in test config"));
-
-        final Connector connector = telemetryRegistry.getConnector(connectorConfig);
-
-        memoryTwinSubscriberDefault.subscribe(ConnectorTwinConfig.CONNECTOR_KEY, ConnectorTwinConfig.class, cg -> {
-            ConnectorTwinConfig.ConnectorConfig connectorConfigs = cg.getConfigurations().get(0);
-            try {
-                InetAddress ip = InetAddress.getByName(connectorConfigs.getIpAddress());
-                connector.stream(connectorConfigs.getNodeId(), ip, connectorConfigs.getParameters());
-            } catch (UnknownHostException e) {
-                throw new RuntimeException("Invalid IP address in test connector config: " + connectorConfigs.getIpAddress(), e);
-            }
-        });
-    }
-
-
-
 }

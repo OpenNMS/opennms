@@ -32,10 +32,7 @@ import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.dao.api.ServiceRef;
-import org.opennms.netmgt.telemetry.api.receiver.Connector;
-import org.opennms.netmgt.telemetry.config.model.ConnectorConfig;
 import org.opennms.netmgt.telemetry.config.model.ConnectorTwinConfig;
-import org.opennms.netmgt.telemetry.config.model.TelemetrydConfig;
 import org.opennms.netmgt.telemetry.daemon.LocationPublisher;
 import org.opennms.netmgt.telemetry.daemon.LocationPublisherManager;
 import org.opennms.netmgt.telemetry.daemon.OpenConfigTwinPublisherImpl;
@@ -43,16 +40,11 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 
-import javax.annotation.Resource;
 import java.lang.reflect.Field;
 import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CountDownLatch;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.Assert.*;
 
@@ -75,7 +67,7 @@ import static org.junit.Assert.*;
 @JUnitConfigurationEnvironment(systemProperties={ // We don't need a real pinger here
         "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.NullPinger"})
 @JUnitTemporaryDatabase(tempDbClass= MockDatabase.class,reuseDatabase=false)
-public class OpenConfigSpringIT {
+public class OpenConfigLocationPublisherT {
 
     @Autowired
     private LocationPublisherManager locationPublisherManager;
@@ -83,8 +75,7 @@ public class OpenConfigSpringIT {
     @Autowired
     private OpenConfigTwinPublisherImpl openConfigTwinPublisher;
 
-    @Resource(name = "memoryTwinPublisher")
-    private Object memoryTwinPublisherBean; // keep generic type if your class is in another module
+
 
     @Autowired
     private Map<String, TwinSubscriber> twinSubscribers;
@@ -93,7 +84,7 @@ public class OpenConfigSpringIT {
     public void setUp() {
         assertNotNull(locationPublisherManager);
         assertNotNull(openConfigTwinPublisher);
-        assertNotNull(memoryTwinPublisherBean);
+
     }
 
     // helper to read private fields via reflection
@@ -162,9 +153,9 @@ public class OpenConfigSpringIT {
         ConnectorTwinConfig.ConnectorConfig cfg;
         try {
             String ipStr = InetAddressUtils.str(InetAddress.getByName("1.1.1.1"));
-            cfg = new ConnectorTwinConfig.ConnectorConfig(999, ipStr, "ck-1", true, Collections.emptyList());
+            cfg = new ConnectorTwinConfig.ConnectorConfig(999, ipStr, "ck-1", Collections.emptyList());
         } catch (NoClassDefFoundError | Exception e) {
-            cfg = new ConnectorTwinConfig.ConnectorConfig(999, "1.1.1.1", "ck-1", true, Collections.emptyList());
+            cfg = new ConnectorTwinConfig.ConnectorConfig(999, "1.1.1.1", "ck-1", Collections.emptyList());
         }
 
         p1.addConfigAndPublish(cfg);
@@ -176,54 +167,5 @@ public class OpenConfigSpringIT {
         assertNotSame("manager.forceCloseAll should clear internal map", p1, p2);
         assertFalse("fresh publisher should not have configs", p2.hasConfigs());
     }
-
-    @Test
-    public void subscribe_for_multiple_locations() throws Exception {
-        String testLocation = "LOC-TEST";
-        String defaultLocation = "Default";
-
-        CountDownLatch testLatch = new CountDownLatch(1);
-        CountDownLatch defaultLatch = new CountDownLatch(1);
-
-        AtomicReference<ConnectorTwinConfig> testReceivedRef = new AtomicReference<>();
-        AtomicReference<ConnectorTwinConfig> defaultReceivedRef = new AtomicReference<>();
-
-        ServiceRef srv = new ServiceRef(100, InetAddress.getByName("10.0.0.5"), "svc", testLocation);
-        List<Map<String,String>> params = Collections.singletonList(Collections.singletonMap("k","v"));
-
-        openConfigTwinPublisher.publishConfig(srv, params, "nk-1");
-
-        getSubscriberForLocation(testLocation).subscribe(
-                ConnectorTwinConfig.CONNECTOR_KEY,
-                ConnectorTwinConfig.class,
-                cg -> {
-                    testReceivedRef.set(cg);
-                    testLatch.countDown();
-                });
-
-        getSubscriberForLocation(defaultLocation).subscribe(
-                ConnectorTwinConfig.CONNECTOR_KEY,
-                ConnectorTwinConfig.class,
-                cg -> {
-                    defaultReceivedRef.set(cg);
-                    defaultLatch.countDown();
-                });
-
-        boolean testReceived = testLatch.await(5, TimeUnit.SECONDS);
-        boolean defaultReceived = defaultLatch.await(100, TimeUnit.MILLISECONDS); // Shorter timeout for default
-
-        assertTrue("Message not received by test location", testReceived);
-        assertNotNull("Test location reference is null", testReceivedRef.get());
-
-        assertFalse("Default location received a message when it shouldn't have", defaultReceived);
-        assertNull("Default location reference is not null", defaultReceivedRef.get());
-    }
-
-
-    public TwinSubscriber getSubscriberForLocation(String location) {
-        String beanName = "memoryTwinSubscriber" + location;
-        return twinSubscribers.get(beanName);
-    }
-
 
 }

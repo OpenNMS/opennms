@@ -32,27 +32,39 @@
           class="org.opennms.netmgt.telemetry.daemon.OpenConfigTwinPublisherImpl">
         <constructor-arg ref="locationPublisherManager"/>
     </bean>
-    <bean name="memoryTwinSubscriber" class="org.opennms.core.ipc.twin.memory.MemoryTwinSubscriber">
-        <constructor-arg index="0" ref="memoryTwinPublisher"/>
-        <constructor-arg index="1" value="Default"/>
+
+    <bean id="jmsTwinPublisher" class="org.opennms.core.ipc.twin.jms.publisher.JmsTwinPublisher" primary="true"
+          init-method="init" destroy-method="close" >
+        <constructor-arg ref="twinRpcServer"/>
+        <constructor-arg ref="localTwinSubscriber"/>
+        <constructor-arg ref="tracerRegistry"/>
+        <constructor-arg ref="jmsTwinMetricRegistry"/>
     </bean>
 
-    <bean name="memoryTwinSubscriberDefault" class="org.opennms.core.ipc.twin.memory.MemoryTwinSubscriber">
-        <constructor-arg index="0" ref="memoryTwinPublisher"/>
-        <constructor-arg index="1" value="Default"/>
+    <bean id="localTwinSubscriber" class="org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl">
+        <constructor-arg ref="identity"/>
     </bean>
 
-    <bean name="memoryTwinSubscriberRemote" class="org.opennms.core.ipc.twin.memory.MemoryTwinSubscriber">
-        <constructor-arg index="0" ref="memoryTwinPublisher"/>
-        <constructor-arg index="1" value="Remote"/>
-    </bean>
-    <bean name="memoryTwinPublisher" class="org.opennms.core.ipc.twin.memory.MemoryTwinPublisher">
-    </bean>
+    <onmsgi:service interface="org.opennms.core.ipc.twin.api.LocalTwinSubscriber" ref="localTwinSubscriber">
+        <onmsgi:service-properties>
+            <entry key="registration.export" value="true" />
+        </onmsgi:service-properties>
+    </onmsgi:service>
 
-    <bean name="memoryTwinSubscriberLOC-TEST" class="org.opennms.core.ipc.twin.memory.MemoryTwinSubscriber">
-        <constructor-arg index="0" ref="memoryTwinPublisher"/>
-        <constructor-arg index="1" value="LOC-TEST"/>
+    <bean id="connectorStarter"
+          class="org.opennms.netmgt.telemetry.connectors.ConnectorStarter"
+        init-method="start">
+        <property name="M_twinSubscriber" ref="localTwinSubscriber"/>
+        <property name="configMap">
+            <map key-type="java.lang.String" value-type="java.lang.String">
+                <entry key="name"         value="OpenConfig"/>
+                <entry key="class-name"   value="org.opennms.netmgt.telemetry.protocols.openconfig.connector.OpenConfigConnector"/>
+                <entry key="queue"        value="OpenConfig"/>
+                <entry key="service-name" value="OpenConfig"/>
+            </map>
+        </property>
+        <property name="distPollerDao" ref="distPollerDao" />
+        <property name="telemetryRegistry" ref="telemetryRegistry" />
     </bean>
-
 
 </beans>

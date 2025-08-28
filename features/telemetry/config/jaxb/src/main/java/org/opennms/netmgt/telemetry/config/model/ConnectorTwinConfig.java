@@ -31,7 +31,7 @@ import java.util.Map;
 public class ConnectorTwinConfig {
     public static String CONNECTOR_KEY = "telemetry.connector.config";
 
-    private List<ConnectorConfig> configurations;
+    private List<ConnectorConfig> configurations = new ArrayList<>();
 
     public ConnectorTwinConfig() {
     }
@@ -54,7 +54,6 @@ public class ConnectorTwinConfig {
         private String ipAddress;
         private List<Map<String, String>> parameters;
         private String nodeConnectorKey;
-        private boolean enabled;
 
         public ConnectorConfig() {
         }
@@ -64,13 +63,11 @@ public class ConnectorTwinConfig {
                 @JsonProperty("nodeId") int nodeId,
                 @JsonProperty("ipAddress") String ipAddress,
                 @JsonProperty("nodeConnectorKey") String connectionKey,
-                @JsonProperty("enabled") boolean enabled,
                 @JsonProperty("parameters") List<Map<String, String>> parameters) {
 
             this.nodeId = nodeId;
             this.ipAddress = ipAddress;
             this.nodeConnectorKey = connectionKey;
-            this.enabled = enabled;
             this.parameters = parameters != null
                     ? Collections.unmodifiableList(new ArrayList<>(parameters))
                     : Collections.emptyList();
@@ -88,7 +85,5 @@ public class ConnectorTwinConfig {
         @JsonProperty("parameters")
         public List<Map<String, String>> getParameters() { return parameters; }
 
-        @JsonProperty("enabled")
-        public boolean isEnabled() { return enabled; }
     }
 }

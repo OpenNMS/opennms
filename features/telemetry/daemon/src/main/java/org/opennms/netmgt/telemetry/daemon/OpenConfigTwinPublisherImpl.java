@@ -69,7 +69,6 @@ public class OpenConfigTwinPublisherImpl implements OpenConfigTwinPublisher {
         return new ConnectorTwinConfig.ConnectorConfig(
             serviceRef.getNodeId(),
             InetAddressUtils.str(serviceRef.getIpAddress()), nodeConnectotrKey,
-            true,
             parameters
         );
     }

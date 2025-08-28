@@ -22,6 +22,7 @@
 
 package org.opennms.netmgt.telemetry.connectors;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.opennms.core.ipc.sink.api.AsyncDispatcher;
 import org.opennms.core.ipc.sink.api.MessageDispatcherFactory;
 import org.opennms.core.ipc.twin.api.TwinSubscriber;
@@ -40,16 +41,20 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.InetAddress;
-import java.util.*;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.ArrayList;
+import java.util.Set;
+import java.util.HashSet;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
-public class ConnectorStarter  {
+public class ConnectorStarter {
     private static final Logger LOG = LoggerFactory.getLogger(ConnectorStarter.class);
 
-    private static final String MODULE_ID_PREFIX = "Telemetry-";
-
-    Map<String, String> configMap;
+    Map<String, String> configMap = new HashMap<>();
 
     private MessageDispatcherFactory messageDispatcherFactory;
 
@@ -128,7 +133,7 @@ public class ConnectorStarter  {
     }
 
     public void subscribe() {
-        m_twinSubscription = m_twinSubscriber.subscribe( ConnectorTwinConfig.CONNECTOR_KEY, ConnectorTwinConfig.class, this::onConfig);
+        m_twinSubscription = m_twinSubscriber.subscribe(ConnectorTwinConfig.CONNECTOR_KEY, ConnectorTwinConfig.class, this::onConfig);
     }
 
     private void onConfig(ConnectorTwinConfig request) {
@@ -143,33 +148,22 @@ public class ConnectorStarter  {
                 Set<String> currentKeys = new HashSet<>(entities.keySet());
                 for (String existingKey : currentKeys) {
                     if (!newConfigKeys.contains(existingKey)) {
-                        LOG.info("Removing connector for key: {}", existingKey);
                         delete(existingKey);
                     }
                 }
 
                 for (ConnectorTwinConfig.ConnectorConfig config : request.getConfigurations()) {
-                    LOG.error("iterating the configs- reloading {} ",config.toString());
-                    if (config.isEnabled()) {
-                        Entity existingEntity = entities.get(config.getNodeConnectorKey());
+                    LOG.debug("Processing connector config: {}", config.getNodeConnectorKey());
+                    Entity existingEntity = entities.get(config.getNodeConnectorKey());
 
-                        if (existingEntity != null) {
-                            // Check if configuration has changed and needs update
-                            // stop the previous connector of node and start with updated configs
-                            if (hasConfigChanged(existingEntity.config, config)) {
-                                LOG.info("Configuration changed for key: {}, updating", config.getNodeConnectorKey());
-                                delete(config.getNodeConnectorKey());
-                                startConnector(config);
-                            }
-                        } else {
-                            startConnector(config);
-                        }
-                    } else {
-                        // Configuration is disabled remove if exists
-                        if (entities.containsKey(config.getNodeConnectorKey())) {
-                            LOG.info("Configuration disabled for key: {}", config.getNodeConnectorKey());
+                    if (existingEntity != null && hasConfigChanged(existingEntity.config, config)) {
+                        // if config changed -> restart connector
+                            LOG.info("Configuration changed for key: {}, updating", config.getNodeConnectorKey());
                             delete(config.getNodeConnectorKey());
-                        }
+                            startConnector(config);
+                    } else {
+                        // new config found in list -> start connector
+                        startConnector(config);
                     }
                 }
             }
@@ -181,7 +175,7 @@ public class ConnectorStarter  {
             final Entity entity = new Entity();
             entity.config = config;
             final String queueName = Objects.requireNonNull(baseDef.getQueueName());
-            AsyncDispatcher<TelemetryMessage> dispatcher=  telemetryRegistry.getDispatcher(baseDef.getQueueName());
+            AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(baseDef.getQueueName());
             if (dispatcher == null) {
                 // No dispatcher in registry, check if we have a local instance
                 if (sharedQueueDispatcher == null) {
@@ -218,14 +212,19 @@ public class ConnectorStarter  {
     }
 
 
-
     public void bind(TwinSubscriber twinSubscriber) {
         m_twinSubscriber = twinSubscriber;
         subscribe();
     }
 
+
+
     public void unbind(TwinSubscriber twinSubscriber) {
         m_twinSubscriber = null;
+    }
+
+    public Map<String, Entity> getEntities() {
+        return entities;
     }
 
     private static class Entity {
@@ -262,6 +261,16 @@ public class ConnectorStarter  {
 
     public void setTelemetryRegistry(TelemetryRegistry telemetryRegistry) {
         this.telemetryRegistry = telemetryRegistry;
+    }
+
+    public TwinSubscriber getM_twinSubscriber() {
+        return m_twinSubscriber;
+    }
+
+    @VisibleForTesting
+    public void setM_twinSubscriber(TwinSubscriber m_twinSubscriber) {
+        this.m_twinSubscriber = m_twinSubscriber;
+        subscribe();
     }
 
 }
