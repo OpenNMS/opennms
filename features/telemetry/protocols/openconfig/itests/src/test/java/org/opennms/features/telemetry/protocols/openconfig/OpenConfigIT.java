@@ -27,8 +27,6 @@ import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
@@ -41,7 +39,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
-import org.opennms.core.ipc.twin.api.TwinSubscriber;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.MockDatabase;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
@@ -52,12 +49,9 @@ import org.opennms.netmgt.dao.api.ServiceTypeDao;
 import org.opennms.netmgt.model.NetworkBuilder;
 import org.opennms.netmgt.model.OnmsNode;
 import org.opennms.netmgt.model.OnmsServiceType;
-import org.opennms.netmgt.telemetry.api.receiver.Connector;
-import org.opennms.netmgt.telemetry.api.registry.TelemetryRegistry;
 import org.opennms.netmgt.telemetry.config.dao.TelemetrydConfigDao;
 import org.opennms.netmgt.telemetry.config.model.AdapterConfig;
 import org.opennms.netmgt.telemetry.config.model.ConnectorConfig;
-import org.opennms.netmgt.telemetry.config.model.ConnectorTwinConfig;
 import org.opennms.netmgt.telemetry.config.model.PackageConfig;
 import org.opennms.netmgt.telemetry.config.model.Parameter;
 import org.opennms.netmgt.telemetry.config.model.QueueConfig;
@@ -124,11 +118,6 @@ public class OpenConfigIT {
     private File rrdBaseDir;
 
     private int port;
-    @Autowired
-    private TwinSubscriber memoryTwinSubscriberDefault;
-    @Autowired
-    private TelemetryRegistry telemetryRegistry;
-
 
     @Before
     public void setUp() throws IOException {
@@ -161,12 +150,9 @@ public class OpenConfigIT {
     public void testOpenConfigForJti() throws Exception {
 
         // Use custom configuration to enable openconfig.
-        TelemetrydConfig config = getConfig(true);
-        updateDaoWithConfig(config);
+        updateDaoWithConfig(getConfig(true));
         // Start the daemon
         telemetryd.start();
-
-
         // Wait until the JRB archive is created
         await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
                 .resolve(Paths.get("1", "eth0", "ifInOctets.jrb")).toFile().canRead(), equalTo(true));
@@ -176,12 +162,9 @@ public class OpenConfigIT {
     public void testOpenConfigForGnmi() throws Exception {
 
         // Use custom configuration to enable openconfig.
-        TelemetrydConfig config = getConfig(false);
-        updateDaoWithConfig(config);
+        updateDaoWithConfig(getConfig(false));
         // Start the daemon
         telemetryd.start();
-
-
         // Wait until the JRB archive is created
         await().atMost(30, TimeUnit.SECONDS).until(() -> rrdBaseDir.toPath()
                 .resolve(Paths.get("1", "eth1", "ifInOctets.jrb")).toFile().canRead(), equalTo(true));
@@ -274,4 +257,5 @@ public class OpenConfigIT {
         }
         telemetryd.destroy();
     }
+
 }
