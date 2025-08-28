@@ -50,14 +50,12 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
-
+import java.util.Date;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
@@ -86,6 +84,9 @@ public class EventConfRestServiceIT {
 
     @Autowired
     private EventConfEventDao eventConfEventDao;
+
+    @Autowired
+    private EventConfPersistenceService eventConfPersistenceService;
 
     @Before
     public void setUp() {
@@ -313,6 +314,46 @@ public class EventConfRestServiceIT {
         Response response = eventConfRestApi.enableDisableEventConfSources(payload, null);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
         assertTrue(((String) response.getEntity()).contains("enabled"));
+    }
+
+    @Test
+    public void testFilterEventConfSource_InvalidOffsetLimit() {
+        Response response = eventConfRestApi.filterEventConfSource(
+                "test", "vendor", "desc", 1, 2, 10, -1, 5, null);
+
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+
+        response = eventConfRestApi.filterEventConfSource(
+                "test", "vendor", "desc", 1, 2, 10, 11, 5, null);
+
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testFilterEventConfSource_NoRecordsFound() {
+        Response response = eventConfRestApi.filterEventConfSource(
+                "nonexistent", "nonexistent", "nonexistent", 1, 2, 0, 0, 5, null);
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+    }
+
+    @Test
+    public void testFilterEventConfSource_Success() {
+        EventConfSource source =  new EventConfSource();
+        source.setName("test");
+        source.setFileOrder(1);
+        source.setEventCount(2);
+        source.setEnabled(true);
+        source.setCreatedTime(new Date());
+        source.setLastModified(new Date());
+        source.setVendor("vendor");
+        source.setDescription("desc");
+        eventConfSourceDao.saveOrUpdate(source);
+
+        Response response = eventConfRestApi.filterEventConfSource(
+                "test", "vendor", "desc", 1, 2, 0, 0, 5, null);
+
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+        assertNotNull(response.getEntity());
     }
 
 }

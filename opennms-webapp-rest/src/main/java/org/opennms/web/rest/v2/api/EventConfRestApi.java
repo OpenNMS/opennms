@@ -54,12 +54,12 @@ public interface EventConfRestApi {
                                   @Context SecurityContext securityContext) throws Exception;
 
     @GET
-    @Path("filter")
-    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Path("filter/events")
+    @Produces(MediaType.APPLICATION_JSON)
     @Operation(
-            summary = "Filter EventConf Records",
-            description = "Fetch EventConf records based on provided filters such as UEI, vendor, source and name.",
-            operationId = "filterEventConf"
+            summary = "Filter EventConfEvent Records",
+            description = "Fetch EventConfEvent records based on provided filters such as UEI, vendor, source and name.",
+            operationId = "filterEventConfEvent"
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "EventConf records retrieved successfully",
@@ -91,4 +91,32 @@ public interface EventConfRestApi {
             @ApiResponse(responseCode = "400", description = "Invalid request")
     })
     Response enableDisableEventConfSources(EventConfSrcEnableDisablePayload eventConfSrcEnableDisablePayload, @Context SecurityContext securityContext) throws Exception;
+    @GET
+    @Path("filter/sources")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Filter EventConfSource Records",
+            description = "Fetch EventConfSource records based on provided filters such as name, vendor, description, fileOrder and eventCount.",
+            operationId = "filterEventConfSource"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "EventConfSource records retrieved successfully",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
+                    content = @Content),
+            @ApiResponse(responseCode = "204", description = "No matching EventConfSource records found for the given criteria",
+                    content = @Content)
+    })
+    Response filterEventConfSource(
+            @QueryParam("name") String name,
+            @QueryParam("vendor") String vendor,
+            @QueryParam("desc") String desc,
+            @QueryParam("fileOrder") Integer fileOrder,
+            @QueryParam("eventCount") Integer eventCount,
+            @QueryParam("totalRecords") Integer totalRecords,
+            @QueryParam("offset") Integer offset,
+            @QueryParam("limit") Integer limit,
+            @Context SecurityContext securityContext );
+
+
 }
