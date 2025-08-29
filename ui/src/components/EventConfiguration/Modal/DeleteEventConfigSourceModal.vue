@@ -32,6 +32,7 @@
 </template>
 
 <script lang="ts" setup>
+import { deleteEventConfigSourceById } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
@@ -42,12 +43,17 @@ const labels = {
 }
 
 const deleteEventConfigSource = async () => {
+  if (store.deleteEventConfigSourceModalState.eventConfigSource === null) {
+    return
+  }
   try {
-    // TODO: Call API to delete the event configuration source
-    // await api.deleteEventConfigSource(store.deleteEventConfigSourceModalState.eventConfigSource.id);
-
-    // After successful deletion, hide the modal and refresh the list
+    const response = await deleteEventConfigSourceById(store.deleteEventConfigSourceModalState.eventConfigSource.id)
+    if (!response) {
+      console.error('Failed to delete event configuration source')
+      return
+    }
     store.hideDeleteEventConfigSourceModal()
+    store.resetSourcesPagination()
     await store.fetchEventConfigs()
   } catch (error) {
     console.error('Error deleting event configuration source:', error)

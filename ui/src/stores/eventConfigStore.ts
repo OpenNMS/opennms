@@ -50,6 +50,9 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     hideDeleteEventConfigSourceModal() {
       this.deleteEventConfigSourceModalState.visible = false
       this.deleteEventConfigSourceModalState.eventConfigSource = null
+    },
+    resetSourcesPagination() {
+      this.sourcesPagination = { ...defaultPagination }
     }
   }
 })
