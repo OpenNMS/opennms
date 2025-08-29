@@ -9,7 +9,6 @@ const defaultPagination = {
   total: 0
 }
 
-
 export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore', {
   state: (): EventConfigDetailStoreState => ({
     events: [],
@@ -52,18 +51,25 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       this.deleteEventConfigEventModalState.eventConfigEvent = null
     },
     async disableEventConfigEvent(eventId: number) {
-      // Placeholder for disabling event logic
-      const response = await changeEventConfigEventStatus(eventId, this.selectedSource?.id || 0, false)
-      if (response) {
-        await this.fetchEventsBySourceId()
+      if (this.selectedSource) {
+        const response = await changeEventConfigEventStatus(eventId, this.selectedSource.id, false)
+        if (response) {
+          await this.fetchEventsBySourceId()
+        }
+      } else {
+        console.error('No source selected')
       }
     },
     async enableEventConfigEvent(eventId: number) {
-      // Placeholder for enabling event logic
-      const response = await changeEventConfigEventStatus(eventId, this.selectedSource?.id || 0, true)
-      if (response) {
-        await this.fetchEventsBySourceId()
+      if (this.selectedSource) {
+        const response = await changeEventConfigEventStatus(eventId, this.selectedSource.id, true)
+        if (response) {
+          await this.fetchEventsBySourceId()
+        }
+      } else {
+        console.error('No source selected')
       }
     }
   }
 })
+

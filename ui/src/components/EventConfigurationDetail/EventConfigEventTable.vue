@@ -73,7 +73,7 @@
                 :buttons="buttons"
                 :disabled="false"
                 :id="`event-enabled-toggle-${event.id}`"
-                @toggle-button-click="toogledStatus(event)"
+                @toggle-button-click="toggledStatus(event)"
               />
             </td>
             <td>
@@ -168,7 +168,7 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
   sort[sortObj.property] = sortObj.value
 }
 
-const toogledStatus = async (event: EventConfigEvent) => {
+const toggledStatus = async (event: EventConfigEvent) => {
   if (event.enabled) {
     await store.disableEventConfigEvent(event.id)
   } else {
