@@ -44,6 +44,19 @@ public class LocationPublisher {
     public LocationPublisher(String location, TwinPublisher twinPublisher) {
         this.location = location;
         this.twinPublisher = twinPublisher;
+        if (session == null) {
+            try {
+                session = twinPublisher.register(
+                        ConnectorTwinConfig.CONNECTOR_KEY,
+                        ConnectorTwinConfig.class,
+                        location
+                );
+            } catch (IOException e) {
+                LOG.error("Failed to create  session for {}: {}", location, e.getMessage(), e);
+            }
+        }
+
+
     }
 
 
@@ -72,13 +85,6 @@ public class LocationPublisher {
     }
 
     private void publishCurrentConfigs() throws IOException {
-        if (session == null) {
-            session = twinPublisher.register(
-                    ConnectorTwinConfig.CONNECTOR_KEY,
-                    ConnectorTwinConfig.class,
-                    location
-            );
-        }
         session.publish(new ConnectorTwinConfig(new ArrayList<>(configs.values())));
     }
 
@@ -95,7 +101,7 @@ public class LocationPublisher {
             configs.clear();
             closeSession();
         } catch (IOException e) {
-            LOG.warn("Failed to close session for {}: {}", location, e.getMessage(), e);
+            LOG.error("Failed to close session for {}: {}", location, e.getMessage(), e);
         } finally {
             lock.unlock();
         }
