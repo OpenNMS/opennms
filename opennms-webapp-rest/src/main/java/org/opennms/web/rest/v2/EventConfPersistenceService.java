@@ -36,6 +36,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class EventConfPersistenceService {
@@ -98,5 +99,12 @@ public class EventConfPersistenceService {
         }).toList();
 
         eventEntities.forEach(eventConfEventDao::save);
+    }
+
+    public Map<String, Object> filterEventConfSource(String name, String vendor, String desc, Integer fileOrder,
+                                                     Integer eventCount, Integer totalRecords, Integer offset,
+                                                     Integer limit) {
+        return eventConfSourceDao.filterEventConfSource(name, vendor, desc, fileOrder, eventCount, totalRecords,
+                offset, limit);
     }
 }

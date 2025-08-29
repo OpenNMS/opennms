@@ -352,4 +352,31 @@ public class EventConfSourceDaoIT implements InitializingBean {
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
     }
+
+    @Test
+    public void testFilterEventConfSource_ReturnsValidMap() {
+        EventConfSource source =  new EventConfSource();
+        source.setName("testName");
+        source.setFileOrder(1);
+        source.setEventCount(5);
+        source.setEnabled(true);
+        source.setCreatedTime(new Date());
+        source.setLastModified(new Date());
+        source.setVendor("testVendor");
+        source.setDescription("testDesc");
+        m_dao.saveOrUpdate(source);
+        Map<String, Object> result = m_dao.filterEventConfSource(
+                "testName", "testVendor", "testDesc", 1, 5, 0, 0, 5);
+        assertNotNull(result);
+        assertEquals(1, result.get("totalRecords"));
+        assertTrue(((List)result.get("eventConfSourceList")).size()>0);
+    }
+
+    @Test
+    public void testFilterEventConfSource_ReturnsEmptyMap() {
+        Map<String, Object> result = m_dao.filterEventConfSource(
+                null, null, null, null, null, null, 0, 5);
+        assertNotNull(result);
+        assertFalse(result.isEmpty());
+    }
 }

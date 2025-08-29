@@ -42,6 +42,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -294,6 +295,103 @@ public class EventConfPersistenceServiceIT {
         assertFalse(enableEventConfSources.stream().noneMatch(EventConfSource::getEnabled));
         List<EventConfEvent> enableEventConfEvents = eventConfEventDao.findAll();
         assertFalse(enableEventConfEvents.stream().noneMatch(EventConfEvent::getEnabled));
+    }
+
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testFilterEventConfSource_shouldReturnResults_whenFiltersMatch() {
+        String filename = "test-filter-source.xml";
+        String username = "filter_user";
+        Date now = new Date();
+
+        EventConfSourceMetadataDto metadata = new EventConfSourceMetadataDto.Builder()
+                .filename(filename)
+                .eventCount(2)
+                .fileOrder(10)
+                .username(username)
+                .now(now)
+                .vendor("Juniper")
+                .description("Filter test source")
+                .build();
+
+        Event event = new Event();
+        event.setUei("uei.opennms.org/test/filter");
+        event.setEventLabel("Filter Event");
+        event.setDescr("Event for filter test");
+        event.setSeverity("Normal");
+        Events events = new Events();
+        events.getEvents().add(event);
+        eventConfPersistenceService.persistEventConfFile(events, metadata);
+        Map<String, Object> result = eventConfPersistenceService.filterEventConfSource(
+                null,            // name
+                "Juniper",       // vendor
+                null,            // desc
+                null,            // fileOrder
+                null,            // eventCount
+                0,               // totalRecords
+                0,               // offset
+                10               // limit
+        );
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.containsKey("totalRecords"));
+        Assert.assertTrue(result.containsKey("eventConfSourceList"));
+
+        List<EventConfSource> sources = (List<EventConfSource>) result.get("eventConfSourceList");
+        Assert.assertFalse(sources.isEmpty());
+        Assert.assertEquals("Juniper", sources.get(0).getVendor());
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testFilterEventConfSource_shouldReturnEmpty_whenNoMatch() {
+        Map<String, Object> result = eventConfPersistenceService.filterEventConfSource(
+                "nonexistent", "nonexistent", "none",
+                -1, -1, 0, 0, 10
+        );
+        Assert.assertNotNull(result);
+        List<EventConfSource> sources = (List<EventConfSource>) result.get("eventConfSourceList");
+        Assert.assertTrue(sources.isEmpty());
+        Assert.assertEquals(0, result.get("totalRecords"));
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testFilterEventConfSource_shouldObeyPagination() {
+        String username = "pagination_test";
+        Date now = new Date();
+
+        for (int i = 1; i <= 5; i++) {
+            EventConfSourceMetadataDto metadata = new EventConfSourceMetadataDto.Builder()
+                    .filename("file-" + i + ".xml")
+                    .eventCount(1)
+                    .fileOrder(i)
+                    .username(username)
+                    .now(now)
+                    .vendor("VendorX")
+                    .description("Desc " + i)
+                    .build();
+
+            Event event = new Event();
+            event.setUei("uei.opennms.org/test/pagination/" + i);
+            event.setEventLabel("Event " + i);
+            event.setDescr("Pagination event " + i);
+            event.setSeverity("Normal");
+
+            Events events = new Events();
+            events.getEvents().add(event);
+
+            eventConfPersistenceService.persistEventConfFile(events, metadata);
+        }
+        Map<String, Object> result = eventConfPersistenceService.filterEventConfSource(
+                null, "VendorX", null,
+                null, null,
+                0, 0, 2
+        );
+        Assert.assertNotNull(result);
+        List<EventConfSource> sources = (List<EventConfSource>) result.get("eventConfSourceList");
+        Assert.assertEquals(2, sources.size()); // Only 2 due to pagination
+        Assert.assertTrue((Integer) result.get("totalRecords") >= 5); // DB contains 5
     }
 
 
