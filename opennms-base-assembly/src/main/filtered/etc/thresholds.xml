@@ -46,7 +46,7 @@
       </expression>
    </group>
    <group name="netsnmp-memory-linux" rrdRepository="${install.share.dir}/rrd/snmp/">
-      <expression description="Trigger an alert when the sum of the amount of unused real/physical memory plus the amount of real/virtual memory currently allocated as cached memory expressed as a percentage of total system memory reaches or goes below 5% for two consecutive measurement intervals" type="low" ds-type="node" value="5.0" rearm="10.0" trigger="2" expr-label="Below 5% Total System Memory" filterOperator="OR" expression="(memAvailReal + memCached) / memTotalReal * 100.0"/>
+      <expression description="Trigger an alert when the estimated amount of memory available for allocation without swapping expressed as a percentage of total system memory reaches or goes below 5% for two consecutive measurement intervals" type="low" ds-type="node" value="5.0" rearm="10.0" trigger="2" relaxed="true" expr-label="Below 5% Total System Memory" filterOperator="OR" expression="memSysAvail == null ? (memAvailRealX != null &amp;&amp; memCachedX != null &amp;&amp; memTotalRealX != null ? (memAvailRealX + memCachedX) / memTotalRealX * 100.0 : (memAvailReal + memCached) / memTotalReal * 100.0) : memSysAvail / memTotalRealX * 100.0"/>
    </group>
    <group name="netsnmp-memory-nonlinux" rrdRepository="${install.share.dir}/rrd/snmp/">
       <expression description="Trigger an alert when the amount of unused real/physical memory expressed as a percentage of total system memory reaches or goes below 5% for two consecutive measurement intervals" type="low" ds-type="node" value="5.0" rearm="10.0" trigger="2" expr-label="Below 5% Real Memory" filterOperator="OR" expression="memAvailReal / memTotalReal * 100.0"/>

@@ -69,6 +69,17 @@
       <!-- Error flag.  1 indicates very little swap space left -->
       <mibObj oid=".1.3.6.1.4.1.2021.4.100" instance="0" alias="memSwapError" type="integer"/>
    </group>
+   <group name="ucd-memory-X" ifType="ignore">
+      <mibObj oid=".1.3.6.1.4.1.2021.4.18" instance="0" alias="memTotalSwapX" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2021.4.19" instance="0" alias="memAvailSwapX" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2021.4.20" instance="0" alias="memTotalRealX" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2021.4.21" instance="0" alias="memAvailRealX" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2021.4.22" instance="0" alias="memTotalFreeX" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2021.4.24" instance="0" alias="memSharedX" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2021.4.25" instance="0" alias="memBufferX" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2021.4.26" instance="0" alias="memCachedX" type="gauge"/>
+      <mibObj oid=".1.3.6.1.4.1.2021.4.27" instance="0" alias="memSysAvail" type="integer"/>
+   </group>
    <group name="ucd-sysstat" ifType="ignore">
       <mibObj oid=".1.3.6.1.4.1.2021.11.3" instance="0" alias="SwapIn" type="integer"/>
       <mibObj oid=".1.3.6.1.4.1.2021.11.4" instance="0" alias="SwapOut" type="integer"/>
@@ -165,6 +176,7 @@
          <includeGroup>net-snmp-disk-highlow</includeGroup>
          <includeGroup>ucd-loadavg</includeGroup>
          <includeGroup>ucd-memory</includeGroup>
+         <includeGroup>ucd-memory-X</includeGroup>
          <includeGroup>ucd-sysstat</includeGroup>
          <includeGroup>ucd-sysstat-raw</includeGroup>
          <includeGroup>ucd-sysstat-raw-more</includeGroup>
