@@ -74,25 +74,3 @@ administrative options below that; and the Lock Menu option at the bottom.
 Locking means it will stay expanded even when navigating to different
 pages.
 |===
-
-== Legacy vs. non-legacy pages
-
-{page-component-title} contains pages built using several different technologies.
-
-- Java JSP - the majority of the pages
-- Vaadin - a responsive technology used on pages such as BSM, Topology, Wallboards
-- Vue.js - newer and future pages, built using the Vue Javascript framework as a Single Page Application
-
-The top and side menus are built using Vue.js and the Feather Design System.
-
-The newer Vue pages have the menus "built-in" to the Vue SPA application.
-
-The older/legacy JSP and Vaadin pages have a Vue menu app embedded into them containing just the menu components (same components as in the SPA).
-
-
-== Menu templates
-
-The organization of the side menu is controlled by JSON menu templates and
-is user-customizable.
-
-See the xref:development:menu/menu-templates.adoc[menu templates documentation].
