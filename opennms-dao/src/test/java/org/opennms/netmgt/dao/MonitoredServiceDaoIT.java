@@ -59,7 +59,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class MonitoredServiceDaoIT implements InitializingBean {
+public class MonitoredServiceDaoIT extends AbstractJRobinIT implements InitializingBean {
 
     @Autowired
     private MonitoredServiceDao m_monitoredServiceDao;

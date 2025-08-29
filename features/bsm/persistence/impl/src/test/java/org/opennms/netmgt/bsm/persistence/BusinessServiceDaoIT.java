@@ -33,6 +33,7 @@ import javax.validation.ConstraintViolationException;
 
 import org.junit.Assert;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.criteria.Alias;
@@ -104,6 +105,11 @@ public class BusinessServiceDaoIT {
     private HighestSeverityEntity m_highestSeverity;
 
     private IgnoreEntity m_ignore;
+
+    @BeforeClass
+    public static void beforeClass() {
+        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
+    }
 
     @Before
     public void setUp() {

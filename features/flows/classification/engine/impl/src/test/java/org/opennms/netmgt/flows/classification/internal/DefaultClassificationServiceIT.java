@@ -30,6 +30,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -83,6 +84,11 @@ public class DefaultClassificationServiceIT {
 
     private Group userGroupDb; // the user group that is attached to hibernate
     private Group userGroupCsv; // the user group that is not attached to hibernate
+
+    @BeforeClass
+    public static void beforeClass() {
+        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
+    }
 
     @Before
     public void setUp() throws InterruptedException {

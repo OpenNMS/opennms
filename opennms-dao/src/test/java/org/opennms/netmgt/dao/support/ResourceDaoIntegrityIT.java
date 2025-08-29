@@ -64,6 +64,7 @@ import org.opennms.netmgt.config.datacollection.Parameter;
 import org.opennms.netmgt.config.datacollection.PersistenceSelectorStrategy;
 import org.opennms.netmgt.config.datacollection.ResourceType;
 import org.opennms.netmgt.config.datacollection.StorageStrategy;
+import org.opennms.netmgt.dao.AbstractJRobinIT;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.api.NodeDao;
@@ -114,7 +115,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
-public class ResourceDaoIntegrityIT implements InitializingBean {
+public class ResourceDaoIntegrityIT extends AbstractJRobinIT implements InitializingBean {
 
     private FilterDao m_filterDao;
     private CollectdConfigFactory m_collectdConfig;

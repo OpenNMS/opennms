@@ -42,7 +42,7 @@ import org.springframework.test.context.ContextConfiguration;
         "classpath:/META-INF/opennms/applicationContext-databasePopulator.xml"})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class ReportingSqlViewTestIT {
+public class ReportingSqlViewTestIT extends AbstractJRobinIT {
 
     @Autowired
     private DatabasePopulator databasePopulator;

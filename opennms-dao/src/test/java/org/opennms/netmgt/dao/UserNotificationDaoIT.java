@@ -63,7 +63,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class UserNotificationDaoIT implements InitializingBean {
+public class UserNotificationDaoIT extends AbstractJRobinIT implements InitializingBean {
 	
     @Autowired
     private DistPollerDao m_distPollerDao;

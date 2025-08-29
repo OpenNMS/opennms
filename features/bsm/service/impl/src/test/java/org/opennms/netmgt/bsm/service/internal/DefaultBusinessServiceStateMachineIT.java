@@ -33,10 +33,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.junit.After;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.*;
 import org.junit.runner.RunWith;
 import org.opennms.core.criteria.CriteriaBuilder;
 import org.opennms.core.spring.BeanUtils;
@@ -112,6 +109,11 @@ public class DefaultBusinessServiceStateMachineIT {
 
     @Autowired
     private AlarmProvider alarmProvider;
+
+    @BeforeClass
+    public static void beforeClass() {
+        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
+    }
 
     @Before
     public void before() {

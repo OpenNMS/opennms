@@ -23,6 +23,7 @@ package org.opennms.features.deviceconfig.persistence;
 
 import org.hamcrest.Matchers;
 import org.junit.Assert;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -80,6 +81,10 @@ public class DeviceConfigDaoIT {
 
     private OnmsIpInterface ipInterface;
 
+    @BeforeClass
+    public static void beforeClass() {
+        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
+    }
 
     @Test
     @Transactional

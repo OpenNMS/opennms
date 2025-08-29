@@ -39,6 +39,7 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
+import org.opennms.netmgt.dao.AbstractJRobinIT;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.IpInterfaceDao;
 import org.opennms.netmgt.model.OnmsIpInterface;
@@ -63,7 +64,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class IpInterfaceDaoHibernateIT implements InitializingBean {
+public class IpInterfaceDaoHibernateIT extends AbstractJRobinIT implements InitializingBean {
 
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;

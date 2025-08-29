@@ -24,6 +24,7 @@ package org.opennms.netmgt.bsm.persistence;
 import static org.junit.Assert.assertEquals;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -81,6 +82,11 @@ public class IPServiceEdgeDaoIT {
     private HighestSeverityEntity m_highestSeverity;
 
     private IdentityEntity m_identity;
+
+    @BeforeClass
+    public static void beforeClass() {
+        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
+    }
 
     @Before
     public void setUp() {

@@ -48,6 +48,7 @@ import org.opennms.core.utils.InetAddressUtils;
 import org.opennms.netmgt.config.mock.MockNotifdConfigManager;
 import org.opennms.netmgt.config.notifications.Notification;
 import org.opennms.netmgt.config.notifications.Rule;
+import org.opennms.netmgt.dao.AbstractJRobinIT;
 import org.opennms.netmgt.dao.api.CategoryDao;
 import org.opennms.netmgt.dao.api.DistPollerDao;
 import org.opennms.netmgt.dao.api.EventDao;
@@ -88,7 +89,7 @@ import com.google.common.collect.ImmutableMap;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase=false)
-public class NotificationManagerIT implements InitializingBean {
+public class NotificationManagerIT extends AbstractJRobinIT implements InitializingBean {
 	@Autowired
 	private DataSource m_dataSource;
 

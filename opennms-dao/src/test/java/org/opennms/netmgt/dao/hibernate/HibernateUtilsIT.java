@@ -31,6 +31,7 @@ import java.util.List;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.dao.AbstractJRobinIT;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,7 +50,7 @@ import static org.junit.Assert.assertTrue;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext = false)
-public class HibernateUtilsIT implements InitializingBean {
+public class HibernateUtilsIT extends AbstractJRobinIT implements InitializingBean {
 
     @Autowired
     SessionFactory factory;

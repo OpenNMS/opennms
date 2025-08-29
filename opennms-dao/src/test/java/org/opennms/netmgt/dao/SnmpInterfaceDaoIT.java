@@ -52,7 +52,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class SnmpInterfaceDaoIT implements InitializingBean {
+public class SnmpInterfaceDaoIT extends AbstractJRobinIT implements InitializingBean {
 	@Autowired
 	private SnmpInterfaceDao m_snmpInterfaceDao;
 

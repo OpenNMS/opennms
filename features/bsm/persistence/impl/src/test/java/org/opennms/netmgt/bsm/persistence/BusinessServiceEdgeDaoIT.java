@@ -84,6 +84,11 @@ public class BusinessServiceEdgeDaoIT {
 
     private IdentityEntity m_identity;
 
+    @BeforeClass
+    public static void beforeClass() {
+        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
+    }
+
     @Before
     public void setUp() {
         BeanUtils.assertAutowiring(this);

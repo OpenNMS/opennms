@@ -70,7 +70,7 @@ import java.util.List;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class EventDaoIT implements InitializingBean {
+public class EventDaoIT extends AbstractJRobinIT implements InitializingBean {
     @Autowired
     private DistPollerDao m_distPollerDao;
     

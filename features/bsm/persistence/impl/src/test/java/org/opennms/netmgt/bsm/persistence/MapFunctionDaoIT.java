@@ -23,6 +23,7 @@ package org.opennms.netmgt.bsm.persistence;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -52,6 +53,11 @@ public class MapFunctionDaoIT {
 
     @Autowired
     private MapFunctionDao m_mapFunctionDao;
+
+    @BeforeClass
+    public static void beforeClass() {
+        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
+    }
 
     @Test
     public void canCreateReadUpdateAndDeleteMapFunctions() {

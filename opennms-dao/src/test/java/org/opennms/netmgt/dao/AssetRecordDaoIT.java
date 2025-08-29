@@ -58,7 +58,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
-public class AssetRecordDaoIT implements InitializingBean {
+public class AssetRecordDaoIT extends AbstractJRobinIT implements InitializingBean {
     
 	@Autowired
 	private DistPollerDao m_distPollerDao;

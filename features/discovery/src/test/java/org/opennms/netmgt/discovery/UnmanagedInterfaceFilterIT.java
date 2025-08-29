@@ -25,6 +25,7 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -78,6 +79,11 @@ public class UnmanagedInterfaceFilterIT implements InitializingBean {
 	@Override
 	public void afterPropertiesSet() throws Exception {
 		BeanUtils.assertAutowiring(this);
+	}
+
+	@BeforeClass
+	public static void beforeClass() {
+		System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
 	}
 
 	@Before

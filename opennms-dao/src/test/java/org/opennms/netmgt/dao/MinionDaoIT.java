@@ -54,7 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext = true)
-public class MinionDaoIT {
+public class MinionDaoIT extends AbstractJRobinIT {
     @Autowired
     private MinionDao m_minionDao;
 

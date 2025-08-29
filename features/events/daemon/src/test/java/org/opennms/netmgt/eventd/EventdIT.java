@@ -78,7 +78,7 @@ import org.springframework.transaction.support.TransactionCallback;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class EventdIT implements InitializingBean {
+public class EventdIT extends AbstractJRobinIT implements InitializingBean {
     private static final long SLEEP_TIME = 50;
 
     @Autowired
