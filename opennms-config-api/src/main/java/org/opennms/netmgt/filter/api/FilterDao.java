@@ -113,4 +113,5 @@ public interface FilterDao {
      */
     void validateRule(String rule) throws FilterParseException;
 
+    public Map<Integer, String> getNodeLocations();
 }

@@ -33,7 +33,7 @@ import org.opennms.netmgt.telemetry.config.model.PackageConfig;
 import org.opennms.netmgt.telemetry.config.model.Parameter;
 
 public class ConnectorManagerTest {
-
+    private  static  final  String DEFAULT_LOCATION = "Default";
 
     @Test
     public void testParamsByGroup() {
@@ -50,7 +50,7 @@ public class ConnectorManagerTest {
 
         ConnectorManager connectorManager = new ConnectorManager();
         connectorManager.setEntityScopeProvider(new MockEntityScopeProvider());
-        ServiceRef serviceRef = new ServiceRef(1, InetAddressUtils.ONE_TWENTY_SEVEN, "OPENCONFIG");
+        ServiceRef serviceRef = new ServiceRef(1, InetAddressUtils.ONE_TWENTY_SEVEN, "OPENCONFIG",DEFAULT_LOCATION);
         List<Map<String, String>> groupedParams = connectorManager.getGroupedParams(connectorPackage, serviceRef);
         Assert.assertEquals(4, groupedParams.size());
         // Each map should either belongs to different group which has paths or it should be a group with port ( which is global)

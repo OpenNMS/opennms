@@ -38,6 +38,7 @@ import java.util.Set;
 import java.util.SortedMap;
 import java.util.TreeMap;
 import java.util.TreeSet;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -75,7 +76,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 	private static final Pattern SQL_VALUE_COLUMN_PATTERN = Pattern.compile("[a-zA-Z0-9_\\-]*[a-zA-Z][a-zA-Z0-9_\\-]*");
 	private static final Pattern SQL_IPLIKE_PATTERN = Pattern.compile("(\\w+)\\s+IPLIKE\\s+([0-9a-f.:*,-]+|###@\\d+@###)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
 	private static final String SQL_IPLIKE6_RHS_REGEX = "^[0-9A-Fa-f:*,-]+$";
-
+    private final Map<Integer, String> nodeLocations = new ConcurrentHashMap<>();
 	private DataSource m_dataSource;
     private DatabaseSchemaConfig m_databaseSchemaConfigFactory;
 
@@ -218,7 +219,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     public Map<Integer, Map<InetAddress, Set<String>>> getNodeIPAddressServiceMap(String rule) throws FilterParseException {
         final Map<Integer, Map<InetAddress, Set<String>>> nodeIpServices = new TreeMap<>();
         String sqlString;
-
+        nodeLocations.clear();
         LOG.debug("Filter.getNodeIPAddressServiceMap({})", rule);
 
         // get the database connection
@@ -245,11 +246,13 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
                     final Integer nodeId = rset.getInt(1);
                     final InetAddress ipaddr = addr(rset.getString(2));
                     final String serviceName = rset.getString(3);
+                    final String location = rset.getString(4);
                     if (ipaddr == null || serviceName == null) {
                         continue;
                     }
                     Map<InetAddress, Set<String>> ifServices = nodeIpServices.computeIfAbsent(nodeId, key -> new TreeMap<>(new InetAddressComparator()));
                     ifServices.computeIfAbsent(ipaddr, key -> new TreeSet<>()).add(serviceName);
+                    nodeLocations.putIfAbsent(nodeId, location);
                 }
             }
 
@@ -444,6 +447,11 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         isRuleMatching(rule);
     }
 
+    @Override
+    public Map<Integer, String> getNodeLocations() {
+        return nodeLocations;
+    }
+
     /**
      * <p>getNodeMappingStatement</p>
      *
@@ -478,7 +486,7 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
         columns.append(m_databaseSchemaConfigFactory.addColumn(tables, "nodeID"));
         columns.append(", " + m_databaseSchemaConfigFactory.addColumn(tables, "ipAddr"));
         columns.append(", " + m_databaseSchemaConfigFactory.addColumn(tables, "serviceName"));
-
+        columns.append(", " + m_databaseSchemaConfigFactory.addColumn(tables, "location"));
         final String where = parseRule(tables, rule);
         final String from = m_databaseSchemaConfigFactory.constructJoinExprForTables(tables);
 
