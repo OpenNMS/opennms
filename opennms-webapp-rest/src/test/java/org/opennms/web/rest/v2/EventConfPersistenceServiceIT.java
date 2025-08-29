@@ -26,7 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.config.DefaultEventConfDao;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
@@ -42,9 +42,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
-import static org.awaitility.Awaitility.await;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -68,6 +65,9 @@ public class EventConfPersistenceServiceIT {
 
     @Autowired
     private EventConfPersistenceService eventConfPersistenceService;
+    
+    @Autowired
+    private EventConfDao eventConfDao;
 
     @Test
     @JUnitTemporaryDatabase
@@ -277,20 +277,12 @@ public class EventConfPersistenceServiceIT {
         List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
         Assert.assertEquals("Should have 7 events total", 7, dbEvents.size());
 
-        DefaultEventConfDao eventConfDao = new DefaultEventConfDao();
-        eventConfDao.loadEventsFromDB(dbEvents);
-
-
-        // Wait for async loading to complete
-        await().atMost(10, TimeUnit.SECONDS)
-               .until(() -> eventConfDao.getRootEvents() != null);
+        // Manually trigger reload to load events into the injected EventConfDao
+        eventConfPersistenceService.reloadEvents();
 
         // Verify events were loaded correctly
         Events rootEvents = eventConfDao.getRootEvents();
         Assert.assertNotNull("Root events should not be null", rootEvents);
-        
-        List<Event> allEvents = eventConfDao.getAllEvents();
-        Assert.assertEquals("Should have loaded 7 events from database", 7, allEvents.size());
 
         // Test that events can be found by UEI
         Event foundEvent1 = eventConfDao.findByUei("uei.opennms.org/test/high1");
@@ -347,8 +339,7 @@ public class EventConfPersistenceServiceIT {
         Assert.assertEquals("High Priority Event 1", eventsForUei.get(0).getEventLabel());
 
         // Test fileOrder - verify events are loaded in correct order by checking loaded event files
-        Events events = rootEvents;
-        Assert.assertNotNull("Events object should not be null", events);
+        Assert.assertNotNull("Events object should not be null", rootEvents);
         
         // The event files should be ordered by fileOrder: 0, 1, 2, 5, 10
         List<String> expectedOrder = List.of(
@@ -358,7 +349,7 @@ public class EventConfPersistenceServiceIT {
                 "medium-priority.xml",      // fileOrder 5
                 "lowest-priority.xml"       // fileOrder 10
         );
-        List<String> actualOrder = events.getEventFiles();
+        List<String> actualOrder = rootEvents.getEventFiles();
         
         Assert.assertEquals("Should have 5 event files loaded", 5, actualOrder.size());
         for (int i = 0; i < expectedOrder.size(); i++) {

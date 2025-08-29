@@ -24,7 +24,6 @@ package org.opennms.netmgt.config.api;
 import java.util.List;
 import java.util.Map;
 
-import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.springframework.dao.DataAccessException;
@@ -146,8 +145,9 @@ public interface EventConfDao {
     Events getRootEvents();
 
     /**
-     * Loads event conf events from DB into memory.
-     * @param dbEvents
+     * Sets the loaded Events object and initializes it for use.
+     * 
+     * @param rootEvents the Events object to set
      */
-    void loadEventsFromDB(List<EventConfEvent> dbEvents);
+    void setLoadedEvents(Events rootEvents);
 }
