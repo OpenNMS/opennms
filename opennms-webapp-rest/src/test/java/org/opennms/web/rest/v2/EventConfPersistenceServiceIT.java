@@ -98,7 +98,7 @@ public class EventConfPersistenceServiceIT {
         eventConfPersistenceService.persistEventConfFile(events, metadata);
 
         List<EventConfSource> sources = eventConfSourceDao.findAllByFileOrder();
-        Assert.assertEquals(1, sources.size()-defaultEventConfSize);
+        Assert.assertEquals(1, sources.size() - defaultEventConfSize);
         EventConfSource source = sources.get(0);
         Assert.assertEquals(filename, source.getName());
         Assert.assertEquals("integration test file", source.getDescription());
@@ -106,7 +106,7 @@ public class EventConfPersistenceServiceIT {
         Assert.assertEquals(username, source.getUploadedBy());
 
         List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
-        Assert.assertEquals(1, dbEvents.size()-defaultEventConfEventSize);
+        Assert.assertEquals(1, dbEvents.size() - defaultEventConfEventSize);
         EventConfEvent persistedEvent = dbEvents.get(0);
         Assert.assertEquals("uei.opennms.org/test/it", persistedEvent.getUei());
         Assert.assertEquals("IT Event", persistedEvent.getEventLabel());
@@ -143,7 +143,7 @@ public class EventConfPersistenceServiceIT {
         eventConfPersistenceService.persistEventConfFile(updatedEvents, updatedMetadata);
         List<EventConfSource> sources = eventConfSourceDao.findAllByFileOrder();
 
-        Assert.assertEquals(1, sources.size()-defaultEventConfSize);
+        Assert.assertEquals(1, sources.size() - defaultEventConfSize);
         EventConfSource source = sources.get(0);
         Assert.assertEquals(filename, source.getName());
         Assert.assertEquals("updated entry", source.getDescription());
@@ -151,7 +151,7 @@ public class EventConfPersistenceServiceIT {
         Assert.assertEquals("updated_user", source.getUploadedBy());
         Assert.assertEquals(0, (int) source.getFileOrder());
         List<EventConfEvent> updatedDbEvents = eventConfEventDao.findEnabledEvents();
-        Assert.assertEquals(1, updatedDbEvents.size()-defaultEventConfEventSize);
+        Assert.assertEquals(1, updatedDbEvents.size() - defaultEventConfEventSize);
         EventConfEvent finalEvent = updatedDbEvents.get(0);
         Assert.assertEquals("uei.opennms.org/test/update2", finalEvent.getUei());
         Assert.assertEquals("Updated Description", finalEvent.getDescription());
