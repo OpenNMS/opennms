@@ -17,7 +17,7 @@
                 <div class="file">
                   <div class="file-icon">
                     <FeatherIcon :icon="Text" />
-                    <span>{{ element.name }}</span>
+                    <span>{{ element.name.length > 39 ? element.name.slice(0, 36) + "..." : element.name }}</span>
                   </div>
                   <div class="actions">
                     <FeatherButton
@@ -93,7 +93,7 @@
             data-test="upload-button"
           >
             <FeatherSpinner v-if="isLoading" />
-            <span v-else>Upload Files</span>
+            <span v-else>Upload Files </span>
           </FeatherButton>
         </div>
       </div>
@@ -137,8 +137,7 @@ const handleEventConfUpload = async (e: Event) => {
       }
 
       try {
-        const validationResult = await validateEventConfigFile(file)
-        
+        const validationResult = await validateEventConfigFile(file)        
         if (validationResult.isValid) {
           eventFiles.value.push(file)
         } else {
@@ -178,7 +177,8 @@ const uploadFiles = async () => {
     console.warn('No files to upload')
     return
   }
-  if (!eventFiles.value.every(file => file.name.endsWith('.events.xml'))) {
+  if (!eventFiles.value.every(
+    file => file.name.endsWith('.events.xml') || file.name === 'eventconf.xml')) {
     console.error('All files must be XML files')
     return
   }
