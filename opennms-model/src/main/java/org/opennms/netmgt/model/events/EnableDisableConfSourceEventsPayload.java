@@ -1,3 +1,4 @@
+
 /*
  * Licensed to The OpenNMS Group, Inc (TOG) under one or more
  * contributor license agreements.  See the LICENSE.md file
@@ -19,28 +20,31 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.model.events;
 
-import org.opennms.netmgt.model.EventConfEvent;
-
-import java.util.Collection;
 import java.util.List;
 
-public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
+public class EnableDisableConfSourceEventsPayload {
+    private boolean enable;
+    private List<Long> eventsIds;
 
-    EventConfEvent get(Long id);
+    public EnableDisableConfSourceEventsPayload() {
+    }
 
-    List<EventConfEvent> findBySourceId(Long sourceId);
+    public boolean isEnable() {
+        return enable;
+    }
 
-    EventConfEvent findByUei(String uei);
+    public void setEnable(boolean enable) {
+        this.enable = enable;
+    }
 
-    List<EventConfEvent> findEnabledEvents();
+    public List<Long> getEventsIds() {
+        return eventsIds;
+    }
 
-    void deleteBySourceId(Long sourceId);
+    public void setEventsIds(List<Long> eventsIds) {
+        this.eventsIds = eventsIds;
+    }
 
-    void deleteAll(final Collection<EventConfEvent> list);
-
-    List<EventConfEvent> filterEventConf(String uei, String vendor, String sourceName, int offset, int limit);
-
-    void updateEventEnabledFlag(Long sourceId, List<Long> eventIds, boolean enabled);
 }
