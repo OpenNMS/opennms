@@ -91,4 +91,21 @@ public interface EventConfRestApi {
             @ApiResponse(responseCode = "400", description = "Invalid request")
     })
     Response enableDisableEventConfSources(EventConfSrcEnableDisablePayload eventConfSrcEnableDisablePayload, @Context SecurityContext securityContext) throws Exception;
+
+    @POST
+    @Path("/upload-single")
+    @Consumes(MediaType.MULTIPART_FORM_DATA)
+    @Produces("application/json")
+    @Operation(
+            summary = "Upload a single event conf xml file",
+            description = "Upload and validate a single event conf xml file. Rejects if the XML is invalid.",
+            operationId = "uploadSingleEventConfFile"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Upload successful"),
+            @ApiResponse(responseCode = "400", description = "Invalid event conf xml or request")
+    })
+    Response uploadSingleEventConfFile(@Multipart("upload") Attachment attachment,
+                                       @Context SecurityContext securityContext) throws Exception;
+
 }

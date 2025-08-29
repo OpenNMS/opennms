@@ -140,6 +140,43 @@ public class EventConfRestService implements EventConfRestApi {
         }
     }
 
+    @Override
+    @Transactional
+    public Response uploadSingleEventConfFile(final Attachment attachment, final SecurityContext securityContext) throws Exception {
+        if (attachment == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("No file uploaded. Please provide a valid event conf xml file.").build();
+        }
+
+        final String username = getUsername(securityContext);
+        final Date now = new Date();
+        final String fileName = attachment.getContentDisposition().getParameter("filename");
+
+        Events fileEvents;
+        try (InputStream stream = attachment.getObject(InputStream.class)) {
+            // Validate + parse eventconf XML
+            fileEvents = parseEventFile(stream);
+
+            // Ensure the root element contains events
+            if (fileEvents == null || fileEvents.getEvents() == null) {
+                return Response.status(Response.Status.BAD_REQUEST).entity("Invalid event conf xml: missing <events> definition.").build();
+            }
+        } catch (Exception e) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid event conf xml: " + e.getMessage()).build();
+        }
+
+        try {
+            // Persist the single file (order = 1 always since it's only one file)
+            eventConfPersistenceService.persistEventConfFile(fileEvents, new EventConfSourceMetadataDto.Builder().filename(fileName).eventCount(fileEvents.getEvents().size()).fileOrder(1).username(username).now(now).vendor(StringUtils.substringBefore(fileName, ".")).description("").build());
+
+            // Build and return success response
+            Map<String, Object> success = buildSuccessResponse(fileName, fileEvents);
+            return Response.ok(success).build();
+
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to persist event conf xml: " + ex.getMessage()).build();
+        }
+    }
+
 
     private List<String> determineFileOrder(final Attachment eventconfXmlAttachment, final Set<String> uploadedFiles) {
         List<String> ordered = new ArrayList<>();
