@@ -2,7 +2,7 @@
   <TableCard class="event-config-event-table">
     <div class="header">
       <div class="title-container">
-        <!-- <span class="title"> SNMP Interfaces </span> -->
+        <span class="title"> Events </span>
       </div>
       <div class="action-container">
         <div class="search-container">
@@ -78,6 +78,7 @@
               <FeatherButton
                 icon="Trash"
                 text
+                @click="store.showDeleteEventConfigEventModal(event)"
               >
                 <FeatherIcon :icon="Delete" />
               </FeatherButton>
@@ -104,6 +105,7 @@
         />
       </div>
     </div>
+    <DeleteEventConfigEventModal />
   </TableCard>
 </template>
 
@@ -120,6 +122,7 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import TableCard from '../Common/TableCard.vue'
+import DeleteEventConfigEventModal from './Modal/DeleteEventConfigEventModal.vue'
 
 const store = useEventConfigDetailStore()
 const emptyListContent = {

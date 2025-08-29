@@ -33,6 +33,10 @@ export type EventConfigStoreState = {
   activeTab: number
   uploadedFilesReportModalState: {
     visible: boolean
+  },
+  deleteEventConfigSourceModalState: {
+    visible: boolean,
+    eventConfigSource: EventConfSourceMetadata | null
   }
 }
 
@@ -40,7 +44,11 @@ export type EventConfigDetailStoreState = {
   events: EventConfigEvent[]
   eventsPagination: Pagination
   selectedSource: EventConfSourceMetadata | null
-  isLoading: boolean
+  isLoading: boolean,
+  deleteEventConfigEventModalState: {
+    visible: boolean,
+    eventConfigEvent: EventConfigEvent | null
+  }
 }
 
 export type EventConfigFilesUploadReponse = {
@@ -54,6 +62,10 @@ export type EventConfigFilesUploadReponse = {
     {
       file: string
     }
-  ]
+  ],
+   invalid?: {
+    file: string;
+    reason: string;
+  }[];
 }
 
