@@ -63,7 +63,7 @@ public class EventConfEventDaoIT implements InitializingBean {
     private EventConfSourceDao m_eventSourceDao;
 
     private EventConfSource m_source;
-
+    private int defaultEventConfEventCount;
     @Before
     @Transactional
     public void setUp() {
@@ -77,6 +77,9 @@ public class EventConfEventDaoIT implements InitializingBean {
         m_source.setUploadedBy("JUnitTest");
         m_source.setEventCount(0);
         m_source.setLastModified(new Date());
+
+        List<EventConfEvent> event = m_eventDao.findAll();
+        defaultEventConfEventCount = event.size();
 
         m_eventSourceDao.saveOrUpdate(m_source);
         m_eventSourceDao.flush();
@@ -132,8 +135,9 @@ public class EventConfEventDaoIT implements InitializingBean {
     @Transactional
     public void testFindAllEventConfEvents() {
         List<EventConfEvent> event = m_eventDao.findAll();
+        int eventSize = event.size() - defaultEventConfEventCount;
         assertNotNull("Expected to find all events", event);
-        assertEquals(4, event.size());
+        assertEquals(4, eventSize);
 
     }
 
@@ -141,8 +145,9 @@ public class EventConfEventDaoIT implements InitializingBean {
     @Transactional
     public void testGetById() {
         List<EventConfEvent> events = m_eventDao.findAll();
+        int eventSize = events.size() - defaultEventConfEventCount;
         assertNotNull("Events should not be null", events);
-        assertEquals(4, events.size());
+        assertEquals(4, eventSize);
         EventConfEvent result = m_eventDao.get(events.get(0).getId());
         assertNotNull("Fetched event should not be null", result);
         assertEquals(events.get(0).getUei(), result.getUei());
@@ -168,15 +173,17 @@ public class EventConfEventDaoIT implements InitializingBean {
     @Transactional
     public void testFindEnabledEvents() {
         List<EventConfEvent> enabledEvents = m_eventDao.findEnabledEvents();
+        int enabledEventsSize = enabledEvents.size() - defaultEventConfEventCount;
         assertNotNull("Enabled events should be found", enabledEvents);
-        assertEquals(4, enabledEvents.size());
+        assertEquals(4, enabledEventsSize);
 
         EventConfEvent event = enabledEvents.get(0);
         event.setEnabled(false);
         m_eventDao.saveOrUpdate(event);
 
         List<EventConfEvent> updatedEnabled = m_eventDao.findEnabledEvents();
-        assertEquals(3, updatedEnabled.size());
+        int updatedEnabledSize = updatedEnabled.size() - defaultEventConfEventCount;
+        assertEquals(3, updatedEnabledSize);
     }
 
     @Test
