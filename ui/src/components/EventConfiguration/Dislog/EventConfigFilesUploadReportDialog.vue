@@ -1,6 +1,6 @@
 <template>
   <FeatherDialog
-    v-model="store.uploadedFilesReportModalState.visible"
+    v-model="store.uploadedFilesReportDialogState.visible"
     :labels="{ title: 'Upload Report', close: 'Close' }"
     hide-close
     @hidden="closeDialog"
@@ -55,7 +55,7 @@ const props = defineProps<{
 }>()
 
 const closeDialog = () => {
-  store.uploadedFilesReportModalState.visible = false
+  store.uploadedFilesReportDialogState.visible = false
 }
 
 const getUploadReportStatus = () => {
@@ -76,7 +76,7 @@ const getUploadReportStatus = () => {
   }
 }
 const gotoViewTab = () => {
-  store.uploadedFilesReportModalState.visible = false
+  store.uploadedFilesReportDialogState.visible = false
   store.resetActiveTab()
 }
 </script>

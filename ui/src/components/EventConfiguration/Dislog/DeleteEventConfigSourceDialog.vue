@@ -1,7 +1,7 @@
 <template>
   <div class="delete-event-config-source-modal">
     <FeatherDialog
-      v-model="store.deleteEventConfigSourceModalState.visible"
+      v-model="store.deleteEventConfigSourceDialogState.visible"
       :labels="labels"
       hide-close
       @hidden="store.hideDeleteEventConfigSourceModal()"
@@ -9,11 +9,11 @@
       <div class="modal-body">
         <p>
           This will delete the event configuration source:
-          <strong>{{ store.deleteEventConfigSourceModalState.eventConfigSource?.filename }}</strong>
+          <strong>{{ store.deleteEventConfigSourceDialogState.eventConfigSource?.filename }}</strong>
         </p>
         <p>
           <strong>Note:</strong> This event configuration source has
-          <strong>{{ store.deleteEventConfigSourceModalState.eventConfigSource?.eventCount }}</strong> events associated
+          <strong>{{ store.deleteEventConfigSourceDialogState.eventConfigSource?.eventCount }}</strong> events associated
           with it and will be deleted.
         </p>
         <p><strong>Are you sure you want to proceed?</strong></p>
@@ -43,11 +43,11 @@ const labels = {
 }
 
 const deleteEventConfigSource = async () => {
-  if (store.deleteEventConfigSourceModalState.eventConfigSource === null) {
+  if (store.deleteEventConfigSourceDialogState.eventConfigSource === null) {
     return
   }
   try {
-    const response = await deleteEventConfigSourceById(store.deleteEventConfigSourceModalState.eventConfigSource.id)
+    const response = await deleteEventConfigSourceById(store.deleteEventConfigSourceDialogState.eventConfigSource.id)
     if (!response) {
       console.error('Failed to delete event configuration source')
       return
