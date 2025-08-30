@@ -41,3 +41,18 @@ export const deleteEventConfigSourceById = async (id: number): Promise<boolean> 
     return false
   }
 }
+
+export const changeEventConfigEventStatus = async (eventId: number, sourceId: number, enable: boolean): Promise<boolean> => {
+  const endpoint = `/eventconf/sources/${sourceId}/events/status`
+  const payload = {
+    enable,
+    eventsIds: [eventId]
+  }
+  try {
+    const response = await v2.put(endpoint, payload)
+    return response.status === 200
+  } catch (error) {
+    console.error('Error changing event config event status:', error)
+    return false
+  }
+}

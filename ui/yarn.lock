@@ -702,6 +702,15 @@
     "@featherds/utils" "^0.12.40"
     vue "^3.1.0"
 
+"@featherds/toggle-button@^0.12.40":
+  version "0.12.40"
+  resolved "https://registry.yarnpkg.com/@featherds/toggle-button/-/toggle-button-0.12.40.tgz#3bd75966cb9f7908e5b6352c767e4ceb7d9c3e41"
+  integrity sha512-zRYPTMOQ2AR72vDODDS4IHRhKDKrxxCEz0P17Sw28YTKHY96QEu5weY5Mfsz85mrc2IeYKLq6HLV7SUv/gTfBQ==
+  dependencies:
+    "@featherds/ripple" "^0.12.40"
+    "@featherds/styles" "^0.12.40"
+    vue "^3.1.0-0"
+
 "@featherds/tooltip@0.12.40":
   version "0.12.40"
   resolved "https://registry.yarnpkg.com/@featherds/tooltip/-/tooltip-0.12.40.tgz#0d09d4f07af4463f683aa4b014afef6f9b9f83f7"
