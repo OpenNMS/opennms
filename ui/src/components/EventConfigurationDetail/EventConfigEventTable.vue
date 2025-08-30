@@ -67,29 +67,42 @@
             <td>{{ event.uei }}</td>
             <td>{{ event.eventLabel }}</td>
             <td>{{ event.description }}</td>
+            <td>{{ event.enabled ? 'Enabled' : 'Disabled' }}</td>
             <td>
-              <FeatherToggleButton
-                :selected="event.enabled ? 1 : 0"
-                :buttons="buttons"
-                :disabled="false"
-                :id="`event-enabled-toggle-${event.id}`"
-                @toggle-button-click="toggledStatus(event)"
-              />
-            </td>
-            <td>
-              <FeatherButton
-                icon="Edit"
-                text
-              >
-                <FeatherIcon :icon="Edit" />
-              </FeatherButton>
-              <FeatherButton
-                icon="Trash"
-                text
-                @click="store.showDeleteEventConfigEventModal(event)"
-              >
-                <FeatherIcon :icon="Delete" />
-              </FeatherButton>
+              <div class="action-container">
+                <FeatherButton
+                  icon="Edit"
+                  :title="`Edit ${event.eventLabel}`"
+                  data-test="edit-button"
+                >
+                  <FeatherIcon :icon="Edit" />
+                </FeatherButton>
+                <FeatherDropdown>
+                  <template v-slot:trigger="{ attrs, on }">
+                    <FeatherButton
+                      link
+                      href="#"
+                      v-bind="attrs"
+                      v-on="on"
+                      :icon="`More actions for ${event.eventLabel}`"
+                    >
+                      <FeatherIcon :icon="MenuIcon" />
+                    </FeatherButton>
+                  </template>
+                  <FeatherDropdownItem
+                    @click="store.showDeleteEventConfigEventDialog(event)"
+                    data-test="delete-event-button"
+                  >
+                    Delete Event
+                  </FeatherDropdownItem>
+                  <FeatherDropdownItem
+                    @click="store.showChangeEventConfigEventStatusDialog(event)"
+                    data-test="change-status-button"
+                  >
+                    {{ event.enabled ? 'Disable Event' : 'Enable Event' }}
+                  </FeatherDropdownItem>
+                </FeatherDropdown>
+              </div>
             </td>
           </tr>
         </TransitionGroup>
@@ -113,7 +126,8 @@
         />
       </div>
     </div>
-    <DeleteEventConfigEventModal />
+    <DeleteEventConfigEventDialog />
+    <ChangeEventConfEventStatusDialog />
   </TableCard>
 </template>
 
@@ -121,30 +135,23 @@
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
-import Cancel from '@featherds/icon/action/Cancel'
-import CheckCircle from '@featherds/icon/action/CheckCircle'
-import Delete from '@featherds/icon/action/Delete'
 import DownloadFile from '@featherds/icon/action/DownloadFile'
 import Edit from '@featherds/icon/action/Edit'
 import Search from '@featherds/icon/action/Search'
+import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
 import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
-import { FeatherToggleButton } from '@featherds/toggle-button'
 import TableCard from '../Common/TableCard.vue'
-import DeleteEventConfigEventModal from './Modal/DeleteEventConfigEventModal.vue'
-import { EventConfigEvent } from '@/types/eventConfig'
+import ChangeEventConfEventStatusDialog from './Dialog/ChangeEventConfEventStatusDialog.vue'
+import DeleteEventConfigEventDialog from './Dialog/DeleteEventConfigEventDialog.vue'
+import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 
 const store = useEventConfigDetailStore()
 const emptyListContent = {
   msg: 'No results found.'
 }
-
-const buttons: { label: string; icon: any; disabled: boolean }[] = [
-  { label: 'Disabled', icon: Cancel, disabled: false },
-  { label: 'Enabled', icon: CheckCircle, disabled: false }
-]
 
 const columns = computed(() => [
   { id: 'uei', label: 'UEI' },
@@ -166,14 +173,6 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
     sort[prop] = SORT.NONE
   }
   sort[sortObj.property] = sortObj.value
-}
-
-const toggledStatus = async (event: EventConfigEvent) => {
-  if (event.enabled) {
-    await store.disableEventConfigEvent(event.id)
-  } else {
-    await store.enableEventConfigEvent(event.id)
-  }
 }
 </script>
 
@@ -238,6 +237,26 @@ const toggledStatus = async (event: EventConfigEvent) => {
         div {
           border-radius: 5px;
           padding: 0px 5px 0px 5px;
+        }
+
+        .action-container {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+
+          button {
+            margin: 0px;
+          }
+
+          :deep(.feather-menu-dropdown) {
+            .feather-dropdown{
+              li {
+                a {
+                  padding: 8px 16px !important;
+                }
+              }
+            }
+          }
         }
       }
     }

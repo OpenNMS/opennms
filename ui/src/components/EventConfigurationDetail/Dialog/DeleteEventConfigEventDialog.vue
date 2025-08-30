@@ -1,22 +1,22 @@
 <template>
-  <div class="delete-event-config-source-modal">
+  <div class="delete-event-config-source-dialog">
     <FeatherDialog
-      v-model="store.deleteEventConfigEventModalState.visible"
+      v-model="store.deleteEventConfigEventDialogState.visible"
       :labels="labels"
       hide-close
-      @hidden="store.hideDeleteEventConfigEventModal()"
+      @hidden="store.hideDeleteEventConfigEventDialog()"
     >
       <div class="modal-body">
         <p>
           This will delete the event configuration event:
-          <strong>{{ store.deleteEventConfigEventModalState.eventConfigEvent?.eventLabel }}</strong>
+          <strong>{{ store.deleteEventConfigEventDialogState.eventConfigEvent?.eventLabel }}</strong>
           with source name: 
           <strong>{{ store.selectedSource?.filename }}</strong>
         </p>
         <p><strong>Are you sure you want to proceed?</strong></p>
       </div>
       <template v-slot:footer>
-        <FeatherButton @click="store.hideDeleteEventConfigEventModal()"> Cancel </FeatherButton>
+        <FeatherButton @click="store.hideDeleteEventConfigEventDialog()"> Cancel </FeatherButton>
         <FeatherButton
           primary
           @click="deleteEventConfigEvent()"
@@ -44,7 +44,7 @@ const deleteEventConfigEvent = async () => {
     // await api.deleteEventConfigSource(store.deleteEventConfigSourceModalState.eventConfigSource.id);
 
     // After successful deletion, hide the modal and refresh the list
-    store.hideDeleteEventConfigEventModal()
+    store.hideDeleteEventConfigEventDialog()
     await store.fetchEventsBySourceId()
   } catch (error) {
     console.error('Error deleting event configuration source:', error)
@@ -53,7 +53,7 @@ const deleteEventConfigEvent = async () => {
 </script>
 
 <style scoped lang="scss">
-.delete-event-config-source-modal {
+.delete-event-config-source-dialog {
   .modal-body {
     display: flex;
     flex-direction: column;

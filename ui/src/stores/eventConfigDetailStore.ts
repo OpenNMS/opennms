@@ -1,6 +1,7 @@
 import { eventConfigEvents } from '@/components/EventConfiguration/data'
 import { changeEventConfigEventStatus } from '@/services/eventConfigService'
 import { EventConfigDetailStoreState, EventConfigEvent, EventConfSourceMetadata } from '@/types/eventConfig'
+import { cloneDeep } from 'lodash'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
@@ -15,7 +16,11 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     eventsPagination: { ...defaultPagination },
     selectedSource: null,
     isLoading: false,
-    deleteEventConfigEventModalState: {
+    deleteEventConfigEventDialogState: {
+      visible: false,
+      eventConfigEvent: null
+    },
+    changeEventConfigEventStatusDialogState: {
       visible: false,
       eventConfigEvent: null
     }
@@ -25,7 +30,9 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       this.isLoading = true
       const id = this.selectedSource?.id
       try {
-        this.events = eventConfigEvents // Using static data for now
+        console.log('Fetching events for source ID:', this.events)
+        
+        this.events = cloneDeep(eventConfigEvents) // Using static data for now
         this.eventsPagination.total = this.events.length
       } catch (error) {
         console.error('Error fetching events for source ID:', id, error)
@@ -42,13 +49,13 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     onEventsPageSizeChange(pageSize: number) {
       this.eventsPagination.pageSize = pageSize
     },
-    showDeleteEventConfigEventModal(eventConfigSource: EventConfigEvent) {
-      this.deleteEventConfigEventModalState.visible = true
-      this.deleteEventConfigEventModalState.eventConfigEvent = eventConfigSource
+    showDeleteEventConfigEventDialog(eventConfigSource: EventConfigEvent) {
+      this.deleteEventConfigEventDialogState.visible = true
+      this.deleteEventConfigEventDialogState.eventConfigEvent = eventConfigSource
     },
-    hideDeleteEventConfigEventModal() {
-      this.deleteEventConfigEventModalState.visible = false
-      this.deleteEventConfigEventModalState.eventConfigEvent = null
+    hideDeleteEventConfigEventDialog() {
+      this.deleteEventConfigEventDialogState.visible = false
+      this.deleteEventConfigEventDialogState.eventConfigEvent = null
     },
     async disableEventConfigEvent(eventId: number) {
       if (this.selectedSource) {
@@ -69,6 +76,16 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       } else {
         console.error('No source selected')
       }
+    },
+    showChangeEventConfigEventStatusDialog(eventConfigEvent: EventConfigEvent) {
+      this.changeEventConfigEventStatusDialogState.eventConfigEvent = eventConfigEvent
+      this.changeEventConfigEventStatusDialogState.visible = true
+    },
+    async hideChangeEventConfigEventStatusDialog() {
+
+      this.changeEventConfigEventStatusDialogState.visible = false
+      this.changeEventConfigEventStatusDialogState.eventConfigEvent = null
+      await this.fetchEventsBySourceId()
     }
   }
 })

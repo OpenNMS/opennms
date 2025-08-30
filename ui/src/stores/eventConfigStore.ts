@@ -1,5 +1,6 @@
 import { eventConfigSources } from '@/components/EventConfiguration/data'
 import { EventConfigStoreState, EventConfSourceMetadata } from '@/types/eventConfig'
+import { cloneDeep } from 'lodash'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
@@ -26,7 +27,7 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     async fetchEventConfigs() {
       this.isLoading = true
       try {
-        this.sources = eventConfigSources // Using static data for now
+        this.sources = cloneDeep(eventConfigSources) // Using static data for now
         this.sourcesPagination.total = this.sources.length
       } catch (error) {
         console.error('Error fetching event configurations:', error)

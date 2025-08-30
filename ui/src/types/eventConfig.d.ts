@@ -45,9 +45,14 @@ export type EventConfigDetailStoreState = {
   eventsPagination: Pagination
   selectedSource: EventConfSourceMetadata | null
   isLoading: boolean,
-  deleteEventConfigEventModalState: {
+  deleteEventConfigEventDialogState: {
     visible: boolean,
     eventConfigEvent: EventConfigEvent | null
+  },
+  changeEventConfigEventStatusDialogState: {
+    visible: boolean,
+    eventConfigEvent: EventConfigEvent | null,
+    
   }
 }
 
