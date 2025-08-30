@@ -34,6 +34,7 @@ import org.opennms.netmgt.dnsresolver.api.DnsResolver;
 import org.opennms.netmgt.events.api.EventForwarder;
 import org.opennms.netmgt.telemetry.api.receiver.TelemetryMessage;
 import org.opennms.netmgt.telemetry.listeners.TcpParser;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.TcpSession;
@@ -50,14 +51,17 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
     private final IpFixMessageBuilder messageBuilder = new IpFixMessageBuilder();
 
     private final Set<TcpSession> sessions = Sets.newConcurrentHashSet();
+    private final InformationElementDatabase informationElementDatabase;
 
     public IpfixTcpParser(final String name,
                           final AsyncDispatcher<TelemetryMessage> dispatcher,
                           final EventForwarder eventForwarder,
                           final Identity identity,
                           final DnsResolver dnsResolver,
-                          final MetricRegistry metricRegistry) {
+                          final MetricRegistry metricRegistry,
+                          final InformationElementDatabase informationElementDatabase) {
         super(Protocol.IPFIX, name, dispatcher, eventForwarder, identity, dnsResolver, metricRegistry);
+        this.informationElementDatabase = informationElementDatabase;
     }
 
     @Override
@@ -85,7 +89,7 @@ public class IpfixTcpParser extends ParserBase implements TcpParser {
 
                 final Packet packet;
                 if (buffer.isReadable(header.payloadLength())) {
-                    packet = new Packet(session, header, slice(buffer, header.payloadLength()));
+                    packet = new Packet(informationElementDatabase, session, header, slice(buffer, header.payloadLength()));
                 } else {
                     buffer.resetReaderIndex();
                     return Optional.empty();

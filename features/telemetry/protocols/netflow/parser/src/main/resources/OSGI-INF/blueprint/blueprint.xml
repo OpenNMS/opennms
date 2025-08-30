@@ -13,6 +13,16 @@
     <reference id="identity" interface="org.opennms.distributed.core.api.Identity" />
     <reference id="dnsResolver" interface="org.opennms.netmgt.dnsresolver.api.DnsResolver" availability="mandatory" />
 
+    <reference-list id="twinSubscriberRef" interface="org.opennms.core.ipc.twin.api.TwinSubscriber" availability="optional">
+        <reference-listener bind-method="bind" unbind-method="unbind" ref="informationElementXmlProvider"/>
+    </reference-list>
+
+    <bean id="informationElementXmlProvider" class="org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.InformationElementXmlProviderImpl"/>
+
+    <bean id="informationElementDatabase" class="org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase">
+        <argument ref="informationElementXmlProvider" />
+    </bean>
+
     <!-- Netflow 5 UDP Parser Factory -->
     <bean id="netflow5UdpParserFactory" class="org.opennms.netmgt.telemetry.protocols.netflow.parser.factory.Netflow5UdpParserFactory">
         <argument ref="telemetryRegistry" />
@@ -32,6 +42,7 @@
         <argument ref="eventForwarder" />
         <argument ref="identity" />
         <argument ref="dnsResolver" />
+        <argument ref="informationElementDatabase"/>
     </bean>
     <service ref="netflow9UdpParserFactory" interface="org.opennms.netmgt.telemetry.api.receiver.ParserFactory">
         <service-properties>
@@ -45,6 +56,7 @@
         <argument ref="eventForwarder" />
         <argument ref="identity" />
         <argument ref="dnsResolver" />
+        <argument ref="informationElementDatabase"/>
     </bean>
     <service ref="ipfixTcpParserFactory" interface="org.opennms.netmgt.telemetry.api.receiver.ParserFactory">
         <service-properties>
@@ -58,6 +70,7 @@
         <argument ref="eventForwarder" />
         <argument ref="identity" />
         <argument ref="dnsResolver" />
+        <argument ref="informationElementDatabase"/>
     </bean>
     <service ref="ipfixUdpParserFactory" interface="org.opennms.netmgt.telemetry.api.receiver.ParserFactory">
         <service-properties>
