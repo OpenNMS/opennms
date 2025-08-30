@@ -9,17 +9,17 @@
         <EventConfigSourceTable />
       </FeatherTabPanel>
       <FeatherTabPanel>
-        <UploadFilesTab />
+        <EventConfigUploadFilesTab />
       </FeatherTabPanel>
     </FeatherTabContainer>
   </div>
 </template>
 
 <script lang="ts" setup>
+import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { FeatherTab, FeatherTabContainer, FeatherTabPanel } from '@featherds/tabs'
 import EventConfigSourceTable from './EventConfigSourceTable.vue'
-import UploadFilesTab from './UploadFilesTab.vue'
-import { useEventConfigStore } from '@/stores/eventConfigStore'
+import EventConfigUploadFilesTab from './EventConfigUploadFilesTab.vue'
 
 const store = useEventConfigStore()
 </script>

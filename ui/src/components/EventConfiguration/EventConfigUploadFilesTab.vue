@@ -98,7 +98,7 @@
         </div>
       </div>
     </div>
-    <EventConfigFilesUploadReportModal :report="uploadFilesReport" />
+    <EventConfigFilesUploadReportDialog :report="uploadFilesReport" />
   </div>
 </template>
 
@@ -106,18 +106,18 @@
 import { uploadEventConfigFiles } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigFilesUploadReponse } from '@/types/eventConfig'
-import { validateEventConfigFile,isDuplicateFile } from './eventConfigXmlValidator' 
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
-import { FeatherTooltip } from '@featherds/tooltip'
-import { FeatherSpinner } from '@featherds/progress'
 import Delete from '@featherds/icon/action/Delete'
+import Info from '@featherds/icon/action/Info'
 import Text from '@featherds/icon/file/Text'
 import Apps from '@featherds/icon/navigation/Apps'
-import Info from '@featherds/icon/action/Info'
-import Draggable from 'vuedraggable'
-import EventConfigFilesUploadReportModal from './Modal/EventConfigFilesUploadReportModal.vue'
+import { FeatherSpinner } from '@featherds/progress'
+import { FeatherTooltip } from '@featherds/tooltip'
 import { ref } from 'vue'
+import Draggable from 'vuedraggable'
+import EventConfigFilesUploadReportDialog from './Dialog/EventConfigFilesUploadReportDialog.vue'
+import { isDuplicateFile, validateEventConfigFile } from './eventConfigXmlValidator'
 
 const eventConfFileInput = ref<HTMLInputElement | null>(null)
 const uploadFilesReport = ref<EventConfigFilesUploadReponse>({} as EventConfigFilesUploadReponse)
@@ -197,7 +197,7 @@ const uploadFiles = async () => {
     eventFiles.value = [] 
     invalidFiles.value = []
     eventConfFileInput.value!.value = ''
-    store.uploadedFilesReportModalState.visible = true
+    store.uploadedEventConfigFilesReportDialogState.visible = true
   } catch (err) {
     console.error(err)
     isLoading.value = false
