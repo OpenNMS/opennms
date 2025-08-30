@@ -45,6 +45,7 @@ const deleteEventConfigEvent = async () => {
 
     // After successful deletion, hide the modal and refresh the list
     store.hideDeleteEventConfigEventDialog()
+    store.resetEventsPagination()
     await store.fetchEventsBySourceId()
   } catch (error) {
     console.error('Error deleting event configuration source:', error)

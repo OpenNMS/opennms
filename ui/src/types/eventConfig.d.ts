@@ -31,10 +31,10 @@ export type EventConfigStoreState = {
   sourcesPagination: Pagination
   isLoading: boolean
   activeTab: number
-  uploadedFilesReportModalState: {
+  uploadedEventConfigFilesReportDialogState: {
     visible: boolean
   },
-  deleteEventConfigSourceModalState: {
+  deleteEventConfigSourceDialogState: {
     visible: boolean,
     eventConfigSource: EventConfSourceMetadata | null
   }

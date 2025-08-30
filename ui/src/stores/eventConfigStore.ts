@@ -15,10 +15,10 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     sourcesPagination: { ...defaultPagination },
     isLoading: false,
     activeTab: 0,
-    uploadedFilesReportModalState: {
+    uploadedEventConfigFilesReportDialogState: {
       visible: false
     },
-    deleteEventConfigSourceModalState: {
+    deleteEventConfigSourceDialogState: {
       visible: false,
       eventConfigSource: null
     }
@@ -45,12 +45,15 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
       this.activeTab = 0
     },
     showDeleteEventConfigSourceModal(eventConfigSource: EventConfSourceMetadata) {
-      this.deleteEventConfigSourceModalState.visible = true
-      this.deleteEventConfigSourceModalState.eventConfigSource = eventConfigSource
+      this.deleteEventConfigSourceDialogState.visible = true
+      this.deleteEventConfigSourceDialogState.eventConfigSource = eventConfigSource
     },
     hideDeleteEventConfigSourceModal() {
-      this.deleteEventConfigSourceModalState.visible = false
-      this.deleteEventConfigSourceModalState.eventConfigSource = null
+      this.deleteEventConfigSourceDialogState.visible = false
+      this.deleteEventConfigSourceDialogState.eventConfigSource = null
+    },
+    resetSourcesPagination() {
+      this.sourcesPagination = { ...defaultPagination }
     }
   }
 })
