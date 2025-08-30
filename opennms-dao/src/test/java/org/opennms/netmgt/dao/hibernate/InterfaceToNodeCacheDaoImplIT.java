@@ -37,7 +37,6 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.core.utils.InetAddressUtils;
-import org.opennms.netmgt.dao.AbstractJRobinIT;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.InterfaceToNodeCache;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
@@ -65,7 +64,7 @@ import org.springframework.transaction.support.TransactionOperations;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase=false)
-public class InterfaceToNodeCacheDaoImplIT extends AbstractJRobinIT implements InitializingBean {
+public class InterfaceToNodeCacheDaoImplIT implements InitializingBean {
 
     @Autowired
     InterfaceToNodeCache m_cache;

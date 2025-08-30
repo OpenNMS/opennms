@@ -33,7 +33,6 @@ import java.util.Map;
 import javax.script.ScriptEngineManager;
 
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -87,11 +86,6 @@ public class GraphMLEdgeStatusProviderIT {
 
     @Autowired
     private SnmpInterfaceDao snmpInterfaceDao;
-
-    @BeforeClass
-    public static void beforeClass() {
-        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
-    }
 
     @Before
     public void before() {

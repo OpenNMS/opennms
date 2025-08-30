@@ -30,7 +30,6 @@ import java.util.stream.StreamSupport;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -87,11 +86,6 @@ public class DiscoveryIntegrationIT {
 
     @Autowired
     private DiscoveryTaskExecutor m_taskExecutor;
-
-    @BeforeClass
-    public static void beforeClass() {
-        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
-    }
 
     @Before
     public void setUp() throws Exception {

@@ -23,7 +23,6 @@ package org.opennms.netmgt.bsm.persistence;
 
 import static org.junit.Assert.assertEquals;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -52,11 +51,6 @@ public class ReductionFunctionDaoIT {
 
     @Autowired
     private ReductionFunctionDao m_reductionFunctionDao;
-
-    @BeforeClass
-    public static void beforeClass() {
-        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
-    }
 
     @Test
     public void canCreateReadUpdateAndDeleteReductionFunctions() {

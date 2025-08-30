@@ -58,7 +58,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class EventUtilHibernateIT extends AbstractJRobinIT {
+public class EventUtilHibernateIT {
 
     @Autowired
     private EventUtilDaoImpl eventUtilDaoImpl;

@@ -23,7 +23,6 @@ package org.opennms.netmgt.vaadin.core;
 
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -57,11 +56,6 @@ public class TransactionAwareBeanProxyFactoryIT {
 
     public class Dummy {
 
-    }
-
-    @BeforeClass
-    public static void beforeClass() {
-        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
     }
 
     @Autowired

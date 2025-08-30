@@ -27,7 +27,11 @@ import static org.opennms.netmgt.bsm.test.BsmTestUtils.createDummyBusinessServic
 
 import java.util.Objects;
 
-import org.junit.*;
+import org.junit.After;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.ExpectedException;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -105,11 +109,6 @@ public class BusinessServiceManagerImplIT {
     @Autowired
     @Qualifier("bsmDatabasePopulator")
     private BsmDatabasePopulator populator;
-
-    @BeforeClass
-    public static void beforeClass() {
-        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
-    }
 
     @Before
     public void before() {

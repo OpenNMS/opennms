@@ -74,7 +74,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class IpInterfaceDaoIT extends AbstractJRobinIT implements InitializingBean {
+public class IpInterfaceDaoIT implements InitializingBean {
     @Autowired
     private IpInterfaceDao m_ipInterfaceDao;
 

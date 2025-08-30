@@ -64,7 +64,7 @@ import java.util.TreeSet;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
-public class HwEntityDaoIT extends AbstractJRobinIT implements InitializingBean {
+public class HwEntityDaoIT implements InitializingBean {
 
     /** The node DAO. */
     @Autowired

@@ -35,7 +35,6 @@ import java.util.Map;
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -109,11 +108,6 @@ public class CollectionResourceWrapperIT {
     
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();
-
-    @BeforeClass
-    public static void beforeClass() {
-        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
-    }
 
     @Before
     public void setUp() throws Exception {

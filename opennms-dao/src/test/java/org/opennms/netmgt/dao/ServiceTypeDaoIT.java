@@ -48,7 +48,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase=false)
-public class ServiceTypeDaoIT extends AbstractJRobinIT implements InitializingBean {
+public class ServiceTypeDaoIT implements InitializingBean {
 	@Autowired
 	private ServiceTypeDao m_serviceTypeDao;
 

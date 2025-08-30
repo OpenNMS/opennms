@@ -97,7 +97,7 @@ import com.google.common.collect.Sets;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class OutageDaoIT extends AbstractJRobinIT implements InitializingBean {
+public class OutageDaoIT implements InitializingBean {
     @Autowired
     private DistPollerDao m_distPollerDao;
 

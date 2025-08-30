@@ -29,7 +29,6 @@ import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.stream.StreamSupport;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.MockLogAppender;
@@ -81,10 +80,6 @@ public class DiscoveryWithDetectorsIT {
     @Autowired
     private ServiceDetectorRegistryImpl serviceDetectorRegistry;
 
-    @BeforeClass
-    public static void beforeClass() {
-        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
-    }
 
     @Test(timeout = 30000)
     public void testDiscoveryWithMockDetector() throws IOException, InterruptedException {

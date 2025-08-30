@@ -29,7 +29,6 @@ import static org.junit.Assert.assertArrayEquals;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Mockito;
@@ -105,11 +104,6 @@ public class DeviceConfigMonitorAdaptorIT {
 
     private OnmsIpInterface ipInterface;
     private OnmsNode node;
-
-    @BeforeClass
-    public static void beforeClass() {
-        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
-    }
 
     @Before
     public void init() {

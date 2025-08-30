@@ -54,7 +54,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
-public class CriteriaIT extends AbstractJRobinIT implements InitializingBean {
+public class CriteriaIT implements InitializingBean {
 
     @Autowired
     private NodeDao m_nodeDao;

@@ -32,7 +32,6 @@ import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.AbstractJRobinIT;
 import org.opennms.netmgt.dao.api.ReportCatalogDao;
 import org.opennms.netmgt.model.ReportCatalogEntry;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -53,7 +52,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class ReportCatalogDaoHibernateIT extends AbstractJRobinIT implements InitializingBean {
+public class ReportCatalogDaoHibernateIT implements InitializingBean {
     @Autowired
 	private ReportCatalogDao m_reportCatalogDao;
 

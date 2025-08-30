@@ -29,7 +29,6 @@ import java.nio.file.Paths;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.ipc.sink.mock.MockMessageDispatcherFactory;
@@ -102,11 +101,6 @@ public class SyslogReloadDaemonIT implements InitializingBean {
     private SyslogSinkModule m_syslogSinkModule;
     
     private SyslogReceiverCamelNettyImpl m_receiver;
-
-    @BeforeClass
-    public static void beforeClass() {
-        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
-    }
 
     @Override
     public void afterPropertiesSet() throws Exception {

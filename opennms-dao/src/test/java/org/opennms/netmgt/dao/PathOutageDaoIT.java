@@ -68,7 +68,7 @@ import org.springframework.transaction.support.TransactionTemplate;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class PathOutageDaoIT extends AbstractJRobinIT implements InitializingBean {
+public class PathOutageDaoIT implements InitializingBean {
 
     @Autowired
     private MonitoringLocationDao m_locationDao;

@@ -33,7 +33,10 @@ import java.util.stream.Collectors;
 
 import javax.script.ScriptEngineManager;
 
-import org.junit.*;
+import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -106,11 +109,6 @@ public class GraphMLVertexStatusProviderIT {
 
     private GraphMLServiceAccessor serviceAccessor;
     private AlarmSummaryWrapper alarmSummaryWrapper;
-
-    @BeforeClass
-    public static void beforeClass() {
-        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
-    }
 
     @Before
     public void before() {

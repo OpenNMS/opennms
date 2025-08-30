@@ -28,7 +28,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.junit.Assert;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
@@ -67,11 +66,6 @@ public class TopologyEntityDaoHibernateIT {
 
     @Autowired
     private CdpLinkDao cdpLinkDao;
-
-    @BeforeClass
-    public static void beforeClass() {
-        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
-    }
 
     @BeforeTransaction
     public void setUp() {

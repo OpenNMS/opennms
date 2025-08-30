@@ -85,7 +85,7 @@ import com.google.common.collect.Sets;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
-public class AlarmDaoIT extends AbstractJRobinIT implements InitializingBean {
+public class AlarmDaoIT implements InitializingBean {
 
 	@Autowired
 	private DistPollerDao m_distPollerDao;

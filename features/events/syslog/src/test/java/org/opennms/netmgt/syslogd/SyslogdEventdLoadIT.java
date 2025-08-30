@@ -39,7 +39,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.io.IOUtils;
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -120,11 +119,6 @@ public class SyslogdEventdLoadIT implements InitializingBean {
     private SyslogSinkConsumer m_syslogSinkConsumer;
 
     private SyslogSinkModule m_syslogSinkModule;
-
-    @BeforeClass
-    public static void beforeClass() {
-        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
-    }
 
     @Override
     public void afterPropertiesSet() throws Exception {

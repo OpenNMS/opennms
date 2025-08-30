@@ -31,7 +31,6 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.AbstractJRobinIT;
 import org.opennms.netmgt.dao.api.JavaMailConfigurationDao;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
@@ -56,7 +55,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class DefaultJavamailConfigurationDaoIT extends AbstractJRobinIT implements InitializingBean {
+public class DefaultJavamailConfigurationDaoIT implements InitializingBean {
 
     @Autowired
     private JavaMailConfigurationDao m_jmcDao;

@@ -66,7 +66,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class AuthorizationIT extends AbstractJRobinIT implements InitializingBean {
+public class AuthorizationIT implements InitializingBean {
 
     @Autowired
     AlarmDao m_alarmDao;

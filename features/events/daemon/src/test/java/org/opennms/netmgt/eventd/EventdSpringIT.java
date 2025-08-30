@@ -26,7 +26,6 @@ import static org.junit.Assert.fail;
 import java.util.Arrays;
 import java.util.List;
 
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.spring.BeanUtils;
@@ -59,17 +58,12 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
-public class EventdSpringIT extends AbstractJRobinIT implements InitializingBean {
+public class EventdSpringIT implements InitializingBean {
     @Autowired
     Eventd m_daemon;
 
     @Autowired
     EventConfDao m_eventConfDao;
-
-    @BeforeClass
-    public static void beforeClass() {
-        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
-    }
 
     @Override
     public void afterPropertiesSet() throws Exception {

@@ -82,7 +82,7 @@ import com.google.common.collect.Sets;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
-public class AcknowledgmentDaoIT extends AbstractJRobinIT implements InitializingBean {
+public class AcknowledgmentDaoIT implements InitializingBean {
 	@Autowired
     private AcknowledgmentDao m_acknowledgmentDao;
 	

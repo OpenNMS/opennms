@@ -57,7 +57,7 @@ import org.junit.Assert;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext = false)
-public class HeatMapIT extends AbstractJRobinIT implements InitializingBean {
+public class HeatMapIT implements InitializingBean {
     @Autowired
     private NodeDao m_nodeDao;
 

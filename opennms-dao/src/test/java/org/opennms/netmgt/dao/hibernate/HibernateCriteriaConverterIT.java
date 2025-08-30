@@ -34,7 +34,6 @@ import org.opennms.core.spring.BeanUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
-import org.opennms.netmgt.dao.AbstractJRobinIT;
 import org.opennms.netmgt.dao.DatabasePopulator;
 import org.opennms.netmgt.dao.api.NodeDao;
 import org.opennms.netmgt.model.OnmsCriteria;
@@ -59,7 +58,7 @@ import org.springframework.transaction.annotation.Transactional;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 @Transactional
-public class HibernateCriteriaConverterIT extends AbstractJRobinIT implements InitializingBean {
+public class HibernateCriteriaConverterIT implements InitializingBean {
     private static final Logger LOG = LoggerFactory.getLogger(HibernateCriteriaConverterIT.class);
 
     @Autowired

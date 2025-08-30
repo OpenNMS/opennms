@@ -59,7 +59,7 @@ import org.springframework.transaction.annotation.Transactional;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext = false)
-public class MemoDaoIT extends AbstractJRobinIT implements InitializingBean {
+public class MemoDaoIT implements InitializingBean {
 
     @Autowired
     private DistPollerDao m_distPollerDao;

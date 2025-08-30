@@ -35,7 +35,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.stubbing.Answer;
@@ -70,11 +69,6 @@ public class ThresholdStateIT {
     private final ThresholdingSession thresholdingSession = MockSession.getSession();
     private ThresholdStateMonitor monitor;
     private final Scope scope = mock(Scope.class);
-
-    @BeforeClass
-    public static void beforeClass() {
-        System.setProperty("org.opennms.rrd.strategyClass", "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy");
-    }
 
     @Before
     public void setup() {

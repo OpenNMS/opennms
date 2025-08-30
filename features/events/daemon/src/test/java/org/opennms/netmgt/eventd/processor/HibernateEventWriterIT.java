@@ -40,7 +40,6 @@ import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.dao.api.MonitoringLocationDao;
 import org.opennms.netmgt.dao.mock.MockDistPollerDao;
-import org.opennms.netmgt.eventd.AbstractJRobinIT;
 import org.opennms.netmgt.eventd.EventUtil;
 import org.opennms.netmgt.events.api.EventConstants;
 import org.opennms.netmgt.model.OnmsMonitoringSystem;
@@ -75,7 +74,7 @@ import org.springframework.test.context.ContextConfiguration;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(reuseDatabase=false)
-public class HibernateEventWriterIT extends AbstractJRobinIT {
+public class HibernateEventWriterIT {
 
     @Autowired
     private EventWriter m_eventWriter;

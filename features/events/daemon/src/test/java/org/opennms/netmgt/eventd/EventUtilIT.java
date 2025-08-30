@@ -63,7 +63,7 @@ import com.google.common.collect.Maps;
 })
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase(dirtiesContext=false)
-public class EventUtilIT extends AbstractJRobinIT {
+public class EventUtilIT {
 
     private final MockNetwork m_network = new MockNetwork();
     private MockService m_svc;
