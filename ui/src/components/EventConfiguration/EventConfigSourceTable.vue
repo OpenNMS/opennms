@@ -130,7 +130,7 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import TableCard from '../Common/TableCard.vue'
-import DeleteEventConfigSourceDialog from './Dislog/DeleteEventConfigSourceDialog.vue'
+import DeleteEventConfigSourceDialog from './Dialog/DeleteEventConfigSourceDialog.vue'
 
 const router = useRouter()
 const store = useEventConfigStore()

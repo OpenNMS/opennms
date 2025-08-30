@@ -15,7 +15,7 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     sourcesPagination: { ...defaultPagination },
     isLoading: false,
     activeTab: 0,
-    uploadedFilesReportDialogState: {
+    uploadedEventConfigFilesReportDialogState: {
       visible: false
     },
     deleteEventConfigSourceDialogState: {

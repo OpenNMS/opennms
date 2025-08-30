@@ -116,7 +116,7 @@ import { FeatherSpinner } from '@featherds/progress'
 import { FeatherTooltip } from '@featherds/tooltip'
 import { ref } from 'vue'
 import Draggable from 'vuedraggable'
-import EventConfigFilesUploadReportDialog from './Dislog/EventConfigFilesUploadReportDialog.vue'
+import EventConfigFilesUploadReportDialog from './Dialog/EventConfigFilesUploadReportDialog.vue'
 import { isDuplicateFile, validateEventConfigFile } from './eventConfigXmlValidator'
 
 const eventConfFileInput = ref<HTMLInputElement | null>(null)
@@ -197,7 +197,7 @@ const uploadFiles = async () => {
     eventFiles.value = [] 
     invalidFiles.value = []
     eventConfFileInput.value!.value = ''
-    store.uploadedFilesReportDialogState.visible = true
+    store.uploadedEventConfigFilesReportDialogState.visible = true
   } catch (err) {
     console.error(err)
     isLoading.value = false
