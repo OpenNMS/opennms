@@ -22,6 +22,7 @@
     "@featherds/app-layout": "0.12.40",
     "@featherds/app-rail": "^0.12.35",
     "@featherds/autocomplete": "0.12.40",
+    "@featherds/back-button": "^0.12.40",
     "@featherds/button": "0.12.40",
     "@featherds/checkbox": "0.12.40",
     "@featherds/chips": "0.12.40",

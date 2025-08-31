@@ -50,7 +50,7 @@ const changeStatus = async () => {
       } else {
         await store.enableEventConfigEvent(eventId)
       }
-      store.hideChangeEventConfigEventStatusDialog()
+      await store.hideChangeEventConfigEventStatusDialog()
     } else {
       console.error('No event configuration event selected')
     }

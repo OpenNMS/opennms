@@ -49,10 +49,26 @@ export const changeEventConfigEventStatus = async (eventId: number, sourceId: nu
     eventsIds: [eventId]
   }
   try {
-    const response = await v2.put(endpoint, payload)
+    const response = await v2.patch(endpoint, payload)
     return response.status === 200
   } catch (error) {
     console.error('Error changing event config event status:', error)
+    return false
+  }
+}
+
+export const changeEventConfigSourceStatus = async (sourceId: number, enabled: boolean): Promise<boolean> => {
+  const endpoint = '/eventconf/sources/status'
+  const payload = {
+    enabled,
+    cascadeToEvents: true,
+    sourceIds: [sourceId]
+  }
+  try {
+    const response = await v2.patch(endpoint, payload)
+    return response.status === 200
+  } catch (error) {
+    console.error('Error changing event config source status:', error)
     return false
   }
 }

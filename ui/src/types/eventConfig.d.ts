@@ -2,6 +2,7 @@ import { Pagination } from '.'
 
 export type EventConfSourceMetadata = {
   filename: string
+  enabled: boolean
   eventCount: number
   fileOrder: number
   username: string
@@ -33,9 +34,13 @@ export type EventConfigStoreState = {
   activeTab: number
   uploadedEventConfigFilesReportDialogState: {
     visible: boolean
-  },
+  }
   deleteEventConfigSourceDialogState: {
-    visible: boolean,
+    visible: boolean
+    eventConfigSource: EventConfSourceMetadata | null
+  }
+  changeEventConfigSourceStatusDialogState: {
+    visible: boolean
     eventConfigSource: EventConfSourceMetadata | null
   }
 }
@@ -44,15 +49,22 @@ export type EventConfigDetailStoreState = {
   events: EventConfigEvent[]
   eventsPagination: Pagination
   selectedSource: EventConfSourceMetadata | null
-  isLoading: boolean,
+  isLoading: boolean
   deleteEventConfigEventDialogState: {
-    visible: boolean,
+    visible: boolean
     eventConfigEvent: EventConfigEvent | null
-  },
+  }
   changeEventConfigEventStatusDialogState: {
-    visible: boolean,
-    eventConfigEvent: EventConfigEvent | null,
-    
+    visible: boolean
+    eventConfigEvent: EventConfigEvent | null
+  }
+  deleteEventConfigSourceDialogState: {
+    visible: boolean
+    eventConfigSource: EventConfSourceMetadata | null
+  }
+  changeEventConfigSourceStatusDialogState: {
+    visible: boolean
+    eventConfigSource: EventConfSourceMetadata | null
   }
 }
 
@@ -67,10 +79,10 @@ export type EventConfigFilesUploadReponse = {
     {
       file: string
     }
-  ],
-   invalid?: {
-    file: string;
-    reason: string;
-  }[];
+  ]
+  invalid?: {
+    file: string
+    reason: string
+  }[]
 }
 
