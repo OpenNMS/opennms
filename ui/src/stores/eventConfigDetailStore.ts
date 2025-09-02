@@ -86,7 +86,9 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       this.changeEventConfigEventStatusDialogState.visible = false
       this.changeEventConfigEventStatusDialogState.eventConfigEvent = null
       await this.fetchEventsBySourceId()
+    },
+    resetEventsPagination() {
+      this.eventsPagination = { ...defaultPagination }
     }
   }
 })
-

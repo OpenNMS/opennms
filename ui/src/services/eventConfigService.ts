@@ -28,6 +28,20 @@ export const uploadEventConfigFiles = async (files: File[]): Promise<EventConfig
   }
 }
 
+export const deleteEventConfigSourceById = async (id: number): Promise<boolean> => {
+  const endpoint = '/eventconf/sources'
+  const payload = {
+    sourceIds: [id]
+  }
+  try {
+    const response = await v2.delete(endpoint, { data: payload })
+    return response.status === 200
+  } catch (error) {
+    console.error('Error deleting event config source:', error)
+    return false
+  }
+}
+
 export const changeEventConfigEventStatus = async (eventId: number, sourceId: number, enable: boolean): Promise<boolean> => {
   const endpoint = `/eventconf/sources/${sourceId}/events/status`
   const payload = {
