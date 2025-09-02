@@ -20,7 +20,6 @@
   <event-file>events/opennms.correlation.events.xml</event-file>
   <event-file>events/opennms.default.threshold.events.xml</event-file>
   <event-file>events/opennms.discovery.events.xml</event-file>
-  <event-file>events/opennms.hyperic.events.xml</event-file>
   <event-file>events/opennms.internal.events.xml</event-file>
   <event-file>events/opennms.linkd.events.xml</event-file>
   <event-file>events/opennms.mib.events.xml</event-file>

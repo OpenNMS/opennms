@@ -180,7 +180,7 @@ const render = () => {
     const el = $j(e);
     let didGraphRendered = false;
     // Extract the attributes
-    let def = {
+    const def = {
       'resourceId': el.data('resource-id'),
       'graphName': el.data('graph-name'),
       'graphTitle': el.data('graph-title'),
@@ -235,11 +235,11 @@ const render = () => {
 
     // Calculate if div is in viewport and render if it is.
     const renderGraphWhenInView = () => {
-      let scrollTop = $(window).scrollTop();
-      let windowBottom = scrollTop + $(window).height();
-      let offsetTop = el.offset().top;
-      let offsetBottom = offsetTop + el.height();
-      let divIsHidden = el.parent().hasClass('ng-hide');
+      const scrollTop = $(window).scrollTop();
+      const windowBottom = scrollTop + $(window).height();
+      const offsetTop = el.offset().top;
+      const offsetBottom = offsetTop + el.height();
+      const divIsHidden = el.parent().hasClass('ng-hide');
       if ((scrollTop <= offsetBottom && windowBottom >= offsetTop) && !didGraphRendered && !divIsHidden) {
         renderGraph();
       }
@@ -262,14 +262,14 @@ const render = () => {
 
     // If print is triggered, render graph if div is not hidden.
     (function () {
-      var beforePrint = function () {
-        let divIsHidden = el.parent().hasClass('ng-hide');
+      const beforePrint = function () {
+        const divIsHidden = el.parent().hasClass('ng-hide');
         if (!didGraphRendered && !divIsHidden) {
           renderGraph();
         }
       };
       if (window.matchMedia) {
-        var mediaQueryList = window.matchMedia('print');
+        const mediaQueryList = window.matchMedia('print');
         mediaQueryList.addListener(function (mql) {
           if (mql.matches) {
             beforePrint();

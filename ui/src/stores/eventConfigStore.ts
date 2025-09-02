@@ -1,38 +1,56 @@
-import { data } from '@/components/EventConfiguration/data'
-import { EventConfigState, EventConfSourceMetadata } from '@/types/eventConfig'
+import { eventConfigSources } from '@/components/EventConfiguration/data'
+import { EventConfigStoreState, EventConfSourceMetadata } from '@/types/eventConfig'
+import { cloneDeep } from 'lodash'
 import { defineStore } from 'pinia'
 
-export const useEventConfigStore = defineStore('eventConfigStore', {
-  state: (): EventConfigState => ({
-    eventConfigs: [],
-    eventConfigPagination: {
-      page: 1,
-      pageSize: 10,
-      total: 0
+const defaultPagination = {
+  page: 1,
+  pageSize: 10,
+  total: 0
+}
+
+export const useEventConfigStore = defineStore('useEventConfigStore', {
+  state: (): EventConfigStoreState => ({
+    sources: [],
+    sourcesPagination: { ...defaultPagination },
+    isLoading: false,
+    activeTab: 0,
+    uploadedFilesReportModalState: {
+      visible: false
     },
-    selectedEventConfig: null,
-    isLoading: false
+    deleteEventConfigSourceModalState: {
+      visible: false,
+      eventConfigSource: null
+    }
   }),
   actions: {
     async fetchEventConfigs() {
       this.isLoading = true
       try {
-        this.eventConfigs = data // Using static data for now
-        this.eventConfigPagination.total = this.eventConfigs.length
+        this.sources = cloneDeep(eventConfigSources) // Using static data for now
+        this.sourcesPagination.total = this.sources.length
       } catch (error) {
         console.error('Error fetching event configurations:', error)
       } finally {
         this.isLoading = false
       }
     },
-    selectEventConfig(eventConfig: EventConfSourceMetadata) {
-      this.selectedEventConfig = eventConfig
+    onSourcePageChange(page: number) {
+      this.sourcesPagination.page = page
     },
-    onEventConfigPageChange(page: number) {
-      this.eventConfigPagination.page = page
+    onSourcePageSizeChange(pageSize: number) {
+      this.sourcesPagination.pageSize = pageSize
     },
-    onEventConfigPageSizeChange(pageSize: number) {
-      this.eventConfigPagination.pageSize = pageSize
+    resetActiveTab(){
+      this.activeTab = 0
+    },
+    showDeleteEventConfigSourceModal(eventConfigSource: EventConfSourceMetadata) {
+      this.deleteEventConfigSourceModalState.visible = true
+      this.deleteEventConfigSourceModalState.eventConfigSource = eventConfigSource
+    },
+    hideDeleteEventConfigSourceModal() {
+      this.deleteEventConfigSourceModalState.visible = false
+      this.deleteEventConfigSourceModalState.eventConfigSource = null
     }
   }
 })

@@ -33,7 +33,7 @@ function getBaseHref() {
     return window.getBaseHref();
 }
 
-var app = angular.module('forecast', ['onms.http', 'onms.default.apps'])
+const app = angular.module('forecast', ['onms.http', 'onms.default.apps'])
   .config(['$locationProvider', function($locationProvider) {
     $locationProvider.hashPrefix('');
   }]);
@@ -88,7 +88,7 @@ app.controller('forecastCtrl', /* @ngInject */ function($scope) {
     $scope.series = [];
 
     // The different list of options which all forecasting templates inherit
-    var defaultForecastingOptions = {
+    const defaultForecastingOptions = {
         trainingStart: 14,
         graphStart: 7,
         season: 1.0,
@@ -143,7 +143,7 @@ app.controller('forecastCtrl', /* @ngInject */ function($scope) {
     clearUserInput();
 
     function getGraphDefinition(report, resource) {
-        var url = getBaseHref() + 'rest/graphs/' + encodeURIComponent(report);
+        const url = getBaseHref() + 'rest/graphs/' + encodeURIComponent(report);
         // Pull in the graph definition
         $.ajax({
             url: url,
@@ -157,7 +157,7 @@ app.controller('forecastCtrl', /* @ngInject */ function($scope) {
             $scope.resource = resource;
 
             // Convert the graph definition
-            var rrdGraphConverter = new Backshift.Utilities.RrdGraphConverter({
+            const rrdGraphConverter = new Backshift.Utilities.RrdGraphConverter({
                 graphDef: $scope.graphDef,
                 resourceId: $scope.resource
             });
@@ -187,7 +187,7 @@ app.controller('forecastCtrl', /* @ngInject */ function($scope) {
         }
 
         // Build the data-source
-        var ds = new Backshift.DataSource.OpenNMS({
+        const ds = new Backshift.DataSource.OpenNMS({
             url: getBaseHref() + 'rest/measurements',
             metrics: graphModel.metrics
         });
@@ -210,7 +210,7 @@ app.controller('forecastCtrl', /* @ngInject */ function($scope) {
     $scope.reset = function() {
         clearUserInput();
         // Re-render the original graph model
-        var rrdGraphConverter = new Backshift.Utilities.RrdGraphConverter({
+        const rrdGraphConverter = new Backshift.Utilities.RrdGraphConverter({
             graphDef: $scope.graphDef,
             resourceId: $scope.resource
         });
@@ -224,11 +224,11 @@ app.controller('forecastCtrl', /* @ngInject */ function($scope) {
     };
 
     $scope.forecast = function() {
-        var rrdGraphConverter = new Backshift.Utilities.RrdGraphConverter({
+        const rrdGraphConverter = new Backshift.Utilities.RrdGraphConverter({
             graphDef: $scope.graphDef,
             resourceId: $scope.resource
         });
-        var graphModel = rrdGraphConverter.model;
+        const graphModel = rrdGraphConverter.model;
 
         // Add series for the trend, forecast and bounds
         graphModel.series.push({
@@ -256,11 +256,11 @@ app.controller('forecastCtrl', /* @ngInject */ function($scope) {
             'color': '#ff0000'
         });
 
-        var numberOfSecondsInADay = 24*60*60;
-        var now = Date.now();
-        var trainingStartInMillis = now - ($scope.forecastingOptions.trainingStart * numberOfSecondsInADay * 1000);
-        var graphStartInMillis = now - ($scope.forecastingOptions.graphStart * numberOfSecondsInADay * 1000);
-        var graphEndInMillis = now;
+        const numberOfSecondsInADay = 24*60*60;
+        const now = Date.now();
+        const trainingStartInMillis = now - ($scope.forecastingOptions.trainingStart * numberOfSecondsInADay * 1000);
+        const graphStartInMillis = now - ($scope.forecastingOptions.graphStart * numberOfSecondsInADay * 1000);
+        const graphEndInMillis = now;
 
         // Add metric filters to prepare, trend and forecast the target metric
         graphModel.metrics.push({

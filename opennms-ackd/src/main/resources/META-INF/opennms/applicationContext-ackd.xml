@@ -28,18 +28,6 @@
     <property name="name" value="JavaMailReader" />
   </bean>
 
-  <bean id="hypericReader" class="org.opennms.netmgt.ackd.readers.DefaultAckReader" >
-    <property name="ackProcessor" ref="hypericAckProcessor" />
-    <property name="name" value="HypericReader" />
-  </bean>
-
-  <bean id="hypericAckProcessor" class="org.opennms.netmgt.ackd.readers.HypericAckProcessor" >
-    <property name="ackdConfigDao" ref="ackdConfigurationDao" />
-    <!-- From META-INF/opennms/applicationContext-dao.xml -->
-    <property name="alarmDao" ref="alarmDao" />
-    <property name="acknowledgmentDao" ref="acknowledgmentDao" />
-  </bean>
-
   <bean id="mailAckProcessor" class="org.opennms.netmgt.ackd.readers.MailAckProcessor" >
     <property name="ackdConfigDao" ref="ackdConfigurationDao" />
     <property name="acknowledgmentDao" ref="acknowledgmentDao" />
@@ -55,7 +43,6 @@
     <property name="ackReaders" >
       <list>
         <ref bean="javaMailReader" />
-        <ref bean="hypericReader" />
       </list>
     </property>
   </bean>

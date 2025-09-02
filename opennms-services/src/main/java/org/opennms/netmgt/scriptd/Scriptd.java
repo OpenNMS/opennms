@@ -24,6 +24,7 @@ package org.opennms.netmgt.scriptd;
 import java.io.IOException;
 import java.lang.reflect.UndeclaredThrowableException;
 
+import org.opennms.core.spring.BeanFactoryReference;
 import org.opennms.core.spring.BeanUtils;
 import org.opennms.netmgt.config.ScriptdConfigFactory;
 import org.opennms.netmgt.daemon.AbstractServiceDaemon;
@@ -34,7 +35,6 @@ import org.opennms.netmgt.events.api.annotations.EventListener;
 import org.opennms.netmgt.events.api.model.IEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.access.BeanFactoryReference;
 
 /**
  * This class implements a script execution service. This service subscribes to

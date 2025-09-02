@@ -54,11 +54,11 @@ sudo apt-mark hold libopennms-java \
               opennms-db
 ----
 
-. Upgrade Java 11 to the latest release:
+. Upgrade Java 17 to the latest release:
 +
 [source, console]
 ----
-apt install openjdk-11-jdk-headless openjdk-11-jre-headless
+apt install openjdk-17-jdk-headless openjdk-17-jre-headless
 ----
 
 . Use the `runjava` command to set the JVM that {page-component-title} will use:

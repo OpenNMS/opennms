@@ -31,12 +31,9 @@ import javax.inject.Inject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.access.BeanFactoryLocator;
-import org.springframework.beans.factory.access.BeanFactoryReference;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.context.access.DefaultLocatorFactory;
 
 /**
  * Helper methods for working with Spring beans.
@@ -67,10 +64,9 @@ public class BeanUtils implements ApplicationContextAware {
      */
     public static BeanFactoryReference getBeanFactory(String contextId) {
         // If no ApplicationContext has been injected by an existing Spring
-        // context, then use DefaultLocatorFactory to find or create the context
+        // context, then use ContextRegistry to find or create the context
         if (m_context == null) {
-            BeanFactoryLocator beanFactoryLoader = DefaultLocatorFactory.getInstance();
-            return beanFactoryLoader.useBeanFactory(contextId);
+            return ContextRegistry.getInstance().getBeanFactory(contextId);
         } else {
             return new BeanFactoryReference() {
                 @Override

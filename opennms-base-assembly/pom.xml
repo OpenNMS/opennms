@@ -865,6 +865,11 @@
       <version>${project.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.spring-web</artifactId>
+      <version>${project.version}</version>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.ipc.rpc</groupId>
       <artifactId>org.opennms.core.ipc.rpc.jms-impl</artifactId>
       <version>${project.version}</version>

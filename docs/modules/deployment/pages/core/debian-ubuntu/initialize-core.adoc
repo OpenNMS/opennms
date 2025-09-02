@@ -67,23 +67,13 @@ sudo /usr/share/opennms/bin/runjava -s
 sudo /usr/share/opennms/bin/install -dis
 ----
 
-._Binding to privileged ports_
-
-The core service user must be able to send ICMP echo requests.
-During setup, the permissions for `net.ipv4.ping_group_range` are set permanently on boot via `/etc/sysctl.d/99-opennms-non-root-icmp.conf`.
-Some system kernels do not honor this setting; in those cases, additional configuration is required to allow binding to privileged ports.
-We recommend creating a systemd overlay to add the necessary settings to the service configuration:
-
-. Run `systemctl edit opennms.service` and add the following line to the `[Service]` section:
-+
-[source, properties]
+.Define any necessary xref:operation:deep-dive/admin/configuration/startup.adoc[startup configuration], such as open file descriptors or maximum Java heap
+[source, console]
 ----
-AmbientCapabilities=CAP_NET_RAW CAP_NET_BIND_SERVICE
+echo "JAVA_HEAP_SIZE=16384" | sudo tee ${OPENNMS_HOME}/etc/opennms.conf
+echo "MAXIMUM_FILE_DESCRIPTORS=512000" | sudo tee ${OPENNMS_HOME}/etc/opennms.conf
 ----
-
-Reload the systemd unit with `systemctl daemon-reload` and restart the service with `systemctl restart opennms`.
-
-(For more background on this issue, see https://opennms.discourse.group/t/h29-wont-start-with-permission-error-to-open-icmp-socket/2387[H29+ won't start with permission error to open ICMP socket] on Discourse.)
+NOTE: These values are provided as examples; ideal values will vary based on your environment and workload
 
 .Enable {page-component-title} core instance on system boot and start immediately
 [source, console]

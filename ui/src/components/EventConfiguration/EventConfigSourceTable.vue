@@ -39,7 +39,7 @@
       <table
         class="data-table"
         aria-label="SNMP Interfaces Table"
-        v-if="store.eventConfigs.length"
+        v-if="store.sources.length"
       >
         <thead>
           <tr>
@@ -61,8 +61,8 @@
           tag="tbody"
         >
           <tr
-            v-for="config in store.eventConfigs"
-            :key="config.filename"
+            v-for="config in store.sources"
+            :key="config.id"
           >
             <td>{{ config.filename }}</td>
             <td>{{ config.description }}</td>
@@ -70,52 +70,67 @@
             <td>{{ config.vendor }}</td>
             <td>{{ config.eventCount }}</td>
             <td>
-              <FeatherButton
-                primary
-                icon="View Details"
-                data-test="view-button"
-                @click="onEventClick(config.id)"
-              >
-                <FeatherIcon :icon="ViewDetails"> </FeatherIcon>
-              </FeatherButton>
+              <div class="action-container">
+                <FeatherButton
+                  primary
+                  icon="View Details"
+                  data-test="view-button"
+                  @click="onEventClick(config)"
+                >
+                  <FeatherIcon :icon="ViewDetails"> </FeatherIcon>
+                </FeatherButton>
+                <FeatherButton
+                  primary
+                  icon="Delete"
+                  data-test="delete-source-button"
+                  @click="store.showDeleteEventConfigSourceModal(config)"
+                >
+                  <FeatherIcon :icon="Delete"> </FeatherIcon>
+                </FeatherButton>
+              </div>
             </td>
           </tr>
         </TransitionGroup>
       </table>
       <div class="alerts-pagination">
         <FeatherPagination
-          :modelValue="store.eventConfigPagination.page"
-          :pageSize="store.eventConfigPagination.pageSize"
-          :total="store.eventConfigPagination.total"
+          :modelValue="store.sourcesPagination.page"
+          :pageSize="store.sourcesPagination.pageSize"
+          :total="store.sourcesPagination.total"
           :pageSizes="[10, 20, 50]"
-          @update:modelValue="store.onEventConfigPageChange"
-          @update:pageSize="store.onEventConfigPageSizeChange"
+          @update:modelValue="store.onSourcePageChange"
+          @update:pageSize="store.onSourcePageSizeChange"
           data-test="FeatherPagination"
-          v-if="store.eventConfigs.length"
+          v-if="store.sources.length"
         />
       </div>
-      <div v-if="!store.eventConfigs.length">
+      <div v-if="!store.sources.length">
         <EmptyList
           :content="emptyListContent"
           data-test="empty-list"
         />
       </div>
     </div>
+    <DeleteEventConfigSourceModal />
   </TableCard>
 </template>
 
 <script lang="ts" setup>
+import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
+import { EventConfSourceMetadata } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
+import Delete from '@featherds/icon/action/Delete'
 import DownloadFile from '@featherds/icon/action/DownloadFile'
 import Search from '@featherds/icon/action/Search'
 import ViewDetails from '@featherds/icon/action/ViewDetails'
 import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
+import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import TableCard from '../Common/TableCard.vue'
-import { FeatherPagination } from '@featherds/pagination'
+import DeleteEventConfigSourceModal from './Modal/DeleteEventConfigSourceModal.vue'
 
 const router = useRouter()
 const store = useEventConfigStore()
@@ -130,12 +145,7 @@ const columns = computed(() => [
   { id: 'vendor', label: 'Vendor' },
   { id: 'eventCount', label: 'Event Count' }
 ])
-const onEventClick = (id: number) => {
-  router.push({
-    name: 'Event Configuration Details',
-    params: { id: id }
-  })
-}
+
 const sort = reactive({
   fileName: SORT.NONE,
   description: SORT.NONE,
@@ -143,6 +153,15 @@ const sort = reactive({
   vendor: SORT.NONE,
   eventCount: SORT.NONE
 }) as any
+
+const onEventClick = (source: EventConfSourceMetadata) => {
+  const eventDetailsStore = useEventConfigDetailStore()
+  eventDetailsStore.setSelectedEventConfigSource(source)
+  router.push({
+    name: 'Event Configuration Details',
+    params: { id: source.id }
+  })
+}
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
   for (const prop in sort) {
@@ -217,6 +236,16 @@ onMounted(async () => {
         div {
           border-radius: 5px;
           padding: 0px 5px 0px 5px;
+        }
+
+        .action-container {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+
+          button {
+            margin: 0px;
+          }
         }
       }
     }

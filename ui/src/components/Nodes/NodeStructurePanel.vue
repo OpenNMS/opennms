@@ -130,11 +130,11 @@ const onClearFlows = () => {
 }
 
 const onClearLocations = () => {
-  nodeStructureStore.setSelectedMonitoringLocations([])
+  nodeStructureStore.updateSelectedMonitoringLocations([])
 }
 
 const onClearAll = () => {
-  nodeStructureStore.clearAllFilters(SetOperator.Union)
+  nodeStructureStore.clearAllFiltersAndSelections()
 }
 
 /**
@@ -166,7 +166,7 @@ const onFlowClick = (flow: string) => {
 
 const onLocationClick = (loc: MonitoringLocation) => {
   const newSelection = getNewSelection(loc, isLocationSelected(loc), nodeStructureStore.queryFilter.selectedMonitoringLocations, x => x.name !== loc.name)
-  nodeStructureStore.setSelectedMonitoringLocations(newSelection)
+  nodeStructureStore.updateSelectedMonitoringLocations(newSelection)
 }
 </script>
 

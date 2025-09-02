@@ -9,7 +9,7 @@
   "zenithConnectEnabled": false,
   "zenithConnectBaseUrl": "",
   "zenithConnectRelativeUrl": "",
-  "displayAddNodeButton": true,
+  "displayAddNodeButton": false,
   "sideMenuInitialExpand": false,
   "copyrightDates": "",
   "version": "",
@@ -583,31 +583,6 @@
     },
     {
       "type": "separator"
-    },
-    {
-      "id": "userProfileMenu",
-      "name": "User Profile",
-      "url": "#",
-      "locationMatch": null,
-      "icon": "action/Person",
-      "roles": null,
-      "items": [
-       {
-         "id": "logout",
-         "name": "Log Out",
-         "url": "j_spring_security_logout",
-         "locationMatch": null,
-         "action": "logout",
-         "roles": null
-       },
-       {
-         "id": "changePassword",
-         "name": "Change Password",
-         "url": "account/selfService/newPasswordEntry",
-         "locationMatch": null,
-         "roles": null
-       }
-      ]
     },
     {
       "id": "apiDocumentationMenu",

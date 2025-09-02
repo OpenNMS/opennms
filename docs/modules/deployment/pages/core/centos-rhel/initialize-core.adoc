@@ -67,21 +67,13 @@ sudo /opt/opennms/bin/runjava -s
 sudo /opt/opennms/bin/install -dis
 ----
 
-[[initialize-core-cap]]
-._Assign CAP_NET_RAW capabilities_
-{page-component-title} runs as a non-root user, which requires having a Linux kernel greater than 3.10.
-If you run on an older kernel and you cannot upgrade your OS, you need to assign `CAP_NET_RAW` capabilities:
-
-. Run `systemctl edit opennms.service` and add the following code to the `[Service]` section:
-+
-[source, properties]
+.Define any necessary xref:operation:deep-dive/admin/configuration/startup.adoc[startup configuration], such as open file descriptors or maximum Java heap
+[source, console]
 ----
-AmbientCapabilities=CAP_NET_RAW CAP_NET_BIND_SERVICE
+echo "JAVA_HEAP_SIZE=16384" | sudo tee ${OPENNMS_HOME}/etc/opennms.conf
+echo "MAXIMUM_FILE_DESCRIPTORS=512000" | sudo tee ${OPENNMS_HOME}/etc/opennms.conf
 ----
-
-Reload the systemd unit with `systemctl daemon-reload` and restart the service with `systemctl restart opennms`.
-
-(For more background on this issue, see https://opennms.discourse.group/t/h29-wont-start-with-permission-error-to-open-icmp-socket/2387[H29+ won't start with permission error to open ICMP socket] on Discourse.)
+NOTE: These values are provided as examples; ideal values will vary based on your environment and workload
 
 .Enable {page-component-title} core instance on system boot and start immediately
 [source, console]

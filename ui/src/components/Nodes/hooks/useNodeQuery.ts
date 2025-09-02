@@ -24,6 +24,7 @@ import { isConvertibleToInteger } from '@/lib/utils'
 import {
   Category,
   MonitoringLocation,
+  NodeQueryExtendedSearchParams,
   NodeQueryFilter,
   NodeQueryForeignSourceParams,
   NodeQuerySnmpParams,
@@ -41,6 +42,7 @@ import {
   parseSnmpParams,
   parseSysParams
 } from './queryStringParser'
+import { isIP } from 'is-ip'
 
 export const useNodeQuery = () => {
   const getDefaultNodeQueryForeignSourceParams = () => {
@@ -89,6 +91,71 @@ export const useNodeQuery = () => {
       selectedMonitoringLocations: [] as MonitoringLocation[],
       extendedSearch: getDefaultNodeQueryExtendedSearchParams()
     } as NodeQueryFilter
+  }
+
+  const getObjectValues = (obj?: any): string[] => {
+    if (obj) {
+      const names = Object.getOwnPropertyNames(obj)
+      const values = names.map(name => String((obj as any)[name] || ''))
+
+      return values
+    }
+
+    return []
+  }
+
+  const hasAnyExtendedSearchValues = (extendedSearch?: NodeQueryExtendedSearchParams) => {
+    if (extendedSearch) {
+      if (!!extendedSearch.ipAddress && extendedSearch.ipAddress.length > 0) {
+        return true
+      }
+
+      if (extendedSearch.foreignSourceParams) {
+        const values = getObjectValues(extendedSearch.foreignSourceParams)
+
+        if (values.some(s => s && s.length > 0)) {
+          return true
+        }
+      }
+
+      if (extendedSearch.snmpParams) {
+        const values = getObjectValues(extendedSearch.snmpParams)
+
+        if (values.some(s => s && s.length > 0)) {
+          return true
+        }
+      }
+
+      if (extendedSearch.sysParams) {
+        const values = getObjectValues(extendedSearch.sysParams)
+
+        if (values.some(s => s && s.length > 0)) {
+          return true
+        }
+      }
+    }
+
+    return false
+  }
+
+  const addIpAddressToQueryFilter = (filter: NodeQueryFilter, ipAddress: string) => {
+    const ip = parseIplike(ipAddress)
+
+    if (ip) {
+      const extended = {
+        ...filter.extendedSearch,
+        ipAddress: ip
+      }
+
+      const filterWithIp = {
+        ...filter,
+        extendedSearch: extended
+      }
+
+      return filterWithIp
+    }
+
+    return filter
   }
 
   /**
@@ -202,6 +269,7 @@ export const useNodeQuery = () => {
   }
 
   return {
+    addIpAddressToQueryFilter,
     buildNodeQueryFilterFromQueryString,
     buildUpdatedNodeStructureQueryParameters,
     getDefaultNodeQueryFilter,
@@ -209,6 +277,7 @@ export const useNodeQuery = () => {
     getDefaultNodeQueryForeignSourceParams,
     getDefaultNodeQuerySnmpParams,
     getDefaultNodeQuerySysParams,
+    hasAnyExtendedSearchValues,
     queryStringHasTrackedValues
   }
 }
@@ -217,8 +286,11 @@ export const useNodeQuery = () => {
  * Build a FIQL query for the Node Rest service from a NodeQueryFilter.
  */
 const buildNodeStructureQuery = (filter: NodeQueryFilter) => {
-  const searchQuery = buildSearchQuery(filter.searchTerm)
-  const ipAddressQuery = buildIpAddressQuery(filter.extendedSearch.ipAddress)
+  const searchTerm = sanitizeSearchTerm(filter.searchTerm)
+  const ipAddress = sanitizeSearchTerm(filter.extendedSearch.ipAddress)
+
+  const searchQuery = buildSearchQuery(searchTerm)
+  const ipAddressQuery = buildIpAddressQuery(ipAddress)
   const categoryQuery = buildCategoryQuery(filter.selectedCategories, filter.categoryMode)
   const flowsQuery = buildFlowsQuery(filter.selectedFlows)
   const locationQuery = buildLocationsQuery(filter.selectedMonitoringLocations)
@@ -226,9 +298,19 @@ const buildNodeStructureQuery = (filter: NodeQueryFilter) => {
   const snmpQuery = buildSnmpQuery(filter.extendedSearch.snmpParams)
   const sysQuery = buildSysQuery(filter.extendedSearch.sysParams)
 
-  // TODO: filter on regex to screen out bad FIQL characters like ',', ';', etc.
-  // and/or restrict characters in the FeatherInput above
-  const query = [searchQuery, ipAddressQuery, foreignSourceQuery, snmpQuery, sysQuery, categoryQuery, flowsQuery, locationQuery].filter(s => s.length > 0).join(';')
+  // TODO: May need more search term sanitizing and/or restrict characters in the FeatherInput above
+  const querySeparator = getFiqlSetOperator(SetOperator.Intersection)
+  const query = [searchQuery, ipAddressQuery, foreignSourceQuery, snmpQuery, sysQuery, categoryQuery, flowsQuery, locationQuery].filter(s => s.length > 0).join(querySeparator)
+
+  // additional fields to search on for main searchTerm
+  // these will be added as SetOperator.Union (i.e. 'or')
+  // for now, just ipAddress - but only if user does not specify ipAddress in extended search
+  if (!ipAddress && isIP(searchTerm)) {
+    const ipQuery = buildIpAddressQuery(searchTerm)
+    const separator = getFiqlSetOperator(SetOperator.Union)
+
+    return `${query}${separator}${ipQuery}`
+  }
 
   return query
 }
@@ -257,7 +339,7 @@ const buildCategoryQuery = (selectedCategories: Category[], categoryMode: SetOpe
   if (categoryItems.length === 1) {
     return `${categoryItems[0]}`
   } else if (categoryItems.length > 1) {
-    const separator = categoryMode === SetOperator.Intersection ? ';' : ','
+    const separator = getFiqlSetOperator(categoryMode)
     return `(${categoryItems.join(separator)})`
   }
 
@@ -395,4 +477,16 @@ const buildSysQuery = (sysParams?: NodeQuerySysParams) => {
   }
 
   return ''
+}
+
+/**
+ * Remove any FIQL characters from a search term.
+ * May need to do additional replacements here.
+ */
+export const sanitizeSearchTerm = (s?: string) => {
+  return (s || '').replace(/[,;]/, ' ')
+}
+
+export const getFiqlSetOperator = (op: SetOperator) => {
+  return op === SetOperator.Union ? ',' : ';'
 }

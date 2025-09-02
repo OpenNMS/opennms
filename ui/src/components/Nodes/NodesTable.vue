@@ -9,10 +9,16 @@
             :onJsonDownload="onJsonDownload"
           />
           <FeatherButton
-            secondary
+            primary
             @click="() => nodeStructureStore.openColumnsDrawerModal()"
           >
-            Customize
+            Customize Columns
+          </FeatherButton>
+          <FeatherButton
+            secondary
+            @click="() => nodeStructureStore.clearAllFiltersAndSelections()"
+          >
+            Clear Filters
           </FeatherButton>
         </div>
       </div>
@@ -20,25 +26,29 @@
       <div class="spacer-large"></div>
       <div class="search-container feather-col-12">
         <div class="feather-row">
-          <div class="search-filter-column">
-            <FeatherInput
-              v-model="currentSearch"
-              @update:modelValue="searchFilterHandler"
-              label="Search node label"
-            >
-              <template #pre>
-                <FeatherIcon :icon="Search" />
-              </template>
-            </FeatherInput>
-          </div>
-          <div class="filter-icon-wrapper">
-            <FeatherIcon
-              :icon="FilterAlt"
-              @click="() => nodeStructureStore.openInstancesDrawerModal()"
-            />
+          <div class="filter">
+            <div class="search-filter-column">
+              <FeatherInput
+                v-model="currentSearch"
+                @update:modelValue="searchFilterHandler"
+                label="Search node label or full IP address"
+              >
+                <template #pre>
+                  <FeatherIcon :icon="Search" />
+                </template>
+              </FeatherInput>
+            </div>
+            <div>
+              <FeatherButton
+                icon="FilterAlt"
+                @click="() => nodeStructureStore.openInstancesDrawerModal()"
+              >
+                <FeatherIcon :icon="FilterAlt" />
+              </FeatherButton>
+            </div>
           </div>
           <div class="chip-container">
-            <FeatherChipList label="Tags">
+            <FeatherChipList label="SearchParams">
               <FeatherChip
                 v-for="(cat, index) in nodeStructureStore.selectedCategories"
                 :key="`cat-${index}`"
@@ -64,7 +74,7 @@
                     @click="removeItem(flow, FilterTypeEnum.Flow)"
                   />
                 </template>
-                {{ `FLow: ${flow._text}` }}
+                {{ `Flow: ${flow._text}` }}
               </FeatherChip>
 
               <FeatherChip
@@ -75,10 +85,23 @@
                   <FeatherIcon
                     :icon="cancelIcon"
                     class="icon"
-                    @click="removeItem(loc, FilterTypeEnum.Location)"
+                    @click="removeItem(loc, FilterTypeEnum.MonitoringLocation)"
                   />
                 </template>
                 {{ `Location: ${loc.name}` }}
+              </FeatherChip>
+
+              <FeatherChip
+                v-if="hasExtendedSearchParams"
+              >
+                <template #icon>
+                  <FeatherIcon
+                    :icon="cancelIcon"
+                    class="icon"
+                    @click="removeExtendedSearchItem"
+                  />
+                </template>
+                {{ 'Extended Search' }}
               </FeatherChip>
             </FeatherChipList>
           </div>
@@ -94,6 +117,7 @@
           <table
             :class="tableCssClasses"
             summary="Nodes"
+            v-if="nodes.length > 0"
           >
             <thead>
               <tr>
@@ -104,7 +128,7 @@
                   <div @click="navigateColumns(Direction.Left)">
                     <FeatherButton icon="Shift Left">
                       <FeatherIcon
-                        :icon="Code"
+                        :icon="ChevronLeft"
                         class="navigation-icon"
                       />
                     </FeatherButton>
@@ -136,7 +160,7 @@
                   >
                     <FeatherButton icon="Shift Right">
                       <FeatherIcon
-                        :icon="Code"
+                        :icon="ChevronRight"
                         class="navigation-icon"
                       />
                     </FeatherButton>
@@ -238,10 +262,16 @@
               </tr>
             </tbody>
           </table>
+          <EmptyList
+            v-else
+            :content="emptyListContent"
+            data-test="empty-list"
+          />
         </div>
       </div>
     </div>
     <FeatherPagination
+      v-if="nodeStore.totalCount > 0"
       v-model="pageNumber"
       :pageSize="queryParameters.limit"
       :total="nodeStore.totalCount"
@@ -284,7 +314,8 @@ import Edit from '@featherds/icon/action/Edit'
 import FilterAlt from '@featherds/icon/action/FilterAlt'
 import Search from '@featherds/icon/action/Search'
 import Cancel from '@featherds/icon/navigation/Cancel'
-import Code from '@featherds/icon/network/Code'
+import ChevronLeft from '@featherds/icon/navigation/ChevronLeft'
+import ChevronRight from '@featherds/icon/navigation/ChevronRight'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
@@ -300,13 +331,14 @@ import NodeTooltipCell from './NodeTooltipCell.vue'
 import { useNodeExport } from './hooks/useNodeExport'
 import { useNodeQuery } from './hooks/useNodeQuery'
 import { getTableCssClasses } from './utils'
+import EmptyList from '../Common/EmptyList.vue'
 
 const menuStore = useMenuStore()
 const nodeStructureStore = useNodeStructureStore()
 const nodeStore = useNodeStore()
 const { showSnackBar } = useSnackbar()
 const { generateBlob, generateDownload, getExportData } = useNodeExport()
-const { buildUpdatedNodeStructureQueryParameters } = useNodeQuery()
+const { buildUpdatedNodeStructureQueryParameters, hasAnyExtendedSearchValues } = useNodeQuery()
 const visibleColumnStart = ref(0)
 const visibleColumnsCount = 5
 
@@ -368,7 +400,6 @@ const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 
 const dialogVisible = ref(false)
 const dialogNode = ref<Node>()
-// const preferencesVisible = ref(false)
 const tableCssClasses = computed<string[]>(() => getTableCssClasses(nodeStructureStore.columns))
 const queryParameters = ref<QueryParameters>(nodeStore.nodeQueryParameters)
 const pageNumber = ref(1)
@@ -446,10 +477,6 @@ const onNodeInfo = (node: Node) => {
   dialogVisible.value = true
 }
 
-// const openPreferences = () => {
-//   preferencesVisible.value = true
-// }
-
 const computeNodeLink = (nodeId: number | string) => {
   return `${mainMenu.value.baseHref}${mainMenu.value.baseNodeUrl}${nodeId}`
 }
@@ -462,6 +489,10 @@ const onNodeLinkClick = (nodeId: number | string) => {
   window.location.assign(computeNodeLink(nodeId))
 }
 
+const hasExtendedSearchParams = computed(() => {
+  return hasAnyExtendedSearchValues(nodeStructureStore.queryFilter.extendedSearch)
+})
+
 const removeItem = (item: IAutocompleteItemType, type: FilterTypeEnum) => {
   switch (type) {
     case FilterTypeEnum.Category:
@@ -470,12 +501,16 @@ const removeItem = (item: IAutocompleteItemType, type: FilterTypeEnum) => {
     case FilterTypeEnum.Flow:
       nodeStructureStore.removeFlow(item)
       break
-    case FilterTypeEnum.Location:
-      nodeStructureStore.removeLocation(item)
+    case FilterTypeEnum.MonitoringLocation:
+      nodeStructureStore.removeMonitoringLocation(item)
       break
     default:
       console.warn(`Unknown filter type: ${type}`)
   }
+}
+
+const removeExtendedSearchItem = () => {
+  nodeStructureStore.removeExtendedSearch()
 }
 
 const updateQuery = (options?: { orderBy?: string, order?: SORT }) => {
@@ -495,6 +530,10 @@ const updateQuery = (options?: { orderBy?: string, order?: SORT }) => {
   queryParameters.value = updatedParams
 
   nodeStore.getNodes(updatedParams, true)
+}
+
+const emptyListContent = {
+  msg: 'No results found.'
 }
 
 watch([() => nodeStructureStore.queryFilter], () => {
@@ -549,24 +588,32 @@ table {
   display: block;
 }
 
-.feather-col-11.search-filter-column {
-  padding-left: 1rem;
-  max-width: 60% !important;
-}
-
 .action-buttons-column {
   text-align: left;
 }
 
-.search-filter-column {
-  :deep(.feather-input-sub-text) {
-    display: none !important;
+.filter {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  .search-filter-column {
+    :deep(.feather-input-sub-text) {
+      display: none !important;
+    }
+
+    .feather-input-container {
+      width: 450px !important;
+    }
   }
 
-  .feather-input-container {
-    width: 450px !important;
+  .btn.btn-icon{
+    border: 2px solid var($border-on-surface);
+    border-radius: 3px;
+    padding: 0 0.5rem;
+    height: 3rem;
+    width: 3rem;
   }
-
 }
 
 .chip-container {
@@ -583,18 +630,6 @@ table {
 
 .spacer-large {
   margin-bottom: 2rem;
-}
-
-.filter-icon-wrapper {
-  display: flex;
-  align-items: center;
-  margin-left: 10px;
-  padding: 0 0.5rem;
-  font-size: 1.5rem;
-  cursor: pointer;
-  border: 2px solid var($border-on-surface);
-  color: var($primary);
-  border-radius: 3px;
 }
 
 .title-bar {

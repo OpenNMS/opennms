@@ -26,7 +26,7 @@
 %{!?_descr:%define _descr "OpenNMS"}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
-%{!?jdk:%define jdk java-11-openjdk-devel}
+%{!?jdk:%define jdk java-17-openjdk-devel}
 
 %{!?extrainfo:%define extrainfo }
 %{!?extrainfo2:%define extrainfo2 }

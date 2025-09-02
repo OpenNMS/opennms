@@ -68,7 +68,7 @@ const render = function(options) {
     const hideControlsOnStartup = isUndefinedOrNull(options.hideControlsOnStartup) ? false : options.hideControlsOnStartup;
     const mapId = isUndefinedOrNull(options.mapId) ? 'map' : options.mapId;
 
-    let query = {
+    const query = {
         strategy: isUndefinedOrNull(options.strategy) ? 'Alarms' : options.strategy,
         severityFilter: isUndefinedOrNull(options.severity) ?  'Normal' : options.severity,
         includeAcknowledgedAlarms: isUndefinedOrNull(options.includeAcknowledgedAlarms) ? false : options.includeAcknowledgedAlarms
@@ -79,7 +79,7 @@ const render = function(options) {
     let theMap = undefined;
     let markersGroup = undefined;
 
-    let triggerRetry = function(fn) {
+    const triggerRetry = function(fn) {
         if (timer !== undefined) {
             clearTimeout(timer);
             retryCount = 0;
@@ -94,7 +94,7 @@ const render = function(options) {
     };
 
     const getIcons = function () {
-        let icons = {};
+        const icons = {};
         for (let i = 0; i < severities.length; i++) {
             icons[severities[i]] = L.icon({
                 iconUrl: baseHref + '/assets/' + severityImages[i],
@@ -108,7 +108,7 @@ const render = function(options) {
         return icons;
     };
 
-    var loadConfig = function() {
+    const loadConfig = function() {
         $.ajax({
             method: 'GET',
             url: restEndpoint + '/config',
@@ -130,7 +130,7 @@ const render = function(options) {
         })
     };
 
-    var loadGeolocations = function(query, fn) {
+    const loadGeolocations = function(query, fn) {
         $.ajax({
             method: 'POST',
             url: restEndpoint,
@@ -162,25 +162,25 @@ const render = function(options) {
         });
     };
 
-    var resetMap = function(theMarkers) {
+    const resetMap = function(theMarkers) {
         markersGroup.clearLayers();
-        var icons = getIcons();
-        for (var i = 0; i < theMarkers.length; i++) {
-            var markerData = theMarkers[i];
+        const icons = getIcons();
+        for (let i = 0; i < theMarkers.length; i++) {
+            const markerData = theMarkers[i];
             if (markerData.coordinates !== undefined) {
-                var latitude = markerData.coordinates.latitude;
-                var longitude = markerData.coordinates.longitude;
+                const latitude = markerData.coordinates.latitude;
+                const longitude = markerData.coordinates.longitude;
 
-                var icon = icons['Normal'];
+                let icon = icons['Normal'];
                 if (markerData.severityInfo !== undefined
                     && markerData.severityInfo.label !== undefined) {
                     icon = icons[markerData.severityInfo.label];
                 }
-                var marker = L.marker(L.latLng(latitude, longitude), {
+                const marker = L.marker(L.latLng(latitude, longitude), {
                     icon: icon
                 });
 
-                var popup = buildMarkerPopup(markerData);
+                const popup = buildMarkerPopup(markerData);
                 marker.bindPopup(popup);
                 marker.data = markerData;
                 markersGroup.addLayer(marker);
@@ -188,10 +188,10 @@ const render = function(options) {
         }
     };
 
-    var buildMarkerPopup = function (marker) {
-        var template = L.DomUtil.get('single-popup');
-        var popup = template.cloneNode(true);
-        var popupContent = L.Util.template(popup.innerHTML, {
+    const buildMarkerPopup = function (marker) {
+        const template = L.DomUtil.get('single-popup');
+        const popup = template.cloneNode(true);
+        const popupContent = L.Util.template(popup.innerHTML, {
             'NODE_ID': emptyStringIfNull(marker.nodeInfo.nodeId),
             'NODE_LABEL': emptyStringIfNull(marker.nodeInfo.nodeLabel),
             'DESCRIPTION': emptyStringIfNull(marker.nodeInfo.description),
@@ -203,37 +203,37 @@ const render = function(options) {
         return popupContent;
     };
 
-    var emptyStringIfNull = function(input) {
+    const emptyStringIfNull = function(input) {
         if (input === null || input === 'null') {
             return '';
         }
         return input;
     };
 
-    var createSvgElement = function (dataArray, classArray, total) {
-        var cx = 20;
-        var cy = 20;
-        var r = 20;
-        var innerR = 13;
+    const createSvgElement = function (dataArray, classArray, total) {
+        const cx = 20;
+        const cy = 20;
+        const r = 20;
+        const innerR = 13;
 
-        var startangle = 0;
-        var svg = '<svg class="svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="40px" height="40px">';
+        let startangle = 0;
+        let svg = '<svg class="svg" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="40px" height="40px">';
 
-        for (var i = 0; i < dataArray.length; i++) {
+        for (let i = 0; i < dataArray.length; i++) {
             // Only consider severity if actually available
             if (dataArray[i] > 0) {
-                var endangle = startangle + dataArray[i] / total * Math.PI * 2.0;
+                const endangle = startangle + dataArray[i] / total * Math.PI * 2.0;
 
                 // Calculate inner and outer circle
-                var x1 = cx + (r * Math.sin(startangle));
-                var y1 = cy - (r * Math.cos(startangle));
-                var X1 = cx + (innerR * Math.sin(startangle));
-                var Y1 = cy - (innerR * Math.cos(startangle));
-                var x2 = cx + (r * Math.sin(endangle));
-                var y2 = cy - (r * Math.cos(endangle));
-                var X2 = cx + (innerR * Math.sin(endangle));
-                var Y2 = cy - (innerR * Math.cos(endangle));
-                var big = endangle - startangle > Math.PI ? 1 : 0;
+                const x1 = cx + (r * Math.sin(startangle));
+                const y1 = cy - (r * Math.cos(startangle));
+                const X1 = cx + (innerR * Math.sin(startangle));
+                const Y1 = cy - (innerR * Math.cos(startangle));
+                const x2 = cx + (r * Math.sin(endangle));
+                const y2 = cy - (r * Math.cos(endangle));
+                const X2 = cx + (innerR * Math.sin(endangle));
+                const Y2 = cy - (innerR * Math.cos(endangle));
+                const big = endangle - startangle > Math.PI ? 1 : 0;
 
                 // this branch is if one data value comprises 100% of the data
                 if (dataArray[i] >= total) {
@@ -262,7 +262,7 @@ const render = function(options) {
         return svg;
     };
 
-    var centerOnMap = function() {
+    const centerOnMap = function() {
         if (markersGroup.getBounds().isValid()) {
             theMap.fitBounds(markersGroup.getBounds(), {padding: [15, 15]});
         } else {
@@ -271,8 +271,8 @@ const render = function(options) {
         }
     };
 
-    var createButton = function(title, className, container, fn) {
-        var link = L.DomUtil.create('a', className, container);
+    const createButton = function(title, className, container, fn) {
+        const link = L.DomUtil.create('a', className, container);
         link.href = '#';
         link.title = title;
         link.style.fontSize = '120%';
@@ -287,7 +287,7 @@ const render = function(options) {
         return link;
     };
 
-    var CenterOnMarkersControl = L.Control.extend({
+    const CenterOnMarkersControl = L.Control.extend({
         options: {
             position: 'topright'
         },
@@ -298,14 +298,14 @@ const render = function(options) {
 
         onAdd: function (map) {
             // create the control container with a particular class name
-            var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
-            var refresh = createButton('Refresh', 'fa fa-refresh', container, function() {
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+            const refresh = createButton('Refresh', 'fa fa-refresh', container, function() {
                 loadGeolocations(query);
             });
-            var center = createButton('Center on marker', 'fa fa-location-arrow', container, function() {
+            const center = createButton('Center on marker', 'fa fa-location-arrow', container, function() {
                 centerOnMap();
             });
-            var includeAcknowledgedAlarmsButton = createButton('Include acknowledged alarms in status calculation', 'fa fa-square-o', container, function() {
+            const includeAcknowledgedAlarmsButton = createButton('Include acknowledged alarms in status calculation', 'fa fa-square-o', container, function() {
                 query.includeAcknowledgedAlarms = !query.includeAcknowledgedAlarms;
                 L.DomUtil.removeClass(includeAcknowledgedAlarmsButton, 'fa-check-square-o');
                 L.DomUtil.removeClass(includeAcknowledgedAlarmsButton, 'fa-square-o');
@@ -321,15 +321,15 @@ const render = function(options) {
         }
     });
 
-    var SeverityFilterControl = L.Control.extend({
+    const SeverityFilterControl = L.Control.extend({
         onAdd: function (map) {
-            var setSeverityLabel = function(severity) {
+            const setSeverityLabel = function(severity) {
                 filterLabel.title = 'Show markers with severity >= ' + severity;
                 filterLabel.className = severityIcons[severity];
             };
 
             // Applies the severity
-            var applySeverity = function(severity) {
+            const applySeverity = function(severity) {
                 if (query.severityFilter !== severity) {
                     query.severityFilter = severity;
                     loadGeolocations(query)
@@ -338,21 +338,21 @@ const render = function(options) {
             };
 
             // create the control container with a particular class name
-            var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
             // Increase Severity button
             createButton('Increase severity filter', 'fa fa-angle-up', container, function() {
-                var index = severities.indexOf(query.severityFilter);
+                let index = severities.indexOf(query.severityFilter);
                 if (index < severities.length - 1) {
                     index++;
                 }
                 applySeverity(severities[index]);
             });
 
-            var filterLabel = createButton('', '', container, function() {}); // eslint-disable-line @typescript-eslint/no-empty-function
+            const filterLabel = createButton('', '', container, function() {}); // eslint-disable-line @typescript-eslint/no-empty-function
 
             // Decrase severity button
             createButton('Decrease severity filter', 'fa fa-angle-down', container, function() {
-                var index = severities.indexOf(query.severityFilter);
+                let index = severities.indexOf(query.severityFilter);
                 if (index > 0) {
                     index--;
                 }
@@ -366,20 +366,20 @@ const render = function(options) {
         }
     });
 
-    var StatusCalculatorStrategyControl = L.Control.extend({
+    const StatusCalculatorStrategyControl = L.Control.extend({
         onAdd: function (map) {
             // create the control container with a particular class name
-            var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
+            const container = L.DomUtil.create('div', 'leaflet-bar leaflet-control');
 
-            var alarmButton = createButton('Calculate status based on alarms', 'fa fa-exclamation', container, function(e) {
+            const alarmButton = createButton('Calculate status based on alarms', 'fa fa-exclamation', container, function(e) {
                 buttonClick(e.target, 'Alarms');
             });
 
-            var outageButton = createButton('Calculate status based on outages', 'fa fa-flash', container, function(e) {
+            const outageButton = createButton('Calculate status based on outages', 'fa fa-flash', container, function(e) {
                 buttonClick(e.target, 'Outages');
             });
 
-            var setSelected = function(strategy) {
+            const setSelected = function(strategy) {
                 if (strategy === 'Alarms') {
                     L.DomUtil.addClass(alarmButton, 'selected');
                     L.DomUtil.removeClass(outageButton, 'selected');
@@ -392,7 +392,7 @@ const render = function(options) {
                 }
             }
 
-            var buttonClick = function(button, strategy) {
+            const buttonClick = function(button, strategy) {
                 query.strategy = strategy;
                 loadGeolocations(query);
                 setSelected(strategy);
@@ -404,14 +404,14 @@ const render = function(options) {
         }
     });
 
-    var SeverityLegendControl = L.Control.extend({
+    const SeverityLegendControl = L.Control.extend({
         options: {
             position: 'bottomleft'
         },
 
         onAdd: function (map) {
-            var container = L.DomUtil.create('div', 'leaflet-control-attribution leaflet-control');
-            for (var i = 0; i < severities.length; i++) {
+            const container = L.DomUtil.create('div', 'leaflet-control-attribution leaflet-control');
+            for (let i = 0; i < severities.length; i++) {
                 container.innerHTML +=
                     '<div style="float:left;">' +
                     '<div style="float:left; margin-top: 3px; display:inline-block; height:10px; width: 10px;" class="marker-cluster-' + severities[i] + '" ></div><div style="float: left; margin-right: 4pt; margin-left: 2pt;">' + severities[i] + ' </div>' +
@@ -421,7 +421,7 @@ const render = function(options) {
         }
     });
 
-    var initMap = function(config) {
+    const initMap = function(config) {
         // create map
         theMap = L.map(mapId, {
             zoom: 1,
@@ -436,13 +436,13 @@ const render = function(options) {
         markersGroup = L.markerClusterGroup({
                 zoomToBoundsOnClick: false,
                 iconCreateFunction: function (cluster) {
-                    var severity = 0;
-                    var severityLabel = 'Normal';
-                    var severityArray = [0, 0, 0, 0, 0, 0, 0];
-                    var classArray = severities;
+                    let severity = 0;
+                    let severityLabel = 'Normal';
+                    const severityArray = [0, 0, 0, 0, 0, 0, 0];
+                    const classArray = severities;
 
-                    for (var i = 0; i < cluster.getAllChildMarkers().length; i++) {
-                        var markerData = cluster.getAllChildMarkers()[i].data;
+                    for (let i = 0; i < cluster.getAllChildMarkers().length; i++) {
+                        const markerData = cluster.getAllChildMarkers()[i].data;
                         severityArray[markerData.severityInfo.id - 1]++;
                         if (severity < markerData.severityInfo.id) {
                             severity = markerData.severityInfo.id;
@@ -450,7 +450,7 @@ const render = function(options) {
                         }
                     }
 
-                    var svg = createSvgElement(severityArray.slice(2, severityArray.length), classArray, cluster.getAllChildMarkers().length);
+                    const svg = createSvgElement(severityArray.slice(2, severityArray.length), classArray, cluster.getAllChildMarkers().length);
                     return L.divIcon({
                         iconSize: L.point(40, 40),
                         className: 'marker-cluster marker-cluster-' + severityLabel,
@@ -463,21 +463,21 @@ const render = function(options) {
         markersGroup.addTo(theMap);
         markersGroup.on('clusterclick', function (event) {
             if (theMap.getZoom() !== theMap.getMaxZoom()) {
-                var markers = event.layer.getAllChildMarkers();
-                var tableContent = '';
-                var nodeIds = [];
-                var unacknowledgedAlarms = 0;
+                const markers = event.layer.getAllChildMarkers();
+                let tableContent = '';
+                const nodeIds = [];
+                let unacknowledgedAlarms = 0;
 
                 // Sort the markers based on the severity, starting with the worst
                 markers.sort(function(a, b) {
                     return -1 * (a.data.severityInfo.id - b.data.severityInfo.id);
                 });
                 // Build table content
-                for (var i = 0; i < markers.length; i++) {
-                    var markerData = markers[i].data;
+                for (let i = 0; i < markers.length; i++) {
+                    const markerData = markers[i].data;
                     unacknowledgedAlarms += markerData.alarmUnackedCount;
                     nodeIds.push(markerData.nodeInfo.nodeId);
-                    var rowTemplate = L.DomUtil.get('multi-popup-table-row')
+                    const rowTemplate = L.DomUtil.get('multi-popup-table-row')
                         .cloneNode(true)
                         .children[0].children[0]
                         .innerHTML;
@@ -490,15 +490,15 @@ const render = function(options) {
                     });
                 }
 
-                var template = L.DomUtil.get('multi-popup');
-                var popupContent = L.Util.template(template.cloneNode(true).innerHTML, {
+                const template = L.DomUtil.get('multi-popup');
+                const popupContent = L.Util.template(template.cloneNode(true).innerHTML, {
                     'NUMBER_NODES': markers.length,
                     'NUMBER_UNACKED': unacknowledgedAlarms,
                     'NODE_IDS': nodeIds.join(','),
                     'TABLE_CONTENT': '<table class="node-marker-list">' + tableContent + '</table>'
                 });
 
-                var popup = L.popup({
+                const popup = L.popup({
                     'minWidth': 500,
                     'maxWidth': 500,
                     'maxHeight': 300,
@@ -519,7 +519,7 @@ const render = function(options) {
         new SeverityLegendControl().addTo(theMap);
 
         if (hideControlsOnStartup) {
-            var setControlVisibility = function (visible) {
+            const setControlVisibility = function (visible) {
                 $('.leaflet-right.leaflet-top')[0].style.display =  visible ? 'block' : 'none';
             };
             theMap.on('mouseover', function () {

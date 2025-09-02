@@ -601,7 +601,7 @@ export interface IpInterfaceInfo {
 export enum FilterTypeEnum {
   Category = 'category',
   Flow = 'flow',
-  Location = 'location'
+  MonitoringLocation = 'location'
 }
 
 export enum Direction {

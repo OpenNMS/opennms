@@ -1,4 +1,5 @@
 {
+  "templateName": "legacy",
   "baseHref": "",
   "homeUrl": "",
   "formattedTime": "",
@@ -8,6 +9,8 @@
   "zenithConnectEnabled": false,
   "zenithConnectBaseUrl": "",
   "zenithConnectRelativeUrl": "",
+  "displayAddNodeButton": false,
+  "sideMenuInitialExpand": false,
   "copyrightDates": "",
   "version": "",
   "userTileProviders": [
@@ -22,16 +25,26 @@
     {
       "id": "searchMenu",
       "name": "Search",
-      "url": "element/index.jsp",
-      "locationMatch": "element",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "action/Search",
       "roles": null,
-      "items": null
+      "items": [
+        {
+          "id": "searchInventory",
+          "name": "Search",
+          "url": "element/index.jsp",
+          "locationMatch": "element",
+          "roles": null
+        }
+      ]
     },
     {
-      "id": "info",
+      "id": "infoMenu",
       "name": "Info",
       "url": "#",
       "locationMatch": null,
+      "icon": "network/Server",
       "roles": null,
       "items": [
         {
@@ -67,10 +80,10 @@
           "name": "Device Configs",
           "url": "ui/index.html#/device-config-backup",
           "locationMatch": "configurationManagement",
-          "roles": ["ROLE_ADMIN", "ROLE_REST" ,"ROLE_DEVICE_CONFIG_BACKUP"]
+          "roles": ["ROLE_ADMIN", "ROLE_REST", "ROLE_DEVICE_CONFIG_BACKUP"]
         },
         {
-          "id": "externalRequisition",
+          "id": "externalRequisitions",
           "name": "External Requisitions",
           "url": "ui/index.html#/configuration",
           "locationMatch": "configurationManagement",
@@ -84,7 +97,7 @@
           "roles": ["ROLE_FILESYSTEM_EDITOR"]
         },
         {
-          "id": "logs",
+          "id": "logViewer",
           "name": "Logs",
           "url": "ui/index.html#/logs",
           "locationMatch": "configurationManagement",
@@ -117,6 +130,7 @@
       "name": "Status",
       "url": "#",
       "locationMatch": null,
+      "icon": "action/Dashboard",
       "roles": null,
       "items": [
         {
@@ -148,7 +162,7 @@
           "roles": null
         },
         {
-          "id": "surveillance",
+          "id": "surveillanceView",
           "name": "Surveillance",
           "url": "surveillance-view.jsp",
           "locationMatch": "surveillance-view",
@@ -169,7 +183,7 @@
           "roles": null
         },
         {
-          "id": "application",
+          "id": "applications",
           "name": "Application",
           "url": "application/index.jsp",
           "locationMatch": "application",
@@ -180,10 +194,18 @@
     {
       "id": "reportsMenu",
       "name": "Reports",
-      "url": "report/index.jsp",
+      "url": "#",
       "locationMatch": null,
+      "icon": "action/Dashboard",
       "roles": null,
       "items": [
+        {
+          "id": "reportsMain",
+          "name": "Reports Main",
+          "url": "report/index.jsp",
+          "locationMatch": "entries",
+          "roles": null
+        },
         {
           "id": "charts",
           "name": "Charts",
@@ -224,12 +246,20 @@
     {
       "id": "dashboardsMenu",
       "name": "Dashboards",
-      "url": "dashboards.htm",
+      "url": "#",
       "locationMatch": null,
+      "icon": "action/Dashboard",
       "roles": null,
       "items": [
         {
-          "id": "dashboard",
+          "id": "dashboardsMain",
+          "name": "Main",
+          "url": "dashboards.htm",
+          "locationMatch": "entries",
+          "roles": null
+        },
+        {
+          "id": "surveillanceDashboard",
           "name": "Dashboard",
           "url": "dashboard.jsp",
           "locationMatch": "dashboard",
@@ -247,10 +277,18 @@
     {
       "id": "mapsMenu",
       "name": "Maps",
-      "url": "maps.htm",
+      "url": "#",
       "locationMatch": null,
+      "icon": "action/Location",
       "roles": null,
       "items": [
+        {
+          "id": "mapsMain",
+          "name": "Main",
+          "url": "maps.htm",
+          "locationMatch": "entries",
+          "roles": null
+        },
         {
           "id": "topology",
           "name": "Topology",
@@ -266,6 +304,54 @@
           "roles": null
         }
       ]
+    },
+    {
+      "id": "administrationMenu",
+      "name": "Administration",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "action/ManageProfile",
+      "roles": null,
+      "items": [
+        {
+          "id": "configureOpenNms",
+          "name": "Configure OpenNMS",
+          "url": "admin/index.jsp",
+          "locationMatch": null,
+          "roles": ["ROLE_ADMIN"]
+        }
+     ]
+    },
+    {
+      "id": "supportMenu",
+      "name": "Support",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "action/ContactSupport",
+      "roles": null,
+      "items": [
+        {
+          "id": "helpMain",
+          "name": "Help",
+          "url": "help/index.jsp",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "helpAbout",
+          "name": "About",
+          "url": "about/index.jsp",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "support",
+          "name": "Support",
+          "url": "support/index.jsp",
+          "locationMatch": null,
+          "roles": ["ROLE_ADMIN"]
+        }
+      ]
     }
   ],
   "helpMenu": {
@@ -273,6 +359,7 @@
     "name": "Help",
     "url": null,
     "locationMatch": null,
+    "icon": "action/Help",
     "roles": null,
     "items": [
       {
@@ -324,6 +411,7 @@
         "name": "Log Out",
         "url": "j_spring_security_logout",
         "locationMatch": null,
+        "action": "logout",
         "roles": null
       }
     ]

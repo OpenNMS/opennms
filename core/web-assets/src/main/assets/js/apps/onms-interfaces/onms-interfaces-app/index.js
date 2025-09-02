@@ -143,7 +143,7 @@ angular.module('onms-interfaces', [
 
   $scope.setStylesForIpInterfaces = function() {
     angular.forEach($scope.ipInterfaces, function(intf) {
-      var cssClass = undefined;
+      let cssClass = undefined;
       if (intf.isManaged === 'U' || intf.isManaged === 'F' || intf.isManaged === 'N' || intf.monitoredServiceCount < 1) {
         cssClass = 'onms-interface-status-unknown';
       } else {
@@ -212,7 +212,7 @@ angular.module('onms-interfaces', [
 
   $scope.setStylesForSnmpInterfaces = function() {
     angular.forEach($scope.snmpInterfaces, function(intf) {
-      var cssClass = undefined;
+      let cssClass = undefined;
       if (intf.ifAdminStatus !== 1) {
         cssClass = 'onms-interface-status-unknown';
       } else {

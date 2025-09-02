@@ -33,6 +33,7 @@
 const RequisitionsData = function RequisitionsData() {
   'use strict';
 
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
 
   /**
@@ -54,7 +55,7 @@ const RequisitionsData = function RequisitionsData() {
   * @returns {integer} the index (-1 if the foreign source doesn't exist)
   */
   self.indexOf = function(foreignSource) {
-    for(var i = 0; i < self.requisitions.length; i++) {
+    for(let i = 0; i < self.requisitions.length; i++) {
       if (self.requisitions[i].foreignSource === foreignSource) {
         return i;
       }
@@ -72,7 +73,7 @@ const RequisitionsData = function RequisitionsData() {
   * @returns {object} the requisition object.
   */
   self.getRequisition = function(foreignSource) {
-    var idx = self.indexOf(foreignSource);
+    const idx = self.indexOf(foreignSource);
     return idx < 0 ? null : self.requisitions[idx];
   };
 
@@ -85,7 +86,7 @@ const RequisitionsData = function RequisitionsData() {
   * @methodOf RequisitionsData
   */
   self.setRequisition = function(requisition) {
-    var idx = self.indexOf(requisition.foreignSource);
+    const idx = self.indexOf(requisition.foreignSource);
     if (idx < 0) {
       self.requisitions.push(requisition);
     } else {

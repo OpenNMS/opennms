@@ -41,7 +41,7 @@
 
   <!-- Bootstrap listener to start up and shut down Spring's root WebApplicationContext. -->
   <listener>
-    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    <listener-class>org.opennms.core.spring.web.ContextLoaderListener</listener-class>
   </listener>
   <!--
   Not sure if this is needed since we still have a web.xml file.

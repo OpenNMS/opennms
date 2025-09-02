@@ -21,8 +21,8 @@
 
     <template v-slot:right>
       <div class="date-wrapper">
-        <div class="date-formatted-date">{{ formattedDate }}</div>
         <div class="date-formatted-time">{{ formattedTime }}</div>
+        <div class="date-formatted-date">{{ formattedDate }}</div>
       </div>
       <template v-if="mainMenu.username">
         <UserNotificationsMenuItem :ref="userNotificationsMenu" />
@@ -138,7 +138,8 @@ const shiftCheck = (e: KeyboardEvent) => {
     if (shiftCodes.includes(lastShift.lastKey)) {
       if (Date.now() - lastShift.timeSinceLastKey < shiftDelay) {
         clearShiftCheck()
-        const elem: HTMLInputElement | null = document.querySelector('.menubar-search textarea')
+
+        const elem: HTMLInputElement | null = document.querySelector('#opennms-sidemenu-container .onms-search-input-wrapper input.search-input')
 
         if (elem) {
           elem.focus()
@@ -224,13 +225,13 @@ onMounted(async () => {
   .date-formatted-date {
     display: flex;
     justify-content: right;
-    font-weight: 800;
-    font-size: 1em;
   }
 
   .date-formatted-time {
     display: flex;
     justify-content: right;
+    font-weight: 800;
+    font-size: 1em;
   }
 }
 </style>

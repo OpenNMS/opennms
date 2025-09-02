@@ -245,13 +245,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItem("internalLogsMenu", "Instrumentation Log Reader");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Instrumentation Log Reader')]")));
 
-        // User Profile Menu
-        clickMenuItem("userProfileMenu", "Change Password");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[contains(text()[normalize-space()], 'Please enter the old and new passwords and confirm.')]")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//form[@name='goForm']//label[contains(text()[normalize-space()], 'Current Password')]")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//form[@name='goForm']//label[contains(text()[normalize-space()], 'New Password')]")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//form[@name='goForm']//label[contains(text()[normalize-space()], 'Confirm New Password')]")));
-
         // API Documentation Menu
         // Omit clicking for now, some of these are external links
         foundElement = findMenuItemLink("apiDocumentationMenu", "REST Open API Documentation");
@@ -397,6 +390,17 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         reportsPage();
         findElementByLink("Statistics Reports").click();
         findElementByXpath("//div[@class='card-header']/span[text()='Statistics Report List']");
+    }
+
+    @Test
+    public void testSelfServiceMenu() {
+        LOG.debug("In testSelfServiceMenu");
+
+        clickChangePassword();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[contains(text()[normalize-space()], 'Please enter the old and new passwords and confirm.')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//form[@name='goForm']//label[contains(text()[normalize-space()], 'Current Password')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//form[@name='goForm']//label[contains(text()[normalize-space()], 'New Password')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//form[@name='goForm']//label[contains(text()[normalize-space()], 'Confirm New Password')]")));
     }
 
     @Test

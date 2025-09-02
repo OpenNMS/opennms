@@ -51,5 +51,9 @@
       <artifactId>junit</artifactId>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>org.opennms.core</groupId>
+      <artifactId>org.opennms.core.spring</artifactId>
+    </dependency>
   </dependencies>
 </project>

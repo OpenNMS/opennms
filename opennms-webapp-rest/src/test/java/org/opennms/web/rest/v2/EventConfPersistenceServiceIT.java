@@ -32,6 +32,7 @@ import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
+import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.JUnitConfigurationEnvironment;
@@ -42,6 +43,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -65,7 +69,7 @@ public class EventConfPersistenceServiceIT {
 
     @Autowired
     private EventConfPersistenceService eventConfPersistenceService;
-    
+
     @Autowired
     private EventConfDao eventConfDao;
 
@@ -147,7 +151,158 @@ public class EventConfPersistenceServiceIT {
     }
 
     @Test
-    @JUnitTemporaryDatabase  
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void testFilterEventConf_ShouldReturnFilteredResults() {
+        // Arrange: Persist multiple events with different vendors, UEIs, and source names
+        String filename1 = "vendor-cisco.xml";
+        String filename2 = "vendor-hp.xml";
+        String username = "filter_test_user";
+        Date now = new Date();
+
+        // First metadata (Cisco vendor)
+        EventConfSourceMetadataDto ciscoMetadata = new EventConfSourceMetadataDto.Builder()
+                .filename(filename1)
+                .eventCount(1)
+                .fileOrder(1)
+                .username(username)
+                .now(now)
+                .vendor("Cisco")
+                .description("Cisco events")
+                .build();
+
+        Event ciscoEvent = new Event();
+        ciscoEvent.setUei("uei.opennms.org/vendor/cisco");
+        ciscoEvent.setEventLabel("Cisco Event");
+        ciscoEvent.setDescr("Cisco test event");
+        ciscoEvent.setSeverity("Normal");
+
+        Events ciscoEvents = new Events();
+        ciscoEvents.getEvents().add(ciscoEvent);
+
+        eventConfPersistenceService.persistEventConfFile(ciscoEvents, ciscoMetadata);
+
+        // Second metadata (HP vendor)
+        EventConfSourceMetadataDto hpMetadata = new EventConfSourceMetadataDto.Builder()
+                .filename(filename2)
+                .eventCount(1)
+                .fileOrder(2)
+                .username(username)
+                .now(now)
+                .vendor("HP")
+                .description("HP events")
+                .build();
+
+        Event hpEvent = new Event();
+        hpEvent.setUei("uei.opennms.org/vendor/hp");
+        hpEvent.setEventLabel("HP Event");
+        hpEvent.setDescr("HP test event");
+        hpEvent.setSeverity("Normal");
+
+        Events hpEvents = new Events();
+        hpEvents.getEvents().add(hpEvent);
+
+        eventConfPersistenceService.persistEventConfFile(hpEvents, hpMetadata);
+
+        // Act: Filter only Cisco events
+        List<EventConfEvent> filteredResults = eventConfPersistenceService.findEventConfByFilters(
+                null, // uei
+                "Cisco", // vendor
+                null,  // sourceName
+                0, //offset
+                10 //limit
+        );
+
+        // Assert
+        Assert.assertNotNull(filteredResults);
+        Assert.assertFalse(filteredResults.isEmpty());
+        Assert.assertTrue(filteredResults.stream()
+                .allMatch(e -> "Cisco".equals(e.getSource().getVendor())));
+        Assert.assertTrue(filteredResults.stream()
+                .anyMatch(e -> e.getUei().contains("cisco")));
+    }
+
+    @Test
+    public void filter_shouldReturnEmptyList_whenNoMatchesFound() {
+        List<EventConfEvent> results = eventConfPersistenceService
+                .findEventConfByFilters("nonexistent-uei", "nonexistent-vendor", "nonexistent-source", 0, 10);
+
+        Assert.assertNotNull(results);
+        Assert.assertTrue(results.isEmpty());
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testUpdateSourceAndEventEnabled() {
+        String username = "test_user";
+        Date now = new Date();
+
+        String filename1 = "source-file-1.xml";
+        EventConfSourceMetadataDto metadata1 = new EventConfSourceMetadataDto.Builder()
+                .filename(filename1)
+                .eventCount(1)
+                .fileOrder(1)
+                .username(username)
+                .now(now)
+                .vendor("vendor-1")
+                .description("first entry")
+                .build();
+
+        Event event1 = new Event();
+        event1.setUei("uei.opennms.org/test/update/1");
+        event1.setEventLabel("Event One");
+        event1.setDescr("Description for Event One");
+        event1.setSeverity("Normal");
+
+        Events events1 = new Events();
+        events1.getEvents().add(event1);
+
+        eventConfPersistenceService.persistEventConfFile(events1, metadata1);
+
+        String filename2 = "source-file-2.xml";
+        EventConfSourceMetadataDto metadata2 = new EventConfSourceMetadataDto.Builder()
+                .filename(filename2)
+                .eventCount(1)
+                .fileOrder(2)
+                .username(username)
+                .now(now)
+                .vendor("vendor-2")
+                .description("second entry")
+                .build();
+
+        Event event2 = new Event();
+        event2.setUei("uei.opennms.org/test/update/2");
+        event2.setEventLabel("Event Two");
+        event2.setDescr("Description for Event Two");
+        event2.setSeverity("Warning");
+
+        Events events2 = new Events();
+        events2.getEvents().add(event2);
+
+        eventConfPersistenceService.persistEventConfFile(events2, metadata2);
+
+        List<Long> sourcesIds = eventConfSourceDao.findAll()
+                .stream().map(EventConfSource::getId).toList();
+        // Disable eventConfSources and eventConfEvents.
+        EventConfSrcEnableDisablePayload eventConfSrcDisablePayload = new EventConfSrcEnableDisablePayload(false, true, sourcesIds);
+        eventConfPersistenceService.updateSourceAndEventEnabled(eventConfSrcDisablePayload);
+        List<EventConfSource> eventConfSources = eventConfSourceDao.findAll();
+        assertTrue(eventConfSources.stream().noneMatch(EventConfSource::getEnabled));
+        List<EventConfEvent> eventConfEvents = eventConfEventDao.findAll();
+        assertTrue(eventConfEvents.stream().noneMatch(EventConfEvent::getEnabled));
+
+        // Enable eventConfSources and eventConfEvents.
+        EventConfSrcEnableDisablePayload eventConfSrcEnablePayload = new EventConfSrcEnableDisablePayload(true, true, sourcesIds);
+        eventConfPersistenceService.updateSourceAndEventEnabled(eventConfSrcEnablePayload);
+        List<EventConfSource> enableEventConfSources = eventConfSourceDao.findAll();
+        assertFalse(enableEventConfSources.stream().noneMatch(EventConfSource::getEnabled));
+        List<EventConfEvent> enableEventConfEvents = eventConfEventDao.findAll();
+        assertFalse(enableEventConfEvents.stream().noneMatch(EventConfEvent::getEnabled));
+    }
+
+
+    @Test
+    @JUnitTemporaryDatabase
     @Transactional
     public void testLoadEventConfFromDatabase() throws Exception {
         // Create multiple sources with events to test loading from database
@@ -164,7 +319,7 @@ public class EventConfPersistenceServiceIT {
                 .vendor("test-vendor")
                 .description("high priority events")
                 .build();
-        
+
         Events events1 = new Events();
         Event event1 = new Event();
         event1.setUei("uei.opennms.org/test/high1");
@@ -172,7 +327,7 @@ public class EventConfPersistenceServiceIT {
         event1.setDescr("First high priority event");
         event1.setSeverity("Critical");
         events1.getEvents().add(event1);
-        
+
         Event event2 = new Event();
         event2.setUei("uei.opennms.org/test/high2");
         event2.setEventLabel("High Priority Event 2");
@@ -190,7 +345,7 @@ public class EventConfPersistenceServiceIT {
                 .vendor("test-vendor")
                 .description("medium priority events")
                 .build();
-        
+
         Events events2 = new Events();
         Event event3 = new Event();
         event3.setUei("uei.opennms.org/test/medium");
@@ -209,7 +364,7 @@ public class EventConfPersistenceServiceIT {
                 .vendor("test-vendor")
                 .description("low-medium priority events")
                 .build();
-        
+
         Events events3 = new Events();
         Event event4 = new Event();
         event4.setUei("uei.opennms.org/test/lowmedium");
@@ -228,7 +383,7 @@ public class EventConfPersistenceServiceIT {
                 .vendor("test-vendor")
                 .description("lowest priority events")
                 .build();
-        
+
         Events events4 = new Events();
         Event event5 = new Event();
         event5.setUei("uei.opennms.org/test/lowest1");
@@ -236,7 +391,7 @@ public class EventConfPersistenceServiceIT {
         event5.setDescr("First lowest priority event");
         event5.setSeverity("Indeterminate");
         events4.getEvents().add(event5);
-        
+
         Event event6 = new Event();
         event6.setUei("uei.opennms.org/test/lowest2");
         event6.setEventLabel("Lowest Priority Event 2");
@@ -254,7 +409,7 @@ public class EventConfPersistenceServiceIT {
                 .vendor("test-vendor")
                 .description("second high priority events")
                 .build();
-        
+
         Events events5 = new Events();
         Event event7 = new Event();
         event7.setUei("uei.opennms.org/test/secondhigh");
@@ -273,7 +428,7 @@ public class EventConfPersistenceServiceIT {
         // Verify data was persisted
         List<EventConfSource> sources = eventConfSourceDao.findAllByFileOrder();
         Assert.assertEquals("Should have 5 sources", 5, sources.size());
-        
+
         List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
         Assert.assertEquals("Should have 7 events total", 7, dbEvents.size());
 
@@ -340,23 +495,22 @@ public class EventConfPersistenceServiceIT {
 
         // Test fileOrder - verify events are loaded in correct order by checking loaded event files
         Assert.assertNotNull("Events object should not be null", rootEvents);
-        
+
         // The event files should be ordered by fileOrder: 0, 1, 2, 5, 10
         List<String> expectedOrder = List.of(
                 "high-priority.xml",        // fileOrder 0
-                "second-high-priority.xml", // fileOrder 1  
+                "second-high-priority.xml", // fileOrder 1
                 "low-medium-priority.xml",  // fileOrder 2
                 "medium-priority.xml",      // fileOrder 5
                 "lowest-priority.xml"       // fileOrder 10
         );
         List<String> actualOrder = rootEvents.getEventFiles();
-        
+
         Assert.assertEquals("Should have 5 event files loaded", 5, actualOrder.size());
         for (int i = 0; i < expectedOrder.size(); i++) {
-            Assert.assertEquals("Event file order should match fileOrder priority at index " + i, 
+            Assert.assertEquals("Event file order should match fileOrder priority at index " + i,
                     expectedOrder.get(i), actualOrder.get(i));
         }
 
     }
-
 }

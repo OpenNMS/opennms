@@ -145,28 +145,6 @@
          <parameter key="rrd-base-name" value="https" />
          <parameter key="ds-name" value="https" />
       </service>
-      <service name="HypericAgent" interval="300000" user-defined="false" status="on">
-         <parameter key="retry" value="${requisition:poller-retry|requisition:retry|detector:retry|1}" />
-         <parameter key="timeout" value="${requisition:poller-timeout|requisition:timeout|detector:timeout|2200}" />
-         <parameter key="port" value="${requisition:port|detector:port|2144}" />
-      </service>
-      <service name="HypericHQ" interval="300000" user-defined="false" status="on">
-         <parameter key="retry" value="${requisition:poller-retry|requisition:retry|detector:retry|1}" />
-         <parameter key="timeout" value="${requisition:poller-timeout|requisition:timeout|detector:timeout|3000}" />
-         <parameter key="rrd-repository" value="${install.share.dir}/rrd/response" />
-         <parameter key="rrd-base-name" value="hyperic-hq" />
-         <parameter key="ds-name" value="hyperic-hq" />
-         <parameter key="page-sequence">
-            <page-sequence>
-               <page disable-ssl-verification="true" host="${ipaddr}" http-version="1.1" method="GET" path="/Login.do" port="7080" response-range="100-399" scheme="http" successMatch="(HQ Login)|(Sign in to Hyperic HQ)" />
-               <page disable-ssl-verification="true" failureMatch="(?s)(The username or password provided does not match our records)|(You are not signed in)" failureMessage="HQ Login in Failed" host="${ipaddr}" http-version="1.1" method="POST" path="/j_security_check.do" port="7080" response-range="100-399" scheme="http" successMatch="HQ Dashboard">
-                  <parameter key="j_username" value="hqadmin" />
-                  <parameter key="j_password" value="hqadmin" />
-               </page>
-               <page disable-ssl-verification="true" host="${ipaddr}" http-version="1.1" method="GET" path="/Logout.do" port="7080" response-range="100-399" scheme="http" successMatch="HQ Login" />
-            </page-sequence>
-         </parameter>
-      </service>
       <service name="MySQL" interval="300000" user-defined="false" status="on">
          <parameter key="retry" value="${requisition:poller-retry|requisition:retry|detector:retry|1}" />
          <parameter key="timeout" value="${requisition:poller-timeout|requisition:timeout|detector:timeout|3000}" />
@@ -394,8 +372,6 @@
    <monitor service="HTTP-8080" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
    <monitor service="HTTP-8000" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />
    <monitor service="HTTPS" class-name="org.opennms.netmgt.poller.monitors.HttpsMonitor" />
-   <monitor service="HypericAgent" class-name="org.opennms.netmgt.poller.monitors.TcpMonitor" />
-   <monitor service="HypericHQ" class-name="org.opennms.netmgt.poller.monitors.PageSequenceMonitor" />
    <monitor service="SMTP" class-name="org.opennms.netmgt.poller.monitors.SmtpMonitor" />
    <monitor service="DNS" class-name="org.opennms.netmgt.poller.monitors.DnsMonitor" />
    <monitor service="Elasticsearch" class-name="org.opennms.netmgt.poller.monitors.HttpMonitor" />

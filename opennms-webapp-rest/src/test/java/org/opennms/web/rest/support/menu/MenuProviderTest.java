@@ -74,12 +74,12 @@ public class MenuProviderTest {
 
         // Check top level menus and names
         assertNotNull(mainMenu.menus);
-        assertEquals(6, mainMenu.menus.size());
+        assertEquals(8, mainMenu.menus.size());
 
         List<String> menuNames = mainMenu.menus.stream().map(m -> m.name).toList();
 
         final String[] expectedMenuNames = new String[] {
-            "Search", "Info", "Status", "Reports", "Dashboards", "Maps"
+            "Search", "Info", "Status", "Reports", "Dashboards", "Maps", "Administration", "Support"
         };
         assertThat(menuNames, containsInAnyOrder(expectedMenuNames));
 

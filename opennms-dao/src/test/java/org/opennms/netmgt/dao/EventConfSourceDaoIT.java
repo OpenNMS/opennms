@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.dao;
 
+import org.hibernate.SessionFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -61,6 +62,9 @@ import static org.junit.Assert.assertTrue;
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class EventConfSourceDaoIT implements InitializingBean {
+
+    @Autowired
+    private SessionFactory sessionFactory;
 
     @Autowired
     private EventConfSourceDao m_dao;
@@ -263,6 +267,84 @@ public class EventConfSourceDaoIT implements InitializingBean {
 
         List<EventConfEvent> allEvents = m_eventDao.findAll();
         assertEquals("Total event count mismatch across all files", totalExpectedEventCount, allEvents.size());
+    }
+
+
+    @Test
+    @Transactional
+    public void testLoadAndPersistMultipleEventConfFilesAndUpdateEnabledFlag() throws Exception {
+        String[] xmlFiles = {"eventconf-test-1.xml",
+                "eventconf-test-2.xml"
+        };
+
+        int totalExpectedEventCount = 0;
+        List<Long> allSourceIds = new ArrayList<>();
+
+        for (int i = 0; i < xmlFiles.length; i++) {
+            String file = xmlFiles[i];
+
+            EventConfSource source = new EventConfSource();
+            source.setName("test-source-" + i);
+            source.setEnabled(true);
+            source.setCreatedTime(new Date());
+            source.setFileOrder(i + 1);
+            source.setDescription("Source for " + file);
+            source.setVendor("testVendor");
+            source.setUploadedBy("Test");
+            source.setLastModified(new Date());
+
+            org.opennms.netmgt.xml.eventconf.Events events = JaxbUtils.unmarshal(org.opennms.netmgt.xml.eventconf.Events.class, getClass().getClassLoader().getResourceAsStream(file));
+
+            int eventCount = events.getEvents().size();
+            totalExpectedEventCount += eventCount;
+            source.setEventCount(eventCount);
+
+            m_dao.saveOrUpdate(source);
+            m_dao.flush();
+            allSourceIds.add(source.getId());
+
+            for (var xmlEvent : events.getEvents()) {
+                EventConfEvent jpaEvent = new EventConfEvent();
+                jpaEvent.setUei(xmlEvent.getUei());
+                jpaEvent.setDescription(xmlEvent.getDescr());
+                jpaEvent.setXmlContent(xmlEvent.toString());
+                jpaEvent.setEnabled(true);
+                jpaEvent.setCreatedTime(new Date());
+                jpaEvent.setLastModified(new Date());
+                jpaEvent.setModifiedBy("XMLTest");
+                jpaEvent.setSource(source);
+
+                m_eventDao.saveOrUpdate(jpaEvent);
+            }
+            m_eventDao.flush();
+
+            List<EventConfEvent> savedForSource = m_eventDao.findBySourceId(source.getId());
+            assertEquals("Event count mismatch for " + file, eventCount, savedForSource.size());
+        }
+
+        List<EventConfEvent> allEvents = m_eventDao.findAll();
+        assertEquals("Total event count mismatch across all files", totalExpectedEventCount, allEvents.size());
+
+        m_dao.updateEnabledFlag(allSourceIds, false, false);
+        sessionFactory.getCurrentSession().clear();
+        for (Long sourceId : allSourceIds) {
+            final var source = m_dao.get(sourceId);
+            assertFalse("Source should be disabled", source.getEnabled());
+
+            List<EventConfEvent> events = m_eventDao.findBySourceId(sourceId);
+            assertFalse("Events should still be enabled when cascade=false", events.isEmpty() && events.stream().anyMatch(EventConfEvent::getEnabled));
+        }
+
+        m_dao.updateEnabledFlag(allSourceIds, true, true);
+        sessionFactory.getCurrentSession().clear();
+        for (final var sourceId : allSourceIds) {
+            final var source = m_dao.get(sourceId);
+            assertTrue("Source should be enabled", source.getEnabled());
+
+            List<EventConfEvent> events = m_eventDao.findBySourceId(sourceId);
+            assertFalse("Events should not be empty", events.isEmpty());
+            assertTrue("All events should be enabled when cascade=true", events.stream().allMatch(EventConfEvent::getEnabled));
+        }
     }
 
 

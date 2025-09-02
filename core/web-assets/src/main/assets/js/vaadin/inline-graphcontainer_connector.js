@@ -25,7 +25,7 @@ const GraphContainers = require('apps/onms-graph');
 
 if (!window.org_opennms_features_vaadin_components_graph_InlineGraphContainer) {
   window.org_opennms_features_vaadin_components_graph_InlineGraphContainer = function InlineGraphContainer() {
-    var e = this.getElement();
+    const e = this.getElement();
 
     console.log('inlinegraphcontainer: registering state change');
     this.onStateChange = function onStateChange() {

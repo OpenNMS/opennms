@@ -132,7 +132,7 @@ angular.module('onms-interfaces-config', [
       headers: {'Content-Type': 'application/x-www-form-urlencoded'}
     })
     .then(function() {
-      var action = $scope.isCollectionEnabled(intf) ? 'enabled' : 'disabled';
+      const action = $scope.isCollectionEnabled(intf) ? 'enabled' : 'disabled';
       growl.success('Data collection flag was successfully ' + action + ' for interface ' + intf.ifName);
     }, function() {
       growl.error('Cannot set data collection flag for interface ' + intf.ifName);
@@ -147,7 +147,7 @@ angular.module('onms-interfaces-config', [
 
   $scope.setStylesForSnmpInterfaces = function() {
     angular.forEach($scope.snmpInterfaces, function(intf) {
-      var cssClass = undefined;
+      let cssClass = undefined;
       if (intf.ifAdminStatus !== 1) {
         cssClass = 'onms-interface-status-unknown';
       } else {

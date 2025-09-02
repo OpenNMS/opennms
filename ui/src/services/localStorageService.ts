@@ -20,6 +20,7 @@
 /// License.
 ///
 
+import { useNodeQuery } from '@/components/Nodes/hooks/useNodeQuery'
 import { NodePreferences, OpenNmsPreferences } from '@/types'
 
 const OPENNMS_PREFERENCES_STORAGE_KEY = 'opennms-preferences'
@@ -57,10 +58,9 @@ const loadDefaultPreferences = () => {
 
 const saveNodePreferences = (data: NodePreferences) => {
   const prefs = loadPreferences() || defaultPreferences()
+  const query = useNodeQuery()
   prefs.nodePreferences = data
-  if (prefs.nodePreferences.nodeFilter) {
-    prefs.nodePreferences.nodeFilter.searchTerm = ''
-  }
+  prefs.nodePreferences.nodeFilter = query.getDefaultNodeQueryFilter()
   savePreferences(prefs)
 }
 

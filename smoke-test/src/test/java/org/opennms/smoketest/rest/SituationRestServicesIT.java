@@ -135,6 +135,7 @@ public class SituationRestServicesIT {
 
     @Test
     public void test2_addAlarm() {
+        final int beforeCount = fetchRelatedCount();
         restClient.sendEvent(
                 getServiceProblemEvent("Minor", "uei.opennms.org/traps/A10/axLowerPowerSupplyFailure")
         );
@@ -164,13 +165,13 @@ public class SituationRestServicesIT {
                 .then()
                 .statusCode(200);
 
-        int before = fetchRelatedCount() - 1;
-        int after  = fetchRelatedCount();
-        assertEquals("Should add exactly one alarm", before + 1, after);
+        await().atMost(2, TimeUnit.MINUTES).until(() -> fetchRelatedCount() == beforeCount + 1);
+        assertEquals("Should add exactly one alarm", beforeCount + 1, fetchRelatedCount());
     }
 
     @Test
     public void test3_removeAlarm() {
+        final int beforeCount = fetchRelatedCount();
         AlarmDao dao = stack.postgres().getDaoFactory().getDao(AlarmDaoHibernate.class);
         OnmsAlarm target = await().atMost(2, TimeUnit.MINUTES).pollInterval(10, TimeUnit.SECONDS)
                 .until(DaoUtils.findMatchingCallable(
@@ -196,9 +197,8 @@ public class SituationRestServicesIT {
                 .then()
                 .statusCode(200);
 
-        int before = fetchRelatedCount() + 1;
-        int after  = fetchRelatedCount();
-        assertEquals("Should remove exactly one alarm", before - 1, after);
+        await().atMost(2, TimeUnit.MINUTES).until(() -> fetchRelatedCount() == beforeCount - 1);
+        assertEquals("Should remove exactly one alarm", beforeCount - 1, fetchRelatedCount());
     }
 
     @Test

@@ -27,7 +27,7 @@ export default class WeekdayOptions {
 
         // in case of an array, convert it to an object
         if (Array.isArray(input)) {
-            let newOptions = {};
+            const newOptions = {};
             input.forEach((item) => {
                 if (item instanceof Weekdays.Weekdays) {
                     newOptions[item.label] = true;

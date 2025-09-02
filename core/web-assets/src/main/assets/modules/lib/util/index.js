@@ -33,8 +33,8 @@ export default class Util {
 		}
 	}
 	static toggle(booleanValue, elementName) {
-		var checkboxes = document.getElementsByName(elementName);
-		for (var index in checkboxes) {
+		const checkboxes = document.getElementsByName(elementName);
+		for (const index in checkboxes) {
 			if (checkboxes.hasOwnProperty(index)) {
 				checkboxes[index].checked = booleanValue;
 			}

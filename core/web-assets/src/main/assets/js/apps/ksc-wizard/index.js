@@ -52,7 +52,7 @@ angular.module('onms-ksc-wizard', [
 
 .filter('startFrom', function() {
   return function(input, start) {
-    var s = parseInt(start, 10);
+    const s = parseInt(start, 10);
     if (input) {
       return input.length < s ? input : input.slice(s);
     }
@@ -80,7 +80,8 @@ angular.module('onms-ksc-wizard', [
   $scope.setLevel = function(level, reset) {
     $scope.resourceFilter = '';
     $scope.level = level;
-    var resources = [];
+    const resources = [];
+
     switch (level) {
       case 0:
         $http.get('rest/resources?depth=0').then(function(response) {
@@ -147,7 +148,6 @@ angular.module('onms-ksc-wizard', [
 }])
 
 .controller('KSCWizardCtrl', ['$scope', '$filter', '$http', '$window', 'growl', function($scope, $filter, $http, $window, growl) {
-
   $scope.resourceFilter = null;
   $scope.resources = [];
   $scope.filteredResources = [];
@@ -230,7 +230,7 @@ angular.module('onms-ksc-wizard', [
   };
 
   $scope.selectResource = function(resource) {
-    var baseUrl = Util.getBaseHref() + 'KSC/customView.htm';
+    const baseUrl = Util.getBaseHref() + 'KSC/customView.htm';
     if (resource.name.indexOf(':') > 0) {
       $window.location.href = baseUrl + '?type=nodeSource&report=' + resource.name;
     } else {
@@ -271,5 +271,4 @@ angular.module('onms-ksc-wizard', [
     $scope.filteredReports = $filter('filter')($scope.reports, $scope.reportFilter);
     $scope.updateReports();
   });
-
 }]);
