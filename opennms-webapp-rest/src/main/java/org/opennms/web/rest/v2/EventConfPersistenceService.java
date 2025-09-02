@@ -53,11 +53,6 @@ public class EventConfPersistenceService {
     @Autowired
     private EventConfDao eventConfDao;
 
-    @PostConstruct
-    public void initService(){
-        //saveEventsToDatabase();
-    }
-
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void persistEventConfFile(final Events events, final EventConfSourceMetadataDto eventConfSourceMetadataDto) {
         EventConfSource source = createOrUpdateSource(eventConfSourceMetadataDto);

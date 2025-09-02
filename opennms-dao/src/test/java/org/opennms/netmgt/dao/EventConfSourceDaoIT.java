@@ -325,7 +325,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
         }
 
         List<EventConfEvent> allEvents = m_eventDao.findAll();
-        assertEquals("Total event count mismatch across all files", totalExpectedEventCount, allEvents.size()-defaultEventSize);
+        assertEquals("Total event count mismatch across all files", totalExpectedEventCount, allEvents.size() - defaultEventSize);
 
         m_dao.updateEnabledFlag(allSourceIds, false, false);
         sessionFactory.getCurrentSession().clear();
