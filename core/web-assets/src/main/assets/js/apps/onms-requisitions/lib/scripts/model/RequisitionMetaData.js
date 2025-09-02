@@ -42,6 +42,7 @@ const Scope = MetaDataConstants.Scope;
 const RequisitionMetaData = function RequisitionMetaData(node, requisitionNode) {
   'use strict';
 
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
 
   /**
@@ -113,14 +114,14 @@ const RequisitionMetaData = function RequisitionMetaData(node, requisitionNode) 
   self.doesReferencedEntityExist = function(entry) {
     if (entry.scope === Scope.INTERFACE || entry.scope === Scope.SERVICE) {
       // Does an interface exist with the given IP address
-      let iff = _.find(requisitionNode.interfaces, function(iff) { return iff.ipAddress === entry.scoped_interface.ipAddress; });
+      const iff = _.find(requisitionNode.interfaces, function(iff) { return iff.ipAddress === entry.scoped_interface.ipAddress; });
       if (iff === undefined) {
         return false;
       }
 
       if (entry.scope === Scope.SERVICE) {
         // Does a service exist with the given name?
-        let svc = _.find(iff.services, function(svc) { return svc.name === entry.scoped_service.name; });
+        const svc = _.find(iff.services, function(svc) { return svc.name === entry.scoped_service.name; });
         if (svc === undefined) {
           return false;
         }
@@ -151,7 +152,7 @@ const RequisitionMetaData = function RequisitionMetaData(node, requisitionNode) 
   });
 
   self.getOnmsMetaData = function(predicate) {
-    var metaDataObject = [];
+    const metaDataObject = [];
 
     angular.forEach(self.requisition, function(entry) {
       if (!predicate(entry)) {

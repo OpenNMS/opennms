@@ -1,5 +1,6 @@
 import { eventConfigSources } from '@/components/EventConfiguration/data'
-import { EventConfigStoreState } from '@/types/eventConfig'
+import { EventConfigStoreState, EventConfSourceMetadata } from '@/types/eventConfig'
+import { cloneDeep } from 'lodash'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
@@ -16,13 +17,17 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     activeTab: 0,
     uploadedFilesReportModalState: {
       visible: false
+    },
+    deleteEventConfigSourceModalState: {
+      visible: false,
+      eventConfigSource: null
     }
   }),
   actions: {
     async fetchEventConfigs() {
       this.isLoading = true
       try {
-        this.sources = eventConfigSources // Using static data for now
+        this.sources = cloneDeep(eventConfigSources) // Using static data for now
         this.sourcesPagination.total = this.sources.length
       } catch (error) {
         console.error('Error fetching event configurations:', error)
@@ -38,6 +43,14 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     },
     resetActiveTab(){
       this.activeTab = 0
+    },
+    showDeleteEventConfigSourceModal(eventConfigSource: EventConfSourceMetadata) {
+      this.deleteEventConfigSourceModalState.visible = true
+      this.deleteEventConfigSourceModalState.eventConfigSource = eventConfigSource
+    },
+    hideDeleteEventConfigSourceModal() {
+      this.deleteEventConfigSourceModalState.visible = false
+      this.deleteEventConfigSourceModalState.eventConfigSource = null
     }
   }
 })
