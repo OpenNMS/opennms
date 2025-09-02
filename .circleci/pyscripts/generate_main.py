@@ -133,9 +133,9 @@ def main():
         f.write("\n".join(final_output))
 
     # Cleanup
-    os.remove(os.path.join(working_dir.name, ".circlecy", "main", "@main.yml"))
-    os.remove(os.path.join(working_dir.name, ".circlecy", "main", "executors.yml"))
-    os.remove(os.path.join(working_dir.name, ".circlecy", "main", "parameters.yml"))
+    os.remove(os.path.join(working_dir.name, ".circleci", "main", "@main.yml"))
+    os.remove(os.path.join(working_dir.name, ".circleci", "main", "executors.yml"))
+    os.remove(os.path.join(working_dir.name, ".circleci", "main", "parameters.yml"))
     shutil.move(os.path.join(working_dir.name, ".circleci"), "/tmp/")
     for folder in ["main", "executors", "parameters"]:
         shutil.rmtree(os.path.join("/tmp", ".circleci", folder))
