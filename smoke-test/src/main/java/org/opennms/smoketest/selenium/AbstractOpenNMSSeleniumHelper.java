@@ -130,6 +130,11 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
     public static final File DOWNLOADS_FOLDER = new File("target/downloads");
 
+    private enum SelfServiceMenuType {
+        LOGOUT,
+        CHANGE_PASSWORD
+    }
+
     public WebDriverWait wait = null;
     public WebDriverWait requisitionWait = null;
 
@@ -609,32 +614,51 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         return foundElement[0];
     }
 
-    protected void clickLogout() {
-        LOG.debug("Clicking logout");
+    private void clickSelfServiceItem(final SelfServiceMenuType itemType) {
+        LOG.debug("Clicking self service item: {}", itemType);
+
+        final String SELF_SERVICE_BUTTON_XPATH = "//div[@id='opennms-sidemenu-container']//div[contains(@class, 'self-service-menubar-dropdown')]//featherbutton[@class='self-service-menubar-dropdown-button-dark']";
+        final String LOGOUT_XPATH = "//div[@id='opennms-sidemenu-container']//div[@class='self-service-menubar-dropdown-item-content']//a[@name='self-service-logout']";
+        final String CHANGE_PASSWORD_XPATH = "//div[@id='opennms-sidemenu-container']//div[@class='self-service-menubar-dropdown-item-content']//a[@name='self-service-changePassword']";
 
         final int timeout = 5;
         final WebDriverWait shortWait = new WebDriverWait(getDriver(), Duration.ofSeconds(1));
 
-        final String SELF_SERVICE_BUTTON_XPATH = "//div[@id='opennms-sidemenu-container']//div[contains(@class, 'self-service-menubar-dropdown')]//featherbutton[@class='self-service-menubar-dropdown-button-dark']";
-        final String LOGOUT_XPATH = "//div[@id='opennms-sidemenu-container']//div[@class='self-service-menubar-dropdown-item-content']//a[@name='self-service-logout']";
-
         Unreliables.retryUntilSuccess(timeout, TimeUnit.SECONDS, () -> {
+            String itemXpath = LOGOUT_XPATH;
+
+            if (itemType == SelfServiceMenuType.LOGOUT) {
+                itemXpath = LOGOUT_XPATH;
+            } else if (itemType == SelfServiceMenuType.CHANGE_PASSWORD) {
+                itemXpath = CHANGE_PASSWORD_XPATH;
+            }
+
             final Actions action = new Actions(getDriver());
 
-            // Find the self service menu and hover over it so that the dropdown menu appears`
+            // Find the self service menu and hover over it so that the dropdown menu appears
             final WebElement selfServiceMenu = findElementByXpath(SELF_SERVICE_BUTTON_XPATH);
             shortWait.until(ExpectedConditions.visibilityOf(selfServiceMenu ));
 
             action.moveToElement(selfServiceMenu).build().perform();
 
-            // Find and click the logout link item on the dropdown menu
-            final WebElement logoutLink = findElementByXpath(LOGOUT_XPATH);
+            // Find and click the link item on the dropdown menu
+            WebElement linkToClick = findElementByXpath(itemXpath);
 
-            shortWait.until(ExpectedConditions.visibilityOf(logoutLink));
-            logoutLink.click();
+            shortWait.until(ExpectedConditions.visibilityOf(linkToClick));
+            linkToClick.click();
 
             return null;
         });
+    }
+
+    protected void clickLogout() {
+        LOG.debug("Clicking logout");
+        clickSelfServiceItem(SelfServiceMenuType.LOGOUT);
+    }
+
+    protected void clickChangePassword() {
+        LOG.debug("Clicking self service menu, change password item");
+        clickSelfServiceItem(SelfServiceMenuType.CHANGE_PASSWORD);
     }
 
     protected void frontPage() {
