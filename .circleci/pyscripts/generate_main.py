@@ -1,5 +1,4 @@
 #!/usr/bin/env python3
-
 """
 Generates main.yml file from provided build triggers.
 """
@@ -12,308 +11,146 @@ import tempfile
 from library import common
 from library import cci
 
-
 def append_to_sample_workflow(workflow_path, entry):
-    if len(workflow_path) > 1:
-        for e in entry:
-            workflow_path.append(e)
+    if isinstance(workflow_path, list):
+        workflow_path.extend(entry)
     else:
         workflow_path = entry
-
     return workflow_path
 
-
 def combine_workflow_path(job_entry_spaces, workflow_path):
-    _entries = []
-    combined_entries = []
-    for index, element in enumerate(workflow_path):
-        re_match = re.match("^" + (" " * job_entry_spaces) + "- ", element)
-        if re_match:
-            _entries.append(index)
+    entries = []
+    indices = []
+    for idx, line in enumerate(workflow_path):
+        if re.match(fr"^{ ' ' * {job_entry_spaces} }-", line):
+            indices.append(idx)
+    combined = []
+    for i, idx in enumerate(indices):
+        start = idx
+        end = indices[i + 1] if i + 1 < len(indices) else len(workflow_path)
+        combined.append("\n".join(workflow_path[start:end]))
+    return combined
 
-    for index, position in enumerate(_entries):
-        if index < len(_entries) - 1:
-            _output = "\n".join(workflow_path[position : _entries[index + 1]])
-        else:
-            _output = "\n".join(workflow_path[position:])
+def main():
+    circleCI = cci.cci()
+    common_library = common.common()
+    working_dir = tempfile.TemporaryDirectory()
+    
+    # Copy .circleci directory to working directory
+    shutil.copytree(".circleci", os.path.join(working_dir.name, ".circleci"))
+    
+    path_to_main_yml = os.path.join(working_dir.name, ".circleci", "main", "@main.yml")
+    path_to_modified_main = os.path.join(working_dir.name, ".circleci", "main.yml")
+    path_to_pipeline_params = os.path.join("/tmp", "pipeline-parameters.json")
+    path_to_build_components = os.path.join("/tmp", "build-triggers.json")
 
-        if _output not in combined_entries:
-            combined_entries.append(_output)
+    with open(path_to_pipeline_params, "r", encoding="utf-8") as f:
+        pipeline_params = json.load(f)
 
-    return combined_entries
+    with open(path_to_build_components, "r", encoding="utf-8") as f:
+        build_components = json.load(f)
 
+    # Read main.yml and extract keywords
+    with open(path_to_main_yml, "r", encoding="utf-8") as f:
+        main_yml_content = f.readlines()
+    
+    keywords = common_library.extract_keywords(path_to_main_yml)
 
-circleCI = cci.cci()
+    for keyword, sub_keywords in keywords.items():
+        for sub_keyword in sub_keywords:
+            if "workflows" in keyword:
+                continue
+            tmp_page = sub_keyword.replace("#", "").replace(f"{keyword}:", "")
+            if ".index" in tmp_page:
+                keywords[keyword][sub_keyword]["commands"] = common_library.expand_index(
+                    sub_keyword, os.path.join(working_dir.name, ".circleci", "main"), []
+                )
+            else:
+                keywords[keyword][sub_keyword]["commands"] = common_library.expand_keyword(
+                    sub_keyword, os.path.join(working_dir.name, ".circleci", "main")
+                )
 
-common_library = common.common()
+    final_output = []
+    RE_PATTERN = r"^.*#.*#$"
 
-working_directory = tempfile.TemporaryDirectory()
+    for line in main_yml_content:
+        if re.match(RE_PATTERN, line):
+            if "#workflows#" in line:
+                circleCI.set_Workflow(os.path.join(".circleci", "main", "workflows", "workflows_v2.json"))
+                workflow_path = []
+                level = 0
+                if "workflows:" not in workflow_path:
+                    workflow_path.append("  workflows:")
+                level += 2
 
-# We don't want to modify the main files, make a copy of the .circleci folder
-# into a working directory
-shutil.copytree(".circleci", os.path.join(working_directory.name, ".circleci"))
-
-path_to_workflow_json = os.path.join(
-    ".circleci", "main", "workflows", "workflows_v2.json"
-)
-
-
-MAIN_FILENAME = "@main.yml"
-path_to_main_folder = os.path.join(working_directory.name, ".circleci", "main")
-path_to_main_yml = os.path.join(path_to_main_folder, MAIN_FILENAME)
-path_to_modified_main = os.path.join(
-    working_directory.name, ".circleci", MAIN_FILENAME.replace("@", "")
-)
-
-path_to_executors_yml = os.path.join(path_to_main_folder, "executors.yml")
-path_to_parameters_yml = os.path.join(path_to_main_folder, "parameters.yml")
-
-path_to_pipeline_parameters = os.path.join("/tmp", "pipeline-parameters.json")
-with open(path_to_pipeline_parameters, "r", encoding="UTF-8") as file_handler:
-    pipeline_parameters = json.load(file_handler)
-
-
-path_to_build_components = os.path.join("/tmp", "build-triggers.json")
-with open(path_to_build_components, "r", encoding="UTF-8") as file_handler:
-    build_components = json.load(file_handler)
-
-
-COMMANDS_FOLDER = "commands"
-WORKFLOW_FOLDER = "workflows"
-JOB_FOLDER = "jobs"
-component_folders = [COMMANDS_FOLDER, WORKFLOW_FOLDER, JOB_FOLDER]
-
-components_path = os.path.join(working_directory.name, ".circleci", "main")
-
-filters_enabled = True
-
-print("main_filename:", MAIN_FILENAME)
-print("path_to_main:", path_to_main_yml)
-print("path_to_modified_main:", path_to_modified_main)
-print("components_path:", components_path)
-
-if os.path.exists(os.path.join("/tmp", ".circleci")):
-    print("clean up existing folder:", os.path.join("/tmp", ".circleci"))
-    shutil.rmtree(os.path.join("/tmp", ".circleci"))
-
-
-# Read the @main.yml file
-with open(path_to_main_yml, "r", encoding="UTF-8") as file_handler:
-    main_yml_content = file_handler.readlines()
-
-keywords = common_library.extract_keywords(path_to_main_yml)
-
-for keyword in keywords:
-    for sub_keyword in keywords[keyword]:
-        if "workflows" in keyword:
-            continue
-        tmp_page = sub_keyword.replace("#", "").replace(keyword + ":", "")
-        if ".index" in tmp_page:
-            keywords[keyword][sub_keyword]["commands"] = common_library.expand_index(
-                sub_keyword, path_to_main_folder, []
-            )
-        else:
-            keywords[keyword][sub_keyword]["commands"] = common_library.expand_keyword(
-                sub_keyword, path_to_main_folder
-            )
-
-final_output = ""
-RE_PATTERN = "^.*#.*#"
-
-
-def print_add(workflow_path, level, filters_enabled, job_name):
-    print(
-        job_name + ":",
-        circleCI.get_Workflow_dependency(job_name),
-    )
-    workflow = circleCI.get_Workflow_yaml(
-        job_name, level, enable_filters=filters_enabled
-    )
-    return append_to_sample_workflow(workflow_path, workflow)
-
-
-for e in main_yml_content:
-    re_match = re.match(RE_PATTERN, e)
-    if re_match:
-        if "#workflows#" in re_match.group():
-            circleCI.set_Workflow(path_to_workflow_json)
-            workflow_path = []
-
-            level = 0
-            if "workflows:" not in workflow_path:
-                workflow_path.append(common_library.create_space(level) + "workflows:")
-            level = level + 2
-
-            enabled_components = []
-            for component in build_components:
-                enabled_components.append(build_components[component])
-
-            if enabled_components.count(True) > 1:
-                workflow_name = "combined-builds"
-            elif enabled_components.count(True) == 1:
-                if build_components["docs"]:
-                    workflow_name = "docs"
-                elif build_components["ui"]:
-                    workflow_name = "ui"
-                elif build_components["build-publish"]:
-                    workflow_name = "build-publish"
-                elif build_components["build-deploy"]:
-                    workflow_name = "build-deploy"
-                elif build_components["experimental"]:
-                    workflow_name = "experimental"
+                workflow_name = "build"
+                enabled_components = [val for val in build_components.values() if val]
+                if len(enabled_components) > 1:
+                    workflow_name = "combined-builds"
+                elif len(enabled_components) == 1:
+                    workflow_name = {
+                        True: "build-publish",
+                        False: "build"
+                    }[enabled_components[0]]
                 else:
                     workflow_name = "build"
-            else:
-                workflow_name = "build"
 
-            workflow_path.append(
-                common_library.create_space(level) + workflow_name + ":"
-            )
+                workflow_path.append("  " + workflow_name + ":")
+                workflow_path.append("    jobs:")
 
-            level += 2
-            workflow_path.append(common_library.create_space(level) + "jobs:")
-            level += 2
-            job_entry_spaces = level
+                job_entry_spaces = 4
+                workflow_path = print_add(workflow_path, job_entry_spaces, filters_enabled=True, **build_components)
 
-            if (
-                "master-branch" in build_components
-                and build_components["master-branch"]
-            ):
-                workflow_path = print_add(
-                    workflow_path, level, filters_enabled, "master-branch"
-                )
-
-            if (
-                "merge-foundation" in build_components
-                and build_components["merge-foundation"]
-            ):
-                workflow_path = print_add(
-                    workflow_path, level, filters_enabled, "merge-foundation-branch"
-                )
-
-            if build_components["rpms"]:
-                workflow_path = print_add(workflow_path, level, filters_enabled, "rpms")
-
-            if build_components["integration"]:
-                workflow_path = print_add(
-                    workflow_path, level, filters_enabled, "integration-test"
-                )
-
-            if build_components["smoke"]:
-                if filters_enabled:
-                    tmp_filters_enabled = False
-
-                workflow_path = print_add(
-                    workflow_path, level, filters_enabled, "smoke"
-                )
-
-            if build_components["debs"]:
-                workflow_path = print_add(workflow_path, level, filters_enabled, "debs")
-
-            if build_components["oci"]:
-                workflow_path = print_add(workflow_path, level, filters_enabled, "oci")
-
-            if build_components["trivy-scan"]:
-                workflow_path = print_add(workflow_path, level, filters_enabled, "trivy-scan")
-            
-            if build_components["trivy-analyze"]:
-                workflow_path = print_add(workflow_path, level, filters_enabled, "trivy-analyze")
-
-            if build_components["experimental"]:
-                workflow_path = print_add(
-                    workflow_path, level, filters_enabled, "experimental"
-                )
-
-            if build_components["build-deploy"]:
-                workflow_path = print_add(
-                    workflow_path, level, filters_enabled, "build-deploy"
-                )
-
-            if build_components["docs"]:
-                workflow_path = print_add(workflow_path, level, filters_enabled, "docs")
-
-            if build_components["ui"]:
-                workflow_path = print_add(workflow_path, level, filters_enabled, "ui")
-
-            if build_components["coverage"]:
-                workflow_path = print_add(
-                    workflow_path, level, filters_enabled, "weekly-coverage"
-                )
-
-            if build_components["build-publish"]:
-                workflow_path = print_add(
-                    workflow_path, level, filters_enabled, "build-publish"
-                )
-
-            if (
-                not build_components["build-deploy"]
-                and not build_components["docs"]
-                and not build_components["ui"]
-                and not build_components["coverage"]
-                and len(workflow_path) < 4
-            ):
-                workflow_path = print_add(
-                    workflow_path, level, filters_enabled, "empty"
-                )
-
-            if workflow_path:
                 finaly_workflow_path = ["\n".join(workflow_path[:3])]
-                finaly_workflow_path.extend(
-                    combine_workflow_path(job_entry_spaces, workflow_path[3:])
-                )
+                finaly_workflow_path.extend(combine_workflow_path(job_entry_spaces, workflow_path[3:]))
 
-                for line in finaly_workflow_path:
-                    if isinstance(line, list):
-                        for entry_lvl2 in line:
-                            if isinstance(entry_lvl2, list):
-                                for entry_lvl3 in entry_lvl2:
-                                    final_output += entry_lvl3 + "\n"
-                            else:
-                                final_output += entry_lvl2 + "\n"
+                for entry in finaly_workflow_path:
+                    if isinstance(entry, list):
+                        for line in entry:
+                            final_output.append(line)
                     else:
-                        final_output += line + "\n"
-            continue
+                        final_output.append(entry)
+                continue
 
-        block_type, step = re_match.group().split(":")
-        commands = keywords[block_type.replace("#", "").strip()][
-            re_match.group().strip()
-        ]["commands"]
+            block_type, step = re.match(r"^(.+):(.+)$", line).groups()
+            commands = keywords[block_type.replace("#", "").strip()][step.strip()]["commands"]
+            for command in commands:
+                if isinstance(command, list):
+                    final_output.extend(command)
+                else:
+                    final_output.append(command)
+        else:
+            final_output.append(line)
 
-        for command in commands:
-            if isinstance(command, list):
-                for sub_command in command:
-                    final_output += sub_command
-            else:
-                final_output += command
-    else:
-        final_output += e
+    # Append parameters and executors
+    with open(os.path.join(working_dir.name, ".circleci", "main", "parameters.yml"), "r") as f:
+        final_output.extend(f.readlines())
+    with open(os.path.join(working_dir.name, ".circleci", "main", "executors.yml"), "r") as f:
+        final_output.extend(f.readlines())
 
-final_output += "\n"
-with open(path_to_executors_yml, "r", encoding="UTF-8") as file_handler:
-    executors_yml_content = file_handler.readlines()
+    # Write final output
+    with open(path_to_modified_main, "w", encoding="utf-8") as f:
+        f.write("\n".join(final_output))
 
-for e in executors_yml_content:
-    final_output += e
+    # Cleanup
+    os.remove(os.path.join(working_dir.name, ".circlecy", "main", "@main.yml"))
+    os.remove(os.path.join(working_dir.name, ".circlecy", "main", "executors.yml"))
+    os.remove(os.path.join(working_dir.name, ".circlecy", "main", "parameters.yml"))
+    shutil.move(os.path.join(working_dir.name, ".circleci"), "/tmp/")
+    for folder in ["main", "executors", "parameters"]:
+        shutil.rmtree(os.path.join("/tmp", ".circleci", folder))
+    working_dir.cleanup()
 
-final_output += "\n"
-with open(path_to_parameters_yml, "r", encoding="UTF-8") as file_handler:
-    parameters_yml_content = file_handler.readlines()
+def print_add(workflow_path, job_entry_spaces, filters_enabled, **components):
+    for name, enabled in components.items():
+        if enabled:
+            job_name = {
+                "build-publish": "build-publish",
+                "build": "build",
+                "combined-builds": "combined-builds"
+            }[name]
+            workflow_path.append(f"    {job_name}:")
+    return workflow_path
 
-for e in parameters_yml_content:
-    final_output += e
-
-with open(path_to_modified_main, "w", encoding="UTF-8") as file_handler:
-    file_handler.write(final_output)
-
-
-os.remove(os.path.join(working_directory.name, ".circleci", "main", "@main.yml"))
-os.remove(os.path.join(working_directory.name, ".circleci", "main", "executors.yml"))
-os.remove(os.path.join(working_directory.name, ".circleci", "main", "parameters.yml"))
-
-# move the .circleci with updated main.yml file into tmp directory
-shutil.move(os.path.join(working_directory.name, ".circleci"), "/tmp/")
-
-for folder in component_folders:
-    shutil.rmtree(os.path.join("/tmp", ".circleci", "main", folder))
-
-working_directory.cleanup()
+if __name__ == "__main__":
+    main()
