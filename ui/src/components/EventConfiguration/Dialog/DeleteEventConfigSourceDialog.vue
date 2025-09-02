@@ -52,6 +52,7 @@ const deleteEventConfigSource = async () => {
     const response = await deleteEventConfigSourceById(store.deleteEventConfigSourceDialogState.eventConfigSource.id)
     if (!response) {
       console.error('Failed to delete event configuration source')
+      showSnackBar({ msg: 'Failed to delete event configuration source', error: true })
       return
     }
     store.hideDeleteEventConfigSourceModal()
@@ -59,7 +60,7 @@ const deleteEventConfigSource = async () => {
     await store.fetchEventConfigs()
   } catch (error) {
     console.error('Error deleting event configuration source:', error)
-    showSnackBar({ msg: 'Error deleting event configuration source', error: true })
+    showSnackBar({ msg: 'Failed to delete event configuration source', error: true })
   }
 }
 </script>
