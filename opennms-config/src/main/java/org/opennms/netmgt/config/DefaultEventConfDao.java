@@ -36,6 +36,7 @@ import java.util.stream.Collectors;
 import org.opennms.core.config.api.ConfigReloadContainer;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.EventLabelComparator;
 import org.opennms.netmgt.xml.eventconf.EventMatchers;
@@ -251,6 +252,54 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	@Override
 	public Events getRootEvents() {
 		return m_events;
+	}
+
+	@Override
+	public synchronized void loadEventsFromDB(List<EventConfEvent> dbEvents) {
+
+		// Group events by source and sort by source fileOrder
+		Map<String, List<EventConfEvent>> eventsBySource = dbEvents.stream()
+				.collect(Collectors.groupingBy(
+						event -> event.getSource().getName(),
+						LinkedHashMap::new,
+						Collectors.toList()
+				));
+
+		// Sort sources by fileOrder
+		List<Map.Entry<String, List<EventConfEvent>>> sortedSources = eventsBySource.entrySet().stream()
+				.sorted(Map.Entry.comparingByValue((events1, events2) -> {
+					Integer order1 = events1.get(0).getSource().getFileOrder();
+					Integer order2 = events2.get(0).getSource().getFileOrder();
+					return Integer.compare(order1 != null ? order1 : 0, order2 != null ? order2 : 0);
+				}))
+				.toList();
+
+		Events rootEvents = new Events();
+
+		// Create Events objects per source and add to m_loadedEventFiles
+		for (Map.Entry<String, List<EventConfEvent>> sourceEntry : sortedSources) {
+			String sourceName = sourceEntry.getKey();
+			List<EventConfEvent> sourceEvents = sourceEntry.getValue();
+
+			Events eventsForSource = new Events();
+
+			for (EventConfEvent dbEvent : sourceEvents) {
+				String xmlContent = dbEvent.getXmlContent();
+				if (xmlContent != null && !xmlContent.trim().isEmpty()) {
+					try {
+						Event event = JaxbUtils.unmarshal(Event.class, xmlContent);
+						eventsForSource.addEvent(event);
+					} catch (Exception e) {
+						LOG.warn("Failed to parse event XML content for UEI {}: {}", dbEvent.getUei(), e.getMessage());
+					}
+				}
+			}
+
+			rootEvents.addLoadedEventFile(sourceName, eventsForSource);
+		}
+		m_partition = new EnterpriseIdPartition();
+		rootEvents.initialize(m_partition, new EventOrdering());
+		m_events = rootEvents;
 	}
 
 	public void setConfigResource(Resource configResource) throws IOException {

@@ -26,6 +26,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
@@ -68,6 +69,9 @@ public class EventConfPersistenceServiceIT {
 
     @Autowired
     private EventConfPersistenceService eventConfPersistenceService;
+
+    @Autowired
+    private EventConfDao eventConfDao;
 
     @Test
     @JUnitTemporaryDatabase
@@ -297,4 +301,162 @@ public class EventConfPersistenceServiceIT {
     }
 
 
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void testLoadEventConfFromDatabase() throws Exception {
+        // Create multiple sources with events to test loading from database
+        String username = "db_test_user";
+        Date now = new Date();
+
+        // Source with fileOrder 0 (highest priority)
+        EventConfSourceMetadataDto metadata1 = new EventConfSourceMetadataDto.Builder()
+                .filename("high-priority.xml")
+                .eventCount(2)
+                .fileOrder(0)
+                .username(username)
+                .now(now)
+                .vendor("test-vendor")
+                .description("high priority events")
+                .build();
+
+        Events events1 = new Events();
+        Event event1 = new Event();
+        event1.setUei("uei.opennms.org/test/high1");
+        event1.setEventLabel("High Priority Event 1");
+        event1.setDescr("First high priority event");
+        event1.setSeverity("Critical");
+        events1.getEvents().add(event1);
+
+        Event event2 = new Event();
+        event2.setUei("uei.opennms.org/test/high2");
+        event2.setEventLabel("High Priority Event 2");
+        event2.setDescr("Second high priority event");
+        event2.setSeverity("Major");
+        events1.getEvents().add(event2);
+
+        // Source with fileOrder 5 (lower priority)
+        EventConfSourceMetadataDto metadata2 = new EventConfSourceMetadataDto.Builder()
+                .filename("medium-priority.xml")
+                .eventCount(1)
+                .fileOrder(5)
+                .username(username)
+                .now(now)
+                .vendor("test-vendor")
+                .description("medium priority events")
+                .build();
+
+        Events events2 = new Events();
+        Event event3 = new Event();
+        event3.setUei("uei.opennms.org/test/medium");
+        event3.setEventLabel("Medium Priority Event");
+        event3.setDescr("Medium priority event");
+        event3.setSeverity("Normal");
+        events2.getEvents().add(event3);
+
+        // Source with fileOrder 2 (between high and medium)
+        EventConfSourceMetadataDto metadata3 = new EventConfSourceMetadataDto.Builder()
+                .filename("low-medium-priority.xml")
+                .eventCount(1)
+                .fileOrder(2)
+                .username(username)
+                .now(now)
+                .vendor("test-vendor")
+                .description("low-medium priority events")
+                .build();
+
+        Events events3 = new Events();
+        Event event4 = new Event();
+        event4.setUei("uei.opennms.org/test/lowmedium");
+        event4.setEventLabel("Low-Medium Priority Event");
+        event4.setDescr("Low-medium priority event");
+        event4.setSeverity("Minor");
+        events3.getEvents().add(event4);
+
+        // Source with fileOrder 10 (lowest priority)
+        EventConfSourceMetadataDto metadata4 = new EventConfSourceMetadataDto.Builder()
+                .filename("lowest-priority.xml")
+                .eventCount(2)
+                .fileOrder(10)
+                .username(username)
+                .now(now)
+                .vendor("test-vendor")
+                .description("lowest priority events")
+                .build();
+
+        Events events4 = new Events();
+        Event event5 = new Event();
+        event5.setUei("uei.opennms.org/test/lowest1");
+        event5.setEventLabel("Lowest Priority Event 1");
+        event5.setDescr("First lowest priority event");
+        event5.setSeverity("Indeterminate");
+        events4.getEvents().add(event5);
+
+        Event event6 = new Event();
+        event6.setUei("uei.opennms.org/test/lowest2");
+        event6.setEventLabel("Lowest Priority Event 2");
+        event6.setDescr("Second lowest priority event");
+        event6.setSeverity("Cleared");
+        events4.getEvents().add(event6);
+
+        // Source with fileOrder 1 (second highest priority)
+        EventConfSourceMetadataDto metadata5 = new EventConfSourceMetadataDto.Builder()
+                .filename("second-high-priority.xml")
+                .eventCount(1)
+                .fileOrder(1)
+                .username(username)
+                .now(now)
+                .vendor("test-vendor")
+                .description("second high priority events")
+                .build();
+
+        Events events5 = new Events();
+        Event event7 = new Event();
+        event7.setUei("uei.opennms.org/test/secondhigh");
+        event7.setEventLabel("Second High Priority Event");
+        event7.setDescr("Second high priority event");
+        event7.setSeverity("Major");
+        events5.getEvents().add(event7);
+
+        // Persist test data
+        eventConfPersistenceService.persistEventConfFile(events1, metadata1);
+        eventConfPersistenceService.persistEventConfFile(events2, metadata2);
+        eventConfPersistenceService.persistEventConfFile(events3, metadata3);
+        eventConfPersistenceService.persistEventConfFile(events4, metadata4);
+        eventConfPersistenceService.persistEventConfFile(events5, metadata5);
+
+        // Verify data was persisted
+        List<EventConfSource> sources = eventConfSourceDao.findAllByFileOrder();
+        Assert.assertEquals("Should have 5 sources", 5, sources.size());
+
+        List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
+        Assert.assertEquals("Should have 7 events total", 7, dbEvents.size());
+
+        // Manually trigger reload to load events into the injected EventConfDao
+        eventConfPersistenceService.reloadEventsFromDB();
+
+        // Verify events were loaded correctly
+        Events rootEvents = eventConfDao.getRootEvents();
+        Assert.assertNotNull("Root events should not be null", rootEvents);
+
+        // Test fileOrder - verify events are loaded in correct order by checking loaded event files
+        Assert.assertNotNull("Events object should not be null", rootEvents);
+
+        // The event files should be ordered by fileOrder: 0, 1, 2, 5, 10
+        List<String> expectedOrder = List.of(
+                "high-priority.xml",        // fileOrder 0
+                "second-high-priority.xml", // fileOrder 1
+                "low-medium-priority.xml",  // fileOrder 2
+                "medium-priority.xml",      // fileOrder 5
+                "lowest-priority.xml"       // fileOrder 10
+        );
+        List<String> actualOrder = rootEvents.getEventFiles();
+
+        Assert.assertEquals("Should have 5 event files loaded", 5, actualOrder.size());
+        for (int i = 0; i < expectedOrder.size(); i++) {
+            Assert.assertEquals("Event file order should match fileOrder priority at index " + i,
+                    expectedOrder.get(i), actualOrder.get(i));
+        }
+
+    }
 }

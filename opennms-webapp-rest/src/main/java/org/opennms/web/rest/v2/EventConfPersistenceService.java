@@ -21,7 +21,9 @@
  */
 package org.opennms.web.rest.v2;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
@@ -29,16 +31,25 @@ import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 
 @Service
 public class EventConfPersistenceService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(EventConfPersistenceService.class);
 
     @Autowired
     private EventConfSourceDao eventConfSourceDao;
@@ -46,11 +57,28 @@ public class EventConfPersistenceService {
     @Autowired
     private EventConfEventDao eventConfEventDao;
 
+    @Autowired
+    private EventConfDao eventConfDao;
+
+    private final ThreadFactory eventConfThreadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("load-eventConf-%d")
+            .build();
+
+    private final ExecutorService eventConfExecutor = Executors.newSingleThreadExecutor(eventConfThreadFactory);
+
+    @PostConstruct
+    public void init() {
+        // Asynchronously load events from DB.
+        eventConfExecutor.execute(this::reloadEventsFromDB);
+    }
+
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void persistEventConfFile(final Events events, final EventConfSourceMetadataDto eventConfSourceMetadataDto) {
         EventConfSource source = createOrUpdateSource(eventConfSourceMetadataDto);
         eventConfEventDao.deleteBySourceId(source.getId());
         saveEvents(source, events, eventConfSourceMetadataDto.getUsername(), eventConfSourceMetadataDto.getNow());
+        // Asynchronously load event conf from DB.
+        eventConfExecutor.execute(this::reloadEventsFromDB);
     }
 
     public List<EventConfEvent>  findEventConfByFilters(String uei, String vendor, String sourceName, int offset, int limit) {
@@ -98,5 +126,18 @@ public class EventConfPersistenceService {
         }).toList();
 
         eventEntities.forEach(eventConfEventDao::save);
+    }
+
+    protected void reloadEventsFromDB() {
+        List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
+        if (dbEvents.isEmpty()) {
+            return;
+        }
+        eventConfDao.loadEventsFromDB(dbEvents);
+    }
+
+    @PreDestroy
+    public void shutdown(){
+        eventConfExecutor.shutdown();
     }
 }
