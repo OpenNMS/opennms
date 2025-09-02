@@ -53,6 +53,7 @@ const deleteEventConfigSource = async () => {
     const response = await deleteEventConfigSourceById(store.deleteEventConfigSourceDialogState.eventConfigSource.id)
     if (!response) {
       console.error('Failed to delete event configuration source')
+      showSnackBar({ msg: 'Failed to delete event configuration source', error: true })
       return
     }
     store.hideDeleteEventConfigSourceDialog()
