@@ -324,11 +324,11 @@ public class EventConfPersistenceServiceIT {
         events.getEvents().add(event);
         eventConfPersistenceService.persistEventConfFile(events, metadata);
         Map<String, Object> result = eventConfPersistenceService.filterEventConfSource(
-                null,            // name
+                filename,            // name
                 "Juniper",       // vendor
-                null,            // desc
-                null,            // fileOrder
-                null,            // eventCount
+                metadata.getDescription(),            // desc
+                metadata.getFileOrder(),            // fileOrder
+                metadata.getEventCount(),            // eventCount
                 0,               // totalRecords
                 0,               // offset
                 10               // limit
@@ -338,8 +338,12 @@ public class EventConfPersistenceServiceIT {
         Assert.assertTrue(result.containsKey("eventConfSourceList"));
 
         List<EventConfSource> sources = (List<EventConfSource>) result.get("eventConfSourceList");
+        EventConfSource persistedSource = sources.get(0);
         Assert.assertFalse(sources.isEmpty());
-        Assert.assertEquals("Juniper", sources.get(0).getVendor());
+        Assert.assertEquals(metadata.getVendor(), persistedSource.getVendor());
+        Assert.assertEquals(filename, persistedSource.getName());
+        Assert.assertEquals(metadata.getDescription(), persistedSource.getDescription());
+        Assert.assertEquals(metadata.getFileOrder(), persistedSource.getFileOrder().intValue());
     }
 
     @Test
