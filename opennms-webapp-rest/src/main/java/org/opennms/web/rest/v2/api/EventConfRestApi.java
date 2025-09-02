@@ -103,7 +103,11 @@ public interface EventConfRestApi {
     )
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Upload successful"),
-            @ApiResponse(responseCode = "400", description = "Invalid event conf xml or request")
+            @ApiResponse(responseCode = "400", description = "Invalid event conf xml or request"),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Internal Server Error. The server encountered an unexpected condition that prevented it from fulfilling the request."
+            )
     })
     Response uploadSingleEventConfFile(@Multipart("upload") Attachment attachment,
                                        @Context SecurityContext securityContext) throws Exception;

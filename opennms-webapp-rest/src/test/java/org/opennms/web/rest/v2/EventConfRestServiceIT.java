@@ -359,7 +359,7 @@ public class EventConfRestServiceIT {
 
         Response resp = eventConfRestApi.uploadSingleEventConfFile(att, securityContext);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
-        assertTrue(((String) resp.getEntity()).contains("Invalid event conf xml"));
+        assertTrue(((String) resp.getEntity()).contains("Invalid event conf XML"));
     }
 
 }

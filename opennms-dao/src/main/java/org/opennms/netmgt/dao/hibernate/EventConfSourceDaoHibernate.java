@@ -106,6 +106,15 @@ public class EventConfSourceDaoHibernate
         LOG.info("Set enabled={} for sources {} (cascadeToEvents={})", enabled, sourceIds, cascadeToEvents);
     }
 
+    @Override
+    public Integer findMaxFileOrder() {
+        Integer maxOrder = (Integer) getSessionFactory().getCurrentSession()
+                .createQuery("SELECT MAX(e.fileOrder) FROM EventConfSource e")
+                .uniqueResult();
+
+        return maxOrder != null ? maxOrder : 0;
+    }
+
 
     @Override
     public void saveOrUpdate(EventConfSource source) {

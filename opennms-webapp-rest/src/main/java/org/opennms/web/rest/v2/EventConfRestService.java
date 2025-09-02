@@ -25,8 +25,10 @@ package org.opennms.web.rest.v2;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfEventDto;
+import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -40,12 +42,13 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Set;
-import java.util.List;
-import java.util.Date;
-import java.util.ArrayList;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
 import java.util.LinkedHashMap;
+import java.util.Date;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -54,43 +57,64 @@ public class EventConfRestService implements EventConfRestApi {
     @Autowired
     private EventConfPersistenceService eventConfPersistenceService;
 
+    @Autowired
+    private EventConfSourceDao eventConfSourceDao;
+
     @Override
     @Transactional
     public Response uploadEventConfFiles(final List<Attachment> attachments, final SecurityContext securityContext) {
         final String username = getUsername(securityContext);
         final Date now = new Date();
-        int fileOrder = 1;
+        int maxFileOrder = Optional.ofNullable(eventConfSourceDao.findMaxFileOrder()).orElse(0);
 
-        List<Map<String, Object>> successList = new ArrayList<>();
-        List<Map<String, Object>> errorList = new ArrayList<>();
+        final Map<String, Attachment> fileMap = attachments.stream()
+                .collect(Collectors.toMap(
+                        a -> a.getContentDisposition().getParameter("filename"),
+                        a -> a,
+                        (a1, a2) -> a1, // keep first if duplicate
+                        LinkedHashMap::new
+                ));
 
-        Map<String, Attachment> fileMap = attachments.stream().collect(Collectors.toMap(a -> a.getContentDisposition().getParameter("filename"), a -> a, (a1, a2) -> a1, LinkedHashMap::new));
+        final Attachment eventConfXml = fileMap.remove("eventconf.xml");
+        final List<String> orderedFiles = determineFileOrder(eventConfXml, fileMap.keySet());
 
-        final var eventconfXml = fileMap.remove("eventconf.xml");
-        final var orderedFiles = determineFileOrder(eventconfXml, fileMap.keySet());
+        final List<Map<String, Object>> successList = new ArrayList<>();
+        final List<Map<String, Object>> errorList = new ArrayList<>();
 
         for (final String fileName : orderedFiles) {
             final Attachment attachment = fileMap.get(fileName);
-            if (attachment == null) continue;
+            if (attachment == null) {
+                continue;
+            }
 
             Events fileEvents;
             try (InputStream stream = attachment.getObject(InputStream.class)) {
                 fileEvents = parseEventFile(stream);
             } catch (Exception e) {
                 errorList.add(buildErrorResponse(fileName, e));
-                continue; // Continue to next file
+                continue;
             }
 
             try {
-                eventConfPersistenceService.persistEventConfFile(fileEvents, new EventConfSourceMetadataDto.Builder().filename(fileName).eventCount(fileEvents.getEvents().size()).fileOrder(fileOrder++).username(username).now(now).vendor(StringUtils.substringBefore(fileName, ".")).description("").build());
+                final EventConfSource existingSource = eventConfSourceDao.findByName(fileName);
+                final int fileOrder = (existingSource != null)
+                        ? existingSource.getFileOrder()
+                        : ++maxFileOrder;
+
+                eventConfPersistenceService.persistEventConfFile(
+                        fileEvents,
+                        buildMetadata(fileName, fileEvents, fileOrder, username, now)
+                );
+
                 successList.add(buildSuccessResponse(fileName, fileEvents));
-            } catch (Exception ex) {
-                errorList.add(buildErrorResponse(fileName, ex));
+            } catch (Exception e) {
+                errorList.add(buildErrorResponse(fileName, e));
             }
         }
 
         return Response.ok(Map.of("success", successList, "errors", errorList)).build();
     }
+
 
     @Override
     public Response filterEventConf(String uei, String vendor, String sourceName, int offset, int limit, SecurityContext securityContext) {
@@ -142,38 +166,51 @@ public class EventConfRestService implements EventConfRestApi {
 
     @Override
     @Transactional
-    public Response uploadSingleEventConfFile(final Attachment attachment, final SecurityContext securityContext) throws Exception {
+    public Response uploadSingleEventConfFile(final Attachment attachment, final SecurityContext securityContext) {
         if (attachment == null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("No file uploaded. Please provide a valid event conf xml file.").build();
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("No file uploaded. Please provide a valid event conf XML file.")
+                    .build();
         }
 
         final String username = getUsername(securityContext);
         final Date now = new Date();
         final String fileName = attachment.getContentDisposition().getParameter("filename");
+        int maxFileOrder = Optional.ofNullable(eventConfSourceDao.findMaxFileOrder()).orElse(0);
 
         Events fileEvents;
         try (InputStream stream = attachment.getObject(InputStream.class)) {
-            // Validate + parse eventconf XML
             fileEvents = parseEventFile(stream);
 
-            // Ensure the root element contains events
-            if (fileEvents == null || fileEvents.getEvents() == null) {
-                return Response.status(Response.Status.BAD_REQUEST).entity("Invalid event conf xml: missing <events> definition.").build();
+            if (fileEvents == null || fileEvents.getEvents() == null || fileEvents.getEvents().isEmpty()) {
+                return Response.status(Response.Status.BAD_REQUEST)
+                        .entity("Invalid event conf XML: missing <events> definition.")
+                        .build();
             }
         } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Invalid event conf xml: " + e.getMessage()).build();
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid event conf XML: " + e.getMessage())
+                    .build();
         }
 
         try {
-            // Persist the single file (order = 1 always since it's only one file)
-            eventConfPersistenceService.persistEventConfFile(fileEvents, new EventConfSourceMetadataDto.Builder().filename(fileName).eventCount(fileEvents.getEvents().size()).fileOrder(1).username(username).now(now).vendor(StringUtils.substringBefore(fileName, ".")).description("").build());
+            final EventConfSource existingSource = eventConfSourceDao.findByName(fileName);
+            final int fileOrder = (existingSource != null)
+                    ? existingSource.getFileOrder()
+                    : ++maxFileOrder;
 
-            // Build and return success response
-            Map<String, Object> success = buildSuccessResponse(fileName, fileEvents);
+            eventConfPersistenceService.persistEventConfFile(
+                    fileEvents,
+                    buildMetadata(fileName, fileEvents, fileOrder, username, now)
+            );
+
+            final Map<String, Object> success = buildSuccessResponse(fileName, fileEvents);
             return Response.ok(success).build();
 
-        } catch (Exception ex) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Failed to persist event conf xml: " + ex.getMessage()).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Failed to persist event conf XML: " + e.getMessage())
+                    .build();
         }
     }
 
@@ -184,10 +221,14 @@ public class EventConfRestService implements EventConfRestApi {
         if (eventconfXmlAttachment != null) {
             try (InputStream stream = eventconfXmlAttachment.getObject(InputStream.class)) {
                 List<String> fromXmlRaw = parseOrderingFromEventconfXml(stream);
-                List<String> fromXml = fromXmlRaw.stream().map(path -> path.contains("/") ? path.substring(path.lastIndexOf("/") + 1) : path).toList();
+                List<String> fromXml = fromXmlRaw.stream()
+                        .map(path -> path.contains("/") ? path.substring(path.lastIndexOf("/") + 1) : path).toList();
 
                 // Identify files not listed in eventconf.xml
-                List<String> extraFiles = uploadedFiles.stream().filter(f -> !fromXml.contains(f)).collect(Collectors.toList());
+                List<String> extraFiles = uploadedFiles
+                        .stream()
+                        .filter(f -> !fromXml.contains(f))
+                        .collect(Collectors.toList());
 
                 // Add extra files first, then the ones in eventconf.xml
                 ordered.addAll(extraFiles);
@@ -222,7 +263,11 @@ public class EventConfRestService implements EventConfRestApi {
         entry.put("file", filename);
         entry.put("eventCount", events.getEvents().size());
         entry.put("vendor", StringUtils.substringBefore(filename, "."));
-        List<Map<String, ? extends Serializable>> eventSummaries = events.getEvents().stream().map(e -> Map.of("uei", e.getUei(), "label", e.getEventLabel(), "description", e.getEventLabel(), "enabled", true)).collect(Collectors.toList());
+        List<Map<String, ? extends Serializable>> eventSummaries = events
+                .getEvents()
+                .stream()
+                .map(e -> Map.of("uei", e.getUei(), "label", e.getEventLabel(), "description", e.getEventLabel(), "enabled", true))
+                .collect(Collectors.toList());
         entry.put("events", eventSummaries);
 
         return entry;
@@ -233,6 +278,19 @@ public class EventConfRestService implements EventConfRestApi {
         entry.put("file", filename);
         entry.put("error", ex.getClass().getSimpleName() + ": " + ex.getMessage());
         return entry;
+    }
+
+    private EventConfSourceMetadataDto buildMetadata(String fileName, Events events, int fileOrder,
+                                                     String username, Date now) {
+        return new EventConfSourceMetadataDto.Builder()
+                .filename(fileName)
+                .eventCount(events.getEvents().size())
+                .fileOrder(fileOrder)
+                .username(username)
+                .now(now)
+                .vendor(StringUtils.substringBefore(fileName, "."))
+                .description("")
+                .build();
     }
 
 }

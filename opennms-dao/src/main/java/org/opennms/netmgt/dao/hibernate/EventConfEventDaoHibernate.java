@@ -75,6 +75,27 @@ public class EventConfEventDaoHibernate
         return findWithPagination(queryBuilder.toString(), queryParamList.toArray(), offset, limit);
     }
 
+    @Override
+    public void saveAll(Collection<EventConfEvent> events) {
+        if (events == null || events.isEmpty()) {
+            return;
+        }
+
+        int batchSize = 50;
+        int i = 0;
+        for (EventConfEvent event : events) {
+            getHibernateTemplate().save(event);
+            i++;
+            if (i % batchSize == 0) {
+                getHibernateTemplate().flush();
+                getHibernateTemplate().clear();
+            }
+
+        }
+        getHibernateTemplate().flush();
+        getHibernateTemplate().clear();
+    }
+
     /**
      * Escapes special characters (% , _ , \, ., /, [, ]) in a string
      * to make it safe for SQL LIKE queries.
