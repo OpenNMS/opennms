@@ -90,16 +90,16 @@
                     </FeatherButton>
                   </template>
                   <FeatherDropdownItem
-                    @click="store.showDeleteEventConfigEventDialog(event)"
-                    data-test="delete-event-button"
-                  >
-                    Delete Event
-                  </FeatherDropdownItem>
-                  <FeatherDropdownItem
                     @click="store.showChangeEventConfigEventStatusDialog(event)"
                     data-test="change-status-button"
                   >
                     {{ event.enabled ? 'Disable Event' : 'Enable Event' }}
+                  </FeatherDropdownItem>
+                  <FeatherDropdownItem
+                    @click="store.showDeleteEventConfigEventDialog(event)"
+                    data-test="delete-event-button"
+                  >
+                    Delete Event
                   </FeatherDropdownItem>
                 </FeatherDropdown>
               </div>

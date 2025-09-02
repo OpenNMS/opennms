@@ -34,11 +34,10 @@ const labels = {
 }
 
 const getMessage = () => {
-  if (store.changeEventConfigSourceStatusDialogState.eventConfigSource && store.changeEventConfigSourceStatusDialogState.eventConfigSource.enabled) {
-    return `This will disable the event configuration source: <strong>${store.changeEventConfigSourceStatusDialogState.eventConfigSource.filename}</strong> and disable all events associated with it.`
-  } else {
-    return `This will enable the event configuration source: <strong>${store.changeEventConfigSourceStatusDialogState.eventConfigSource?.filename}</strong> and enable all events associated with it.`
-  }
+  const isEnabled = store.changeEventConfigSourceStatusDialogState.eventConfigSource?.enabled
+  const filename = store.changeEventConfigSourceStatusDialogState.eventConfigSource?.filename || ''
+  const action = isEnabled ? 'disable' : 'enable'
+  return `This will ${action} the event configuration source: <strong>${filename}</strong> and ${action} all events associated with it.`
 }
 
 const changeStatus = async () => {

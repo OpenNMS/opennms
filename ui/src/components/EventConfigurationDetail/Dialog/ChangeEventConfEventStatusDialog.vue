@@ -33,12 +33,20 @@ const labels = {
   title: 'Change Event Configuration Event Status'
 }
 
+// const getMessage = () => {
+//   if (store.changeEventConfigEventStatusDialogState.eventConfigEvent && store.changeEventConfigEventStatusDialogState.eventConfigEvent.enabled) {
+//     return `This will disable the event configuration event: <strong>${store.changeEventConfigEventStatusDialogState.eventConfigEvent.eventLabel}</strong> with source name: <strong>${store.selectedSource?.filename}</strong>`
+//   } else {
+//     return `This will enable the event configuration event: <strong>${store.changeEventConfigEventStatusDialogState.eventConfigEvent?.eventLabel}</strong> with source name: <strong>${store.selectedSource?.filename}</strong>`
+//   }
+// }
+
 const getMessage = () => {
-  if (store.changeEventConfigEventStatusDialogState.eventConfigEvent && store.changeEventConfigEventStatusDialogState.eventConfigEvent.enabled) {
-    return `This will disable the event configuration event: <strong>${store.changeEventConfigEventStatusDialogState.eventConfigEvent.eventLabel}</strong> with source name: <strong>${store.selectedSource?.filename}</strong>`
-  } else {
-    return `This will enable the event configuration event: <strong>${store.changeEventConfigEventStatusDialogState.eventConfigEvent?.eventLabel}</strong> with source name: <strong>${store.selectedSource?.filename}</strong>`
-  }
+  const isEnabled = store.changeEventConfigEventStatusDialogState.eventConfigEvent?.enabled
+  const eventLabel = store.changeEventConfigEventStatusDialogState.eventConfigEvent?.eventLabel || ''
+  const sourceName = store.selectedSource?.filename || ''
+  const action = isEnabled ? 'disable' : 'enable'
+  return `This will ${action} the event configuration event: <strong>${eventLabel}</strong> with source name: <strong>${sourceName}</strong>.`
 }
 
 const changeStatus = async () => {
