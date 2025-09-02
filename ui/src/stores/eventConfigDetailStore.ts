@@ -1,6 +1,6 @@
 import { eventConfigEvents } from '@/components/EventConfiguration/data'
 import { changeEventConfigEventStatus } from '@/services/eventConfigService'
-import { EventConfigDetailStoreState, EventConfigEvent, EventConfSourceMetadata } from '@/types/eventConfig'
+import { DrawerState, EventConfigDetailStoreState, EventConfigEvent, EventConfSourceMetadata } from '@/types/eventConfig'
 import { cloneDeep } from 'lodash'
 import { defineStore } from 'pinia'
 
@@ -8,6 +8,13 @@ const defaultPagination = {
   page: 1,
   pageSize: 10,
   total: 0
+}
+
+const getDefaultDrawerState = (): DrawerState => {
+  return {
+    visible: false,
+    isEventEditorModal: false
+  }
 }
 
 export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore', {
@@ -23,7 +30,8 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     changeEventConfigEventStatusDialogState: {
       visible: false,
       eventConfigEvent: null
-    }
+    },
+    drawerState: getDefaultDrawerState()
   }),
   actions: {
     async fetchEventsBySourceId() {
@@ -86,6 +94,12 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       this.changeEventConfigEventStatusDialogState.visible = false
       this.changeEventConfigEventStatusDialogState.eventConfigEvent = null
       await this.fetchEventsBySourceId()
+    },
+    openEventDrawerModal() {
+      this.drawerState.visible  = true      
+    },
+    closeEventDrawerModal() {
+      this.drawerState.visible  = false
     }
   }
 })

@@ -73,6 +73,7 @@
                 <FeatherButton
                   icon="Edit"
                   :title="`Edit ${event.eventLabel}`"
+                  @click="openEventDrawer(event)"
                   data-test="edit-button"
                 >
                   <FeatherIcon :icon="Edit" />
@@ -129,6 +130,9 @@
     <DeleteEventConfigEventDialog />
     <ChangeEventConfEventStatusDialog />
   </TableCard>
+  <EventConfigDetailsDrawer
+  :event="selectedEvent"
+  />
 </template>
 
 <script setup lang="ts">
@@ -147,11 +151,14 @@ import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfEventStatusDialog from './Dialog/ChangeEventConfEventStatusDialog.vue'
 import DeleteEventConfigEventDialog from './Dialog/DeleteEventConfigEventDialog.vue'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
+import EventConfigDetailsDrawer from './Drawer/EventConfigDetailsDrawer.vue'
+import { EventConfigEvent } from '@/types/eventConfig'
 
 const store = useEventConfigDetailStore()
 const emptyListContent = {
   msg: 'No results found.'
 }
+const selectedEvent = ref<EventConfigEvent | null>(null)
 
 const columns = computed(() => [
   { id: 'uei', label: 'UEI' },
@@ -173,6 +180,10 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
     sort[prop] = SORT.NONE
   }
   sort[sortObj.property] = sortObj.value
+}
+const openEventDrawer = (event: EventConfigEvent) => {
+  selectedEvent.value = event
+  store.openEventDrawerModal()
 }
 </script>
 

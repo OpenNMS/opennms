@@ -44,16 +44,16 @@ export type EventConfigDetailStoreState = {
   events: EventConfigEvent[]
   eventsPagination: Pagination
   selectedSource: EventConfSourceMetadata | null
-  isLoading: boolean,
+  isLoading: boolean
   deleteEventConfigEventDialogState: {
-    visible: boolean,
+    visible: boolean
     eventConfigEvent: EventConfigEvent | null
-  },
-  changeEventConfigEventStatusDialogState: {
-    visible: boolean,
-    eventConfigEvent: EventConfigEvent | null,
-    
   }
+  changeEventConfigEventStatusDialogState: {
+    visible: boolean
+    eventConfigEvent: EventConfigEvent | null
+  }
+  drawerState: DrawerState   // 👈 add this
 }
 
 export type EventConfigFilesUploadReponse = {
@@ -72,5 +72,10 @@ export type EventConfigFilesUploadReponse = {
     file: string;
     reason: string;
   }[];
+}
+
+export interface DrawerState {
+  visible: boolean
+  isEventEditorModal: boolean
 }
 
