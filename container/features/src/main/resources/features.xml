@@ -1155,7 +1155,7 @@
         <feature>opennms-elastic-client</feature>
         <feature>rate-limited-logger</feature>
 
-        <feature dependency="true">opennms-core-ipc-twin-common</feature>
+        <feature>opennms-core-ipc-twin-common</feature>
 
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>
