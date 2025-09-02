@@ -113,6 +113,8 @@ def main():
                 continue
 
             block_type, step = re.match(r"^(.+):(.+)$", line).groups()
+            print(block_type)
+            print(keywords)
             commands = keywords[block_type.replace("#", "").strip()][step.strip()]["commands"]
             for command in commands:
                 if isinstance(command, list):
