@@ -29,11 +29,13 @@
 </template>
 
 <script lang="ts" setup>
+import useSnackbar from '@/composables/useSnackbar'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
 
 const store = useEventConfigDetailStore()
+const { showSnackBar } = useSnackbar()
 const labels = {
   title: 'Delete Event Configuration Event'
 }
@@ -49,6 +51,7 @@ const deleteEventConfigEvent = async () => {
     await store.fetchEventsBySourceId()
   } catch (error) {
     console.error('Error deleting event configuration source:', error)
+    showSnackBar({ msg: 'Failed to delete event configuration event', error: true })
   }
 }
 </script>

@@ -35,7 +35,7 @@ export const deleteEventConfigSourceById = async (id: number): Promise<boolean> 
   }
   try {
     const response = await v2.delete(endpoint, { data: payload })
-    return response.status === 200 ? true : false
+    return response.status === 200
   } catch (error) {
     console.error('Error deleting event config source:', error)
     return false

@@ -6,7 +6,7 @@
     <div class="header">
       <div class="title-container">
         <div>
-          <FeatherBackButton @click="$router.go(-1)">Go Back</FeatherBackButton>
+          <FeatherBackButton @click="router.push({ name: 'Event Configuration' })">Go Back</FeatherBackButton>
         </div>
         <div>
           <h1>Event Configuration Details</h1>
@@ -67,7 +67,7 @@
     <p>No event configuration found.</p>
     <FeatherButton
       primary
-      @click="$router.go(-1)"
+      @click="router.push({ name: 'Event Configuration' })"
     >
       Go Back
     </FeatherButton>
@@ -84,11 +84,12 @@ import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
 
 const store = useEventConfigDetailStore()
-const router = useRoute()
+const route = useRoute()
+const router = useRouter()
 const config = ref<EventConfSourceMetadata>()
 
 onMounted(async () => {
-  if (Number(router.params.id) === store.selectedSource?.id) {
+  if (Number(route.params.id) === store.selectedSource?.id) {
     config.value = store.selectedSource
     await store.fetchEventsBySourceId()
   }
