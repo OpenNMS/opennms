@@ -127,7 +127,10 @@ public class EventConfPersistenceService {
             if(fileName.contains("opennms.hyperic.events.xml")) continue;
 
             if (fileName.startsWith("opennms")) {
-                EventConfSourceMetadataDto metadataDto = new EventConfSourceMetadataDto.Builder().filename(fileName).now(new Date()).vendor(StringUtils.substringBefore(fileName, ".")).username("system-migration").description("").eventCount(events.getEvents().size()).fileOrder(fileOrder++).build();
+                String withoutExtension = fileName.endsWith(".xml")
+                        ? fileName.substring(0, fileName.lastIndexOf(".xml"))
+                        : fileName;
+                EventConfSourceMetadataDto metadataDto = new EventConfSourceMetadataDto.Builder().filename(withoutExtension).now(new Date()).vendor(StringUtils.substringBefore(fileName, ".")).username("system-migration").description("").eventCount(events.getEvents().size()).fileOrder(fileOrder++).build();
                 persistEventConfFile(events, metadataDto);
             }
         }

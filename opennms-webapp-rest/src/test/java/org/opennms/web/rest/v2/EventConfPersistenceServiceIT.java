@@ -47,6 +47,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -70,6 +71,9 @@ public class EventConfPersistenceServiceIT {
 
     @Autowired
     private EventConfEventDao eventConfEventDao;
+
+    @Autowired
+    private EventConfDao eventConfDao;
 
     @Autowired
     private EventConfPersistenceService eventConfPersistenceService;
@@ -317,51 +321,38 @@ public class EventConfPersistenceServiceIT {
     @JUnitTemporaryDatabase
     @Transactional
     public void testUnmarshallEventConfEventXmlContent() throws Exception {
-        String filename = "xml-content-test.xml";
-        String username = "xml_test_user";
-        Date now = new Date();
+        Map<String, Events> fileEventsMap = eventConfDao.getRootEvents().getLoadedEventFiles();
+        List<EventConfSource> eventConfSourceList = eventConfSourceDao.findAll();
 
-        // Build metadata
-        EventConfSourceMetadataDto metadata = new EventConfSourceMetadataDto.Builder()
-                .filename(filename)
-                .eventCount(1)
-                .fileOrder(5)
-                .username(username)
-                .now(now)
-                .vendor("xml-vendor")
-                .description("XML content test")
-                .build();
+        for (EventConfSource eventConfSource : eventConfSourceList) {
+            List<EventConfEvent> eventConfEventList = eventConfEventDao.findBySourceId(eventConfSource.getId());
+            Events fileEvents = fileEventsMap.get("events/" + eventConfSource.getName()+".xml");
 
-        // Build event
-        Event event = new Event();
-        event.setUei("uei.opennms.org/test/xml");
-        event.setEventLabel("XML Event");
-        event.setDescr("<p>XML Event description</p>");
-        event.setSeverity("Critical");
+            Assert.assertNotNull("File events not found for source: " + eventConfSource.getName(), fileEvents);
 
-        Events events = new Events();
-        events.getEvents().add(event);
+            List<Event> eventsList = fileEvents.getEvents();
 
-        // Persist
-        eventConfPersistenceService.persistEventConfFile(events, metadata);
+            for (EventConfEvent eventConfEvent : eventConfEventList) {
+                Event dbEvent = JaxbUtils.unmarshal(Event.class, eventConfEvent.getXmlContent());
 
-        // Fetch persisted event
-        List<EventConfEvent> dbEvents = eventConfEventDao.findAll();
-        Assert.assertFalse(dbEvents.isEmpty());
-        EventConfEvent persistedEvent = dbEvents.get(dbEvents.size() - 1);
+                Event matchingFileEvent = eventsList.stream()
+                        .filter(fileEvent ->
+                                Objects.equals(fileEvent.getUei(), dbEvent.getUei()) &&
+                                Objects.equals(fileEvent.getSeverity(), dbEvent.getSeverity()) &&
+                                Objects.equals(fileEvent.getLogmsg().getContent(), dbEvent.getLogmsg().getContent()) &&
+                                Objects.equals(fileEvent.getDescr(), dbEvent.getDescr())
+                        )
+                        .findFirst()
+                        .orElse(null);
 
-        // Validate xml_content is not null
-        Assert.assertNotNull("xml_content should not be null", persistedEvent.getXmlContent());
+                Assert.assertNotNull("DB event with UEI " + dbEvent.getUei() + " not found in file events",
+                        matchingFileEvent);
+            }
+        }
 
-        // Unmarshall xml_content
-        Event unmarshalledEvent = JaxbUtils.unmarshal(Event.class, persistedEvent.getXmlContent());
-        Assert.assertNotNull(unmarshalledEvent);
 
-        // Validate unmarshalled data
-        Assert.assertEquals(event.getUei(), unmarshalledEvent.getUei());
-        Assert.assertEquals(event.getEventLabel(), unmarshalledEvent.getEventLabel());
-        Assert.assertEquals(event.getDescr(), unmarshalledEvent.getDescr());
-        Assert.assertEquals(event.getSeverity(), unmarshalledEvent.getSeverity());
+
+
     }
 
 
