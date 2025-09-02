@@ -143,4 +143,7 @@ public interface EventConfDao {
      * @return a {@link org.opennms.netmgt.xml.eventconf.Events} object.
      */
     Events getRootEvents();
+
+    void loadEventsFromDB(Events rootEvents);
+
 }

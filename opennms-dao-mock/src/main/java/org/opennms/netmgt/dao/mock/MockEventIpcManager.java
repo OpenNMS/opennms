@@ -167,6 +167,11 @@ public class MockEventIpcManager implements EventForwarder, EventProxy, EventIpc
         public Events getRootEvents() {
             return null;
         }
+
+        @Override
+        public void loadEventsFromDB(Events rootEvents) {
+
+        }
     }
 
     public static interface SendNowHook {

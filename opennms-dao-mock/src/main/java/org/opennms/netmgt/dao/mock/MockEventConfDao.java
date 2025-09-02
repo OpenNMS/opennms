@@ -188,4 +188,9 @@ public class MockEventConfDao implements EventConfDao, InitializingBean {
         return m_events;
     }
 
+    @Override
+    public void loadEventsFromDB(Events rootEvents) {
+        
+    }
+
 }

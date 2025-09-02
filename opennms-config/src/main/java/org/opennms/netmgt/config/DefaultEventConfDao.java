@@ -253,6 +253,13 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 		return m_events;
 	}
 
+	@Override
+	public void loadEventsFromDB(Events rootEvents) {
+		m_partition = new EnterpriseIdPartition();
+		rootEvents.initialize(m_partition, new EventOrdering());
+		m_events = rootEvents;
+	}
+
 	public void setConfigResource(Resource configResource) throws IOException {
 		m_configResource = configResource;
 	}

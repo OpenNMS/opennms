@@ -21,24 +21,39 @@
  */
 package org.opennms.web.rest.v2;
 
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
+import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.stream.Collectors;
 
 @Service
 public class EventConfPersistenceService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(EventConfPersistenceService.class);
 
     @Autowired
     private EventConfSourceDao eventConfSourceDao;
@@ -46,11 +61,28 @@ public class EventConfPersistenceService {
     @Autowired
     private EventConfEventDao eventConfEventDao;
 
+    @Autowired
+    private EventConfDao eventConfDao;
+
+    private final ThreadFactory eventConfThreadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("load-eventConf-%d")
+            .build();
+
+    private final ExecutorService eventConfExecutor = Executors.newSingleThreadExecutor(eventConfThreadFactory);
+
+    @PostConstruct
+    public void init() {
+        // Asynchronously load events from DB.
+        eventConfExecutor.execute(this::loadEventConfFromDB);
+    }
+
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void persistEventConfFile(final Events events, final EventConfSourceMetadataDto eventConfSourceMetadataDto) {
         EventConfSource source = createOrUpdateSource(eventConfSourceMetadataDto);
         eventConfEventDao.deleteBySourceId(source.getId());
         saveEvents(source, events, eventConfSourceMetadataDto.getUsername(), eventConfSourceMetadataDto.getNow());
+        // Asynchronously load event conf from DB.
+        eventConfExecutor.execute(this::loadEventConfFromDB);
     }
 
     public List<EventConfEvent>  findEventConfByFilters(String uei, String vendor, String sourceName, int offset, int limit) {
@@ -98,5 +130,59 @@ public class EventConfPersistenceService {
         }).toList();
 
         eventEntities.forEach(eventConfEventDao::save);
+    }
+
+    protected synchronized void loadEventConfFromDB() {
+        List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
+        if (dbEvents.isEmpty()) {
+            return;
+        }
+        // Group events by source and sort by source fileOrder
+        Map<String, List<EventConfEvent>> eventsBySource = dbEvents.stream()
+                .collect(Collectors.groupingBy(
+                        event -> event.getSource().getName(),
+                        LinkedHashMap::new,
+                        Collectors.toList()
+                ));
+
+        // Sort sources by fileOrder
+        List<Map.Entry<String, List<EventConfEvent>>> sortedSources = eventsBySource.entrySet().stream()
+                .sorted(Map.Entry.comparingByValue((events1, events2) -> {
+                    Integer order1 = events1.get(0).getSource().getFileOrder();
+                    Integer order2 = events2.get(0).getSource().getFileOrder();
+                    return Integer.compare(order1 != null ? order1 : 0, order2 != null ? order2 : 0);
+                }))
+                .toList();
+
+        Events rootEvents = new Events();
+
+        // Create Events objects per source and add to m_loadedEventFiles
+        for (Map.Entry<String, List<EventConfEvent>> sourceEntry : sortedSources) {
+            String sourceName = sourceEntry.getKey();
+            List<EventConfEvent> sourceEvents = sourceEntry.getValue();
+
+            Events eventsForSource = new Events();
+
+            for (EventConfEvent dbEvent : sourceEvents) {
+                String xmlContent = dbEvent.getXmlContent();
+                if (xmlContent != null && !xmlContent.trim().isEmpty()) {
+                    try {
+                        Event event = JaxbUtils.unmarshal(Event.class, xmlContent);
+                        eventsForSource.addEvent(event);
+                    } catch (Exception e) {
+                        LOG.warn("Failed to parse event XML content for UEI {}: {}", dbEvent.getUei(), e.getMessage());
+                    }
+                }
+            }
+
+            rootEvents.addLoadedEventFile(sourceName, eventsForSource);
+        }
+
+        eventConfDao.loadEventsFromDB(rootEvents);
+    }
+
+    @PreDestroy
+    public void shutdown(){
+        eventConfExecutor.shutdown();
     }
 }
