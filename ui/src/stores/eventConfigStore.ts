@@ -1,4 +1,5 @@
 import { eventConfigSources } from '@/components/EventConfiguration/data'
+import { changeEventConfigSourceStatus } from '@/services/eventConfigService'
 import { EventConfigStoreState, EventConfSourceMetadata } from '@/types/eventConfig'
 import { cloneDeep } from 'lodash'
 import { defineStore } from 'pinia'
@@ -21,6 +22,10 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     deleteEventConfigSourceDialogState: {
       visible: false,
       eventConfigSource: null
+    },
+    changeEventConfigSourceStatusDialogState: {
+      visible: false,
+      eventConfigSource: null
     }
   }),
   actions: {
@@ -41,7 +46,7 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     onSourcePageSizeChange(pageSize: number) {
       this.sourcesPagination.pageSize = pageSize
     },
-    resetActiveTab(){
+    resetActiveTab() {
       this.activeTab = 0
     },
     showDeleteEventConfigSourceModal(eventConfigSource: EventConfSourceMetadata) {
@@ -54,6 +59,35 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     },
     resetSourcesPagination() {
       this.sourcesPagination = { ...defaultPagination }
+    },
+    showChangeEventConfigSourceStatusDialog(eventConfigSource: EventConfSourceMetadata) {
+      this.changeEventConfigSourceStatusDialogState.visible = true
+      this.changeEventConfigSourceStatusDialogState.eventConfigSource = eventConfigSource
+    },
+    hideChangeEventConfigSourceStatusDialog() {
+      this.changeEventConfigSourceStatusDialogState.visible = false
+      this.changeEventConfigSourceStatusDialogState.eventConfigSource = null
+    },
+    async disableEventConfigSource(sourceId: number) {
+      if (sourceId) {
+        const response = await changeEventConfigSourceStatus(sourceId, false)
+        if (response) {
+          await this.fetchEventConfigs()
+        }
+      } else {
+        console.error('No source selected')
+      }
+    },
+    async enableEventConfigSource(sourceId: number) {
+      if (sourceId) {
+        const response = await changeEventConfigSourceStatus(sourceId, true)
+        if (response) {
+          await this.fetchEventConfigs()
+        }
+      } else {
+        console.error('No source selected')
+      }
     }
   }
 })
+
