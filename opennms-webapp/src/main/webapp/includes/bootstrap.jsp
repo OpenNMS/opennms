@@ -200,7 +200,7 @@
   </c:if>
 
   <%-- Vue side menu --%>
-  <link rel="stylesheet" href="${baseHref}/opennms/ui-components/assets/index.css" media="screen" />
+  <link rel="stylesheet" href="<%= __baseHref %>ui-components/assets/index.css" media="screen" />
 </head>
 
 <%-- The <body> tag is unmatched in this file (its matching tag is in the
@@ -249,7 +249,7 @@
       <!-- both superQuiet and fromVaadin are true -->
       <% if (oldMenuValue == null || !oldMenuValue.equals("true")) { %>
         <div id="opennms-sidemenu-container"></div>
-        <script type="module" src="${baseHref}/opennms/ui-components/assets/index.js"></script>
+        <script type="module" src="<%= __baseHref %>ui-components/assets/index.js"></script>
       <% } %>
     </c:if>
   </c:when>
@@ -273,7 +273,7 @@
       <c:otherwise>
         <% if (oldMenuValue == null || !oldMenuValue.equals("true")) { %>
           <div id="opennms-sidemenu-container"></div>
-          <script type="module" src="${baseHref}/opennms/ui-components/assets/index.js"></script>
+          <script type="module" src="<%= __baseHref %>ui-components/assets/index.js"></script>
         <% } %>
       </c:otherwise>
     </c:choose>
