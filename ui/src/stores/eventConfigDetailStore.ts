@@ -1,6 +1,6 @@
 import { eventConfigEvents } from '@/components/EventConfiguration/data'
 import { changeEventConfigEventStatus, changeEventConfigSourceStatus } from '@/services/eventConfigService'
-import { EventConfigDetailStoreState, EventConfigEvent, EventConfSourceMetadata } from '@/types/eventConfig'
+import { EventConfigDetailStoreState, EventConfigEvent, EventConfSourceMetadata,DrawerState } from '@/types/eventConfig'
 import { cloneDeep } from 'lodash'
 import { defineStore } from 'pinia'
 
@@ -8,6 +8,13 @@ const defaultPagination = {
   page: 1,
   pageSize: 10,
   total: 0
+}
+
+const getDefaultDrawerState = (): DrawerState => {
+  return {
+    visible: false,
+    isEventEditorModal: false
+  }
 }
 
 export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore', {
@@ -31,7 +38,8 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     changeEventConfigSourceStatusDialogState: {
       visible: false,
       eventConfigSource: null
-    }
+    },
+    drawerState: getDefaultDrawerState()
   }),
   actions: {
     async fetchEventsBySourceId() {
@@ -132,6 +140,12 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       } else {
         console.error('No source selected')
       }
+    },
+    openEventDrawerModal() {
+      this.drawerState.visible  = true      
+    },
+    closeEventDrawerModal() {
+      this.drawerState.visible  = false
     }
   }
 })

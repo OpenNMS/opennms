@@ -66,6 +66,7 @@ export type EventConfigDetailStoreState = {
     visible: boolean
     eventConfigSource: EventConfSourceMetadata | null
   }
+  drawerState: DrawerState
 }
 
 export type EventConfigFilesUploadReponse = {
@@ -86,3 +87,7 @@ export type EventConfigFilesUploadReponse = {
   }[]
 }
 
+export interface DrawerState {
+  visible: boolean
+  isEventEditorModal: boolean
+}
