@@ -108,7 +108,7 @@ public class EventConfPersistenceServiceIT {
     @JUnitTemporaryDatabase
     @Transactional
     public void testPersistUpdatesExistingSource() {
-        String filename = "existing-source.xml";
+        String filename = "existing-source";
         String username = "test_user";
         Date now = new Date();
         EventConfSourceMetadataDto metadata = new EventConfSourceMetadataDto.Builder().filename(filename).eventCount(2).fileOrder(2).username(username).now(now).vendor("update-vendor").description("original entry").build();
@@ -121,7 +121,7 @@ public class EventConfPersistenceServiceIT {
         events.getEvents().add(event);
         eventConfPersistenceService.persistEventConfFile(events, metadata);
 
-        EventConfSourceMetadataDto updatedMetadata = new EventConfSourceMetadataDto.Builder().filename(filename).eventCount(3).fileOrder(3).username("updated_user").now(new Date()).vendor("updated-vendor").description("updated entry").build();
+        EventConfSourceMetadataDto updatedMetadata = new EventConfSourceMetadataDto.Builder().filename(filename).eventCount(3).fileOrder(1).username("updated_user").now(new Date()).vendor("updated-vendor").description("updated entry").build();
         Event updatedEvent = new Event();
         updatedEvent.setUei("uei.opennms.org/test/update2");
         updatedEvent.setEventLabel("Updated Event");
@@ -138,7 +138,7 @@ public class EventConfPersistenceServiceIT {
         Assert.assertEquals("updated entry", source.getDescription());
         Assert.assertEquals("updated-vendor", source.getVendor());
         Assert.assertEquals("updated_user", source.getUploadedBy());
-        Assert.assertEquals(3, (int) source.getFileOrder());
+        Assert.assertEquals(2, (int) source.getFileOrder());
         List<EventConfEvent> updatedDbEvents = eventConfEventDao.findEnabledEvents();
         Assert.assertEquals(1, updatedDbEvents.size());
         EventConfEvent finalEvent = updatedDbEvents.get(0);
@@ -233,7 +233,7 @@ public class EventConfPersistenceServiceIT {
         String username = "test_user";
         Date now = new Date();
 
-        String filename1 = "source-file-1.xml";
+        String filename1 = "source-file-1";
         EventConfSourceMetadataDto metadata1 = new EventConfSourceMetadataDto.Builder()
                 .filename(filename1)
                 .eventCount(1)
@@ -255,7 +255,7 @@ public class EventConfPersistenceServiceIT {
 
         eventConfPersistenceService.persistEventConfFile(events1, metadata1);
 
-        String filename2 = "source-file-2.xml";
+        String filename2 = "source-file-2";
         EventConfSourceMetadataDto metadata2 = new EventConfSourceMetadataDto.Builder()
                 .filename(filename2)
                 .eventCount(1)

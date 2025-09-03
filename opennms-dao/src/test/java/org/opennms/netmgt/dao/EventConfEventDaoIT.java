@@ -38,6 +38,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -190,6 +191,39 @@ public class EventConfEventDaoIT implements InitializingBean {
         List<EventConfEvent> afterDelete = m_eventDao.findBySourceId(m_source.getId());
         assertEquals(0, afterDelete.size());
     }
+
+
+    @Test
+    @Transactional
+    public void testSaveAllEvents() {
+        int totalEvents = 55;
+        List<EventConfEvent> bulkEvents = new ArrayList<>();
+        for (int i = 0; i < totalEvents; i++) {
+            EventConfEvent event = getEventConfEvent(i);
+            bulkEvents.add(event);
+        }
+
+        m_eventDao.saveAll(bulkEvents);
+
+        List<EventConfEvent> allEvents = m_eventDao.findBySourceId(m_source.getId());
+        assertNotNull(allEvents);
+        assertEquals(4 + totalEvents, allEvents.size());
+    }
+
+    private EventConfEvent getEventConfEvent(int i) {
+        EventConfEvent event = new EventConfEvent();
+        event.setUei("uei.opennms.org/test/bulk/" + i);
+        event.setEventLabel("Bulk Event " + i);
+        event.setDescription("Test bulk event " + i);
+        event.setXmlContent("<event><uei>uei.opennms.org/test/bulk/" + i + "</uei></event>");
+        event.setSource(m_source);
+        event.setEnabled(true);
+        event.setCreatedTime(new Date());
+        event.setLastModified(new Date());
+        event.setModifiedBy("testUser");
+        return event;
+    }
+
 
     @Override
     public void afterPropertiesSet() throws Exception {

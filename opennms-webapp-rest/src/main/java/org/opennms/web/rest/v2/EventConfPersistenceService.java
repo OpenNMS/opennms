@@ -68,10 +68,10 @@ public class EventConfPersistenceService {
         if (source == null) {
             source = new EventConfSource();
             source.setCreatedTime(eventConfSourceMetadataDto.getNow());
+            source.setFileOrder(eventConfSourceMetadataDto.getFileOrder() );
         }
 
         source.setName(eventConfSourceMetadataDto.getFilename());
-        source.setFileOrder(eventConfSourceMetadataDto.getFileOrder());
         source.setEventCount(eventConfSourceMetadataDto.getEventCount());
         source.setEnabled(true);
         source.setUploadedBy(eventConfSourceMetadataDto.getUsername());
@@ -97,6 +97,6 @@ public class EventConfPersistenceService {
             return event;
         }).toList();
 
-        eventEntities.forEach(eventConfEventDao::save);
+        eventConfEventDao.saveAll(eventEntities);
     }
 }
