@@ -79,14 +79,31 @@
                 >
                   <FeatherIcon :icon="ViewDetails"> </FeatherIcon>
                 </FeatherButton>
-                <FeatherButton
-                  primary
-                  icon="Delete"
-                  data-test="delete-source-button"
-                  @click="store.showDeleteEventConfigSourceModal(config)"
-                >
-                  <FeatherIcon :icon="Delete"> </FeatherIcon>
-                </FeatherButton>
+                <FeatherDropdown>
+                  <template v-slot:trigger="{ attrs, on }">
+                    <FeatherButton
+                      link
+                      href="#"
+                      v-bind="attrs"
+                      v-on="on"
+                      :icon="`More actions for ${config.filename}`"
+                    >
+                      <FeatherIcon :icon="MenuIcon" />
+                    </FeatherButton>
+                  </template>
+                  <FeatherDropdownItem
+                    @click="store.showChangeEventConfigSourceStatusDialog(config)"
+                    data-test="change-status-button"
+                  >
+                    {{ config.enabled ? 'Disable Source' : 'Enable Source' }}
+                  </FeatherDropdownItem>
+                  <FeatherDropdownItem
+                    @click="store.showDeleteEventConfigSourceModal(config)"
+                    data-test="delete-source-button"
+                  >
+                    Delete Source
+                  </FeatherDropdownItem>
+                </FeatherDropdown>
               </div>
             </td>
           </tr>
@@ -111,7 +128,8 @@
         />
       </div>
     </div>
-    <DeleteEventConfigSourceModal />
+    <DeleteEventConfigSourceDialog />
+    <ChangeEventConfSourceStatusDialog />
   </TableCard>
 </template>
 
@@ -120,17 +138,19 @@ import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfSourceMetadata } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
+import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
-import Delete from '@featherds/icon/action/Delete'
 import DownloadFile from '@featherds/icon/action/DownloadFile'
 import Search from '@featherds/icon/action/Search'
 import ViewDetails from '@featherds/icon/action/ViewDetails'
+import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
 import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import TableCard from '../Common/TableCard.vue'
-import DeleteEventConfigSourceModal from './Modal/DeleteEventConfigSourceModal.vue'
+import ChangeEventConfSourceStatusDialog from './Dialog/ChangeEventConfSourceStatusDialog.vue'
+import DeleteEventConfigSourceDialog from './Dialog/DeleteEventConfigSourceDialog.vue'
 
 const router = useRouter()
 const store = useEventConfigStore()
@@ -245,6 +265,16 @@ onMounted(async () => {
 
           button {
             margin: 0px;
+          }
+
+          :deep(.feather-menu-dropdown) {
+            .feather-dropdown {
+              li {
+                a {
+                  padding: 8px 16px !important;
+                }
+              }
+            }
           }
         }
       }

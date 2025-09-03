@@ -4,6 +4,7 @@ import { EventConfigEvent, EventConfSourceMetadata } from '@/types/eventConfig'
 export const eventConfigSources: EventConfSourceMetadata[] = [
   {
     filename: 'example-event-config.xml',
+    enabled: true,
     eventCount: 42,
     fileOrder: 1,
     username: 'admin',
@@ -14,6 +15,7 @@ export const eventConfigSources: EventConfSourceMetadata[] = [
   },
   {
     filename: 'another-event-config.xml',
+    enabled: false,
     eventCount: 15,
     fileOrder: 2,
     username: 'user1',
@@ -24,6 +26,7 @@ export const eventConfigSources: EventConfSourceMetadata[] = [
   },
   {
     filename: 'custom-event-config.xml',
+    enabled: true,
     eventCount: 30,
     fileOrder: 3,
     username: 'user2',

@@ -4,7 +4,19 @@
     v-if="config"
   >
     <div class="header">
-      <h1>Event Configuration Details</h1>
+      <div class="title-container">
+        <div>
+          <FeatherBackButton @click="router.push({ name: 'Event Configuration' })">Go Back</FeatherBackButton>
+        </div>
+        <div>
+          <h1>Event Configuration Details</h1>
+        </div>
+      </div>
+
+      <div class="action-container">
+        <FeatherButton @click="store.showChangeEventConfigSourceStatusDialog(config)"> {{ config.enabled ? 'Disable Source' : 'Enable Source' }} </FeatherButton>
+        <FeatherButton primary @click="store.showDeleteEventConfigSourceDialog(config)"> Delete Source </FeatherButton>
+      </div>
     </div>
 
     <div class="config-details-box">
@@ -23,12 +35,18 @@
           <span class="field-label">Vendor:</span>
           <span class="field-value">{{ config?.vendor }}</span>
         </div>
+        <div class="config-field">
+          <span class="field-label">Status:</span>
+          <span class="field-value">{{ config?.enabled ? 'Enabled' : 'Disabled' }}</span>
+        </div>
       </div>
-      <div class="config-row vertical-fields">
+      <div class="config-row">
         <div class="config-field">
           <span class="field-label">File Order:</span>
           <span class="field-value">{{ config?.fileOrder }}</span>
         </div>
+      </div>
+      <div class="config-row">
         <div class="config-field">
           <span class="field-label">Event Count:</span>
           <span class="field-value">{{ config?.eventCount }}</span>
@@ -39,28 +57,39 @@
     <div class="event-table-section">
       <EventConfigEventTable />
     </div>
+    <DeleteEventConfigSourceDialog />
+    <ChangeEventConfSourceStatusDialog />
   </div>
   <div
     v-else
     class="not-found-container"
   >
     <p>No event configuration found.</p>
-    <FeatherButton primary @click="$router.go(-1)"> Go Back </FeatherButton>
+    <FeatherButton
+      primary
+      @click="router.push({ name: 'Event Configuration' })"
+    >
+      Go Back
+    </FeatherButton>
   </div>
 </template>
 
 <script setup lang="ts">
+import ChangeEventConfSourceStatusDialog from '@/components/EventConfigurationDetail/Dialog/ChangeEventConfSourceStatusDialog.vue'
+import DeleteEventConfigSourceDialog from '@/components/EventConfigurationDetail/Dialog/DeleteEventConfigSourceDialog.vue'
 import EventConfigEventTable from '@/components/EventConfigurationDetail/EventConfigEventTable.vue'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { EventConfSourceMetadata } from '@/types/eventConfig'
+import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
 
 const store = useEventConfigDetailStore()
-const router = useRoute()
+const route = useRoute()
+const router = useRouter()
 const config = ref<EventConfSourceMetadata>()
 
 onMounted(async () => {
-  if (Number(router.params.id) === store.selectedSource?.id) {
+  if (Number(route.params.id) === store.selectedSource?.id) {
     config.value = store.selectedSource
     await store.fetchEventsBySourceId()
   }
@@ -76,7 +105,26 @@ onMounted(async () => {
   padding: 20px;
 
   .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
     margin-bottom: 20px;
+
+    .title-container {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .action-container {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+
+      button {
+        margin: 0;
+      }
+    }
   }
 
   .config-details-box {
@@ -105,11 +153,6 @@ onMounted(async () => {
         .field-value {
           color: #333;
         }
-      }
-
-      .vertical-fields {
-        flex-direction: column;
-        gap: 10px;
       }
 
       .name-field {
