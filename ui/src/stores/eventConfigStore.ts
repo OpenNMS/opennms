@@ -1,5 +1,5 @@
 import { eventConfigSources } from '@/components/EventConfiguration/data'
-import { changeEventConfigSourceStatus } from '@/services/eventConfigService'
+import { changeEventConfigSourceStatus, filterEventConfigSources } from '@/services/eventConfigService'
 import { EventConfigStoreState, EventConfSourceMetadata } from '@/types/eventConfig'
 import { cloneDeep } from 'lodash'
 import { defineStore } from 'pinia'
@@ -32,6 +32,13 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     async fetchEventConfigs() {
       this.isLoading = true
       try {
+        const response = await filterEventConfigSources(
+          (this.sourcesPagination.page - 1) * this.sourcesPagination.pageSize,
+          this.sourcesPagination.pageSize,
+          this.sourcesPagination.total,
+          ''
+        )
+        console.log('response', response)
         this.sources = cloneDeep(eventConfigSources) // Using static data for now
         this.sourcesPagination.total = this.sources.length
       } catch (error) {

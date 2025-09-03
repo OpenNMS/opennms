@@ -66,8 +66,8 @@
           >
             <td>{{ config.filename }}</td>
             <td>{{ config.description }}</td>
-            <td>{{ config.fileOrder }}</td>
             <td>{{ config.vendor }}</td>
+            <td>{{ config.fileOrder }}</td>
             <td>{{ config.eventCount }}</td>
             <td>
               <div class="action-container">
@@ -161,8 +161,8 @@ const emptyListContent = {
 const columns = computed(() => [
   { id: 'fileName', label: 'Name' },
   { id: 'description', label: 'Description' },
-  { id: 'fileOrder', label: 'File Order' },
   { id: 'vendor', label: 'Vendor' },
+  { id: 'fileOrder', label: 'File Order' },
   { id: 'eventCount', label: 'Event Count' }
 ])
 
