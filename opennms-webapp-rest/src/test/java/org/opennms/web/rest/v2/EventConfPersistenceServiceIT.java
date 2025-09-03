@@ -21,7 +21,6 @@
  */
 package org.opennms.web.rest.v2;
 
-import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -327,14 +326,10 @@ public class EventConfPersistenceServiceIT {
         for (EventConfSource eventConfSource : eventConfSourceList) {
             List<EventConfEvent> eventConfEventList = eventConfEventDao.findBySourceId(eventConfSource.getId());
             Events fileEvents = fileEventsMap.get("events/" + eventConfSource.getName()+".xml");
-
             Assert.assertNotNull("File events not found for source: " + eventConfSource.getName(), fileEvents);
-
             List<Event> eventsList = fileEvents.getEvents();
-
             for (EventConfEvent eventConfEvent : eventConfEventList) {
                 Event dbEvent = JaxbUtils.unmarshal(Event.class, eventConfEvent.getXmlContent());
-
                 Event matchingFileEvent = eventsList.stream()
                         .filter(fileEvent ->
                                 Objects.equals(fileEvent.getUei(), dbEvent.getUei()) &&
@@ -344,17 +339,11 @@ public class EventConfPersistenceServiceIT {
                         )
                         .findFirst()
                         .orElse(null);
-
                 Assert.assertNotNull("DB event with UEI " + dbEvent.getUei() + " not found in file events",
                         matchingFileEvent);
+                dbEvent.setEventMatcher(matchingFileEvent.getEventMatcher());
+                Assert.assertEquals(dbEvent, matchingFileEvent);
             }
         }
-
-
-
-
     }
-
-
-
 }
