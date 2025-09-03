@@ -69,13 +69,13 @@ public class EventConfRestService implements EventConfRestApi {
 
         final Map<String, Attachment> fileMap = attachments.stream()
                 .collect(Collectors.toMap(
-                        a -> a.getContentDisposition().getParameter("filename"),
+                        a -> stripExtension(a.getContentDisposition().getParameter("filename")),
                         a -> a,
                         (a1, a2) -> a1, // keep first if duplicate
                         LinkedHashMap::new
                 ));
 
-        final Attachment eventConfXml = fileMap.remove("eventconf.xml");
+        final Attachment eventConfXml = fileMap.remove("eventconf");
         final List<String> orderedFiles = determineFileOrder(eventConfXml, fileMap.keySet());
 
         final List<Map<String, Object>> successList = new ArrayList<>();
@@ -291,6 +291,12 @@ public class EventConfRestService implements EventConfRestApi {
                 .vendor(StringUtils.substringBefore(fileName, "."))
                 .description("")
                 .build();
+    }
+
+    private String stripExtension(final String filename) {
+        if (filename == null) return null;
+        int dotIndex = filename.lastIndexOf('.');
+        return (dotIndex == -1) ? filename : filename.substring(0, dotIndex);
     }
 
 }

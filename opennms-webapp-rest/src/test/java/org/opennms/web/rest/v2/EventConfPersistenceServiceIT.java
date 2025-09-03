@@ -108,7 +108,7 @@ public class EventConfPersistenceServiceIT {
     @JUnitTemporaryDatabase
     @Transactional
     public void testPersistUpdatesExistingSource() {
-        String filename = "existing-source.xml";
+        String filename = "existing-source";
         String username = "test_user";
         Date now = new Date();
         EventConfSourceMetadataDto metadata = new EventConfSourceMetadataDto.Builder().filename(filename).eventCount(2).fileOrder(2).username(username).now(now).vendor("update-vendor").description("original entry").build();
@@ -233,7 +233,7 @@ public class EventConfPersistenceServiceIT {
         String username = "test_user";
         Date now = new Date();
 
-        String filename1 = "source-file-1.xml";
+        String filename1 = "source-file-1";
         EventConfSourceMetadataDto metadata1 = new EventConfSourceMetadataDto.Builder()
                 .filename(filename1)
                 .eventCount(1)
@@ -255,7 +255,7 @@ public class EventConfPersistenceServiceIT {
 
         eventConfPersistenceService.persistEventConfFile(events1, metadata1);
 
-        String filename2 = "source-file-2.xml";
+        String filename2 = "source-file-2";
         EventConfSourceMetadataDto metadata2 = new EventConfSourceMetadataDto.Builder()
                 .filename(filename2)
                 .eventCount(1)
