@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.stream.Collectors;
 
 public class EventConfSourceDaoHibernate
@@ -106,6 +108,49 @@ public class EventConfSourceDaoHibernate
         LOG.info("Set enabled={} for sources {} (cascadeToEvents={})", enabled, sourceIds, cascadeToEvents);
     }
 
+    @Override
+    public Map<String, Object> filterEventConfSource(final String filter, final String sortBy, final String order,
+                                                     final Integer totalRecords, final Integer offset, Integer limit) {
+
+        int resultCount = (totalRecords != null) ? totalRecords : 0;
+        List<Object> queryParams = new ArrayList<>();
+        List<String> conditions = new ArrayList<>();
+
+        // Add filter conditions dynamically
+        if (filter != null && !filter.trim().isEmpty()) {
+            String escapedFilter = "%" + escapeLike(filter.trim().toLowerCase()) + "%";
+            conditions.add("lower(s.name) like ? escape '\\'");
+            queryParams.add(escapedFilter);
+
+            conditions.add("lower(s.vendor) like ? escape '\\'");
+            queryParams.add(escapedFilter);
+
+            conditions.add("lower(s.description) like ? escape '\\'");
+            queryParams.add(escapedFilter);
+
+        }
+
+        String whereClause = conditions.isEmpty() ? "" : " where " + String.join(" OR ", conditions);
+
+        // COUNT QUERY: get total matching records if not already provided
+        if (resultCount == 0) {
+            String countQuery = "select count(s.id) from EventConfSource s " + whereClause;
+            resultCount = super.queryInt(countQuery, queryParams.toArray());
+        }
+
+        // DATA QUERY: fetch paginated results
+        List<EventConfSource> eventConfSourceList = Collections.emptyList();
+        if (resultCount > 0) {
+            String orderBy = " order by " + (sortBy == null || sortBy.trim().isEmpty() ? "createdTime ": sortBy) +" "+ (order == null ? "desc" : order);
+            String dataQuery = "from EventConfSource s " + whereClause + orderBy;
+            eventConfSourceList = findWithPagination(dataQuery, queryParams.toArray(), offset, limit);
+        }
+
+        // Return map with results
+        return Map.of("totalRecords", resultCount, "eventConfSourceList", eventConfSourceList);
+
+    }
+
 
     @Override
     public void saveOrUpdate(EventConfSource source) {
@@ -115,5 +160,24 @@ public class EventConfSourceDaoHibernate
     @Override
     public void delete(EventConfSource source) {
         super.delete(source);
+    }
+
+    /**
+     * Escapes special characters (%, _, \, /, [, ]) in a string
+     * to make it safe for SQL LIKE queries.
+     *
+     * @param input the input string
+     * @return the escaped string
+     */
+    private String escapeLike(String input) {
+        return input
+                .replace("\\", "\\\\")
+                .replace("%", "\\%")
+                .replace("_", "\\_")
+                .replace("@", "\\@")
+                .replace("/", "\\/")
+                .replace("[", "\\[")
+                .replace("]", "\\]")
+                .replace(".", "\\.");
     }
 }

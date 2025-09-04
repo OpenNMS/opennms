@@ -27,6 +27,8 @@ import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfEventDto;
+import org.opennms.netmgt.model.EventConfSource;
+import org.opennms.netmgt.model.EventConfSourceDto;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -40,12 +42,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Set;
-import java.util.List;
-import java.util.Date;
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.LinkedHashMap;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -138,6 +135,37 @@ public class EventConfRestService implements EventConfRestApi {
         } catch (Exception ex) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
         }
+    }
+
+    @Override
+    public Response filterEventConfSource(String filter, String sortBy, String order, Integer totalRecords,
+                                          Integer offset, Integer limit, SecurityContext securityContext) {
+
+        // Return 400 Bad Request if offset < 0, limit < 1, or offset exceeds totalRecords
+        if (offset < 0 || limit < 1 ||  offset > totalRecords) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of("error", "Invalid offset/limit values"))
+                    .build();
+        }
+
+        // Call service to fetch results
+        Map<String, Object> result = eventConfPersistenceService.filterEventConfSource(
+                filter, sortBy, order, totalRecords, offset, limit
+        );
+
+        // Check if no data found
+        if (result == null
+                || result.isEmpty()
+                || (result.containsKey("totalRecords") && ((Integer) result.get("totalRecords")) == 0)) {
+            return Response.noContent().build();  // 204 No Content
+        }
+
+        List<EventConfSourceDto> dtoList =
+                EventConfSourceDto.fromEntity((List<EventConfSource>) result.get("eventConfSourceList"));
+
+        // Build response
+        return Response.ok(Map.of("totalRecords", result.get("totalRecords"), "eventConfSourceList", dtoList))
+                .build();
     }
 
 
