@@ -109,8 +109,7 @@ public class EventConfSourceDaoHibernate
     }
 
     @Override
-    public Map<String, Object> filterEventConfSource(final String name, final String vendor, final String desc,
-                                                     final Integer fileOrder, final Integer eventCount,
+    public Map<String, Object> filterEventConfSource(final String filter, final String sortBy, final String order,
                                                      final Integer totalRecords, final Integer offset, Integer limit) {
 
         int resultCount = (totalRecords != null) ? totalRecords : 0;
@@ -118,32 +117,20 @@ public class EventConfSourceDaoHibernate
         List<String> conditions = new ArrayList<>();
 
         // Add filter conditions dynamically
-        if (name != null && !name.trim().isEmpty()) {
+        if (filter != null && !filter.trim().isEmpty()) {
+            String escapedFilter = "%" + escapeLike(filter.trim().toLowerCase()) + "%";
             conditions.add("lower(s.name) like ? escape '\\'");
-            queryParams.add("%" + escapeLike(name.trim().toLowerCase()) + "%");
-        }
+            queryParams.add(escapedFilter);
 
-        if (vendor != null && !vendor.trim().isEmpty()) {
             conditions.add("lower(s.vendor) like ? escape '\\'");
-            queryParams.add("%" + escapeLike(vendor.trim().toLowerCase()) + "%");
-        }
+            queryParams.add(escapedFilter);
 
-        if (desc != null && !desc.trim().isEmpty()) {
             conditions.add("lower(s.description) like ? escape '\\'");
-            queryParams.add("%" + escapeLike(desc.trim().toLowerCase()) + "%");
+            queryParams.add(escapedFilter);
+
         }
 
-        if (fileOrder != null && fileOrder > 0) {
-            conditions.add("s.fileOrder = ?");
-            queryParams.add(fileOrder);
-        }
-
-        if (eventCount != null && eventCount > -1) {
-            conditions.add("s.eventCount = ?");
-            queryParams.add(eventCount);
-        }
-
-        String whereClause = conditions.isEmpty() ? "" : " where " + String.join(" AND ", conditions);
+        String whereClause = conditions.isEmpty() ? "" : " where " + String.join(" OR ", conditions);
 
         // COUNT QUERY: get total matching records if not already provided
         if (resultCount == 0) {
@@ -154,7 +141,8 @@ public class EventConfSourceDaoHibernate
         // DATA QUERY: fetch paginated results
         List<EventConfSource> eventConfSourceList = Collections.emptyList();
         if (resultCount > 0) {
-            String dataQuery = "from EventConfSource s " + whereClause;
+            String orderBy = " order by " + (sortBy == null || sortBy.trim().isEmpty() ? "createdTime ": sortBy) +" "+ (order == null ? "desc" : order);
+            String dataQuery = "from EventConfSource s " + whereClause + orderBy;
             eventConfSourceList = findWithPagination(dataQuery, queryParams.toArray(), offset, limit);
         }
 

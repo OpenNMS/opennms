@@ -319,12 +319,12 @@ public class EventConfRestServiceIT {
     @Test
     public void testFilterEventConfSource_InvalidOffsetLimit() {
         Response response = eventConfRestApi.filterEventConfSource(
-                "test", "vendor", "desc", 1, 2, 10, -1, 5, null);
+                "test", "name", "desc", 0, -1, 5, null);
 
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
 
         response = eventConfRestApi.filterEventConfSource(
-                "test", "vendor", "desc", 1, 2, 10, 11, 5, null);
+                "test", "vendor", "desc", 0, 11, 5, null);
 
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
     }
@@ -332,7 +332,7 @@ public class EventConfRestServiceIT {
     @Test
     public void testFilterEventConfSource_NoRecordsFound() {
         Response response = eventConfRestApi.filterEventConfSource(
-                "nonexistent", "nonexistent", "nonexistent", 1, 2, 0, 0, 5, null);
+                "nonexistent", "name", "Asc", 0, 0, 5, null);
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
     }
 
@@ -350,7 +350,7 @@ public class EventConfRestServiceIT {
         eventConfSourceDao.saveOrUpdate(source);
 
         Response response = eventConfRestApi.filterEventConfSource(
-                "test", "vendor", "desc", 1, 2, 0, 0, 5, null);
+                "test", "vendor", "desc",0, 0, 5, null);
 
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
         assertNotNull(response.getEntity());

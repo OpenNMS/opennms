@@ -108,11 +108,9 @@ public interface EventConfRestApi {
                     content = @Content)
     })
     Response filterEventConfSource(
-            @QueryParam("name") String name,
-            @QueryParam("vendor") String vendor,
-            @QueryParam("desc") String desc,
-            @QueryParam("fileOrder") Integer fileOrder,
-            @QueryParam("eventCount") Integer eventCount,
+            @QueryParam("filter") String filter,
+            @QueryParam("sortBy") String sortBy,
+            @QueryParam("order") String order,
             @QueryParam("totalRecords") Integer totalRecords,
             @QueryParam("offset") Integer offset,
             @QueryParam("limit") Integer limit,

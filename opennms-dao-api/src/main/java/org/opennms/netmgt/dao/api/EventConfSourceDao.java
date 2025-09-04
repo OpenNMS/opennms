@@ -49,6 +49,6 @@ public interface EventConfSourceDao extends OnmsDao<EventConfSource, Long> {
 
     void updateEnabledFlag(final Collection<Long> sourceIds, boolean enabled, boolean cascadeToEvents);
 
-    Map<String, Object> filterEventConfSource(String name, String vendor, String desc, Integer fileOrder,
-                                              Integer eventCount, Integer totalRecords, Integer offset, Integer limit);
+    Map<String, Object> filterEventConfSource(String filter, String sortBy, String order, Integer totalRecords,
+                                              Integer offset, Integer limit);
 }

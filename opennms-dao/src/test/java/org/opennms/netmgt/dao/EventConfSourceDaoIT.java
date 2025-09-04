@@ -368,7 +368,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
         source.setDescription("testDesc");
         m_dao.saveOrUpdate(source);
         Map<String, Object> result = m_dao.filterEventConfSource(
-                "testName", "testVendor", "testDesc", 1, 5, 0, 0, 5);
+                "testName", "name", "Asc",0, 0, 5);
         assertNotNull(result);
         assertEquals(1, result.get("totalRecords"));
         assertTrue(((List)result.get("eventConfSourceList")).size()>0);
@@ -377,7 +377,7 @@ public class EventConfSourceDaoIT implements InitializingBean {
     @Test
     public void testFilterEventConfSource_ReturnsEmptyMap() {
         Map<String, Object> result = m_dao.filterEventConfSource(
-                null, null, null, null, null, null, 0, 5);
+                null, null, null, null, 0, 5);
         assertNotNull(result);
         assertFalse(result.isEmpty());
     }
