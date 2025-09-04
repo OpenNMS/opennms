@@ -1,45 +1,93 @@
-import { data } from '@/components/EventConfiguration/data'
-import { EventConfigState, EventConfSourceMetadata } from '@/types/eventConfig'
+import { eventConfigSources } from '@/components/EventConfiguration/data'
+import { changeEventConfigSourceStatus } from '@/services/eventConfigService'
+import { EventConfigStoreState, EventConfSourceMetadata } from '@/types/eventConfig'
+import { cloneDeep } from 'lodash'
 import { defineStore } from 'pinia'
 
-export const useEventConfigStore = defineStore('eventConfigStore', {
-  state: (): EventConfigState => ({
-    eventConfigs: [],
-    eventConfigPagination: {
-      page: 1,
-      pageSize: 10,
-      total: 0
-    },
-    selectedEventConfig: null,
+const defaultPagination = {
+  page: 1,
+  pageSize: 10,
+  total: 0
+}
+
+export const useEventConfigStore = defineStore('useEventConfigStore', {
+  state: (): EventConfigStoreState => ({
+    sources: [],
+    sourcesPagination: { ...defaultPagination },
     isLoading: false,
     activeTab: 0,
-    uploadedFilesReportModalState: {
+    uploadedEventConfigFilesReportDialogState: {
       visible: false
+    },
+    deleteEventConfigSourceDialogState: {
+      visible: false,
+      eventConfigSource: null
+    },
+    changeEventConfigSourceStatusDialogState: {
+      visible: false,
+      eventConfigSource: null
     }
   }),
   actions: {
     async fetchEventConfigs() {
       this.isLoading = true
       try {
-        this.eventConfigs = data // Using static data for now
-        this.eventConfigPagination.total = this.eventConfigs.length
+        this.sources = cloneDeep(eventConfigSources) // Using static data for now
+        this.sourcesPagination.total = this.sources.length
       } catch (error) {
         console.error('Error fetching event configurations:', error)
       } finally {
         this.isLoading = false
       }
     },
-    selectEventConfig(eventConfig: EventConfSourceMetadata) {
-      this.selectedEventConfig = eventConfig
+    onSourcePageChange(page: number) {
+      this.sourcesPagination.page = page
     },
-    onEventConfigPageChange(page: number) {
-      this.eventConfigPagination.page = page
+    onSourcePageSizeChange(pageSize: number) {
+      this.sourcesPagination.pageSize = pageSize
     },
-    onEventConfigPageSizeChange(pageSize: number) {
-      this.eventConfigPagination.pageSize = pageSize
-    },
-    resetActiveTab(){
+    resetActiveTab() {
       this.activeTab = 0
+    },
+    showDeleteEventConfigSourceModal(eventConfigSource: EventConfSourceMetadata) {
+      this.deleteEventConfigSourceDialogState.visible = true
+      this.deleteEventConfigSourceDialogState.eventConfigSource = eventConfigSource
+    },
+    hideDeleteEventConfigSourceModal() {
+      this.deleteEventConfigSourceDialogState.visible = false
+      this.deleteEventConfigSourceDialogState.eventConfigSource = null
+    },
+    resetSourcesPagination() {
+      this.sourcesPagination = { ...defaultPagination }
+    },
+    showChangeEventConfigSourceStatusDialog(eventConfigSource: EventConfSourceMetadata) {
+      this.changeEventConfigSourceStatusDialogState.visible = true
+      this.changeEventConfigSourceStatusDialogState.eventConfigSource = eventConfigSource
+    },
+    hideChangeEventConfigSourceStatusDialog() {
+      this.changeEventConfigSourceStatusDialogState.visible = false
+      this.changeEventConfigSourceStatusDialogState.eventConfigSource = null
+    },
+    async disableEventConfigSource(sourceId: number) {
+      if (sourceId) {
+        const response = await changeEventConfigSourceStatus(sourceId, false)
+        if (response) {
+          await this.fetchEventConfigs()
+        }
+      } else {
+        console.error('No source selected')
+      }
+    },
+    async enableEventConfigSource(sourceId: number) {
+      if (sourceId) {
+        const response = await changeEventConfigSourceStatus(sourceId, true)
+        if (response) {
+          await this.fetchEventConfigs()
+        }
+      } else {
+        console.error('No source selected')
+      }
     }
   }
 })
+

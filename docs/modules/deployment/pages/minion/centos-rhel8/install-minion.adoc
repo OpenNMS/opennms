@@ -1,7 +1,7 @@
-.Install OpenJDK 11 JRE runtime
+.Install OpenJDK 17 JRE runtime
 [source, console]
 ----
-sudo dnf -y install java-11-openjdk-headless
+sudo dnf -y install java-17-openjdk-headless
 ----
 
 NOTE: On some distributions, such as Oracle Linux 8, you may also need to manually install the `tzdata-java` package.

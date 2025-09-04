@@ -48,7 +48,12 @@ import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
-@ContextConfiguration(locations = {"classpath:/META-INF/opennms/applicationContext-soa.xml", "classpath:/META-INF/opennms/applicationContext-dao.xml", "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml", "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",})
+@ContextConfiguration(locations = {
+        "classpath:/META-INF/opennms/applicationContext-soa.xml",
+        "classpath:/META-INF/opennms/applicationContext-dao.xml",
+        "classpath:/META-INF/opennms/applicationContext-mockConfigManager.xml",
+        "classpath:/META-INF/opennms/applicationContext-commonConfigs.xml",
+})
 @JUnitConfigurationEnvironment
 @JUnitTemporaryDatabase
 public class EventConfEventDaoIT implements InitializingBean {
@@ -64,6 +69,7 @@ public class EventConfEventDaoIT implements InitializingBean {
     @Autowired
     private SessionFactory sessionFactory;
 
+    private int defaultEventConfEventCount;
     @Before
     @Transactional
     public void setUp() {
@@ -78,16 +84,31 @@ public class EventConfEventDaoIT implements InitializingBean {
         m_source.setEventCount(0);
         m_source.setLastModified(new Date());
 
+        List<EventConfEvent> event = m_eventDao.findAll();
+        defaultEventConfEventCount = event.size();
+
         m_eventSourceDao.saveOrUpdate(m_source);
         m_eventSourceDao.flush();
 
-        insertEvent("uei.opennms.org/internal/discoveryConfigChange", "Discovery configuration changed", "The discovery configuration has been changed and should be reloaded", "Normal");
+        insertEvent("uei.opennms.org/internal/discoveryConfigChange",
+                "Discovery configuration changed",
+                "The discovery configuration has been changed and should be reloaded",
+                "Normal");
 
-        insertEvent("uei.opennms.org/internal/discovery/hardwareInventoryFailed", "Hardware discovery failed", "The hardware discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.", "Minor");
+        insertEvent("uei.opennms.org/internal/discovery/hardwareInventoryFailed",
+                "Hardware discovery failed",
+                "The hardware discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.",
+                "Minor");
 
-        insertEvent("uei.opennms.org/internal/discovery/hardwareInventorySuccessful", "Hardware discovery successful", "The hardware discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has been completed successfully.", "Normal");
+        insertEvent("uei.opennms.org/internal/discovery/hardwareInventorySuccessful",
+                "Hardware discovery successful",
+                "The hardware discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has been completed successfully.",
+                "Normal");
 
-        insertEvent("uei.opennms.org/internal/discovery/newSuspect", "New suspect discovered", "A new interface (%interface%) has been discovered in location %parm[location]% and is being queued for a services scan.", "Warning");
+        insertEvent("uei.opennms.org/internal/discovery/newSuspect",
+                "New suspect discovered",
+                "A new interface (%interface%) has been discovered in location %parm[location]% and is being queued for a services scan.",
+                "Warning");
     }
 
     @After
@@ -120,8 +141,9 @@ public class EventConfEventDaoIT implements InitializingBean {
     @Transactional
     public void testFindAllEventConfEvents() {
         List<EventConfEvent> event = m_eventDao.findAll();
+        int eventSize = event.size() - defaultEventConfEventCount;
         assertNotNull("Expected to find all events", event);
-        assertEquals(4, event.size());
+        assertEquals(4, eventSize);
 
     }
 
@@ -129,8 +151,9 @@ public class EventConfEventDaoIT implements InitializingBean {
     @Transactional
     public void testGetById() {
         List<EventConfEvent> events = m_eventDao.findAll();
+        int eventSize = events.size() - defaultEventConfEventCount;
         assertNotNull("Events should not be null", events);
-        assertEquals(4, events.size());
+        assertEquals(4, eventSize);
         EventConfEvent result = m_eventDao.get(events.get(0).getId());
         assertNotNull("Fetched event should not be null", result);
         assertEquals(events.get(0).getUei(), result.getUei());
@@ -156,15 +179,17 @@ public class EventConfEventDaoIT implements InitializingBean {
     @Transactional
     public void testFindEnabledEvents() {
         List<EventConfEvent> enabledEvents = m_eventDao.findEnabledEvents();
+        int enabledEventsSize = enabledEvents.size() - defaultEventConfEventCount;
         assertNotNull("Enabled events should be found", enabledEvents);
-        assertEquals(4, enabledEvents.size());
+        assertEquals(4, enabledEventsSize);
 
         EventConfEvent event = enabledEvents.get(0);
         event.setEnabled(false);
         m_eventDao.saveOrUpdate(event);
 
         List<EventConfEvent> updatedEnabled = m_eventDao.findEnabledEvents();
-        assertEquals(3, updatedEnabled.size());
+        int updatedEnabledSize = updatedEnabled.size() - defaultEventConfEventCount;
+        assertEquals(3, updatedEnabledSize);
     }
 
     @Test

@@ -324,7 +324,7 @@
     },
     {
       "id": "supportMenu",
-      "name": "Support ",
+      "name": "Support",
       "url": "#",
       "locationMatch": null,
       "icon": "action/ContactSupport",

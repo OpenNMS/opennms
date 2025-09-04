@@ -179,13 +179,13 @@ require('../services/Requisitions');
     * @returns {string} The HTML template
     */
     $scope.getTemplate = function(parameter) {
-      var selectedPolicyClass = $scope.policy.class;
+      const selectedPolicyClass = $scope.policy.class;
       $scope.optionalParameters = [];
 
-      for (var i=0; i<$scope.availablePolicies.length; i++) {
+      for (let i=0; i<$scope.availablePolicies.length; i++) {
         if ($scope.availablePolicies[i].class === selectedPolicyClass) {
-          for (var j=0; j<$scope.availablePolicies[i].parameters.length; j++) {
-            var paramCfg = $scope.availablePolicies[i].parameters[j];
+          for (let j=0; j<$scope.availablePolicies[i].parameters.length; j++) {
+            const paramCfg = $scope.availablePolicies[i].parameters[j];
             if (paramCfg.key === parameter.key) { // Checking current parameter
               if (paramCfg.required) {
                 if ($scope.isNonEmptyArray(paramCfg.options)) {
@@ -214,10 +214,10 @@ require('../services/Requisitions');
     * @returns {array} The parameter options list
     */
     $scope.getParameterOptions = function(parameterKey) {
-      for (var i=0; i<$scope.availablePolicies.length; i++) {
+      for (let i=0; i<$scope.availablePolicies.length; i++) {
         if ($scope.availablePolicies[i].class === $scope.policy.class) {
-          for (var j=0; j<$scope.availablePolicies[i].parameters.length; j++) {
-            var paramCfg = $scope.availablePolicies[i].parameters[j];
+          for (let j=0; j<$scope.availablePolicies[i].parameters.length; j++) {
+            const paramCfg = $scope.availablePolicies[i].parameters[j];
             if (paramCfg.key === parameterKey) { // Checking current parameter
               return paramCfg.options;
             }
@@ -236,9 +236,9 @@ require('../services/Requisitions');
     * @returns {array} The optional parameters list
     */
     $scope.getOptionalParameters = function() {
-      var params = [];
+      const params = [];
       angular.forEach($scope.optionalParameters, function(availParam) {
-        var found = false;
+        let found = false;
         angular.forEach($scope.policy.parameter, function(param) {
           if (param.key === availParam) {
             found = true;
@@ -257,11 +257,11 @@ require('../services/Requisitions');
       $scope.availablePolicies = policies;
       angular.forEach(policies, function(policy) {
         if (policy.class === $scope.policy.class) {
-          var orderedParams = [];
-          for (var i=0; i<policy.parameters.length; i++) {
-            var pkey = policy.parameters[i].key;
-            for (var j=0; j<$scope.policy.parameter.length; j++) {
-              var p = $scope.policy.parameter[j];
+          const orderedParams = [];
+          for (let i=0; i<policy.parameters.length; i++) {
+            const pkey = policy.parameters[i].key;
+            for (let j=0; j<$scope.policy.parameter.length; j++) {
+              const p = $scope.policy.parameter[j];
               if (p.key === pkey) {
                 orderedParams.push(p);
               }

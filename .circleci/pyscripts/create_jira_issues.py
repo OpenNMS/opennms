@@ -6,6 +6,8 @@ import re
 import urllib.parse
 
 PROJECT_KEY = "NMS"
+EPIC_KEY = "NMS-16937" 
+EPIC_LINK_FIELD = "customfield_10014" 
 JIRA_USER = os.getenv("JIRA_USER")
 JIRA_API_TOKEN = os.getenv("JIRA_API_TOKEN")
 JIRA_URL = os.getenv("JIRA_URL")
@@ -227,7 +229,9 @@ def create_issue_for_package(package_name, vulnerabilities):
             "security": {
                 "name": SECURITY_LEVEL
             },
-            "labels": ["trivy"]
+            "labels": ["trivy"],
+            
+            EPIC_LINK_FIELD: EPIC_KEY  # Link to epic
         }
     }
 
