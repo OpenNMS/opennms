@@ -23,13 +23,6 @@
       "roles": null,
       "items": [
         {
-          "id": "dashboardsMain",
-          "name": "Dashboards",
-          "url": "dashboards.htm",
-          "locationMatch": "dashboard",
-          "roles": null
-        },
-        {
           "id": "surveillanceDashboard",
           "name": "Surveillance Dashboard",
           "url": "dashboard.jsp",
@@ -186,37 +179,23 @@
     },
     {
       "id": "mapsMenu",
-      "name": "Maps",
-      "url": "#",
-      "locationMatch": null,
+      "name": "Geographical Map",
+      "url": "ui/index.html#/map",
+      "action": "link",
+      "locationMatch": "geographical",
       "icon": "action/Location",
       "roles": null,
-      "items": [
-        {
-          "id": "geographicalMap",
-          "name": "Geographical",
-          "url": "ui/index.html#/map",
-          "locationMatch": "ui/index.html#/map",
-          "roles": null
-        }
-      ]
+      "items": null
     },
     {
       "id": "topologiesMenu",
-      "name": "Topologies",
-      "url": "#",
-      "locationMatch": null,
+      "name": "Topology Map",
+      "url": "topology",
+      "action": "link",
+      "locationMatch": "topology",
       "icon": "network/Instances",
       "roles": null,
-      "items": [
-        {
-          "id": "topology",
-          "name": "Topology",
-          "url": "topology",
-          "locationMatch": "topology",
-          "roles": null
-        }
-      ]
+      "items": null
     },
     {
       "id": "metricsMenu",
