@@ -119,4 +119,7 @@ public class SampleDatagramEnricher {
         }
     }
 
+    boolean isDnsLookupsEnabled() {
+        return dnsLookupsEnabled;
+    }
 }
