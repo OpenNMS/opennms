@@ -1793,8 +1793,8 @@
     <smackVersion>4.0.6</smackVersion>
     <snakeyamlVersion>1.33</snakeyamlVersion>
     <snappyJavaVersion>1.1.9.0</snappyJavaVersion>
-    <snmp4jVersion>2.5.5</snmp4jVersion>
-    <snmp4jagentVersion>2.5.3</snmp4jagentVersion>
+    <snmp4jVersion>2.8.15</snmp4jVersion>
+    <snmp4jagentVersion>2.7.9</snmp4jagentVersion>
     <sonarVersion>3.7.0.1746</sonarVersion>
     <spockVersion>1.3-groovy-2.5</spockVersion>
     <swaggerUIVersion>3.13.0</swaggerUIVersion>
