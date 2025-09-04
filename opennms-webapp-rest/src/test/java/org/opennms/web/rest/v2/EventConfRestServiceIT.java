@@ -34,6 +34,7 @@ import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
+import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
@@ -305,6 +306,59 @@ public class EventConfRestServiceIT {
         assertFalse(enableEventConfSources.stream().noneMatch(EventConfSource::getEnabled));
         List<EventConfEvent> enableEventConfEvents = eventConfEventDao.findAll();
         assertFalse(enableEventConfEvents.stream().noneMatch(EventConfEvent::getEnabled));
+    }
+
+
+    @Test
+    public void testEnableDisableEventConfSourcesEvents() throws Exception {
+        String[] filenames = {"eventconf.xml", "opennms.alarm.events.xml", "Cisco.airespace.xml"};
+        List<Attachment> attachments = new ArrayList<>();
+
+        for (final var name : filenames) {
+            final var path = "/EVENTS-CONF/" + name;
+            final var is = getClass().getResourceAsStream(path);
+            Attachment att = mock(Attachment.class);
+            ContentDisposition cd = mock(ContentDisposition.class);
+            when(cd.getParameter("filename")).thenReturn(name);
+            when(att.getContentDisposition()).thenReturn(cd);
+            when(att.getObject(InputStream.class)).thenReturn(is);
+            attachments.add(att);
+        }
+        eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+
+        // Retrieve initial events
+        EventConfEvent triggerEvent = eventConfEventDao.findByUei("uei.opennms.org/alarms/trigger");
+        EventConfEvent clearEvent = eventConfEventDao.findByUei("uei.opennms.org/alarms/clear");
+
+        long sourceId = triggerEvent.getSource().getId();
+
+        // Disable events
+        EnableDisableConfSourceEventsPayload disablePayload = new EnableDisableConfSourceEventsPayload();
+        disablePayload.setEventsIds(List.of(triggerEvent.getId(), clearEvent.getId()));
+        disablePayload.setEnable(false);
+
+        eventConfRestApi.enableDisableEventConfSourcesEvents(sourceId, disablePayload, securityContext);
+
+        // Verify disabled state
+        EventConfEvent disabledTriggerEvent = eventConfEventDao.findByUei("uei.opennms.org/alarms/trigger");
+        EventConfEvent disabledClearEvent = eventConfEventDao.findByUei("uei.opennms.org/alarms/clear");
+
+        assertFalse(disabledTriggerEvent.getEnabled());
+        assertFalse(disabledClearEvent.getEnabled());
+
+        // Enable events
+        EnableDisableConfSourceEventsPayload enablePayload = new EnableDisableConfSourceEventsPayload();
+        enablePayload.setEventsIds(List.of(triggerEvent.getId(), clearEvent.getId()));
+        enablePayload.setEnable(true);
+
+        eventConfRestApi.enableDisableEventConfSourcesEvents(sourceId, enablePayload, securityContext);
+
+        // Verify enabled state
+        EventConfEvent enabledTriggerEvent = eventConfEventDao.findByUei("uei.opennms.org/alarms/trigger");
+        EventConfEvent enabledClearEvent = eventConfEventDao.findByUei("uei.opennms.org/alarms/clear");
+
+        assertTrue(enabledTriggerEvent.getEnabled());
+        assertTrue(enabledClearEvent.getEnabled());
     }
 
     @Test

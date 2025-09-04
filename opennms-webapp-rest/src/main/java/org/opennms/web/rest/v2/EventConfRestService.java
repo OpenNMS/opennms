@@ -27,6 +27,7 @@ import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfEventDto;
+import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -140,6 +141,30 @@ public class EventConfRestService implements EventConfRestApi {
         }
     }
 
+
+    @Transactional
+    @Override
+    public Response enableDisableEventConfSourcesEvents(final Long sourceId, EnableDisableConfSourceEventsPayload payload, SecurityContext securityContext) throws Exception {
+
+        if (payload == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
+        }
+
+        if (payload.getEventsIds() == null || payload.getEventsIds().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("At least one eventConfEventsIds must be provided.").build();
+        }
+
+        try {
+            eventConfPersistenceService.enableDisableConfSourcesEvents(sourceId, payload);
+            return Response.ok().entity("EventConfEvents updated successfully.").build();
+
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND).entity("One or more eventConfEvents were not found: " + ex.getMessage()).build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+        }
+
+    }
 
     private List<String> determineFileOrder(final Attachment eventconfXmlAttachment, final Set<String> uploadedFiles) {
         List<String> ordered = new ArrayList<>();

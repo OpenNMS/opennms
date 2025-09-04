@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.dao;
 
+import org.hibernate.SessionFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -42,6 +43,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
@@ -63,6 +65,10 @@ public class EventConfEventDaoIT implements InitializingBean {
     private EventConfSourceDao m_eventSourceDao;
 
     private EventConfSource m_source;
+
+    @Autowired
+    private SessionFactory sessionFactory;
+
     private int defaultEventConfEventCount;
     @Before
     @Transactional
@@ -196,6 +202,36 @@ public class EventConfEventDaoIT implements InitializingBean {
 
         List<EventConfEvent> afterDelete = m_eventDao.findBySourceId(m_source.getId());
         assertEquals(0, afterDelete.size());
+    }
+
+    @Test
+    @Transactional
+    public void testUpdateEventEnabledFlag() {
+
+        EventConfSource source = m_eventSourceDao.findByName("test-source");
+
+        EventConfEvent discoveryEvent = m_eventDao.findByUei("uei.opennms.org/internal/discoveryConfigChange");
+        EventConfEvent hardwareEvent = m_eventDao.findByUei("uei.opennms.org/internal/discovery/hardwareInventoryFailed");
+
+        // disable events
+        m_eventDao.updateEventEnabledFlag(source.getId(), List.of(discoveryEvent.getId(), hardwareEvent.getId()), false);
+        sessionFactory.getCurrentSession().clear();
+
+        // verify disabled state
+        EventConfEvent refreshedDiscoveryEvent = m_eventDao.findByUei("uei.opennms.org/internal/discoveryConfigChange");
+        EventConfEvent refreshedHardwareEvent = m_eventDao.findByUei("uei.opennms.org/internal/discovery/hardwareInventoryFailed");
+        assertFalse(refreshedDiscoveryEvent.getEnabled());
+        assertFalse(refreshedHardwareEvent.getEnabled());
+
+        // enable events
+        m_eventDao.updateEventEnabledFlag(source.getId(), List.of(discoveryEvent.getId(), hardwareEvent.getId()), true);
+        sessionFactory.getCurrentSession().clear();
+
+        // verify enabled state
+        refreshedDiscoveryEvent = m_eventDao.findByUei("uei.opennms.org/internal/discoveryConfigChange");
+        refreshedHardwareEvent = m_eventDao.findByUei("uei.opennms.org/internal/discovery/hardwareInventoryFailed");
+        assertTrue(refreshedDiscoveryEvent.getEnabled());
+        assertTrue(refreshedHardwareEvent.getEnabled());
     }
 
     @Override
