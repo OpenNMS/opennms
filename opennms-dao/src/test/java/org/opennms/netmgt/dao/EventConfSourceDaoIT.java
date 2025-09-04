@@ -75,9 +75,12 @@ public class EventConfSourceDaoIT implements InitializingBean {
 
     private EventConfSource m_source;
 
+    private int defaultEventSize;
+
     @Before
     @Transactional
     public void setUp() {
+        defaultEventSize = m_eventDao.findAll().size();
         m_source = new EventConfSource();
         m_source.setName("JUnit Source");
         m_source.setVendor("TestVendor");
@@ -380,13 +383,12 @@ public class EventConfSourceDaoIT implements InitializingBean {
                 m_eventDao.saveOrUpdate(jpaEvent);
             }
             m_eventDao.flush();
-
             List<EventConfEvent> savedForSource = m_eventDao.findBySourceId(source.getId());
             assertEquals("Event count mismatch for " + file, eventCount, savedForSource.size());
         }
 
         List<EventConfEvent> allEvents = m_eventDao.findAll();
-        assertEquals("Total event count mismatch across all files", totalExpectedEventCount, allEvents.size());
+        assertEquals("Total event count mismatch across all files", totalExpectedEventCount, allEvents.size() - defaultEventSize);
 
         m_dao.updateEnabledFlag(allSourceIds, false, false);
         sessionFactory.getCurrentSession().clear();

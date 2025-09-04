@@ -1,8 +1,8 @@
 <template>
-  <TableCard class="event-configuration-table">
+  <TableCard class="event-config-event-table">
     <div class="header">
       <div class="title-container">
-        <!-- <span class="title"> SNMP Interfaces </span> -->
+        <span class="title"> Events </span>
       </div>
       <div class="action-container">
         <div class="search-container">
@@ -39,7 +39,7 @@
       <table
         class="data-table"
         aria-label="SNMP Interfaces Table"
-        v-if="store.eventConfigs.length"
+        v-if="store.events.length"
       >
         <thead>
           <tr>
@@ -61,81 +61,105 @@
           tag="tbody"
         >
           <tr
-            v-for="config in store.eventConfigs"
-            :key="config.filename"
+            v-for="event in store.events"
+            :key="event.id"
           >
-            <td>{{ config.filename }}</td>
-            <td>{{ config.description }}</td>
-            <td>{{ config.fileOrder }}</td>
-            <td>{{ config.vendor }}</td>
-            <td>{{ config.eventCount }}</td>
+            <td>{{ event.uei }}</td>
+            <td>{{ event.eventLabel }}</td>
+            <td>{{ event.description }}</td>
+            <td>{{ event.enabled ? 'Enabled' : 'Disabled' }}</td>
             <td>
-              <FeatherButton
-                primary
-                icon="View Details"
-                data-test="view-button"
-                @click="onEventClick(config.id)"
-              >
-                <FeatherIcon :icon="ViewDetails"> </FeatherIcon>
-              </FeatherButton>
+              <div class="action-container">
+                <FeatherButton
+                  icon="Edit"
+                  :title="`Edit ${event.eventLabel}`"
+                  data-test="edit-button"
+                >
+                  <FeatherIcon :icon="Edit" />
+                </FeatherButton>
+                <FeatherDropdown>
+                  <template v-slot:trigger="{ attrs, on }">
+                    <FeatherButton
+                      link
+                      href="#"
+                      v-bind="attrs"
+                      v-on="on"
+                      :icon="`More actions for ${event.eventLabel}`"
+                    >
+                      <FeatherIcon :icon="MenuIcon" />
+                    </FeatherButton>
+                  </template>
+                  <FeatherDropdownItem
+                    @click="store.showChangeEventConfigEventStatusDialog(event)"
+                    data-test="change-status-button"
+                  >
+                    {{ event.enabled ? 'Disable Event' : 'Enable Event' }}
+                  </FeatherDropdownItem>
+                  <FeatherDropdownItem
+                    @click="store.showDeleteEventConfigEventDialog(event)"
+                    data-test="delete-event-button"
+                  >
+                    Delete Event
+                  </FeatherDropdownItem>
+                </FeatherDropdown>
+              </div>
             </td>
           </tr>
         </TransitionGroup>
       </table>
       <div class="alerts-pagination">
         <FeatherPagination
-          :modelValue="store.eventConfigPagination.page"
-          :pageSize="store.eventConfigPagination.pageSize"
-          :total="store.eventConfigPagination.total"
+          :modelValue="store.eventsPagination.page"
+          :pageSize="store.eventsPagination.pageSize"
+          :total="store.eventsPagination.total"
           :pageSizes="[10, 20, 50]"
-          @update:modelValue="store.onEventConfigPageChange"
-          @update:pageSize="store.onEventConfigPageSizeChange"
+          @update:modelValue="store.onEventsPageChange"
+          @update:pageSize="store.onEventsPageSizeChange"
           data-test="FeatherPagination"
-          v-if="store.eventConfigs.length"
+          v-if="store.events.length"
         />
       </div>
-      <div v-if="!store.eventConfigs.length">
+      <div v-if="!store.events.length">
         <EmptyList
           :content="emptyListContent"
           data-test="empty-list"
         />
       </div>
     </div>
+    <DeleteEventConfigEventDialog />
+    <ChangeEventConfEventStatusDialog />
   </TableCard>
 </template>
 
-<script lang="ts" setup>
-import { useEventConfigStore } from '@/stores/eventConfigStore'
+<script setup lang="ts">
+import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
 import DownloadFile from '@featherds/icon/action/DownloadFile'
+import Edit from '@featherds/icon/action/Edit'
 import Search from '@featherds/icon/action/Search'
-import ViewDetails from '@featherds/icon/action/ViewDetails'
+import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
 import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
+import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import TableCard from '../Common/TableCard.vue'
-import { FeatherPagination } from '@featherds/pagination'
+import ChangeEventConfEventStatusDialog from './Dialog/ChangeEventConfEventStatusDialog.vue'
+import DeleteEventConfigEventDialog from './Dialog/DeleteEventConfigEventDialog.vue'
+import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 
-const router = useRouter()
-const store = useEventConfigStore()
+const store = useEventConfigDetailStore()
 const emptyListContent = {
   msg: 'No results found.'
 }
 
 const columns = computed(() => [
-  { id: 'fileName', label: 'Name' },
+  { id: 'uei', label: 'UEI' },
+  { id: 'eventLabel', label: 'Event Label' },
   { id: 'description', label: 'Description' },
-  { id: 'fileOrder', label: 'File Order' },
-  { id: 'vendor', label: 'Vendor' },
-  { id: 'eventCount', label: 'Event Count' }
+  { id: 'enabled', label: 'Status' }
 ])
-const onEventClick = (id: number) => {
-  router.push({
-    name: 'Event Configuration Details',
-    params: { id: id }
-  })
-}
+
 const sort = reactive({
   fileName: SORT.NONE,
   description: SORT.NONE,
@@ -150,10 +174,6 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
   }
   sort[sortObj.property] = sortObj.value
 }
-
-onMounted(async () => {
-  await store.fetchEventConfigs()
-})
 </script>
 
 <style lang="scss" scoped>
@@ -162,7 +182,7 @@ onMounted(async () => {
 @use '@featherds/table/scss/table';
 @use '@/styles/_transitionDataTable';
 
-.event-configuration-table {
+.event-config-event-table {
   margin-top: 10px;
   padding: 25px;
 
@@ -217,6 +237,26 @@ onMounted(async () => {
         div {
           border-radius: 5px;
           padding: 0px 5px 0px 5px;
+        }
+
+        .action-container {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+
+          button {
+            margin: 0px;
+          }
+
+          :deep(.feather-menu-dropdown) {
+            .feather-dropdown{
+              li {
+                a {
+                  padding: 8px 16px !important;
+                }
+              }
+            }
+          }
         }
       }
     }
