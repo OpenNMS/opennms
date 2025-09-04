@@ -61,6 +61,6 @@
     <module>tracing</module>
     <module>grpc</module>
     <module>encrypt-util</module>
-      <module>fileutils</module>
+    <module>fileutils</module>
   </modules>
 </project>

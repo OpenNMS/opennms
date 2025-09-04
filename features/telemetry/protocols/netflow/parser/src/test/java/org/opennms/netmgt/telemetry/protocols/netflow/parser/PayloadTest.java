@@ -54,7 +54,7 @@ public class PayloadTest {
                 final org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header h1 =
                         new org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header(slice(buffer, org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Header.SIZE));
                 final org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Packet p1 =
-                        new org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Packet(session, h1, buffer);
+                        new org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.proto.Packet(null, session, h1, buffer);
             } catch (final Exception e) {
                 assertThat(e instanceof InvalidPacketException, is(true));
                 assertThat(e.getMessage(), containsString("Invalid template ID: 8, Offset: [0x001E], Payload:"));

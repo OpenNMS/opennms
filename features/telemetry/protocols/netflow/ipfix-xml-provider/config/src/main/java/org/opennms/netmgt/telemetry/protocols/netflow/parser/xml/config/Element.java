@@ -25,42 +25,48 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.xml;
+package org.opennms.netmgt.telemetry.protocols.netflow.parser.xml.config;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+public class Element {
+    private int id;
+    private String name;
+    private String dataType;
 
-@XmlRootElement(name = "ipfix-elements")
-public class IpfixElements {
-    private Scope scope;
-    private List<Element> elements = new ArrayList<>();
-
-    @XmlElement(name = "element")
-    public List<Element> getElements() {
-        return this.elements;
+    public Element() {
     }
 
-    public void setElements(final List<Element> elements) {
-        this.elements = elements;
+    public int getId() {
+        return id;
     }
 
-    public Scope getScope() {
-        return scope;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public void setScope(Scope scope) {
-        this.scope = scope;
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getDataType() {
+        return dataType;
+    }
+
+    public void setDataType(String dataType) {
+        this.dataType = dataType;
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("IpfixElements{");
-        sb.append("scope=").append(scope);
-        sb.append(", elements=").append(elements);
+        final StringBuilder sb = new StringBuilder("Element{");
+        sb.append("id=").append(id);
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", dataType='").append(dataType).append('\'');
         sb.append('}');
         return sb.toString();
     }
@@ -69,12 +75,12 @@ public class IpfixElements {
     public boolean equals(Object object) {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
-        IpfixElements that = (IpfixElements) object;
-        return Objects.equals(scope, that.scope) && Objects.equals(elements, that.elements);
+        Element element = (Element) object;
+        return id == element.id && Objects.equals(name, element.name) && Objects.equals(dataType, element.dataType);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(scope, elements);
+        return Objects.hash(id, name, dataType);
     }
 }

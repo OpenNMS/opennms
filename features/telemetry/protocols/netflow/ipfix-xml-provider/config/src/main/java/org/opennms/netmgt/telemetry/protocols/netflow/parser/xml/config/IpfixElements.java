@@ -25,38 +25,42 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.xml;
+package org.opennms.netmgt.telemetry.protocols.netflow.parser.xml.config;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
-public class Scope {
-    private long pen;
-    private String name;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
 
-    public Scope() {
+@XmlRootElement(name = "ipfix-elements")
+public class IpfixElements {
+    private Scope scope;
+    private List<Element> elements = new ArrayList<>();
+
+    @XmlElement(name = "element")
+    public List<Element> getElements() {
+        return this.elements;
     }
 
-    public long getPen() {
-        return pen;
+    public void setElements(final List<Element> elements) {
+        this.elements = elements;
     }
 
-    public void setPen(long pen) {
-        this.pen = pen;
+    public Scope getScope() {
+        return scope;
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
+    public void setScope(Scope scope) {
+        this.scope = scope;
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder("Scope{");
-        sb.append("pen=").append(pen);
-        sb.append(", name='").append(name).append('\'');
+        final StringBuilder sb = new StringBuilder("IpfixElements{");
+        sb.append("scope=").append(scope);
+        sb.append(", elements=").append(elements);
         sb.append('}');
         return sb.toString();
     }
@@ -65,12 +69,12 @@ public class Scope {
     public boolean equals(Object object) {
         if (this == object) return true;
         if (object == null || getClass() != object.getClass()) return false;
-        Scope scope = (Scope) object;
-        return pen == scope.pen && Objects.equals(name, scope.name);
+        IpfixElements that = (IpfixElements) object;
+        return Objects.equals(scope, that.scope) && Objects.equals(elements, that.elements);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(pen, name);
+        return Objects.hash(scope, elements);
     }
 }

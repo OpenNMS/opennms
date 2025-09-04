@@ -29,6 +29,7 @@ import java.util.Optional;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.MissingTemplateException;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElement;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.values.UnsignedValue;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.Field;
@@ -62,12 +63,14 @@ public final class ScopeFieldSpecifier implements Field, Scope {
     public final int fieldLength; // uint16
 
     public final InformationElement field;
+    public final InformationElementDatabase informationElementDatabase;
 
-    public ScopeFieldSpecifier(final ByteBuf buffer) throws InvalidPacketException {
+    public ScopeFieldSpecifier(final InformationElementDatabase informationElementDatabase, final ByteBuf buffer) throws InvalidPacketException {
         this.fieldType = uint16(buffer);
         this.fieldLength = uint16(buffer);
 
-        this.field = from(this.fieldType)
+        this.informationElementDatabase = informationElementDatabase;
+        this.field = from(informationElementDatabase, this.fieldType)
                 .orElseThrow(() -> new InvalidPacketException(buffer, "Invalid scope field type: 0x%04X", this.fieldType));
 
         if (this.fieldLength > this.field.getMaximumFieldLength() || this.fieldLength < this.field.getMinimumFieldLength()) {
@@ -82,7 +85,7 @@ public final class ScopeFieldSpecifier implements Field, Scope {
     @Override
     public Value<?> parse(Session.Resolver resolver, ByteBuf buffer) throws InvalidPacketException, MissingTemplateException {
         try {
-            return this.field.parse(resolver, buffer);
+            return this.field.parse(informationElementDatabase, resolver, buffer);
         } catch (final InvalidPacketException e) {
             throw new InvalidPacketException(e, "Failed to parse Netflow9 scope field: fieldType=%d", this.fieldType);
         }
@@ -106,18 +109,18 @@ public final class ScopeFieldSpecifier implements Field, Scope {
                 .toString();
     }
 
-    private static Optional<InformationElement> from(final int fieldType) {
+    private static Optional<InformationElement> from(final InformationElementDatabase informationElementDatabase, final int fieldType) {
         switch (fieldType) {
             case 0x0001:
-                return Optional.of(UnsignedValue.parserWith64Bit(SCOPE_SYSTEM, Optional.empty()));
+                return Optional.of(UnsignedValue.parserWith64Bit(informationElementDatabase, SCOPE_SYSTEM, Optional.empty()));
             case 0x0002:
-                return Optional.of(UnsignedValue.parserWith64Bit(SCOPE_INTERFACE, Optional.empty()));
+                return Optional.of(UnsignedValue.parserWith64Bit(informationElementDatabase, SCOPE_INTERFACE, Optional.empty()));
             case 0x0003:
-                return Optional.of(UnsignedValue.parserWith64Bit(SCOPE_LINE_CARD, Optional.empty()));
+                return Optional.of(UnsignedValue.parserWith64Bit(informationElementDatabase, SCOPE_LINE_CARD, Optional.empty()));
             case 0x0004:
-                return Optional.of(UnsignedValue.parserWith64Bit(SCOPE_CACHE, Optional.empty()));
+                return Optional.of(UnsignedValue.parserWith64Bit(informationElementDatabase, SCOPE_CACHE, Optional.empty()));
             case 0x0005:
-                return Optional.of(UnsignedValue.parserWith64Bit(SCOPE_TEMPLATE, Optional.empty()));
+                return Optional.of(UnsignedValue.parserWith64Bit(informationElementDatabase, SCOPE_TEMPLATE, Optional.empty()));
             default:
                 return Optional.empty();
         }

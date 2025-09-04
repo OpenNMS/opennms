@@ -61,14 +61,14 @@ public class OctetArrayValue extends Value<byte[]> {
                 .toString();
     }
 
-    public static InformationElement parser(final String name, final Optional<Semantics> semantics) {
-        return parserWithLimits(0, 0xFFFF).parser(name, semantics);
+    public static InformationElement parser(final InformationElementDatabase database, final String name, final Optional<Semantics> semantics) {
+        return parserWithLimits(0, 0xFFFF).parser(database, name, semantics);
     }
 
     public static InformationElementDatabase.ValueParserFactory parserWithLimits(final int minimum, final int maximum) {
-        return (name, semantics) -> new InformationElement() {
+        return (database, name, semantics) -> new InformationElement() {
             @Override
-            public Value<?> parse(Session.Resolver resolver, ByteBuf buffer) throws InvalidPacketException, MissingTemplateException {
+            public Value<?> parse(final InformationElementDatabase database, Session.Resolver resolver, ByteBuf buffer) throws InvalidPacketException, MissingTemplateException {
                 return new OctetArrayValue(name, semantics, bytes(buffer, buffer.readableBytes()));
             }
 

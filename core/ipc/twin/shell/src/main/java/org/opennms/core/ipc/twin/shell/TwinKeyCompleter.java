@@ -27,6 +27,7 @@ import org.apache.karaf.shell.api.console.Completer;
 import org.apache.karaf.shell.api.console.Session;
 import org.apache.karaf.shell.support.completers.StringsCompleter;
 import org.opennms.netmgt.snmp.TrapListenerConfig;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.xml.config.IpfixDotD;
 
 import java.util.HashMap;
 import java.util.List;
@@ -39,6 +40,7 @@ public class TwinKeyCompleter implements Completer {
 
     static {
         twinClazzMap.put(TrapListenerConfig.TWIN_KEY, TrapListenerConfig.class);
+        twinClazzMap.put(IpfixDotD.TWIN_KEY, IpfixDotD.class);
     }
 
     @Override

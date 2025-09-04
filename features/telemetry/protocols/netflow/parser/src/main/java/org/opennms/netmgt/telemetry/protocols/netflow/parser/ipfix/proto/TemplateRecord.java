@@ -31,6 +31,7 @@ import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketExcept
 import com.google.common.base.MoreObjects;
 
 import io.netty.buffer.ByteBuf;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 
 public final class TemplateRecord implements Record {
 
@@ -38,13 +39,14 @@ public final class TemplateRecord implements Record {
 
     public final List<FieldSpecifier> fields;
 
-    public TemplateRecord(final TemplateRecordHeader header,
+    public TemplateRecord(final InformationElementDatabase informationElementDatabase,
+                          final TemplateRecordHeader header,
                           final ByteBuf buffer) throws InvalidPacketException {
         this.header = Objects.requireNonNull(header);
 
         final List<FieldSpecifier> fields = new LinkedList<>();
         for (int i = 0; i < this.header.fieldCount; i++) {
-            final FieldSpecifier field = new FieldSpecifier(buffer);
+            final FieldSpecifier field = new FieldSpecifier(informationElementDatabase, buffer);
             fields.add(field);
         }
 
