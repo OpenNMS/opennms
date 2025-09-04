@@ -106,6 +106,12 @@ public class EventConfSourceDaoHibernate
         LOG.info("Set enabled={} for sources {} (cascadeToEvents={})", enabled, sourceIds, cascadeToEvents);
     }
 
+    @Override
+    public List<String> findAllNames() {
+        return findObjects(String.class,
+                "select s.name from EventConfSource s order by s.fileOrder");
+    }
+
 
     @Override
     public void saveOrUpdate(EventConfSource source) {

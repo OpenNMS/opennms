@@ -349,6 +349,70 @@ public class EventConfSourceDaoIT implements InitializingBean {
         }
     }
 
+    @Test
+    @Transactional
+    public void testFindAllNamesReturnsPersistedNames() {
+        List<String> names = m_dao.findAllNames();
+
+        assertNotNull("Names list should not be null", names);
+        assertFalse("Names list should not be empty", names.isEmpty());
+        assertTrue("Names should contain the persisted source", names.contains("JUnit Source"));
+    }
+
+    @Test
+    @Transactional
+    public void testFindAllNamesRespectsFileOrder() {
+        EventConfSource source1 = new EventConfSource();
+        source1.setName("Source-A");
+        source1.setVendor("VendorA");
+        source1.setEnabled(true);
+        source1.setFileOrder(1);
+        source1.setDescription("First Source");
+        source1.setEventCount(1);
+        source1.setCreatedTime(new Date());
+        source1.setLastModified(new Date());
+        source1.setUploadedBy("JUnit");
+        m_dao.saveOrUpdate(source1);
+
+        EventConfSource source2 = new EventConfSource();
+        source2.setName("Source-B");
+        source2.setVendor("VendorB");
+        source2.setEnabled(true);
+        source2.setFileOrder(2);
+        source2.setDescription("Second Source");
+        source2.setEventCount(2);
+        source2.setCreatedTime(new Date());
+        source2.setLastModified(new Date());
+        source2.setUploadedBy("JUnit");
+        m_dao.saveOrUpdate(source2);
+
+        m_dao.flush();
+
+        List<String> names = m_dao.findAllNames();
+
+        assertNotNull(names);
+        assertTrue("Names should contain Source-A", names.contains("Source-A"));
+        assertTrue("Names should contain Source-B", names.contains("Source-B"));
+
+        // Verify ordering by fileOrder
+        int idxA = names.indexOf("Source-A");
+        int idxB = names.indexOf("Source-B");
+        assertTrue("Source-A should come before Source-B", idxA < idxB);
+    }
+
+    @Test
+    @Transactional
+    public void testFindAllNamesWhenNoSourcesExist() {
+        m_dao.deleteAll(m_dao.findAll());
+        m_dao.flush();
+
+        List<String> names = m_dao.findAllNames();
+
+        assertNotNull("Names list should not be null even if empty", names);
+        assertTrue("Names list should be empty when no sources exist", names.isEmpty());
+    }
+
+
 
     @Override
     public void afterPropertiesSet() throws Exception {
