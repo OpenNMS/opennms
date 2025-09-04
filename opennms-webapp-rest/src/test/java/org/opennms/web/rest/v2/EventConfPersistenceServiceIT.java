@@ -33,6 +33,7 @@ import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
+import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
@@ -346,4 +347,66 @@ public class EventConfPersistenceServiceIT {
             }
         }
     }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testDeleteEventConfSources() throws Exception {
+        String username = "test_user";
+        Date now = new Date();
+
+        String filename1 = "source-file-1.xml";
+        EventConfSourceMetadataDto metadata1 = new EventConfSourceMetadataDto.Builder()
+                .filename(filename1)
+                .eventCount(1)
+                .fileOrder(1)
+                .username(username)
+                .now(now)
+                .vendor("vendor-1")
+                .description("first entry")
+                .build();
+
+        Event event1 = new Event();
+        event1.setUei("uei.opennms.org/test/update/1");
+        event1.setEventLabel("Event One");
+        event1.setDescr("Description for Event One");
+        event1.setSeverity("Normal");
+
+        Events events1 = new Events();
+        events1.getEvents().add(event1);
+
+        eventConfPersistenceService.persistEventConfFile(events1, metadata1);
+
+        String filename2 = "source-file-2.xml";
+        EventConfSourceMetadataDto metadata2 = new EventConfSourceMetadataDto.Builder()
+                .filename(filename2)
+                .eventCount(1)
+                .fileOrder(2)
+                .username(username)
+                .now(now)
+                .vendor("vendor-2")
+                .description("second entry")
+                .build();
+
+        Event event2 = new Event();
+        event2.setUei("uei.opennms.org/test/update/2");
+        event2.setEventLabel("Event Two");
+        event2.setDescr("Description for Event Two");
+        event2.setSeverity("Warning");
+
+        Events events2 = new Events();
+        events2.getEvents().add(event2);
+
+        eventConfPersistenceService.persistEventConfFile(events2, metadata2);
+
+        List<Long> sourcesIds = eventConfSourceDao.findAll()
+                .stream().map(EventConfSource::getId).toList();
+        // delete eventConfSources and its related events
+        EventConfSourceDeletePayload eventConfSrcDisablePayload = new EventConfSourceDeletePayload();
+        eventConfSrcDisablePayload.setSourceIds(sourcesIds);
+        eventConfPersistenceService.deleteEventConfSources(eventConfSrcDisablePayload);
+        List<EventConfSource> eventConfSources = eventConfSourceDao.findAll();
+        assertTrue(eventConfSources.isEmpty());
+
+    }
+
 }
