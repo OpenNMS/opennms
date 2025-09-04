@@ -4,7 +4,7 @@
 
 The side menu organization is configured by the use of JSON menu templates.
 
-Currently these can be found in the `opennms/jetty-webapps/opennms/WEB-INF` folder in your installation.
+Currently these can be found in the `opennms/jetty-webapps/opennms/WEB-INF/menu` folder in your installation.
 
 The `menu-template.json` file controls the menu configuration.
 
@@ -41,8 +41,7 @@ The menu template structure can be found in the Java code in: `org.opennms.web.r
   <tr>
     <td>baseHref, homeUrl, formattedDateTime, formattedDate, formattedTime,
   noticeStatus, username, baseNodeUrl, zenithConnectEnabled, zenithConnectBaseUrl,
-  zenithConnectRelativeUrl, copyrightDates, version,
-  userTileProviders</td>
+  zenithConnectRelativeUrl, copyrightDates, version</td>
     <td>These are filled in at runtime with values. Any values you enter will be ignored.</td>
   </tr>
   <tr>
