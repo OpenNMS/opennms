@@ -21,7 +21,9 @@
  */
 package org.opennms.web.rest.v2;
 
+
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
+import org.apache.commons.lang.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
@@ -45,6 +47,7 @@ import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ThreadFactory;
+import java.util.Map;
 
 @Service
 public class EventConfPersistenceService {
@@ -137,7 +140,32 @@ public class EventConfPersistenceService {
     }
 
     @PreDestroy
-    public void shutdown(){
+    public void shutdown() {
         eventConfExecutor.shutdown();
+    }
+
+    private void saveEventsToDatabase() {
+
+        Map<String, Events> fileEventsMap = eventConfDao.getRootEvents().getLoadedEventFiles();
+        int fileOrder = 1;
+        for (Map.Entry<String, Events> entry : fileEventsMap.entrySet()) {
+            String fileName = entry.getKey();
+            if (fileName.startsWith("events/")) {
+                String[] parts = fileName.split("/");
+                fileName = parts[parts.length - 1];
+            }
+            Events events = entry.getValue();
+
+            if (fileName.contains("opennms.hyperic.events.xml")) continue;
+
+            if (fileName.startsWith("opennms")) {
+                String withoutExtension = fileName.endsWith(".xml")
+                        ? fileName.substring(0, fileName.lastIndexOf(".xml"))
+                        : fileName;
+                EventConfSourceMetadataDto metadataDto = new EventConfSourceMetadataDto.Builder().filename(withoutExtension).now(new Date()).vendor(StringUtils.substringBefore(fileName, ".")).username("system-migration").description("").eventCount(events.getEvents().size()).fileOrder(fileOrder++).build();
+                persistEventConfFile(events, metadataDto);
+            }
+        }
+
     }
 }

@@ -2,6 +2,7 @@ import { Pagination } from '.'
 
 export type EventConfSourceMetadata = {
   filename: string
+  enabled: boolean
   eventCount: number
   fileOrder: number
   username: string
@@ -31,11 +32,15 @@ export type EventConfigStoreState = {
   sourcesPagination: Pagination
   isLoading: boolean
   activeTab: number
-  uploadedFilesReportModalState: {
+  uploadedEventConfigFilesReportDialogState: {
     visible: boolean
-  },
-  deleteEventConfigSourceModalState: {
-    visible: boolean,
+  }
+  deleteEventConfigSourceDialogState: {
+    visible: boolean
+    eventConfigSource: EventConfSourceMetadata | null
+  }
+  changeEventConfigSourceStatusDialogState: {
+    visible: boolean
     eventConfigSource: EventConfSourceMetadata | null
   }
 }
@@ -44,16 +49,24 @@ export type EventConfigDetailStoreState = {
   events: EventConfigEvent[]
   eventsPagination: Pagination
   selectedSource: EventConfSourceMetadata | null
-  isLoading: boolean,
+  isLoading: boolean
   deleteEventConfigEventDialogState: {
-    visible: boolean,
+    visible: boolean
     eventConfigEvent: EventConfigEvent | null
-  },
-  changeEventConfigEventStatusDialogState: {
-    visible: boolean,
-    eventConfigEvent: EventConfigEvent | null,
-    
   }
+  changeEventConfigEventStatusDialogState: {
+    visible: boolean
+    eventConfigEvent: EventConfigEvent | null
+  }
+  deleteEventConfigSourceDialogState: {
+    visible: boolean
+    eventConfigSource: EventConfSourceMetadata | null
+  }
+  changeEventConfigSourceStatusDialogState: {
+    visible: boolean
+    eventConfigSource: EventConfSourceMetadata | null
+  }
+  drawerState: DrawerState
 }
 
 export type EventConfigFilesUploadReponse = {
@@ -67,10 +80,14 @@ export type EventConfigFilesUploadReponse = {
     {
       file: string
     }
-  ],
-   invalid?: {
-    file: string;
-    reason: string;
-  }[];
+  ]
+  invalid?: {
+    file: string
+    reason: string
+  }[]
 }
 
+export interface DrawerState {
+  visible: boolean
+  isEventEditorModal: boolean
+}

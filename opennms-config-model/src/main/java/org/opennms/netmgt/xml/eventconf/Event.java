@@ -572,4 +572,12 @@ public class Event implements Serializable, Comparable<Event> {
                 .toString();
     }
 
+    public void setEventMatcher(EventMatcher eventMatcher) {
+        this.m_matcher = eventMatcher;
+    }
+
+    public EventMatcher getEventMatcher() {
+        return this.m_matcher;
+    }
+
 }

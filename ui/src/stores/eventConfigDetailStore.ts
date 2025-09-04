@@ -1,6 +1,6 @@
 import { eventConfigEvents } from '@/components/EventConfiguration/data'
-import { changeEventConfigEventStatus } from '@/services/eventConfigService'
-import { EventConfigDetailStoreState, EventConfigEvent, EventConfSourceMetadata } from '@/types/eventConfig'
+import { changeEventConfigEventStatus, changeEventConfigSourceStatus } from '@/services/eventConfigService'
+import { EventConfigDetailStoreState, EventConfigEvent, EventConfSourceMetadata,DrawerState } from '@/types/eventConfig'
 import { cloneDeep } from 'lodash'
 import { defineStore } from 'pinia'
 
@@ -8,6 +8,13 @@ const defaultPagination = {
   page: 1,
   pageSize: 10,
   total: 0
+}
+
+const getDefaultDrawerState = (): DrawerState => {
+  return {
+    visible: false,
+    isEventEditorModal: false
+  }
 }
 
 export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore', {
@@ -23,7 +30,16 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     changeEventConfigEventStatusDialogState: {
       visible: false,
       eventConfigEvent: null
-    }
+    },
+    deleteEventConfigSourceDialogState: {
+      visible: false,
+      eventConfigSource: null
+    },
+    changeEventConfigSourceStatusDialogState: {
+      visible: false,
+      eventConfigSource: null
+    },
+    drawerState: getDefaultDrawerState()
   }),
   actions: {
     async fetchEventsBySourceId() {
@@ -31,7 +47,7 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       const id = this.selectedSource?.id
       try {
         console.log('Fetching events for source ID:', this.events)
-        
+
         this.events = cloneDeep(eventConfigEvents) // Using static data for now
         this.eventsPagination.total = this.events.length
       } catch (error) {
@@ -82,10 +98,54 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       this.changeEventConfigEventStatusDialogState.visible = true
     },
     async hideChangeEventConfigEventStatusDialog() {
-
       this.changeEventConfigEventStatusDialogState.visible = false
       this.changeEventConfigEventStatusDialogState.eventConfigEvent = null
       await this.fetchEventsBySourceId()
+    },
+    resetEventsPagination() {
+      this.eventsPagination = { ...defaultPagination }
+    },
+    showDeleteEventConfigSourceDialog(eventConfigSource: EventConfSourceMetadata) {
+      this.deleteEventConfigSourceDialogState.visible = true
+      this.deleteEventConfigSourceDialogState.eventConfigSource = eventConfigSource
+    },
+    hideDeleteEventConfigSourceDialog() {
+      this.deleteEventConfigSourceDialogState.visible = false
+      this.deleteEventConfigSourceDialogState.eventConfigSource = null
+    },
+    showChangeEventConfigSourceStatusDialog(eventConfigSource: EventConfSourceMetadata) {
+      this.changeEventConfigSourceStatusDialogState.visible = true
+      this.changeEventConfigSourceStatusDialogState.eventConfigSource = eventConfigSource
+    },
+    hideChangeEventConfigSourceStatusDialog() {
+      this.changeEventConfigSourceStatusDialogState.visible = false
+      this.changeEventConfigSourceStatusDialogState.eventConfigSource = null
+    },
+    async disableEventConfigSource(sourceId: number) {
+      if (sourceId && this.selectedSource) {
+        const response = await changeEventConfigSourceStatus(sourceId, false)
+        if (response) {
+          this.selectedSource.enabled = false
+        }
+      } else {
+        console.error('No source selected')
+      }
+    },
+    async enableEventConfigSource(sourceId: number) {
+      if (sourceId && this.selectedSource) {
+        const response = await changeEventConfigSourceStatus(sourceId, true)
+        if (response) {
+          this.selectedSource.enabled = true
+        }
+      } else {
+        console.error('No source selected')
+      }
+    },
+    openEventDrawerModal() {
+      this.drawerState.visible  = true      
+    },
+    closeEventDrawerModal() {
+      this.drawerState.visible  = false
     }
   }
 })

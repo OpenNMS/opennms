@@ -74,6 +74,7 @@
                   icon="Edit"
                   :title="`Edit ${event.eventLabel}`"
                   data-test="edit-button"
+                  @click="openEventDrawer(event)"
                 >
                   <FeatherIcon :icon="Edit" />
                 </FeatherButton>
@@ -90,16 +91,16 @@
                     </FeatherButton>
                   </template>
                   <FeatherDropdownItem
-                    @click="store.showDeleteEventConfigEventDialog(event)"
-                    data-test="delete-event-button"
-                  >
-                    Delete Event
-                  </FeatherDropdownItem>
-                  <FeatherDropdownItem
                     @click="store.showChangeEventConfigEventStatusDialog(event)"
                     data-test="change-status-button"
                   >
                     {{ event.enabled ? 'Disable Event' : 'Enable Event' }}
+                  </FeatherDropdownItem>
+                  <FeatherDropdownItem
+                    @click="store.showDeleteEventConfigEventDialog(event)"
+                    data-test="delete-event-button"
+                  >
+                    Delete Event
                   </FeatherDropdownItem>
                 </FeatherDropdown>
               </div>
@@ -129,6 +130,7 @@
     <DeleteEventConfigEventDialog />
     <ChangeEventConfEventStatusDialog />
   </TableCard>
+  <EventConfigDetailsDrawer  :event="selectedEvent" />
 </template>
 
 <script setup lang="ts">
@@ -147,12 +149,14 @@ import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfEventStatusDialog from './Dialog/ChangeEventConfEventStatusDialog.vue'
 import DeleteEventConfigEventDialog from './Dialog/DeleteEventConfigEventDialog.vue'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
+import EventConfigDetailsDrawer from './Drawer/EventConfigDetailsDrawer.vue'
+import { EventConfigEvent } from '@/types/eventConfig'
 
 const store = useEventConfigDetailStore()
 const emptyListContent = {
   msg: 'No results found.'
 }
-
+const selectedEvent = ref<EventConfigEvent | null>(null)
 const columns = computed(() => [
   { id: 'uei', label: 'UEI' },
   { id: 'eventLabel', label: 'Event Label' },
@@ -167,6 +171,11 @@ const sort = reactive({
   vendor: SORT.NONE,
   eventCount: SORT.NONE
 }) as any
+
+const openEventDrawer = (event: EventConfigEvent) => {
+  selectedEvent.value = event
+  store.openEventDrawerModal()
+}
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
   for (const prop in sort) {
