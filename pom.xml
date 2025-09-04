@@ -1422,6 +1422,7 @@
             <skipIpv6Tests>${skipIpv6Tests}</skipIpv6Tests>
             <proxy.port>${proxy.port}</proxy.port>
             <opennms.version>${project.version}</opennms.version>
+            <org.opennms.rrd.strategyClass>org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy</org.opennms.rrd.strategyClass>
             <!-- <opennms.unit.test>true</opennms.unit.test> -->
           </systemPropertyVariables>
           <forkCount>1</forkCount>
@@ -1449,6 +1450,7 @@
           <!-- Don't specify argLine here or it will override the argLine property value -->
           <systemPropertyVariables>
             <java.locale.providers>CLDR,COMPAT</java.locale.providers>
+            <org.opennms.rrd.strategyClass>org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy</org.opennms.rrd.strategyClass>
           </systemPropertyVariables>
           <!--
             Configure failsafe to put reports in the surefire unit test directory so that
