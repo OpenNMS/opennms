@@ -21,7 +21,9 @@
  */
 package org.opennms.web.rest.v2;
 
+import org.apache.commons.lang.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
@@ -34,6 +36,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -46,6 +49,9 @@ public class EventConfPersistenceService {
 
     @Autowired
     private EventConfEventDao eventConfEventDao;
+
+    @Autowired
+    private EventConfDao eventConfDao;
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void persistEventConfFile(final Events events, final EventConfSourceMetadataDto eventConfSourceMetadataDto) {
@@ -101,10 +107,28 @@ public class EventConfPersistenceService {
         eventEntities.forEach(eventConfEventDao::save);
     }
 
-    public Map<String, Object> filterEventConfSource(String name, String vendor, String desc, Integer fileOrder,
-                                                     Integer eventCount, Integer totalRecords, Integer offset,
-                                                     Integer limit) {
-        return eventConfSourceDao.filterEventConfSource(name, vendor, desc, fileOrder, eventCount, totalRecords,
-                offset, limit);
+    private void saveEventsToDatabase(){
+
+        Map<String, Events> fileEventsMap = eventConfDao.getRootEvents().getLoadedEventFiles();
+        int fileOrder = 1;
+        for (Map.Entry<String, Events> entry : fileEventsMap.entrySet()) {
+            String fileName = entry.getKey();
+            if(fileName.startsWith("events/")) {
+                String[] parts = fileName.split("/");
+                fileName = parts[parts.length - 1];
+            }
+            Events events = entry.getValue();
+
+            if(fileName.contains("opennms.hyperic.events.xml")) continue;
+
+            if (fileName.startsWith("opennms")) {
+                String withoutExtension = fileName.endsWith(".xml")
+                        ? fileName.substring(0, fileName.lastIndexOf(".xml"))
+                        : fileName;
+                EventConfSourceMetadataDto metadataDto = new EventConfSourceMetadataDto.Builder().filename(withoutExtension).now(new Date()).vendor(StringUtils.substringBefore(fileName, ".")).username("system-migration").description("").eventCount(events.getEvents().size()).fileOrder(fileOrder++).build();
+                persistEventConfFile(events, metadataDto);
+            }
+        }
+
     }
 }
