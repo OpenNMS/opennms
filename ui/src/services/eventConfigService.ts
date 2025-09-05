@@ -98,17 +98,6 @@ export const changeEventConfigSourceStatus = async (sourceId: number, enabled: b
   }
 }
 
-// (params: {
-//   name?: string
-//   vendor?: string
-//   desc?: string
-//   fileOrder?: number
-//   eventCount?: number
-//   totalRecords?: number
-//   offset?: number
-//   limit?: number
-// })
-
 /**
  * Makes a GET request to the REST endpoint to filter event configuration sources.
  *
