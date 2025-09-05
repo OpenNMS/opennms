@@ -91,4 +91,28 @@ public interface EventConfRestApi {
             @ApiResponse(responseCode = "400", description = "Invalid request")
     })
     Response enableDisableEventConfSources(EventConfSrcEnableDisablePayload eventConfSrcEnableDisablePayload, @Context SecurityContext securityContext) throws Exception;
+
+    @GET
+    @Path("filter/events/sourceId")
+    @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Operation(
+            summary = "Filter EventConfEvent Records by Source Id",
+            description = "Fetch EventConf records based on sourceId.",
+            operationId = "filterConfEventBySourceId"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "EventConf records retrieved successfully",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
+                    content = @Content),
+            @ApiResponse(responseCode = "204", description = "No matching EventConfEvent records found for the given criteria",
+                    content = @Content)
+    })
+    Response filterConfEventsBySourceId(
+            @QueryParam("sourceId") Long sourceId,
+            @QueryParam("totalRecords") Integer totalRecords,
+            @QueryParam("offset") Integer offset,
+            @QueryParam("limit") Integer limit,
+            @Context SecurityContext securityContext );
+
 }

@@ -25,6 +25,7 @@ import org.opennms.netmgt.model.EventConfEvent;
 
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 
 public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
 
@@ -41,4 +42,6 @@ public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
     void deleteAll(final Collection<EventConfEvent> list);
 
     List<EventConfEvent> filterEventConf(String uei, String vendor, String sourceName, int offset, int limit);
+
+    Map<String, Object>  findBySourceId(Long sourceId, Integer totalRecords, Integer offset, Integer limit);
 }
