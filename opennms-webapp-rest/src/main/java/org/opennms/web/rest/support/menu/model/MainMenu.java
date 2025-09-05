@@ -42,8 +42,6 @@ public class MainMenu {
     public String copyrightDates;
     public String version;
 
-    final public List<TileProviderItem> userTileProviders = new ArrayList<>();
-
     final public List<MenuEntry> menus = new ArrayList<>();
     public MenuEntry helpMenu;
     public MenuEntry selfServiceMenu;

@@ -16,14 +16,6 @@ export interface MenuItem {
   onClick?: () => void
 }
 
-export interface TileProviderItem {
-  name: string
-  url: string
-  attribution: string
-  userDefinedAsDefault?: boolean
-  visible?: boolean
-}
-
 export interface MainMenu {
   templateName: string
   baseHref: string
@@ -41,7 +33,6 @@ export interface MainMenu {
   zenithConnectRelativeUrl: string
   displayAddNodeButton?: boolean
   sideMenuInitialExpand?: boolean
-  userTileProviders?: TileProviderItem[]
   
   menus: MenuItem[]
   helpMenu: MenuItem | null
