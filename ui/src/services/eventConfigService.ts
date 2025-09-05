@@ -101,11 +101,13 @@ export const changeEventConfigSourceStatus = async (sourceId: number, enabled: b
 /**
  * Makes a GET request to the REST endpoint to filter event configuration sources.
  *
- * @param offset The offset of the first record to return.
- * @param limit The maximum number of records to return.
- * @param totalRecords The total number of records in the result set.
- * @param searchTerm The search term to filter by.
- * @returns A promise that resolves to the filtered event configuration sources.
+ * @param offset The offset of the page of results to return.
+ * @param limit The maximum number of results to return in a page.
+ * @param totalRecords The total number of records across all pages.
+ * @param filter The filter to apply to the results, expressed as a comma-separated list of key-value pairs.
+ * @param sortBy The field to sort the results by.
+ * @param order The order in which to sort the results (either "asc" or "desc").
+ * @returns A promise that resolves to an `EventConfSourcesResponse` containing the filtered event configuration sources.
  */
 export const filterEventConfigSources = async (offset: number, limit: number, totalRecords: number, filter: string, sortBy: string, order: string): Promise<EventConfSourcesResponse> => {
   const endpoint = '/eventconf/filter/sources'
