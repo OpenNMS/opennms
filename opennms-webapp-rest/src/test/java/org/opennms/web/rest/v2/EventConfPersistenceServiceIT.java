@@ -48,7 +48,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -76,6 +79,7 @@ public class EventConfPersistenceServiceIT {
 
     @Autowired
     private EventConfPersistenceService eventConfPersistenceService;
+
     private int defaultEventConfSize;
     private int defaultEventConfEventSize;
 
@@ -325,7 +329,7 @@ public class EventConfPersistenceServiceIT {
 
         for (EventConfSource eventConfSource : eventConfSourceList) {
             List<EventConfEvent> eventConfEventList = eventConfEventDao.findBySourceId(eventConfSource.getId());
-            Events fileEvents = fileEventsMap.get("events/" + eventConfSource.getName()+".xml");
+            Events fileEvents = fileEventsMap.get("events/" + eventConfSource.getName() + ".xml");
             Assert.assertNotNull("File events not found for source: " + eventConfSource.getName(), fileEvents);
             List<Event> eventsList = fileEvents.getEvents();
             for (EventConfEvent eventConfEvent : eventConfEventList) {
@@ -333,9 +337,9 @@ public class EventConfPersistenceServiceIT {
                 Event matchingFileEvent = eventsList.stream()
                         .filter(fileEvent ->
                                 Objects.equals(fileEvent.getUei(), dbEvent.getUei()) &&
-                                Objects.equals(fileEvent.getSeverity(), dbEvent.getSeverity()) &&
-                                Objects.equals(fileEvent.getLogmsg().getContent(), dbEvent.getLogmsg().getContent()) &&
-                                Objects.equals(fileEvent.getDescr(), dbEvent.getDescr())
+                                        Objects.equals(fileEvent.getSeverity(), dbEvent.getSeverity()) &&
+                                        Objects.equals(fileEvent.getLogmsg().getContent(), dbEvent.getLogmsg().getContent()) &&
+                                        Objects.equals(fileEvent.getDescr(), dbEvent.getDescr())
                         )
                         .findFirst()
                         .orElse(null);
@@ -346,4 +350,23 @@ public class EventConfPersistenceServiceIT {
             }
         }
     }
+
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void testLoadingOfEventsInMemory() {
+
+        // Call loadEventsFromDB directly
+        var dbEvents = eventConfEventDao.findEnabledEvents();
+        eventConfDao.loadEventsFromDB(dbEvents);
+        var event = eventConfDao.findByUei("uei.opennms.org/circuitBreaker/stateChange");
+        assertNotNull(event);
+        // This is not unique uei so getEventByUeiOptimistic will exclude this.
+        var uniqueEvent = eventConfDao.getRootEvents().getEventByUeiOptimistic("uei.opennms.org/circuitBreaker/stateChange");
+        assertNull(uniqueEvent);
+        assertEquals(defaultEventConfEventSize, eventConfDao.getEventUEIs().size());
+
+    }
+
 }
+
