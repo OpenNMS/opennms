@@ -54,6 +54,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.core.xml.ValidateUsing;
 import org.opennms.netmgt.config.utils.ConfigUtils;
@@ -573,5 +574,10 @@ public class Events implements Serializable {
      */
     public Event getEventByUeiOptimistic(String uei) {
         return m_eventsByUei.get(uei);
+    }
+
+    @VisibleForTesting
+    public Map<String, Event> getEventsByUei() {
+        return m_eventsByUei;
     }
 }

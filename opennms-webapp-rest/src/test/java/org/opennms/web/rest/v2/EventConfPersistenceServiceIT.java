@@ -44,9 +44,11 @@ import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -346,6 +348,29 @@ public class EventConfPersistenceServiceIT {
                 Assert.assertEquals(dbEvent, matchingFileEvent);
             }
         }
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void testEventConfPersistenceLoadingIntoMemory() {
+
+        List<EventConfEvent> eventConfEvents = eventConfEventDao.findEnabledEvents();
+        eventConfDao.loadEventsFromDB(eventConfEvents);
+        Events events = eventConfDao.getRootEvents();
+        // Count unique UEIs by iterating through all events
+        Set<String> uniqueUeis = new HashSet<>();
+        events.forEachEvent(uniqueUeis, (acc, event) -> {
+            if (event.getUei() != null) {
+                acc.add(event.getUei());
+            }
+            return acc;
+        });
+
+        Map<String, org.opennms.netmgt.xml.eventconf.Event> eventsByUei = events.getEventsByUei();
+        Assert.assertEquals(156, uniqueUeis.size());
+        Assert.assertEquals(155, eventsByUei.size());
+
     }
 
 }
