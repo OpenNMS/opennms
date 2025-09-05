@@ -14,8 +14,15 @@
       </div>
 
       <div class="action-container">
-        <FeatherButton @click="store.showChangeEventConfigSourceStatusDialog(config)"> {{ config.enabled ? 'Disable Source' : 'Enable Source' }} </FeatherButton>
-        <FeatherButton primary @click="store.showDeleteEventConfigSourceDialog(config)"> Delete Source </FeatherButton>
+        <FeatherButton @click="store.showChangeEventConfigSourceStatusDialog(config)">
+          {{ config.enabled ? 'Disable Source' : 'Enable Source' }}
+        </FeatherButton>
+        <FeatherButton
+          primary
+          @click="store.showDeleteEventConfigSourceDialog(config)"
+        >
+          Delete Source
+        </FeatherButton>
       </div>
     </div>
 
@@ -23,7 +30,7 @@
       <div class="config-row">
         <div class="config-field name-field">
           <span class="field-label">Name:</span>
-          <span class="field-value">{{ config?.filename }}</span>
+          <span class="field-value">{{ config?.name }}</span>
         </div>
         <div class="config-field description-field">
           <span class="field-label">Description:</span>
@@ -79,14 +86,14 @@ import ChangeEventConfSourceStatusDialog from '@/components/EventConfigurationDe
 import DeleteEventConfigSourceDialog from '@/components/EventConfigurationDetail/Dialog/DeleteEventConfigSourceDialog.vue'
 import EventConfigEventTable from '@/components/EventConfigurationDetail/EventConfigEventTable.vue'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
-import { EventConfSourceMetadata } from '@/types/eventConfig'
+import { EventConfSource } from '@/types/eventConfig'
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
 
 const store = useEventConfigDetailStore()
 const route = useRoute()
 const router = useRouter()
-const config = ref<EventConfSourceMetadata>()
+const config = ref<EventConfSource>()
 
 onMounted(async () => {
   if (Number(route.params.id) === store.selectedSource?.id) {

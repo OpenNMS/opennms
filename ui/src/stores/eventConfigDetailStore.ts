@@ -1,6 +1,6 @@
 import { eventConfigEvents } from '@/components/EventConfiguration/data'
 import { changeEventConfigEventStatus, changeEventConfigSourceStatus } from '@/services/eventConfigService'
-import { EventConfigDetailStoreState, EventConfigEvent, EventConfSourceMetadata } from '@/types/eventConfig'
+import { EventConfigDetailStoreState, EventConfEvent, EventConfSource } from '@/types/eventConfig'
 import { cloneDeep } from 'lodash'
 import { defineStore } from 'pinia'
 
@@ -48,7 +48,7 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
         this.isLoading = false
       }
     },
-    setSelectedEventConfigSource(eventConfigSource: EventConfSourceMetadata) {
+    setSelectedEventConfigSource(eventConfigSource: EventConfSource) {
       this.selectedSource = eventConfigSource
     },
     onEventsPageChange(page: number) {
@@ -57,7 +57,7 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     onEventsPageSizeChange(pageSize: number) {
       this.eventsPagination.pageSize = pageSize
     },
-    showDeleteEventConfigEventDialog(eventConfigSource: EventConfigEvent) {
+    showDeleteEventConfigEventDialog(eventConfigSource: EventConfEvent) {
       this.deleteEventConfigEventDialogState.visible = true
       this.deleteEventConfigEventDialogState.eventConfigEvent = eventConfigSource
     },
@@ -85,7 +85,7 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
         console.error('No source selected')
       }
     },
-    showChangeEventConfigEventStatusDialog(eventConfigEvent: EventConfigEvent) {
+    showChangeEventConfigEventStatusDialog(eventConfigEvent: EventConfEvent) {
       this.changeEventConfigEventStatusDialogState.eventConfigEvent = eventConfigEvent
       this.changeEventConfigEventStatusDialogState.visible = true
     },
@@ -97,7 +97,7 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     resetEventsPagination() {
       this.eventsPagination = { ...defaultPagination }
     },
-    showDeleteEventConfigSourceDialog(eventConfigSource: EventConfSourceMetadata) {
+    showDeleteEventConfigSourceDialog(eventConfigSource: EventConfSource) {
       this.deleteEventConfigSourceDialogState.visible = true
       this.deleteEventConfigSourceDialogState.eventConfigSource = eventConfigSource
     },
@@ -105,7 +105,7 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       this.deleteEventConfigSourceDialogState.visible = false
       this.deleteEventConfigSourceDialogState.eventConfigSource = null
     },
-    showChangeEventConfigSourceStatusDialog(eventConfigSource: EventConfSourceMetadata) {
+    showChangeEventConfigSourceStatusDialog(eventConfigSource: EventConfSource) {
       this.changeEventConfigSourceStatusDialogState.visible = true
       this.changeEventConfigSourceStatusDialogState.eventConfigSource = eventConfigSource
     },

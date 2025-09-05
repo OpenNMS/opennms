@@ -1,41 +1,5 @@
 import { BreadCrumb } from '@/types'
-import { EventConfigEvent, EventConfSourceMetadata } from '@/types/eventConfig'
-
-export const eventConfigSources: EventConfSourceMetadata[] = [
-  {
-    filename: 'example-event-config.xml',
-    enabled: true,
-    eventCount: 42,
-    fileOrder: 1,
-    username: 'admin',
-    now: new Date(),
-    vendor: 'OpenNMS',
-    description: 'Example event configuration file for demonstration purposes.',
-    id: 1
-  },
-  {
-    filename: 'another-event-config.xml',
-    enabled: false,
-    eventCount: 15,
-    fileOrder: 2,
-    username: 'user1',
-    now: new Date(),
-    vendor: 'OpenNMS',
-    description: 'Another event configuration file with different settings.',
-    id: 2
-  },
-  {
-    filename: 'custom-event-config.xml',
-    enabled: true,
-    eventCount: 30,
-    fileOrder: 3,
-    username: 'user2',
-    now: new Date(),
-    vendor: 'CustomVendor',
-    description: 'Custom event configuration file for specific vendor requirements.',
-    id: 3
-  }
-]
+import { EventConfEvent } from '@/types/eventConfig'
 
 export const breadcrumbItems: BreadCrumb[] = [
   {
@@ -51,7 +15,7 @@ export const breadcrumbItems: BreadCrumb[] = [
   }
 ]
 
-export const eventConfigEvents: EventConfigEvent[] = [
+export const eventConfigEvents: EventConfEvent[] = [
   {
     id: 1,
     uei: 'uei-1',
@@ -95,3 +59,4 @@ export const eventConfigEvents: EventConfigEvent[] = [
     fileOrder: 3
   }
 ]
+

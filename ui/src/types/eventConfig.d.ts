@@ -1,18 +1,19 @@
-import { Pagination } from '.'
+import { Pagination, Sorting } from '.'
 
-export type EventConfSourceMetadata = {
-  filename: string
+export type EventConfSource = {
+  id: number
+  name: string
+  vendor: string
+  description: string
   enabled: boolean
   eventCount: number
   fileOrder: number
-  username: string
-  now: Date
-  vendor: string
-  description: string
-  id: number
+  uploadedBy: string
+  createdTime: Date
+  lastModified: Date
 }
 
-export type EventConfigEvent = {
+export type EventConfEvent = {
   id: number
   uei: string
   eventLabel: string
@@ -28,8 +29,10 @@ export type EventConfigEvent = {
 }
 
 export type EventConfigStoreState = {
-  sources: EventConfSourceMetadata[]
+  sources: EventConfSource[]
   sourcesPagination: Pagination
+  sourcesSearchTerm: string
+  sourcesSorting: Sorting
   isLoading: boolean
   activeTab: number
   uploadedEventConfigFilesReportDialogState: {
@@ -37,18 +40,18 @@ export type EventConfigStoreState = {
   }
   deleteEventConfigSourceDialogState: {
     visible: boolean
-    eventConfigSource: EventConfSourceMetadata | null
+    eventConfigSource: EventConfSource | null
   }
   changeEventConfigSourceStatusDialogState: {
     visible: boolean
-    eventConfigSource: EventConfSourceMetadata | null
+    eventConfigSource: EventConfSource | null
   }
 }
 
 export type EventConfigDetailStoreState = {
   events: EventConfigEvent[]
   eventsPagination: Pagination
-  selectedSource: EventConfSourceMetadata | null
+  selectedSource: EventConfSource | null
   isLoading: boolean
   deleteEventConfigEventDialogState: {
     visible: boolean
@@ -60,11 +63,11 @@ export type EventConfigDetailStoreState = {
   }
   deleteEventConfigSourceDialogState: {
     visible: boolean
-    eventConfigSource: EventConfSourceMetadata | null
+    eventConfigSource: EventConfSource | null
   }
   changeEventConfigSourceStatusDialogState: {
     visible: boolean
-    eventConfigSource: EventConfSourceMetadata | null
+    eventConfigSource: EventConfSource | null
   }
 }
 
@@ -86,3 +89,7 @@ export type EventConfigFilesUploadReponse = {
   }[]
 }
 
+export type EventConfSourcesResponse = {
+  sources: EventConfSource[]
+  totalRecords: number
+}

@@ -10,6 +10,9 @@
             label="Search"
             type="search"
             data-test="search-input"
+            v-model.trim="store.sourcesSearchTerm"
+            placeholder="Search by Name, Vendor or Description"
+            @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
           >
             <template #pre>
               <FeatherIcon :icon="Search" />
@@ -64,10 +67,9 @@
             v-for="config in store.sources"
             :key="config.id"
           >
-            <td>{{ config.filename }}</td>
-            <td>{{ config.description }}</td>
+            <td>{{ config.name }}</td>
             <td>{{ config.vendor }}</td>
-            <td>{{ config.fileOrder }}</td>
+            <td>{{ config.description }}</td>
             <td>{{ config.eventCount }}</td>
             <td>
               <div class="action-container">
@@ -86,7 +88,7 @@
                       href="#"
                       v-bind="attrs"
                       v-on="on"
-                      :icon="`More actions for ${config.filename}`"
+                      :icon="`More actions for ${config.name}`"
                     >
                       <FeatherIcon :icon="MenuIcon" />
                     </FeatherButton>
@@ -136,7 +138,7 @@
 <script lang="ts" setup>
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
-import { EventConfSourceMetadata } from '@/types/eventConfig'
+import { EventConfSource } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
@@ -148,6 +150,7 @@ import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
+import { debounce } from 'lodash'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfSourceStatusDialog from './Dialog/ChangeEventConfSourceStatusDialog.vue'
 import DeleteEventConfigSourceDialog from './Dialog/DeleteEventConfigSourceDialog.vue'
@@ -159,10 +162,9 @@ const emptyListContent = {
 }
 
 const columns = computed(() => [
-  { id: 'fileName', label: 'Name' },
-  { id: 'description', label: 'Description' },
+  { id: 'name', label: 'Name' },
   { id: 'vendor', label: 'Vendor' },
-  { id: 'fileOrder', label: 'File Order' },
+  { id: 'description', label: 'Description' },
   { id: 'eventCount', label: 'Event Count' }
 ])
 
@@ -174,7 +176,7 @@ const sort = reactive({
   eventCount: SORT.NONE
 }) as any
 
-const onEventClick = (source: EventConfSourceMetadata) => {
+const onEventClick = (source: EventConfSource) => {
   const eventDetailsStore = useEventConfigDetailStore()
   eventDetailsStore.setSelectedEventConfigSource(source)
   router.push({
@@ -184,11 +186,21 @@ const onEventClick = (source: EventConfSourceMetadata) => {
 }
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
+  if (sortObj.value === 'asc' || sortObj.value === 'desc') {
+    store.onSourcesSortChange(sortObj.property, sortObj.value)
+  } else {
+    store.onSourcesSortChange('createdTime', 'desc')
+  }
+
   for (const prop in sort) {
     sort[prop] = SORT.NONE
   }
   sort[sortObj.property] = sortObj.value
 }
+
+const onChangeSearchTerm = debounce(async (value: string) => {
+  await store.onChangeSourcesSearchTerm(value)
+}, 500)
 
 onMounted(async () => {
   await store.fetchEventConfigs()
