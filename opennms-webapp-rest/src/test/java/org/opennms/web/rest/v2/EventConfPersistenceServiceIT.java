@@ -48,7 +48,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -346,6 +349,23 @@ public class EventConfPersistenceServiceIT {
                 Assert.assertEquals(dbEvent, matchingFileEvent);
             }
         }
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void testLoadingOfEventsInMemory() {
+
+        // Call loadEventsFromDB directly
+        var dbEvents = eventConfEventDao.findEnabledEvents();
+        eventConfDao.loadEventsFromDB(dbEvents);
+        var event = eventConfDao.findByUei("uei.opennms.org/circuitBreaker/stateChange");
+        assertNotNull(event);
+        // This is not unique uei so getEventByUeiOptimistic will exclude this.
+        var uniqueEvent = eventConfDao.getRootEvents().getEventByUeiOptimistic("uei.opennms.org/circuitBreaker/stateChange");
+        assertNull(uniqueEvent);
+        assertEquals(defaultEventConfEventSize, eventConfDao.getEventUEIs().size());
+
     }
 
 }

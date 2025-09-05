@@ -145,6 +145,10 @@ public interface EventConfDao {
      */
     Events getRootEvents();
 
+    /**
+     * Load event conf from DB, should replace loading of event conf from filesystem
+     * @param dbEvents
+     */
     void loadEventsFromDB(List<EventConfEvent> dbEvents);
 
 }
