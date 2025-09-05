@@ -614,3 +614,8 @@ export type Pagination = {
   pageSize: number
   total: number
 }
+
+export type Sorting = {
+  sortOrder: string
+  sortKey: string
+}

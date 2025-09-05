@@ -1,5 +1,5 @@
 <template>
-  <div class="delete-event-config-source-dialog">
+  <div class="delete-event-config-event-dialog">
     <FeatherDialog
       v-model="store.deleteEventConfigEventDialogState.visible"
       :labels="labels"
@@ -10,8 +10,8 @@
         <p>
           This will delete the event configuration event:
           <strong>{{ store.deleteEventConfigEventDialogState.eventConfigEvent?.eventLabel }}</strong>
-          with source name: 
-          <strong>{{ store.selectedSource?.filename }}</strong>
+          with source name:
+          <strong>{{ store.selectedSource?.name }}</strong>
         </p>
         <p><strong>Are you sure you want to proceed?</strong></p>
       </div>
@@ -57,7 +57,7 @@ const deleteEventConfigEvent = async () => {
 </script>
 
 <style scoped lang="scss">
-.delete-event-config-source-dialog {
+.delete-event-config-event-dialog {
   .modal-body {
     display: flex;
     flex-direction: column;
