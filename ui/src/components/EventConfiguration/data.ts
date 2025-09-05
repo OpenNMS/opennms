@@ -1,5 +1,5 @@
 import { BreadCrumb } from '@/types'
-import { EventConfEvent } from '@/types/eventConfig'
+import { EventConfigEvent } from '@/types/eventConfig'
 
 export const breadcrumbItems: BreadCrumb[] = [
   {
@@ -15,7 +15,7 @@ export const breadcrumbItems: BreadCrumb[] = [
   }
 ]
 
-export const eventConfigEvents: EventConfEvent[] = [
+export const eventConfigEvents: EventConfigEvent[] = [
   {
     id: 1,
     uei: 'uei-1',

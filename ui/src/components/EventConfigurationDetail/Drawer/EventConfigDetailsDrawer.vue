@@ -60,7 +60,7 @@
 
 <script lang="ts" setup>
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
-import { EventConfEvent } from '@/types/eventConfig'
+import { EventConfigEvent } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDrawer } from '@featherds/drawer'
 import { FeatherIcon } from '@featherds/icon'
@@ -73,7 +73,7 @@ const eventDescription = ref('')
 const eventLabel = ref('')
 const selectedEventStatus = ref<ISelectItemType | undefined>()
 const props = defineProps<{
-  event: EventConfEvent | null
+  event: EventConfigEvent | null
 }>()
 
 const categoryOptions = [
@@ -92,7 +92,7 @@ const handleSave = () => {
   eventConfigStore.closeEventDrawerModal()
 }
 
-const setIntialEventInfo = (val: EventConfEvent) => {
+const setIntialEventInfo = (val: EventConfigEvent) => {
   eventDescription.value = val.description
   eventLabel.value = val.eventLabel
   selectedEventStatus.value = {

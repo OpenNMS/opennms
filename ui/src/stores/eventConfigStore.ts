@@ -1,5 +1,5 @@
 import { changeEventConfigSourceStatus, filterEventConfigSources } from '@/services/eventConfigService'
-import { EventConfigStoreState, EventConfSource } from '@/types/eventConfig'
+import { EventConfigSource, EventConfigStoreState } from '@/types/eventConfig'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
@@ -72,7 +72,7 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     resetActiveTab() {
       this.activeTab = 0
     },
-    showDeleteEventConfigSourceModal(eventConfigSource: EventConfSource) {
+    showDeleteEventConfigSourceModal(eventConfigSource: EventConfigSource) {
       this.deleteEventConfigSourceDialogState.visible = true
       this.deleteEventConfigSourceDialogState.eventConfigSource = eventConfigSource
     },
@@ -83,7 +83,7 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     resetSourcesPagination() {
       this.sourcesPagination = { ...defaultPagination }
     },
-    showChangeEventConfigSourceStatusDialog(eventConfigSource: EventConfSource) {
+    showChangeEventConfigSourceStatusDialog(eventConfigSource: EventConfigSource) {
       this.changeEventConfigSourceStatusDialogState.visible = true
       this.changeEventConfigSourceStatusDialogState.eventConfigSource = eventConfigSource
     },

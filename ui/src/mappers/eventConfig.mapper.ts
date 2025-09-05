@@ -1,4 +1,4 @@
-import { EventConfigFilesUploadReponse, EventConfSource, EventConfSourcesResponse } from '@/types/eventConfig'
+import { EventConfigFilesUploadReponse, EventConfigSource, EventConfigSourcesResponse } from '@/types/eventConfig'
 
 export const mapUploadedEventConfigFilesResponseFromServer = (response: any): EventConfigFilesUploadReponse => {
   return {
@@ -12,7 +12,7 @@ export const mapUploadedEventConfigFilesResponseFromServer = (response: any): Ev
   }
 }
 
-export const mapEventConfigSourceFromServer = (source: any): EventConfSource => {
+export const mapEventConfigSourceFromServer = (source: any): EventConfigSource => {
   return {
     id: source.id,
     name: source.name,
@@ -27,7 +27,7 @@ export const mapEventConfigSourceFromServer = (source: any): EventConfSource => 
   }
 }
 
-export const mapEventConfSourceResponseFromServer = (response: any): EventConfSourcesResponse => {
+export const mapEventConfSourceResponseFromServer = (response: any): EventConfigSourcesResponse => {
   return {
     sources: response.eventConfSourceList.map((source: any) => mapEventConfigSourceFromServer(source)),
     totalRecords: response.totalRecords

@@ -1,6 +1,6 @@
 import { Pagination, Sorting } from '.'
 
-export type EventConfSource = {
+export type EventConfigSource = {
   id: number
   name: string
   vendor: string
@@ -13,7 +13,7 @@ export type EventConfSource = {
   lastModified: Date
 }
 
-export type EventConfEvent = {
+export type EventConfigEvent = {
   id: number
   uei: string
   eventLabel: string
@@ -29,7 +29,7 @@ export type EventConfEvent = {
 }
 
 export type EventConfigStoreState = {
-  sources: EventConfSource[]
+  sources: EventConfigSource[]
   sourcesPagination: Pagination
   sourcesSearchTerm: string
   sourcesSorting: Sorting
@@ -40,18 +40,18 @@ export type EventConfigStoreState = {
   }
   deleteEventConfigSourceDialogState: {
     visible: boolean
-    eventConfigSource: EventConfSource | null
+    eventConfigSource: EventConfigSource | null
   }
   changeEventConfigSourceStatusDialogState: {
     visible: boolean
-    eventConfigSource: EventConfSource | null
+    eventConfigSource: EventConfigSource | null
   }
 }
 
 export type EventConfigDetailStoreState = {
   events: EventConfigEvent[]
   eventsPagination: Pagination
-  selectedSource: EventConfSource | null
+  selectedSource: EventConfigSource | null
   isLoading: boolean
   deleteEventConfigEventDialogState: {
     visible: boolean
@@ -63,11 +63,11 @@ export type EventConfigDetailStoreState = {
   }
   deleteEventConfigSourceDialogState: {
     visible: boolean
-    eventConfigSource: EventConfSource | null
+    eventConfigSource: EventConfigSource | null
   }
   changeEventConfigSourceStatusDialogState: {
     visible: boolean
-    eventConfigSource: EventConfSource | null
+    eventConfigSource: EventConfigSource | null
   }
   drawerState: DrawerState
 }
@@ -90,8 +90,8 @@ export type EventConfigFilesUploadReponse = {
   }[]
 }
 
-export type EventConfSourcesResponse = {
-  sources: EventConfSource[]
+export type EventConfigSourcesResponse = {
+  sources: EventConfigSource[]
   totalRecords: number
 }
 export interface DrawerState {

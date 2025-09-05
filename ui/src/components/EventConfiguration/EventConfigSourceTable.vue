@@ -56,6 +56,7 @@
             >
               {{ col.label }}
             </FeatherSortHeader>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -71,6 +72,7 @@
             <td>{{ config.vendor }}</td>
             <td>{{ config.description }}</td>
             <td>{{ config.eventCount }}</td>
+            <td>{{ config.enabled ? 'Enabled' : 'Disabled' }}</td>
             <td>
               <div class="action-container">
                 <FeatherButton
@@ -131,14 +133,14 @@
       </div>
     </div>
     <DeleteEventConfigSourceDialog />
-    <ChangeEventConfSourceStatusDialog />
+    <ChangeEventConfigSourceStatusDialog />
   </TableCard>
 </template>
 
 <script lang="ts" setup>
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
-import { EventConfSource } from '@/types/eventConfig'
+import { EventConfigSource } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
@@ -152,7 +154,7 @@ import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
 import TableCard from '../Common/TableCard.vue'
-import ChangeEventConfSourceStatusDialog from './Dialog/ChangeEventConfSourceStatusDialog.vue'
+import ChangeEventConfigSourceStatusDialog from './Dialog/ChangeEventConfigSourceStatusDialog.vue'
 import DeleteEventConfigSourceDialog from './Dialog/DeleteEventConfigSourceDialog.vue'
 
 const router = useRouter()
@@ -176,7 +178,7 @@ const sort = reactive({
   eventCount: SORT.NONE
 }) as any
 
-const onEventClick = (source: EventConfSource) => {
+const onEventClick = (source: EventConfigSource) => {
   const eventDetailsStore = useEventConfigDetailStore()
   eventDetailsStore.setSelectedEventConfigSource(source)
   router.push({

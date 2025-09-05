@@ -65,7 +65,7 @@
       <EventConfigEventTable />
     </div>
     <DeleteEventConfigSourceDialog />
-    <ChangeEventConfSourceStatusDialog />
+    <ChangeEventConfigSourceStatusDialog />
   </div>
   <div
     v-else
@@ -82,18 +82,18 @@
 </template>
 
 <script setup lang="ts">
-import ChangeEventConfSourceStatusDialog from '@/components/EventConfigurationDetail/Dialog/ChangeEventConfSourceStatusDialog.vue'
+import ChangeEventConfigSourceStatusDialog from '@/components/EventConfigurationDetail/Dialog/ChangeEventConfigSourceStatusDialog.vue'
 import DeleteEventConfigSourceDialog from '@/components/EventConfigurationDetail/Dialog/DeleteEventConfigSourceDialog.vue'
 import EventConfigEventTable from '@/components/EventConfigurationDetail/EventConfigEventTable.vue'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
-import { EventConfSource } from '@/types/eventConfig'
+import { EventConfigSource } from '@/types/eventConfig'
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'
 
 const store = useEventConfigDetailStore()
 const route = useRoute()
 const router = useRouter()
-const config = ref<EventConfSource>()
+const config = ref<EventConfigSource>()
 
 onMounted(async () => {
   if (Number(route.params.id) === store.selectedSource?.id) {

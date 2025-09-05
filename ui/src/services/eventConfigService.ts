@@ -1,5 +1,8 @@
-import { mapEventConfSourceResponseFromServer, mapUploadedEventConfigFilesResponseFromServer } from '@/mappers/eventConfig.mapper'
-import { EventConfigFilesUploadReponse, EventConfSourcesResponse } from '@/types/eventConfig'
+import {
+  mapEventConfSourceResponseFromServer,
+  mapUploadedEventConfigFilesResponseFromServer
+} from '@/mappers/eventConfig.mapper'
+import { EventConfigFilesUploadReponse, EventConfigSourcesResponse } from '@/types/eventConfig'
 import { v2 } from './axiosInstances'
 
 /**
@@ -109,7 +112,14 @@ export const changeEventConfigSourceStatus = async (sourceId: number, enabled: b
  * @param order The order in which to sort the results (either "asc" or "desc").
  * @returns A promise that resolves to an `EventConfSourcesResponse` containing the filtered event configuration sources.
  */
-export const filterEventConfigSources = async (offset: number, limit: number, totalRecords: number, filter: string, sortBy: string, order: string): Promise<EventConfSourcesResponse> => {
+export const filterEventConfigSources = async (
+  offset: number,
+  limit: number,
+  totalRecords: number,
+  filter: string,
+  sortBy: string,
+  order: string
+): Promise<EventConfigSourcesResponse> => {
   const endpoint = '/eventconf/filter/sources'
   try {
     const response = await v2.get(endpoint, {
