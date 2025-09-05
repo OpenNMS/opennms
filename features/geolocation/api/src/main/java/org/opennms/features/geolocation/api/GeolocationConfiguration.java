@@ -28,6 +28,12 @@ import java.util.Map;
  *
  */
 public interface GeolocationConfiguration {
+    /**
+     * Returns the tile server display name (optional).
+     *
+     * @return the tile server name
+     */
+    String getTileServerName();
 
     /**
      * Returns the tile server url.
