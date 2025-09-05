@@ -86,12 +86,18 @@ Within the `menus` array, each item is a top-level menu item for the side menu.
   <tr>
     <td>url</td>
     <td>The URL that the top-level menu links to.
-    Generally this is <code>"#"</code> since the actual links are in the menu items.
-    This will be used in the future to link directly from a top-level menu item (in which
-    case it should not have any <code>items</code>).
+    This can be empty or left as <code>"#"</code> if there are subitems.
+    If you want clicking on the top level menu item to directly link to a page or URL, set <code>url</code>
+    and also add an <code>action</code> property: <code>"action": "link"</code>. Also leave <code>items</code> as <code>null</code>.
+    If you want this to link to an external URL outside of OpenNMS, set this property: <code>"isExternalLink": true</code>.
+    You cannot set this link and have submenu items at the same time.
     </td>
   </tr>
   <tr>
+    <td>action</td>
+    <td>See <code>url</code>, this treat the top-level menu item as a link.</td>
+  </tr>
+   <tr>
     <td>locationMatch</td>
     <td>Used by the Search feature.</td>
   </tr>
