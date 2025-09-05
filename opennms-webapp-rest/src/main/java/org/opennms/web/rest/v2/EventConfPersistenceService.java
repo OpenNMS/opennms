@@ -36,7 +36,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -129,6 +128,9 @@ public class EventConfPersistenceService {
                 persistEventConfFile(events, metadataDto);
             }
         }
+    }
 
+    public Map<String, Object> filterConfEventsBySourceId(Long sourceId, Integer totalRecords,  Integer offset, Integer limit) {
+        return eventConfEventDao.findBySourceId(sourceId, totalRecords,  offset, limit);
     }
 }

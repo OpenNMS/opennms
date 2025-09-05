@@ -140,6 +140,38 @@ public class EventConfRestService implements EventConfRestApi {
         }
     }
 
+    @Override
+    public Response filterConfEventsBySourceId(Long sourceId, Integer totalRecords, Integer offset, Integer limit,
+                                               SecurityContext securityContext) {
+
+        // Return 400 Bad Request if sourceId is null, invalid sourceId, offset < 0, limit < 1,
+        // or offset exceeds totalRecords
+        if (sourceId == null || sourceId <= 0 || offset < 0 || limit < 1 || offset > totalRecords) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of("error", "Invalid sourceId/offset/limit values"))
+                    .build();
+        }
+
+        // Call service to fetch results
+        Map<String, Object> result = eventConfPersistenceService.filterConfEventsBySourceId(
+                                    sourceId, totalRecords, offset, limit
+                                    );
+
+        // Check if no data found
+        if (result == null
+                || result.isEmpty()
+                || (result.containsKey("totalRecords") && ((Integer) result.get("totalRecords")) == 0)) {
+            return Response.noContent().build();  // 204 No Content
+        }
+
+        List<EventConfEventDto> dtoList =
+                EventConfEventDto.fromEntity((List<EventConfEvent>) result.get("eventConfEventList"));
+
+        // Build response
+        return Response.ok(Map.of("totalRecords", result.get("totalRecords"), "eventConfEventList", dtoList))
+                .build();
+    }
+
 
     private List<String> determineFileOrder(final Attachment eventconfXmlAttachment, final Set<String> uploadedFiles) {
         List<String> ordered = new ArrayList<>();
