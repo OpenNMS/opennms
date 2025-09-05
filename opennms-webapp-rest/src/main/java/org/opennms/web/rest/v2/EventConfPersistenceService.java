@@ -71,7 +71,7 @@ public class EventConfPersistenceService {
 
     @PostConstruct
     public void init() {
-        // Asynchronously load events from DB.
+        // Asynchronously load events from DB in order to not to block startup
         eventConfExecutor.execute(this::reloadEventsFromDB);
     }
 

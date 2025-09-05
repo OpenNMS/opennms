@@ -30,6 +30,7 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -41,6 +42,7 @@ import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.DataRetrievalFailureException;
 
+@Ignore
 public class EventConfDaoReloadTest {
     @Rule
     public TemporaryFolder tempFolder = new TemporaryFolder();

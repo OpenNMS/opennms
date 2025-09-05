@@ -139,7 +139,7 @@ public class Bsmd implements SpringServiceDaemon, BusinessServiceStateChangeHand
         Objects.requireNonNull(m_eventIpcManager, "eventIpcManager cannot be null");
         Objects.requireNonNull(m_eventConfDao, "eventConfDao cannot be null");
 
-        handleConfigurationChanged();
+        //handleConfigurationChanged();
     }
 
     @Override

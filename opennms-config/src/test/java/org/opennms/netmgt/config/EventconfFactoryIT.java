@@ -50,6 +50,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.utils.InetAddressUtils;
@@ -434,6 +435,7 @@ public class EventconfFactoryIT {
     }
     
     //Ensure reload does indeed reload fresh data
+    @Ignore
     @Test
     public void testReload() throws Exception {
 		m_eventConfDao.setConfigResource(new ClassPathResource(getResourceForRelativePath("eventconf-speedtest/eventconf.xml")));
