@@ -610,9 +610,6 @@ find %{buildroot}%{instprefix}/etc ! -type d | \
 	grep -v 'snmp-hardware-inventory-adapter-configuration.xml' | \
 	grep -v '/users.xml' | \
 	grep -v 'tca-datacollection-config.xml' | \
-	grep -v 'opennms.properties' | \
-	grep -v 'config.properties' | \
-	grep -v 'custom.properties' | \
 	sort > %{_tmppath}/files.main
 find %{buildroot}%{instprefix}/etc ! -type d -name \*.cfg | \
 	grep -v 'etc/org.opennms' | \
@@ -723,9 +720,6 @@ rm -rf %{buildroot}
 %defattr(664 opennms opennms 775)
 %attr(755,opennms,opennms)	%{profiledir}/%{name}.sh
 %attr(755,opennms,opennms)	%{logdir}
-# %attr(644,opennms,opennms) %{instprefix}/etc/custom.properties
-# %attr(644,opennms,opennms) %{instprefix}/etc/opennms.properties
-# %attr(644,opennms,opennms) %{instprefix}/etc/config.properties
 %attr(644,opennms,opennms)    %{_unitdir}/opennms.service
                         %config %{instprefix}/etc/custom.properties
 %attr(640,opennms,opennms)	%config(noreplace) %{instprefix}/etc/users.xml
@@ -733,6 +727,11 @@ rm -rf %{buildroot}
 			%{instprefix}/deploy
 %attr(755,root,root)	%{instprefix}/lib/*snmp-metadata-provisioning-adapter*.jar
 %attr(755,root,root)	%{instprefix}/lib/*geoip-provisioning-adapter*.jar
+
+# Always override these files.
+%config %{instprefix}/etc/opennms.properties
+%config %{instprefix}/etc/custom.properties
+%config %{instprefix}/etc/config.properties
 
 %files jmx-config-generator
 %defattr(644 opennms opennms 755)
