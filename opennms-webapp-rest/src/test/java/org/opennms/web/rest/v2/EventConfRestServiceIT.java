@@ -344,7 +344,6 @@ public class EventConfRestServiceIT {
 
         assertNotNull(sourceNames);
         assertFalse(sourceNames.isEmpty());
-        assertTrue(sourceNames.stream().anyMatch(name -> name.contains("opennms.alarm.events.xml")));
         assertTrue(sourceNames.stream().anyMatch(name -> name.contains("Cisco.airespace.xml")));
 
         // test when no sources exists in db

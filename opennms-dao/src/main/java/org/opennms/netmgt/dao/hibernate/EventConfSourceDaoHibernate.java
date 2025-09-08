@@ -108,9 +108,14 @@ public class EventConfSourceDaoHibernate
 
     @Override
     public List<String> findAllNames() {
-        return findObjects(String.class,
-                "select s.name from EventConfSource s order by s.fileOrder");
+        return findObjects(
+                String.class,
+                "select s.name from EventConfSource s " +
+                        "where lower(s.vendor) != 'opennms' " +
+                        "order by s.fileOrder"
+        );
     }
+
 
 
     @Override

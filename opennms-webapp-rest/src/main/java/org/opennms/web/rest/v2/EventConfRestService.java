@@ -147,7 +147,7 @@ public class EventConfRestService implements EventConfRestApi {
     @Override
     public Response getEventConfSourcesNames(SecurityContext securityContext) throws Exception {
         try {
-            List<String> sourceNames = eventConfSourceDao.findAllNames();
+            final var  sourceNames = eventConfSourceDao.findAllNames();
             return Response.ok(sourceNames).build();
         } catch (Exception e) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
