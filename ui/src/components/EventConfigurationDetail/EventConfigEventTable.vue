@@ -74,6 +74,7 @@
                   icon="Edit"
                   :title="`Edit ${event.eventLabel}`"
                   data-test="edit-button"
+                  @click="openEventDrawer(event)"
                 >
                   <FeatherIcon :icon="Edit" />
                 </FeatherButton>
@@ -127,13 +128,16 @@
       </div>
     </div>
     <DeleteEventConfigEventDialog />
-    <ChangeEventConfEventStatusDialog />
+    <ChangeEventConfigEventStatusDialog />
   </TableCard>
+  <EventConfigDetailsDrawer :event="selectedEvent" />
 </template>
 
 <script setup lang="ts">
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
+import { EventConfigEvent } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
+import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import DownloadFile from '@featherds/icon/action/DownloadFile'
 import Edit from '@featherds/icon/action/Edit'
@@ -144,15 +148,15 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import TableCard from '../Common/TableCard.vue'
-import ChangeEventConfEventStatusDialog from './Dialog/ChangeEventConfEventStatusDialog.vue'
+import ChangeEventConfigEventStatusDialog from './Dialog/ChangeEventConfigEventStatusDialog.vue'
 import DeleteEventConfigEventDialog from './Dialog/DeleteEventConfigEventDialog.vue'
-import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
+import EventConfigDetailsDrawer from './Drawer/EventConfigDetailsDrawer.vue'
 
 const store = useEventConfigDetailStore()
 const emptyListContent = {
   msg: 'No results found.'
 }
-
+const selectedEvent = ref<EventConfigEvent | null>(null)
 const columns = computed(() => [
   { id: 'uei', label: 'UEI' },
   { id: 'eventLabel', label: 'Event Label' },
@@ -167,6 +171,11 @@ const sort = reactive({
   vendor: SORT.NONE,
   eventCount: SORT.NONE
 }) as any
+
+const openEventDrawer = (event: EventConfigEvent) => {
+  selectedEvent.value = event
+  store.openEventDrawerModal()
+}
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
   for (const prop in sort) {
@@ -249,7 +258,7 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
           }
 
           :deep(.feather-menu-dropdown) {
-            .feather-dropdown{
+            .feather-dropdown {
               li {
                 a {
                   padding: 8px 16px !important;

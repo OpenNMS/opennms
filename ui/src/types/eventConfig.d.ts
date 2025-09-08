@@ -1,15 +1,16 @@
-import { Pagination } from '.'
+import { Pagination, Sorting } from '.'
 
-export type EventConfSourceMetadata = {
-  filename: string
+export type EventConfigSource = {
+  id: number
+  name: string
+  vendor: string
+  description: string
   enabled: boolean
   eventCount: number
   fileOrder: number
-  username: string
-  now: Date
-  vendor: string
-  description: string
-  id: number
+  uploadedBy: string
+  createdTime: Date
+  lastModified: Date
 }
 
 export type EventConfigEvent = {
@@ -28,8 +29,10 @@ export type EventConfigEvent = {
 }
 
 export type EventConfigStoreState = {
-  sources: EventConfSourceMetadata[]
+  sources: EventConfigSource[]
   sourcesPagination: Pagination
+  sourcesSearchTerm: string
+  sourcesSorting: Sorting
   isLoading: boolean
   activeTab: number
   uploadedEventConfigFilesReportDialogState: {
@@ -37,18 +40,18 @@ export type EventConfigStoreState = {
   }
   deleteEventConfigSourceDialogState: {
     visible: boolean
-    eventConfigSource: EventConfSourceMetadata | null
+    eventConfigSource: EventConfigSource | null
   }
   changeEventConfigSourceStatusDialogState: {
     visible: boolean
-    eventConfigSource: EventConfSourceMetadata | null
+    eventConfigSource: EventConfigSource | null
   }
 }
 
 export type EventConfigDetailStoreState = {
   events: EventConfigEvent[]
   eventsPagination: Pagination
-  selectedSource: EventConfSourceMetadata | null
+  selectedSource: EventConfigSource | null
   isLoading: boolean
   deleteEventConfigEventDialogState: {
     visible: boolean
@@ -60,12 +63,13 @@ export type EventConfigDetailStoreState = {
   }
   deleteEventConfigSourceDialogState: {
     visible: boolean
-    eventConfigSource: EventConfSourceMetadata | null
+    eventConfigSource: EventConfigSource | null
   }
   changeEventConfigSourceStatusDialogState: {
     visible: boolean
-    eventConfigSource: EventConfSourceMetadata | null
+    eventConfigSource: EventConfigSource | null
   }
+  drawerState: DrawerState
 }
 
 export type EventConfigFilesUploadReponse = {
@@ -86,3 +90,11 @@ export type EventConfigFilesUploadReponse = {
   }[]
 }
 
+export type EventConfigSourcesResponse = {
+  sources: EventConfigSource[]
+  totalRecords: number
+}
+export interface DrawerState {
+  visible: boolean
+  isEventEditorModal: boolean
+}

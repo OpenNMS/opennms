@@ -1,7 +1,5 @@
-import { eventConfigSources } from '@/components/EventConfiguration/data'
-import { changeEventConfigSourceStatus } from '@/services/eventConfigService'
-import { EventConfigStoreState, EventConfSourceMetadata } from '@/types/eventConfig'
-import { cloneDeep } from 'lodash'
+import { changeEventConfigSourceStatus, filterEventConfigSources } from '@/services/eventConfigService'
+import { EventConfigSource, EventConfigStoreState } from '@/types/eventConfig'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
@@ -14,6 +12,11 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
   state: (): EventConfigStoreState => ({
     sources: [],
     sourcesPagination: { ...defaultPagination },
+    sourcesSearchTerm: '',
+    sourcesSorting: {
+      sortOrder: 'desc',
+      sortKey: 'createdTime'
+    },
     isLoading: false,
     activeTab: 0,
     uploadedEventConfigFilesReportDialogState: {
@@ -32,24 +35,44 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     async fetchEventConfigs() {
       this.isLoading = true
       try {
-        this.sources = cloneDeep(eventConfigSources) // Using static data for now
-        this.sourcesPagination.total = this.sources.length
+        const response = await filterEventConfigSources(
+          (this.sourcesPagination.page - 1) * this.sourcesPagination.pageSize,
+          this.sourcesPagination.pageSize,
+          this.sourcesPagination.total,
+          this.sourcesSearchTerm,
+          this.sourcesSorting.sortKey,
+          this.sourcesSorting.sortOrder
+        )
+        this.sources = response.sources
+        this.sourcesPagination.total = response.totalRecords
+        this.isLoading = false
       } catch (error) {
         console.error('Error fetching event configurations:', error)
-      } finally {
         this.isLoading = false
       }
     },
-    onSourcePageChange(page: number) {
+    async onSourcePageChange(page: number) {
       this.sourcesPagination.page = page
+      await this.fetchEventConfigs()
     },
-    onSourcePageSizeChange(pageSize: number) {
+    async onSourcePageSizeChange(pageSize: number) {
       this.sourcesPagination.pageSize = pageSize
+      await this.fetchEventConfigs()
+    },
+    async onChangeSourcesSearchTerm(value: string) {
+      this.sourcesSearchTerm = value ?? ''
+      this.sourcesPagination.page = 1
+      await this.fetchEventConfigs()
+    },
+    async onSourcesSortChange(sortKey: string, sortOrder: string) {
+      this.sourcesSorting.sortKey = sortKey
+      this.sourcesSorting.sortOrder = sortOrder
+      await this.fetchEventConfigs()
     },
     resetActiveTab() {
       this.activeTab = 0
     },
-    showDeleteEventConfigSourceModal(eventConfigSource: EventConfSourceMetadata) {
+    showDeleteEventConfigSourceModal(eventConfigSource: EventConfigSource) {
       this.deleteEventConfigSourceDialogState.visible = true
       this.deleteEventConfigSourceDialogState.eventConfigSource = eventConfigSource
     },
@@ -60,7 +83,7 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     resetSourcesPagination() {
       this.sourcesPagination = { ...defaultPagination }
     },
-    showChangeEventConfigSourceStatusDialog(eventConfigSource: EventConfSourceMetadata) {
+    showChangeEventConfigSourceStatusDialog(eventConfigSource: EventConfigSource) {
       this.changeEventConfigSourceStatusDialogState.visible = true
       this.changeEventConfigSourceStatusDialogState.eventConfigSource = eventConfigSource
     },
