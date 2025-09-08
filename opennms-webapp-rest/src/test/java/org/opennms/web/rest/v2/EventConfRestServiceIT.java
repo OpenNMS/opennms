@@ -317,6 +317,7 @@ public class EventConfRestServiceIT {
     @Transactional
     public void testUploadSingleEventConfFile_ValidFile() throws Exception {
         String filename = "Cisco.airespace.xml";
+        String description = "cisco description";
         InputStream is = getClass().getResourceAsStream("/EVENTS-CONF/" + filename);
         assertNotNull("Resource not found: " + filename, is);
 
@@ -326,7 +327,7 @@ public class EventConfRestServiceIT {
         when(att.getContentDisposition()).thenReturn(cd);
         when(att.getObject(InputStream.class)).thenReturn(is);
 
-        Response resp = eventConfRestApi.uploadSingleEventConfFile(att, securityContext);
+        Response resp = eventConfRestApi.uploadSingleEventConfFile(att,description, securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
 
         @SuppressWarnings("unchecked")
@@ -340,7 +341,7 @@ public class EventConfRestServiceIT {
 
     @Test
     public void testUploadSingleEventConfFile_NoAttachment_ShouldReturnBadRequest() throws Exception {
-        Response resp = eventConfRestApi.uploadSingleEventConfFile(null, securityContext);
+        Response resp = eventConfRestApi.uploadSingleEventConfFile(null,"", securityContext);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
         assertTrue(((String) resp.getEntity()).contains("No file uploaded"));
     }
@@ -357,7 +358,7 @@ public class EventConfRestServiceIT {
         when(att.getContentDisposition()).thenReturn(cd);
         when(att.getObject(InputStream.class)).thenReturn(is);
 
-        Response resp = eventConfRestApi.uploadSingleEventConfFile(att, securityContext);
+        Response resp = eventConfRestApi.uploadSingleEventConfFile(att,"", securityContext);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
         assertTrue(((String) resp.getEntity()).contains("Invalid event conf XML"));
     }

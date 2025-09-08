@@ -110,6 +110,7 @@ public interface EventConfRestApi {
             )
     })
     Response uploadSingleEventConfFile(@Multipart("upload") Attachment attachment,
+                                       @Multipart("description") String description,
                                        @Context SecurityContext securityContext) throws Exception;
 
 }

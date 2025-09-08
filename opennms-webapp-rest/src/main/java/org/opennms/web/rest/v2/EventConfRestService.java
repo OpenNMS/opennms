@@ -103,7 +103,7 @@ public class EventConfRestService implements EventConfRestApi {
 
                 eventConfPersistenceService.persistEventConfFile(
                         fileEvents,
-                        buildMetadata(fileName, fileEvents, fileOrder, username, now)
+                        buildMetadata(fileName,"", fileEvents, fileOrder, username, now)
                 );
 
                 successList.add(buildSuccessResponse(fileName, fileEvents));
@@ -166,7 +166,7 @@ public class EventConfRestService implements EventConfRestApi {
 
     @Override
     @Transactional
-    public Response uploadSingleEventConfFile(final Attachment attachment, final SecurityContext securityContext) {
+    public Response uploadSingleEventConfFile(final Attachment attachment,final String description, final SecurityContext securityContext) {
         if (attachment == null) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity("No file uploaded. Please provide a valid event conf XML file.")
@@ -201,7 +201,7 @@ public class EventConfRestService implements EventConfRestApi {
 
             eventConfPersistenceService.persistEventConfFile(
                     fileEvents,
-                    buildMetadata(fileName, fileEvents, fileOrder, username, now)
+                    buildMetadata(fileName,description, fileEvents, fileOrder, username, now)
             );
 
             final Map<String, Object> success = buildSuccessResponse(fileName, fileEvents);
@@ -280,7 +280,7 @@ public class EventConfRestService implements EventConfRestApi {
         return entry;
     }
 
-    private EventConfSourceMetadataDto buildMetadata(String fileName, Events events, int fileOrder,
+    private EventConfSourceMetadataDto buildMetadata(String fileName, String description, Events events, int fileOrder,
                                                      String username, Date now) {
         return new EventConfSourceMetadataDto.Builder()
                 .filename(fileName)
@@ -289,7 +289,7 @@ public class EventConfRestService implements EventConfRestApi {
                 .username(username)
                 .now(now)
                 .vendor(StringUtils.substringBefore(fileName, "."))
-                .description("")
+                .description(description)
                 .build();
     }
 
