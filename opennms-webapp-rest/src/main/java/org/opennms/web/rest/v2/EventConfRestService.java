@@ -42,7 +42,13 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.LinkedHashMap;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -142,7 +148,8 @@ public class EventConfRestService implements EventConfRestApi {
                                           Integer offset, Integer limit, SecurityContext securityContext) {
 
         // Return 400 Bad Request if offset < 0, limit < 1, or offset exceeds totalRecords
-        if (offset < 0 || limit < 1 ||  offset > totalRecords) {
+        if (Objects.requireNonNullElse(offset,0) < 0 || Objects.requireNonNullElse(limit, 0) < 1
+            ||  Objects.requireNonNullElse(offset,0) > Objects.requireNonNullElse(totalRecords,0)) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(Map.of("error", "Invalid offset/limit values"))
                     .build();
