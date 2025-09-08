@@ -37,6 +37,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
@@ -207,31 +208,58 @@ public class EventConfEventDaoIT implements InitializingBean {
     @Test
     @Transactional
     public void testUpdateEventEnabledFlag() {
+        m_source = new EventConfSource();
+        m_source.setName("testEventEnabledFlagName");
+        m_source.setEnabled(true);
+        m_source.setCreatedTime(new Date());
+        m_source.setFileOrder(1);
+        m_source.setDescription("Test event source");
+        m_source.setVendor("TestVendor1");
+        m_source.setUploadedBy("JUnitTest");
+        m_source.setEventCount(2);
+        m_source.setLastModified(new Date());
 
-        EventConfSource source = m_eventSourceDao.findByName("test-source");
+        List<EventConfEvent> event = m_eventDao.findAll();
+        defaultEventConfEventCount = event.size();
 
-        EventConfEvent discoveryEvent = m_eventDao.findByUei("uei.opennms.org/internal/discoveryConfigChange");
-        EventConfEvent hardwareEvent = m_eventDao.findByUei("uei.opennms.org/internal/discovery/hardwareInventoryFailed");
+        m_eventSourceDao.saveOrUpdate(m_source);
+        m_eventSourceDao.flush();
+
+        insertEvent("uei.opennms.org/internal/discoveryConfigChange11", "Discovery configuration changed testing", "The discovery configuration has been changed and should be reloaded", "Normal");
+
+        insertEvent("uei.opennms.org/internal/discovery/hardwareInventoryFailed22", "Hardware discovery failed testing", "The hardware discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.", "Minor");
+
+        EventConfSource source = m_eventSourceDao.findByName("testEventEnabledFlagName");
+
+        EventConfEvent discoveryEvent = m_eventDao.findByUei("uei.opennms.org/internal/discoveryConfigChange11");
+        EventConfEvent hardwareEvent = m_eventDao.findByUei("uei.opennms.org/internal/discovery/hardwareInventoryFailed22");
 
         // disable events
         m_eventDao.updateEventEnabledFlag(source.getId(), List.of(discoveryEvent.getId(), hardwareEvent.getId()), false);
+        sessionFactory.getCurrentSession().flush();
         sessionFactory.getCurrentSession().clear();
 
         // verify disabled state
-        EventConfEvent refreshedDiscoveryEvent = m_eventDao.findByUei("uei.opennms.org/internal/discoveryConfigChange");
-        EventConfEvent refreshedHardwareEvent = m_eventDao.findByUei("uei.opennms.org/internal/discovery/hardwareInventoryFailed");
+        EventConfEvent refreshedDiscoveryEvent = m_eventDao.findByUei("uei.opennms.org/internal/discoveryConfigChange11");
+        EventConfEvent refreshedHardwareEvent = m_eventDao.findByUei("uei.opennms.org/internal/discovery/hardwareInventoryFailed22");
         assertFalse(refreshedDiscoveryEvent.getEnabled());
         assertFalse(refreshedHardwareEvent.getEnabled());
 
         // enable events
         m_eventDao.updateEventEnabledFlag(source.getId(), List.of(discoveryEvent.getId(), hardwareEvent.getId()), true);
+        sessionFactory.getCurrentSession().flush();
         sessionFactory.getCurrentSession().clear();
 
         // verify enabled state
-        refreshedDiscoveryEvent = m_eventDao.findByUei("uei.opennms.org/internal/discoveryConfigChange");
-        refreshedHardwareEvent = m_eventDao.findByUei("uei.opennms.org/internal/discovery/hardwareInventoryFailed");
+        refreshedDiscoveryEvent = m_eventDao.findByUei("uei.opennms.org/internal/discoveryConfigChange11");
+        refreshedHardwareEvent = m_eventDao.findByUei("uei.opennms.org/internal/discovery/hardwareInventoryFailed22");
         assertTrue(refreshedDiscoveryEvent.getEnabled());
         assertTrue(refreshedHardwareEvent.getEnabled());
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public EventConfEvent reloadEvent(String uei) {
+        return m_eventDao.findByUei(uei);
     }
 
     @Override

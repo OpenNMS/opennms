@@ -24,6 +24,7 @@ package org.opennms.web.rest.v2;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
+import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -47,10 +48,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.io.InputStream;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -87,6 +85,9 @@ public class EventConfRestServiceIT {
 
     @Autowired
     private EventConfEventDao eventConfEventDao;
+
+    @Autowired
+    private SessionFactory sessionFactory;
 
     @Before
     public void setUp() {
@@ -310,38 +311,42 @@ public class EventConfRestServiceIT {
 
 
     @Test
+    @Transactional
     public void testEnableDisableEventConfSourcesEvents() throws Exception {
-        String[] filenames = {"eventconf.xml", "opennms.alarm.events.xml", "Cisco.airespace.xml"};
-        List<Attachment> attachments = new ArrayList<>();
+        EventConfSource  m_source = new EventConfSource();
+        m_source.setName("testEventEnabledFlagTest");
+        m_source.setEnabled(true);
+        m_source.setCreatedTime(new Date());
+        m_source.setFileOrder(1);
+        m_source.setDescription("Test event source");
+        m_source.setVendor("TestVendor1");
+        m_source.setUploadedBy("JUnitTest");
+        m_source.setEventCount(2);
+        m_source.setLastModified(new Date());
 
-        for (final var name : filenames) {
-            final var path = "/EVENTS-CONF/" + name;
-            final var is = getClass().getResourceAsStream(path);
-            Attachment att = mock(Attachment.class);
-            ContentDisposition cd = mock(ContentDisposition.class);
-            when(cd.getParameter("filename")).thenReturn(name);
-            when(att.getContentDisposition()).thenReturn(cd);
-            when(att.getObject(InputStream.class)).thenReturn(is);
-            attachments.add(att);
-        }
-        eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        eventConfSourceDao.saveOrUpdate(m_source);
+        eventConfSourceDao.flush();
 
-        // Retrieve initial events
-        EventConfEvent triggerEvent = eventConfEventDao.findByUei("uei.opennms.org/alarms/trigger");
-        EventConfEvent clearEvent = eventConfEventDao.findByUei("uei.opennms.org/alarms/clear");
+        insertEvent(m_source,"uei.opennms.org/internal/trigger", "Trigger configuration changed testing", "The Trigger configuration has been changed and should be reloaded", "Normal");
 
-        long sourceId = triggerEvent.getSource().getId();
+        insertEvent(m_source,"uei.opennms.org/internal/clear", "Clear discovery failed testing", "The Clear discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.", "Minor");
+
+        EventConfSource source = eventConfSourceDao.findByName("testEventEnabledFlagTest");
+
+        EventConfEvent triggerEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/trigger");
+        EventConfEvent clearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
 
         // Disable events
         EnableDisableConfSourceEventsPayload disablePayload = new EnableDisableConfSourceEventsPayload();
         disablePayload.setEventsIds(List.of(triggerEvent.getId(), clearEvent.getId()));
         disablePayload.setEnable(false);
 
-        eventConfRestApi.enableDisableEventConfSourcesEvents(sourceId, disablePayload, securityContext);
-
+        eventConfRestApi.enableDisableEventConfSourcesEvents(source.getId(), disablePayload, securityContext);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
         // Verify disabled state
-        EventConfEvent disabledTriggerEvent = eventConfEventDao.findByUei("uei.opennms.org/alarms/trigger");
-        EventConfEvent disabledClearEvent = eventConfEventDao.findByUei("uei.opennms.org/alarms/clear");
+        EventConfEvent disabledTriggerEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/trigger");
+        EventConfEvent disabledClearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
 
         assertFalse(disabledTriggerEvent.getEnabled());
         assertFalse(disabledClearEvent.getEnabled());
@@ -351,11 +356,12 @@ public class EventConfRestServiceIT {
         enablePayload.setEventsIds(List.of(triggerEvent.getId(), clearEvent.getId()));
         enablePayload.setEnable(true);
 
-        eventConfRestApi.enableDisableEventConfSourcesEvents(sourceId, enablePayload, securityContext);
-
+        eventConfRestApi.enableDisableEventConfSourcesEvents(source.getId(), enablePayload, securityContext);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
         // Verify enabled state
-        EventConfEvent enabledTriggerEvent = eventConfEventDao.findByUei("uei.opennms.org/alarms/trigger");
-        EventConfEvent enabledClearEvent = eventConfEventDao.findByUei("uei.opennms.org/alarms/clear");
+        EventConfEvent enabledTriggerEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/trigger");
+        EventConfEvent enabledClearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
 
         assertTrue(enabledTriggerEvent.getEnabled());
         assertTrue(enabledClearEvent.getEnabled());
@@ -367,6 +373,21 @@ public class EventConfRestServiceIT {
         Response response = eventConfRestApi.enableDisableEventConfSources(payload, null);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
         assertTrue(((String) response.getEntity()).contains("enabled"));
+    }
+
+    private void insertEvent(EventConfSource m_source,String uei, String label, String description, String severity) {
+        EventConfEvent event = new EventConfEvent();
+        event.setUei(uei);
+        event.setEventLabel(label);
+        event.setDescription(description);
+        event.setXmlContent("<event><uei>" + uei + "</uei></event>");
+        event.setSource(m_source);
+        event.setEnabled(true);
+        event.setCreatedTime(new Date());
+        event.setLastModified(new Date());
+        event.setModifiedBy("JUnitTest");
+
+        eventConfEventDao.saveOrUpdate(event);
     }
 
 }
