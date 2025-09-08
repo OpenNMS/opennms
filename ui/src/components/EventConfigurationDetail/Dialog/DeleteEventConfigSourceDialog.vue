@@ -9,7 +9,7 @@
       <div class="modal-body">
         <p>
           This will delete the event configuration source:
-          <strong>{{ store.deleteEventConfigSourceDialogState.eventConfigSource?.filename }}</strong>
+          <strong>{{ store.deleteEventConfigSourceDialogState.eventConfigSource?.name }}</strong>
         </p>
         <p>
           <strong>Note:</strong> This event configuration source has

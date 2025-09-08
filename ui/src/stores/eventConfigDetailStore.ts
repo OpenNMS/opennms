@@ -1,6 +1,6 @@
 import { eventConfigEvents } from '@/components/EventConfiguration/data'
 import { changeEventConfigEventStatus, changeEventConfigSourceStatus } from '@/services/eventConfigService'
-import { EventConfigDetailStoreState, EventConfigEvent, EventConfSourceMetadata,DrawerState } from '@/types/eventConfig'
+import { DrawerState, EventConfigDetailStoreState, EventConfigEvent, EventConfigSource } from '@/types/eventConfig'
 import { cloneDeep } from 'lodash'
 import { defineStore } from 'pinia'
 
@@ -56,7 +56,7 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
         this.isLoading = false
       }
     },
-    setSelectedEventConfigSource(eventConfigSource: EventConfSourceMetadata) {
+    setSelectedEventConfigSource(eventConfigSource: EventConfigSource) {
       this.selectedSource = eventConfigSource
     },
     onEventsPageChange(page: number) {
@@ -105,7 +105,7 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     resetEventsPagination() {
       this.eventsPagination = { ...defaultPagination }
     },
-    showDeleteEventConfigSourceDialog(eventConfigSource: EventConfSourceMetadata) {
+    showDeleteEventConfigSourceDialog(eventConfigSource: EventConfigSource) {
       this.deleteEventConfigSourceDialogState.visible = true
       this.deleteEventConfigSourceDialogState.eventConfigSource = eventConfigSource
     },
@@ -113,7 +113,7 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       this.deleteEventConfigSourceDialogState.visible = false
       this.deleteEventConfigSourceDialogState.eventConfigSource = null
     },
-    showChangeEventConfigSourceStatusDialog(eventConfigSource: EventConfSourceMetadata) {
+    showChangeEventConfigSourceStatusDialog(eventConfigSource: EventConfigSource) {
       this.changeEventConfigSourceStatusDialogState.visible = true
       this.changeEventConfigSourceStatusDialogState.eventConfigSource = eventConfigSource
     },
