@@ -38,7 +38,7 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
 (function() {
     'use strict';
 
-    var MODULE_NAME = 'onms.geoservice';
+    const MODULE_NAME = 'onms.geoservice';
 
     angular.module(MODULE_NAME, [
             'angular-loading-bar',
@@ -219,7 +219,7 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
 
             // Some fields need manual validation
             $scope.validateFieldsManually = function() {
-               var manualValidation = $scope.manualValidation[$scope.geocoder.id];
+               const manualValidation = $scope.manualValidation[$scope.geocoder.id];
                if (manualValidation) {
                    return manualValidation();
                }
@@ -228,7 +228,7 @@ const mapquestTemplate  = require('./views/config/mapquest.html');
 
             // Refresh data
             $scope.refreshTabs().then(function(geocoders) {
-                    var matchingGeocoders = geocoders.filter(function(item) {
+                    const matchingGeocoders = geocoders.filter(function(item) {
                         return item.id === $stateParams.id;
                     });
                     if (matchingGeocoders.length > 0) {

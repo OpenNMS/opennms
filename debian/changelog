@@ -1,3 +1,12 @@
+opennms (34.0.1-1) stable; urgency=low
+
+  * Release 34.0.1 contains contains a couple of bug fixes, enhancements and a new feature.
+
+    For details on what has changed, see:
+    https://docs.opennms.com/horizon/34.0.1/index.html
+
+ -- OpenNMS Release Manager <opennms@opennms.org>  Tue, 10 Sep 2025 13:20:00 -0500
+
 opennms (34.0.0-1) stable; urgency=low
 
   * Release 34.0.0 contains a bunch of changes, including menu improvments,
