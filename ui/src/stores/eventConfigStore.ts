@@ -38,7 +38,6 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
         const response = await filterEventConfigSources(
           (this.sourcesPagination.page - 1) * this.sourcesPagination.pageSize,
           this.sourcesPagination.pageSize,
-          this.sourcesPagination.total,
           this.sourcesSearchTerm,
           this.sourcesSorting.sortKey,
           this.sourcesSorting.sortOrder
@@ -56,6 +55,7 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
       await this.fetchEventConfigs()
     },
     async onSourcePageSizeChange(pageSize: number) {
+      this.sourcesPagination.page = 1
       this.sourcesPagination.pageSize = pageSize
       await this.fetchEventConfigs()
     },
@@ -82,6 +82,13 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     },
     resetSourcesPagination() {
       this.sourcesPagination = { ...defaultPagination }
+    },
+    async refreshEventsSources() {
+      this.resetSourcesPagination()
+      this.sourcesSearchTerm = ''
+      this.sourcesSorting.sortKey = 'createdTime'
+      this.sourcesSorting.sortOrder = 'desc'
+      await this.fetchEventConfigs()
     },
     showChangeEventConfigSourceStatusDialog(eventConfigSource: EventConfigSource) {
       this.changeEventConfigSourceStatusDialogState.visible = true

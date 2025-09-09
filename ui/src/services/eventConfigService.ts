@@ -1,8 +1,13 @@
 import {
+  mapEventConfigEventsResponseFromServer,
   mapEventConfSourceResponseFromServer,
   mapUploadedEventConfigFilesResponseFromServer
 } from '@/mappers/eventConfig.mapper'
-import { EventConfigFilesUploadReponse, EventConfigSourcesResponse } from '@/types/eventConfig'
+import {
+  EventConfigEventsResponse,
+  EventConfigFilesUploadReponse,
+  EventConfigSourcesResponse
+} from '@/types/eventConfig'
 import { v2 } from './axiosInstances'
 
 /**
@@ -115,7 +120,6 @@ export const changeEventConfigSourceStatus = async (sourceId: number, enabled: b
 export const filterEventConfigSources = async (
   offset: number,
   limit: number,
-  totalRecords: number,
   filter: string,
   sortBy: string,
   order: string
@@ -126,7 +130,6 @@ export const filterEventConfigSources = async (
       params: {
         offset,
         limit,
-        totalRecords,
         filter,
         sortBy,
         order
@@ -139,6 +142,36 @@ export const filterEventConfigSources = async (
     }
   } catch (error) {
     console.error('Error filtering event config sources:', error)
+    throw error
+  }
+}
+
+export const filterEventConfigEvents = async (
+  sourceId: number,
+  offset: number,
+  limit: number,
+  filter: string,
+  sortBy: string,
+  order: string
+): Promise<EventConfigEventsResponse> => {
+  const endpoint = `/eventconf/filter/events/${sourceId}`
+  try {
+    const response = await v2.get(endpoint, {
+      params: {
+        offset,
+        limit,
+        filter,
+        sortBy,
+        order
+      }
+    })
+    if (response.status === 200) {
+      return mapEventConfigEventsResponseFromServer(response.data)
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error filtering event config events:', error)
     throw error
   }
 }
