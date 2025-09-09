@@ -86,11 +86,6 @@ public class EventConfRestServiceIT {
     @Autowired
     private EventConfEventDao eventConfEventDao;
 
-    @Autowired
-    private EventConfRestApi eventConfRestApi;
-
-    private SecurityContext securityContext;
-
     @Before
     public void setUp() {
         Principal principal = mock(Principal.class);
