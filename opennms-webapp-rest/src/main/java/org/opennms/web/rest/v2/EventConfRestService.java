@@ -164,57 +164,6 @@ public class EventConfRestService implements EventConfRestApi {
         }
     }
 
-    @Override
-    @Transactional
-    public Response uploadSingleEventConfFile(final Attachment attachment,final String description, final SecurityContext securityContext) {
-        if (attachment == null) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("No file uploaded. Please provide a valid event conf XML file.")
-                    .build();
-        }
-
-        final String username = getUsername(securityContext);
-        final Date now = new Date();
-        final String fileName = attachment.getContentDisposition().getParameter("filename");
-        int maxFileOrder = Optional.ofNullable(eventConfSourceDao.findMaxFileOrder()).orElse(0);
-
-        Events fileEvents;
-        try (InputStream stream = attachment.getObject(InputStream.class)) {
-            fileEvents = parseEventFile(stream);
-
-            if (fileEvents == null || fileEvents.getEvents() == null || fileEvents.getEvents().isEmpty()) {
-                return Response.status(Response.Status.BAD_REQUEST)
-                        .entity("Invalid event conf XML: missing <events> definition.")
-                        .build();
-            }
-        } catch (Exception e) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                    .entity("Invalid event conf XML: " + e.getMessage())
-                    .build();
-        }
-
-        try {
-            final EventConfSource existingSource = eventConfSourceDao.findByName(fileName);
-            final int fileOrder = (existingSource != null)
-                    ? existingSource.getFileOrder()
-                    : ++maxFileOrder;
-
-            eventConfPersistenceService.persistEventConfFile(
-                    fileEvents,
-                    buildMetadata(fileName,description, fileEvents, fileOrder, username, now)
-            );
-
-            final Map<String, Object> success = buildSuccessResponse(fileName, fileEvents);
-            return Response.ok(success).build();
-
-        } catch (Exception e) {
-            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
-                    .entity("Failed to persist event conf XML: " + e.getMessage())
-                    .build();
-        }
-    }
-
-
     private List<String> determineFileOrder(final Attachment eventconfXmlAttachment, final Set<String> uploadedFiles) {
         List<String> ordered = new ArrayList<>();
 

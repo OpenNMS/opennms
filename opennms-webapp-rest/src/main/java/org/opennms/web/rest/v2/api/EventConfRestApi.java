@@ -92,25 +92,4 @@ public interface EventConfRestApi {
     })
     Response enableDisableEventConfSources(EventConfSrcEnableDisablePayload eventConfSrcEnableDisablePayload, @Context SecurityContext securityContext) throws Exception;
 
-    @POST
-    @Path("/upload-single")
-    @Consumes(MediaType.MULTIPART_FORM_DATA)
-    @Produces("application/json")
-    @Operation(
-            summary = "Upload a single event conf xml file",
-            description = "Upload and validate a single event conf xml file. Rejects if the XML is invalid.",
-            operationId = "uploadSingleEventConfFile"
-    )
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Upload successful"),
-            @ApiResponse(responseCode = "400", description = "Invalid event conf xml or request"),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Internal Server Error. The server encountered an unexpected condition that prevented it from fulfilling the request."
-            )
-    })
-    Response uploadSingleEventConfFile(@Multipart("upload") Attachment attachment,
-                                       @Multipart("description") String description,
-                                       @Context SecurityContext securityContext) throws Exception;
-
 }

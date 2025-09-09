@@ -51,7 +51,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -312,55 +311,4 @@ public class EventConfRestServiceIT {
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
         assertTrue(((String) response.getEntity()).contains("enabled"));
     }
-
-    @Test
-    @Transactional
-    public void testUploadSingleEventConfFile_ValidFile() throws Exception {
-        String filename = "Cisco.airespace.xml";
-        String description = "cisco description";
-        InputStream is = getClass().getResourceAsStream("/EVENTS-CONF/" + filename);
-        assertNotNull("Resource not found: " + filename, is);
-
-        Attachment att = mock(Attachment.class);
-        ContentDisposition cd = mock(ContentDisposition.class);
-        when(cd.getParameter("filename")).thenReturn(filename);
-        when(att.getContentDisposition()).thenReturn(cd);
-        when(att.getObject(InputStream.class)).thenReturn(is);
-
-        Response resp = eventConfRestApi.uploadSingleEventConfFile(att,description, securityContext);
-        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
-
-        @SuppressWarnings("unchecked")
-        Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
-
-        assertEquals(filename, entity.get("file"));
-        assertEquals("Cisco", entity.get("vendor"));
-        assertEquals(101, entity.get("eventCount"));
-        assertNotNull(entity.get("events"));
-    }
-
-    @Test
-    public void testUploadSingleEventConfFile_NoAttachment_ShouldReturnBadRequest() throws Exception {
-        Response resp = eventConfRestApi.uploadSingleEventConfFile(null,"", securityContext);
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
-        assertTrue(((String) resp.getEntity()).contains("No file uploaded"));
-    }
-
-    @Test
-    public void testUploadSingleEventConfFile_InvalidXML_ShouldReturnBadRequest() throws Exception {
-        String filename = "test.invalid.xml";
-        InputStream is = getClass().getResourceAsStream("/EVENTS-CONF/" + filename);
-        assertNotNull("Resource not found: " + filename, is);
-
-        Attachment att = mock(Attachment.class);
-        ContentDisposition cd = mock(ContentDisposition.class);
-        when(cd.getParameter("filename")).thenReturn(filename);
-        when(att.getContentDisposition()).thenReturn(cd);
-        when(att.getObject(InputStream.class)).thenReturn(is);
-
-        Response resp = eventConfRestApi.uploadSingleEventConfFile(att,"", securityContext);
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
-        assertTrue(((String) resp.getEntity()).contains("Invalid event conf XML"));
-    }
-
 }
