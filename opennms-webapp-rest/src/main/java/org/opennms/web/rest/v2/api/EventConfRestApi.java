@@ -19,16 +19,19 @@ import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
+import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 
 
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.Path;
 import javax.ws.rs.PATCH;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.MediaType;
@@ -93,6 +96,23 @@ public interface EventConfRestApi {
             @ApiResponse(responseCode = "400", description = "Invalid request")
     })
     Response enableDisableEventConfSources(EventConfSrcEnableDisablePayload eventConfSrcEnableDisablePayload, @Context SecurityContext securityContext) throws Exception;
+
+    @DELETE
+    @Path("/sources")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces("application/json")
+    @Operation(
+            summary = "Delete EventConf Sources",
+            description = "Delete one or more eventConf sources by their IDs.",
+            operationId = "deleteEventConfSources"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Sources deleted successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid IDs)"),
+            @ApiResponse(responseCode = "404", description = "One or more sources not found")
+    })
+    Response deleteEventConfSources(EventConfSourceDeletePayload eventConfSourceDeletePayload,
+                                    @Context SecurityContext securityContext) throws Exception;
 
     @PATCH
     @Path("/sources/{sourceId}/events/status")
