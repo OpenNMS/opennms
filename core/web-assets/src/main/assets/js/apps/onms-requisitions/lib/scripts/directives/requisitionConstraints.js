@@ -49,7 +49,7 @@ const _ = require('lodash');
       require: 'ngModel',
       link: function(scope, element, attrs, ctrl) {
         ctrl.$parsers.unshift(function(ipAddress) {
-          var found = scope.ipBlackList && scope.ipBlackList.indexOf(ipAddress) !== -1;
+          const found = scope.ipBlackList && scope.ipBlackList.indexOf(ipAddress) !== -1;
           if (found) { // It has to be unique
             ctrl.$setValidity('valid', false);
             return undefined;
@@ -79,7 +79,7 @@ const _ = require('lodash');
       require: 'ngModel',
       link: function(scope, element, attrs, ctrl) {
         ctrl.$parsers.unshift(function(serviceName) {
-          var found = false;
+          let found = false;
           if (scope.requisitionInterface && scope.requisitionInterface.services) {
             angular.forEach(scope.requisitionInterface.services, function(s) {
               if (s.$$hashKey !== scope.service.$$hashKey && s.name === serviceName) {
@@ -114,7 +114,7 @@ const _ = require('lodash');
       require: 'ngModel',
       link: function(scope, element, attrs, ctrl) {
         ctrl.$parsers.unshift(function(foreignId) {
-          var found = scope.foreignIdBlackList && scope.foreignIdBlackList.indexOf(foreignId) !== -1;
+          const found = scope.foreignIdBlackList && scope.foreignIdBlackList.indexOf(foreignId) !== -1;
           if (found || foreignId.match(/[/\\?:&*'"]/)) {
             ctrl.$setValidity('valid', false);
             return undefined;
@@ -147,7 +147,7 @@ const _ = require('lodash');
             ctrl.$setValidity('unique', false);
             return undefined;
           }
-          var found = false;
+          let found = false;
           angular.forEach(scope.$parent.node.categories, function(c) {
             if (c.$$hashKey !== scope.category.$$hashKey && c.name === categoryName) {
               found = true;

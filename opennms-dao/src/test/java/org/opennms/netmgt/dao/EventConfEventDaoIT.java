@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.dao;
 
+import org.hibernate.SessionFactory;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
@@ -36,6 +37,7 @@ import org.opennms.test.JUnitConfigurationEnvironment;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
@@ -43,6 +45,7 @@ import java.util.Date;
 import java.util.List;
 
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertEquals;
 
@@ -65,6 +68,10 @@ public class EventConfEventDaoIT implements InitializingBean {
 
     private EventConfSource m_source;
 
+    @Autowired
+    private SessionFactory sessionFactory;
+
+    private int defaultEventConfEventCount;
     @Before
     @Transactional
     public void setUp() {
@@ -78,6 +85,9 @@ public class EventConfEventDaoIT implements InitializingBean {
         m_source.setUploadedBy("JUnitTest");
         m_source.setEventCount(0);
         m_source.setLastModified(new Date());
+
+        List<EventConfEvent> event = m_eventDao.findAll();
+        defaultEventConfEventCount = event.size();
 
         m_eventSourceDao.saveOrUpdate(m_source);
         m_eventSourceDao.flush();
@@ -133,8 +143,9 @@ public class EventConfEventDaoIT implements InitializingBean {
     @Transactional
     public void testFindAllEventConfEvents() {
         List<EventConfEvent> event = m_eventDao.findAll();
+        int eventSize = event.size() - defaultEventConfEventCount;
         assertNotNull("Expected to find all events", event);
-        assertEquals(4, event.size());
+        assertEquals(4, eventSize);
 
     }
 
@@ -142,8 +153,9 @@ public class EventConfEventDaoIT implements InitializingBean {
     @Transactional
     public void testGetById() {
         List<EventConfEvent> events = m_eventDao.findAll();
+        int eventSize = events.size() - defaultEventConfEventCount;
         assertNotNull("Events should not be null", events);
-        assertEquals(4, events.size());
+        assertEquals(4, eventSize);
         EventConfEvent result = m_eventDao.get(events.get(0).getId());
         assertNotNull("Fetched event should not be null", result);
         assertEquals(events.get(0).getUei(), result.getUei());
@@ -169,15 +181,17 @@ public class EventConfEventDaoIT implements InitializingBean {
     @Transactional
     public void testFindEnabledEvents() {
         List<EventConfEvent> enabledEvents = m_eventDao.findEnabledEvents();
+        int enabledEventsSize = enabledEvents.size() - defaultEventConfEventCount;
         assertNotNull("Enabled events should be found", enabledEvents);
-        assertEquals(4, enabledEvents.size());
+        assertEquals(4, enabledEventsSize);
 
         EventConfEvent event = enabledEvents.get(0);
         event.setEnabled(false);
         m_eventDao.saveOrUpdate(event);
 
         List<EventConfEvent> updatedEnabled = m_eventDao.findEnabledEvents();
-        assertEquals(3, updatedEnabled.size());
+        int updatedEnabledSize = updatedEnabled.size() - defaultEventConfEventCount;
+        assertEquals(3, updatedEnabledSize);
     }
 
     @Test
@@ -190,6 +204,63 @@ public class EventConfEventDaoIT implements InitializingBean {
 
         List<EventConfEvent> afterDelete = m_eventDao.findBySourceId(m_source.getId());
         assertEquals(0, afterDelete.size());
+    }
+
+    @Test
+    @Transactional
+    public void testUpdateEventEnabledFlag() {
+        m_source = new EventConfSource();
+        m_source.setName("testEventEnabledFlagName");
+        m_source.setEnabled(true);
+        m_source.setCreatedTime(new Date());
+        m_source.setFileOrder(1);
+        m_source.setDescription("Test event source");
+        m_source.setVendor("TestVendor1");
+        m_source.setUploadedBy("JUnitTest");
+        m_source.setEventCount(2);
+        m_source.setLastModified(new Date());
+
+        List<EventConfEvent> event = m_eventDao.findAll();
+        defaultEventConfEventCount = event.size();
+
+        m_eventSourceDao.saveOrUpdate(m_source);
+        m_eventSourceDao.flush();
+
+        insertEvent("uei.opennms.org/internal/discoveryConfigChange11", "Discovery configuration changed testing", "The discovery configuration has been changed and should be reloaded", "Normal");
+
+        insertEvent("uei.opennms.org/internal/discovery/hardwareInventoryFailed22", "Hardware discovery failed testing", "The hardware discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.", "Minor");
+
+        EventConfSource source = m_eventSourceDao.findByName("testEventEnabledFlagName");
+
+        EventConfEvent discoveryEvent = m_eventDao.findByUei("uei.opennms.org/internal/discoveryConfigChange11");
+        EventConfEvent hardwareEvent = m_eventDao.findByUei("uei.opennms.org/internal/discovery/hardwareInventoryFailed22");
+
+        // disable events
+        m_eventDao.updateEventEnabledFlag(source.getId(), List.of(discoveryEvent.getId(), hardwareEvent.getId()), false);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+
+        // verify disabled state
+        EventConfEvent refreshedDiscoveryEvent = m_eventDao.findByUei("uei.opennms.org/internal/discoveryConfigChange11");
+        EventConfEvent refreshedHardwareEvent = m_eventDao.findByUei("uei.opennms.org/internal/discovery/hardwareInventoryFailed22");
+        assertFalse(refreshedDiscoveryEvent.getEnabled());
+        assertFalse(refreshedHardwareEvent.getEnabled());
+
+        // enable events
+        m_eventDao.updateEventEnabledFlag(source.getId(), List.of(discoveryEvent.getId(), hardwareEvent.getId()), true);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+
+        // verify enabled state
+        refreshedDiscoveryEvent = m_eventDao.findByUei("uei.opennms.org/internal/discoveryConfigChange11");
+        refreshedHardwareEvent = m_eventDao.findByUei("uei.opennms.org/internal/discovery/hardwareInventoryFailed22");
+        assertTrue(refreshedDiscoveryEvent.getEnabled());
+        assertTrue(refreshedHardwareEvent.getEnabled());
+    }
+
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public EventConfEvent reloadEvent(String uei) {
+        return m_eventDao.findByUei(uei);
     }
 
 

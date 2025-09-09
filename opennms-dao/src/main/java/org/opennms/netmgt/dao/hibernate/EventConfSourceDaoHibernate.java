@@ -117,6 +117,16 @@ public class EventConfSourceDaoHibernate
 
 
     @Override
+    public void deleteBySourceIds(List<Long> sourceIds) {
+        int deletedCount = getHibernateTemplate().execute(session ->
+                session.createQuery("delete from EventConfSource s where s.id in (:ids)")
+                        .setParameterList("ids", sourceIds)
+                        .executeUpdate()
+        );
+        LOG.info("Deleted {} EventConfSource(s) with IDs: {}", deletedCount, sourceIds);
+    }
+
+    @Override
     public void saveOrUpdate(EventConfSource source) {
         super.saveOrUpdate(source);
     }

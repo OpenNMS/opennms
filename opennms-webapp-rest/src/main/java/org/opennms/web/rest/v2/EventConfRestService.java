@@ -25,6 +25,8 @@ package org.opennms.web.rest.v2;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
+import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfEventDto;
@@ -162,6 +164,53 @@ public class EventConfRestService implements EventConfRestApi {
         } catch (Exception ex) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
         }
+    }
+
+
+    @Override
+    public Response deleteEventConfSources(EventConfSourceDeletePayload payload, SecurityContext securityContext) throws Exception {
+
+        if (payload == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
+        }
+
+        if (payload.getSourceIds() == null || payload.getSourceIds().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("At least one sourceId must be provided.").build();
+        }
+
+        try {
+            eventConfPersistenceService.deleteEventConfSources(payload);
+            return Response.ok().entity("EventConf sources deleted successfully.").build();
+
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND).entity("One or more sourceIds were not found: " + ex.getMessage()).build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+        }
+
+    }
+
+    @Override
+    public Response enableDisableEventConfSourcesEvents(final Long sourceId, EnableDisableConfSourceEventsPayload payload, SecurityContext securityContext) throws Exception {
+
+        if (payload == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
+        }
+
+        if (payload.getEventsIds() == null || payload.getEventsIds().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("At least one eventConfEventsIds must be provided.").build();
+        }
+
+        try {
+            eventConfPersistenceService.enableDisableConfSourcesEvents(sourceId, payload);
+            return Response.ok().entity("EventConfEvents updated successfully.").build();
+
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND).entity("One or more eventConfEvents were not found: " + ex.getMessage()).build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+        }
+
     }
 
     private List<String> determineFileOrder(final Attachment eventconfXmlAttachment, final Set<String> uploadedFiles) {

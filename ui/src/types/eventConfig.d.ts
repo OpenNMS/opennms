@@ -1,14 +1,16 @@
-import { Pagination } from '.'
+import { Pagination, Sorting } from '.'
 
-export type EventConfSourceMetadata = {
-  filename: string
-  eventCount: number
-  fileOrder: number
-  username: string
-  now: Date
+export type EventConfigSource = {
+  id: number
+  name: string
   vendor: string
   description: string
-  id: number
+  enabled: boolean
+  eventCount: number
+  fileOrder: number
+  uploadedBy: string
+  createdTime: Date
+  lastModified: Date
 }
 
 export type EventConfigEvent = {
@@ -27,20 +29,47 @@ export type EventConfigEvent = {
 }
 
 export type EventConfigStoreState = {
-  sources: EventConfSourceMetadata[]
+  sources: EventConfigSource[]
   sourcesPagination: Pagination
+  sourcesSearchTerm: string
+  sourcesSorting: Sorting
   isLoading: boolean
   activeTab: number
-  uploadedFilesReportModalState: {
+  uploadedEventConfigFilesReportDialogState: {
     visible: boolean
+  }
+  deleteEventConfigSourceDialogState: {
+    visible: boolean
+    eventConfigSource: EventConfigSource | null
+  }
+  changeEventConfigSourceStatusDialogState: {
+    visible: boolean
+    eventConfigSource: EventConfigSource | null
   }
 }
 
 export type EventConfigDetailStoreState = {
   events: EventConfigEvent[]
   eventsPagination: Pagination
-  selectedSource: EventConfSourceMetadata | null
+  selectedSource: EventConfigSource | null
   isLoading: boolean
+  deleteEventConfigEventDialogState: {
+    visible: boolean
+    eventConfigEvent: EventConfigEvent | null
+  }
+  changeEventConfigEventStatusDialogState: {
+    visible: boolean
+    eventConfigEvent: EventConfigEvent | null
+  }
+  deleteEventConfigSourceDialogState: {
+    visible: boolean
+    eventConfigSource: EventConfigSource | null
+  }
+  changeEventConfigSourceStatusDialogState: {
+    visible: boolean
+    eventConfigSource: EventConfigSource | null
+  }
+  drawerState: DrawerState
 }
 
 export type EventConfigFilesUploadReponse = {
@@ -55,5 +84,17 @@ export type EventConfigFilesUploadReponse = {
       file: string
     }
   ]
+  invalid?: {
+    file: string
+    reason: string
+  }[]
 }
 
+export type EventConfigSourcesResponse = {
+  sources: EventConfigSource[]
+  totalRecords: number
+}
+export interface DrawerState {
+  visible: boolean
+  isEventEditorModal: boolean
+}

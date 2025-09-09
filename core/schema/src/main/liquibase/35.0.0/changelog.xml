@@ -106,4 +106,31 @@
         </createIndex>
     </changeSet>
 
+    <changeSet author="mwajahatabbasi" id="35.0.0-eventconf-sources-insert">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM eventconf_sources
+            </sqlCheck>
+        </preConditions>
+        <sqlFile
+                path="../sql/eventconf_sources.sql"
+                relativeToChangelogFile="true"
+                splitStatements="true"
+                endDelimiter=";"
+                stripComments="true"/>
+    </changeSet>
+    <changeSet author="mwajahatabbasi" id="35.0.0-eventconf-events-insert">
+        <preConditions onFail="MARK_RAN">
+            <sqlCheck expectedResult="0">
+                SELECT COUNT(*) FROM eventconf_events
+            </sqlCheck>
+        </preConditions>
+        <sqlFile
+                path="../sql/eventconf_events.sql"
+                relativeToChangelogFile="true"
+                splitStatements="true"
+                endDelimiter=";"
+                stripComments="true"/>
+    </changeSet>
+
 </databaseChangeLog>

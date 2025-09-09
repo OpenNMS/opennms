@@ -49,5 +49,7 @@ public interface EventConfSourceDao extends OnmsDao<EventConfSource, Long> {
 
     void updateEnabledFlag(final Collection<Long> sourceIds, boolean enabled, boolean cascadeToEvents);
 
+    void deleteBySourceIds(List<Long> sourceIds);
+
     Integer findMaxFileOrder();
 }

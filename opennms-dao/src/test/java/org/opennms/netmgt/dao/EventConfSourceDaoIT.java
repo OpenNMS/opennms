@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
@@ -74,9 +75,12 @@ public class EventConfSourceDaoIT implements InitializingBean {
 
     private EventConfSource m_source;
 
+    private int defaultEventSize;
+
     @Before
     @Transactional
     public void setUp() {
+        defaultEventSize = m_eventDao.findAll().size();
         m_source = new EventConfSource();
         m_source.setName("JUnit Source");
         m_source.setVendor("TestVendor");
@@ -269,6 +273,68 @@ public class EventConfSourceDaoIT implements InitializingBean {
         assertEquals("Total event count mismatch across all files", totalExpectedEventCount, allEvents.size());
     }
 
+    @Test
+    @Transactional
+    public void testDeleteBySourceIds() throws Exception {
+        // List of XML files to test
+        String[] xmlFiles = {
+                "eventconf-test-1.xml",
+                "eventconf-test-2.xml"
+        };
+
+        int totalExpectedEventCount = 0;
+        List<Long> allSourceIds = new ArrayList<>();
+
+        for (int i = 0; i < xmlFiles.length; i++) {
+            String file = xmlFiles[i];
+
+            EventConfSource source = new EventConfSource();
+            source.setName("test-source-" + i);
+            source.setEnabled(true);
+            source.setCreatedTime(new Date());
+            source.setFileOrder(i + 1);
+            source.setDescription("Source for " + file);
+            source.setVendor("JUnitVendor");
+            source.setUploadedBy("JUnitTest");
+            source.setLastModified(new Date());
+
+            org.opennms.netmgt.xml.eventconf.Events events =
+                    JaxbUtils.unmarshal(org.opennms.netmgt.xml.eventconf.Events.class,
+                            getClass().getClassLoader().getResourceAsStream(file));
+
+            assertNotNull("Events should not be null for file: " + file, events);
+            assertFalse("Event list should not be empty for file: " + file, events.getEvents().isEmpty());
+
+            int eventCount = events.getEvents().size();
+            totalExpectedEventCount += eventCount;
+            source.setEventCount(eventCount);
+
+            m_dao.saveOrUpdate(source);
+            m_dao.flush();
+            allSourceIds.add(source.getId());
+
+            for (var xmlEvent : events.getEvents()) {
+                EventConfEvent jpaEvent = new EventConfEvent();
+                jpaEvent.setUei(xmlEvent.getUei());
+                jpaEvent.setDescription(xmlEvent.getDescr());
+                jpaEvent.setXmlContent(xmlEvent.toString());
+                jpaEvent.setEnabled(true);
+                jpaEvent.setCreatedTime(new Date());
+                jpaEvent.setLastModified(new Date());
+                jpaEvent.setModifiedBy("XMLTest");
+                jpaEvent.setSource(source);
+
+                m_eventDao.saveOrUpdate(jpaEvent);
+            }
+
+            m_eventDao.flush();
+        }
+        final var  eventConfSources = m_dao.findAll();
+        m_dao.deleteBySourceIds(eventConfSources.stream().map(EventConfSource::getId).collect(Collectors.toList()));
+        final var  deletedEventConfSources = m_dao.findAll();
+        assertEquals(0,deletedEventConfSources.size());
+    }
+
 
     @Test
     @Transactional
@@ -317,13 +383,12 @@ public class EventConfSourceDaoIT implements InitializingBean {
                 m_eventDao.saveOrUpdate(jpaEvent);
             }
             m_eventDao.flush();
-
             List<EventConfEvent> savedForSource = m_eventDao.findBySourceId(source.getId());
             assertEquals("Event count mismatch for " + file, eventCount, savedForSource.size());
         }
 
         List<EventConfEvent> allEvents = m_eventDao.findAll();
-        assertEquals("Total event count mismatch across all files", totalExpectedEventCount, allEvents.size());
+        assertEquals("Total event count mismatch across all files", totalExpectedEventCount, allEvents.size() - defaultEventSize);
 
         m_dao.updateEnabledFlag(allSourceIds, false, false);
         sessionFactory.getCurrentSession().clear();

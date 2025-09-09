@@ -22,14 +22,19 @@
 package org.opennms.web.rest.v2;
 
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
+import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
+import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
@@ -42,6 +47,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
@@ -67,7 +74,20 @@ public class EventConfPersistenceServiceIT {
     private EventConfEventDao eventConfEventDao;
 
     @Autowired
+    private EventConfDao eventConfDao;
+
+    @Autowired
     private EventConfPersistenceService eventConfPersistenceService;
+    private int defaultEventConfSize;
+    private int defaultEventConfEventSize;
+
+    @Before
+    @Transactional
+    public void setUp() {
+        defaultEventConfSize =  eventConfSourceDao.findAllByFileOrder().size();
+        defaultEventConfEventSize = eventConfEventDao.findAll().size();
+    }
+
 
     @Test
     @JUnitTemporaryDatabase
@@ -76,7 +96,7 @@ public class EventConfPersistenceServiceIT {
         String filename = "test-events.xml";
         String username = "integration_test_user";
         Date now = new Date();
-        EventConfSourceMetadataDto metadata = new EventConfSourceMetadataDto.Builder().filename(filename).eventCount(1).fileOrder(1).username(username).now(now).vendor("test-vendor").description("integration test file").build();
+        EventConfSourceMetadataDto metadata = new EventConfSourceMetadataDto.Builder().filename(filename).eventCount(1).fileOrder(0).username(username).now(now).vendor("test-vendor").description("integration test file").build();
         Event event = new Event();
         event.setUei("uei.opennms.org/test/it");
         event.setEventLabel("IT Event");
@@ -87,7 +107,7 @@ public class EventConfPersistenceServiceIT {
         eventConfPersistenceService.persistEventConfFile(events, metadata);
 
         List<EventConfSource> sources = eventConfSourceDao.findAllByFileOrder();
-        Assert.assertEquals(1, sources.size());
+        Assert.assertEquals(1, sources.size() - defaultEventConfSize);
         EventConfSource source = sources.get(0);
         Assert.assertEquals(filename, source.getName());
         Assert.assertEquals("integration test file", source.getDescription());
@@ -95,7 +115,7 @@ public class EventConfPersistenceServiceIT {
         Assert.assertEquals(username, source.getUploadedBy());
 
         List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
-        Assert.assertEquals(1, dbEvents.size());
+        Assert.assertEquals(1, dbEvents.size() - defaultEventConfEventSize);
         EventConfEvent persistedEvent = dbEvents.get(0);
         Assert.assertEquals("uei.opennms.org/test/it", persistedEvent.getUei());
         Assert.assertEquals("IT Event", persistedEvent.getEventLabel());
@@ -132,7 +152,7 @@ public class EventConfPersistenceServiceIT {
         eventConfPersistenceService.persistEventConfFile(updatedEvents, updatedMetadata);
         List<EventConfSource> sources = eventConfSourceDao.findAllByFileOrder();
 
-        Assert.assertEquals(1, sources.size());
+        Assert.assertEquals(1, sources.size() - defaultEventConfSize);
         EventConfSource source = sources.get(0);
         Assert.assertEquals(filename, source.getName());
         Assert.assertEquals("updated entry", source.getDescription());
@@ -140,7 +160,7 @@ public class EventConfPersistenceServiceIT {
         Assert.assertEquals("updated_user", source.getUploadedBy());
         Assert.assertEquals(2, (int) source.getFileOrder());
         List<EventConfEvent> updatedDbEvents = eventConfEventDao.findEnabledEvents();
-        Assert.assertEquals(1, updatedDbEvents.size());
+        Assert.assertEquals(1, updatedDbEvents.size() - defaultEventConfEventSize);
         EventConfEvent finalEvent = updatedDbEvents.get(0);
         Assert.assertEquals("uei.opennms.org/test/update2", finalEvent.getUei());
         Assert.assertEquals("Updated Description", finalEvent.getDescription());
@@ -295,6 +315,179 @@ public class EventConfPersistenceServiceIT {
         List<EventConfEvent> enableEventConfEvents = eventConfEventDao.findAll();
         assertFalse(enableEventConfEvents.stream().noneMatch(EventConfEvent::getEnabled));
     }
+
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void testUnmarshallEventConfEventXmlContent() throws Exception {
+        Map<String, Events> fileEventsMap = eventConfDao.getRootEvents().getLoadedEventFiles();
+        List<EventConfSource> eventConfSourceList = eventConfSourceDao.findAll();
+
+        for (EventConfSource eventConfSource : eventConfSourceList) {
+            List<EventConfEvent> eventConfEventList = eventConfEventDao.findBySourceId(eventConfSource.getId());
+            Events fileEvents = fileEventsMap.get("events/" + eventConfSource.getName()+".xml");
+            Assert.assertNotNull("File events not found for source: " + eventConfSource.getName(), fileEvents);
+            List<Event> eventsList = fileEvents.getEvents();
+            for (EventConfEvent eventConfEvent : eventConfEventList) {
+                Event dbEvent = JaxbUtils.unmarshal(Event.class, eventConfEvent.getXmlContent());
+                Event matchingFileEvent = eventsList.stream()
+                        .filter(fileEvent ->
+                                Objects.equals(fileEvent.getUei(), dbEvent.getUei()) &&
+                                Objects.equals(fileEvent.getSeverity(), dbEvent.getSeverity()) &&
+                                Objects.equals(fileEvent.getLogmsg().getContent(), dbEvent.getLogmsg().getContent()) &&
+                                Objects.equals(fileEvent.getDescr(), dbEvent.getDescr())
+                        )
+                        .findFirst()
+                        .orElse(null);
+                Assert.assertNotNull("DB event with UEI " + dbEvent.getUei() + " not found in file events",
+                        matchingFileEvent);
+                dbEvent.setEventMatcher(matchingFileEvent.getEventMatcher());
+                Assert.assertEquals(dbEvent, matchingFileEvent);
+            }
+        }
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testDeleteEventConfSources() throws Exception {
+        String username = "test_user";
+        Date now = new Date();
+
+        String filename1 = "source-file-1.xml";
+        EventConfSourceMetadataDto metadata1 = new EventConfSourceMetadataDto.Builder()
+                .filename(filename1)
+                .eventCount(1)
+                .fileOrder(1)
+                .username(username)
+                .now(now)
+                .vendor("vendor-1")
+                .description("first entry")
+                .build();
+
+        Event event1 = new Event();
+        event1.setUei("uei.opennms.org/test/update/1");
+        event1.setEventLabel("Event One");
+        event1.setDescr("Description for Event One");
+        event1.setSeverity("Normal");
+
+        Events events1 = new Events();
+        events1.getEvents().add(event1);
+
+        eventConfPersistenceService.persistEventConfFile(events1, metadata1);
+
+        String filename2 = "source-file-2.xml";
+        EventConfSourceMetadataDto metadata2 = new EventConfSourceMetadataDto.Builder()
+                .filename(filename2)
+                .eventCount(1)
+                .fileOrder(2)
+                .username(username)
+                .now(now)
+                .vendor("vendor-2")
+                .description("second entry")
+                .build();
+
+        Event event2 = new Event();
+        event2.setUei("uei.opennms.org/test/update/2");
+        event2.setEventLabel("Event Two");
+        event2.setDescr("Description for Event Two");
+        event2.setSeverity("Warning");
+
+        Events events2 = new Events();
+        events2.getEvents().add(event2);
+
+        eventConfPersistenceService.persistEventConfFile(events2, metadata2);
+
+        List<Long> sourcesIds = eventConfSourceDao.findAll()
+                .stream().map(EventConfSource::getId).toList();
+        // delete eventConfSources and its related events
+        EventConfSourceDeletePayload eventConfSrcDisablePayload = new EventConfSourceDeletePayload();
+        eventConfSrcDisablePayload.setSourceIds(sourcesIds);
+        eventConfPersistenceService.deleteEventConfSources(eventConfSrcDisablePayload);
+        List<EventConfSource> eventConfSources = eventConfSourceDao.findAll();
+        assertTrue(eventConfSources.isEmpty());
+
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testEnableDisableEventConfSourcesEvents() {
+        String username = "test_user";
+        Date now = new Date();
+
+        String filename1 = "source-file-1.xml";
+        EventConfSourceMetadataDto metadata1 = new EventConfSourceMetadataDto.Builder()
+                .filename(filename1)
+                .eventCount(1)
+                .fileOrder(1)
+                .username(username)
+                .now(now)
+                .vendor("vendor-1")
+                .description("first entry")
+                .build();
+
+        Event event1 = new Event();
+        event1.setUei("uei.opennms.org/test/trigger/1");
+        event1.setEventLabel("Event One");
+        event1.setDescr("Description for Event One");
+        event1.setSeverity("Normal");
+
+        Events events1 = new Events();
+        events1.getEvents().add(event1);
+
+        eventConfPersistenceService.persistEventConfFile(events1, metadata1);
+
+        String filename2 = "source-file-2.xml";
+        EventConfSourceMetadataDto metadata2 = new EventConfSourceMetadataDto.Builder()
+                .filename(filename2)
+                .eventCount(1)
+                .fileOrder(2)
+                .username(username)
+                .now(now)
+                .vendor("vendor-2")
+                .description("second entry")
+                .build();
+
+        Event event2 = new Event();
+        event2.setUei("uei.opennms.org/test/clear/2");
+        event2.setEventLabel("Event Two");
+        event2.setDescr("Description for Event Two");
+        event2.setSeverity("Warning");
+
+        Events events2 = new Events();
+        events2.getEvents().add(event2);
+
+        eventConfPersistenceService.persistEventConfFile(events2, metadata2);
+
+        // Retrieve initial events
+        EventConfEvent triggerEvent = eventConfEventDao.findByUei("uei.opennms.org/test/trigger/1");
+
+        long sourceId = triggerEvent.getSource().getId();
+
+        // Disable events
+        EnableDisableConfSourceEventsPayload disablePayload = new EnableDisableConfSourceEventsPayload();
+        disablePayload.setEventsIds(List.of(triggerEvent.getId()));
+        disablePayload.setEnable(false);
+
+        eventConfPersistenceService.enableDisableConfSourcesEvents(sourceId, disablePayload);
+
+        // Verify disabled state
+        EventConfEvent disabledTriggerEvent = eventConfEventDao.findByUei("uei.opennms.org/test/trigger/1");
+
+        assertFalse(disabledTriggerEvent.getEnabled());
+
+        // Enable events
+        EnableDisableConfSourceEventsPayload enablePayload = new EnableDisableConfSourceEventsPayload();
+        enablePayload.setEventsIds(List.of(triggerEvent.getId()));
+        enablePayload.setEnable(true);
+
+        eventConfPersistenceService.enableDisableConfSourcesEvents(sourceId, enablePayload);
+
+        // Verify enabled state
+        EventConfEvent enabledTriggerEvent = eventConfEventDao.findByUei("uei.opennms.org/test/trigger/1");
+
+        assertTrue(enabledTriggerEvent.getEnabled());
+    }
+
 
 
 }

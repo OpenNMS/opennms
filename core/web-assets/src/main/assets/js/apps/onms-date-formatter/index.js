@@ -29,16 +29,17 @@ function OnmsDateFormatter() {
 }
 
 OnmsDateFormatter.prototype.init = function init(readyCallback) {
-	var self = this;
-	var defaultFormat = "yyyy-MM-dd'T'HH:mm:ssxxx"; // eslint-disable-line quotes
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
+	const self = this;
+	const defaultFormat = "yyyy-MM-dd'T'HH:mm:ssxxx"; // eslint-disable-line quotes
 	window._onmsZoneId = undefined;
 
-	var xhr = new XMLHttpRequest();
+	const xhr = new XMLHttpRequest();
 	xhr.onreadystatechange = function readystatechange() {
 		try {
 			if (xhr.readyState === XMLHttpRequest.DONE) {
 				if (xhr.status === 200) {
-					var config = JSON.parse(xhr.responseText);
+					const config = JSON.parse(xhr.responseText);
 					if (config.datetimeformatConfig && config.datetimeformatConfig.datetimeformat) {
 						window._onmsDateTimeFormat = config.datetimeformatConfig.datetimeformat || defaultFormat;
 						window._onmsZoneId = config.datetimeformatConfig.zoneId;
@@ -99,7 +100,7 @@ OnmsDateFormatter.prototype.format = function format(date) {
 (function() {
 	'use strict';
 	if (typeof jest === 'undefined') {
-		var f = new OnmsDateFormatter();
+		const f = new OnmsDateFormatter();
 		f.init(function() {
 			window._onmsFormatter = f;
 		});
@@ -115,10 +116,10 @@ OnmsDateFormatter.prototype.format = function format(date) {
 		angular.module('onmsDateFormatter', ['ng']).factory('DateFormatterService', ['$interval', '$q', function DateFormatterService($interval, $q) {
 			console.log('Initializing DateFormatterService');
 
-			var deferred = $q.defer();
+			const deferred = $q.defer();
 
-			var count = 0;
-			var i = $interval(function() {
+			let count = 0;
+			const i = $interval(function() {
 				if (window._onmsFormatter) {
 					console.log('Global formatter found: ' + window._onmsDateTimeFormat);
 					deferred.resolve(window._onmsFormatter);
@@ -143,7 +144,7 @@ OnmsDateFormatter.prototype.format = function format(date) {
 
 		angular.module('onmsDateFormatter').filter('onmsDate', ['$filter', 'DateFormatterService', function($filter, DateFormatterService) {
 			return function onmsDate(input, ifEmpty) {
-				var ret;
+				let ret;
 				if (window._onmsFormatter) {
 					// If the formatter has finished initializing, use it
 					ret = window._onmsFormatter.format(input);

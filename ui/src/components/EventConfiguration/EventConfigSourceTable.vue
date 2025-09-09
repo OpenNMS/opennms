@@ -10,6 +10,9 @@
             label="Search"
             type="search"
             data-test="search-input"
+            v-model.trim="store.sourcesSearchTerm"
+            placeholder="Search by Name, Vendor or Description"
+            @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
           >
             <template #pre>
               <FeatherIcon :icon="Search" />
@@ -53,6 +56,7 @@
             >
               {{ col.label }}
             </FeatherSortHeader>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -64,20 +68,47 @@
             v-for="config in store.sources"
             :key="config.id"
           >
-            <td>{{ config.filename }}</td>
-            <td>{{ config.description }}</td>
-            <td>{{ config.fileOrder }}</td>
+            <td>{{ config.name }}</td>
             <td>{{ config.vendor }}</td>
+            <td>{{ config.description }}</td>
             <td>{{ config.eventCount }}</td>
+            <td>{{ config.enabled ? 'Enabled' : 'Disabled' }}</td>
             <td>
-              <FeatherButton
-                primary
-                icon="View Details"
-                data-test="view-button"
-                @click="onEventClick(config)"
-              >
-                <FeatherIcon :icon="ViewDetails"> </FeatherIcon>
-              </FeatherButton>
+              <div class="action-container">
+                <FeatherButton
+                  primary
+                  icon="View Details"
+                  data-test="view-button"
+                  @click="onEventClick(config)"
+                >
+                  <FeatherIcon :icon="ViewDetails"> </FeatherIcon>
+                </FeatherButton>
+                <FeatherDropdown>
+                  <template v-slot:trigger="{ attrs, on }">
+                    <FeatherButton
+                      link
+                      href="#"
+                      v-bind="attrs"
+                      v-on="on"
+                      :icon="`More actions for ${config.name}`"
+                    >
+                      <FeatherIcon :icon="MenuIcon" />
+                    </FeatherButton>
+                  </template>
+                  <FeatherDropdownItem
+                    @click="store.showChangeEventConfigSourceStatusDialog(config)"
+                    data-test="change-status-button"
+                  >
+                    {{ config.enabled ? 'Disable Source' : 'Enable Source' }}
+                  </FeatherDropdownItem>
+                  <FeatherDropdownItem
+                    @click="store.showDeleteEventConfigSourceModal(config)"
+                    data-test="delete-source-button"
+                  >
+                    Delete Source
+                  </FeatherDropdownItem>
+                </FeatherDropdown>
+              </div>
             </td>
           </tr>
         </TransitionGroup>
@@ -101,23 +132,30 @@
         />
       </div>
     </div>
+    <DeleteEventConfigSourceDialog />
+    <ChangeEventConfigSourceStatusDialog />
   </TableCard>
 </template>
 
 <script lang="ts" setup>
+import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
+import { EventConfigSource } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
+import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import DownloadFile from '@featherds/icon/action/DownloadFile'
 import Search from '@featherds/icon/action/Search'
 import ViewDetails from '@featherds/icon/action/ViewDetails'
+import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
 import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
-import { FeatherSortHeader, SORT } from '@featherds/table'
-import TableCard from '../Common/TableCard.vue'
 import { FeatherPagination } from '@featherds/pagination'
-import { EventConfSourceMetadata } from '@/types/eventConfig'
-import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
+import { FeatherSortHeader, SORT } from '@featherds/table'
+import { debounce } from 'lodash'
+import TableCard from '../Common/TableCard.vue'
+import ChangeEventConfigSourceStatusDialog from './Dialog/ChangeEventConfigSourceStatusDialog.vue'
+import DeleteEventConfigSourceDialog from './Dialog/DeleteEventConfigSourceDialog.vue'
 
 const router = useRouter()
 const store = useEventConfigStore()
@@ -126,10 +164,9 @@ const emptyListContent = {
 }
 
 const columns = computed(() => [
-  { id: 'fileName', label: 'Name' },
-  { id: 'description', label: 'Description' },
-  { id: 'fileOrder', label: 'File Order' },
+  { id: 'name', label: 'Name' },
   { id: 'vendor', label: 'Vendor' },
+  { id: 'description', label: 'Description' },
   { id: 'eventCount', label: 'Event Count' }
 ])
 
@@ -141,7 +178,7 @@ const sort = reactive({
   eventCount: SORT.NONE
 }) as any
 
-const onEventClick = (source: EventConfSourceMetadata) => {
+const onEventClick = (source: EventConfigSource) => {
   const eventDetailsStore = useEventConfigDetailStore()
   eventDetailsStore.setSelectedEventConfigSource(source)
   router.push({
@@ -151,11 +188,21 @@ const onEventClick = (source: EventConfSourceMetadata) => {
 }
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
+  if (sortObj.value === 'asc' || sortObj.value === 'desc') {
+    store.onSourcesSortChange(sortObj.property, sortObj.value)
+  } else {
+    store.onSourcesSortChange('createdTime', 'desc')
+  }
+
   for (const prop in sort) {
     sort[prop] = SORT.NONE
   }
   sort[sortObj.property] = sortObj.value
 }
+
+const onChangeSearchTerm = debounce(async (value: string) => {
+  await store.onChangeSourcesSearchTerm(value)
+}, 500)
 
 onMounted(async () => {
   await store.fetchEventConfigs()
@@ -223,6 +270,26 @@ onMounted(async () => {
         div {
           border-radius: 5px;
           padding: 0px 5px 0px 5px;
+        }
+
+        .action-container {
+          display: flex;
+          align-items: center;
+          gap: 5px;
+
+          button {
+            margin: 0px;
+          }
+
+          :deep(.feather-menu-dropdown) {
+            .feather-dropdown {
+              li {
+                a {
+                  padding: 8px 16px !important;
+                }
+              }
+            }
+          }
         }
       }
     }

@@ -129,4 +129,27 @@ public class EventConfEventDaoHibernate
     public void deleteAll(final Collection<EventConfEvent> list) {
         super.deleteAll(list);
     }
+
+    @Override
+    public void updateEventEnabledFlag(Long sourceId, List<Long> eventIds, boolean enabled) {
+        if (eventIds == null || eventIds.isEmpty()) {
+            LOG.warn("No event IDs provided for update. Skipping...");
+            return;
+        }
+
+        var session = getSessionFactory().getCurrentSession();
+        String hql = "update EventConfEvent e set e.enabled = :enabled " +
+                "where e.source.id = :sourceId and e.id in (:eventIds)";
+
+        var query = session.createQuery(hql);
+        query.setParameter("enabled", enabled);
+        query.setParameter("sourceId", sourceId);
+        query.setParameterList("eventIds", eventIds);
+
+        int updatedCount = query.executeUpdate();
+        LOG.info("Updated {} events (enabled={}) for sourceId={}", updatedCount, enabled, sourceId);
+    }
+
+
+
 }

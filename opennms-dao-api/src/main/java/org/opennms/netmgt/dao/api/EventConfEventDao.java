@@ -42,5 +42,7 @@ public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
 
     List<EventConfEvent> filterEventConf(String uei, String vendor, String sourceName, int offset, int limit);
 
+    void updateEventEnabledFlag(Long sourceId, List<Long> eventIds, boolean enabled);
+
     void saveAll(Collection<EventConfEvent> events);
 }
