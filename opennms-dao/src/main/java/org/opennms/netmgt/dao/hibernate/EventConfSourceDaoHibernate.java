@@ -110,9 +110,8 @@ public class EventConfSourceDaoHibernate
     public List<String> findAllNames() {
         return findObjects(
                 String.class,
-                "select s.name from EventConfSource s " +
-                        "where lower(s.vendor) != 'opennms' " +
-                        "order by s.fileOrder"
+                "select distinct s.name from EventConfSource s "
+
         );
     }
 
