@@ -5,7 +5,7 @@
     <parent>
         <artifactId>org.opennms.config-dao</artifactId>
         <groupId>org.opennms</groupId>
-        <version>34.0.1-SNAPSHOT</version>
+        <version>34.0.1</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
