@@ -131,7 +131,7 @@ public class EventConfPersistenceServiceIT {
         String filename = "existing-source";
         String username = "test_user";
         Date now = new Date();
-        EventConfSourceMetadataDto metadata = new EventConfSourceMetadataDto.Builder().filename(filename).eventCount(2).fileOrder(2).username(username).now(now).vendor("update-vendor").description("original entry").build();
+        EventConfSourceMetadataDto metadata = new EventConfSourceMetadataDto.Builder().filename(filename).eventCount(2).fileOrder(0).username(username).now(now).vendor("update-vendor").description("original entry").build();
         Event event = new Event();
         event.setUei("uei.opennms.org/test/update");
         event.setEventLabel("Initial Event");
@@ -154,11 +154,11 @@ public class EventConfPersistenceServiceIT {
 
         Assert.assertEquals(1, sources.size() - defaultEventConfSize);
         EventConfSource source = sources.get(0);
-        Assert.assertEquals(filename, source.getName());
+        Assert.assertEquals("existing-source", source.getName());
         Assert.assertEquals("updated entry", source.getDescription());
         Assert.assertEquals("updated-vendor", source.getVendor());
         Assert.assertEquals("updated_user", source.getUploadedBy());
-        Assert.assertEquals(2, (int) source.getFileOrder());
+        Assert.assertEquals(0, (int) source.getFileOrder());
         List<EventConfEvent> updatedDbEvents = eventConfEventDao.findEnabledEvents();
         Assert.assertEquals(1, updatedDbEvents.size() - defaultEventConfEventSize);
         EventConfEvent finalEvent = updatedDbEvents.get(0);
