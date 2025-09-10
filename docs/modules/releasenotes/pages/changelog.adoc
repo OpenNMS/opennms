@@ -2,6 +2,56 @@
 
 = Changelog
 
+[[releasenotes-changelog-34.0.1]]
+
+== Release 34.0.1
+
+Release 34.0.1 contains a couple of bug fixes, enhancements and a new feature.
+
+=== Bug
+
+* Update org.apache.zookeeper:zookeeper (Issue https://opennms.atlassian.net/browse/NMS-18037[NMS-18037])
+* Update commons-fileupload:commons-fileupload (Issue https://opennms.atlassian.net/browse/NMS-18081[NMS-18081])
+* decodeBER throws exception on PDU with long numeric BER value encoding (Issue https://opennms.atlassian.net/browse/NMS-18160[NMS-18160])
+* Remove unnecessary 2nd click for menus with just one entry (Issue https://opennms.atlassian.net/browse/NMS-18193[NMS-18193])
+* Main Menu Dashboards -> Dashboards doesn't go to Dashboards (Issue https://opennms.atlassian.net/browse/NMS-18194[NMS-18194])
+* Fix flaky test : SituationRestIT  (Issue https://opennms.atlassian.net/browse/NMS-18205[NMS-18205])
+* Update okio library (Issue https://opennms.atlassian.net/browse/NMS-18215[NMS-18215])
+* Update commons-fileupload library (Issue https://opennms.atlassian.net/browse/NMS-18216[NMS-18216])
+* OpenNMS fails to start when SnmpPoller is enabled (Issue https://opennms.atlassian.net/browse/NMS-18220[NMS-18220])
+* Clicking an alarm in the "Nodes with Pending Alarms" on landing page leads to an alarm page without menu (Issue https://opennms.atlassian.net/browse/NMS-18221[NMS-18221])
+* Updaye activemq-client, activemq-openwire-legacy library (Issue https://opennms.atlassian.net/browse/NMS-18224[NMS-18224])
+* FE: Node list filters: Various bug fixes (Issue https://opennms.atlassian.net/browse/NMS-18226[NMS-18226])
+* Loading bean from BeanUtils concurrently is causing deadlock (Issue https://opennms.atlassian.net/browse/NMS-18228[NMS-18228])
+* Update libarchive library (Issue https://opennms.atlassian.net/browse/NMS-18230[NMS-18230])
+* Update pam library (Issue https://opennms.atlassian.net/browse/NMS-18231[NMS-18231])
+* SFlow Parser doesn't respect dnslookupsEnabled=false (Issue https://opennms.atlassian.net/browse/NMS-18242[NMS-18242])
+* When you click on an alarm the navigation and application header is gone (Issue https://opennms.atlassian.net/browse/NMS-18266[NMS-18266])
+* Shortcut to set search focus is not working (Issue https://opennms.atlassian.net/browse/NMS-18269[NMS-18269])
+* Inconsistent tile provider configuration (Issue https://opennms.atlassian.net/browse/NMS-18274[NMS-18274])
+* Inconsistent tile server in the geographical maps (Issue https://opennms.atlassian.net/browse/NMS-18290[NMS-18290])
+
+=== Enhancement
+
+* Set the RRDTool as the default time series storage implementation (Issue https://opennms.atlassian.net/browse/NMS-17883[NMS-17883])
+* FE: Display empty list if no node available* (Issue https://opennms.atlassian.net/browse/NMS-18214[NMS-18214])
+* Please expose surveillance categories in a single comma-delimited tag/label (Issue https://opennms.atlassian.net/browse/NMS-18238[NMS-18238])
+* FE: Reduce whitespace in menu, combine expand/collapse with lock (Issue https://opennms.atlassian.net/browse/NMS-18279[NMS-18279])
+
+=== Task
+
+* FE: UI Dependabot updates for August 2025 (Issue https://opennms.atlassian.net/browse/NMS-17867[NMS-17867])
+* FE: Node search should search across more fields (Issue https://opennms.atlassian.net/browse/NMS-18047[NMS-18047])
+* Clean up references to Java 11 (Issue https://opennms.atlassian.net/browse/NMS-18227[NMS-18227])
+* Move menu template documentation from Operation to Development (Issue https://opennms.atlassian.net/browse/NMS-18276[NMS-18276])
+* FE: Change self-service menu in top menu to be icon-only (Issue https://opennms.atlassian.net/browse/NMS-18281[NMS-18281])
+* FE: Remove "User" section from side menu template (Issue https://opennms.atlassian.net/browse/NMS-18282[NMS-18282])
+* Remove menu template docs from documentation, move to readme-style file in ui (Issue https://opennms.atlassian.net/browse/NMS-18284[NMS-18284])
+
+=== New Feature
+
+* FE: Top Expand/Collapse button should maintain state (Issue https://opennms.atlassian.net/browse/NMS-18288[NMS-18288])
+
 [[releasenotes-changelog-34.0.0]]
 
 == Release 34.0.0
