@@ -173,7 +173,6 @@
 **** xref:deep-dive/elasticsearch/features/event-forwarder-mapping.adoc[]
 **** xref:deep-dive/elasticsearch/features/event-forwarder-mapping-table.adoc[]
 *** xref:deep-dive/elasticsearch/features/flows.adoc[]
-*** xref:deep-dive/elasticsearch/features/situation-feedback.adoc[]
 *** xref:deep-dive/elasticsearch/features/alarm-history.adoc[]
 
 ** xref:deep-dive/flows/introduction.adoc[]
@@ -194,7 +193,6 @@
 *** xref:deep-dive/kafka-producer/configure-kafka.adoc[]
 *** xref:deep-dive/kafka-producer/shell-commands.adoc[]
 
-** xref:deep-dive/alarm-correlation/situation-feedback.adoc[]
 ** xref:deep-dive/meta-data.adoc[]
 ** xref:deep-dive/search.adoc[]
 ** xref:deep-dive/snmp-poller/concepts.adoc[]
