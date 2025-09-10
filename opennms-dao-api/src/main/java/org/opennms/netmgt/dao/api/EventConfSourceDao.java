@@ -51,4 +51,6 @@ public interface EventConfSourceDao extends OnmsDao<EventConfSource, Long> {
 
     Map<String, Object> filterEventConfSource(String filter, String sortBy, String order, Integer totalRecords,
                                               Integer offset, Integer limit);
+
+    void deleteBySourceIds(List<Long> sourceIds);
 }

@@ -19,28 +19,24 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt.dao.api;
+package org.opennms.netmgt.model.events;
 
-import org.opennms.netmgt.model.EventConfEvent;
-
-import java.util.Collection;
 import java.util.List;
 
-public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
+public class EventConfSourceDeletePayload {
+    private List<Long> sourceIds;
 
-    EventConfEvent get(Long id);
+    public EventConfSourceDeletePayload() {
 
-    List<EventConfEvent> findBySourceId(Long sourceId);
+    }
 
-    EventConfEvent findByUei(String uei);
+    public List<Long> getSourceIds() {
+        return sourceIds;
+    }
 
-    List<EventConfEvent> findEnabledEvents();
+    public void setSourceIds(List<Long> sourceIds) {
+        this.sourceIds = sourceIds;
+    }
 
-    void deleteBySourceId(Long sourceId);
 
-    void deleteAll(final Collection<EventConfEvent> list);
-
-    List<EventConfEvent> filterEventConf(String uei, String vendor, String sourceName, int offset, int limit);
-
-    void updateEventEnabledFlag(Long sourceId, List<Long> eventIds, boolean enabled);
 }

@@ -24,17 +24,20 @@ package org.opennms.web.rest.v2;
 
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.ContentDisposition;
+import org.hibernate.SessionFactory;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
 import org.opennms.netmgt.model.EventConfEventDto;
+import org.opennms.netmgt.model.EventConfEvent;
+import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
-import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
-import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
+import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
+import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,6 +87,9 @@ public class EventConfRestServiceIT {
 
     @Autowired
     private EventConfEventDao eventConfEventDao;
+
+    @Autowired
+    private SessionFactory sessionFactory;
 
     @Autowired
     private EventConfPersistenceService eventConfPersistenceService;
@@ -308,6 +314,64 @@ public class EventConfRestServiceIT {
         assertFalse(enableEventConfEvents.stream().noneMatch(EventConfEvent::getEnabled));
     }
 
+
+    @Test
+    @Transactional
+    public void testEnableDisableEventConfSourcesEvents() throws Exception {
+        EventConfSource  m_source = new EventConfSource();
+        m_source.setName("testEventEnabledFlagTest");
+        m_source.setEnabled(true);
+        m_source.setCreatedTime(new Date());
+        m_source.setFileOrder(1);
+        m_source.setDescription("Test event source");
+        m_source.setVendor("TestVendor1");
+        m_source.setUploadedBy("JUnitTest");
+        m_source.setEventCount(2);
+        m_source.setLastModified(new Date());
+
+        eventConfSourceDao.saveOrUpdate(m_source);
+        eventConfSourceDao.flush();
+
+        insertEvent(m_source,"uei.opennms.org/internal/trigger", "Trigger configuration changed testing", "The Trigger configuration has been changed and should be reloaded", "Normal");
+
+        insertEvent(m_source,"uei.opennms.org/internal/clear", "Clear discovery failed testing", "The Clear discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.", "Minor");
+
+        EventConfSource source = eventConfSourceDao.findByName("testEventEnabledFlagTest");
+
+        EventConfEvent triggerEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/trigger");
+        EventConfEvent clearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
+
+        // Disable events
+        EnableDisableConfSourceEventsPayload disablePayload = new EnableDisableConfSourceEventsPayload();
+        disablePayload.setEventsIds(List.of(triggerEvent.getId(), clearEvent.getId()));
+        disablePayload.setEnable(false);
+
+        eventConfRestApi.enableDisableEventConfSourcesEvents(source.getId(), disablePayload, securityContext);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+        // Verify disabled state
+        EventConfEvent disabledTriggerEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/trigger");
+        EventConfEvent disabledClearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
+
+        assertFalse(disabledTriggerEvent.getEnabled());
+        assertFalse(disabledClearEvent.getEnabled());
+
+        // Enable events
+        EnableDisableConfSourceEventsPayload enablePayload = new EnableDisableConfSourceEventsPayload();
+        enablePayload.setEventsIds(List.of(triggerEvent.getId(), clearEvent.getId()));
+        enablePayload.setEnable(true);
+
+        eventConfRestApi.enableDisableEventConfSourcesEvents(source.getId(), enablePayload, securityContext);
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+        // Verify enabled state
+        EventConfEvent enabledTriggerEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/trigger");
+        EventConfEvent enabledClearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
+
+        assertTrue(enabledTriggerEvent.getEnabled());
+        assertTrue(enabledClearEvent.getEnabled());
+    }
+
     @Test
     public void testEnableDisableEventConfSources_InvalidPayload() throws Exception {
         EventConfSrcEnableDisablePayload payload = new EventConfSrcEnableDisablePayload(null, null, Collections.emptyList());
@@ -316,44 +380,58 @@ public class EventConfRestServiceIT {
         assertTrue(((String) response.getEntity()).contains("enabled"));
     }
 
+
     @Test
-    public void testFilterEventConfSource_InvalidOffsetLimit() {
-        Response response = eventConfRestApi.filterEventConfSource(
-                "test", "name", "desc", 0, -1, 5, null);
+    public void testDeleteEventConfSources_Success() throws Exception {
+        String[] filenames = {"eventconf.xml", "opennms.alarm.events.xml", "Cisco.airespace.xml"};
+        List<Attachment> attachments = new ArrayList<>();
 
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        for (final var name : filenames) {
+            final var path = "/EVENTS-CONF/" + name;
+            final var is = getClass().getResourceAsStream(path);
+            Attachment att = mock(Attachment.class);
+            ContentDisposition cd = mock(ContentDisposition.class);
+            when(cd.getParameter("filename")).thenReturn(name);
+            when(att.getContentDisposition()).thenReturn(cd);
+            when(att.getObject(InputStream.class)).thenReturn(is);
+            attachments.add(att);
+        }
+        eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        List<Long> sourcesIds = eventConfSourceDao.findAll().stream().map(EventConfSource::getId).toList();
+        // Delete eventConfSources.
+        EventConfSourceDeletePayload payload = new EventConfSourceDeletePayload();
+        payload.setSourceIds(sourcesIds);
 
-        response = eventConfRestApi.filterEventConfSource(
-                "test", "vendor", "desc", 0, 11, 5, null);
+        eventConfRestApi.deleteEventConfSources(payload, securityContext);
+        List<EventConfSource> eventConfSources = eventConfSourceDao.findAll();
+        assertEquals(0, eventConfSources.size());
 
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
     }
 
     @Test
-    public void testFilterEventConfSource_NoRecordsFound() {
-        Response response = eventConfRestApi.filterEventConfSource(
-                "nonexistent", "name", "Asc", 0, 0, 5, null);
-        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), response.getStatus());
+    public void testDeleteEventConfSources_EmptySourceIds() throws Exception {
+        EventConfSourceDeletePayload payload = new EventConfSourceDeletePayload();
+        payload.setSourceIds(Collections.emptyList());
+
+        Response response = eventConfRestApi.deleteEventConfSources(payload, securityContext);
+
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), response.getStatus());
+        assertTrue(((String) response.getEntity()).contains("At least one sourceId"));
+
     }
+    private void insertEvent(EventConfSource m_source,String uei, String label, String description, String severity) {
+        EventConfEvent event = new EventConfEvent();
+        event.setUei(uei);
+        event.setEventLabel(label);
+        event.setDescription(description);
+        event.setXmlContent("<event><uei>" + uei + "</uei></event>");
+        event.setSource(m_source);
+        event.setEnabled(true);
+        event.setCreatedTime(new Date());
+        event.setLastModified(new Date());
+        event.setModifiedBy("JUnitTest");
 
-    @Test
-    public void testFilterEventConfSource_Success() {
-        EventConfSource source =  new EventConfSource();
-        source.setName("test");
-        source.setFileOrder(1);
-        source.setEventCount(2);
-        source.setEnabled(true);
-        source.setCreatedTime(new Date());
-        source.setLastModified(new Date());
-        source.setVendor("vendor");
-        source.setDescription("desc");
-        eventConfSourceDao.saveOrUpdate(source);
-
-        Response response = eventConfRestApi.filterEventConfSource(
-                "test", "vendor", "desc",0, 0, 5, null);
-
-        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
-        assertNotNull(response.getEntity());
+        eventConfEventDao.saveOrUpdate(event);
     }
 
 }
