@@ -4,9 +4,10 @@
 # vim:set ai et sts=4 sw=4 tw=0:
 
 # Overwrite the files during install or upgrade
-install -m 644 custom.properties /etc/opennms/
-install -m 644 config.properties /etc/opennms/
-install -m 644 opennms.properties /etc/opennms/
+# Not the right solution, but for testing :)
+install -m 644 custom.properties /usr/share/opennms/etc/
+install -m 644 config.properties /usr/share/opennms/etc/
+install -m 644 opennms.properties /usr/share/opennms/etc/
 
 ## create the OpenNMS group if it doesn't exist
 if ! getent group opennms >/dev/null 2>&1; then
