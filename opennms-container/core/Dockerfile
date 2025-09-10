@@ -107,7 +107,6 @@ RUN rm -rf /opt/opennms/share/rrd \
             /opennms-data/rrd \
             /opennms-data/reports \
             /opennms-data/mibs && \
-    ln -s /opennms-data/rrd /opt/opennms/share/rrd && \
     ln -s /opennms-data/reports /opt/opennms/share/reports && \
     ln -s /opennms-data/mibs /opt/opennms/share/mibs && \
 # Compatibility with other OpenNMS paths
