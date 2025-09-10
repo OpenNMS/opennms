@@ -3,7 +3,7 @@ version: '34-SNAPSHOT'
 title: Horizon
 asciidoc:
   attributes:
-    full-display-version: '34.0.0-SNAPSHOT'
+    full-display-version: '34.0.1-SNAPSHOT'
     package-prefix: opennms
     experimental: true
     source-language: asciidoc@
@@ -16,17 +16,18 @@ asciidoc:
     compatible-ubuntu: '20.04 LTS'
     compatible-debian: '9 - 11'
     compatible-rocky-linux: '9.x'
-    compatible-opennms-plugin: '7+'
-    compatible-oia: '0.6.x'
-    compatible-cassandra: '3.11.x'
-    compatible-elasticsearch: '6.7.0 - 7.17.9'
-    compatible-javajdk: 'OpenJDK 11 or 17'
+    compatible-opennms-plugin: '9 - 11.2'
+    compatible-oia: '1.6.1'
+    compatible-cassandra: '4.17.0'
+    compatible-elasticsearch: '8.18.2'
+    compatible-javajdk: 'OpenJDK 17'
     compatible-kafka: '1.x - 3.x'
-    compatible-postgresql: '10.x - 15.x'
+    compatible-postgresql: '13.x - 15.x'
     compatible-rrdtool: '1.7.x'
     jasperreportsversion: '6.3.0'
     latest-meridian-stable: '2023'
     postgresql-version: '15'
+    jmx-prom-exporter-version: '1.3.0'
 nav:
 - modules/ROOT/index.adoc
 - modules/releasenotes/nav.adoc

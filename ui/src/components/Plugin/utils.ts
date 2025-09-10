@@ -94,12 +94,20 @@ const addStylesheet = (url: string) => {
   head.prepend(link)
 }
 
-const getJSPath = (baseUrl: string, extensionId: string, rootPath: string, fileName: string) => {
-  return `${baseUrl}/plugins/ui-extension/module/${extensionId}?path=${rootPath}/${fileName}`
+/**
+ * Get the Rest url for the UiExtensionService Rest API (see features/ui-extension).
+ * Accessing this url will return the Javascript module code for the plugin.
+ */
+const getJSPath = (baseRestUrl: string, extensionId: string, rootPath: string, fileName: string) => {
+  return `${baseRestUrl}/plugins/ui-extension/module/${extensionId}?path=${rootPath}/${fileName}`
 }
 
-const getCSSPath = (baseUrl: string, extensionId: string) => {
-  return `${baseUrl}/plugins/ui-extension/css/${extensionId}`
+/**
+ * Get the Rest url for the UiExtensionService Rest API (see features/ui-extension).
+ * Accessing this url will return the CSS code for the plugin.
+ */
+const getCSSPath = (baseRestUrl: string, extensionId: string) => {
+  return `${baseRestUrl}/plugins/ui-extension/css/${extensionId}`
 }
 
 export { externalComponent, addStylesheet, getJSPath, getCSSPath }

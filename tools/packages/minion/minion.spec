@@ -16,7 +16,7 @@
 %{!?_descr:%define _descr OpenNMS}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
-%{!?_java:%define _java java-11-openjdk-devel}
+%{!?_java:%define _java java-17-openjdk-devel}
 
 %{!?extrainfo:%define extrainfo %{nil}}
 %{!?extrainfo2:%define extrainfo2 %{nil}}
@@ -71,7 +71,6 @@ Requires(pre):  jicmp >= 3.0.0
 Requires:       jicmp6 >= 3.0.0
 Requires(pre):  jicmp6 >= 3.0.0
 Provides:	opennms-plugin-api = %{opa_version}
-Recommends:	haveged
 
 Conflicts:      %{name}-container        < %{version}-%{release}
 Conflicts:      %{name}-features-core    < %{version}-%{release}

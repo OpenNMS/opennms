@@ -48,6 +48,7 @@ import {
   getHistoryByIpInterface
 } from './deviceService'
 
+import { getGeolocationConfig } from './geolocationService'
 import { getMainMenu, getNotificationSummary } from './menuService'
 import { getMainMonitoringSystem } from './monitoringSystemService'
 import { getFileNames, getFile, getSnippets, postFile, deleteFile, getFileExtensions } from './configService'
@@ -58,6 +59,7 @@ import { getEvents } from './eventService'
 import { getNodeIfServices } from './ifService'
 import { getIpInterfaces, getNodeIpInterfaceQuery } from './ipInterfaceService'
 import { search } from './searchService'
+import { performLogout } from './logoutService'
 import { getLogs, getLog } from './logsService'
 import { getWhoAmI } from './whoAmIService'
 import { getInfo } from './infoService'
@@ -71,8 +73,8 @@ import {
   setUsageStatisticsStatus
 } from './usageStatisticsService'
 import {
- addZenithRegistration,
- getZenithRegistrations
+  addZenithRegistration,
+  getZenithRegistrations
 } from './zenithConnectService'
 
 export default {
@@ -100,6 +102,7 @@ export default {
   getWhoAmI,
   deleteFile,
   getSnippets,
+  getGeolocationConfig,
   getMainMenu,
   getNotificationSummary,
   getMainMonitoringSystem,
@@ -131,5 +134,6 @@ export default {
   getUsageStatisticsStatus,
   setUsageStatisticsStatus,
   addZenithRegistration,
-  getZenithRegistrations
+  getZenithRegistrations,
+  performLogout
 }

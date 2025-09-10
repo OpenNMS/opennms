@@ -137,6 +137,19 @@ public final class ThresholdEntity implements Cloneable {
         }
     }
 
+     /**
+     * Get expression Label
+     *
+     * @return a {@link java.lang.String} object.
+     */
+    public String getExpressionLabel() {
+        if (hasThresholds()) {
+            return getThresholdConfig().getExprLabel().orElse(null);
+        } else {
+            return null;
+        }
+    }
+
     /**
      * Returns a copy of this ThresholdEntity object.
      *

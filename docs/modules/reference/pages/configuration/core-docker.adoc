@@ -14,12 +14,17 @@
 | `-t`     | One-time command to run the config-tester against the configuration.
 |===
 
+[[core-oci-confd]]
 == Environment variables
 
 .Java options
 |===
-| Environment variable  | Description                           | Required | Default value
-| `JAVA_OPTS`           | Allows you to add additional Java options. | optional | `-`
+| Environment variable        | Description                                            | Required | Default value
+| `JAVA_OPTS`                 | Allows you to add additional Java options.             | optional | `-`
+| `PROM_JMX_EXPORTER_ENABLED` | Enable the JMX Prometheus Exporter agent.              | required | `false`
+| `PROM_JMX_EXPORTER_PORT`    | TCP port for the JMX Prometheus Exporter.              | optional | `9299`
+| `PROM_JMX_EXPORTER_CONFIG`  | Path to the JMX Prometheus Exporter configuration file | optional | `/opt/prom-jmx-exporter/config.yaml`
+| `PROM_JMX_EXPORTER_JAR`     | Path to the JMX Prometheus agent                       | optional | `/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar`
 |===
 
 .PostgreSQL connection configuration in opennms-datasources.xml
@@ -95,3 +100,26 @@
 | `/opt/opennms-overlay` | Allows you to overwrite files relative to `/opt/opennms`.
 | `/opennms-data`        | Directory with RRDTool/JRobin files and generated PDF reports sent to the file system.
 |===
+
+== JMX Prometheus Exporter
+
+.JMX Exporter with a Confd YAML configuration file
+[source, yaml]
+----
+java:
+  agent:
+    prom-jmx-exporter:
+      startDelaySeconds: 0
+      lowerCaseOutputName: true
+      lowercaseOutputLabelNames: true
+      autoExcludeObjectNameAttributes: true
+      includeObjectNames:
+        - "java.lang:*"
+        - "OpenNMS:*"
+        - "org.opennms.*:*"
+        - "org.opennms.newts:name=ring-buffer*"
+        - "org.opennms.newts:name=repository.samples-inserted*"
+        - "org.opennms.core.ipc.rpc:*"
+      excludeObjectNames:
+        - "org.apache.camel:*"
+----

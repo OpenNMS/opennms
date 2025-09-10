@@ -36,7 +36,7 @@ const QuickNode = require('../model/QuickNode');
   const quickAddPanelBasicView = require('../../views/quick-add-panel-basic.html');
   const quickAddPanelSnmpView = require('../../views/quick-add-panel-snmp.html');
   const quickAddPanelCategoriesView = require('../../views/quick-add-panel-categories.html');
-  const quickAddPanelCliView = require('../../views/quick-add-panel-cli.html');
+  // const quickAddPanelCliView = require('../../views/quick-add-panel-cli.html');
   const quickAddPanelHelpView = require('../../views/quick-add-panel-help.html');
 
   angular.module('onms-requisitions')
@@ -61,7 +61,7 @@ const QuickNode = require('../model/QuickNode');
     $scope.quickAddPanelBasicView = quickAddPanelBasicView;
     $scope.quickAddPanelSnmpView = quickAddPanelSnmpView;
     $scope.quickAddPanelCategoriesView = quickAddPanelCategoriesView;
-    $scope.quickAddPanelCliView = quickAddPanelCliView;
+    // $scope.quickAddPanelCliView = quickAddPanelCliView;
     $scope.quickAddPanelHelpView = quickAddPanelHelpView;
 
     /**
@@ -137,7 +137,7 @@ const QuickNode = require('../model/QuickNode');
     $scope.provision = function() {
       $scope.isSaving = true;
       growl.info('The node ' + _.escape($scope.node.nodeLabel) + ' is being added to requisition ' + _.escape($scope.node.foreignSource) + '. Please wait...');
-      var successMessage = 'The node ' + _.escape($scope.node.nodeLabel) + ' has been added to requisition ' + _.escape($scope.node.foreignSource);
+      const successMessage = 'The node ' + _.escape($scope.node.nodeLabel) + ' has been added to requisition ' + _.escape($scope.node.foreignSource);
       RequisitionsService.quickAddNode($scope.node).then(
         function() { // success
           $scope.reset();
@@ -177,9 +177,9 @@ const QuickNode = require('../model/QuickNode');
     * @returns {array} the unused available categories
     */
     $scope.getAvailableCategories = function() {
-      var categories = [];
+      const categories = [];
       angular.forEach($scope.availableCategories, function(category) {
-        var found = false;
+        let found = false;
         angular.forEach($scope.node.categories, function(c) {
           if (c.name === category) {
             found = true;

@@ -85,6 +85,7 @@ public class JdbcStoredProcedureDetectorIT implements InitializingBean {
 
         String url = null;
         String username = null;
+        String password = "postgres";
         Connection conn = null;
         try {
             conn = m_dataSource.getConnection();
@@ -112,7 +113,7 @@ public class JdbcStoredProcedureDetectorIT implements InitializingBean {
         m_detector.setPort(5432);
         m_detector.setUrl(url);
         m_detector.setUser(username);
-        m_detector.setPassword("");
+        m_detector.setPassword(password);
         m_detector.setStoredProcedure("isRunning");
 
     }

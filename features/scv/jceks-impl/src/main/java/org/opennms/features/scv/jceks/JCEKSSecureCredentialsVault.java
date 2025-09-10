@@ -44,7 +44,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.Set;
+import java.util.Properties;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.Properties;
 
 import javax.crypto.SecretKey;
 import javax.crypto.SecretKeyFactory;
@@ -55,6 +57,7 @@ import org.opennms.core.fileutils.FileUpdateCallback;
 import org.opennms.core.fileutils.FileUpdateWatcher;
 import org.opennms.features.scv.api.Credentials;
 import org.opennms.features.scv.api.SecureCredentialsVault;
+import org.opennms.features.scv.utils.ScvUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -69,7 +72,8 @@ import com.google.common.collect.Sets;
 public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, FileUpdateCallback {
 
     public static final Logger LOG = LoggerFactory.getLogger(JCEKSSecureCredentialsVault.class);
-
+    public static final String KEYSTORE_KEY_PROPERTY = "org.opennms.features.scv.jceks.key";
+    public static final String DEFAULT_KEYSTORE_KEY = "QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw";
     private final KeyStore m_keystore;
     private final File m_keystoreFile;
     private final char[] m_password;
@@ -80,31 +84,41 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
     private FileUpdateWatcher m_fileUpdateWatcher;
     private final AtomicBoolean m_fileUpdated = new AtomicBoolean(false);
     private long m_lastModified = System.currentTimeMillis();
-
-    public static final String KEYSTORE_KEY_PROPERTY = "org.opennms.features.scv.jceks.key";
-
-    public static final String DEFAULT_KEYSTORE_KEY = "QqSezYvBtk2gzrdpggMHvt5fJGWCdkRw";
+    private final String m_keyStoreType;
 
     public JCEKSSecureCredentialsVault(String keystoreFile, String password, boolean useWatcher)  {
         this(keystoreFile, password, useWatcher, new byte[]{0x0, 0xd, 0xd, 0xb, 0xa, 0x1, 0x1});
+    }
+
+    public JCEKSSecureCredentialsVault(String keystoreFile, String password, boolean useWatcher, String keyStoreType)  {
+        this(keystoreFile, password, useWatcher, new byte[]{0x0, 0xd, 0xd, 0xb, 0xa, 0x1, 0x1}, keyStoreType);
     }
 
     public JCEKSSecureCredentialsVault(String keystoreFile, String password)  {
         this(keystoreFile, password, false, new byte[]{0x0, 0xd, 0xd, 0xb, 0xa, 0x1, 0x1});
     }
 
-    public JCEKSSecureCredentialsVault(String keystoreFile, String password, boolean useWatcher, byte[] salt) {
-        this(keystoreFile, password, useWatcher, salt, 16, 4096);
+    public JCEKSSecureCredentialsVault(String keystoreFile, String password, String keyStoreType)  {
+        this(keystoreFile, password, false, keyStoreType);
     }
 
-    public JCEKSSecureCredentialsVault(String keystoreFile, String password, boolean useWatcher, byte[] salt, int iterationCount, int keyLength) {
+    public JCEKSSecureCredentialsVault(String keystoreFile, String password, boolean useWatcher, byte[] salt) {
+        this(keystoreFile, password, useWatcher, salt, 16, 4096, KeyStoreType.JCEKS.toString());
+    }
+
+    public JCEKSSecureCredentialsVault(String keystoreFile, String password, boolean useWatcher, byte[] salt, String keyStoreType) {
+        this(keystoreFile, password, useWatcher, salt, 16, 4096, keyStoreType);
+    }
+
+    public JCEKSSecureCredentialsVault(String keystoreFile, String password, boolean useWatcher, byte[] salt, int iterationCount, int keyLength, String keyStoreType) {
         m_password = Objects.requireNonNull(password).toCharArray();
         m_salt = Objects.requireNonNull(salt);
         m_iterationCount = iterationCount;
         m_keyLength = keyLength;
-        m_keystoreFile = new File(keystoreFile);
+        m_keyStoreType = getValidKeyStoreType(keyStoreType);
+        m_keystoreFile = new File(getKeyStoreFileName(keystoreFile));
         try {
-            m_keystore = KeyStore.getInstance("JCEKS");
+            m_keystore = KeyStore.getInstance(m_keyStoreType);
             if (!m_keystoreFile.isFile()) {
                 LOG.info("No existing keystore found at: {}. Using empty keystore.", m_keystoreFile);
                 m_keystore.load(null, m_password);
@@ -122,6 +136,16 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
         } catch (KeyStoreException | NoSuchAlgorithmException | CertificateException | IOException e) {
             throw Throwables.propagate(e);
         }
+    }
+
+    private String getKeyStoreFileName(String keystoreFile) {
+
+        String fileName = keystoreFile;
+        if (KeyStoreType.PKCS12.toString().equals(m_keyStoreType)) {
+            fileName = keystoreFile.replaceAll(".jce",".pk12");
+        }
+
+        return fileName;
     }
 
     private void createFileUpdateWatcher() {
@@ -261,7 +285,8 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
     }
 
     private static String getKeystorePassword() {
-        return System.getProperty(KEYSTORE_KEY_PROPERTY, DEFAULT_KEYSTORE_KEY);
+        Properties properties = ScvUtils.loadScvProperties(System.getProperty("opennms.home"));
+        return properties.getProperty(ScvUtils.KEYSTORE_KEY_PROPERTY, DEFAULT_KEYSTORE_KEY);
     }
 
     /*
@@ -269,7 +294,8 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
        Should be mostly used for read-only access, short-lived and instantiate for each access.
      */
     public static JCEKSSecureCredentialsVault defaultScv() {
-        return new JCEKSSecureCredentialsVault(getKeystoreFilename(), getKeystorePassword());
+        Properties properties = ScvUtils.loadScvProperties(System.getProperty("opennms.home"));
+        return new JCEKSSecureCredentialsVault(getKeystoreFilename(), getKeystorePassword(), properties.getProperty(ScvUtils.SCV_KEYSTORE_TYPE_PROPERTY));
     }
 
     @Override
@@ -286,6 +312,26 @@ public class JCEKSSecureCredentialsVault implements SecureCredentialsVault, File
                 LOG.error("Exception while loading keystore file {}", m_keystoreFile, e);
             }
             m_fileUpdated.set(true);
+        }
+    }
+
+    /**
+     * Returns a valid KeyStore type based on the provided input string.
+     * <p>
+     * This method checks if the given {@code keystoreType} matches any of the defined values
+     * in the {@link KeyStoreType} enum. If it matches, the corresponding enum name is returned.
+     * If the input is {@code null}, empty, or does not match any enum value,
+     * the method returns the default keystore type {@code "JCEKS"}.
+     * </p>
+     *
+     * @param keystoreType the input keystore type string to validate
+     * @return a valid keystore type name (either from the enum or default "JCEKS")
+     */
+    private String getValidKeyStoreType(String keystoreType) {
+        try {
+            return KeyStoreType.valueOf(keystoreType.toUpperCase()).toString();
+        } catch (IllegalArgumentException | NullPointerException e) {
+            return KeyStoreType.JCEKS.toString();
         }
     }
 

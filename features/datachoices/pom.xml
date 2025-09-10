@@ -5,7 +5,7 @@
     <parent>
         <artifactId>org.opennms.features</artifactId>
         <groupId>org.opennms</groupId>
-        <version>34.0.0-SNAPSHOT</version>
+        <version>34.0.1-SNAPSHOT</version>
     </parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>datachoices</artifactId>
@@ -26,6 +26,12 @@
                         <Bundle-SymbolicName>${project.artifactId}</Bundle-SymbolicName>
                         <Bundle-Version>${project.version}</Bundle-Version>
                         <Karaf-Commands>*</Karaf-Commands>
+                    <!--    keep flows api import resolution optional to avoid the error while uninstalling the flows feature       -->
+                        <Import-Package>
+                            org.opennms.netmgt.flows.api;resolution:=optional,
+                            org.opennms.netmgt.flows.filter.api;resolution:=optional,
+                            *
+                        </Import-Package>
                     </instructions>
                 </configuration>
             </plugin>

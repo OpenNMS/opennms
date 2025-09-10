@@ -23,6 +23,26 @@ CONFD_CONFIG_FILE="${CONFD_CONFIG_DIR}/confd.toml"
 CACERTS="${MINION_HOME}/cacerts"
 export JAVA_OPTS="${JAVA_OPTS} -Xms${JAVA_MIN_MEM:-2g} -Xmx${JAVA_MAX_MEM:-2g}"
 
+# Prometheus JMX Exporter Configuration
+#
+# The JMX exporter allows Prometheus to scrape JMX metrics from the OpenNMS Minion applications.
+# The Prometheus JMX exporter needs to be enabled and is disabled by default.
+#
+# Requirements:
+# - PROM_JMX_EXPORTER_ENABLED=true
+# - All other settings are optional and have sensible defaults
+#
+# Default behavior:
+# - Configuration is managed via confd templates
+# - Template uses key/values from /java/agent/prom-jmx-exporter
+PROM_JMX_EXPORTER_ENABLED="${PROM_JMX_EXPORTER_ENABLED:-false}" # required
+PROM_JMX_EXPORTER_JAR="${PROM_JMX_EXPORTER_JAR:-/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar}"
+PROM_JMX_EXPORTER_PORT="${PROM_JMX_EXPORTER_PORT:-9299}"
+PROM_JMX_EXPORTER_CONFIG="${PROM_JMX_EXPORTER_CONFIG:-/opt/prom-jmx-exporter/config.yaml}"
+
+if [[ "${PROM_JMX_EXPORTER_ENABLED,,}" == "true" ]]; then
+  export JAVA_OPTS="${JAVA_OPTS} -javaagent:${PROM_JMX_EXPORTER_JAR}=${PROM_JMX_EXPORTER_PORT}:${PROM_JMX_EXPORTER_CONFIG}"
+fi
 
 export JAVA_OPTS="$JAVA_OPTS -Djava.locale.providers=CLDR,COMPAT"
 export JAVA_OPTS="$JAVA_OPTS $("${MINION_HOME}/bin/_module_opts.sh")"

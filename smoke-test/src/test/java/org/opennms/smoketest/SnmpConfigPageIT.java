@@ -23,10 +23,15 @@ package org.opennms.smoketest;
 
 import static org.junit.Assert.assertEquals;
 
+import org.junit.Ignore;
 import org.junit.Test;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SnmpConfigPageIT extends OpenNMSSeleniumIT {
+    private static Logger LOG = LoggerFactory.getLogger(SnmpConfigPageIT.class);
 
     /**
      * Checks whether Snmp config data is saved and
@@ -37,58 +42,78 @@ public class SnmpConfigPageIT extends OpenNMSSeleniumIT {
         // lookup IP 1.2.3.4
         lookupIpAddress("1.2.3.4");
         // fill in details for IPs 1.2.3.4 and 1.2.3.5
-        enterText(By.id("lastIPAddress"), "1.2.3.5");
-        enterText(By.id("timeout"), "1801");
-        enterText(By.id("retryCount"), "2");
-        enterText(By.id("port"), "162");
-        enterText(By.id("proxyHost"), "10.20.30.40");
-        enterText(By.id("maxRequestSize"), "65534");
-        enterText(By.id("maxVarsPerPdu"), "9");
-        enterText(By.id("maxRepetitions"), "1");
-        enterText(By.id("ttl"), "42");
-        enterText(By.id("readCommunityString"), "fooReadBar");
-        enterText(By.id("writeCommunityString"), "fooWriteBar");
-        findElementByName("saveConfig").click();
+        clearAndEnterTextById("lastIPAddress", "1.2.3.5");
+        clearAndEnterTextById("timeout", "1801");
+        clearAndEnterTextById("retryCount", "2");
+        clearAndEnterTextById("port", "162");
+        clearAndEnterTextById("proxyHost", "10.20.30.40");
+        clearAndEnterTextById("maxRequestSize", "65534");
+        clearAndEnterTextById("maxVarsPerPdu", "9");
+        clearAndEnterTextById("maxRepetitions", "1");
+        clearAndEnterTextById("ttl", "42");
+        clearAndEnterTextById("readCommunityString", "fooReadBar");
+        clearAndEnterTextById("writeCommunityString", "fooWriteBar");
+        clickElementByName("saveConfig");
 
         // lookup 1.2.3.4
         lookupIpAddress("1.2.3.4");
         // check that all data (including proxyHost) was correctly saved
-        assertEquals("1.2.3.4", findElementById("firstIPAddress").getAttribute("value"));
-        assertEquals("1801", findElementById("timeout").getAttribute("value"));
-        assertEquals("2", findElementById("retryCount").getAttribute("value"));
-        assertEquals("162", findElementById("port").getAttribute("value"));
-        assertEquals("10.20.30.40", findElementById("proxyHost").getAttribute("value"));
-        assertEquals("65534", findElementById("maxRequestSize").getAttribute("value"));
-        assertEquals("9", findElementById("maxVarsPerPdu").getAttribute("value"));
-        assertEquals("1", findElementById("maxRepetitions").getAttribute("value"));
-        assertEquals("42", findElementById("ttl").getAttribute("value"));
-        assertEquals("fooReadBar", findElementById("readCommunityString").getAttribute("value"));
-        assertEquals("fooWriteBar", findElementById("writeCommunityString").getAttribute("value"));
+        assertEquals("1.2.3.4", scrollAndFindElementById("firstIPAddress").getAttribute("value"));
+        assertEquals("1801", scrollAndFindElementById("timeout").getAttribute("value"));
+        assertEquals("2", scrollAndFindElementById("retryCount").getAttribute("value"));
+        assertEquals("162", scrollAndFindElementById("port").getAttribute("value"));
+        assertEquals("10.20.30.40", scrollAndFindElementById("proxyHost").getAttribute("value"));
+        assertEquals("65534", scrollAndFindElementById("maxRequestSize").getAttribute("value"));
+        assertEquals("9", scrollAndFindElementById("maxVarsPerPdu").getAttribute("value"));
+        assertEquals("1", scrollAndFindElementById("maxRepetitions").getAttribute("value"));
+        assertEquals("42", scrollAndFindElementById("ttl").getAttribute("value"));
+        assertEquals("fooReadBar", scrollAndFindElementById("readCommunityString").getAttribute("value"));
+        assertEquals("fooWriteBar", scrollAndFindElementById("writeCommunityString").getAttribute("value"));
 
         // lookup 1.2.3.5
         lookupIpAddress("1.2.3.5");
         // check that all data (including proxyHost) was correctly saved
-        assertEquals("1.2.3.5", findElementById("firstIPAddress").getAttribute("value"));
-        assertEquals("1801", findElementById("timeout").getAttribute("value"));
-        assertEquals("2", findElementById("retryCount").getAttribute("value"));
-        assertEquals("162", findElementById("port").getAttribute("value"));
-        assertEquals("10.20.30.40", findElementById("proxyHost").getAttribute("value"));
-        assertEquals("65534", findElementById("maxRequestSize").getAttribute("value"));
-        assertEquals("9", findElementById("maxVarsPerPdu").getAttribute("value"));
-        assertEquals("1", findElementById("maxRepetitions").getAttribute("value"));
-        assertEquals("42", findElementById("ttl").getAttribute("value"));
-        assertEquals("fooReadBar", findElementById("readCommunityString").getAttribute("value"));
-        assertEquals("fooWriteBar", findElementById("writeCommunityString").getAttribute("value"));
+        assertEquals("1.2.3.5", scrollAndFindElementById("firstIPAddress").getAttribute("value"));
+        assertEquals("1801", scrollAndFindElementById("timeout").getAttribute("value"));
+        assertEquals("2", scrollAndFindElementById("retryCount").getAttribute("value"));
+        assertEquals("162", scrollAndFindElementById("port").getAttribute("value"));
+        assertEquals("10.20.30.40", scrollAndFindElementById("proxyHost").getAttribute("value"));
+        assertEquals("65534", scrollAndFindElementById("maxRequestSize").getAttribute("value"));
+        assertEquals("9", scrollAndFindElementById("maxVarsPerPdu").getAttribute("value"));
+        assertEquals("1", scrollAndFindElementById("maxRepetitions").getAttribute("value"));
+        assertEquals("42", scrollAndFindElementById("ttl").getAttribute("value"));
+        assertEquals("fooReadBar", scrollAndFindElementById("readCommunityString").getAttribute("value"));
+        assertEquals("fooWriteBar", scrollAndFindElementById("writeCommunityString").getAttribute("value"));
     }
 
     private void lookupIpAddress(final String ipAddress) {
+        LOG.debug("lookupIpAddress: {}", ipAddress);
+
         gotoSnmpConfigPage();
-        enterText(By.id("lookup_ipAddress"), ipAddress);
-        findElementByName("getConfig").click();
+        clearAndEnterTextById("lookup_ipAddress", ipAddress);
+        clickElementByName("getConfig");
+    }
+
+    private WebElement scrollAndFindElementById(final String id) {
+        return scrollToElement(By.id(id));
+    }
+
+    private void clearAndEnterTextById(final String id, final String input) {
+        WebElement elem = scrollAndFindElementById(id);
+        elem.clear();
+        elem.sendKeys(input);
+    }
+
+    private void clickElementByName(final String name) {
+        WebElement elem = scrollToElement(By.name(name));
+        clickElementUsingScript(elem);
     }
 
     private void gotoSnmpConfigPage() {
+        LOG.debug("gotoSnmpConfigPage");
+
         adminPage();
-        findElementByLink("Configure SNMP Community Names by IP Address").click();
+        WebElement elem = findElementByLink("Configure SNMP Community Names by IP Address");
+        clickElementUsingScript(elem);
     }
 }

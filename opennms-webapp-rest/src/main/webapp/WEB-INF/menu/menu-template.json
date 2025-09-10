@@ -1,0 +1,777 @@
+{
+  "templateName": "default",
+  "baseHref": "",
+  "homeUrl": "",
+  "formattedTime": "",
+  "noticeStatus": "",
+  "username": "",
+  "baseNodeUrl": "",
+  "zenithConnectEnabled": false,
+  "zenithConnectBaseUrl": "",
+  "zenithConnectRelativeUrl": "",
+  "displayAddNodeButton": false,
+  "sideMenuInitialExpand": false,
+  "copyrightDates": "",
+  "version": "",
+  "menus": [
+    {
+      "id": "dashboardsMenu",
+      "name": "Dashboards",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "action/Dashboard",
+      "roles": null,
+      "items": [
+        {
+          "id": "surveillanceDashboard",
+          "name": "Surveillance Dashboard",
+          "url": "dashboard.jsp",
+          "locationMatch": "dashboard",
+          "roles": null
+        },
+        {
+          "id": "opsBoard",
+          "name": "Wallboard",
+          "url": "vaadin-wallboard",
+          "locationMatch": "vaadin-wallboard",
+          "roles": null
+        },
+        {
+          "id": "heatmap",
+          "name": "Heatmap",
+          "url": "heatmap/index.jsp",
+          "locationMatch": "heatmap",
+          "roles": null
+        },
+        {
+          "id": "trend",
+          "name": "Trends",
+          "url": "trend/index.jsp",
+          "locationMatch": "trend",
+          "roles": null
+        },
+        {
+          "id": "charts",
+          "name": "Charts",
+          "url": "charts/index.jsp",
+          "locationMatch": "chart",
+          "roles": null
+        },
+        {
+          "id": "databaseReports",
+          "name": "Database Reports",
+          "url": "report/database/index.jsp",
+          "locationMatch": "database-reports",
+          "roles": null
+        },
+        {
+          "id": "statistics",
+          "name": "Metrics Statistics (statsd)",
+          "url": "statisticsReports/index.htm",
+          "locationMatch": "reports",
+          "roles": null
+        },
+        {
+          "id": "kscReports",
+          "name": "Metrics Dashboard (KSC Reports)",
+          "url": "KSC/index.jsp",
+          "locationMatch": "ksc",
+          "roles": null
+        }
+      ]
+    },
+    {
+      "id": "inventoryMenu",
+      "name": "Inventory",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "network/Server",
+      "roles": null,
+      "items": [
+        {
+          "id": "nodes",
+          "name": "Nodes",
+          "url": "element/nodeList.htm",
+          "locationMatch": "nodelist",
+          "roles": null
+        },
+        {
+          "id": "structuredNodeList",
+          "name": "Structured Node List",
+          "url": "ui/index.html#/nodes",
+          "locationMatch": "configurationManagement",
+          "roles": null
+        },
+        {
+          "id": "deviceConfigs",
+          "name": "Device Configs",
+          "url": "ui/index.html#/device-config-backup",
+          "locationMatch": "configurationManagement",
+          "roles": ["ROLE_ADMIN", "ROLE_REST", "ROLE_DEVICE_CONFIG_BACKUP"]
+        },
+        {
+          "id": "assets",
+          "name": "Assets",
+          "url": "asset/index.jsp",
+          "locationMatch": "asset",
+          "roles": null
+        },
+        {
+          "id": "searchInventory",
+          "name": "Search Inventory",
+          "url": "element/index.jsp",
+          "locationMatch": "element",
+          "roles": null
+        }
+      ]
+    },
+    {
+      "id": "monitoringMenu",
+      "name": "Monitoring",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "action/View",
+      "roles": null,
+      "items": [
+        {
+          "id": "surveillanceView",
+          "name": "Surveillance View",
+          "url": "surveillance-view.jsp",
+          "locationMatch": "surveillance-view",
+          "roles": null
+        },
+        {
+          "id": "applications",
+          "name": "Applications",
+          "url": "application/index.jsp",
+          "locationMatch": "application",
+          "roles": null
+        },
+        {
+          "id": "alarms",
+          "name": "Alarms",
+          "url": "alarm/index.htm",
+          "locationMatch": "alarm",
+          "roles": null
+        },
+        {
+          "id": "outages",
+          "name": "Outages",
+          "url": "outage/index.jsp",
+          "locationMatch": "outage",
+          "roles": null
+        },
+        {
+          "id": "events",
+          "name": "Events",
+          "url": "event/index",
+          "locationMatch": "event",
+          "roles": null
+        },
+        {
+          "id": "pathOutages",
+          "name": "Path Outages",
+          "url": "pathOutage/index.jsp",
+          "locationMatch": "pathOutage",
+          "roles": null
+        }
+      ]
+    },
+    {
+      "id": "mapsMenu",
+      "name": "Geographical Map",
+      "url": "ui/index.html#/map",
+      "action": "link",
+      "locationMatch": "geographical",
+      "icon": "action/Location",
+      "roles": null,
+      "items": null
+    },
+    {
+      "id": "topologiesMenu",
+      "name": "Topology Map",
+      "url": "topology",
+      "action": "link",
+      "locationMatch": "topology",
+      "icon": "network/Instances",
+      "roles": null,
+      "items": null
+    },
+    {
+      "id": "metricsMenu",
+      "name": "Metrics (Resource Graphs)",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "datavis/LineChart",
+      "roles": null,
+      "items": [
+        {
+          "id": "resourceGraphs",
+          "name": "Resource Graphs",
+          "url": "graph/index.jsp",
+          "locationMatch": "performance",
+          "roles": null
+        }
+      ]
+    },
+    {
+      "type": "separator"
+    },
+    {
+      "id": "distributedMonitoringMenu",
+      "name": "Distributed Monitoring",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "action/ViewDetails",
+      "roles": null,
+      "items": [
+        {
+          "id": "manageMinions",
+          "name": "Manage Minions",
+          "url": "minion/index.jsp",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "manageApplications",
+          "name": "Manage Applications",
+          "url": "admin/applications.htm",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "manageMonitoringLocations",
+          "name": "Manage Monitoring Locations",
+          "url": "locations/index.jsp",
+          "locationMatch": "",
+          "roles": null
+        }
+      ]
+    },
+    {
+      "id": "manageInventoryMenu",
+      "name": "Manage Inventory",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "network/Server",
+      "roles": null,
+      "items": [
+        {
+          "id": "provisioningRequisitions",
+          "name": "Provisioning Requisitions",
+          "url": "admin/ng-requisitions/index.jsp",
+          "locationMatch": "provisioning",
+          "roles": null
+        },
+        {
+          "id": "scheduledDiscovery",
+          "name": "Scheduled Node Discovery",
+          "url": "admin/discovery/edit-config.jsp",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "singleDiscovery",
+          "name": "One-shot Node Discovery",
+          "url": "admin/discovery/edit-scan.jsp",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "addSingleNode",
+          "name": "Add a Single Node",
+          "url": "admin/ng-requisitions/quick-add-node.jsp",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "deleteNodes",
+          "name": "Delete Nodes",
+          "url": "admin/deleteNodes",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "manageBusinessServices",
+          "name": "Manage Business Services",
+          "url": "admin/bsm/adminpage.jsp",
+          "locationMatch": "",
+          "roles": null
+        }
+      ]
+    },
+    {
+      "id": "userManagementMenu",
+      "name": "User Management",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "action/ManageProfile",
+      "roles": null,
+      "items": [
+        {
+          "id": "manageUsers",
+          "name": "Manage Users",
+          "url": "admin/userGroupView/users/list.jsp",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "manageGroups",
+          "name": "Manage Groups",
+          "url": "admin/userGroupView/groups/list.htm",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "manageOnCall",
+          "name": "Manage On-call Roles",
+          "url": "admin/userGroupView/roles",
+          "locationMatch": "",
+          "roles": null
+        }
+      ]
+    },
+    {
+      "id": "integrationsMenu",
+      "name": "Integrations",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "network/ApiEndpoints",
+      "roles": null,
+      "items": [
+        {
+          "id": "snmpAgentConfiguration",
+          "name": "SNMP Agent Configuration",
+          "url": "admin/snmpConfig",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "externalRequisitions",
+          "name": "External Requisitions",
+          "url": "ui/index.html#/configuration",
+          "locationMatch": "configurationManagement",
+          "roles": ["ROLE_ADMIN"]
+        },
+        {
+          "id": "geocodingServices",
+          "name": "Geocoding Services",
+          "url": "admin/geoservice/index.jsp",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "grafanaPdfReporting",
+          "name": "Grafana PDF Reporting",
+          "url": "admin/endpoint/index.jsp",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "zenithConnect",
+          "name": "Connect to Zenith",
+          "url": "ui/index.html#/zenith-connect",
+          "locationMatch": "zenithConnect",
+          "roles": ["ROLE_ADMIN", "ROLE_USER"],
+          "requiredSystemProperties": [
+            {
+              "name": "opennms.zenithConnect.enabled",
+              "value": "true"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "toolsMenu",
+      "name": "Tools",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "network/Build",
+      "roles": null,
+      "items": [
+        {
+          "id": "snmpMibCompiler",
+          "name": "SNMP MIB Compiler",
+          "url": "admin/mibCompiler.jsp",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "jmxMetricConfigurationGenerator",
+          "name": "JMX Metric Configuration Generator",
+          "url": "admin/jmxConfigGenerator.jsp",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "importExportNodeAssetInformation",
+          "name": "Import/Export Node Asset Information",
+          "url": "admin/asset/index.jsp",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "sendCustomEvents",
+          "name": "Send Custom Events",
+          "url": "admin/sendevent.htm",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "fileEditor",
+          "name": "File Editor",
+          "url": "ui/index.html#/file-editor",
+          "locationMatch": "configurationManagement",
+          "roles": ["ROLE_FILESYSTEM_EDITOR"]
+        },
+        {
+          "id": "scv",
+          "name": "Secure Credentials Vault",
+          "url": "ui/index.html#/scv",
+          "locationMatch": "configurationManagement",
+          "roles": ["ROLE_ADMIN"]
+        }
+      ]
+    },
+    {
+      "id": "administrationMenu",
+      "name": "Administration",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "action/Workflow",
+      "roles": null,
+      "items": [
+        {
+          "id": "surveillanceCategories",
+          "name": "Surveillance Categories",
+          "url": "admin/categories.htm",
+          "locationMatch": "categories",
+          "roles": null
+        },
+        {
+          "id": "configureThresholds",
+          "name": "Configure Thresholds",
+          "url": "admin/thresholds/index.htm",
+          "locationMatch": "thresholds",
+          "roles": null
+        },
+        {
+          "id": "flowClassification",
+          "name": "Flow Classification",
+          "url": "admin/classification/index.jsp",
+          "locationMatch": null,
+          "roles": ["ROLE_FLOW_MANAGER"]
+        },
+        {
+          "id": "notifications",
+          "name": "Notifications",
+          "url": "notification/index.jsp",
+          "locationMatch": "notification",
+          "roles": null
+        },
+        {
+          "id": "customizeEvents",
+          "name": "Customize Events",
+          "url": "admin/manageEvents.jsp",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "customizeDataCollectionGroups",
+          "name": "Customize Data Collection Groups",
+          "url": "admin/manageSnmpCollections.jsp",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "customizeDataCollectionInterfaces",
+          "name": "Manage SNMP Data Collection per Interface",
+          "url": "admin/snmpGetNodes",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "scheduledOutages",
+          "name": "Scheduled Outages",
+          "url": "admin/sched-outages/index.jsp",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "wallboardConfiguration",
+          "name": "Wallboard Configuration",
+          "url": "admin/wallboardConfig.jsp",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "productUpdateEnrollment",
+          "name": "Product Update Enrollment",
+          "url": "admin/product-update-enrollment/index.jsp",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "usageStatisticsSharing",
+          "name": "Usage Statistics Sharing",
+          "url": "ui/index.html#/usage-statistics",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "configureOpenNms",
+          "name": "Configure OpenNMS",
+          "url": "admin/index.jsp",
+          "locationMatch": null,
+          "roles": ["ROLE_ADMIN"]
+        }
+      ]
+    },
+    {
+      "id": "internalLogsMenu",
+      "name": "Internal Logs",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "network/LogsAlt",
+      "roles": null,
+      "items": [
+        {
+          "id": "logViewer",
+          "name": "Log Viewer",
+          "url": "ui/index.html#/logs",
+          "locationMatch": "configurationManagement",
+          "roles": ["ROLE_ADMIN"]
+        },
+        {
+          "id": "instrumentationLogReader",
+          "name": "Instrumentation Log Reader",
+          "url": "admin/nodemanagement/instrumentationLogReader.jsp",
+          "locationMatch": "configurationManagement",
+          "roles": ["ROLE_ADMIN"]
+        }
+      ]
+    },
+    {
+      "type": "separator"
+    },
+    {
+      "id": "apiDocumentationMenu",
+      "name": "API Documentation",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "network/ApiEndpoints",
+      "roles": null,
+      "items": [
+        {
+          "id": "restOpenApiDocumentation",
+          "name": "REST Open API Documentation",
+          "url": "ui/index.html#/open-api",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "restApiReferenceDocumentation",
+          "name": "REST API Reference Documentation",
+          "url": "https://docs.opennms.com/meridian/2024/development/rest/rest-api.html",
+          "isExternalLink": true,
+          "linkTarget": "_blank",
+          "locationMatch": "",
+          "roles": null
+        },
+        {
+          "id": "sourceCode",
+          "name": "Source Code",
+          "url": "https://github.com/OpenNMS/opennms",
+          "isExternalLink": true,
+          "linkTarget": "_blank",
+          "locationMatch": "",
+          "roles": null
+        }
+      ]
+    },
+    {
+      "id": "helpDocumentationMenu",
+      "name": "Help",
+      "url": "https://docs.opennms.com/meridian/2024",
+      "isExternalLink": true,
+      "locationMatch": null,
+      "icon": "action/Help",
+      "roles": null,
+      "items": [
+        {
+          "id": "helpMain",
+          "name": "Help",
+          "url": "help/index.jsp",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "helpAbout",
+          "name": "About",
+          "url": "about/index.jsp",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "apiDocumentation",
+          "name": "API Documentation",
+          "url": "ui/index.html#/open-api",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "support",
+          "name": "Support",
+          "url": "support/index.jsp",
+          "locationMatch": null,
+          "roles": ["ROLE_ADMIN"]
+        }
+      ]
+    },
+    {
+      "id": "supportMenu",
+      "name": "Support",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "action/ContactSupport",
+      "roles": null,
+      "items": [
+        {
+          "id": "professionalSupport",
+          "name": "Professional Support",
+          "url": "https://www.opennms.com/support",
+          "isExternalLink": true,
+          "linkTarget": "_blank",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "chat",
+          "name": "Chat",
+          "url": "https://chat.opennms.org",
+          "isExternalLink": true,
+          "linkTarget": "_blank",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "communitySupportDiscourse",
+          "name": "Community Support (Discourse)",
+          "url": "https://opennms.discourse.group",
+          "isExternalLink": true,
+          "linkTarget": "_blank",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "publicIssueTracker`",
+          "name": "Public Issue Tracker",
+          "url": "https://issues.opennms.org/secure/Dashboard.jspa",
+          "isExternalLink": true,
+          "linkTarget": "_blank",
+          "locationMatch": null,
+          "roles": null
+        },
+        {
+          "id": "generateSystemReport",
+          "name": "Generate System Report",
+          "url": "admin/support/systemReportList.htm",
+          "locationMatch": null,
+          "roles": null
+        }
+      ]
+    }
+  ],
+  "helpMenu": {
+    "id": "helpMenu",
+    "name": "Help",
+    "url": "#",
+    "locationMatch": null,
+    "roles": null,
+    "items": [
+    ]
+  },
+  "selfServiceMenu": {
+    "id": "selfServiceMenu",
+    "name": "admin",
+    "url": "account/selfService/index.jsp",
+    "locationMatch": null,
+    "roles": null,
+    "items": [
+      {
+        "id": "changePassword",
+        "name": "Change Password",
+        "url": "account/selfService/newPasswordEntry",
+        "locationMatch": null,
+        "roles": null
+      },
+      {
+        "id": "logout",
+        "name": "Log Out",
+        "url": "j_spring_security_logout",
+        "locationMatch": null,
+        "action": "logout",
+        "roles": null
+      }
+    ]
+  },
+  "userNotificationMenu": {
+    "id": "userNotificationMenu",
+    "name": null,
+    "url": null,
+    "locationMatch": null,
+    "roles": null,
+    "items": [
+      {
+        "id": "userNotificationConfiguration",
+        "name": null,
+        "url": "admin/notification/index.jsp",
+        "locationMatch": null,
+        "roles": null
+      },
+      {
+        "id": "userNotificationUser",
+        "name": null,
+        "url": "notification/browse?acktype=unack&filter=user==$USER",
+        "locationMatch": null,
+        "roles": null
+      },
+      {
+        "id": "userNotificationTeam",
+        "name": null,
+        "url": "notification/browse?acktype=unack",
+        "locationMatch": null,
+        "roles": null
+      },
+      {
+        "id": "userNotificationOnCall",
+        "name": "On-Call Schedule",
+        "url": "roles",
+        "locationMatch": null,
+        "roles": null
+      }
+    ]
+  },
+  "provisionMenu": {
+    "id": "provisionMenu",
+    "name": "Quick-Add Node",
+    "url": "admin/ng-requisitions/quick-add-node.jsp#/",
+    "locationMatch": null,
+    "roles": ["ROLE_ADMIN", "ROLE_PROVISION"]
+  },
+  "flowsMenu": {
+    "id": "flowMenu",
+    "name": "Flows Management",
+    "url": "admin/classification/index.jsp",
+    "locationMatch": null,
+    "roles": ["ROLE_FLOW_MANAGER"]
+  },
+  "configurationMenu": {
+    "id": "configurationMenu",
+    "name": "Configure OpenNMS",
+    "url": "admin/index.jsp",
+    "locationMatch": null,
+    "roles": ["ROLE_ADMIN"]
+  }
+}

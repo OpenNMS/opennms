@@ -34,7 +34,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.opennms.core.time.CentralizedDateTimeFormat;
 import org.opennms.web.rest.support.menu.HttpMenuRequestContext;
-import org.opennms.web.rest.support.menu.MainMenu;
+import org.opennms.web.rest.support.menu.model.MainMenu;
 import org.opennms.web.rest.support.menu.MenuProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -80,16 +80,8 @@ public class MenuRestService {
         MainMenu mainMenu = null;
         this.menuProvider.setMenuRequestContext(new HttpMenuRequestContext(request));
 
-        // TODO: This may not be needed, need more testing to be sure that variable expansion is working
-        String webInfRealPath = request.getServletContext().getRealPath(WEB_INF_PREFIX);
-
-        if (this.menuProvider.getDispatcherServletPath().contains("${opennms.home}")) {
-            int index = this.menuProvider.getDispatcherServletPath().indexOf(WEB_INF_PREFIX);
-
-            if (index >= 0) {
-                String path = webInfRealPath + this.menuProvider.getDispatcherServletPath().substring(index + WEB_INF_PREFIX.length());
-                this.menuProvider.setDispatcherServletPath(path);
-            }
+        if (containsHomeVariable(menuProvider.getMenuTemplateFilePath())) {
+            this.menuProvider.setMenuTemplateFilePath(getExpandedWebInfPrefixPath(request, menuProvider.getMenuTemplateFilePath()));
         }
 
         try {
@@ -100,5 +92,20 @@ public class MenuRestService {
         }
 
         return mainMenu;
+    }
+
+    private boolean containsHomeVariable(String path) {
+        return path != null && path.contains("${opennms.home}");
+    }
+
+    private String getExpandedWebInfPrefixPath(final HttpServletRequest request, final String path) {
+        int index = path.indexOf(WEB_INF_PREFIX);
+
+        if (index >= 0) {
+            String webInfRealPath = request.getServletContext().getRealPath(WEB_INF_PREFIX);
+            return webInfRealPath + path.substring(index + WEB_INF_PREFIX.length());
+        }
+
+        return path;
     }
 }

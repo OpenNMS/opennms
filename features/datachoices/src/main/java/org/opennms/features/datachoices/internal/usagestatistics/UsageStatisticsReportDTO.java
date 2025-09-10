@@ -86,6 +86,7 @@ public class UsageStatisticsReportDTO {
     private long m_coreFlowsPersisted;
     private long m_coreNewtsSamplesInserted;
     private long m_coreQueuedUpdatesCompleted;
+    private long m_coreTssWritesCompleted;
     private int m_users;
     private int m_groups;
     private long m_dcbSucceed;
@@ -467,6 +468,14 @@ public class UsageStatisticsReportDTO {
 
     public void setCoreQueuedUpdatesCompleted(long coreQueuedUpdatesCompleted) {
         this.m_coreQueuedUpdatesCompleted = coreQueuedUpdatesCompleted;
+    }
+
+    public long getCoreTssWritesCompleted() {
+        return m_coreTssWritesCompleted;
+    }
+
+    public void setCoreTssWritesCompleted(long coreTssWritesCompleted) {
+        this.m_coreTssWritesCompleted = coreTssWritesCompleted;
     }
 
     public void setSinkStrategy(String sinkStrategy) {

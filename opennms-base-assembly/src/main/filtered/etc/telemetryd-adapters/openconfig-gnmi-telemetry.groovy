@@ -19,9 +19,12 @@
  * language governing permissions and limitations under the
  * License.
  */
+
+
 import groovy.util.logging.Slf4j
 import org.opennms.features.openconfig.proto.gnmi.Gnmi
 import org.opennms.netmgt.collection.api.AttributeType
+import org.opennms.netmgt.collection.api.CollectionResource
 import org.opennms.netmgt.collection.support.builder.InterfaceLevelResource
 import org.opennms.netmgt.collection.support.builder.NodeLevelResource
 
@@ -33,30 +36,73 @@ class CollectionSetGenerator {
         // Sample code for parsing and building resources, real data may vary
         Gnmi.Notification notification = response.getUpdate()
         List<Gnmi.Update> updateList = notification.getUpdateList()
-        String interfaceLabel = null;
-        // Use more traditional java way since java/groovy syntax differs a lot with streams
+
+        // Check if this is a component (CPU) or interface metric
+        String resourceType = null;
+        String resourceName = null;
+
         for (Gnmi.PathElem pathElem : notification.getPrefix().getElemList()) {
             if (pathElem.getName().equals("interface")) {
-                interfaceLabel = pathElem.getKeyMap().get("name");
+                resourceType = CollectionResource.RESOURCE_TYPE_IF;
+                resourceName = pathElem.getKeyMap().get("name");
+                break;
+            } else if (pathElem.getName().equals("component")) {
+                resourceType = CollectionResource.RESOURCE_TYPE_NODE;
+                resourceName = pathElem.getKeyMap().get("name");
                 break;
             }
         }
-        if (interfaceLabel == null) {
-            interfaceLabel = agent.getHostAddress();
+
+        if (resourceName == null) {
+            resourceName = agent.getHostAddress();
         }
-        InterfaceLevelResource interfaceResource = new InterfaceLevelResource(nodeLevelResource, interfaceLabel);
         for (Gnmi.Update update : updateList) {
 
             StringBuilder pathName = new StringBuilder();
             for (Gnmi.PathElem pathElem : update.getPath().getElemList()) {
-                pathName.append(pathElem.getName()).append("/");
+                if (pathName.length() > 0) {
+                    pathName.append("-");
+                }
+                pathName.append(pathElem.getName());
             }
-            pathName.setLength(pathName.length() - 1); // Remove trailing slash
 
+            // Handle different value types
             if (update.getVal().getValueCase().equals(Gnmi.TypedValue.ValueCase.UINT_VAL)) {
-                long value = update.getVal().getUintVal();
-                builder.withNumericAttribute(interfaceResource, "gnmi-interfaces", pathName.toString(),
-                        value, AttributeType.COUNTER);
+                long longValue = update.getVal().getUintVal();
+                if (resourceType == CollectionResource.RESOURCE_TYPE_IF) {
+                    InterfaceLevelResource interfaceResource = new InterfaceLevelResource(nodeLevelResource, resourceName);
+                    builder.withNumericAttribute(interfaceResource, "gnmi-interfaces", pathName.toString(),
+                            longValue, AttributeType.COUNTER);
+                } else if (resourceType == CollectionResource.RESOURCE_TYPE_NODE) {
+                    builder.withNumericAttribute(nodeLevelResource, "component-stats", pathName.toString(),
+                            longValue, AttributeType.GAUGE);
+                } else {
+                    // Default to interface-level resource
+                    InterfaceLevelResource interfaceResource = new InterfaceLevelResource(nodeLevelResource, resourceName);
+                    builder.withNumericAttribute(interfaceResource, "gnmi-interfaces", pathName.toString(),
+                            longValue, AttributeType.COUNTER);
+                }
+            } else if (update.getVal().getValueCase().equals(Gnmi.TypedValue.ValueCase.JSON_VAL)) {
+                String jsonValue = new String(update.getVal().getJsonVal().toByteArray());
+                jsonValue = jsonValue.replaceAll("\"", "");
+                try {
+                    double doubleValue = Double.parseDouble(jsonValue);
+                    if (resourceType == CollectionResource.RESOURCE_TYPE_IF) {
+                        InterfaceLevelResource interfaceResource = new InterfaceLevelResource(nodeLevelResource, resourceName);
+                        builder.withNumericAttribute(interfaceResource, "gnmi-interfaces", pathName.toString(),
+                                doubleValue, AttributeType.COUNTER);
+                    } else if (resourceType == CollectionResource.RESOURCE_TYPE_NODE) {
+                        builder.withNumericAttribute(nodeLevelResource, "component-stats", pathName.toString(),
+                                doubleValue, AttributeType.GAUGE);
+                    } else {
+                        // Default to interface-level resource
+                        InterfaceLevelResource interfaceResource = new InterfaceLevelResource(nodeLevelResource, resourceName);
+                        builder.withNumericAttribute(interfaceResource, "gnmi-interfaces", pathName.toString(),
+                                doubleValue, AttributeType.COUNTER);
+                    }
+                } catch (NumberFormatException e) {
+                    log.warn("Failed to parse JSON value: {}", jsonValue, e);
+                }
             }
         }
     }

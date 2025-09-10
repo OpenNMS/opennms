@@ -25,7 +25,6 @@ import java.io.File;
 import java.io.IOException;
 import java.lang.management.ManagementFactory;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
 import java.sql.Connection;
 import java.sql.DatabaseMetaData;
 import java.time.Duration;
@@ -108,6 +107,7 @@ public class UsageStatisticsReporter implements StateChangeHandler {
     private static final String JMX_OBJ_OPENNMS_FLOWS_PERSISTED = "org.opennms.netmgt.flows:name=flowsPersisted,type=meters";
     private static final String JMX_OBJ_OPENNMS_REPO_SAMPLE_INSERTED = "org.opennms.newts:name=repository.samples-inserted,type=meters";
     private static final String JMX_OBJ_OPENNMS_QUEUED = "OpenNMS:Name=Queued";
+    private static final String JMX_OBJ_OPENNMS_TSS = "org.opennms.timeseries:name=samples.write.integration";
     private static final String JMX_ATTR_FREE_PHYSICAL_MEMORY_SIZE = "FreePhysicalMemorySize";
     private static final String JMX_ATTR_TOTAL_PHYSICAL_MEMORY_SIZE = "TotalPhysicalMemorySize";
     private static final String JMX_ATTR_AVAILABLE_PROCESSORS = "AvailableProcessors";
@@ -340,8 +340,8 @@ public class UsageStatisticsReporter implements StateChangeHandler {
                 final List<Filter> filters = Collections.singletonList(new TimeRangeFilter(twentyFourHoursAgo, currentTime));
                 flowCount = flowQueryService.getFlowCount(filters).get();
 
-            } catch (InterruptedException | ExecutionException e) {
-                LOG.warn("An error occurred while retrieving the flow count. ", e);
+            } catch (Exception e) {
+                LOG.warn("An error occurred while retrieving the flow count.", e);
             }
         }
 
@@ -421,6 +421,10 @@ public class UsageStatisticsReporter implements StateChangeHandler {
         Object coreQueuedUpdatesCompletedObj = getJmxAttribute(JMX_OBJ_OPENNMS_QUEUED, JMX_ATTR_UPDATES_COMPLETED);
         if (coreQueuedUpdatesCompletedObj != null) {
             usageStatisticsReport.setCoreQueuedUpdatesCompleted((long) coreQueuedUpdatesCompletedObj);
+        }
+        Object coreTssWritesCompletedObj = getJmxAttribute(JMX_OBJ_OPENNMS_TSS, JMX_ATTR_COUNT);
+        if (coreTssWritesCompletedObj != null) {
+            usageStatisticsReport.setCoreTssWritesCompleted((long) coreTssWritesCompletedObj);
         }
     }
 

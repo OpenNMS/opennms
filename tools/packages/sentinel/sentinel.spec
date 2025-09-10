@@ -16,7 +16,7 @@
 %{!?_descr:%define _descr OpenNMS}
 %{!?packagedir:%define packagedir %{_name}-%version-%{releasenumber}}
 
-%{!?_java:%define _java java-11-openjdk-devel}
+%{!?_java:%define _java java-17-openjdk-devel}
 
 %{!?extrainfo:%define extrainfo %{nil}}
 %{!?extrainfo2:%define extrainfo2 %{nil}}
@@ -67,7 +67,6 @@ Requires:       /sbin/nologin
 Requires:       /usr/bin/id
 Requires:       /usr/bin/sudo
 Provides:	opennms-plugin-api = %{opa_version}
-Recommends:	haveged
 
 Prefix:        %{sentinelinstprefix}
 

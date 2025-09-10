@@ -3,7 +3,7 @@
   <parent>
     <groupId>org.opennms</groupId>
     <artifactId>org.opennms.container</artifactId>
-    <version>34.0.0-SNAPSHOT</version>
+    <version>34.0.1-SNAPSHOT</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.opennms.karaf</groupId>
@@ -216,7 +216,7 @@
                       <goal>verify</goal>
                   </goals>
                   <configuration>
-                      <javase>11</javase>
+                      <javase>17</javase>
                       <descriptors>
                           <descriptor>file:${project.build.directory}/classes/features.xml</descriptor>
                           <descriptor>file:${project.build.directory}/classes/features-core.xml</descriptor>
