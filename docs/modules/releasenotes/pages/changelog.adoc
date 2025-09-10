@@ -38,6 +38,16 @@ Release 34.0.1 contains a couple of bug fixes, enhancements and a new feature.
 * Please expose surveillance categories in a single comma-delimited tag/label (Issue https://opennms.atlassian.net/browse/NMS-18238[NMS-18238])
 * FE: Reduce whitespace in menu, combine expand/collapse with lock (Issue https://opennms.atlassian.net/browse/NMS-18279[NMS-18279])
 
+=== Task
+
+* FE: UI Dependabot updates for August 2025 (Issue https://opennms.atlassian.net/browse/NMS-17867[NMS-17867])
+* FE: Node search should search across more fields (Issue https://opennms.atlassian.net/browse/NMS-18047[NMS-18047])
+* Clean up references to Java 11 (Issue https://opennms.atlassian.net/browse/NMS-18227[NMS-18227])
+* Move menu template documentation from Operation to Development (Issue https://opennms.atlassian.net/browse/NMS-18276[NMS-18276])
+* FE: Change self-service menu in top menu to be icon-only (Issue https://opennms.atlassian.net/browse/NMS-18281[NMS-18281])
+* FE: Remove "User" section from side menu template (Issue https://opennms.atlassian.net/browse/NMS-18282[NMS-18282])
+* Remove menu template docs from documentation, move to readme-style file in ui (Issue https://opennms.atlassian.net/browse/NMS-18284[NMS-18284])
+
 === New Feature
 
 * FE: Top Expand/Collapse button should maintain state (Issue https://opennms.atlassian.net/browse/NMS-18288[NMS-18288])
