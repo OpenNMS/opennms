@@ -35,4 +35,4 @@ Make sure you have the following:
 * Cassandra cluster with access to the Cassandra client port `9042/tcp`
 
 Note that you must make configurations in the `etc` directory relative to the {page-component-title} Core home directory.
-Depending on your operating system, the home directory is `/usr/share/opennms` for Debian/Ubuntu or `/opt/opennms` for CentOS/RHEL.
+Depending on your operating system, the home directory is `/opt/opennms` for Debian/Ubuntu or `/opt/opennms` for CentOS/RHEL.

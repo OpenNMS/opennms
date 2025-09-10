@@ -1,6 +1,6 @@
 [template]
 src = "opennms-datasources.xml.tmpl"
-dest = "/usr/share/opennms/etc/opennms-datasources.xml"
+dest = "/opt/opennms/etc/opennms-datasources.xml"
 keys = [
     "opennms/database",
     "opennms/dbname",

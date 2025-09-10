@@ -15,7 +15,7 @@ sudo -u opennms ${OPENNMS_HOME}/bin/scvcli set postgres-admin postgres password
 . Edit `opennms-datasources.xml` with `vi`:
 +
 [source, console]
-sudo -u opennms vi /usr/share/opennms/etc/opennms-datasources.xml
+sudo -u opennms vi /opt/opennms/etc/opennms-datasources.xml
 
 . Set encrypted credentials to access the PostgreSQL database:
 +
@@ -55,16 +55,16 @@ sudo -u opennms vi /usr/share/opennms/etc/opennms-datasources.xml
 <9> Set the postgres user for administrative access to PostgreSQL.
 <10> Set the password for administrative access to PostgreSQL.
 
-.Detect Java environment and persist in /usr/share/opennms/etc/java.conf
+.Detect Java environment and persist in /opt/opennms/etc/java.conf
 [source, console]
 ----
-sudo /usr/share/opennms/bin/runjava -s
+sudo /opt/opennms/bin/runjava -s
 ----
 
 .Initialize the database and detect system libraries persisted in /opt/opennms/etc/libraries.properties
 [source, console]
 ----
-sudo /usr/share/opennms/bin/install -dis
+sudo /opt/opennms/bin/install -dis
 ----
 
 .Define any necessary xref:operation:deep-dive/admin/configuration/startup.adoc[startup configuration], such as open file descriptors or maximum Java heap

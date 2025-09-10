@@ -78,7 +78,7 @@ EOF
 ADDITIONAL_MANAGER_OPTIONS="$ADDITIONAL_MANAGER_OPTIONS -javaagent:/opt/prom-jmx-exporter/jmx_prometheus_javaagent.jar=9299:/opt/prom-jmx-exporter/config.yaml
 ----
 
-TIP: Replace `$\{OPENNMS_HOME}` with `/opt/opennms` on RPM and `/usr/share/opennms` on Debian-based Linux distributions.
+TIP: Replace `$\{OPENNMS_HOME}` with `/opt/opennms` on RPM and `/opt/opennms` on Debian-based Linux distributions.
 
 .Step 4: Restart the Core service
 [source]

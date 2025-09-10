@@ -69,16 +69,16 @@ RUN groupadd \
     adduser \
         --uid 10001 \
         --gid 10001 \
-        --home /usr/share/opennms \
+        --home /opt/opennms \
         --no-create-home \
         --shell /usr/bin/bash \
         opennms
 
-# If you copy from /usr/share/opennms to /usr/share/opennms the permissions are not preserved
-# We would have 755 for opennms:root instead of 775 and prevents writing lock files in /usr/share/opennms
+# If you copy from /opt/opennms to /opt/opennms the permissions are not preserved
+# We would have 755 for opennms:root instead of 775 and prevents writing lock files in /opt/opennms
 COPY --chown=10001:0 --from=core-tarball /opt/usr-share /usr/share
 
-COPY --chown=10001:0 --from=core-plugins /opt/usr-plugins /usr/share/opennms/deploy
+COPY --chown=10001:0 --from=core-plugins /opt/usr-plugins /opt/opennms/deploy
 
 ##
 # Install and setup OpenNMS RPMS
@@ -93,9 +93,9 @@ ARG BUILD_DATE="1970-01-01T00:00:00+0000"
 ARG REVISION
 
 # Install any spare packages and create some compatibility links
-RUN rm -rf /usr/share/opennms/share/rrd \
-           /usr/share/opennms/share/reports \
-           /usr/share/opennms/share/mibs \
+RUN rm -rf /opt/opennms/share/rrd \
+           /opt/opennms/share/reports \
+           /opt/opennms/share/mibs \
            /var/cache/apt && \
     install -d -m 775 -o 10001 -g 0 \
             /opt/opennms-etc-overlay \
@@ -107,14 +107,14 @@ RUN rm -rf /usr/share/opennms/share/rrd \
             /opennms-data/rrd \
             /opennms-data/reports \
             /opennms-data/mibs && \
-    ln -s /opennms-data/rrd /usr/share/opennms/share/rrd && \
-    ln -s /opennms-data/reports /usr/share/opennms/share/reports && \
-    ln -s /opennms-data/mibs /usr/share/opennms/share/mibs && \
+    ln -s /opennms-data/rrd /opt/opennms/share/rrd && \
+    ln -s /opennms-data/reports /opt/opennms/share/reports && \
+    ln -s /opennms-data/mibs /opt/opennms/share/mibs && \
 # Compatibility with other OpenNMS paths
-    ln -s /usr/share/opennms /opt/opennms && \
-    ln -s /usr/share/opennms/etc /etc/opennms && \
-    ln -s /usr/share/opennms/logs /var/log/opennms && \
-    ln -s /usr/share/opennms/share /var/lib/opennms && \
+    ln -s /opt/opennms /opt/opennms && \
+    ln -s /opt/opennms/etc /etc/opennms && \
+    ln -s /opt/opennms/logs /var/log/opennms && \
+    ln -s /opt/opennms/share /var/lib/opennms && \
 # Create etc-pristine
     rsync -ar /opt/opennms/etc/ /opt/opennms/share/etc-pristine/
 
@@ -124,8 +124,8 @@ COPY --chown=10001:0 ./container-fs/entrypoint.sh /
 COPY --chown=10001:0 ./container-fs/health.sh /
 
 # Allow users in the root group to access them with the same authorization as the directory and file owner
-RUN chmod -R g=u /usr/share/opennms/etc
-RUN find /usr/share/opennms/data /usr/share/opennms/system /opennms-data -type d -print0 | xargs -0 chmod g=u
+RUN chmod -R g=u /opt/opennms/etc
+RUN find /opt/opennms/data /opt/opennms/system /opennms-data -type d -print0 | xargs -0 chmod g=u
 
 # Arguments for labels should not invalidate caches
 ARG VERSION
@@ -149,7 +149,7 @@ LABEL org.opencontainers.image.created="${BUILD_DATE}" \
       org.opennms.cicd.buildurl="${BUILD_URL}" \
       org.opennms.cicd.branch="${BUILD_BRANCH}"
 
-WORKDIR /usr/share/opennms
+WORKDIR /opt/opennms
 
 ### Containers should NOT run as root as a good practice
 USER 10001

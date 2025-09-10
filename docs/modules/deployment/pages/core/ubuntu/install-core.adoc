@@ -35,13 +35,13 @@ sudo apt-mark hold libopennms-java \
 [source, console]
 ----
 sudo apt -y install tree
-tree /usr/share/opennms -L 1
+tree /opt/opennms -L 1
 ----
 
 .Directory structure after successful installation
 [source, output]
 ----
-/usr/share/opennms
+/opt/opennms
 ├── bin
 ├── data
 ├── deploy
