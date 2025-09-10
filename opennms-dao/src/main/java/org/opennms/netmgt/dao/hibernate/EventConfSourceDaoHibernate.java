@@ -31,6 +31,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class EventConfSourceDaoHibernate
@@ -113,37 +114,55 @@ public class EventConfSourceDaoHibernate
                                                      final Integer totalRecords, final Integer offset, Integer limit) {
 
         int resultCount = (totalRecords != null) ? totalRecords : 0;
-        List<Object> queryParams = new ArrayList<>();
-        List<String> conditions = new ArrayList<>();
-
-        // Add filter conditions dynamically
-        if (filter != null && !filter.trim().isEmpty()) {
-            String escapedFilter = "%" + escapeLike(filter.trim().toLowerCase()) + "%";
-            conditions.add("lower(s.name) like ? escape '\\'");
-            queryParams.add(escapedFilter);
-
-            conditions.add("lower(s.vendor) like ? escape '\\'");
-            queryParams.add(escapedFilter);
-
-            conditions.add("lower(s.description) like ? escape '\\'");
-            queryParams.add(escapedFilter);
-
-        }
-
-        String whereClause = conditions.isEmpty() ? "" : " where " + String.join(" OR ", conditions);
-
-        // COUNT QUERY: get total matching records if not already provided
-        if (resultCount == 0) {
-            String countQuery = "select count(s.id) from EventConfSource s " + whereClause;
-            resultCount = super.queryInt(countQuery, queryParams.toArray());
-        }
-
-        // DATA QUERY: fetch paginated results
         List<EventConfSource> eventConfSourceList = Collections.emptyList();
-        if (resultCount > 0) {
-            String orderBy = " order by " + (sortBy == null || sortBy.trim().isEmpty() ? "createdTime ": sortBy) +" "+ (order == null ? "desc" : order);
-            String dataQuery = "from EventConfSource s " + whereClause + orderBy;
-            eventConfSourceList = findWithPagination(dataQuery, queryParams.toArray(), offset, limit);
+        try {
+            List<Object> queryParams = new ArrayList<>();
+            List<String> conditions = new ArrayList<>();
+
+            // Add filter conditions dynamically
+            if (filter != null && !filter.trim().isEmpty()) {
+                String escapedFilter = "%" + escapeLike(filter.trim().toLowerCase()) + "%";
+                conditions.add("lower(s.name) like ? escape '\\'");
+                queryParams.add(escapedFilter);
+
+                conditions.add("lower(s.vendor) like ? escape '\\'");
+                queryParams.add(escapedFilter);
+
+                conditions.add("lower(s.description) like ? escape '\\'");
+                queryParams.add(escapedFilter);
+
+            }
+
+            String whereClause = conditions.isEmpty() ? "" : " where " + String.join(" OR ", conditions);
+
+            // COUNT QUERY: get total matching records if not already provided
+            if (resultCount == 0) {
+                String countQuery = "select count(s.id) from EventConfSource s " + whereClause;
+                resultCount = super.queryInt(countQuery, queryParams.toArray());
+            }
+
+            // DATA QUERY: fetch paginated results
+            if (resultCount > 0) {
+
+                String orderBy = "";
+                String sortField = sortBy;
+
+                String sortOrder = "ASC".equalsIgnoreCase(order) ? "ASC" : "DESC";
+
+                Set<String> allowedSortFields = Set.of("name", "vendor", "description", "fileOrder", "eventCount");
+
+                if (!allowedSortFields.contains(sortBy)) {
+                    sortField = "createdTime";
+                }
+
+                orderBy = " order by " + sortField + " " + sortOrder;
+
+                String dataQuery = "from EventConfSource s " + whereClause + orderBy;
+                eventConfSourceList = findWithPagination(dataQuery, queryParams.toArray(), offset, limit);
+            }
+
+        } catch (Exception e ) {
+            LOG.debug("Error filterEventConfSource method while fetching the records {} ", e);
         }
 
         // Return map with results

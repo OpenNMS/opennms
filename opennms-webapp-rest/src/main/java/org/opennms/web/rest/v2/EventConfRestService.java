@@ -30,7 +30,7 @@ import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfEventDto;
 import org.opennms.netmgt.model.EventConfSource;
-import org.opennms.netmgt.model.EventConfSourceDto;
+import org.opennms.web.rest.v2.model.EventConfSourceDto;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -159,8 +159,7 @@ public class EventConfRestService implements EventConfRestApi {
 
         // Call service to fetch results
         Map<String, Object> result = eventConfPersistenceService.filterEventConfSource(
-                filter, sortBy, order, totalRecords, offset, limit
-        );
+                filter, sortBy, order, totalRecords, offset, limit);
 
         // Check if no data found
         if (result == null
