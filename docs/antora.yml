@@ -3,7 +3,7 @@ version: '34'
 title: Horizon
 asciidoc:
   attributes:
-    full-display-version: '34.0.0'
+    full-display-version: '34.0.1'
     package-prefix: opennms
     experimental: true
     source-language: asciidoc@
@@ -16,10 +16,10 @@ asciidoc:
     compatible-ubuntu: '20.04 LTS'
     compatible-debian: '9 - 11'
     compatible-rocky-linux: '9.x'
-    compatible-opennms-plugin: '7+'
-    compatible-oia: '0.6.x'
-    compatible-cassandra: '3.11.x'
-    compatible-elasticsearch: '6.7.0 - 7.17.9'
+    compatible-opennms-plugin: '9 - 11.2'
+    compatible-oia: '1.6.1'
+    compatible-cassandra: '4.17.0'
+    compatible-elasticsearch: '8.18.2'
     compatible-javajdk: 'OpenJDK 17'
     compatible-kafka: '1.x - 3.x'
     compatible-postgresql: '13.x - 15.x'

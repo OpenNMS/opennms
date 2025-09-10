@@ -1,7 +1,7 @@
 <template>
   <FeatherDrawer
-    id="left-drawer"
-    data-test="left-drawer"
+    id="column-selection-drawer"
+    data-test="column-selection-drawer"
     @shown="() => nodeStructureStore.columnsDrawerState.visible"
     v-model="nodeStructureStore.columnsDrawerState.visible"
     :labels="{ close: 'close', title: 'Customize Columns' }"
@@ -66,9 +66,6 @@
 </template>
 
 <script lang="ts" setup>
-import { saveNodePreferences } from '@/services/localStorageService'
-import { useNodeStructureStore } from '@/stores/nodeStructureStore'
-import { NodeColumnSelectionItem } from '@/types'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDrawer } from '@featherds/drawer'
 import { FeatherIcon } from '@featherds/icon'
@@ -76,6 +73,9 @@ import Apps from '@featherds/icon/navigation/Apps'
 import Cancel from '@featherds/icon/navigation/Cancel'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import Draggable from 'vuedraggable'
+import { saveNodePreferences } from '@/services/localStorageService'
+import { useNodeStructureStore } from '@/stores/nodeStructureStore'
+import { NodeColumnSelectionItem } from '@/types'
 import { defaultColumns } from './utils'
 
 const nodeStructureStore = useNodeStructureStore()
@@ -88,8 +88,10 @@ const initializeSelectedColumns = (columns: NodeColumnSelectionItem[]) => {
     .sort((a, b) => a.order - b.order)
     .map(col => ({ name: col.label, value: col.id }))
 }
+
 const getAvailableOptions = (currentIndex: number) => {
   const currentSelection = selectedColumns.value[currentIndex]?.value
+
   return columns.value
     .filter(col =>
       !selectedColumns.value.some((sc, i) => i !== currentIndex && sc.value === col.id) ||
@@ -97,6 +99,7 @@ const getAvailableOptions = (currentIndex: number) => {
     )
     .map(col => ({ name: col.label, value: col.id }))
 }
+
 const addColumn = () => {
   if (selectedColumns.value.length < 10) {
     selectedColumns.value = [
@@ -105,9 +108,11 @@ const addColumn = () => {
     ]
   }
 }
+
 const removeColumn = (index: number) => {
   selectedColumns.value = selectedColumns.value.filter((_, i) => i !== index)
 }
+
 const customizeTable = async() => {
   nodeStructureStore.columns = selectedColumns.value.map((col, index) => ({
     id: col.value as string,
@@ -115,20 +120,24 @@ const customizeTable = async() => {
     selected: true,
     order: index
   }))
+
   const nodePrefs = await nodeStructureStore.getNodePreferences()
   saveNodePreferences(nodePrefs)
   nodeStructureStore.columnsDrawerState.visible = false
 }
+
 const resetColumns = async () => {
   nodeStructureStore.columns = [...defaultColumns]
   const nodePrefs = await nodeStructureStore.getNodePreferences()
   saveNodePreferences(nodePrefs)
   nodeStructureStore.columnsDrawerState.visible = false
 }
+
 watch(() => nodeStructureStore.columns, (newColumns) => {
   initializeSelectedColumns(newColumns)
 }, { immediate: true, deep: true })
 </script>
+
 <style lang="scss" scoped>
 @import "@featherds/table/scss/table";
 @import "@featherds/styles/mixins/elevation";
@@ -137,6 +146,8 @@ watch(() => nodeStructureStore.columns, (newColumns) => {
 
 .feather-drawer-custom-padding {
   padding: 20px;
+  height: 100%;
+  overflow: auto;
 }
 
 .spacer-large {
@@ -190,9 +201,10 @@ button.primary {
   flex-direction: column;
   gap: 1rem;
   align-items:flex-start;
-   :deep(.btn + .btn) {
-  margin-left: 0 !important;
-}
+
+ :deep(.btn + .btn) {
+    margin-left: 0 !important;
+  }
 }
 </style>
 

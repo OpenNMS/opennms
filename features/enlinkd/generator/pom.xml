@@ -4,7 +4,7 @@
   <parent>
     <groupId>org.opennms.features</groupId>
     <artifactId>org.opennms.features.enlinkd</artifactId>
-    <version>34.0.0</version>
+    <version>34.0.1</version>
   </parent>
   <properties>
     <bundle.symbolicName>org.opennms.features.enlinkd.generator</bundle.symbolicName>
