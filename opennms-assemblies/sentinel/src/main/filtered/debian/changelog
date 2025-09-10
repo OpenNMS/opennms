@@ -1,4 +1,4 @@
-opennms (34.0.1-1) stable; urgency=low
+opennms-sentinel (34.0.1-1) stable; urgency=low
 
   * Release 34.0.1 contains bug fixes, enhancements and a new feature.
 
