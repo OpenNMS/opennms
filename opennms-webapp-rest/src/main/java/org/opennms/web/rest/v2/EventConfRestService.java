@@ -156,8 +156,7 @@ public class EventConfRestService implements EventConfRestApi {
 
         // Call service to fetch results
         Map<String, Object> result = eventConfPersistenceService.filterConfEventsBySourceId(
-                                    sourceId, totalRecords, offset, limit
-                                    );
+                                    sourceId, totalRecords, offset, limit);
 
         // Check if no data found
         if (result == null

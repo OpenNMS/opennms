@@ -53,6 +53,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Date;
 
 
 import static org.junit.Assert.assertFalse;
@@ -490,5 +491,4 @@ public class EventConfRestServiceIT {
 
         eventConfEventDao.saveOrUpdate(event);
     }
-
 }
