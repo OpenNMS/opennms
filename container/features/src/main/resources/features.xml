@@ -1155,7 +1155,7 @@
         <feature>opennms-elastic-client</feature>
         <feature>rate-limited-logger</feature>
 
-        <feature dependency="true">opennms-core-ipc-twin-common</feature>
+        <bundle>mvn:org.opennms.core.ipc.twin/org.opennms.core.ipc.twin.api/${project.version}</bundle>
 
         <bundle>mvn:org.opennms.features.flows/org.opennms.features.flows.api/${project.version}</bundle>
         <bundle>mvn:org.opennms.features.flows.classification.engine/org.opennms.features.flows.classification.engine.api/${project.version}</bundle>
@@ -1928,11 +1928,6 @@
         <feature>opennms-core-ipc-sink-kafka</feature>
         <feature>opennms-core-ipc-rpc-kafka</feature>
         <feature>opennms-core-ipc-twin-kafka</feature>
-    </feature>
-
-    <feature name="opennms-core-ipc-twin-kafka-publisher" version="${project.version}" description="OpenNMS :: Core :: IPC :: Twin :: Kafka :: Publisher">
-        <feature>opennms-core-ipc-twin-kafka</feature>
-        <bundle>mvn:org.opennms.core.ipc.twin.kafka/org.opennms.core.ipc.twin.kafka.publisher/${project.version}</bundle>
     </feature>
 
     <feature name="opennms-core-ipc-twin-kafka-common" version="${project.version}" description="OpenNMS :: Core :: IPC :: Twin :: Kafka :: Common">
