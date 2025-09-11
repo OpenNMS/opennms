@@ -47,10 +47,10 @@ RUN chmod -R g-w /opt/usr-share/opennms && \
 ##
 # Download plugins
 ##
-FROM ${BASE_IMAGE} AS core-plugins
+# FROM ${BASE_IMAGE} AS core-plugins
 
-COPY plugins.sh /tmp/plugins.sh 
-RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
+# COPY plugins.sh /tmp/plugins.sh 
+# RUN chmod +x /tmp/plugins.sh  && cd /tmp && ./plugins.sh && rm ./plugins.sh
 
 
 FROM ${BASE_IMAGE} AS core-base
@@ -78,7 +78,7 @@ RUN groupadd \
 # We would have 755 for opennms:root instead of 775 and prevents writing lock files in /opt/opennms
 COPY --chown=10001:0 --from=core-tarball /opt/usr-share /usr/share
 
-COPY --chown=10001:0 --from=core-plugins /opt/usr-plugins /opt/opennms/deploy
+# COPY --chown=10001:0 --from=core-plugins /opt/usr-plugins /opt/opennms/deploy
 
 ##
 # Install and setup OpenNMS RPMS
@@ -93,10 +93,7 @@ ARG BUILD_DATE="1970-01-01T00:00:00+0000"
 ARG REVISION
 
 # Install any spare packages and create some compatibility links
-RUN rm -rf /opt/opennms/share/rrd \
-           /opt/opennms/share/reports \
-           /opt/opennms/share/mibs \
-           /var/cache/apt && \
+RUN rm -rf /var/cache/apt && \
     install -d -m 775 -o 10001 -g 0 \
             /opt/opennms-etc-overlay \
             /opt/opennms-jetty-webinf-overlay \
@@ -106,16 +103,9 @@ RUN rm -rf /opt/opennms/share/rrd \
     install -d -m 775 -o 10001 -g 0 \
             /opennms-data/rrd \
             /opennms-data/reports \
-            /opennms-data/mibs && \
-    ln -s /opennms-data/reports /opt/opennms/share/reports && \
-    ln -s /opennms-data/mibs /opt/opennms/share/mibs && \
-# Compatibility with other OpenNMS paths
-    ln -s /opt/opennms /opt/opennms && \
-    ln -s /opt/opennms/etc /etc/opennms && \
-    ln -s /opt/opennms/logs /var/log/opennms && \
-    ln -s /opt/opennms/share /var/lib/opennms && \
+            /opennms-data/mibs 
 # Create etc-pristine
-    rsync -ar /opt/opennms/etc/ /opt/opennms/share/etc-pristine/
+    # rsync -ar /opt/opennms/etc/ /opt/opennms/share/etc-pristine/
 
 # Add templates replaced at runtime and entrypoint
 COPY --chown=10001:0 ./container-fs/confd /etc/confd
@@ -123,7 +113,7 @@ COPY --chown=10001:0 ./container-fs/entrypoint.sh /
 COPY --chown=10001:0 ./container-fs/health.sh /
 
 # Allow users in the root group to access them with the same authorization as the directory and file owner
-RUN chmod -R g=u /opt/opennms/etc
+# RUN chmod -R g=u /opt/opennms/etc
 RUN find /opt/opennms/data /opt/opennms/system /opennms-data -type d -print0 | xargs -0 chmod g=u
 
 # Arguments for labels should not invalidate caches
