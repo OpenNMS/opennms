@@ -48,6 +48,7 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -148,15 +149,17 @@ public class EventConfRestService implements EventConfRestApi {
 
         // Return 400 Bad Request if sourceId is null, invalid sourceId, offset < 0, limit < 1,
         // or offset exceeds totalRecords
-        if (sourceId == null || sourceId <= 0 || offset < 0 || limit < 1 || offset > totalRecords) {
+        if (Objects.requireNonNullElse(sourceId, 0L) <= 0L || Objects.requireNonNullElse(offset, 0) < 0
+                || Objects.requireNonNullElse(offset, 0) > Objects.requireNonNullElse(totalRecords, 0)
+                || Objects.requireNonNullElse(limit, 0) < 1) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(Map.of("error", "Invalid sourceId/offset/limit values"))
                     .build();
         }
 
         // Call service to fetch results
-        Map<String, Object> result = eventConfPersistenceService.filterConfEventsBySourceId(
-                                    sourceId, totalRecords, offset, limit);
+        Map<String, Object> result = eventConfPersistenceService.filterConfEventsBySourceId(sourceId, totalRecords,
+                offset, limit);
 
         // Check if no data found
         if (result == null

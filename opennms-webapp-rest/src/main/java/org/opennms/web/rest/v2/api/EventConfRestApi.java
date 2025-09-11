@@ -98,7 +98,7 @@ public interface EventConfRestApi {
     Response enableDisableEventConfSources(EventConfSrcEnableDisablePayload eventConfSrcEnableDisablePayload, @Context SecurityContext securityContext) throws Exception;
 
     @GET
-    @Path("filter/events/sourceId")
+    @Path("filter/{sourceId}/events")
     @Produces({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Operation(
             summary = "Filter EventConfEvent Records by Source Id",
@@ -114,7 +114,7 @@ public interface EventConfRestApi {
                     content = @Content)
     })
     Response filterConfEventsBySourceId(
-            @QueryParam("sourceId") Long sourceId,
+            @PathParam("sourceId") Long sourceId,
             @QueryParam("totalRecords") Integer totalRecords,
             @QueryParam("offset") Integer offset,
             @QueryParam("limit") Integer limit,

@@ -80,21 +80,12 @@ public class EventConfEventDaoHibernate
     @Override
     public Map<String, Object> findBySourceId(Long sourceId, Integer totalRecords, Integer offset, Integer limit) {
         int resultCount = (totalRecords != null) ? totalRecords : 0;
-        List<Object> queryParams = new ArrayList<>();
-        List<String> conditions = new ArrayList<>();
-
-        // Add filter conditions dynamically
-        if (sourceId != null && sourceId>0) {
-            conditions.add("e.source.id = ?");
-            queryParams.add(sourceId);
-        }
-
-        String whereClause = conditions.isEmpty() ? "" : " where " + String.join(" OR ", conditions);
+        String whereClause = "where e.source.id = ?";
 
         // COUNT QUERY: get total matching records if not already provided
         if (resultCount == 0) {
             String countQuery = "select count(e.id) from EventConfEvent e " + whereClause;
-            resultCount = super.queryInt(countQuery, queryParams.toArray());
+            resultCount = super.queryInt(countQuery, List.of(sourceId).toArray());
         }
 
         // DATA QUERY: fetch paginated results if resultCount > 0
@@ -102,7 +93,7 @@ public class EventConfEventDaoHibernate
         if (resultCount > 0) {
             String orderBy = " order by e.createdTime desc";
             String dataQuery = "from EventConfEvent e " + whereClause + orderBy;
-            eventConfEventList = findWithPagination(dataQuery, queryParams.toArray(), offset, limit);
+            eventConfEventList = findWithPagination(dataQuery, List.of(sourceId).toArray(), offset, limit);
         }
 
         // Return map with results
