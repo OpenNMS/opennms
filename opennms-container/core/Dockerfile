@@ -27,21 +27,21 @@ ARG BASE_IMAGE="opennms/deploy-base:ubi9-3.6.0.b293-jre-17"
 
 FROM ${BASE_IMAGE} AS core-tarball
 
-ADD --chown=10001:0 ./tarball-root/ /opt/usr-share/opennms/
-RUN chmod -R g-w /opt/usr-share/opennms && \
+ADD --chown=10001:0 ./tarball-root/ /opt/opennms/
+RUN chmod -R g-w /opt/opennms && \
     chmod -R g=u \
-        /opt/usr-share/opennms/etc \
-        /opt/usr-share/opennms/data \
-        /opt/usr-share/opennms/jetty-webapps/*/WEB-INF \
-        /opt/usr-share/opennms/logs \
-        /opt/usr-share/opennms/share \
+        /opt/opennms/etc \
+        /opt/opennms/data \
+        /opt/opennms/jetty-webapps/*/WEB-INF \
+        /opt/opennms/logs \
+        /opt/opennms/share \
         && \
-    chmod g=u /opt/usr-share/opennms && \
+    chmod g=u /opt/opennms && \
     find \
-        /opt/usr-share/opennms/data \
-        /opt/usr-share/opennms/deploy \
-        /opt/usr-share/opennms/logs \
-        /opt/usr-share/opennms/system \
+        /opt/opennms/data \
+        /opt/opennms/deploy \
+        /opt/opennms/logs \
+        /opt/opennms/system \
         -type d -print0 | xargs -0 chmod 2775
 
 ##
@@ -76,7 +76,7 @@ RUN groupadd \
 
 # If you copy from /opt/opennms to /opt/opennms the permissions are not preserved
 # We would have 755 for opennms:root instead of 775 and prevents writing lock files in /opt/opennms
-COPY --chown=10001:0 --from=core-tarball /opt/usr-share /usr/share
+COPY --chown=10001:0 --from=core-tarball /opt/opennms /opt/opennms
 
 COPY --chown=10001:0 --from=core-plugins /opt/usr-plugins /opt/opennms/deploy
 
@@ -107,10 +107,10 @@ RUN rm -rf /opt/opennms/share/rrd \
             /opennms-data/rrd \
             /opennms-data/reports \
             /opennms-data/mibs && \
+    ln -s /opennms-data/rrd /opt/opennms/share/rrd && \
     ln -s /opennms-data/reports /opt/opennms/share/reports && \
     ln -s /opennms-data/mibs /opt/opennms/share/mibs && \
 # Compatibility with other OpenNMS paths
-    ln -s /opt/opennms /opt/opennms && \
     ln -s /opt/opennms/etc /etc/opennms && \
     ln -s /opt/opennms/logs /var/log/opennms && \
     ln -s /opt/opennms/share /var/lib/opennms && \
