@@ -150,16 +150,16 @@ public class EventConfRestService implements EventConfRestApi {
                                           Integer offset, Integer limit, SecurityContext securityContext) {
 
         // Return 400 Bad Request if offset < 0, limit < 1, or offset exceeds totalRecords
-        if (Objects.requireNonNullElse(offset,0) < 0 || Objects.requireNonNullElse(limit, 0) < 1
-            ||  Objects.requireNonNullElse(offset,0) > Objects.requireNonNullElse(totalRecords,0)) {
+        if (Objects.requireNonNullElse(offset, 0) < 0 || Objects.requireNonNullElse(limit, 0) < 1
+            || Objects.requireNonNullElse(offset,0) > Objects.requireNonNullElse(totalRecords,0)) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(Map.of("error", "Invalid offset/limit values"))
                     .build();
         }
 
         // Call service to fetch results
-        Map<String, Object> result = eventConfPersistenceService.filterEventConfSource(
-                filter, sortBy, order, totalRecords, offset, limit);
+        Map<String, Object> result = eventConfPersistenceService.filterEventConfSource(filter, sortBy, order,
+                totalRecords, offset, limit);
 
         // Check if no data found
         if (result == null

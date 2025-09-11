@@ -46,6 +46,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import static org.junit.Assert.assertFalse;
@@ -419,22 +420,74 @@ public class EventConfSourceDaoIT implements InitializingBean {
     }
 
     @Test
-    public void testFilterEventConfSource_ReturnsValidMap() {
-        EventConfSource source =  new EventConfSource();
-        source.setName("testName");
-        source.setFileOrder(1);
-        source.setEventCount(5);
-        source.setEnabled(true);
-        source.setCreatedTime(new Date());
-        source.setLastModified(new Date());
-        source.setVendor("testVendor");
-        source.setDescription("testDesc");
-        m_dao.saveOrUpdate(source);
-        Map<String, Object> result = m_dao.filterEventConfSource(
-                "testName", "name", "Asc",0, 0, 5);
-        assertNotNull(result);
+    public void testFilterEventConfSource_ReturnsValidRecords() {
+        EventConfSource source1 = new EventConfSource();
+        source1.setName("opennms.test.events");
+        source1.setFileOrder(1);
+        source1.setEventCount(5);
+        source1.setEnabled(true);
+        source1.setCreatedTime(new Date());
+        source1.setLastModified(new Date());
+        source1.setVendor("opennms");
+        source1.setDescription("Open Network Monitoring System");
+        m_dao.saveOrUpdate(source1);
+
+        EventConfSource source2 = new EventConfSource();
+        source2.setName("cisco.test.events");
+        source2.setFileOrder(2);
+        source2.setEventCount(3);
+        source2.setEnabled(true);
+        source2.setCreatedTime(new Date());
+        source2.setLastModified(new Date());
+        source2.setVendor("cisco");
+        source2.setDescription("Cisco Events");
+        m_dao.saveOrUpdate(source2);
+
+        // Inline helper for reusing assertions
+        BiConsumer<Map<String, Object>, String> assertSourceName =
+                (result, expectedName) -> {
+                    assertNotNull(result);
+                    List<?> list = (List<?>) result.get("eventConfSourceList");
+                    assertEquals(result.get("totalRecords"), list.size());
+                    assertEquals(expectedName, ((EventConfSource) list.get(0)).getName());
+                };
+
+        // 1. Exact filter, ascending by name
+        Map<String, Object> result = m_dao.filterEventConfSource("opennms.test.events", "name", "asc", 0, 0, 10);
         assertEquals(1, result.get("totalRecords"));
-        assertTrue(((List)result.get("eventConfSourceList")).size()>0);
+        assertSourceName.accept(result, "opennms.test.events");
+
+        // 2. Partial filter, ascending by name
+        result = m_dao.filterEventConfSource("test.events", "name", "asc", 0, 0, 10);
+        assertEquals(2, result.get("totalRecords"));
+        assertSourceName.accept(result, "cisco.test.events"); // asc = cisco first
+
+        // 3. Partial filter, descending by name
+        result = m_dao.filterEventConfSource("test.events", "name", "desc", 0, 0, 10);
+        assertEquals(2, result.get("totalRecords"));
+        assertSourceName.accept(result, "opennms.test.events"); // desc = opennms first
+
+        // 4. Partial filter, ascending by fileOrder
+        result = m_dao.filterEventConfSource("test.events", "fileOrder", "asc", 0, 0, 10);
+        assertEquals(2, result.get("totalRecords"));
+        assertSourceName.accept(result, "opennms.test.events"); // fileOrder 1 first
+
+        // 5. Filter by description
+        result = m_dao.filterEventConfSource("Open Network Monitoring System", "fileOrder", "asc", 0, 0, 10);
+        assertEquals(1, result.get("totalRecords"));
+        assertSourceName.accept(result, "opennms.test.events");
+
+        // 6. Filter by vendor (case-insensitive)
+        result = m_dao.filterEventConfSource("CISCO", "fileOrder", "asc", 0, 0, 10);
+        assertEquals(1, result.get("totalRecords"));
+        assertSourceName.accept(result, "cisco.test.events");
+
+        // 7. Pagination (only second record returned)
+        result = m_dao.filterEventConfSource("test.events", "name", "asc", 0, 1, 1);
+        assertEquals(2, result.get("totalRecords"));
+        List<?> list = (List<?>) result.get("eventConfSourceList");
+        assertEquals(1, list.size());
+        assertEquals("opennms.test.events", ((EventConfSource) list.get(0)).getName());
     }
 
     @Test
