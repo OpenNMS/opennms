@@ -151,7 +151,7 @@ public class EventConfRestService implements EventConfRestApi {
 
         // Return 400 Bad Request if offset < 0, limit < 1, or offset exceeds totalRecords
         if (Objects.requireNonNullElse(offset, 0) < 0 || Objects.requireNonNullElse(limit, 0) < 1
-            || Objects.requireNonNullElse(offset,0) > Objects.requireNonNullElse(totalRecords,0)) {
+            || Objects.requireNonNullElse(offset, 0) > Objects.requireNonNullElse(totalRecords, 0)) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(Map.of("error", "Invalid offset/limit values"))
                     .build();
