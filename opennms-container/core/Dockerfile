@@ -111,6 +111,7 @@ RUN rm -rf /opt/opennms/share/rrd \
     ln -s /opennms-data/reports /opt/opennms/share/reports && \
     ln -s /opennms-data/mibs /opt/opennms/share/mibs && \
 # Compatibility with other OpenNMS paths
+    ln -s /opt/opennms /usr/share/opennms && \
     ln -s /opt/opennms/etc /etc/opennms && \
     ln -s /opt/opennms/logs /var/log/opennms && \
     ln -s /opt/opennms/share /var/lib/opennms && \
