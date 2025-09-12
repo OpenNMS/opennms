@@ -23,6 +23,7 @@ package org.opennms.web.rest.v2;
 
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.EventConfEventPayload;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
@@ -32,12 +33,14 @@ import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
+import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -80,6 +83,35 @@ public class EventConfPersistenceService {
     public void enableDisableConfSourcesEvents(final Long sourceId, final EnableDisableConfSourceEventsPayload enableDisableConfSourceEventsPayload) {
 
         eventConfEventDao.updateEventEnabledFlag(sourceId,enableDisableConfSourceEventsPayload.getEventsIds(),enableDisableConfSourceEventsPayload.isEnable());
+    }
+
+
+    @Transactional
+    public void updateEventConfEvent(final Long eventId, EventConfEventPayload payload) {
+        EventConfEvent eventConfEvent = eventConfEventDao.findByEventId(eventId);
+        if (eventConfEvent == null) {
+            throw new EntityNotFoundException(
+                    String.format("EventConfEvent not found for eventId=%d", eventId));
+        }
+        eventConfEvent.setEventLabel(payload.getEventLabel());
+        eventConfEvent.setDescription(payload.getDescription());
+        eventConfEvent.setEnabled(payload.getEnabled());
+        try {
+            Event event = JaxbUtils.unmarshal(Event.class, eventConfEvent.getXmlContent());
+            if (event != null) {
+                event.setEventLabel(payload.getEventLabel());
+                event.setDescr(payload.getDescription());
+
+                eventConfEvent.setXmlContent(JaxbUtils.marshal(event));
+            } else {
+                throw new IllegalStateException("No events found in XML content for eventId=" + eventId);
+            }
+
+            eventConfEventDao.saveOrUpdate(eventConfEvent);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to update EventConfEvent XML for eventId=" + eventId, e);
+        }
     }
 
     private EventConfSource createOrUpdateSource(final EventConfSourceMetadataDto eventConfSourceMetadataDto) {

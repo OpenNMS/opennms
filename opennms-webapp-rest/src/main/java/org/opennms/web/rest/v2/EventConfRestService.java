@@ -25,6 +25,7 @@ package org.opennms.web.rest.v2;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.EventConfEventPayload;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.netmgt.model.EventConfEvent;
@@ -187,6 +188,23 @@ public class EventConfRestService implements EventConfRestApi {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
         }
 
+    }
+
+    @Transactional
+    @Override
+    public Response updateEventConfEvent(Long eventId, EventConfEventPayload payload, SecurityContext securityContext) throws Exception {
+        if (payload == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
+        }
+        try {
+            eventConfPersistenceService.updateEventConfEvent(eventId, payload);
+            return Response.ok().entity("EventConfEvent updated successfully.").build();
+
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND).entity("eventConfEvent were not found: " + ex.getMessage()).build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+        }
     }
 
     private List<String> determineFileOrder(final Attachment eventconfXmlAttachment, final Set<String> uploadedFiles) {

@@ -30,6 +30,8 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.EventConfEventPayload;
 import org.opennms.netmgt.model.EventConfEventDto;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
@@ -38,6 +40,7 @@ import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
+import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -430,6 +433,53 @@ public class EventConfRestServiceIT {
         event.setModifiedBy("JUnitTest");
 
         eventConfEventDao.saveOrUpdate(event);
+    }
+
+
+    @Test
+    @Transactional
+    public void testUpdateEventConfEvent() throws Exception {
+        EventConfSource  m_source = new EventConfSource();
+        m_source.setName("testEventEnabledFlagTest");
+        m_source.setEnabled(true);
+        m_source.setCreatedTime(new Date());
+        m_source.setFileOrder(1);
+        m_source.setDescription("Test event source");
+        m_source.setVendor("TestVendor1");
+        m_source.setUploadedBy("JUnitTest");
+        m_source.setEventCount(2);
+        m_source.setLastModified(new Date());
+
+        eventConfSourceDao.saveOrUpdate(m_source);
+        eventConfSourceDao.flush();
+
+        insertEvent(m_source,"uei.opennms.org/internal/trigger", "Trigger configuration changed testing", "The Trigger configuration has been changed and should be reloaded", "Normal");
+
+        insertEvent(m_source,"uei.opennms.org/internal/clear", "Clear discovery failed testing", "The Clear discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.", "Minor");
+
+        EventConfSource source = eventConfSourceDao.findByName("testEventEnabledFlagTest");
+
+        EventConfEvent triggerEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/trigger");
+        EventConfEvent clearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
+
+        // update description and event-label events
+        EventConfEventPayload payload = new EventConfEventPayload();
+        payload.setEventLabel("Clear label changed.");
+        payload.setDescription("Clear Description changed.");
+        payload.setEnabled(true);
+
+        Response response = eventConfRestApi.updateEventConfEvent(clearEvent.getId(),payload,securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        EventConfEvent updatedClearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
+        assertEquals("Clear label changed.", updatedClearEvent.getEventLabel());
+        assertEquals("Clear Description changed.", updatedClearEvent.getDescription());
+
+        // verify xml content updated or not.
+        Event event = JaxbUtils.unmarshal(Event.class,updatedClearEvent.getXmlContent());
+        assertEquals("Clear label changed.", event.getEventLabel());
+        assertEquals("Clear Description changed.", event.getDescr());
+
     }
 
 }

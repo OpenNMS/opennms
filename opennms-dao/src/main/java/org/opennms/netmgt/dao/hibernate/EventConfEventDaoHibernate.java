@@ -129,6 +129,11 @@ public class EventConfEventDaoHibernate
         LOG.info("Updated {} events (enabled={}) for sourceId={}", updatedCount, enabled, sourceId);
     }
 
+    @Override
+    public EventConfEvent findByEventId( Long eventId) {
+        List<EventConfEvent> list = find("from EventConfEvent e where e.id = ? ", eventId);
+        return list.isEmpty() ? null : list.get(0);
+    }
 
 
 }
