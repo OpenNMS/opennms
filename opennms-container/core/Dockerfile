@@ -125,11 +125,13 @@ COPY --chown=10001:0 ./container-fs/health.sh /
 
 # Allow users in the root group to access them with the same authorization as the directory and file owner
 RUN chmod -R g=u /opt/opennms/etc
+RUN chmod -R g=u /opt/opennms
 RUN find /opt/opennms/data /opt/opennms/system /opennms-data -type d -print0 | xargs -0 chmod g=u
 
 # Arguments for labels should not invalidate caches
 ARG VERSION
 ARG SOURCE
+ARG BASE_IMAGE
 ARG BUILD_JOB_ID
 ARG BUILD_NUMBER
 ARG BUILD_URL
