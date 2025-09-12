@@ -116,6 +116,8 @@ RUN rm -rf /opt/opennms/share/rrd \
     ln -s /opt/opennms/share /var/lib/opennms && \
 # java.lang.UnsatisfiedLinkError: Failed to create temporary file for /com/sun/jna/linux-x86-64/libjnidispatch.so library: JNA temporary directory '/opt/opennms/data/tmp' does not exist
     mkdir -p /opt/opennms/data/tmp && \
+# Can not find or create archive directory /opt/opennms/etc_archive: /opt/opennms/etc_archive, changelog-cm/30.0.0/changelog-cm.xml::1.0-register-schema-provisiond::pschweizer
+     mkdir -p /opt/opennms/etc_archive && \
 # Create etc-pristine
     rsync -ar /opt/opennms/etc/ /opt/opennms/share/etc-pristine/
 
