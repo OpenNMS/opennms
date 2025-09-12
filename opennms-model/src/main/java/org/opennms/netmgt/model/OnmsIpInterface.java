@@ -675,7 +675,7 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             // find the corresponding scanned service
             OnmsMonitoredService imported = serviceTypeMap.get(svc.getServiceType());
             if (imported == null) {
-                if (deleteMissing) {
+                if (deleteMissing || (isOpenConfigRemoved(serviceTypeMap) && "OpenConfig".equalsIgnoreCase(svc.getServiceType().getName()))) {
                     // there is no scanned service... delete it from the database 
                     it.remove();
                     svc.visit(new DeleteEventVisitor(eventForwarder));
@@ -698,6 +698,13 @@ public class OnmsIpInterface extends OnmsEntity implements Serializable {
             getMonitoredServices().add(svc);
             svc.visit(new AddEventVisitor(eventForwarder));
         }
+    }
+
+    private boolean isOpenConfigRemoved(Map<OnmsServiceType, OnmsMonitoredService> serviceTypeMap) {
+        return   getMonitoredServices().stream()
+                .anyMatch(svc -> "OpenConfig".equalsIgnoreCase(svc.getServiceType().getName())) &&
+                serviceTypeMap.keySet().stream()
+                        .noneMatch(st -> "OpenConfig".equalsIgnoreCase(st.getName()));
     }
 
     public void mergeMetaData(OnmsIpInterface scanned) {
