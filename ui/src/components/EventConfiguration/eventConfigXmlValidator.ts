@@ -26,54 +26,35 @@ export const validateEventConfigFile = async (file: File) => {
         validationErrors.push('Missing or invalid OpenNMS namespace in <events> element')
       }
     }
-    if (file.name === 'eventconf.xml') {
-      const globalElement = xmlDoc.querySelector('global')
-      if (!globalElement) {
-        validationErrors.push('Missing <global> section in eventconf.xml')
-      } else {
-        const securityElement = globalElement.querySelector('security')
-        if (!securityElement) {
-          validationErrors.push('Missing <security> element inside <global> in eventconf.xml')
+
+    const eventElements = xmlDoc.querySelectorAll('event')
+    if (eventElements.length === 0) {
+      validationErrors.push('No <event> entries found within <events> element')
+
+      if (eventsElement && eventElements.length === 0) {
+        const childElements = eventsElement.children
+        if (childElements.length === 0) {
+          validationErrors.push('Empty <events> element - no content found')
         } else {
-          const doNotOverride = securityElement.querySelectorAll('doNotOverride')
-          if (doNotOverride.length === 0) {
-            validationErrors.push('Missing <doNotOverride> rules inside <security> in eventconf.xml')
-          }
+          const childNames = Array.from(childElements)
+            .map((el) => `<${el.tagName}>`)
+            .join(', ')
+          validationErrors.push(`<events> element contains ${childNames} but no <event> elements`)
         }
-      }
-      const eventFiles = xmlDoc.querySelectorAll('event-file')
-      if (eventFiles.length === 0) {
-        validationErrors.push('No <event-file> entries found in eventconf.xml')
       }
     } else {
-      const eventElements = xmlDoc.querySelectorAll('event')
-      if (eventElements.length === 0) {
-        validationErrors.push('No <event> entries found within <events> element')
-
-        if (eventsElement && eventElements.length === 0) {
-          const childElements = eventsElement.children
-          if (childElements.length === 0) {
-            validationErrors.push('Empty <events> element - no content found')
-          } else {
-            const childNames = Array.from(childElements)
-              .map((el) => `<${el.tagName}>`)
-              .join(', ')
-            validationErrors.push(`<events> element contains ${childNames} but no <event> elements`)
-          }
+      eventElements.forEach((event, idx) => {
+        const eventErrors = validateEventElement(event, idx + 1)
+        if (eventErrors.length > 0) {
+          validationErrors.push(...eventErrors)
         }
-      } else {
-        eventElements.forEach((event, idx) => {
-          const eventErrors = validateEventElement(event, idx + 1)
-          if (eventErrors.length > 0) {
-            validationErrors.push(...eventErrors)
-          }
-        })
-      }
-      if (!file.name.endsWith('.events.xml') && !file.name.includes('event')) {
-        validationErrors.push(
-          'File does not appear to be an event configuration file (expected .events.xml extension)'
-        )
-      }
+      })
+    }
+
+    if (!file.name.endsWith('.events.xml') && !file.name.includes('event')) {
+      validationErrors.push(
+        'File does not appear to be an event configuration file (expected .events.xml extension)'
+      )
     }
   } catch (error) {
     validationErrors.push(

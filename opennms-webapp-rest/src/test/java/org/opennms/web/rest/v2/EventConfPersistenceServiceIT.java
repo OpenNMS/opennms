@@ -34,8 +34,8 @@ import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfSource;
-import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
+import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
@@ -52,7 +52,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
@@ -80,6 +84,7 @@ public class EventConfPersistenceServiceIT {
 
     @Autowired
     private EventConfPersistenceService eventConfPersistenceService;
+
     private int defaultEventConfSize;
     private int defaultEventConfEventSize;
 
@@ -109,21 +114,21 @@ public class EventConfPersistenceServiceIT {
         eventConfPersistenceService.persistEventConfFile(events, metadata);
 
         List<EventConfSource> sources = eventConfSourceDao.findAllByFileOrder();
-        Assert.assertEquals(1, sources.size() - defaultEventConfSize);
+        assertEquals(1, sources.size() - defaultEventConfSize);
         EventConfSource source = sources.get(0);
-        Assert.assertEquals(filename, source.getName());
-        Assert.assertEquals("integration test file", source.getDescription());
-        Assert.assertEquals("test-vendor", source.getVendor());
-        Assert.assertEquals(username, source.getUploadedBy());
+        assertEquals(filename, source.getName());
+        assertEquals("integration test file", source.getDescription());
+        assertEquals("test-vendor", source.getVendor());
+        assertEquals(username, source.getUploadedBy());
 
         List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
-        Assert.assertEquals(1, dbEvents.size() - defaultEventConfEventSize);
+        assertEquals(1, dbEvents.size() - defaultEventConfEventSize);
         EventConfEvent persistedEvent = dbEvents.get(0);
-        Assert.assertEquals("uei.opennms.org/test/it", persistedEvent.getUei());
-        Assert.assertEquals("IT Event", persistedEvent.getEventLabel());
-        Assert.assertEquals("This is an integration test event.", persistedEvent.getDescription());
+        assertEquals("uei.opennms.org/test/it", persistedEvent.getUei());
+        assertEquals("IT Event", persistedEvent.getEventLabel());
+        assertEquals("This is an integration test event.", persistedEvent.getDescription());
         Assert.assertTrue(persistedEvent.getEnabled());
-        Assert.assertEquals(username, persistedEvent.getModifiedBy());
+        assertEquals(username, persistedEvent.getModifiedBy());
     }
 
     @Test
@@ -154,18 +159,18 @@ public class EventConfPersistenceServiceIT {
         eventConfPersistenceService.persistEventConfFile(updatedEvents, updatedMetadata);
         List<EventConfSource> sources = eventConfSourceDao.findAllByFileOrder();
 
-        Assert.assertEquals(1, sources.size() - defaultEventConfSize);
+        assertEquals(1, sources.size() - defaultEventConfSize);
         EventConfSource source = sources.get(0);
-        Assert.assertEquals(filename, source.getName());
-        Assert.assertEquals("updated entry", source.getDescription());
-        Assert.assertEquals("updated-vendor", source.getVendor());
-        Assert.assertEquals("updated_user", source.getUploadedBy());
-        Assert.assertEquals(0, (int) source.getFileOrder());
+        assertEquals(filename, source.getName());
+        assertEquals("updated entry", source.getDescription());
+        assertEquals("updated-vendor", source.getVendor());
+        assertEquals("updated_user", source.getUploadedBy());
+        assertEquals(0, (int) source.getFileOrder());
         List<EventConfEvent> updatedDbEvents = eventConfEventDao.findEnabledEvents();
-        Assert.assertEquals(1, updatedDbEvents.size() - defaultEventConfEventSize);
+        assertEquals(1, updatedDbEvents.size() - defaultEventConfEventSize);
         EventConfEvent finalEvent = updatedDbEvents.get(0);
-        Assert.assertEquals("uei.opennms.org/test/update2", finalEvent.getUei());
-        Assert.assertEquals("Updated Description", finalEvent.getDescription());
+        assertEquals("uei.opennms.org/test/update2", finalEvent.getUei());
+        assertEquals("Updated Description", finalEvent.getDescription());
     }
 
     @Test
@@ -232,7 +237,7 @@ public class EventConfPersistenceServiceIT {
         );
 
         // Assert
-        Assert.assertNotNull(filteredResults);
+        assertNotNull(filteredResults);
         Assert.assertFalse(filteredResults.isEmpty());
         Assert.assertTrue(filteredResults.stream()
                 .allMatch(e -> "Cisco".equals(e.getSource().getVendor())));
@@ -245,7 +250,7 @@ public class EventConfPersistenceServiceIT {
         List<EventConfEvent> results = eventConfPersistenceService
                 .findEventConfByFilters("nonexistent-uei", "nonexistent-vendor", "nonexistent-source", 0, 10);
 
-        Assert.assertNotNull(results);
+        assertNotNull(results);
         Assert.assertTrue(results.isEmpty());
     }
 
@@ -327,30 +332,48 @@ public class EventConfPersistenceServiceIT {
 
         for (EventConfSource eventConfSource : eventConfSourceList) {
             List<EventConfEvent> eventConfEventList = eventConfEventDao.findBySourceId(eventConfSource.getId());
-            Events fileEvents = fileEventsMap.get("events/" + eventConfSource.getName()+".xml");
-            Assert.assertNotNull("File events not found for source: " + eventConfSource.getName(), fileEvents);
+            Events fileEvents = fileEventsMap.get("events/" + eventConfSource.getName() + ".xml");
+            assertNotNull("File events not found for source: " + eventConfSource.getName(), fileEvents);
             List<Event> eventsList = fileEvents.getEvents();
             for (EventConfEvent eventConfEvent : eventConfEventList) {
                 Event dbEvent = JaxbUtils.unmarshal(Event.class, eventConfEvent.getXmlContent());
                 Event matchingFileEvent = eventsList.stream()
                         .filter(fileEvent ->
                                 Objects.equals(fileEvent.getUei(), dbEvent.getUei()) &&
-                                Objects.equals(fileEvent.getSeverity(), dbEvent.getSeverity()) &&
-                                Objects.equals(fileEvent.getLogmsg().getContent(), dbEvent.getLogmsg().getContent()) &&
-                                Objects.equals(fileEvent.getDescr(), dbEvent.getDescr())
+                                        Objects.equals(fileEvent.getSeverity(), dbEvent.getSeverity()) &&
+                                        Objects.equals(fileEvent.getLogmsg().getContent(), dbEvent.getLogmsg().getContent()) &&
+                                        Objects.equals(fileEvent.getDescr(), dbEvent.getDescr())
                         )
                         .findFirst()
                         .orElse(null);
-                Assert.assertNotNull("DB event with UEI " + dbEvent.getUei() + " not found in file events",
+                assertNotNull("DB event with UEI " + dbEvent.getUei() + " not found in file events",
                         matchingFileEvent);
                 dbEvent.setEventMatcher(matchingFileEvent.getEventMatcher());
-                Assert.assertEquals(dbEvent, matchingFileEvent);
+                assertEquals(dbEvent, matchingFileEvent);
             }
         }
     }
 
     @Test
     @JUnitTemporaryDatabase
+    @Transactional
+    public void testLoadingOfEventsInMemory() {
+
+        // Call loadEventsFromDB directly
+        var dbEvents = eventConfEventDao.findEnabledEvents();
+        eventConfDao.loadEventsFromDB(dbEvents);
+        var event = eventConfDao.findByUei("uei.opennms.org/circuitBreaker/stateChange");
+        assertNotNull(event);
+        // This is not unique uei so getEventByUeiOptimistic will exclude this.
+        var uniqueEvent = eventConfDao.getRootEvents().getEventByUeiOptimistic("uei.opennms.org/circuitBreaker/stateChange");
+        assertNull(uniqueEvent);
+        assertEquals(defaultEventConfEventSize, eventConfDao.getEventUEIs().size());
+
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
     public void testDeleteEventConfSources() throws Exception {
         String username = "test_user";
         Date now = new Date();
@@ -550,5 +573,5 @@ public class EventConfPersistenceServiceIT {
 
         eventConfEventDao.saveOrUpdate(event);
     }
-
 }
+
