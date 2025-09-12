@@ -114,6 +114,8 @@ RUN rm -rf /opt/opennms/share/rrd \
     ln -s /opt/opennms/etc /etc/opennms && \
     ln -s /opt/opennms/logs /var/log/opennms && \
     ln -s /opt/opennms/share /var/lib/opennms && \
+# java.lang.UnsatisfiedLinkError: Failed to create temporary file for /com/sun/jna/linux-x86-64/libjnidispatch.so library: JNA temporary directory '/opt/opennms/data/tmp' does not exist
+    mkdir -p /opt/opennms/data/tmp && \
 # Create etc-pristine
     rsync -ar /opt/opennms/etc/ /opt/opennms/share/etc-pristine/
 
