@@ -146,6 +146,17 @@ export const filterEventConfigSources = async (
   }
 }
 
+/**
+ * Makes a GET request to the REST endpoint to filter event configuration events.
+ *
+ * @param sourceId The ID of the event configuration source to filter events from.
+ * @param offset The offset of the page of results to return.
+ * @param limit The maximum number of results to return in a page.
+ * @param filter The filter to apply to the results, expressed as a comma-separated list of key-value pairs.
+ * @param sortBy The field to sort the results by.
+ * @param order The order in which to sort the results (either "asc" or "desc").
+ * @returns A promise that resolves to an `EventConfigEventsResponse` containing the filtered event configuration events.
+ */
 export const filterEventConfigEvents = async (
   sourceId: number,
   offset: number,
