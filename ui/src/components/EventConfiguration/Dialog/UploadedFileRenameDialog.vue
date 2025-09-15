@@ -8,8 +8,8 @@
     >
       <div class="modal-body">
         <p>
-          The file name '<strong>{{ originalFileName }}</strong
-          >' already exists in the system. Please choose a different name.
+          The file name '<strong> {{ originalFileName }} </strong>' already exists in the system. Please choose a
+          different name.
         </p>
         <p>Please provide a new name for the file:</p>
         <FeatherInput
