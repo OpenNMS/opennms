@@ -29,8 +29,6 @@ import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfEventDto;
-import org.opennms.netmgt.model.EventConfSource;
-import org.opennms.web.rest.v2.model.EventConfSourceDto;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Events;
@@ -49,7 +47,6 @@ import java.util.List;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.Map;
-import java.util.Set;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -147,19 +144,20 @@ public class EventConfRestService implements EventConfRestApi {
     }
 
     @Override
-    public Response filterEventConfSource(String filter, String sortBy, String order, Integer totalRecords,
-                                          Integer offset, Integer limit, SecurityContext securityContext) {
+    public Response filterConfEventsBySourceId(Long sourceId, Integer totalRecords, Integer offset, Integer limit,
+                                               SecurityContext securityContext) {
 
-        // Return 400 Bad Request if offset < 0 or limit < 1
-        if (Objects.requireNonNullElse(offset, 0) < 0 || Objects.requireNonNullElse(limit, 0) < 1) {
+        // Return 400 Bad Request if sourceId is null, invalid sourceId, offset < 0 or limit < 1
+        if (Objects.requireNonNullElse(sourceId, 0L) <= 0L || Objects.requireNonNullElse(offset, 0) < 0
+                || Objects.requireNonNullElse(limit, 0) < 1) {
             return Response.status(Response.Status.BAD_REQUEST)
-                    .entity(Map.of("error", "Invalid offset/limit values"))
+                    .entity(Map.of("error", "Invalid sourceId/offset/limit values"))
                     .build();
         }
 
         // Call service to fetch results
-        Map<String, Object> result = eventConfPersistenceService.filterEventConfSource(filter, sortBy, order,
-                totalRecords, offset, limit);
+        Map<String, Object> result = eventConfPersistenceService.filterConfEventsBySourceId(sourceId, totalRecords,
+                offset, limit);
 
         // Check if no data found
         if (result == null
@@ -168,11 +166,11 @@ public class EventConfRestService implements EventConfRestApi {
             return Response.noContent().build();  // 204 No Content
         }
 
-        List<EventConfSourceDto> dtoList =
-                EventConfSourceDto.fromEntity((List<EventConfSource>) result.get("eventConfSourceList"));
+        List<EventConfEventDto> dtoList =
+                EventConfEventDto.fromEntity((List<EventConfEvent>) result.get("eventConfEventList"));
 
         // Build response
-        return Response.ok(Map.of("totalRecords", result.get("totalRecords"), "eventConfSourceList", dtoList))
+        return Response.ok(Map.of("totalRecords", result.get("totalRecords"), "eventConfEventList", dtoList))
                 .build();
     }
 
