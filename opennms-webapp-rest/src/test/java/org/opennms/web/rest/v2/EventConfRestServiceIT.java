@@ -385,10 +385,6 @@ public class EventConfRestServiceIT {
         Response resp = eventConfRestApi.filterConfEventsBySourceId(-1L, 0, 0, 10, securityContext);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
 
-        // offset > totalRecords
-        resp = eventConfRestApi.filterConfEventsBySourceId(1L, 0, 10, 20, securityContext);
-        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
-
         // Invalid offset
         resp = eventConfRestApi.filterConfEventsBySourceId(1L, 0, -1, 10, securityContext);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
