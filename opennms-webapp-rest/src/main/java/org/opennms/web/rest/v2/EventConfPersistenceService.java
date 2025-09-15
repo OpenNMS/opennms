@@ -21,6 +21,8 @@
  */
 package org.opennms.web.rest.v2;
 
+
+import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
@@ -33,17 +35,25 @@ import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.util.Date;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.Map;
 
 @Service
 public class EventConfPersistenceService {
+
+    private static final Logger LOG = LoggerFactory.getLogger(EventConfPersistenceService.class);
 
     @Autowired
     private EventConfSourceDao eventConfSourceDao;
@@ -54,11 +64,26 @@ public class EventConfPersistenceService {
     @Autowired
     private EventConfDao eventConfDao;
 
+    private final ThreadFactory eventConfThreadFactory = new ThreadFactoryBuilder()
+            .setNameFormat("load-eventConf-%d")
+            .build();
+
+    private final ExecutorService eventConfExecutor = Executors.newSingleThreadExecutor(eventConfThreadFactory);
+
+    @PostConstruct
+    public void init() {
+        // Asynchronously load events from DB in order to not to block startup
+        // TODO: Uncomment when we are ready to disable loading from filesystem
+        //eventConfExecutor.execute(this::reloadEventsFromDB);
+    }
+
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void persistEventConfFile(final Events events, final EventConfSourceMetadataDto eventConfSourceMetadataDto) {
         EventConfSource source = createOrUpdateSource(eventConfSourceMetadataDto);
         eventConfEventDao.deleteBySourceId(source.getId());
         saveEvents(source, events, eventConfSourceMetadataDto.getUsername(), eventConfSourceMetadataDto.getNow());
+        // Asynchronously load event conf from DB.
+        //eventConfExecutor.execute(this::reloadEventsFromDB);
     }
 
     public List<EventConfEvent>  findEventConfByFilters(String uei, String vendor, String sourceName, int offset, int limit) {
@@ -119,19 +144,30 @@ public class EventConfPersistenceService {
         eventEntities.forEach(eventConfEventDao::save);
     }
 
-    private void saveEventsToDatabase(){
+    protected void reloadEventsFromDB() {
+        List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
+        if (dbEvents.isEmpty()) {
+            return;
+        }
+        eventConfDao.loadEventsFromDB(dbEvents);
+    }
+
+    @PreDestroy
+    public void shutdown() {
+        eventConfExecutor.shutdown();
+    }
+
+    private void saveEventsToDatabase() {
 
         Map<String, Events> fileEventsMap = eventConfDao.getRootEvents().getLoadedEventFiles();
         int fileOrder = 1;
         for (Map.Entry<String, Events> entry : fileEventsMap.entrySet()) {
             String fileName = entry.getKey();
-            if(fileName.startsWith("events/")) {
+            if (fileName.startsWith("events/")) {
                 String[] parts = fileName.split("/");
                 fileName = parts[parts.length - 1];
             }
             Events events = entry.getValue();
-
-            if(fileName.contains("opennms.hyperic.events.xml")) continue;
 
             if (fileName.startsWith("opennms")) {
                 String withoutExtension = fileName.endsWith(".xml")
@@ -142,5 +178,9 @@ public class EventConfPersistenceService {
             }
         }
 
+    }
+
+    public Map<String, Object> filterEventConfSource(String filter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
+        return eventConfSourceDao.filterEventConfSource(filter, sortBy, order, totalRecords, offset, limit);
     }
 }
