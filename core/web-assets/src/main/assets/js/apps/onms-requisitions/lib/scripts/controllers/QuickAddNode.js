@@ -26,11 +26,10 @@ const QuickNode = require('../model/QuickNode');
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
-* @copyright 2014-2022 The OpenNMS Group, Inc.
+* @copyright 2014-2025 The OpenNMS Group, Inc.
 */
 
 (function() {
-
   'use strict';
 
   const quickAddPanelBasicView = require('../../views/quick-add-panel-basic.html');
@@ -138,6 +137,7 @@ const QuickNode = require('../model/QuickNode');
       $scope.isSaving = true;
       growl.info('The node ' + _.escape($scope.node.nodeLabel) + ' is being added to requisition ' + _.escape($scope.node.foreignSource) + '. Please wait...');
       const successMessage = 'The node ' + _.escape($scope.node.nodeLabel) + ' has been added to requisition ' + _.escape($scope.node.foreignSource);
+
       RequisitionsService.quickAddNode($scope.node).then(
         function() { // success
           $scope.reset();
@@ -258,6 +258,12 @@ const QuickNode = require('../model/QuickNode');
     */
     $scope.addRequisition = function() {
       bootbox.prompt('A requisition is required, please enter the name for a new requisition', function(foreignSource) {
+        if (foreignSource && RequisitionsService.isExcludedRequisitionName(foreignSource)) {
+          const errMessage = 'You cannot add a node to this requisition.';
+          $scope.errorHandler(errMessage);
+          return;
+        }
+
         if (foreignSource) {
           RequisitionsService.addRequisition(foreignSource).then(
             function() { // success
@@ -272,7 +278,7 @@ const QuickNode = require('../model/QuickNode');
             $scope.errorHandler
           );
         } else {
-          window.location.href = Util.getBaseHref() + 'admin/opennms/index.jsp'; // TODO Is this the best way ?
+          window.location.href = Util.getBaseHref() + 'admin/index.jsp'; // TODO Is this the best way ?
         }
       });
     };
@@ -289,7 +295,11 @@ const QuickNode = require('../model/QuickNode');
     if (!foreignSources) {
       RequisitionsService.getRequisitionNames().then(
         function(requisitions) { // success
-          $scope.foreignSources = requisitions;
+          const filteredRequisitions = (requisitions || []).filter(function(r) {
+            return Boolean(r) && !RequisitionsService.isExcludedRequisitionName(r);
+          });
+          $scope.foreignSources = filteredRequisitions;
+
           // If there is NO requisitions, the user has to create a new one
           if ($scope.foreignSources.length === 0) {
             $scope.addRequisition();
@@ -300,7 +310,5 @@ const QuickNode = require('../model/QuickNode');
     } else {
       $scope.foreignSources = foreignSources;
     }
-
   }]);
-
 }());
