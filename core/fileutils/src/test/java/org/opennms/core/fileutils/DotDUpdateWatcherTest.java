@@ -1,6 +1,28 @@
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
+ *
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.core.fileutils;
 
 import org.awaitility.Awaitility;
+import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Rule;
@@ -26,7 +48,6 @@ public class DotDUpdateWatcherTest {
 
     @Before
     public void before() throws IOException {
-        tempFolder.delete();
         tempFolder.create();
         file1 = tempFolder.newFile("file1.txt");
         file2 = tempFolder.newFile("file2.txt");
@@ -35,10 +56,6 @@ public class DotDUpdateWatcherTest {
         Files.writeString(file2.toPath(), "foo2");
         Files.writeString(file3.toPath(), "foo3");
 
-        if (dotDUpdateWatcher != null) {
-            dotDUpdateWatcher.destroy();
-            dotDUpdateWatcher = null;
-        }
         dotDUpdateWatcher = new DotDUpdateWatcher(tempFolder.getRoot().getAbsolutePath(), (dir, name) -> name.endsWith(".txt"),
         new FileUpdateCallback(){
             @Override
@@ -49,6 +66,16 @@ public class DotDUpdateWatcherTest {
         });
 
         reloadTriggered = false;
+    }
+
+    @After
+    public void after() {
+        if (dotDUpdateWatcher != null) {
+            dotDUpdateWatcher.destroy();
+            dotDUpdateWatcher = null;
+        }
+
+        tempFolder.delete();
     }
 
     @Test
