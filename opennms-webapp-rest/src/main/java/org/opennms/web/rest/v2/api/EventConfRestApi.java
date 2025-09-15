@@ -154,4 +154,30 @@ public interface EventConfRestApi {
     })
     Response enableDisableEventConfSourcesEvents(@PathParam("sourceId") final Long sourceId,EnableDisableConfSourceEventsPayload enableDisableConfSourceEventsPayload,
                                     @Context SecurityContext securityContext) throws Exception;
+    @GET
+    @Path("filter/sources")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Filter EventConfSource Records",
+            description = "Fetch EventConfSource records based on provided filters such as name, vendor, description, fileOrder and eventCount.",
+            operationId = "filterEventConfSource"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "EventConfSource records retrieved successfully",
+                    content = @Content),
+            @ApiResponse(responseCode = "400", description = "Bad Request – invalid or missing input parameters",
+                    content = @Content),
+            @ApiResponse(responseCode = "204", description = "No matching EventConfSource records found for the given criteria",
+                    content = @Content)
+    })
+    Response filterEventConfSource(
+            @QueryParam("filter") String filter,
+            @QueryParam("sortBy") String sortBy,
+            @QueryParam("order") String order,
+            @QueryParam("totalRecords") Integer totalRecords,
+            @QueryParam("offset") Integer offset,
+            @QueryParam("limit") Integer limit,
+            @Context SecurityContext securityContext );
+
+
 }

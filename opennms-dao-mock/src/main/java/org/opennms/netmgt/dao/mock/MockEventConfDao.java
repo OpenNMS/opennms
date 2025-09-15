@@ -37,6 +37,7 @@ import java.util.TreeSet;
 import org.apache.commons.io.IOUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.config.api.EventConfDao;
+import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.xml.eventconf.EnterpriseIdPartition;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.EventLabelComparator;
@@ -187,5 +188,11 @@ public class MockEventConfDao implements EventConfDao, InitializingBean {
     public Events getRootEvents() {
         return m_events;
     }
+
+    @Override
+    public void loadEventsFromDB(List<EventConfEvent> dbEvents) {
+
+    }
+
 
 }
