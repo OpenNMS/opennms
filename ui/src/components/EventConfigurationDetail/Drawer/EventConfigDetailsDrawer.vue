@@ -74,13 +74,14 @@ const eventConfigStore = useEventConfigDetailStore()
 const eventDescription = ref('')
 const eventLabel = ref('')
 const selectedEventStatus = ref<ISelectItemType | undefined>()
+
 const props = defineProps<{
   event: EventConfigEvent | null
 }>()
 
 const categoryOptions = [
   { label: 'Enable', value: 'enable' },
-  { label: 'Disable ', value: 'disable' }
+  { label: 'Disable', value: 'disable' }
 ]
 
 const mapTriggerTypeOptions = (): ISelectItemType[] => {
@@ -94,7 +95,10 @@ const handleSave = async () => {
   if (!props.event) {
     return
   }
-  const enabled = selectedEventStatus.value?._value === "enable"
+
+  const enabled = selectedEventStatus.value
+    ? selectedEventStatus.value._value === 'enable'
+    : props.event.enabled
 
   const response = await updateEventConfigById(
     props.event.id,
@@ -104,21 +108,20 @@ const handleSave = async () => {
   )
 
   if (response) {
-    snackbar.showSnackBar({msg: 'Event Updated.', error: false })
+    snackbar.showSnackBar({ msg: 'Event Updated.', error: false })
     await eventConfigStore.fetchEventsBySourceId()
     eventConfigStore.closeEventDrawerModal()
   } else {
-    snackbar.showSnackBar({msg: 'Something went wrong', error: true })
+    snackbar.showSnackBar({ msg: 'Something went wrong', error: true })
   }
 }
 
-
 const setIntialEventInfo = (val: EventConfigEvent) => {
-  eventDescription.value = val.description
-  eventLabel.value = val.eventLabel
+  eventDescription.value = val.description ?? ''
+  eventLabel.value = val.eventLabel ?? ''
   selectedEventStatus.value = {
-    _text: val.enabled ? 'Enable' : 'true',
-    _value: val.enabled ? 'enable' : 'false'
+    _text: val.enabled ? 'Enable' : 'Disable',
+    _value: val.enabled ? 'enable' : 'disable'
   }
 }
 
@@ -129,10 +132,10 @@ watch(
       setIntialEventInfo(val)
     }
   },
- 
   { immediate: true, deep: true }
 )
 </script>
+
 
 <style lang="scss" scoped>
 @import "@featherds/table/scss/table";

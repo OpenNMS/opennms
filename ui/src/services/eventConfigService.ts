@@ -51,7 +51,7 @@ export const deleteEventConfigSourceById = async (id: number): Promise<boolean> 
   }
 }
 
-export const updateEventConfigById = async (id: number, eventLabel:string,description:string,enabled:boolean): Promise<boolean> => {
+export const updateEventConfigById = async (id: number, eventLabel:string, description:string, enabled:boolean): Promise<boolean> => {
   const endpoint = `eventconf/sources/events/${id}`
   const payload = {
     eventLabel:eventLabel,
