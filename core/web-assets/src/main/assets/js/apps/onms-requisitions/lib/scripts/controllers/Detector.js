@@ -88,9 +88,9 @@ require('../services/Requisitions');
     * @methodOf DetectorController
     */
     $scope.getAvailableParameters = function() {
-      var params = [];
+      const params = [];
       angular.forEach($scope.availableParameters, function(availParam) {
-        var found = false;
+        let found = false;
         angular.forEach($scope.detector.parameter, function(param) {
           if (param.key === availParam.key) {
             found = true;
@@ -176,11 +176,11 @@ require('../services/Requisitions');
         angular.forEach(detectors, function(detector) {
           if (detector.class === $scope.detector.class) {
             $scope.availableParameters = detector.parameters;
-            var orderedParams = [];
-            for (var i=0; i<detector.parameters.length; i++) {
-              var pkey = detector.parameters[i].key;
-              for (var j=0; j<$scope.detector.parameter.length; j++) {
-                var p = $scope.detector.parameter[j];
+            const orderedParams = [];
+            for (let i=0; i<detector.parameters.length; i++) {
+              const pkey = detector.parameters[i].key;
+              for (let j=0; j<$scope.detector.parameter.length; j++) {
+                const p = $scope.detector.parameter[j];
                 if (p.key === pkey) {
                   orderedParams.push(p);
                 }
