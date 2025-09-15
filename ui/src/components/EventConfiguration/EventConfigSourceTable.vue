@@ -32,6 +32,7 @@
           <FeatherButton
             primary
             icon="Refresh"
+            @click="store.refreshEventsSources()"
           >
             <FeatherIcon :icon="Refresh"> </FeatherIcon>
           </FeatherButton>
@@ -113,7 +114,7 @@
           </tr>
         </TransitionGroup>
       </table>
-      <div class="alerts-pagination">
+      <div class="alerts-pagination" v-if="store.sources.length">
         <FeatherPagination
           :modelValue="store.sourcesPagination.page"
           :pageSize="store.sourcesPagination.pageSize"
@@ -122,7 +123,6 @@
           @update:modelValue="store.onSourcePageChange"
           @update:pageSize="store.onSourcePageSizeChange"
           data-test="FeatherPagination"
-          v-if="store.sources.length"
         />
       </div>
       <div v-if="!store.sources.length">
@@ -153,6 +153,7 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
+import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigSourceStatusDialog from './Dialog/ChangeEventConfigSourceStatusDialog.vue'
 import DeleteEventConfigSourceDialog from './Dialog/DeleteEventConfigSourceDialog.vue'

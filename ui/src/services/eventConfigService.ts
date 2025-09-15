@@ -1,8 +1,13 @@
 import {
+  mapEventConfigEventsResponseFromServer,
   mapEventConfSourceResponseFromServer,
   mapUploadedEventConfigFilesResponseFromServer
 } from '@/mappers/eventConfig.mapper'
-import { EventConfigFilesUploadReponse, EventConfigSourcesResponse } from '@/types/eventConfig'
+import {
+  EventConfigEventsResponse,
+  EventConfigFilesUploadReponse,
+  EventConfigSourcesResponse
+} from '@/types/eventConfig'
 import { v2 } from './axiosInstances'
 
 /**
@@ -115,7 +120,6 @@ export const changeEventConfigSourceStatus = async (sourceId: number, enabled: b
 export const filterEventConfigSources = async (
   offset: number,
   limit: number,
-  totalRecords: number,
   filter: string,
   sortBy: string,
   order: string
@@ -126,7 +130,6 @@ export const filterEventConfigSources = async (
       params: {
         offset,
         limit,
-        totalRecords,
         filter,
         sortBy,
         order
@@ -139,6 +142,47 @@ export const filterEventConfigSources = async (
     }
   } catch (error) {
     console.error('Error filtering event config sources:', error)
+    throw error
+  }
+}
+
+/**
+ * Makes a GET request to the REST endpoint to filter event configuration events.
+ *
+ * @param sourceId The ID of the event configuration source to filter events from.
+ * @param offset The offset of the page of results to return.
+ * @param limit The maximum number of results to return in a page.
+ * @param filter The filter to apply to the results, expressed as a comma-separated list of key-value pairs.
+ * @param sortBy The field to sort the results by.
+ * @param order The order in which to sort the results (either "asc" or "desc").
+ * @returns A promise that resolves to an `EventConfigEventsResponse` containing the filtered event configuration events.
+ */
+export const filterEventConfigEvents = async (
+  sourceId: number,
+  offset: number,
+  limit: number,
+  filter: string,
+  sortBy: string,
+  order: string
+): Promise<EventConfigEventsResponse> => {
+  const endpoint = `/eventconf/${sourceId}/filter/events`
+  try {
+    const response = await v2.get(endpoint, {
+      params: {
+        offset,
+        limit,
+        filter,
+        sortBy,
+        order
+      }
+    })
+    if (response.status === 200) {
+      return mapEventConfigEventsResponseFromServer(response.data)
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error filtering event config events:', error)
     throw error
   }
 }

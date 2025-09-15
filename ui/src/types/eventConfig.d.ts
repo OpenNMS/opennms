@@ -51,6 +51,8 @@ export type EventConfigStoreState = {
 export type EventConfigDetailStoreState = {
   events: EventConfigEvent[]
   eventsPagination: Pagination
+  eventsSearchTerm: string
+  eventsSorting: Sorting
   selectedSource: EventConfigSource | null
   isLoading: boolean
   deleteEventConfigEventDialogState: {
@@ -94,7 +96,14 @@ export type EventConfigSourcesResponse = {
   sources: EventConfigSource[]
   totalRecords: number
 }
+
+export type EventConfigEventsResponse = {
+  events: EventConfigEvent[]
+  totalRecords: number
+}
+
 export interface DrawerState {
   visible: boolean
   isEventEditorModal: boolean
 }
+

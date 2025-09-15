@@ -50,7 +50,10 @@
                 <span class="invalid-text">{{ file.name }}</span>
               </div>
               <div class="actions">
-                <FeatherTooltip :title="file.reason" v-slot="{ attrs, on }">
+                <FeatherTooltip
+                  :title="file.reason"
+                  v-slot="{ attrs, on }"
+                >
                   <FeatherIcon
                     :icon="Info"
                     v-bind="attrs"
@@ -93,7 +96,7 @@
             data-test="upload-button"
           >
             <FeatherSpinner v-if="isLoading" />
-            <span v-else>Upload Files </span>
+            <span v-else>Upload Files</span>
           </FeatherButton>
         </div>
       </div>
@@ -114,10 +117,10 @@ import Text from '@featherds/icon/file/Text'
 import Apps from '@featherds/icon/navigation/Apps'
 import { FeatherSpinner } from '@featherds/progress'
 import { FeatherTooltip } from '@featherds/tooltip'
-import { ref } from 'vue'
 import Draggable from 'vuedraggable'
 import EventConfigFilesUploadReportDialog from './Dialog/EventConfigFilesUploadReportDialog.vue'
-import { isDuplicateFile, validateEventConfigFile } from './eventConfigXmlValidator'
+import { isDuplicateFile, MAX_FILES_UPLOAD, validateEventConfigFile } from './eventConfigXmlValidator'
+import useSnackbar from '@/composables/useSnackbar'
 
 const eventConfFileInput = ref<HTMLInputElement | null>(null)
 const uploadFilesReport = ref<EventConfigFilesUploadReponse>({} as EventConfigFilesUploadReponse)
@@ -125,6 +128,7 @@ const store = useEventConfigStore()
 const eventFiles = ref<File[]>([])
 const invalidFiles = ref<{ name: string; reason: string }[]>([])
 const isLoading = ref(false)
+const snackbar = useSnackbar()
 
 const handleEventConfUpload = async (e: Event) => {
   const input = e.target as HTMLInputElement
@@ -137,21 +141,29 @@ const handleEventConfUpload = async (e: Event) => {
       }
 
       try {
-        const validationResult = await validateEventConfigFile(file)        
+        const validationResult = await validateEventConfigFile(file)
         if (validationResult.isValid) {
-          eventFiles.value.push(file)
+          if (eventFiles.value.length < MAX_FILES_UPLOAD) {
+            eventFiles.value.push(file)
+          } else {
+            snackbar.showSnackBar({
+              msg: 'You can upload a maximum of 10 files at a time.',
+              error: true
+            })
+            break
+          }
         } else {
-          invalidFiles.value.push({ 
-            name: file.name, 
-            reason: validationResult.errors.join('; ') 
+          invalidFiles.value.push({
+            name: file.name,
+            reason: validationResult.errors.join('; ')
           })
         }
-        
+
       } catch (error) {
         console.error(`Error processing file ${file.name}:`, error)
-        invalidFiles.value.push({ 
-          name: file.name, 
-          reason: `Unexpected error processing file: ${error instanceof Error ? error.message : 'Unknown error'}` 
+        invalidFiles.value.push({
+          name: file.name,
+          reason: `Unexpected error processing file: ${error instanceof Error ? error.message : 'Unknown error'}`
         })
       }
     }
@@ -178,7 +190,7 @@ const uploadFiles = async () => {
     return
   }
   if (!eventFiles.value.every(
-    file => file.name.endsWith('.events.xml') || file.name === 'eventconf.xml')) {
+    (file: File) => file.name.endsWith('.events.xml') || file.name === 'eventconf.xml')) {
     console.error('All files must be XML files')
     return
   }
@@ -188,13 +200,13 @@ const uploadFiles = async () => {
     uploadFilesReport.value = {
       errors: [...response.errors],
       success: [...response.success],
-      invalid: invalidFiles.value.map(f => ({
+      invalid: invalidFiles.value.map((f: { name: string; reason: string }) => ({
         file: f.name,
         reason: f.reason
       }))
     }
     isLoading.value = false
-    eventFiles.value = [] 
+    eventFiles.value = []
     invalidFiles.value = []
     eventConfFileInput.value!.value = ''
     store.uploadedEventConfigFilesReportDialogState.visible = true
@@ -306,3 +318,4 @@ const uploadFiles = async () => {
   }
 }
 </style>
+

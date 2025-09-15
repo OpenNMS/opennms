@@ -29,6 +29,7 @@
           <FeatherButton
             primary
             icon="Refresh"
+            @click="store.refreshEventConfigEvents()"
           >
             <FeatherIcon :icon="Refresh"> </FeatherIcon>
           </FeatherButton>
@@ -108,7 +109,7 @@
           </tr>
         </TransitionGroup>
       </table>
-      <div class="alerts-pagination">
+      <div class="alerts-pagination" v-if="store.events.length">
         <FeatherPagination
           :modelValue="store.eventsPagination.page"
           :pageSize="store.eventsPagination.pageSize"
@@ -117,7 +118,6 @@
           @update:modelValue="store.onEventsPageChange"
           @update:pageSize="store.onEventsPageSizeChange"
           data-test="FeatherPagination"
-          v-if="store.events.length"
         />
       </div>
       <div v-if="!store.events.length">
@@ -151,6 +151,7 @@ import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigEventStatusDialog from './Dialog/ChangeEventConfigEventStatusDialog.vue'
 import DeleteEventConfigEventDialog from './Dialog/DeleteEventConfigEventDialog.vue'
 import EventConfigDetailsDrawer from './Drawer/EventConfigDetailsDrawer.vue'
+import EmptyList from '../Common/EmptyList.vue'
 
 const store = useEventConfigDetailStore()
 const emptyListContent = {
