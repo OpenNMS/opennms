@@ -32,7 +32,7 @@
                         v-bind="attrs"
                         v-on="on"
                         class="warning-icon"
-                        @click="clicked"
+                        @click="openFileRenameDialog(index)"
                       />
                     </FeatherTooltip>
                     <FeatherTooltip
@@ -112,6 +112,14 @@
       </div>
     </div>
     <EventConfigFilesUploadReportDialog :report="uploadFilesReport" />
+    <UploadedFileRenameDialog
+      :visible="displayRenameDialog"
+      :fileBucket="eventFiles"
+      :index="eventFiles.findIndex(f => f.isDuplicate)"
+      :alreadyExistsNames="store.uploadedSourceNames"
+      @close="closeRenameDialog"
+      @rename="renameFile"
+    />
   </div>
 </template>
 
@@ -133,6 +141,7 @@ import { FeatherTooltip } from '@featherds/tooltip'
 import Draggable from 'vuedraggable'
 import EventConfigFilesUploadReportDialog from './Dialog/EventConfigFilesUploadReportDialog.vue'
 import { isDuplicateFile, MAX_FILES_UPLOAD, validateEventConfigFile } from './eventConfigXmlValidator'
+import UploadedFileRenameDialog from './Dialog/UploadedFileRenameDialog.vue'
 
 const eventConfFileInput = ref<HTMLInputElement | null>(null)
 const uploadFilesReport = ref<EventConfigFilesUploadResponse>({} as EventConfigFilesUploadResponse)
@@ -140,6 +149,8 @@ const store = useEventConfigStore()
 const isLoading = ref(false)
 const snackbar = useSnackbar()
 const eventFiles = ref<UploadEventFileType[]>([])
+const displayRenameDialog = ref(false)
+const selectedIndex = ref<number | null>(null)
 const shouldUploadDisabled = computed(() => {
   return (
     eventFiles.value.length === 0 ||
@@ -193,8 +204,31 @@ const openFileDialog = () => {
   eventConfFileInput.value?.click()
 }
 
-const clicked = () => {
-  console.log('duplicate clicked')
+const openFileRenameDialog = (index: number) => {
+  displayRenameDialog.value = true
+  selectedIndex.value = index
+}
+
+const closeRenameDialog = () => {
+  displayRenameDialog.value = false
+  selectedIndex.value = null
+}
+
+const renameFile = async (newFileName: string) => {
+  if (selectedIndex.value !== null && selectedIndex.value >= 0 && selectedIndex.value < eventFiles.value.length) {
+    const fileToRename = eventFiles.value[selectedIndex.value]
+    const newFile = new File([fileToRename.file], newFileName, { type: fileToRename.file.type })
+    const validationResult = await validateEventConfigFile(newFile)
+    eventFiles.value[selectedIndex.value] = {
+      file: newFile,
+      isValid: validationResult.isValid,
+      errors: validationResult.errors,
+      isDuplicate: store.uploadedSourceNames.map(name => name.toLowerCase()).includes(newFileName.toLowerCase())
+    }
+    closeRenameDialog()
+  } else {
+    console.error('Invalid index for renaming file')
+  }
 }
 
 const removeFile = (index: number) => {
