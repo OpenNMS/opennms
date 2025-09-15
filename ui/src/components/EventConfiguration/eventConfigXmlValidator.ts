@@ -1,3 +1,5 @@
+export const MAX_FILES_UPLOAD = 10
+
 export const validateEventConfigFile = async (file: File) => {
   const validationErrors: string[] = []
 
