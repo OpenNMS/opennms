@@ -91,7 +91,7 @@ The finished CSS file will include this line, directly:
 }
 
 // HACK to make the buttons size correctly.
-// This is needed when embeeding the bootstrap header, which includes bs4
+// This is needed when embedding the bootstrap header, which includes bs4
 .v-button-wrap {
   box-sizing: content-box;
 }
@@ -101,11 +101,27 @@ The finished CSS file will include this line, directly:
     -------------------------------------------------- */
 /**
 * Move topology UI over past the Vue top and side menus.
+* Note this only moves it past the collapsed side menu.
+* This same style is used in both the case where the Topology Map is the top-level item
+* (i.e. `/opennms/topology` accessed directly), as well as when the Topology Map is embedded
+* within the Wallboard UI.
 */
 .v-app.topo_default.topologyui {
   margin-top: 0.5em;
-  margin-left: 27em;
-  /* margin-left: 4em; */
+  margin-left: 4em;
+}
+
+/*
+* Wallboard dashboard caption needs some extra padding to display fully.
+*/
+.v-app.dashboard.wallboardui {
+  margin-left: 4em;
+
+  .v-panel-caption,
+  .v-panel-caption.v-panel-caption-novscroll
+   {
+    padding-bottom: 2em;
+  }
 }
 
 /*  --------------------------------------------------

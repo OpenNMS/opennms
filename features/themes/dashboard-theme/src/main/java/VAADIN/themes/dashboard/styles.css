@@ -41,10 +41,31 @@
 
 /* Wallboard UI, make space for Vue top and side menus */
 .dashboard.v-app.wallboardui {
-    margin-top: 5em;
-    /* margin-left: 4em; */
-    margin-left: 27em;
+    margin-top: 4.5em;
+    margin-left: 4em;
 }
+
+.dashboard.v-app.wallboardui .v-panel-caption,
+.dashboard.v-app.wallboardui .v-panel-caption.v-panel-caption-novscroll
+{
+    padding-bottom: 2em;
+}
+
+/*  --------------------------------------------------
+    :: Vue Menu UI
+    -------------------------------------------------- */
+/**
+* Move topology UI over past the Vue top and side menus.
+* Note this only moves it past the collapsed side menu.
+* This same style is used in both the case where the Topology Map is the top-level item
+* (i.e. `/opennms/topology` accessed directly), as well as when the Topology Map is embedded
+* within the Wallboard UI.
+*/
+.v-app.topo_default.topologyui {
+  margin-top: 0.5em;
+  margin-left: 4em;
+}
+
 
 .debug {
     border: 1px dashed red;

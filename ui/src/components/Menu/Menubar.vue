@@ -220,6 +220,8 @@ onMounted(async () => {
 .date-wrapper {
   display: inline-flex;
   flex-direction: column;
+  font-family: var(--feather-header-font-family);
+  font-size: 0.875rem;
   margin-right: 1em;
 
   .date-formatted-date {
@@ -231,7 +233,6 @@ onMounted(async () => {
     display: flex;
     justify-content: right;
     font-weight: 800;
-    font-size: 1em;
   }
 }
 </style>

@@ -22,6 +22,7 @@
 package org.opennms.features.vaadin.dashboard.ui;
 
 import com.google.common.base.Strings;
+import com.vaadin.shared.ui.MarginInfo;
 import org.opennms.features.vaadin.dashboard.config.DashletSelector;
 import org.opennms.features.vaadin.dashboard.config.ui.WallboardProvider;
 import org.opennms.features.vaadin.dashboard.model.DashletSelectorAccess;
@@ -82,7 +83,15 @@ public class WallboardUI extends UI implements DashletSelectorAccess {
         rootLayout.setSizeFull();
         rootLayout.setSpacing(true);
         rootLayout.setMargin(false);
+
         HeaderLayout headerLayout = new HeaderLayout();
+        MarginInfo headerMargin = headerLayout.getMargin();
+        MarginInfo newMargin = new MarginInfo(
+                true,
+                headerMargin.hasRight(),
+                headerMargin.hasBottom(),
+                headerMargin.hasLeft());
+        headerLayout.setMargin(newMargin);
         rootLayout.addComponent(headerLayout);
 
         VerticalLayout portalWrapper = new VerticalLayout();
