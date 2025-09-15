@@ -1,12 +1,12 @@
 import {
   EventConfigEvent,
   EventConfigEventsResponse,
-  EventConfigFilesUploadReponse,
+  EventConfigFilesUploadResponse,
   EventConfigSource,
   EventConfigSourcesResponse
 } from '@/types/eventConfig'
 
-export const mapUploadedEventConfigFilesResponseFromServer = (response: any): EventConfigFilesUploadReponse => {
+export const mapUploadedEventConfigFilesResponseFromServer = (response: any): EventConfigFilesUploadResponse => {
   return {
     errors: response.errors.map((err: any) => ({
       file: err.file,

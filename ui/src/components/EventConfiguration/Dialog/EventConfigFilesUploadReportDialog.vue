@@ -22,12 +22,6 @@
         >
           <span class="text-danger">{{ file.file }}</span> - Failed to upload
         </li>
-        <li
-          v-for="(file, index) in report.invalid || []"
-          :key="'invalid-' + index"
-        >
-          <span class="text-danger">{{ file.file }}</span> - {{ file.reason }}
-        </li>
       </ul>
     </div>
     <template v-slot:footer>
@@ -44,14 +38,14 @@
 
 <script setup lang="ts">
 import { useEventConfigStore } from '@/stores/eventConfigStore'
-import { EventConfigFilesUploadReponse } from '@/types/eventConfig'
+import { EventConfigFilesUploadResponse } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDialog } from '@featherds/dialog'
 
 const store = useEventConfigStore()
 
 const props = defineProps<{
-  report: EventConfigFilesUploadReponse
+  report: EventConfigFilesUploadResponse
 }>()
 
 const closeDialog = () => {
@@ -59,18 +53,14 @@ const closeDialog = () => {
 }
 
 const getUploadReportStatus = () => {
-  const { success = [], errors = [], invalid = [] } = props.report
+  const { success = [], errors = [] } = props.report
 
-  if (success.length > 0 && (errors.length > 0 || invalid.length > 0)) {
-    return 'Some files were successfully uploaded, while others failed or were skipped.'
-  } else if (success.length > 0 && errors.length === 0 && invalid.length === 0) {
-    return 'All files were successfully uploaded.'
-  } else if (errors.length > 0 && success.length === 0 && invalid.length === 0) {
+  if (success.length > 0 && errors.length === 0) {
+    return 'All files uploaded successfully.'
+  } else if (errors.length > 0 && success.length === 0) {
     return 'All files failed to upload.'
-  } else if (invalid.length > 0 && success.length === 0 && errors.length === 0) {
-    return 'All files were invalid and skipped.'
-  } else if (invalid.length > 0 && errors.length === 0 && success.length > 0) {
-    return 'Some files were uploaded, while others were skipped as invalid.'
+  } else if (success.length > 0 && errors.length > 0) {
+    return 'Some files uploaded successfully, while others failed.'
   } else {
     return 'No files were uploaded.'
   }

@@ -6,7 +6,7 @@
       </div>
       <div class="section">
         <div class="selected-files-section">
-          <div v-if="eventFiles.length > 0 || invalidFiles.length > 0">
+          <div v-if="eventFiles.length > 0">
             <Draggable
               v-model="eventFiles"
               item-key="value"
@@ -17,9 +17,48 @@
                 <div class="file">
                   <div class="file-icon">
                     <FeatherIcon :icon="Text" />
-                    <span>{{ element.name.length > 39 ? element.name.slice(0, 36) + "..." : element.name }}</span>
+                    <span>
+                      {{ element.file.name.length > 39 ? element.file.name.slice(0, 36) + "..." : element.file.name }}
+                    </span>
                   </div>
                   <div class="actions">
+                    <FeatherTooltip
+                      v-if="element.isDuplicate"
+                      :title="'File is a duplicate of another file that has been already uploaded.'"
+                      v-slot="{ attrs, on }"
+                    >
+                      <FeatherIcon
+                        :icon="Warning"
+                        v-bind="attrs"
+                        v-on="on"
+                        class="warning-icon"
+                        @click="clicked"
+                      />
+                    </FeatherTooltip>
+                    <FeatherTooltip
+                      v-if="element.isValid && !element.isDuplicate"
+                      :title="'File is valid'"
+                      v-slot="{ attrs, on }"
+                    >
+                      <FeatherIcon
+                        :icon="CheckCircle"
+                        v-bind="attrs"
+                        v-on="on"
+                        class="success-icon"
+                      />
+                    </FeatherTooltip>
+                    <FeatherTooltip
+                      v-if="!element.isValid"
+                      :title="element.errors.join('.\n ')"
+                      v-slot="{ attrs, on }"
+                    >
+                      <FeatherIcon
+                        :icon="Error"
+                        v-bind="attrs"
+                        v-on="on"
+                        class="error-icon"
+                      />
+                    </FeatherTooltip>
                     <FeatherButton
                       icon="Apps"
                       text
@@ -40,35 +79,6 @@
                 </div>
               </template>
             </Draggable>
-            <div
-              v-for="(file, index) in invalidFiles"
-              class="file"
-              :key="file.name"
-            >
-              <div class="file-icon">
-                <FeatherIcon :icon="Text" />
-                <span class="invalid-text">{{ file.name }}</span>
-              </div>
-              <div class="actions">
-                <FeatherTooltip
-                  :title="file.reason"
-                  v-slot="{ attrs, on }"
-                >
-                  <FeatherIcon
-                    :icon="Info"
-                    v-bind="attrs"
-                    v-on="on"
-                    class="info-icon"
-                  />
-                </FeatherTooltip>
-                <FeatherButton
-                  icon="Trash"
-                  @click="removeInvalidFile(index)"
-                >
-                  <FeatherIcon :icon="Delete" />
-                </FeatherButton>
-              </div>
-            </div>
           </div>
           <div v-else>
             <p>No files selected</p>
@@ -91,7 +101,7 @@
           </FeatherButton>
           <FeatherButton
             primary
-            :disabled="eventFiles.length === 0 || isLoading"
+            :disabled="shouldUploadDisabled"
             @click="uploadFiles"
             data-test="upload-button"
           >
@@ -106,67 +116,74 @@
 </template>
 
 <script setup lang="ts">
+import useSnackbar from '@/composables/useSnackbar'
 import { uploadEventConfigFiles } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
-import { EventConfigFilesUploadReponse } from '@/types/eventConfig'
+import { EventConfigFilesUploadResponse, UploadEventFileType } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
+import CheckCircle from '@featherds/icon/action/CheckCircle'
 import Delete from '@featherds/icon/action/Delete'
-import Info from '@featherds/icon/action/Info'
 import Text from '@featherds/icon/file/Text'
 import Apps from '@featherds/icon/navigation/Apps'
+import Error from '@featherds/icon/notification/Error'
+import Warning from '@featherds/icon/notification/Warning'
 import { FeatherSpinner } from '@featherds/progress'
 import { FeatherTooltip } from '@featherds/tooltip'
 import Draggable from 'vuedraggable'
 import EventConfigFilesUploadReportDialog from './Dialog/EventConfigFilesUploadReportDialog.vue'
 import { isDuplicateFile, MAX_FILES_UPLOAD, validateEventConfigFile } from './eventConfigXmlValidator'
-import useSnackbar from '@/composables/useSnackbar'
 
 const eventConfFileInput = ref<HTMLInputElement | null>(null)
-const uploadFilesReport = ref<EventConfigFilesUploadReponse>({} as EventConfigFilesUploadReponse)
+const uploadFilesReport = ref<EventConfigFilesUploadResponse>({} as EventConfigFilesUploadResponse)
 const store = useEventConfigStore()
-const eventFiles = ref<File[]>([])
-const invalidFiles = ref<{ name: string; reason: string }[]>([])
 const isLoading = ref(false)
 const snackbar = useSnackbar()
+const eventFiles = ref<UploadEventFileType[]>([])
+const shouldUploadDisabled = computed(() => {
+  return (
+    eventFiles.value.length === 0 ||
+    isLoading.value ||
+    !eventFiles.value.every(f => f.isValid) ||
+    eventFiles.value.some(f => f.isDuplicate)
+  )
+})
 
 const handleEventConfUpload = async (e: Event) => {
   const input = e.target as HTMLInputElement
   if (input.files && input.files.length > 0) {
     const files = Array.from(input.files)
-
     for (const file of files) {
-      if (isDuplicateFile(file.name, eventFiles.value, invalidFiles.value)) {
-        continue
-      }
-
       try {
+        if (isDuplicateFile(file.name, eventFiles.value)) {
+          continue
+        }
         const validationResult = await validateEventConfigFile(file)
-        if (validationResult.isValid) {
-          if (eventFiles.value.length < MAX_FILES_UPLOAD) {
-            eventFiles.value.push(file)
-          } else {
-            snackbar.showSnackBar({
-              msg: 'You can upload a maximum of 10 files at a time.',
-              error: true
-            })
-            break
-          }
+        if (eventFiles.value.length >= MAX_FILES_UPLOAD) {
+          snackbar.showSnackBar({
+            msg: `You can upload a maximum of ${MAX_FILES_UPLOAD} files at a time.`,
+            error: true
+          })
+          break
         } else {
-          invalidFiles.value.push({
-            name: file.name,
-            reason: validationResult.errors.join('; ')
+          eventFiles.value.push({
+            file,
+            isValid: validationResult.isValid,
+            errors: validationResult.errors,
+            isDuplicate: store.uploadedSourceNames.map(name => name.toLowerCase()).includes(file.name.toLowerCase()) || false
           })
         }
-
       } catch (error) {
         console.error(`Error processing file ${file.name}:`, error)
-        invalidFiles.value.push({
-          name: file.name,
-          reason: `Unexpected error processing file: ${error instanceof Error ? error.message : 'Unknown error'}`
+        snackbar.showSnackBar({
+          msg: `Error processing file ${file.name}.`,
+          error: true
         })
       }
     }
+    // Reset the input value to allow re-uploading the same file if needed
+    input.value = ''
+    input.files = null
   } else {
     console.warn('No files selected')
   }
@@ -176,12 +193,12 @@ const openFileDialog = () => {
   eventConfFileInput.value?.click()
 }
 
-const removeFile = (index: number) => {
-  eventFiles.value.splice(index, 1)
+const clicked = () => {
+  console.log('duplicate clicked')
 }
 
-const removeInvalidFile = (index: number) => {
-  invalidFiles.value.splice(index, 1)
+const removeFile = (index: number) => {
+  eventFiles.value.splice(index, 1)
 }
 
 const uploadFiles = async () => {
@@ -189,25 +206,19 @@ const uploadFiles = async () => {
     console.warn('No files to upload')
     return
   }
-  if (!eventFiles.value.every(
-    (file: File) => file.name.endsWith('.events.xml') || file.name === 'eventconf.xml')) {
+  if (!eventFiles.value.every(f => f.file.name.endsWith('.events.xml'))) {
     console.error('All files must be XML files')
     return
   }
   isLoading.value = true
   try {
-    const response = await uploadEventConfigFiles(eventFiles.value)
+    const response = await uploadEventConfigFiles(eventFiles.value.filter(f => f.isValid).map(f => f.file))
     uploadFilesReport.value = {
       errors: [...response.errors],
-      success: [...response.success],
-      invalid: invalidFiles.value.map((f: { name: string; reason: string }) => ({
-        file: f.name,
-        reason: f.reason
-      }))
+      success: [...response.success]
     }
     isLoading.value = false
     eventFiles.value = []
-    invalidFiles.value = []
     eventConfFileInput.value!.value = ''
     store.uploadedEventConfigFilesReportDialogState.visible = true
   } catch (err) {
@@ -284,11 +295,25 @@ const uploadFiles = async () => {
             margin: 0px;
           }
 
-          .info-icon {
+          .success-icon {
+            color: var(variables.$success);
+            cursor: pointer;
+            height: 2em;
+            width: 2em;
+          }
+
+          .error-icon {
             color: var(variables.$error);
             cursor: pointer;
-            height: 1.5em;
-            width: 1.5em;
+            height: 2em;
+            width: 2em;
+          }
+
+          .warning-icon {
+            color: var(variables.$major);
+            cursor: pointer;
+            height: 2em;
+            width: 2em;
           }
         }
       }

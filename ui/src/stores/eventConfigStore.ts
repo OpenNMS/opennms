@@ -1,4 +1,8 @@
-import { changeEventConfigSourceStatus, filterEventConfigSources } from '@/services/eventConfigService'
+import {
+  changeEventConfigSourceStatus,
+  filterEventConfigSources,
+  getAllSourceNames
+} from '@/services/eventConfigService'
 import { EventConfigSource, EventConfigStoreState } from '@/types/eventConfig'
 import { defineStore } from 'pinia'
 
@@ -19,6 +23,31 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     },
     isLoading: false,
     activeTab: 0,
+    uploadedSourceNames: [
+      'opennms.snmp.trap.translator.events',
+      'opennms.ackd.events',
+      'opennms.alarm.events',
+      'opennms.bmp.events',
+      'opennms.bsm.events',
+      'opennms.capsd.events',
+      'opennms.collectd.events',
+      'opennms.config.events',
+      'opennms.correlation.events',
+      'opennms.default.threshold.events',
+      'opennms.discovery.events',
+      'opennms.internal.events',
+      'opennms.linkd.events',
+      'opennms.mib.events',
+      'opennms.pollerd.events',
+      'opennms.provisioning.events',
+      'opennms.minion.events',
+      'opennms.perspective.poller.events',
+      'opennms.reportd.events',
+      'opennms.syslogd.events',
+      'A10.AX.events.xml',
+      'AdaptecRaid.events.xml',
+      'ADIC-v2.events.xml'
+    ],
     uploadedEventConfigFilesReportDialogState: {
       visible: false
     },
@@ -32,6 +61,17 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     }
   }),
   actions: {
+    async fetchAllSourcesNames() {
+      this.isLoading = true
+      try {
+        const response = await getAllSourceNames()
+        this.uploadedSourceNames = response
+        this.isLoading = false
+      } catch (error) {
+        console.error('Error fetching all event configuration source names:', error)
+        this.isLoading = false
+      }
+    },
     async fetchEventConfigs() {
       this.isLoading = true
       try {
@@ -42,6 +82,7 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
           this.sourcesSorting.sortKey,
           this.sourcesSorting.sortOrder
         )
+        await this.fetchAllSourcesNames()
         this.sources = response.sources
         this.sourcesPagination.total = response.totalRecords
         this.isLoading = false
