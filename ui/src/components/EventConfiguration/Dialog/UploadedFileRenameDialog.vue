@@ -17,7 +17,7 @@
           label="New File Name"
           :error="error"
           :error-message="error || ''"
-          placeholder="Enter new file name (must end with .xml)"
+          placeholder="Enter new file name (must end with .events.xml)"
           @update:model-value="onChangeFileName"
         />
       </div>
