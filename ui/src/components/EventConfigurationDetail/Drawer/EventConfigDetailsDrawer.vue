@@ -11,7 +11,6 @@
     <div class="feather-drawer-custom-padding">
       <section>
         <h3>Customize the Event Details</h3>
-        <!-- <p>Select which columns you wish to showcase</p> -->
       </section>
       <div class="spacer-large"></div>
       <div class="drawer-content">
@@ -67,7 +66,10 @@ import { FeatherIcon } from '@featherds/icon'
 import MoreVert from '@featherds/icon/navigation/MoreVert'
 import { FeatherInput } from '@featherds/input'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
+import { updateEventConfigById } from '@/services/eventConfigService'
+import useSnackbar from '@/composables/useSnackbar'
 
+const snackbar = useSnackbar()
 const eventConfigStore = useEventConfigDetailStore()
 const eventDescription = ref('')
 const eventLabel = ref('')
@@ -88,16 +90,35 @@ const mapTriggerTypeOptions = (): ISelectItemType[] => {
   }))
 }
 
-const handleSave = () => {
-  eventConfigStore.closeEventDrawerModal()
+const handleSave = async () => {
+  if (!props.event) {
+    return
+  }
+  const enabled = selectedEventStatus.value?._value === "enable"
+
+  const response = await updateEventConfigById(
+    props.event.id,
+    eventLabel.value,
+    eventDescription.value,
+    enabled
+  )
+
+  if (response) {
+    snackbar.showSnackBar({msg: 'Event Updated.', error: false })
+    await eventConfigStore.fetchEventsBySourceId()
+    eventConfigStore.closeEventDrawerModal()
+  } else {
+    snackbar.showSnackBar({msg: 'Something went wrong', error: true })
+  }
 }
+
 
 const setIntialEventInfo = (val: EventConfigEvent) => {
   eventDescription.value = val.description
   eventLabel.value = val.eventLabel
   selectedEventStatus.value = {
-    _text: val.enabled ? 'Enable' : 'Disable',
-    _value: val.enabled ? 'enable' : 'disable'
+    _text: val.enabled ? 'Enable' : 'true',
+    _value: val.enabled ? 'enable' : 'false'
   }
 }
 
@@ -108,6 +129,7 @@ watch(
       setIntialEventInfo(val)
     }
   },
+ 
   { immediate: true, deep: true }
 )
 </script>
@@ -159,4 +181,3 @@ button.primary {
   padding: 5px;
 }
 </style>
-
