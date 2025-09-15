@@ -147,10 +147,8 @@ public class EventConfRestService implements EventConfRestApi {
     public Response filterConfEventsBySourceId(Long sourceId, Integer totalRecords, Integer offset, Integer limit,
                                                SecurityContext securityContext) {
 
-        // Return 400 Bad Request if sourceId is null, invalid sourceId, offset < 0, limit < 1,
-        // or offset exceeds totalRecords
+        // Return 400 Bad Request if sourceId is null, invalid sourceId, offset < 0 or limit < 1
         if (Objects.requireNonNullElse(sourceId, 0L) <= 0L || Objects.requireNonNullElse(offset, 0) < 0
-                || Objects.requireNonNullElse(offset, 0) > Objects.requireNonNullElse(totalRecords, 0)
                 || Objects.requireNonNullElse(limit, 0) < 1) {
             return Response.status(Response.Status.BAD_REQUEST)
                     .entity(Map.of("error", "Invalid sourceId/offset/limit values"))
