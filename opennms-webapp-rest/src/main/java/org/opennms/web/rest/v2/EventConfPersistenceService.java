@@ -179,4 +179,8 @@ public class EventConfPersistenceService {
         }
 
     }
+
+    public Map<String, Object> filterEventConfSource(String filter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
+        return eventConfSourceDao.filterEventConfSource(filter, sortBy, order, totalRecords, offset, limit);
+    }
 }
