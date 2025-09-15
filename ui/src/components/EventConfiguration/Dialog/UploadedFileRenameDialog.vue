@@ -48,9 +48,6 @@ const props = defineProps<{
   index: number
 }>()
 
-function handleDialogHidden() {
-  emits('close')
-}
 const emits = defineEmits<{
   (e: 'close'): void
   (e: 'rename', newFileName: string): void
@@ -104,6 +101,10 @@ const rename = () => {
   } else {
     console.error('Invalid file index or name')
   }
+}
+
+const handleDialogHidden = () => {
+  emits('close')
 }
 
 watch(() => props.visible, (val) => {
