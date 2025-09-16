@@ -354,12 +354,6 @@
             <version>1.17.6</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.awaitility</groupId>
-            <artifactId>awaitility</artifactId>
-            <version>4.2.0</version>
-            <scope>test</scope>
-        </dependency>
         <!-- used by test runtime SSL bits -->
         <dependency>
             <groupId>org.xerial.snappy</groupId>

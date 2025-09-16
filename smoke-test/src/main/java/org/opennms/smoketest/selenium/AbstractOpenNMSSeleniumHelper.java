@@ -601,6 +601,7 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
         final String TOP_MENU_PREFIX = "opennms-menu-id-";
         final String TOP_MENU_XPATH = "//div[@id='opennms-sidebar-control-content']/ul[@id='opennms-sidebar-control-menu']/li[@id='$ID']";
+        final String TOP_MENU_ONLY_XPATH = "//div[@id='opennms-sidebar-control-content']/ul[@id='opennms-sidebar-control-menu']/li/a[@id='$ID']";
         final String POPUP_MENU_ITEMS_XPATH = "//div[@id='opennms-sidebar-control-content']/ul/div[contains(@class, 'feather-popover-container')]/div[@class='popover']/ul[@id='opennms-sidebar-control-menu-opennms-menu-id-$ID-menu']/li/a[contains(@class, 'feather-list-item')]";
 
         final WebDriverWait shortWait = new WebDriverWait(getDriver(), Duration.ofSeconds(1));
@@ -610,9 +611,12 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
         Unreliables.retryUntilTrue(timeout, TimeUnit.SECONDS, () -> {
             final Actions action = new Actions(getDriver());
-            final String topMenuXpath = TOP_MENU_XPATH.replace("$ID", TOP_MENU_PREFIX + menuItemId);
-            final WebElement topMenuElement = findElementByXpath(topMenuXpath);
 
+            final String topMenuXpath = isTopMenuItem ?
+                TOP_MENU_ONLY_XPATH.replace("$ID", TOP_MENU_PREFIX + menuItemId) :
+                TOP_MENU_XPATH.replace("$ID", TOP_MENU_PREFIX + menuItemId);
+
+            final WebElement topMenuElement = findElementByXpath(topMenuXpath);
             shortWait.until(ExpectedConditions.visibilityOf(topMenuElement));
 
             if (isTopMenuItem) {
