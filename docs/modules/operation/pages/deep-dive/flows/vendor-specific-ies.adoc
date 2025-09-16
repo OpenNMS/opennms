@@ -34,5 +34,4 @@ See https://www.iana.org/assignments/ipfix/ipfix.xhtml#ipfix-information-element
 </ipfix-elements>
 ----
 In order for the newly placed files to become active, {page-component-title} needs to be restarted.
-When Minions are in use, the parser are executed on the Minions.
-Thus, the additional definitions also need to placed in the Minions' `ipfix.d` directories.
+When Minions are in use, the configuration is automatically propagated to them.
