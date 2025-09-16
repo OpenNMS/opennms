@@ -99,6 +99,6 @@ export const isDuplicateFile = (
   fileName: string,
   existingFiles: UploadEventFileType[]
 ): boolean => {
-  return existingFiles.some((element) => element.file.name === fileName)
+  return existingFiles.some((element) => element.file.name.toLowerCase() === fileName.toLowerCase())
 }
 

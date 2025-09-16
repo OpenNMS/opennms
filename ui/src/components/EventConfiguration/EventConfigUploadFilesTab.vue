@@ -18,7 +18,7 @@
                   <div class="file-icon">
                     <FeatherIcon :icon="Text" />
                     <span>
-                      {{ element.file.name.length > 39 ? element.file.name.slice(0, 36) + "..." : element.file.name }}
+                      {{ ellipsify(element.file.name, 39) }}
                     </span>
                   </div>
                   <div class="actions">
@@ -142,6 +142,7 @@ import Draggable from 'vuedraggable'
 import EventConfigFilesUploadReportDialog from './Dialog/EventConfigFilesUploadReportDialog.vue'
 import { isDuplicateFile, MAX_FILES_UPLOAD, validateEventConfigFile } from './eventConfigXmlValidator'
 import UploadedFileRenameDialog from './Dialog/UploadedFileRenameDialog.vue'
+import { ellipsify } from '@/lib/utils'
 
 const eventConfFileInput = ref<HTMLInputElement | null>(null)
 const uploadFilesReport = ref<EventConfigFilesUploadResponse>({} as EventConfigFilesUploadResponse)
