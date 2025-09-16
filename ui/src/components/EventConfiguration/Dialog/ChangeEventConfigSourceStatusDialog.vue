@@ -35,7 +35,7 @@ const labels = {
 
 const getMessage = () => {
   const isEnabled = store.changeEventConfigSourceStatusDialogState.eventConfigSource?.enabled
-  const filename = store.changeEventConfigSourceStatusDialogState.eventConfigSource?.filename || ''
+  const filename = store.changeEventConfigSourceStatusDialogState.eventConfigSource?.name || ''
   const action = isEnabled ? 'disable' : 'enable'
   return `This will ${action} the event configuration source: <strong>${filename}</strong> and ${action} all events associated with it.`
 }

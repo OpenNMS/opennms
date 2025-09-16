@@ -25,6 +25,9 @@ package org.opennms.web.rest.v2;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.model.EventConfSource;
+import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
+import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfEventDto;
@@ -32,6 +35,7 @@ import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
+import org.opennms.web.rest.v2.model.EventConfSourceDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -47,6 +51,7 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Component
@@ -145,6 +150,111 @@ public class EventConfRestService implements EventConfRestApi {
     }
 
     @Override
+    public Response filterConfEventsBySourceId(Long sourceId, Integer totalRecords, Integer offset, Integer limit,
+                                               SecurityContext securityContext) {
+
+        // Return 400 Bad Request if sourceId is null, invalid sourceId, offset < 0 or limit < 1
+        if (Objects.requireNonNullElse(sourceId, 0L) <= 0L || Objects.requireNonNullElse(offset, 0) < 0
+                || Objects.requireNonNullElse(limit, 0) < 1) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of("error", "Invalid sourceId/offset/limit values"))
+                    .build();
+        }
+
+        // Call service to fetch results
+        Map<String, Object> result = eventConfPersistenceService.filterConfEventsBySourceId(sourceId, totalRecords,
+                offset, limit);
+
+        // Check if no data found
+        if (result == null
+                || result.isEmpty()
+                || (result.containsKey("totalRecords") && ((Integer) result.get("totalRecords")) == 0)) {
+            return Response.noContent().build();  // 204 No Content
+        }
+
+        List<EventConfEventDto> dtoList =
+                EventConfEventDto.fromEntity((List<EventConfEvent>) result.get("eventConfEventList"));
+
+        // Build response
+        return Response.ok(Map.of("totalRecords", result.get("totalRecords"), "eventConfSourceList", dtoList))
+                .build();
+    }
+
+    @Override
+    public Response filterEventConfSource(String filter, String sortBy, String order, Integer totalRecords,
+                                          Integer offset, Integer limit, SecurityContext securityContext) {
+
+        // Return 400 Bad Request if offset < 0 or limit < 1
+        if (Objects.requireNonNullElse(offset, 0) < 0 || Objects.requireNonNullElse(limit, 0) < 1) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of("error", "Invalid offset/limit values"))
+                    .build();
+        }
+
+        // Call service to fetch results
+        Map<String, Object> result = eventConfPersistenceService.filterEventConfSource(filter, sortBy, order,
+                totalRecords, offset, limit);
+
+        // Check if no data found
+        if (result == null
+                || result.isEmpty()
+                || (result.containsKey("totalRecords") && ((Integer) result.get("totalRecords")) == 0)) {
+            return Response.noContent().build();  // 204 No Content
+        }
+
+        List<EventConfSourceDto> dtoList =
+                EventConfSourceDto.fromEntity((List<EventConfSource>) result.get("eventConfSourceList"));
+
+        // Build response
+        return Response.ok(Map.of("totalRecords", result.get("totalRecords"), "eventConfSourceList", dtoList))
+                .build();
+    }
+
+    @Override
+    public Response deleteEventConfSources(EventConfSourceDeletePayload payload, SecurityContext securityContext) throws Exception {
+
+        if (payload == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
+        }
+
+        if (payload.getSourceIds() == null || payload.getSourceIds().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("At least one sourceId must be provided.").build();
+        }
+
+        try {
+            eventConfPersistenceService.deleteEventConfSources(payload);
+            return Response.ok().entity("EventConf sources deleted successfully.").build();
+
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND).entity("One or more sourceIds were not found: " + ex.getMessage()).build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+        }
+
+    }
+
+    @Override
+    public Response enableDisableEventConfSourcesEvents(final Long sourceId, EnableDisableConfSourceEventsPayload payload, SecurityContext securityContext) throws Exception {
+
+        if (payload == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
+        }
+
+        if (payload.getEventsIds() == null || payload.getEventsIds().isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("At least one eventConfEventsIds must be provided.").build();
+        }
+
+        try {
+            eventConfPersistenceService.enableDisableConfSourcesEvents(sourceId, payload);
+            return Response.ok().entity("EventConfEvents updated successfully.").build();
+
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND).entity("One or more eventConfEvents were not found: " + ex.getMessage()).build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+        }
+
+    @Override
     public Response getEventConfSourcesNames(SecurityContext securityContext) throws Exception {
         try {
             final var  sourceNames = eventConfSourceDao.findAllNames();
@@ -155,6 +265,7 @@ public class EventConfRestService implements EventConfRestApi {
         }
     }
 
+    }
 
     private List<String> determineFileOrder(final Attachment eventconfXmlAttachment, final Set<String> uploadedFiles) {
         List<String> ordered = new ArrayList<>();
