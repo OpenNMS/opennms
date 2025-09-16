@@ -25,16 +25,16 @@ package org.opennms.web.rest.v2;
 import org.apache.commons.lang.StringUtils;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.opennms.core.xml.JaxbUtils;
+import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfEventDto;
-import org.opennms.netmgt.model.EventConfSource;
-import org.opennms.web.rest.v2.model.EventConfSourceDto;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
+import org.opennms.web.rest.v2.model.EventConfSourceDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
@@ -44,11 +44,11 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
 import java.util.Set;
+import java.util.List;
+import java.util.Date;
+import java.util.ArrayList;
+import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -146,6 +146,37 @@ public class EventConfRestService implements EventConfRestApi {
     }
 
     @Override
+    public Response filterConfEventsBySourceId(Long sourceId, Integer totalRecords, Integer offset, Integer limit,
+                                               SecurityContext securityContext) {
+
+        // Return 400 Bad Request if sourceId is null, invalid sourceId, offset < 0 or limit < 1
+        if (Objects.requireNonNullElse(sourceId, 0L) <= 0L || Objects.requireNonNullElse(offset, 0) < 0
+                || Objects.requireNonNullElse(limit, 0) < 1) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of("error", "Invalid sourceId/offset/limit values"))
+                    .build();
+        }
+
+        // Call service to fetch results
+        Map<String, Object> result = eventConfPersistenceService.filterConfEventsBySourceId(sourceId, totalRecords,
+                offset, limit);
+
+        // Check if no data found
+        if (result == null
+                || result.isEmpty()
+                || (result.containsKey("totalRecords") && ((Integer) result.get("totalRecords")) == 0)) {
+            return Response.noContent().build();  // 204 No Content
+        }
+
+        List<EventConfEventDto> dtoList =
+                EventConfEventDto.fromEntity((List<EventConfEvent>) result.get("eventConfEventList"));
+
+        // Build response
+        return Response.ok(Map.of("totalRecords", result.get("totalRecords"), "eventConfSourceList", dtoList))
+                .build();
+    }
+
+    @Override
     public Response filterEventConfSource(String filter, String sortBy, String order, Integer totalRecords,
                                           Integer offset, Integer limit, SecurityContext securityContext) {
 
@@ -174,7 +205,6 @@ public class EventConfRestService implements EventConfRestApi {
         return Response.ok(Map.of("totalRecords", result.get("totalRecords"), "eventConfSourceList", dtoList))
                 .build();
     }
-
 
     @Override
     public Response deleteEventConfSources(EventConfSourceDeletePayload payload, SecurityContext securityContext) throws Exception {

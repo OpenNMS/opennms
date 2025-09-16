@@ -177,7 +177,10 @@ public class EventConfPersistenceService {
                 persistEventConfFile(events, metadataDto);
             }
         }
+    }
 
+    public Map<String, Object> filterConfEventsBySourceId(Long sourceId, Integer totalRecords,  Integer offset, Integer limit) {
+        return eventConfEventDao.findBySourceId(sourceId, totalRecords,  offset, limit);
     }
 
     public Map<String, Object> filterEventConfSource(String filter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {

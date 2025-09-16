@@ -352,6 +352,107 @@ public class EventConfPersistenceServiceIT {
     }
 
     @Test
+    @Transactional
+    public void testFilterConfEventsBySourceId_ShouldReturnFilteredResults() {
+        String filename1 = "vendor-cisco.xml";
+        String filename2 = "vendor-hp.xml";
+        String username = "filter_test_user";
+        Date now = new Date();
+
+        // First metadata (Cisco vendor)
+        EventConfSourceMetadataDto ciscoMetadata = new EventConfSourceMetadataDto.Builder()
+                .filename(filename1)
+                .eventCount(1)
+                .fileOrder(1)
+                .username(username)
+                .now(now)
+                .vendor("Cisco")
+                .description("Cisco events")
+                .build();
+
+        Event ciscoEvent = new Event();
+        ciscoEvent.setUei("uei.opennms.org/vendor/cisco");
+        ciscoEvent.setEventLabel("Cisco Event");
+        ciscoEvent.setDescr("Cisco test event");
+        ciscoEvent.setSeverity("Normal");
+
+        Events ciscoEvents = new Events();
+        ciscoEvents.getEvents().add(ciscoEvent);
+
+        eventConfPersistenceService.persistEventConfFile(ciscoEvents, ciscoMetadata);
+
+        // Second metadata (HP vendor)
+        EventConfSourceMetadataDto hpMetadata = new EventConfSourceMetadataDto.Builder()
+                .filename(filename2)
+                .eventCount(1)
+                .fileOrder(2)
+                .username(username)
+                .now(now)
+                .vendor("HP")
+                .description("HP events")
+                .build();
+
+        Event hpEvent = new Event();
+        hpEvent.setUei("uei.opennms.org/vendor/hp");
+        hpEvent.setEventLabel("HP Event");
+        hpEvent.setDescr("HP test event");
+        hpEvent.setSeverity("Normal");
+
+        Events hpEvents = new Events();
+        hpEvents.getEvents().add(hpEvent);
+
+        eventConfPersistenceService.persistEventConfFile(hpEvents, hpMetadata);
+
+        EventConfSource eventConfSource = eventConfSourceDao.findByName("vendor-hp.xml");
+        Assert.assertNotNull(eventConfSource);
+
+        Map<String, Object> result = eventConfPersistenceService.filterConfEventsBySourceId(eventConfSource.getId(), 0, 0, 10);
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.containsKey("totalRecords"));
+        Assert.assertEquals(1, result.get("totalRecords"));
+        Assert.assertTrue(result.containsKey("eventConfEventList"));
+
+        List<EventConfEvent> eventConfEventList = (List<EventConfEvent>) result.get("eventConfEventList");
+
+        Assert.assertNotNull(eventConfEventList);
+        Assert.assertFalse(eventConfEventList.isEmpty());
+        Assert.assertTrue(eventConfEventList.stream().allMatch(e -> "HP Event".equals(e.getEventLabel())));
+
+
+
+        eventConfSource = eventConfSourceDao.findByName("vendor-cisco.xml");
+        Assert.assertNotNull(eventConfSource);
+
+        result = eventConfPersistenceService.filterConfEventsBySourceId(eventConfSource.getId(), 0, 0, 10);
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.containsKey("totalRecords"));
+        Assert.assertEquals(1, result.get("totalRecords"));
+        Assert.assertTrue(result.containsKey("eventConfEventList"));
+
+        eventConfEventList = (List<EventConfEvent>) result.get("eventConfEventList");
+
+
+        Assert.assertNotNull(eventConfEventList);
+        Assert.assertFalse(eventConfEventList.isEmpty());
+        Assert.assertTrue(eventConfEventList.stream().allMatch(e -> "Cisco Event".equals(e.getEventLabel())));
+    }
+
+    @Test
+    @Transactional
+    public void testFilterConfEventsBySourceId_ShouldReturnEmptyResults() {
+        Long sourceId = 8000L;
+        Map<String, Object> result = eventConfPersistenceService.filterConfEventsBySourceId(sourceId, 0, 0, 10);
+        Assert.assertNotNull(result);
+        Assert.assertTrue(result.containsKey("totalRecords"));
+        Assert.assertEquals(0, result.get("totalRecords"));
+        Assert.assertTrue(result.containsKey("eventConfEventList"));
+
+        List<EventConfEvent> eventConfEventList = (List<EventConfEvent>) result.get("eventConfEventList");
+        Assert.assertNotNull(eventConfEventList);
+        Assert.assertTrue(eventConfEventList.isEmpty());
+    }
+
+    @Test
     @JUnitTemporaryDatabase
     @Transactional
     public void testLoadingOfEventsInMemory() {
