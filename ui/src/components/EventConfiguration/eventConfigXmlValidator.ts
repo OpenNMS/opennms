@@ -1,3 +1,5 @@
+import { UploadEventFileType } from '@/types/eventConfig'
+
 export const MAX_FILES_UPLOAD = 10
 
 export const validateEventConfigFile = async (file: File) => {
@@ -95,9 +97,8 @@ const validateEventElement = (event: Element, eventNumber: number): string[] => 
 
 export const isDuplicateFile = (
   fileName: string,
-  existingFiles: File[],
-  existingInvalidFiles: { name: string; reason: string }[]
+  existingFiles: UploadEventFileType[]
 ): boolean => {
-  return existingFiles.some((f) => f.name === fileName) || existingInvalidFiles.some((f) => f.name === fileName)
+  return existingFiles.some((element) => element.file.name.toLowerCase() === fileName.toLowerCase())
 }
 

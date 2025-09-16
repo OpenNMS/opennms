@@ -42,8 +42,10 @@ export const isString = (value: any) => {
 }
 
 export const ellipsify = (text: string, count: number) => {
+  const ellipsis = '\u2026' // Unicode for "..."
+
   if (text && count && text.length > count) {
-    return text.substring(0, count) + '...'
+    return text.substring(0, count - 1) + ellipsis
   }
 
   return text

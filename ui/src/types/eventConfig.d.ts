@@ -35,6 +35,7 @@ export type EventConfigStoreState = {
   sourcesSorting: Sorting
   isLoading: boolean
   activeTab: number
+  uploadedSourceNames: string[]
   uploadedEventConfigFilesReportDialogState: {
     visible: boolean
   }
@@ -74,7 +75,7 @@ export type EventConfigDetailStoreState = {
   drawerState: DrawerState
 }
 
-export type EventConfigFilesUploadReponse = {
+export type EventConfigFilesUploadResponse = {
   errors: [
     {
       file: string
@@ -86,10 +87,6 @@ export type EventConfigFilesUploadReponse = {
       file: string
     }
   ]
-  invalid?: {
-    file: string
-    reason: string
-  }[]
 }
 
 export type EventConfigSourcesResponse = {
@@ -105,5 +102,12 @@ export type EventConfigEventsResponse = {
 export interface DrawerState {
   visible: boolean
   isEventEditorModal: boolean
+}
+
+export type UploadEventFileType = {
+  file: File
+  isValid: boolean
+  errors: string[]
+  isDuplicate: boolean
 }
 

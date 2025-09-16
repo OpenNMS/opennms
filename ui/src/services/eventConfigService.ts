@@ -5,7 +5,7 @@ import {
 } from '@/mappers/eventConfig.mapper'
 import {
   EventConfigEventsResponse,
-  EventConfigFilesUploadReponse,
+  EventConfigFilesUploadResponse,
   EventConfigSourcesResponse
 } from '@/types/eventConfig'
 import { v2 } from './axiosInstances'
@@ -17,7 +17,7 @@ import { v2 } from './axiosInstances'
  * @returns A promise that resolves to an object containing the list of event
  * configuration files and any errors encountered during the upload process.
  */
-export const uploadEventConfigFiles = async (files: File[]): Promise<EventConfigFilesUploadReponse> => {
+export const uploadEventConfigFiles = async (files: File[]): Promise<EventConfigFilesUploadResponse> => {
   const formData = new FormData()
   const endpoint = '/eventconf/upload'
   files.forEach((file) => {
@@ -165,7 +165,7 @@ export const filterEventConfigEvents = async (
   sortBy: string,
   order: string
 ): Promise<EventConfigEventsResponse> => {
-  const endpoint = `/eventconf/${sourceId}/filter/events`
+  const endpoint = `/eventconf/filter/${sourceId}/events`
   try {
     const response = await v2.get(endpoint, {
       params: {
@@ -183,6 +183,26 @@ export const filterEventConfigEvents = async (
     }
   } catch (error) {
     console.error('Error filtering event config events:', error)
+    throw error
+  }
+}
+
+/**
+ * Makes a GET request to the REST endpoint to fetch all source names.
+ *
+ * @returns A promise that resolves to an array of strings containing all source names.
+ */
+export const getAllSourceNames = async (): Promise<string[]> => {
+  const endpoint = '/eventconf/sources/names'
+  try {
+    const response = await v2.get(endpoint)
+    if (response.status === 200) {
+      return response.data as string[]
+    } else {
+      throw new Error(`Unexpected response status: ${response.status}`)
+    }
+  } catch (error) {
+    console.error('Error fetching all source names:', error)
     throw error
   }
 }
