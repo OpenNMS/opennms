@@ -61,7 +61,7 @@ public class EventConfRestService implements EventConfRestApi {
 
     @Override
     @Transactional
-    public Response uploadEventConfFiles(final List<Attachment> attachments, final SecurityContext securityContext) {
+    public Response uploadEventConfFiles(final List<Attachment> attachments,final List<Boolean> flags, final SecurityContext securityContext) {
         final String username = getUsername(securityContext);
         final Date now = new Date();
         int fileOrder = 1;
@@ -69,26 +69,45 @@ public class EventConfRestService implements EventConfRestApi {
         List<Map<String, Object>> successList = new ArrayList<>();
         List<Map<String, Object>> errorList = new ArrayList<>();
 
-        Map<String, Attachment> fileMap = attachments.stream().collect(Collectors.toMap(a -> a.getContentDisposition().getParameter("filename"), a -> a, (a1, a2) -> a1, LinkedHashMap::new));
+        if (attachments == null || attachments.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of("error", "No files uploaded"))
+                    .build();
+        }
 
-        final var eventconfXml = fileMap.remove("eventconf.xml");
-        final var orderedFiles = determineFileOrder(eventconfXml, fileMap.keySet());
-
-        for (final String fileName : orderedFiles) {
-            final Attachment attachment = fileMap.get(fileName);
-            if (attachment == null) continue;
+        if (flags == null || flags.size() != attachments.size()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                    .entity(Map.of("error", "Number of flags must match number of uploaded files"))
+                    .build();
+        }
+        for (int i = 0; i < attachments.size(); i++) {
+            final Attachment attachment = attachments.get(i);
+            final String fileName = attachment.getContentDisposition().getParameter("filename");
+            final boolean fileOverride = flags.get(i);
 
             Events fileEvents;
             try (InputStream stream = attachment.getObject(InputStream.class)) {
                 fileEvents = parseEventFile(stream);
             } catch (Exception e) {
                 errorList.add(buildErrorResponse(fileName, e));
-                continue; // Continue to next file
+                continue;
             }
 
             try {
-                eventConfPersistenceService.persistEventConfFile(fileEvents, new EventConfSourceMetadataDto.Builder().filename(fileName).eventCount(fileEvents.getEvents().size()).fileOrder(fileOrder++).username(username).now(now).vendor(StringUtils.substringBefore(fileName, ".")).description("").build());
-                successList.add(buildSuccessResponse(fileName, fileEvents));
+                eventConfPersistenceService.persistEventConfFile(
+                        fileEvents,
+                        new EventConfSourceMetadataDto.Builder()
+                                .filename(fileName)
+                                .eventCount(fileEvents.getEvents().size())
+                                .fileOrder(fileOrder++)
+                                .username(username)
+                                .now(now)
+                                .vendor(StringUtils.substringBefore(fileName, "."))
+                                .description("")
+                                .fileOverride(fileOverride)
+                                .build()
+                );
+                successList.add(buildSuccessResponse(fileName, fileEvents, fileOverride));
             } catch (Exception ex) {
                 errorList.add(buildErrorResponse(fileName, ex));
             }
@@ -291,14 +310,24 @@ public class EventConfRestService implements EventConfRestApi {
         return (context != null && context.getUserPrincipal() != null) ? context.getUserPrincipal().getName() : "unknown";
     }
 
-    private Map<String, Object> buildSuccessResponse(String filename, Events events) {
+
+    private record FileWithFlag(Attachment attachment, boolean flag) {}
+
+    private Map<String, Object> buildSuccessResponse(String filename, Events events, boolean flag) {
         Map<String, Object> entry = new LinkedHashMap<>();
         entry.put("file", filename);
         entry.put("eventCount", events.getEvents().size());
         entry.put("vendor", StringUtils.substringBefore(filename, "."));
-        List<Map<String, ? extends Serializable>> eventSummaries = events.getEvents().stream().map(e -> Map.of("uei", e.getUei(), "label", e.getEventLabel(), "description", e.getEventLabel(), "enabled", true)).collect(Collectors.toList());
+        entry.put("flag", flag);
+        List<Map<String, ? extends Serializable>> eventSummaries = events.getEvents().stream()
+                .map(e -> Map.of(
+                        "uei", e.getUei(),
+                        "label", e.getEventLabel(),
+                        "description", e.getEventLabel(),
+                        "enabled", true
+                ))
+                .collect(Collectors.toList());
         entry.put("events", eventSummaries);
-
         return entry;
     }
 

@@ -32,6 +32,7 @@ public class EventConfSourceMetadataDto {
     private Date now;
     private String vendor;
     private String description;
+    private Boolean fileOverride;
 
     // Private constructor to enforce use of builder
     private EventConfSourceMetadataDto(Builder builder) {
@@ -66,6 +67,9 @@ public class EventConfSourceMetadataDto {
     public String getDescription() {
         return description;
     }
+    public Boolean getFileOverride(){
+        return fileOverride;
+    }
 
 
     // Builder class
@@ -77,6 +81,7 @@ public class EventConfSourceMetadataDto {
         private Date now;
         private String vendor;
         private String description;
+        private Boolean fileOverride;
 
         public Builder filename(String filename) {
             this.filename = filename;
@@ -110,6 +115,11 @@ public class EventConfSourceMetadataDto {
 
         public Builder description(String description) {
             this.description = description;
+            return this;
+        }
+
+        public Builder fileOverride(Boolean fileOverride) {
+            this.fileOverride = fileOverride;
             return this;
         }
 

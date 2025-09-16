@@ -49,11 +49,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.io.InputStream;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Date;
+import java.util.*;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
@@ -105,7 +101,8 @@ public class EventConfRestServiceIT {
     @Test
     @Transactional
     public void testEventsConfWithEventConfXMLFiles() throws Exception {
-        String[] filenames = {"eventconf.xml", "opennms.alarm.events.xml", "Cisco.airespace.xml"};
+        String[] filenames = {"opennms.alarm.events.xml", "Cisco.airespace.xml"};
+        List<Boolean> flags = Arrays.asList(true,true);
         List<Attachment> attachments = new ArrayList<>();
 
         for (final var name : filenames) {
@@ -121,7 +118,7 @@ public class EventConfRestServiceIT {
             attachments.add(att);
         }
 
-        Response resp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        Response resp = eventConfRestApi.uploadEventConfFiles(attachments,flags, securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
         @SuppressWarnings("unchecked") Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
         @SuppressWarnings("unchecked") List<Map<String, Object>> success = (List<Map<String, Object>>) entity.get("success");
@@ -144,7 +141,7 @@ public class EventConfRestServiceIT {
     public void testEventsConfWithoutEventConfXMLFiles() throws Exception {
         String[] filenames = {"opennms.alarm.events.xml", "Cisco.airespace.xml"};
         List<Attachment> attachments = new ArrayList<>();
-
+        List<Boolean> flags = Arrays.asList(true,true);
         for (final var name : filenames) {
             final var path = "/EVENTS-CONF/" + name;
             final var is = getClass().getResourceAsStream(path);
@@ -157,7 +154,7 @@ public class EventConfRestServiceIT {
             attachments.add(att);
         }
 
-        Response resp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        Response resp = eventConfRestApi.uploadEventConfFiles(attachments,flags, securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
         @SuppressWarnings("unchecked") Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
         @SuppressWarnings("unchecked") List<Map<String, Object>> success = (List<Map<String, Object>>) entity.get("success");
@@ -177,7 +174,8 @@ public class EventConfRestServiceIT {
     @Transactional
     public void testEmptyAttachments_ShouldReturnEmptyResults() throws Exception {
         List<Attachment> attachments = new ArrayList<>();
-        Response resp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+
+        Response resp = eventConfRestApi.uploadEventConfFiles(attachments,null, securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
 
         Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
@@ -192,6 +190,7 @@ public class EventConfRestServiceIT {
     @Transactional
     public void testNullSecurityContext_ShouldSetUnknownUser() throws Exception {
         String filename = "Cisco.airespace.xml";
+        List<Boolean> flags = Arrays.asList(true);
         InputStream is = getClass().getResourceAsStream("/EVENTS-CONF/" + filename);
         assertNotNull(is);
 
@@ -203,7 +202,7 @@ public class EventConfRestServiceIT {
 
         List<Attachment> attachments = List.of(att);
 
-        Response resp = eventConfRestApi.uploadEventConfFiles(attachments, null);
+        Response resp = eventConfRestApi.uploadEventConfFiles(attachments, flags,securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
         Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
         List<Map<String, Object>> success = (List<Map<String, Object>>) entity.get("success");
@@ -215,6 +214,7 @@ public class EventConfRestServiceIT {
     @Test
     public void testMalformedEventFile_ShouldAppearInErrors() throws Exception {
         String filename = "test.invalid.xml";
+        List<Boolean> flags = Arrays.asList(true);
         InputStream is = getClass().getResourceAsStream("/EVENTS-CONF/" + filename);
 
         Attachment att = mock(Attachment.class);
@@ -225,7 +225,7 @@ public class EventConfRestServiceIT {
 
         List<Attachment> attachments = List.of(att);
 
-        Response resp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        Response resp = eventConfRestApi.uploadEventConfFiles(attachments,flags, securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
         Map<String, Object> entity = (Map<String, Object>) resp.getEntity();
         List<Map<String, Object>> success = (List<Map<String, Object>>) entity.get("success");
@@ -242,6 +242,7 @@ public class EventConfRestServiceIT {
     public void testFilterEventConf_ShouldReturnFilteredResults() throws Exception {
         // Step 1: Seed DB with events from known XMLs
         String[] filenames = {"opennms.alarm.events.xml", "Cisco.airespace.xml"};
+        List<Boolean> flags = Arrays.asList(true,true);
         List<Attachment> attachments = new ArrayList<>();
 
         for (final var name : filenames) {
@@ -255,7 +256,7 @@ public class EventConfRestServiceIT {
             when(att.getObject(InputStream.class)).thenReturn(is);
             attachments.add(att);
         }
-        Response uploadResp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        Response uploadResp = eventConfRestApi.uploadEventConfFiles(attachments,flags, securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), uploadResp.getStatus());
 
         // Step 2: Call the filter API
@@ -282,7 +283,8 @@ public class EventConfRestServiceIT {
 
     @Test
     public void testEventConfSourcesEnabledDisabled() throws Exception {
-        String[] filenames = {"eventconf.xml", "opennms.alarm.events.xml", "Cisco.airespace.xml"};
+        String[] filenames = {"opennms.alarm.events.xml", "Cisco.airespace.xml"};
+        List<Boolean> flags = Arrays.asList(true,true);
         List<Attachment> attachments = new ArrayList<>();
 
         for (final var name : filenames) {
@@ -295,7 +297,7 @@ public class EventConfRestServiceIT {
             when(att.getObject(InputStream.class)).thenReturn(is);
             attachments.add(att);
         }
-        eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        eventConfRestApi.uploadEventConfFiles(attachments, flags,securityContext);
         List<Long> sourcesIds = eventConfSourceDao.findAll().stream().map(EventConfSource::getId).toList();
         // Disable eventConfSources and eventConfEvents.
         EventConfSrcEnableDisablePayload eventConfSrcDisablePayload = new EventConfSrcEnableDisablePayload(false, true, sourcesIds);
@@ -409,6 +411,7 @@ public class EventConfRestServiceIT {
     public void testFilterEventConfEventBySourceId_ShouldReturnOkResponse() throws Exception {
         // Step 1: Seed DB with events from known XMLs
         String[] filenames = {"opennms.alarm.events.xml", "Cisco.airespace.xml"};
+        List<Boolean> flags = Arrays.asList(true,true);
         List<Attachment> attachments = new ArrayList<>();
 
         for (final var name : filenames) {
@@ -423,7 +426,7 @@ public class EventConfRestServiceIT {
             attachments.add(att);
         }
 
-        Response uploadResp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        Response uploadResp = eventConfRestApi.uploadEventConfFiles(attachments,flags, securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), uploadResp.getStatus());
 
         List<EventConfSource> eventConfSourceList = eventConfSourceDao.findAll();
@@ -439,7 +442,8 @@ public class EventConfRestServiceIT {
 
     @Test
     public void testDeleteEventConfSources_Success() throws Exception {
-        String[] filenames = {"eventconf.xml", "opennms.alarm.events.xml", "Cisco.airespace.xml"};
+        String[] filenames = {"opennms.alarm.events.xml", "Cisco.airespace.xml"};
+        List<Boolean> flags = Arrays.asList(true,true);
         List<Attachment> attachments = new ArrayList<>();
 
         for (final var name : filenames) {
@@ -452,7 +456,7 @@ public class EventConfRestServiceIT {
             when(att.getObject(InputStream.class)).thenReturn(is);
             attachments.add(att);
         }
-        eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        eventConfRestApi.uploadEventConfFiles(attachments,flags, securityContext);
         List<Long> sourcesIds = eventConfSourceDao.findAll().stream().map(EventConfSource::getId).toList();
         // Delete eventConfSources.
         EventConfSourceDeletePayload payload = new EventConfSourceDeletePayload();

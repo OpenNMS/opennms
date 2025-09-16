@@ -55,7 +55,7 @@ public interface EventConfRestApi {
             @ApiResponse(responseCode = "200", description = "Upload successful"),
             @ApiResponse(responseCode = "400", description = "Invalid eventconf.xml or request")
     })
-    Response uploadEventConfFiles(@Multipart("upload") List<Attachment> attachments,
+    Response uploadEventConfFiles(@Multipart("upload") List<Attachment> attachments, @Multipart("flags") List<Boolean> flags,
                                   @Context SecurityContext securityContext) throws Exception;
 
     @GET
