@@ -7,7 +7,7 @@
       <div class="action-container">
         <div class="search-container">
           <FeatherInput
-            label="Search"
+            label="Search by Name, Vendor or Description"
             type="search"
             data-test="search-input"
             v-model.trim="store.sourcesSearchTerm"
@@ -18,15 +18,6 @@
               <FeatherIcon :icon="Search" />
             </template>
           </FeatherInput>
-        </div>
-        <div class="download-csv">
-          <FeatherButton
-            primary
-            icon="Download"
-            data-test="download-button"
-          >
-            <FeatherIcon :icon="DownloadFile"> </FeatherIcon>
-          </FeatherButton>
         </div>
         <div class="refresh">
           <FeatherButton
@@ -144,7 +135,6 @@ import { EventConfigSource } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
-import DownloadFile from '@featherds/icon/action/DownloadFile'
 import Search from '@featherds/icon/action/Search'
 import ViewDetails from '@featherds/icon/action/ViewDetails'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'

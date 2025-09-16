@@ -86,7 +86,7 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       this.eventsPagination.page = 1
       await this.fetchEventsBySourceId()
     },
-    async onSourcesSortChange(sortKey: string, sortOrder: string) {
+    async onEventsSortChange(sortKey: string, sortOrder: string) {
       this.eventsSorting.sortKey = sortKey
       this.eventsSorting.sortOrder = sortOrder
       await this.fetchEventsBySourceId()

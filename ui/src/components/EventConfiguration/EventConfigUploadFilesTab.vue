@@ -110,6 +110,38 @@
           </FeatherButton>
         </div>
       </div>
+      <div class="info-section">
+        <h3>Instructions:</h3>
+        <ul>
+          <li>Event configuration files must be in XML format with a .events.xml extension.</li>
+          <li>Each event configuration file should contain a single event configuration.</li>
+          <li>Maximum number of files that can be uploaded at once is {{ MAX_FILES_UPLOAD }}.</li>
+          <li>Ensure that the XML files are well-formed and adhere to the expected schema.</li>
+          <li>
+            Files that are valid and ready for upload will be flagged with icon
+            <FeatherIcon
+              :icon="CheckCircle"
+              class="success-icon"
+            />.
+          </li>
+          <li>
+            Files with duplicate names (excluding the .events.xml extension) will be flagged with icon
+            <FeatherIcon
+              :icon="Warning"
+              class="warning-icon"
+            />
+            indicating renaming or overwriting is required. It can be done by clicking on the icon.
+          </li>
+          <li>
+            Invalid files will be flagged with icon
+            <FeatherIcon
+              :icon="Error"
+              class="error-icon"
+            />
+            and error messages indicating the issues found during validation of the file contents and schema compliance.
+          </li>
+        </ul>
+      </div>
     </div>
     <EventConfigFilesUploadReportDialog :report="uploadFilesReport" />
     <UploadedFileRenameDialog
@@ -295,6 +327,29 @@ const uploadFiles = async () => {
       display: flex;
       align-items: flex-start;
       gap: 10px;
+    }
+
+    .info-section {
+      .success-icon {
+        color: var(variables.$success);
+        vertical-align: middle;
+        height: 2em;
+        width: 2em;
+      }
+
+      .error-icon {
+        color: var(variables.$error);
+        vertical-align: middle;
+        height: 2em;
+        width: 2em;
+      }
+
+      .warning-icon {
+        color: var(variables.$major);
+        vertical-align: middle;
+        height: 2em;
+        width: 2em;
+      }
     }
 
     .selected-files-section {

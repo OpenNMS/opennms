@@ -7,23 +7,17 @@
       <div class="action-container">
         <div class="search-container">
           <FeatherInput
-            label="Search"
+            label="Search by Name, Vendor or Description"
             type="search"
             data-test="search-input"
+            v-model.trim="store.eventsSearchTerm"
+            placeholder="Search by Name, Vendor or Description"
+            @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
           >
             <template #pre>
               <FeatherIcon :icon="Search" />
             </template>
           </FeatherInput>
-        </div>
-        <div class="download-csv">
-          <FeatherButton
-            primary
-            icon="Download"
-            data-test="download-button"
-          >
-            <FeatherIcon :icon="DownloadFile"> </FeatherIcon>
-          </FeatherButton>
         </div>
         <div class="refresh">
           <FeatherButton
@@ -139,7 +133,6 @@ import { EventConfigEvent } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
-import DownloadFile from '@featherds/icon/action/DownloadFile'
 import Edit from '@featherds/icon/action/Edit'
 import Search from '@featherds/icon/action/Search'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
@@ -147,6 +140,7 @@ import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
+import { debounce } from 'lodash'
 import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigEventStatusDialog from './Dialog/ChangeEventConfigEventStatusDialog.vue'
@@ -179,11 +173,21 @@ const openEventDrawer = (event: EventConfigEvent) => {
 }
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
+  if (sortObj.value === 'asc' || sortObj.value === 'desc') {
+    store.onEventsSortChange(sortObj.property, sortObj.value)
+  } else {
+    store.onEventsSortChange('createdTime', 'desc')
+  }
+
   for (const prop in sort) {
     sort[prop] = SORT.NONE
   }
   sort[sortObj.property] = sortObj.value
 }
+
+const onChangeSearchTerm = debounce(async (value: string) => {
+  await store.onChangeEventsSearchTerm(value)
+}, 500)
 </script>
 
 <style lang="scss" scoped>
