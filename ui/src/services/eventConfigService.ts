@@ -165,7 +165,7 @@ export const filterEventConfigEvents = async (
   sortBy: string,
   order: string
 ): Promise<EventConfigEventsResponse> => {
-  const endpoint = `/eventconf/${sourceId}/filter/events`
+  const endpoint = `/eventconf/filter/${sourceId}/events`
   try {
     const response = await v2.get(endpoint, {
       params: {

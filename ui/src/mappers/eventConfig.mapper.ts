@@ -59,7 +59,7 @@ export const mapEventConfigEventFromServer = (event: any): EventConfigEvent => {
 
 export const mapEventConfigEventsResponseFromServer = (response: any): EventConfigEventsResponse => {
   return {
-    events: response.eventConfEventList.map((event: any) => mapEventConfigEventFromServer(event)),
+    events: response.eventConfSourceList.map((event: any) => mapEventConfigEventFromServer(event)),
     totalRecords: response.totalRecords
   }
 }

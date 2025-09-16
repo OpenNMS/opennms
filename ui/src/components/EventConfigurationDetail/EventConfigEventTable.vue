@@ -67,7 +67,7 @@
           >
             <td>{{ event.uei }}</td>
             <td>{{ event.eventLabel }}</td>
-            <td>{{ event.description }}</td>
+            <td><p v-html="event.description"></p></td>
             <td>{{ event.enabled ? 'Enabled' : 'Disabled' }}</td>
             <td>
               <div class="action-container">
@@ -147,11 +147,11 @@ import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
+import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigEventStatusDialog from './Dialog/ChangeEventConfigEventStatusDialog.vue'
 import DeleteEventConfigEventDialog from './Dialog/DeleteEventConfigEventDialog.vue'
 import EventConfigDetailsDrawer from './Drawer/EventConfigDetailsDrawer.vue'
-import EmptyList from '../Common/EmptyList.vue'
 
 const store = useEventConfigDetailStore()
 const emptyListContent = {

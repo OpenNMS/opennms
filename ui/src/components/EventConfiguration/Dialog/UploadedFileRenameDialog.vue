@@ -10,8 +10,23 @@
         <p>
           The file name '<strong> {{ originalFileName }} </strong>' already exists in the system.
         </p>
-        <p>Please provide a new name for the file:</p>
+        <p>Choose one of the following options:</p>
+        <FeatherCheckboxGroup class="checkbox-group" label="" vertical>
+          <FeatherCheckbox
+            v-model="overwriteFile"
+            @update:model-value="onChangeOverwriteFile"
+          >
+            Keep Original File Name: <strong>{{ originalFileName }}</strong> and Overwrite Existing File.
+          </FeatherCheckbox>
+          <FeatherCheckbox
+            v-model="renameFile"
+            @update:model-value="onChangeRenameFile"
+          >
+            Rename Uploaded File to:
+          </FeatherCheckbox>
+        </FeatherCheckboxGroup>
         <FeatherInput
+          v-if="renameFile"
           class="new-file-name-input"
           v-model.trim="newFileName"
           label="New File Name"
@@ -26,9 +41,9 @@
         <FeatherButton
           primary
           :disabled="shouldRemainDisabled"
-          @click="rename"
+          @click="saveChanges"
         >
-          Rename
+          Save Changes
         </FeatherButton>
       </template>
     </FeatherDialog>
@@ -38,6 +53,7 @@
 <script setup lang="ts">
 import { UploadEventFileType } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
+import { FeatherCheckbox, FeatherCheckboxGroup } from '@featherds/checkbox'
 import { FeatherDialog } from '@featherds/dialog'
 import { FeatherInput } from '@featherds/input'
 
@@ -51,35 +67,34 @@ const props = defineProps<{
 const emits = defineEmits<{
   (e: 'close'): void
   (e: 'rename', newFileName: string): void
+  (e: 'overwrite'): void
 }>()
-const dialogVisible = ref(props.visible)
 const labels = {
   title: 'Rename Uploaded File'
 }
+const dialogVisible = ref(props.visible)
+const renameFile = ref<boolean>(false)
+const overwriteFile = ref<boolean>(false)
 const error = ref<string | undefined>()
 const newFileName = ref('')
 const originalFileName = ref('')
 const shouldRemainDisabled = computed(() => (
-  !newFileName.value ||
-  newFileName.value.trim() === '' ||
-  newFileName.value === originalFileName.value ||
-  props.fileBucket.map(f => f.file.name.toLowerCase()).includes(newFileName.value.trim().toLowerCase()) ||
-  props.alreadyExistsNames.map(n => n.toLowerCase()).includes(newFileName.value.trim().toLowerCase()) ||
-  newFileName.value.endsWith('.events.xml') === false
+  (!renameFile.value && !overwriteFile.value) ||
+  (renameFile.value && !!error.value)
 ))
 
 const validateName = () => {
   let isValid = false
   if (newFileName.value === '') {
-    error.value = 'File name cannot be empty'
+    error.value = 'File name cannot be empty.'
   } else if (!newFileName.value.endsWith('.events.xml')) {
     error.value = 'File name must end with .events.xml'
   } else if (newFileName.value === originalFileName.value) {
-    error.value = 'New file name must be different from the original name'
+    error.value = 'New file name must be different from the original name.'
   } else if (props.fileBucket.map(f => f.file.name.toLowerCase()).includes(newFileName.value.trim().toLowerCase())) {
-    error.value = 'A file with this name already exists in the current upload list'
-  } else if (props.alreadyExistsNames.map(n => n.toLowerCase()).includes(newFileName.value.trim().toLowerCase())) {
-    error.value = 'A file with this name already exists in the system'
+    error.value = 'A file with this name already exists in the current upload list.'
+  } else if (props.alreadyExistsNames.map(n => n.replace('.xml', '').toLowerCase()).includes(newFileName.value.trim().replace('.xml', '').toLowerCase())) {
+    error.value = 'A file with this name already exists in the system.'
   } else {
     error.value = undefined
     isValid = true
@@ -95,16 +110,37 @@ const onChangeFileName = (value: any) => {
   }
 }
 
-const rename = () => {
-  if (validateName() && props.index >= 0 && props.index < props.fileBucket.length) {
+const saveChanges = () => {
+  if (overwriteFile.value) {
+    emits('overwrite')
+  } else if (renameFile.value && validateName() && props.index >= 0 && props.index < props.fileBucket.length) {
     emits('rename', newFileName.value)
-  } else {
-    console.error('Invalid file index or name')
   }
 }
 
 const handleDialogHidden = () => {
+  renameFile.value = false
+  overwriteFile.value = false
+  newFileName.value = ''
+  originalFileName.value = ''
+  error.value = undefined
   emits('close')
+}
+
+const onChangeRenameFile = (value: boolean | undefined) => {
+  renameFile.value = !!value
+  if (value) {
+    overwriteFile.value = false
+  }
+}
+
+const onChangeOverwriteFile = (value: boolean | undefined) => {
+  overwriteFile.value = !!value
+  if (value) {
+    renameFile.value = false
+    newFileName.value = originalFileName.value
+    error.value = undefined
+  }
 }
 
 watch(() => props.visible, (val) => {
@@ -114,15 +150,22 @@ watch(() => props.visible, (val) => {
     newFileName.value = originalFileName.value
     error.value = undefined
   } else {
-    originalFileName.value = ''
+    renameFile.value = false
+    overwriteFile.value = false
     newFileName.value = ''
-    error.value = 'Invalid file selected for renaming.'
+    originalFileName.value = ''
+    error.value = undefined
   }
 })
 </script>
 
 <style scoped lang="scss">
 .modal-body {
+  :deep(.checkbox-group) {
+    .feather-input-sub-text {
+      display: none !important;
+    }
+  }
   .new-file-name-input {
     margin-top: 15px;
   }

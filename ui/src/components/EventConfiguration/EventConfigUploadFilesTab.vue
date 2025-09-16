@@ -49,7 +49,7 @@
                     </FeatherTooltip>
                     <FeatherTooltip
                       v-if="!element.isValid"
-                      :title="element.errors.join('.\n ')"
+                      :title="element.errors.map((error: string) => `${error}. `).join('\n')"
                       v-slot="{ attrs, on }"
                     >
                       <FeatherIcon
@@ -119,12 +119,14 @@
       :alreadyExistsNames="store.uploadedSourceNames"
       @close="closeRenameDialog"
       @rename="renameFile"
+      @overwrite="overwriteFile"
     />
   </div>
 </template>
 
 <script setup lang="ts">
 import useSnackbar from '@/composables/useSnackbar'
+import { ellipsify } from '@/lib/utils'
 import { uploadEventConfigFiles } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigFilesUploadResponse, UploadEventFileType } from '@/types/eventConfig'
@@ -140,9 +142,8 @@ import { FeatherSpinner } from '@featherds/progress'
 import { FeatherTooltip } from '@featherds/tooltip'
 import Draggable from 'vuedraggable'
 import EventConfigFilesUploadReportDialog from './Dialog/EventConfigFilesUploadReportDialog.vue'
-import { isDuplicateFile, MAX_FILES_UPLOAD, validateEventConfigFile } from './eventConfigXmlValidator'
 import UploadedFileRenameDialog from './Dialog/UploadedFileRenameDialog.vue'
-import { ellipsify } from '@/lib/utils'
+import { isDuplicateFile, MAX_FILES_UPLOAD, validateEventConfigFile } from './eventConfigXmlValidator'
 
 const eventConfFileInput = ref<HTMLInputElement | null>(null)
 const uploadFilesReport = ref<EventConfigFilesUploadResponse>({} as EventConfigFilesUploadResponse)
@@ -182,7 +183,7 @@ const handleEventConfUpload = async (e: Event) => {
             file,
             isValid: validationResult.isValid,
             errors: validationResult.errors,
-            isDuplicate: store.uploadedSourceNames.map(name => name.toLowerCase()).includes(file.name.toLowerCase()) || false
+            isDuplicate: store.uploadedSourceNames.map(name => name.replace('.xml', '').toLowerCase()).includes(file.name.replace('.xml', '').toLowerCase())
           })
         }
       } catch (error) {
@@ -224,11 +225,20 @@ const renameFile = async (newFileName: string) => {
       file: newFile,
       isValid: validationResult.isValid,
       errors: validationResult.errors,
-      isDuplicate: store.uploadedSourceNames.map(name => name.toLowerCase()).includes(newFileName.toLowerCase())
+      isDuplicate: store.uploadedSourceNames.map(name => name.replace('.xml', '').toLowerCase()).includes(newFileName.replace('.xml', '').toLowerCase())
     }
     closeRenameDialog()
   } else {
     console.error('Invalid index for renaming file')
+  }
+}
+
+const overwriteFile = () => {
+  if (selectedIndex.value !== null && selectedIndex.value >= 0 && selectedIndex.value < eventFiles.value.length) {
+    eventFiles.value[selectedIndex.value].isDuplicate = false
+    closeRenameDialog()
+  } else {
+    console.error('Invalid index for overwriting file')
   }
 }
 

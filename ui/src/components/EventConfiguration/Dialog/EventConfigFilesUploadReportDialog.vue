@@ -65,8 +65,9 @@ const getUploadReportStatus = () => {
     return 'No files were uploaded.'
   }
 }
-const gotoViewTab = () => {
+const gotoViewTab = async () => {
   store.uploadedEventConfigFilesReportDialogState.visible = false
+  await store.fetchEventConfigs()
   store.resetActiveTab()
 }
 </script>
