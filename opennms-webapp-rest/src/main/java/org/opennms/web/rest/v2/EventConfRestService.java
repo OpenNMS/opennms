@@ -253,7 +253,7 @@ public class EventConfRestService implements EventConfRestApi {
         } catch (Exception ex) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
         }
-
+    }
     @Override
     public Response getEventConfSourcesNames(SecurityContext securityContext) throws Exception {
         try {
@@ -263,8 +263,6 @@ public class EventConfRestService implements EventConfRestApi {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
                     .entity("Failed to fetch EventConf source names: " + e.getMessage()).build();
         }
-    }
-
     }
 
     private List<String> determineFileOrder(final Attachment eventconfXmlAttachment, final Set<String> uploadedFiles) {
