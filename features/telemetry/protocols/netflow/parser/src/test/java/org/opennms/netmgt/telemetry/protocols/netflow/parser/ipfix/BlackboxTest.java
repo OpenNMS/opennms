@@ -38,6 +38,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Parameterized;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.session.SequenceNumberTracker;
@@ -50,6 +51,8 @@ import io.netty.buffer.Unpooled;
 @RunWith(Parameterized.class)
 public class BlackboxTest {
     private final static Path FOLDER = Paths.get("src/test/resources/flows");
+
+    private InformationElementDatabase database = new InformationElementDatabase(new org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.InformationElementProvider(), new org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.InformationElementProvider());
 
     @Parameterized.Parameters(name = "file: {0}")
     public static Iterable<Object[]> data() throws IOException {
@@ -88,7 +91,7 @@ public class BlackboxTest {
 
                 do {
                     final Header header = new Header(slice(buf, Header.SIZE));
-                    final Packet packet = new Packet(session, header, slice(buf, header.length - Header.SIZE));
+                    final Packet packet = new Packet(database, session, header, slice(buf, header.length - Header.SIZE));
 
                     assertThat(packet.header.versionNumber, is(0x000a));
 

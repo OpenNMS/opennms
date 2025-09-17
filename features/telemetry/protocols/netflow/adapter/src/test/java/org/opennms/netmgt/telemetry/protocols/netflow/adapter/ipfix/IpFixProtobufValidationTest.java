@@ -43,6 +43,7 @@ import org.opennms.netmgt.flows.api.Flow;
 import org.opennms.netmgt.telemetry.protocols.netflow.adapter.Utils;
 import org.opennms.netmgt.telemetry.protocols.netflow.adapter.common.NetflowMessage;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.InvalidPacketException;
+import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.InformationElementDatabase;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.Value;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Header;
 import org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.proto.Packet;
@@ -62,6 +63,7 @@ import io.netty.buffer.Unpooled;
  */
 public class IpFixProtobufValidationTest {
 
+    private InformationElementDatabase database = new InformationElementDatabase(new org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.InformationElementProvider(), new org.opennms.netmgt.telemetry.protocols.netflow.parser.netflow9.InformationElementProvider());
 
     @BeforeClass
     public static void beforeClass() {
@@ -192,7 +194,7 @@ public class IpFixProtobufValidationTest {
 
             try {
                 header = new Header(slice(buffer, Header.SIZE));
-                final Packet packet = new Packet(session, header, slice(buffer, header.payloadLength()));
+                final Packet packet = new Packet(database, session, header, slice(buffer, header.payloadLength()));
                 packet.getRecords().forEach(rec -> {
                     final FlowMessage.Builder builder = new IpFixMessageBuilder().buildMessage(rec, (address) -> Optional.empty());
                     if (includeRawMessage) {

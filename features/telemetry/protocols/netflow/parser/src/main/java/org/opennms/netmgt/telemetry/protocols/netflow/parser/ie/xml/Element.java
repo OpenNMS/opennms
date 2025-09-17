@@ -25,7 +25,7 @@
  *     http://www.opennms.org/
  *     http://www.opennms.com/
  *******************************************************************************/
-package org.opennms.netmgt.telemetry.protocols.netflow.parser.ipfix.xml;
+package org.opennms.netmgt.telemetry.protocols.netflow.parser.ie.xml;
 
 import java.util.Objects;
 
