@@ -138,7 +138,8 @@ const shiftCheck = (e: KeyboardEvent) => {
     if (shiftCodes.includes(lastShift.lastKey)) {
       if (Date.now() - lastShift.timeSinceLastKey < shiftDelay) {
         clearShiftCheck()
-        const elem: HTMLInputElement | null = document.querySelector('.menubar-search textarea')
+
+        const elem: HTMLInputElement | null = document.querySelector('#opennms-sidemenu-container .onms-search-input-wrapper input.search-input')
 
         if (elem) {
           elem.focus()

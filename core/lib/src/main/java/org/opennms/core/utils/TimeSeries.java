@@ -28,7 +28,7 @@ public abstract class TimeSeries {
 
     public static final String RRD_STRATEGY_CLASS_PROPERTY = "org.opennms.rrd.strategyClass";
     public static final String RRD_TIME_SERIES_STRATEGY_NAME = "rrd";
-    public static final String DEFAULT_RRD_STRATEGY_CLASS = "org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy";
+    public static final String DEFAULT_RRD_STRATEGY_CLASS = "org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy";
 
     private static final String NEWTS_TIME_SERIES_STRATEGY_NAME = "newts";
 

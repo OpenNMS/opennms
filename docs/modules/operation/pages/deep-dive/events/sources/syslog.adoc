@@ -8,6 +8,8 @@ Syslog messages sent over the network to {page-component-title} can be transform
 IMPORTANT: xref:reference:daemons/daemon-config-files/syslogd.adoc[Syslogd], which enables {page-component-title} to receive syslog messages over the network, must be enabled for this functionality to work.
 This daemon is disabled by default.
 
+IMPORTANT: {page-component-title} works natively with UDP syslog reception. If you need TCP syslog reception then receiving the data with a TCP compatible syslog receiver such as rsyslog and forwarding them to {page-component-title} as UDP is possible but may require the use of the xref:operation:deep-dive/events/event-translator.adoc[Event Translator] to assign events to the correct host.
+
 == Parsers
 
 You can use parsers to convert syslog message fields into {page-component-title} event fields.

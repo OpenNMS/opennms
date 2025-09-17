@@ -48,6 +48,7 @@ import {
   getHistoryByIpInterface
 } from './deviceService'
 
+import { getGeolocationConfig } from './geolocationService'
 import { getMainMenu, getNotificationSummary } from './menuService'
 import { getMainMonitoringSystem } from './monitoringSystemService'
 import { getFileNames, getFile, getSnippets, postFile, deleteFile, getFileExtensions } from './configService'
@@ -101,6 +102,7 @@ export default {
   getWhoAmI,
   deleteFile,
   getSnippets,
+  getGeolocationConfig,
   getMainMenu,
   getNotificationSummary,
   getMainMonitoringSystem,

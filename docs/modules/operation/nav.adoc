@@ -18,7 +18,6 @@
 
 ** Menu
 *** xref:deep-dive/menu/introduction.adoc[]
-*** xref:deep-dive/menu/menu-templates.adoc[]
 
 ** User Management
 *** xref:deep-dive/user-management/user-config.adoc[]
@@ -181,7 +180,6 @@
 **** xref:deep-dive/elasticsearch/features/event-forwarder-mapping.adoc[]
 **** xref:deep-dive/elasticsearch/features/event-forwarder-mapping-table.adoc[]
 *** xref:deep-dive/elasticsearch/features/flows.adoc[]
-*** xref:deep-dive/elasticsearch/features/situation-feedback.adoc[]
 *** xref:deep-dive/elasticsearch/features/alarm-history.adoc[]
 
 ** xref:deep-dive/flows/introduction.adoc[]
@@ -207,7 +205,6 @@
 ** xref:deep-dive/grpc-exporter/grpc-exporter.adoc[]
 ** xref:deep-dive/zenith-connect/introduction.adoc[]
 
-** xref:deep-dive/alarm-correlation/situation-feedback.adoc[]
 ** xref:deep-dive/meta-data.adoc[]
 ** xref:deep-dive/search.adoc[]
 ** xref:deep-dive/snmp-poller/concepts.adoc[]
