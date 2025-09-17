@@ -28,6 +28,7 @@ import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
+import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfEventDto;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
@@ -58,6 +59,9 @@ public class EventConfRestService implements EventConfRestApi {
 
     @Autowired
     private EventConfPersistenceService eventConfPersistenceService;
+
+    @Autowired
+    private EventConfSourceDao eventConfSourceDao;
 
     @Override
     @Transactional
@@ -249,7 +253,16 @@ public class EventConfRestService implements EventConfRestApi {
         } catch (Exception ex) {
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
         }
-
+    }
+    @Override
+    public Response getEventConfSourcesNames(SecurityContext securityContext) throws Exception {
+        try {
+            final var  sourceNames = eventConfSourceDao.findAllNames();
+            return Response.ok(sourceNames).build();
+        } catch (Exception e) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR)
+                    .entity("Failed to fetch EventConf source names: " + e.getMessage()).build();
+        }
     }
 
     private List<String> determineFileOrder(final Attachment eventconfXmlAttachment, final Set<String> uploadedFiles) {

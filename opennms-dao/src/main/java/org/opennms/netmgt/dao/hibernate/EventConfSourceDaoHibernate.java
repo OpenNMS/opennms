@@ -180,6 +180,16 @@ public class EventConfSourceDaoHibernate
         );
         LOG.info("Deleted {} EventConfSource(s) with IDs: {}", deletedCount, sourceIds);
     }
+    @Override
+    public List<String> findAllNames() {
+        return findObjects(
+                String.class,
+                "select distinct s.name from EventConfSource s "
+
+        );
+    }
+
+
 
     @Override
     public void saveOrUpdate(EventConfSource source) {

@@ -180,4 +180,19 @@ public interface EventConfRestApi {
             @Context SecurityContext securityContext );
 
 
+
+    @GET
+    @Path("/sources/names")
+    @Produces("application/json")
+    @Operation(
+            summary = "Get EventConf Source Names",
+            description = "Retrieve the names of all EventConf sources stored in the database.",
+            operationId = "getEventConfSourcesNames"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Successfully retrieved source names"),
+            @ApiResponse(responseCode = "500", description = "Internal server error")
+    })
+    Response getEventConfSourcesNames(@Context SecurityContext securityContext) throws Exception;
+
 }
