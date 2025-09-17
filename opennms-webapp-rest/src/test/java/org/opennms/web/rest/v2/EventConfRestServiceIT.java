@@ -55,8 +55,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Date;
 
+import java.util.Date;
 
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertEquals;
@@ -93,6 +93,9 @@ public class EventConfRestServiceIT {
 
     @Autowired
     private SessionFactory sessionFactory;
+
+    @Autowired
+    private EventConfPersistenceService eventConfPersistenceService;
 
     @Before
     public void setUp() {
@@ -380,6 +383,62 @@ public class EventConfRestServiceIT {
         assertTrue(((String) response.getEntity()).contains("enabled"));
     }
 
+    @Test
+    @Transactional
+    public void testFilterEventConfEventBySourceId_ShouldReturnBADRequest() {
+        // Invalid Source Id
+        Response resp = eventConfRestApi.filterConfEventsBySourceId(-1L, 0, 0, 10, securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        // Invalid offset
+        resp = eventConfRestApi.filterConfEventsBySourceId(1L, 0, -1, 10, securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+
+        // Invalid limit
+        resp = eventConfRestApi.filterConfEventsBySourceId(1L, 0, 0, 0, securityContext);
+        assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
+    }
+
+    @Test
+    @Transactional
+    public void testFilterEventConfEventBySourceId_ShouldReturnNoContent() {
+        // Source Id not exits
+        Response resp = eventConfRestApi.filterConfEventsBySourceId(15200L, 0, 0, 10, securityContext);
+        assertEquals(Response.Status.NO_CONTENT.getStatusCode(), resp.getStatus());
+    }
+
+    @Test
+    @Transactional
+    public void testFilterEventConfEventBySourceId_ShouldReturnOkResponse() throws Exception {
+        // Step 1: Seed DB with events from known XMLs
+        String[] filenames = {"opennms.alarm.events.xml", "Cisco.airespace.xml"};
+        List<Attachment> attachments = new ArrayList<>();
+
+        for (final var name : filenames) {
+            final var path = "/EVENTS-CONF/" + name;
+            final var is = getClass().getResourceAsStream(path);
+            assertNotNull("Resource not found: " + path, is);
+            Attachment att = mock(Attachment.class);
+            ContentDisposition cd = mock(ContentDisposition.class);
+            when(cd.getParameter("filename")).thenReturn(name);
+            when(att.getContentDisposition()).thenReturn(cd);
+            when(att.getObject(InputStream.class)).thenReturn(is);
+            attachments.add(att);
+        }
+
+        Response uploadResp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), uploadResp.getStatus());
+
+        List<EventConfSource> eventConfSourceList = eventConfSourceDao.findAll();
+
+        EventConfSource eventConfSource = eventConfSourceDao.findByName("Cisco.airespace.xml");
+        assertNotNull("Event Source not found against name Cisco.airespace ", eventConfSource);
+
+        // Valid Source Id
+        Response resp = eventConfRestApi.filterConfEventsBySourceId(eventConfSource.getId(), 0, 0, 10, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+    }
+
 
     @Test
     public void testDeleteEventConfSources_Success() throws Exception {
@@ -433,6 +492,50 @@ public class EventConfRestServiceIT {
 
         eventConfEventDao.saveOrUpdate(event);
     }
+    @Test
+    @Transactional
+    public void testGetEventConfSourcesNames() throws Exception {
+        String[] filenames = {"opennms.alarm.events.xml", "Cisco.airespace.xml"};
+        List<Attachment> attachments = new ArrayList<>();
+
+        for (final var name : filenames) {
+            final var path = "/EVENTS-CONF/" + name;
+            final var is = getClass().getResourceAsStream(path);
+            assertNotNull("Resource not found: " + path, is);
+
+            Attachment att = mock(Attachment.class);
+            ContentDisposition cd = mock(ContentDisposition.class);
+            when(cd.getParameter("filename")).thenReturn(name);
+            when(att.getContentDisposition()).thenReturn(cd);
+            when(att.getObject(InputStream.class)).thenReturn(is);
+
+            attachments.add(att);
+        }
+
+        Response uploadResp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), uploadResp.getStatus());
+
+        Response resp = eventConfRestApi.getEventConfSourcesNames(securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
+
+        @SuppressWarnings("unchecked")
+        List<String> sourceNames = (List<String>) resp.getEntity();
+
+        assertNotNull(sourceNames);
+        assertFalse(sourceNames.isEmpty());
+        assertTrue(sourceNames.stream().anyMatch(name -> name.contains("Cisco.airespace.xml")));
+
+        // test when no sources exists in db
+        final var  eventConfSources = eventConfSourceDao.findAll();
+        eventConfSourceDao.deleteAll(eventConfSources);
+        Response sourceNamesResponse = eventConfRestApi.getEventConfSourcesNames(securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), sourceNamesResponse.getStatus());
+        @SuppressWarnings("unchecked")
+        final var  eventConfEmptySourceNames = (List<String>) sourceNamesResponse.getEntity();
+        assertNotNull(eventConfEmptySourceNames);
+        assertTrue("Expected empty list when no EventConfSources exist", eventConfEmptySourceNames.isEmpty());
+    }
+
 
 
     @Test

@@ -46,6 +46,7 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityNotFoundException;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
+
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -211,6 +212,14 @@ public class EventConfPersistenceService {
                 persistEventConfFile(events, metadataDto);
             }
         }
-
     }
+
+    public Map<String, Object> filterConfEventsBySourceId(Long sourceId, Integer totalRecords,  Integer offset, Integer limit) {
+        return eventConfEventDao.findBySourceId(sourceId, totalRecords,  offset, limit);
+    }
+
+    public Map<String, Object> filterEventConfSource(String filter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
+        return eventConfSourceDao.filterEventConfSource(filter, sortBy, order, totalRecords, offset, limit);
+    }
+
 }
