@@ -35,7 +35,7 @@
         <h4>Status</h4>
         <div class="spacer-medium"></div>
         <FeatherSelect
-          label="Select Alert Trigger"
+          label="Select Status"
           :options="mapTriggerTypeOptions()"
           v-model="selectedEventStatus"
           clear="Clear Selection"
@@ -51,7 +51,7 @@
         >
           Save Changes
         </FeatherButton>
-        <FeatherButton secondary>Close</FeatherButton>
+        <FeatherButton secondary @click="eventConfigStore.closeEventDrawerModal()">Close</FeatherButton>
       </div>
     </div>
   </FeatherDrawer>
