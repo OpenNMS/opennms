@@ -151,11 +151,11 @@ require('../services/Synchronize');
     * @methodOf RequisitionsController
     */
     $scope.quickAddNode = function() {
-      const availableForeignSources = [];
+      var availableForeignSources = [];
       angular.forEach($scope.requisitionsData.requisitions, function(r) {
         availableForeignSources.push(r.foreignSource);
       });
-      const modalInstance = $uibModal.open({
+      var modalInstance = $uibModal.open({
         backdrop: 'static',
         keyboard: false,
         controller: 'QuickAddNodeModalController',
@@ -166,7 +166,7 @@ require('../services/Synchronize');
         }
       });
       modalInstance.result.then(function(node) {
-        const r = $scope.requisitionsData.getRequisition(node.foreignSource);
+        var r = $scope.requisitionsData.getRequisition(node.foreignSource);
         r.setNode(node);
       });
     };
@@ -180,13 +180,13 @@ require('../services/Synchronize');
     * @param {string} foreignSource The name of the requisition
     */
     $scope.clone = function(foreignSource) {
-      const availableForeignSources = [];
+      var availableForeignSources = [];
       angular.forEach($scope.requisitionsData.requisitions, function(r) {
         if (r.foreignSource !== foreignSource) {
           availableForeignSources.push(r.foreignSource);
         }
       });
-      const modalInstance = $uibModal.open({
+      var modalInstance = $uibModal.open({
         backdrop: 'static',
         keyboard: false,
         controller: 'CloneForeignSourceController',
@@ -229,7 +229,7 @@ require('../services/Synchronize');
             bootbox.alert('Cannot add the requisition ' + _.escape(foreignSource) + ' because the following characters are invalid:<br/>:, /, \\, ?, &, *, \', "');
             return;
           }
-          const r = $scope.requisitionsData.getRequisition(foreignSource);
+          var r = $scope.requisitionsData.getRequisition(foreignSource);
           if (r) {
             bootbox.alert('Cannot add the requisition ' + _.escape(foreignSource) + ' because there is already a requisition with that name');
             return;
@@ -317,7 +317,7 @@ require('../services/Synchronize');
           RequisitionsService.removeAllNodesFromRequisition(foreignSource).then(
             function() { // success
               growl.success('All the nodes from ' + _.escape(foreignSource) + ' have been removed, and the requisition has been synchronized.');
-              const req = $scope.requisitionsData.getRequisition(foreignSource);
+              var req = $scope.requisitionsData.getRequisition(foreignSource);
               req.reset();
             },
             $scope.errorHandler
@@ -490,7 +490,7 @@ require('../services/Synchronize');
     * @methodOf RequisitionsController
     */
     $scope.initialize = function() {
-      const value = $cookies.get('requisitions_page_size');
+      var value = $cookies.get('requisitions_page_size');
       if (value) {
         $scope.pageSize = value;
       }

@@ -36,10 +36,6 @@ import com.google.common.base.Strings;
  *
  */
 public class DefaultGeolocationConfiguration implements GeolocationConfiguration {
-    /**
-     * The key under which the tile server name is stored in opennms.properties.
-     */
-    private static final String NAME_KEY = "gwt.openlayers.name";
 
     /**
      * The key under which the tile server url is stored in opennms.properties.
@@ -53,12 +49,6 @@ public class DefaultGeolocationConfiguration implements GeolocationConfiguration
 
     public DefaultGeolocationConfiguration() {
         Preconditions.checkArgument(!Strings.isNullOrEmpty(getTileServerUrl()), "System Property 'gwt.openlayers.url' is not defined");
-    }
-
-    @Override
-    public String getTileServerName() {
-        final String name = System.getProperty(NAME_KEY);
-        return Strings.isNullOrEmpty(name) ? "" : sanitize(name);
     }
 
     @Override

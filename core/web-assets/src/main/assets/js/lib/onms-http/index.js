@@ -56,7 +56,7 @@ angular.module('onms.http', ['ui.bootstrap'])
     ])
     .run(['$rootScope', '$uibModal', function($rootScope, $uibModal) {
         $rootScope.$on('loginRequired', function() {
-            const baseTags = document.getElementsByTagName('base');
+            var baseTags = document.getElementsByTagName('base');
             if (baseTags && baseTags.length > 0 && baseTags[0].href) {
                 document.headerLogoutForm.submit();
             } else {

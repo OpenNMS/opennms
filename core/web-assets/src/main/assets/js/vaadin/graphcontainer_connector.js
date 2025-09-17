@@ -25,7 +25,7 @@ const GraphContainers = require('apps/onms-graph');
 
 if (!window.org_opennms_features_vaadin_components_graph_GraphContainer) {
   window.org_opennms_features_vaadin_components_graph_GraphContainer = function GraphContainer() {
-    const e = this.getElement();
+    var e = this.getElement();
 
     console.log('graphcontainer: registering state change');
     this.onStateChange = function onStateChange() {
@@ -38,7 +38,7 @@ if (!window.org_opennms_features_vaadin_components_graph_GraphContainer) {
       };
 
       // Build the div
-      const div = document.createElement('div');
+      var div = document.createElement('div');
       div.setAttribute('class', 'graph-container');
       div.setAttribute('data-resource-id', this.getState().resourceId);
       div.setAttribute('data-graph-name', this.getState().graphName);

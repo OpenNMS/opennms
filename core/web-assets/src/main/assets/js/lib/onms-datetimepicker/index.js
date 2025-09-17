@@ -49,7 +49,7 @@ angular.module('onms.datetimepicker', ['ui.bootstrap'])
             },
             link: function(scope, element, attrs) {
                 // Apply if id is provided
-                if (scope.id) {
+                if (scope.id) {
                     scope.elementId = scope.id;
                 } else { // otherwise calculate it
                     scope.id = angular.element('[data-toggle="datetimepicker"]').length;
@@ -59,9 +59,9 @@ angular.module('onms.datetimepicker', ['ui.bootstrap'])
 
                 // Determine the options
                 scope.options = scope.options || {};
-                scope.options.sideBySide = scope.sideBySide === 'true' || false;
-                scope.options.inline = scope.inline === 'true' || false;
-                scope.options.calendarWeeks = scope.calendarWeeks === 'true' || false;
+                scope.options.sideBySide = scope.sideBySide === "true" || false;
+                scope.options.inline = scope.inline === "true" || false;
+                scope.options.calendarWeeks = scope.calendarWeeks === "true" || false;
                 scope.options.format = scope.options.format || 'YYYY-MM-DD HH:mm';
                 if (scope.locale) {
                     scope.options.locale = scope.locale;
@@ -82,8 +82,8 @@ angular.module('onms.datetimepicker', ['ui.bootstrap'])
 
                 // Override the clear icon as it is using fa-delete by default which is not available
                 scope.options.icons = {
-                    clear: 'fa fa-trash',
-                    close: 'fa fa-check',
+                    clear: "fa fa-trash",
+                    close: "fa fa-check",
                 };
 
                 // Listen for keydown events to validate the input immediately
@@ -121,7 +121,7 @@ angular.module('onms.datetimepicker', ['ui.bootstrap'])
 
                 // Component is not yet rendered, so invoke it delayed
                 $timeout(function() {
-                    angular.element('#' + scope.elementId).datetimepicker(scope.options);
+                    angular.element("#" + scope.elementId).datetimepicker(scope.options);
                 }, 0);
             }
         }

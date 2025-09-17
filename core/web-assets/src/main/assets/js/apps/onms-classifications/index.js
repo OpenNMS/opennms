@@ -43,7 +43,7 @@ const confirmTopoverTemplate = require('./views/modals/popover.html');
 
 const handleErrorResponse = function(response, $scope) {
     if (response && response.data) {
-        const error = response.data;
+        var error = response.data;
         $scope.error = {};
         $scope.error[error.context] = error.message;
     }
@@ -52,7 +52,7 @@ const handleErrorResponse = function(response, $scope) {
 (function() {
     'use strict';
 
-    const MODULE_NAME = 'onms.classifications';
+    var MODULE_NAME = 'onms.classifications';
 
     angular.module(MODULE_NAME, [
             'angular-loading-bar',
@@ -185,7 +185,7 @@ const handleErrorResponse = function(response, $scope) {
             };
 
             $scope.fullyDefined = function() {
-                const fullyDefined = $scope.classificationRequest
+                var fullyDefined = $scope.classificationRequest
                     && $scope.classificationRequest.protocol
                     && $scope.classificationRequest.dstPort && $scope.classificationRequest.dstAddress
                     && $scope.classificationRequest.srcPort && $scope.classificationRequest.srcAddress
@@ -220,7 +220,7 @@ const handleErrorResponse = function(response, $scope) {
                     $scope.refresh();
                 });
             };
-            const openModal = function(group) {
+            var openModal = function(group) {
                 return $uibModal.open({
                     backdrop: false,
                     controller: 'GroupModalController',
@@ -240,7 +240,7 @@ const handleErrorResponse = function(response, $scope) {
                 });
             };
             $scope.editGroup = function(group) {
-                const modalInstance = openModal(group);
+                var modalInstance = openModal(group);
                 modalInstance.closed.then(function () {
                     $scope.refreshTabs();
                     $scope.refresh();
@@ -250,14 +250,14 @@ const handleErrorResponse = function(response, $scope) {
                 });
             };
             $scope.addGroup = function(group) {
-                const modalInstance = openModal(group);
+                var modalInstance = openModal(group);
                 modalInstance.closed.then(function () {
                     $scope.refreshTabs();
                     $scope.refresh();
                 });
             };
             $scope.refresh = function() {
-                const parameters = $scope.query || {};
+                var parameters = $scope.query || {};
                 ClassificationGroupService.query({
                     limit: 20,
                     offset: (parameters.page -1) * parameters.limit || 0,
@@ -265,7 +265,7 @@ const handleErrorResponse = function(response, $scope) {
                     order: 'asc'
                 }, function(result, headers) {
                     $scope.groups = result;
-                    const contentRange = elementList.parseContentRange(headers('Content-Range'));
+                    var contentRange = elementList.parseContentRange(headers('Content-Range'));
                     $scope.query.totalItems = contentRange.total;
                 });
             };
@@ -278,36 +278,36 @@ const handleErrorResponse = function(response, $scope) {
                 stop: function(e, ui) {
 
                     // Check Precondition:  item was actually moved
-                    const oldIndex =  angular.element(ui.item).data().oldIndex;
-                    const newIndex =  ui.item.index();
+                    var oldIndex =  angular.element(ui.item).data().oldIndex;
+                    var newIndex =  ui.item.index();
                     if(oldIndex !== newIndex) {
                         // Calculate and set new position (index + offset)
-                        const parameters = $scope.query || {};
-                        const offset = (parameters.page - 1) * parameters.limit || 0;
-                        const group = $scope.groups[newIndex];
-                        let position;
+                        var parameters = $scope.query || {};
+                        var offset = (parameters.page - 1) * parameters.limit || 0;
+                        var group = $scope.groups[newIndex];
+                        var position;
                         if (newIndex - 1 < 0) {
                             // we are already at the beginning of the visible paged list
                             position = offset;
                         } else {
-                            const previousGroup = $scope.groups[newIndex - 1];
+                            var previousGroup = $scope.groups[newIndex - 1];
                             position = (newIndex > oldIndex) ? previousGroup.position : previousGroup.position + 1;
                         }
                         group.position = position;
 
                         // Update backend
-                        const refreshCallback = function () {
+                        var refreshCallback = function () {
                             $scope.refreshTabs();
                             $scope.refresh();
                         };
-                        const errorCallback = function(response) {
+                        var errorCallback = function(response) {
                             handleErrorResponse(response, $scope);
                         };
 
                         ClassificationGroupService.update(group, refreshCallback, errorCallback);
                     }
                 },
-                items: 'tr:not(.unsortable)'
+                items: "tr:not(.unsortable)"
             };
             $scope.refresh();
         }])
@@ -336,7 +336,7 @@ const handleErrorResponse = function(response, $scope) {
             };
 
             $scope.showExportRulesDialog = function() {
-                const modalInstance = $uibModal.open({
+                var modalInstance = $uibModal.open({
                     backdrop: false,
                     controller: 'ClassificationExportController',
                     templateUrl: exportModalTemplate,
@@ -353,9 +353,9 @@ const handleErrorResponse = function(response, $scope) {
             };
 
             $scope.refresh = function() {
-                const parameters = $scope.query || {};
-                const editPositionOfRuleEnabled = !($scope.group.readOnly) && ($scope.query.orderBy === 'position' && $scope.query.order === 'asc');
-                const sortable =  angular.element( '.ui-sortable' );
+                var parameters = $scope.query || {};
+                var editPositionOfRuleEnabled = !($scope.group.readOnly) && ($scope.query.orderBy === 'position' && $scope.query.order === 'asc');
+                var sortable =  angular.element( '.ui-sortable' );
                 if(editPositionOfRuleEnabled === true) {
                     sortable.sortable('enable');
                 } else {
@@ -370,7 +370,7 @@ const handleErrorResponse = function(response, $scope) {
                     query: parameters.search
                 }, function (result, headers) {
                     $scope.rules = result;
-                    const contentRange = elementList.parseContentRange(headers('Content-Range'));
+                    var contentRange = elementList.parseContentRange(headers('Content-Range'));
                     $scope.query.totalItems = contentRange.total;
                 });
             };
@@ -378,8 +378,8 @@ const handleErrorResponse = function(response, $scope) {
             // In some cases the currently selected group needs to be refreshed, this method finds the group from
             // $scope.groups and updates $scope.group accordingly, in order to reflect updates in $scope.groups
             $scope.refreshGroup = function() {
-                for (let i = 0; i<$scope.groups.length; i++) {
-                    const group = $scope.groups[i];
+                for (var i = 0; i<$scope.groups.length; i++) {
+                    var group = $scope.groups[i];
                     if (group.id === $scope.group.id) {
                         $scope.group = group;
                         return;
@@ -388,7 +388,7 @@ const handleErrorResponse = function(response, $scope) {
             };
 
             $scope.refreshAll = function() {
-                const result = $scope.refreshTabs();
+                var result = $scope.refreshTabs();
                 result.$promise.then(function() {
                     $scope.refreshGroup()
                     $scope.refresh();
@@ -417,7 +417,7 @@ const handleErrorResponse = function(response, $scope) {
                 });
             };
 
-            const openModal = function(classification, group) {
+            var openModal = function(classification, group) {
                 return $uibModal.open({
                     backdrop: false,
                     controller: 'ClassificationModalController',
@@ -438,7 +438,7 @@ const handleErrorResponse = function(response, $scope) {
             };
 
             $scope.editRule = function(rule) {
-                const modalInstance = openModal(rule, rule.group);
+                var modalInstance = openModal(rule, rule.group);
                 modalInstance.closed.then(function () {
                     $scope.refreshAll();
                 }, function() {
@@ -448,7 +448,7 @@ const handleErrorResponse = function(response, $scope) {
             };
 
             $scope.addRule = function(group) {
-                const modalInstance = openModal(null, group);
+                var modalInstance = openModal(null, group);
                 modalInstance.closed.then(function () {
                     $scope.refreshAll();
                 });
@@ -462,28 +462,28 @@ const handleErrorResponse = function(response, $scope) {
                 },
                 stop: function(e, ui) {
                     // Check Precondition: item was actually moved
-                    const oldIndex =  angular.element(ui.item).data().oldIndex;
-                    const newIndex =  ui.item.index();
+                    var oldIndex =  angular.element(ui.item).data().oldIndex;
+                    var newIndex =  ui.item.index();
                     if(oldIndex !== newIndex) {
                         // Calculate and set new position (index + offset)
-                        const parameters = $scope.query || {};
-                        const offset = (parameters.page - 1) * parameters.limit || 0;
-                        const rule = $scope.rules[newIndex];
-                        let position;
+                        var parameters = $scope.query || {};
+                        var offset = (parameters.page - 1) * parameters.limit || 0;
+                        var rule = $scope.rules[newIndex];
+                        var position;
                         if (newIndex - 1 < 0) {
                             // we are already at the beginning of the visible paged list
                             position = offset;
                         } else {
-                            const previousRule = $scope.rules[newIndex - 1];
+                            var previousRule = $scope.rules[newIndex - 1];
                             position = (newIndex > oldIndex) ? previousRule.position : previousRule.position + 1;
                         }
                         rule.position = position;
 
                         // Update backend
-                        const refreshCallback = function () {
+                        var refreshCallback = function () {
                             $scope.refreshAll();
                         };
-                        const errorCallback = function(response) {
+                        var errorCallback = function(response) {
                             handleErrorResponse(response, $scope);
                         };
 
@@ -493,7 +493,7 @@ const handleErrorResponse = function(response, $scope) {
             };
 
             $scope.importRules = function() {
-                const modalInstance = $uibModal.open({
+                var modalInstance = $uibModal.open({
                     size: 'lg',
                     backdrop: false,
                     controller: 'ClassificationImportController',
@@ -542,14 +542,14 @@ const handleErrorResponse = function(response, $scope) {
             };
 
             $scope.navigateWithinErrors = function() {
-                const limit = $scope.pagination.limit;
-                const offset = ($scope.pagination.page - 1) * limit;
-                const endIndex = Math.min(offset + limit, $scope.errors.length);
+                var limit = $scope.pagination.limit;
+                var offset = ($scope.pagination.page - 1) * limit;
+                var endIndex = Math.min(offset + limit, $scope.errors.length);
                 $scope.failedRows = $scope.errors.slice(offset, endIndex);
             };
 
             $scope.uploadFile = function() {
-                const reader = new FileReader();
+                var reader = new FileReader();
                 reader.onload = function(e) {
                     $scope.error = undefined;
                     $scope.errors = [];
@@ -578,10 +578,10 @@ const handleErrorResponse = function(response, $scope) {
                             if (response.errors) {
                                 $scope.error = 'The rules could not be imported. Please fix the errors shown below and retry.';
                                 // Persist locally
-                                const errorKeys = Object.getOwnPropertyNames(response.errors);
-                                for (let i = 0; i<errorKeys.length; i++) {
-                                    const index = errorKeys[i];
-                                    const rowIndex = $scope.containsHeader ? parseInt(index, 10) + 1 : index; // increase row index if csv contains header
+                                var errorKeys = Object.getOwnPropertyNames(response.errors);
+                                for (var i = 0; i<errorKeys.length; i++) {
+                                    var index = errorKeys[i];
+                                    var rowIndex = $scope.containsHeader ? parseInt(index, 10) + 1 : index; // increase row index if csv contains header
                                     $scope.errors.push({index: rowIndex, message: response.errors[index].message});
                                 }
                                 // Update pagination settings
@@ -601,7 +601,7 @@ const handleErrorResponse = function(response, $scope) {
                 $scope.export = {};
                 $scope.export.requestedFileName = group.name + '_rules.csv';
                 $scope.exportGroup = function() {
-                    const requestedFileName = $scope.export.requestedFileName.trim();
+                    var requestedFileName = $scope.export.requestedFileName.trim();
                     $window.location = 'rest/classifications/groups/' + $scope.group.id +'?filename='
                         +requestedFileName+'&format=csv';
                     $uibModalInstance.close();
@@ -618,13 +618,13 @@ const handleErrorResponse = function(response, $scope) {
             $scope.maxPosition = (classification === null) ? group.ruleCount : group.ruleCount-1;
             $scope.selectableGroups = groups.filter((group) => group.readOnly === false);
 
-            const convertStringArrayToProtocolsArray = function(string) {
+            var convertStringArrayToProtocolsArray = function(string) {
                 return string.map(function(protocol) {
                     return {keyword: protocol};
                 })
             };
 
-            const convertProtocolsArrayToStringArray = function(protocols) {
+            var convertProtocolsArrayToStringArray = function(protocols) {
                 return protocols.map(function(protocol) {
                     return protocol.keyword;
                 });
@@ -632,10 +632,10 @@ const handleErrorResponse = function(response, $scope) {
 
             $scope.save = function() {
                 // Close modal afterwards
-                const closeCallback = function() {
+                var closeCallback = function() {
                     $uibModalInstance.close();
                 };
-                const errorCallback = function(response) {
+                var errorCallback = function(response) {
                     handleErrorResponse(response, $scope);
                 };
                 $scope.classification.protocols = convertProtocolsArrayToStringArray($scope.selectedProtocols);
@@ -658,7 +658,7 @@ const handleErrorResponse = function(response, $scope) {
             };
 
             $scope.removeProtocol = function(protocol) {
-                const index = $scope.selectedProtocols.indexOf(protocol);
+                var index = $scope.selectedProtocols.indexOf(protocol);
                 if (index !== -1) {
                     $scope.selectedProtocols.splice(index, 1);
                 }
@@ -687,10 +687,10 @@ const handleErrorResponse = function(response, $scope) {
 
             $scope.save = function() {
                 // Close modal afterwards
-                const closeCallback = function() {
+                var closeCallback = function() {
                     $uibModalInstance.close();
                 };
-                const errorCallback = function(response) {
+                var errorCallback = function(response) {
                     handleErrorResponse(response, $scope);
                 };
                 if ($scope.group.id) {

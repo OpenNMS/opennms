@@ -20,8 +20,6 @@
         <constructor-arg ref="kafkaTwinMetricRegistry"/>
     </bean>
 
-    <onmsgi:service ref="kafkaTwinPublisher" interface="org.opennms.core.ipc.twin.api.TwinPublisher"/>
-
     <bean id="identity" class="org.opennms.features.distributed.identity.impl.OpenNMSIdentityImpl"/>
     <bean id="localTwinSubscriber" class="org.opennms.core.ipc.twin.common.LocalTwinSubscriberImpl">
         <constructor-arg ref="identity"/>

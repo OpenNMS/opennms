@@ -13,6 +13,14 @@
   "sideMenuInitialExpand": false,
   "copyrightDates": "",
   "version": "",
+  "userTileProviders": [
+    {
+      "name": "OpenNMS Default",
+      "url": "https://tiles.opennms.org/${z}/${x}/${y}.png",
+      "attribution": "Map data &copy; <a tabindex=\"-1\" target=\"_blank\" href=\"http://openstreetmap.org/copyright\">OpenStreetMap</a> contributors under <a tabindex=\"-1\" target=\"_blank\" href=\"http://opendatacommons.org/licenses/odbl/\">ODbL</a>, <a tabindex=\"-1\" target=\"_blank\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC BY-SA 2.0</a>",
+      "userDefinedAsDefault": false
+    }
+  ],
   "menus": [
     {
       "id": "searchMenu",

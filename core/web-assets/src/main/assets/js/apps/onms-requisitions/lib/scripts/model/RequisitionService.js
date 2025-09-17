@@ -34,7 +34,6 @@
 const RequisitionService = function RequisitionService(svc) {
   'use strict';
 
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
 
   /**

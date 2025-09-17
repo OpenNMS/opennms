@@ -185,9 +185,9 @@ const RequisitionService = require('../model/RequisitionService');
     * @returns {array} the unused available services
     */
     $scope.getAvailableServices = function() {
-      const services = [];
+      var services = [];
       angular.forEach($scope.availableServices, function(avail) {
-        let found = false;
+        var found = false;
         angular.forEach($scope.requisitionInterface.services, function(svc) {
           if (svc.name === avail) {
             found = true;

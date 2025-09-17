@@ -132,8 +132,8 @@ angular.module('onms-resources', [
       $scope.nodeLabel = data.label;
       $scope.loaded = true;
       $scope.hasResources = data.children.resource.length > 0;
-      const reduced = _.map(data.children.resource, function (obj) {
-        const resource = {
+      var reduced = _.map(data.children.resource, function (obj) {
+        var resource = {
           id: obj.id,
           label: obj.label,
           typeLabel: obj.typeLabel,
@@ -147,13 +147,13 @@ angular.module('onms-resources', [
         return resource;
       });
       $scope.resources = _.groupBy(_.sortBy(reduced, function(r) {
-        const type = r['typeLabel'];
+        var type = r['typeLabel'];
         return (type === 'SNMP Node Data' || type === 'SNMP Interface Data') ? Infinity : type;
       }), 'typeLabel');
       // Perform a shallow copy of the resource map - the resources may be updated asynchronously
       // with additional attributes
       $scope.filteredResources = {};
-      for (const k in $scope.resources) {
+      for (var k in $scope.resources) {
         if (Object.prototype.hasOwnProperty.call($scope.resources, k)) {
           $scope.filteredResources[k] = $scope.resources[k];
         }
@@ -186,7 +186,7 @@ angular.module('onms-resources', [
   };
 
   $scope.checkAll = function(check) {
-    for (const key in $scope.resources) {
+    for (var key in $scope.resources) {
       if ($scope.resources.hasOwnProperty(key)) {
         _.each($scope.filteredResources[key], function(r) {
           r.selected = check;
@@ -196,8 +196,8 @@ angular.module('onms-resources', [
   };
 
   $scope.graphSelected = function() {
-    const selected = [];
-    for (const key in $scope.resources) {
+    var selected = [];
+    for (var key in $scope.resources) {
       if ($scope.resources.hasOwnProperty(key)) {
         _.each($scope.filteredResources[key], function(r) {
           if (r.selected) {
@@ -220,7 +220,7 @@ angular.module('onms-resources', [
 
   $scope.doGraph = function (selected) {
     // Custom report graphs doesn't support generatedId
-    if(($scope.url === 'graph/adhoc2.jsp')) {
+    if(($scope.url === "graph/adhoc2.jsp")) {
        $scope.setResourceIds(selected);
        return;
     }
@@ -243,7 +243,7 @@ angular.module('onms-resources', [
   };
 
   $scope.setResourceIds = function (selected) {
-    for (let i = 0; i < selected.length; i++) {
+    for (var i = 0; i < selected.length; i++) {
       selected[i] = 'resourceId=' + selected[i];
     }
     $window.location.href = getBaseHref() + $scope.url + '?' + selected.join('&') + ($scope.reports ? '&reports=' + $scope.reports : '');
@@ -251,7 +251,7 @@ angular.module('onms-resources', [
 
   $scope.$watch('searchQuery', function() {
     $scope.filteredResources = {};
-    for (const key in $scope.resources) {
+    for (var key in $scope.resources) {
       if ($scope.resources.hasOwnProperty(key)) {
         $scope.filteredResources[key] = $filter('filter')($scope.resources[key], $scope.searchQuery);
       }

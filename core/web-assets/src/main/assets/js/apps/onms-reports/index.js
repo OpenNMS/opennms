@@ -78,7 +78,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
 (function() {
     'use strict';
 
-    const MODULE_NAME = 'onms.reports';
+    var MODULE_NAME = 'onms.reports';
 
     angular.module(MODULE_NAME, [
             'angular-loading-bar',
@@ -179,18 +179,18 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                 whoami: () => {
                     const deferred = $q.defer();
                     WhoamiResource.whoami(function(data) {
-                        const user = {
+                        var user = {
                             id: data['id'],
                             name: data['fullName'],
                             email: data['email'],
                             roles: data['roles'],
 
                             isAdmin: function() {
-                                return this.roles.indexOf('ROLE_ADMIN') >= 0;
+                                return this.roles.indexOf("ROLE_ADMIN") >= 0;
                             },
 
                             isReportDesigner: function() {
-                                return this.roles.indexOf('ROLE_REPORT_DESIGNER') >= 0;
+                                return this.roles.indexOf("ROLE_REPORT_DESIGNER") >= 0;
                             }
                         };
                         deferred.resolve(user);
@@ -306,7 +306,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                             scope.endpoints.forEach(function (item) {
                                 item.label = item.uid;
                                 if (item.description) {
-                                    item.label += ' - ' + item.description;
+                                    item.label += " - " + item.description;
                                 }
                             });
                             if (scope.endpoints.length > 0) {
@@ -493,14 +493,14 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
                     data:  { id:$scope.report.id, parameters: $scope.report.parameters, format: $scope.report.format},
                     responseType:  'arraybuffer'
                 }).then(function (response) {
-                        const data = response.data;
-                        const fileBlob = new Blob([data], {type: $scope.report.format === 'PDF' ? 'application/pdf' : 'text/csv'});
-                        const fileURL = URL.createObjectURL(fileBlob);
-                        const contentDisposition = response.headers('Content-Disposition');
+                        var data = response.data;
+                        var fileBlob = new Blob([data], {type: $scope.report.format === 'PDF' ? 'application/pdf' : 'text/csv'});
+                        var fileURL = URL.createObjectURL(fileBlob);
+                        var contentDisposition = response.headers("Content-Disposition");
                         // var filename = (contentDisposition.split(';')[1].trim().split('=')[1]).replace(/"/g, '');
-                        const filename = $stateParams.id + '.' + $scope.report.format.toLowerCase();
+                        var filename = $stateParams.id + '.' + $scope.report.format.toLowerCase();
 
-                        const a = document.createElement('a');
+                        var a = document.createElement('a');
                         document.body.appendChild(a);
                         a.style = 'display: none';
                         a.href = fileURL;
@@ -580,7 +580,7 @@ const handleGrafanaError = function(response, report, optionalCallbackIfNoContex
 
             // We wait for the userInfo to be set, otherwise loading
             // cannot be performed as we don't have a user id
-            $scope.$watch('userInfo', function(newVal, oldVal) {
+            $scope.$watch("userInfo", function(newVal, oldVal) {
                 if (newVal) {
                     $scope.loadDetails();
                 }

@@ -9,8 +9,6 @@
       menuTitle="OpenNMS"
       menuHeader
       menuFooter
-      @update:expanded="() => menuStore.setSideMenuExpanded(true)"
-      @update:collapsed="() => menuStore.setSideMenuExpanded(false)"
     />
   </div>
 </template>
@@ -20,6 +18,7 @@ import { DefineComponent, markRaw } from 'vue'
 import { FeatherSidenav } from '@featherds/sidebar'
 import { FeatherMenuList, MenuListEntry } from '@featherds/menu'
 import { FeatherIcon } from '@featherds/icon'
+import type { Panel } from '@featherds/panel-bar'
 import IconHome from '@featherds/icon/action/Home'
 import { performLogout } from '@/services/logoutService'
 import { useMenuStore } from '@/stores/menuStore'
@@ -29,7 +28,7 @@ import { MainMenu, MenuItem } from '@/types/mainMenu'
 import { computePluginRelLink, createFakePlugin, createMenuItem, createTopMenuItem } from './utils'
 import useMenuIcons from './useMenuIcons'
 
-defineProps({
+const props = defineProps({
   pushedSelector: {
     type: String,
     required: true
@@ -40,11 +39,12 @@ const TOP_MENU_ID_PREFIX = 'opennms-menu-id-'
 
 const menuStore = useMenuStore()
 const pluginStore = usePluginStore()
-const { getIcon } = useMenuIcons()
 
 const mainMenu = computed<MainMenu>(() => menuStore.mainMenu)
 const plugins = computed<Plugin[]>(() => pluginStore.plugins)
 const isExpanded = ref<boolean>(menuStore.sideMenuExpanded() ?? false)
+
+const { getIcon } = useMenuIcons()
 
 const getMenuLink = (menuItem: MenuItem) => {
   if (mainMenu.value?.baseHref && menuItem.url) {
@@ -59,13 +59,27 @@ const getMenuLink = (menuItem: MenuItem) => {
 }
 
 const createTopMenuIcon = (menuItem: MenuItem) => {
-  const icon: (DefineComponent | null) = getIcon(menuItem.icon)
+  let icon: DefineComponent | null = null
+
+  icon = getIcon(menuItem.icon)
 
   return (icon ?? IconHome) as typeof FeatherIcon
 }
 
 const onPerformLogout = async () => {
+  console.log('In onPerformLogout...')
+
   await performLogout()
+
+  console.log('| exiting onPerformLogout...')
+}
+
+const onLockMenu = () => {
+  menuStore.setSideMenuExpanded(true)
+}
+
+const onUnlockMenu = () => {
+  menuStore.setSideMenuExpanded(false)
 }
 
 const createMenuListEntry = (menuItem: MenuItem) => {
@@ -73,6 +87,10 @@ const createMenuListEntry = (menuItem: MenuItem) => {
 
   if (menuItem.action === 'logout') {
     onClick = onPerformLogout
+  } else if (menuItem.action === 'lockMenu') {
+    onClick = onLockMenu
+  } else if (menuItem.action === 'unlockMenu') {
+    onClick = onUnlockMenu
   }
 
   const target = menuItem.linkTarget === '_blank' ? '_blank' : '_self'
@@ -87,32 +105,24 @@ const createMenuListEntry = (menuItem: MenuItem) => {
   } as MenuListEntry
 }
 
-const createMenuListSeparator = () => {
-  return {
-    id: '',
-    type: 'separator'
-  } as MenuListEntry
-}
-
-const createMenuListHeader = (item: MenuItem) => {
-  return {
-    id: '',
-    type: 'header',
-    title: item.name
-  } as MenuListEntry
-}
-
-const createTopMenuListEntry = (topMenuItem: MenuItem) => {
+const createPanel = (topMenuItem: MenuItem) => {
   if (topMenuItem.type === 'separator') {
-    return createMenuListSeparator()
+    return {
+      id: '',
+      type: 'separator'
+    } as Panel
   }
 
   if (topMenuItem.type === 'header') {
-    return createMenuListHeader(topMenuItem)
+    return {
+      id: '',
+      type: 'header',
+      title: topMenuItem.name
+    } as Panel
   }
 
   // 'item'
-  let entry = {
+  return {
     id: `${TOP_MENU_ID_PREFIX}${topMenuItem.id ?? topMenuItem.name ?? ''}`,
     type: 'item',
     title: topMenuItem.name,
@@ -122,19 +132,7 @@ const createTopMenuListEntry = (topMenuItem: MenuItem) => {
     componentProps: {
       items: topMenuItem.items?.map(createMenuListEntry) ?? []
     }
-  } as MenuListEntry
-
-  if (topMenuItem.action && topMenuItem.action === 'link' && topMenuItem.url && topMenuItem.url.length > 0) {
-    const url = getMenuLink(topMenuItem)
-
-    entry = {
-      ...entry,
-      href: url,
-      onClick: () => window.location.assign(url)
-    } as any as MenuListEntry
-  }
-
-  return entry
+  } as Panel
 }
 
 const createPluginsMenu = (useFake: boolean) => {
@@ -167,7 +165,33 @@ const createFlowsMenu = () => {
   return createTopMenuItem('flowsMenu', 'Flows', [flowsMenuItem])
 }
 
-const topPanels = computed<MenuListEntry[]>(() => {
+const createSeparatorMenu = () => {
+  return {
+    type: 'separator'
+  } as MenuItem
+}
+
+const createLockMenu = (isLocked: boolean) => {
+  return {
+    id: 'lockMenu',
+    name: isLocked ? 'Unlock Menu' : 'Lock Menu',
+    action: isLocked ? 'unlockMenu' : 'lockMenu',
+    url: '#',
+    locationMatch: null,
+    icon: isLocked ? 'action/Unlock' : 'action/Lock',
+    items: [
+      {
+        id: 'lockItem',
+        name: isLocked ? 'Unlock Menu' : 'Lock Menu',
+        url: '#',
+        locationMatch: null,
+        action: isLocked ? 'unlockMenu' : 'lockMenu'
+      }
+    ]
+  } as MenuItem
+}
+
+const topPanels = computed<Panel[]>(() => {
   // If user not logged in, don't display any menus
   if (!mainMenu.value.username) {
     return []
@@ -190,7 +214,10 @@ const topPanels = computed<MenuListEntry[]>(() => {
     allMenus.push(createPluginsMenu(true))
   }
 
-  return allMenus.map(i => createTopMenuListEntry(i) as MenuListEntry)
+  // Lock/unlock menu
+  allMenus.push(createSeparatorMenu(), createLockMenu(menuStore.sideMenuExpanded() ?? false))
+
+  return allMenus.map(i => createPanel(i) as Panel)
 })
 </script>
 
@@ -208,10 +235,6 @@ const topPanels = computed<MenuListEntry[]>(() => {
 
   #opennms-sidebar-control {
     --feather-dock-header-offset: 3.75rem;
-  
-    // tighten spacing between toggle button and top of menu items
-    --feather-dock-content-padding-top: 3em;
-    --feather-dock-toggle-top: 2em;
   }
 
   // fix Sidenav toggle button placement
@@ -232,29 +255,6 @@ const topPanels = computed<MenuListEntry[]>(() => {
 
   :deep(.feather-popover-container > .popover) {
     max-width: 24rem;
-  }
-}
-</style>
-
-<style lang="scss">
-#opennms-sidebar-control {
-  #opennms-sidebar-control-content {
-    // tighten spacing around menu separator
-    // less padding around menu separator so it doesn't just go fully across the menu
-    #opennms-sidebar-control-menu {
-      .feather-list-item.hover.focus.disabled.li-separator {
-        height: 1.25em;
-        padding: 0 0.5rem;
-      }
-    }
-
-    // when dock is closed, want the separator not quite fully across horizontally, but closer to fully across than when it's open
-    #opennms-sidebar-control-menu.dock-closed {
-      .feather-list-item.hover.focus.disabled.li-separator {
-        height: 1.25em;
-        padding: 0 0.1rem;
-      }
-    }
   }
 }
 </style>

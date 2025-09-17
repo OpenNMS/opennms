@@ -51,7 +51,7 @@ const loadChartData = function(graph) {
 		},
 		dataType: 'json',
 		success: function(data) {
-		const columns = [];
+		var columns = [];
 
 		// Only include values > 0
 		for (let i = 0; i < data.length; i++) {
@@ -63,7 +63,7 @@ const loadChartData = function(graph) {
 		}
 
 		// Decide to show or hide the graph
-		let sum = 0;
+		var sum = 0;
 		for (let i = 0; i < data.length; i++) {
 			sum += data[i][1];
 		}
@@ -73,7 +73,7 @@ const loadChartData = function(graph) {
 			$('#' + graph.id).parent().show();
 
 			// Generate graph
-			const chart = c3.generate({
+			var chart = c3.generate({
 				bindto: '#' + graph.id,
 				size: donutSize,
 				data: {
@@ -97,7 +97,7 @@ const loadChartData = function(graph) {
 			});
 
 			// Add graph tooltip
-			const description = graph.description || graph.title || '';
+			var description = graph.description || graph.title || '';
 			if (description !== '') {
 				d3.select('#' + graph.id)
 					.select('.c3-chart')
@@ -110,7 +110,7 @@ const loadChartData = function(graph) {
 };
 
 const render = function(options) {
-	const graphs = options.graphs;
+	var graphs = options.graphs;
 	if (graphs === undefined || graphs === null || graphs.length === 0) {
 		return;
 	}
@@ -123,7 +123,7 @@ const render = function(options) {
 
 	for (let i = 0; i < graphs.length; i++) {
 		// Gather options to draw graph
-		const graph = graphs[i];
+		var graph = graphs[i];
 
 		// Skip the entry when any of the required fields are missing
 		if (graph.id === undefined || graph.id === null || graph.id === '') {
@@ -135,7 +135,7 @@ const render = function(options) {
 
 		// create container for graph if it does not exist yet
 		if ($('#' + graph.id).length === 0) {
-			const graphContainer = $('<div/>', {
+			var graphContainer = $('<div/>', {
 				class: 'mx-auto col-xs-12 col-sm-6 col-md-6 col-lg-4'
 			});
 			graphContainer.append($('<div></div>', {
@@ -194,9 +194,9 @@ const graphDefinitions = {
 
 const doRender = function(graphKeys) {
 	//console.log('doRender:',graphKeys);
-	const graphs = [];
+	var graphs = [];
 	for (let i = 0; i < graphKeys.length; i++) {
-		const graphKey = graphKeys[i];
+		var graphKey = graphKeys[i];
 		if (graphKey !== undefined && graphKey in graphDefinitions) {
 			graphs.push(graphDefinitions[graphKey]);
 		}

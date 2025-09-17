@@ -219,7 +219,7 @@ require('../services/Requisitions');
     * @methodOf ForeignSourceController
     */
     $scope.goTop = function() {
-      const doGoTop = function() {
+      var doGoTop = function() {
         $window.location.href = Configuration.baseHref + '#/requisitions';
       };
       $scope.goTo(doGoTop);
@@ -233,7 +233,7 @@ require('../services/Requisitions');
     * @methodOf ForeignSourceController
     */
     $scope.goBack = function() {
-      const doGoBack = function() {
+      var doGoBack = function() {
         if ($scope.foreignSource === 'default') {
           $window.location.href = Configuration.baseHref + '#/requisitions';
         } else {
@@ -264,7 +264,7 @@ require('../services/Requisitions');
     * @param {object} policy The policy object
     */
     $scope.indexOfPolicy = function(policy) {
-      for (let i = 0; i < $scope.foreignSourceDef.policies.length; i++) {
+      for (var i = 0; i < $scope.foreignSourceDef.policies.length; i++) {
         if ($scope.foreignSourceDef.policies[i].name === policy.name) {
           return i;
         }
@@ -281,7 +281,7 @@ require('../services/Requisitions');
     * @param {object} policy The detector object
     */
     $scope.indexOfDetector = function(detector) {
-      for (let i = 0; i < $scope.foreignSourceDef.detectors.length; i++) {
+      for (var i = 0; i < $scope.foreignSourceDef.detectors.length; i++) {
         if ($scope.foreignSourceDef.detectors[i].name === detector.name) {
           return i;
         }
@@ -299,7 +299,7 @@ require('../services/Requisitions');
     * @param {boolean} isNew true, if the policy is new
     */
     $scope.editPolicy = function(policy, isNew) {
-      const form = this.fsForm;
+      var form = this.fsForm;
       $uibModal.open({
         backdrop: 'static',
         keyboard: false,
@@ -327,9 +327,9 @@ require('../services/Requisitions');
     * @param {object} policy The policy object to move
     */
     $scope.movePolicy = function(policy) {
-      const form = this.fsForm;
-      const pos = $scope.indexOfPolicy(policy);
-      const max = $scope.foreignSourceDef.policies.length - 1;
+      var form = this.fsForm;
+      var pos = $scope.indexOfPolicy(policy);
+      var max = $scope.foreignSourceDef.policies.length - 1;
       $uibModal.open({
         backdrop: 'static',
         keyboard: false,
@@ -358,7 +358,7 @@ require('../services/Requisitions');
     * @param {object} policy The policy object to remove
     */
     $scope.removePolicy = function(policy) {
-      const index = $scope.indexOfPolicy(policy);
+      var index = $scope.indexOfPolicy(policy);
       if (index > -1) {
         $scope.foreignSourceDef.policies.splice(index, 1);
         this.fsForm.$dirty = true;
@@ -374,7 +374,7 @@ require('../services/Requisitions');
     */
     $scope.addPolicy = function() {
       $scope.foreignSourceDef.policies.push({ 'name': '', 'class': '', 'parameter': [] });
-      const index = $scope.foreignSourceDef.policies.length - 1;
+      var index = $scope.foreignSourceDef.policies.length - 1;
       $scope.editPolicy($scope.foreignSourceDef.policies[index], true);
     };
 
@@ -388,7 +388,7 @@ require('../services/Requisitions');
     * @param {boolean} isNew true, if the detector is new
     */
     $scope.editDetector = function(detector, isNew) {
-      const form = this.fsForm;
+      var form = this.fsForm;
       $uibModal.open({
         backdrop: 'static',
         keyboard: false,
@@ -416,9 +416,9 @@ require('../services/Requisitions');
     * @param {object} detector The detector object to move
     */
     $scope.moveDetector = function(detector) {
-      const form = this.fsForm;
-      const pos = $scope.indexOfDetector(detector);
-      const max = $scope.foreignSourceDef.detectors.length - 1;
+      var form = this.fsForm;
+      var pos = $scope.indexOfDetector(detector);
+      var max = $scope.foreignSourceDef.detectors.length - 1;
       $uibModal.open({
         backdrop: 'static',
         keyboard: false,
@@ -447,7 +447,7 @@ require('../services/Requisitions');
     * @param {object} detector The detector object to remove
     */
     $scope.removeDetector = function(detector) {
-      const index = $scope.indexOfDetector(detector);
+      var index = $scope.indexOfDetector(detector);
       if (index > -1) {
         $scope.foreignSourceDef.detectors.splice(index, 1);
         this.fsForm.$dirty = true;
@@ -463,7 +463,7 @@ require('../services/Requisitions');
     */
     $scope.addDetector = function() {
       $scope.foreignSourceDef.detectors.push({ 'name': '', 'class': '', 'parameter': [] });
-      const index = $scope.foreignSourceDef.detectors.length - 1;
+      var index = $scope.foreignSourceDef.detectors.length - 1;
       $scope.editDetector($scope.foreignSourceDef.detectors[index], true);
     };
 
@@ -475,7 +475,7 @@ require('../services/Requisitions');
     * @methodOf ForeignSourceController
     */
     $scope.save = function() {
-      const form = this.fsForm;
+      var form = this.fsForm;
       RequisitionsService.startTiming();
       RequisitionsService.saveForeignSourceDefinition($scope.foreignSourceDef).then(
         function() { // success

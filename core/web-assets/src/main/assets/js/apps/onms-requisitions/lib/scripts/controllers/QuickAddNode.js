@@ -137,7 +137,7 @@ const QuickNode = require('../model/QuickNode');
     $scope.provision = function() {
       $scope.isSaving = true;
       growl.info('The node ' + _.escape($scope.node.nodeLabel) + ' is being added to requisition ' + _.escape($scope.node.foreignSource) + '. Please wait...');
-      const successMessage = 'The node ' + _.escape($scope.node.nodeLabel) + ' has been added to requisition ' + _.escape($scope.node.foreignSource);
+      var successMessage = 'The node ' + _.escape($scope.node.nodeLabel) + ' has been added to requisition ' + _.escape($scope.node.foreignSource);
       RequisitionsService.quickAddNode($scope.node).then(
         function() { // success
           $scope.reset();
@@ -177,9 +177,9 @@ const QuickNode = require('../model/QuickNode');
     * @returns {array} the unused available categories
     */
     $scope.getAvailableCategories = function() {
-      const categories = [];
+      var categories = [];
       angular.forEach($scope.availableCategories, function(category) {
-        let found = false;
+        var found = false;
         angular.forEach($scope.node.categories, function(c) {
           if (c.name === category) {
             found = true;

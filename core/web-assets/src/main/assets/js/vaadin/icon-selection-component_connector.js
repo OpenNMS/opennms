@@ -28,33 +28,31 @@ if (!window.org_opennms_features_topology_app_internal_ui_icons_IconSelectionCom
         // Initialize SVG Element
         // As the Topology UI already initialized the SVG Definitions, we do not need to do this again here
         // We can just cross-reference them, cool!
-        const svgParent = this.getElement();
-        const svg = d3.select(svgParent).append('svg:svg');
+        var svgParent = this.getElement();
+        var svg = d3.select(svgParent).append('svg:svg');
 
-        const state = this.getState();
+        var state = this.getState();
+        var connector = this;
 
-        // eslint-disable-next-line @typescript-eslint/no-this-alias
-        const connector = this;
-
-        const elementsToShow = state.elementsToShow;
-        const SPACING = state.spacing;
-        const NO_COLUMNS = state.columnCount;
-        const MAX_SIZE = state.maxSize;
+        var elementsToShow = state.elementsToShow;
+        var SPACING = state.spacing;
+        var NO_COLUMNS = state.columnCount;
+        var MAX_SIZE = state.maxSize;
 
         // Initialize SVG
-        let currentlySelectedIconElement;
-        let columnCounter = 0;
-        let rowCounter = 0;
+        var currentlySelectedIconElement;
+        var columnCounter = 0;
+        var rowCounter = 0;
         elementsToShow.forEach(function showElement(e) {
             // Create a g element for the element itself (this is the container)
-            const element = svg.append('g').attr('class', 'icon');
+            var element = svg.append('g').attr('class', 'icon');
             element.attr('opacity', 1).style('cursor', 'pointer');
 
             // The g element for the icons
-            const svgIconContainer         = element.append('g').attr('class', 'icon-container').attr('opacity', 1);
-            const svgIcon                  = svgIconContainer.append('use');
-            const svgIconRollover          = svgIconContainer.append('use');
-            const svgIconActive            = svgIconContainer.append('use');
+            var svgIconContainer         = element.append('g').attr('class', 'icon-container').attr('opacity', 1);
+            var svgIcon                  = svgIconContainer.append('use');
+            var svgIconRollover          = svgIconContainer.append('use');
+            var svgIconActive            = svgIconContainer.append('use');
 
             // The element which is actually visible
             element.append('svg:rect')
@@ -96,14 +94,14 @@ if (!window.org_opennms_features_topology_app_internal_ui_icons_IconSelectionCom
             }
 
             // Positioning and sizing
-            const xPos = MAX_SIZE * columnCounter + (columnCounter * SPACING);
-            const yPos = MAX_SIZE * rowCounter + (rowCounter * SPACING);
+            var xPos = MAX_SIZE * columnCounter + (columnCounter * SPACING);
+            var yPos = MAX_SIZE * rowCounter + (rowCounter * SPACING);
 
             // Define scale factor based on svgIcon, we assume _rollover and _active icons have same size
-            const iconWidth = svgIcon[0][0].getBBox().width;
-            const iconHeight = svgIcon[0][0].getBBox().height;
-            const primeLength = iconWidth >= iconHeight ? iconWidth : iconHeight;
-            const scaleFactor = primeLength === 0 ? 0.001 : (MAX_SIZE / primeLength);
+            var iconWidth = svgIcon[0][0].getBBox().width;
+            var iconHeight = svgIcon[0][0].getBBox().height;
+            var primeLength = iconWidth >= iconHeight ? iconWidth : iconHeight;
+            var scaleFactor = primeLength === 0 ? 0.001 : (MAX_SIZE / primeLength);
 
             // scale icon-container
             svgIconContainer.attr('transform', 'scale(' + scaleFactor + ')');

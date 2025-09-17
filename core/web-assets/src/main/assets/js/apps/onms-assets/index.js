@@ -121,8 +121,8 @@ angular.module('onms-assets', [
   };
 
   $scope.save = function() {
-    const target = {};
-    for (const k in $scope.asset) {
+    var target = {};
+    for (var k in $scope.asset) {
       if ($scope.infoKeys.indexOf(k) === -1 && $scope.blackList.indexOf(k) === -1 && $scope.asset[k] !== '' && $scope.asset[k] !== null) {
         target[k] = $scope.dateKeys.indexOf(k) === -1 ? $scope.asset[k] : uibDateParser.filter($scope.asset[k], $scope.dateFormat);
       }
@@ -152,14 +152,12 @@ angular.module('onms-assets', [
   };
 
   $scope.updateRequisition = function(assets) {
-    const assetFields = [];
-
-    for (const key in assets) {
+    var assetFields = [];
+    for (var key in assets) {
       if (assets.hasOwnProperty(key)) {
         assetFields.push({ name: key, value: assets[key] });
       }
     }
-
     $http.get('rest/requisitions/' + $scope.foreignSource + '/nodes/' + $scope.foreignId)
       .then(function(response) {
         const node = response.data;
@@ -174,4 +172,5 @@ angular.module('onms-assets', [
         growl.error('Cannot obtain node data from requisition ' + $scope.foreignSource);
       });
   };
+
 }]);

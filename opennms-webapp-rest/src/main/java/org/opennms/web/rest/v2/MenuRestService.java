@@ -80,6 +80,11 @@ public class MenuRestService {
         MainMenu mainMenu = null;
         this.menuProvider.setMenuRequestContext(new HttpMenuRequestContext(request));
 
+        // TODO: These may not be needed, need more testing to be sure that variable expansion is working
+        if (containsHomeVariable(menuProvider.getDispatcherServletPath())) {
+            this.menuProvider.setDispatcherServletPath(getExpandedWebInfPrefixPath(request, menuProvider.getDispatcherServletPath()));
+        }
+
         if (containsHomeVariable(menuProvider.getMenuTemplateFilePath())) {
             this.menuProvider.setMenuTemplateFilePath(getExpandedWebInfPrefixPath(request, menuProvider.getMenuTemplateFilePath()));
         }

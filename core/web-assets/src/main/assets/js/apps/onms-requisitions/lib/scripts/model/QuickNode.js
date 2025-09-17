@@ -36,7 +36,6 @@ const QuickNode = function QuickNode() {
 
   'use strict';
 
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
 
   self.foreignSource = null;
@@ -62,7 +61,7 @@ const QuickNode = function QuickNode() {
   * @returns {object} the new RequisitionNode Object
   */
   self.createRequisitionedNode = function() {
-    const reqNode = new RequisitionNode(self.foreignSource, {
+    var reqNode = new RequisitionNode(self.foreignSource, {
       'foreign-id': self.foreignId,
       'node-label': self.nodeLabel,
       'interface': [{

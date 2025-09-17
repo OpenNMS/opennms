@@ -36,7 +36,6 @@ const RequisitionService = require('./RequisitionService');
 const RequisitionInterface = function RequisitionInterface(intf) {
   'use strict';
 
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
 
   /**

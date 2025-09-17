@@ -92,7 +92,7 @@ angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'monitor
 
 	// Reload all resources via REST
 	$scope.$parent.refresh = function() {
-		const queryArgs = {
+		var queryArgs = {
 			limit: $scope.$parent.query.limit,
 			offset: $scope.$parent.query.offset,
 			orderBy: $scope.$parent.query.orderBy,
@@ -108,7 +108,7 @@ angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'monitor
 			function(value, headers) {
 				$scope.$parent.items = value;
 
-				const contentRange = elementList.parseContentRange(headers('Content-Range'));
+				var contentRange = elementList.parseContentRange(headers('Content-Range'));
 				$scope.$parent.query.lastOffset = contentRange.end;
 				// Subtract 1 from the value since offsets are zero-based
 				$scope.$parent.query.maxOffset = contentRange.total - 1;
@@ -147,7 +147,7 @@ angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'monitor
 
 		// We have to provide the locationName here because it has a dash in its
 		// name and we can't use dot notation to refer to it as a default param
-		const saveMe = monitoringLocationFactory.get({id: item['location-name']}, function() {
+		var saveMe = monitoringLocationFactory.get({id: item['location-name']}, function() {
 			// Update fields
 			saveMe['monitoring-area'] = item['monitoring-area'];
 			saveMe.geolocation = item.geolocation;
@@ -166,7 +166,7 @@ angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'monitor
 		}, function(response) {
 			if (response.status === 404) {
 				// Create a new $resource and assign properties on it
-				const saveMe = new monitoringLocationFactory({});
+				var saveMe = new monitoringLocationFactory({});
 				saveMe['location-name'] = item['location-name'];
 				saveMe['monitoring-area'] = item['monitoring-area'];
 				saveMe.geolocation = item.geolocation;
@@ -189,14 +189,14 @@ angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'monitor
 	$scope.$parent.deleteItem = function(item) {
 		// We have to provide the locationName here because it has a dash in its
 		// name and we can't use dot notation to refer to it as a default param
-		const saveMe = monitoringLocationFactory.get({id: item['location-name']}, function() {
+		var saveMe = monitoringLocationFactory.get({id: item['location-name']}, function() {
 			if ($window.confirm('Are you sure you want to remove location "' + item['location-name'] + '"?')) {
 				// We have to provide the locationName here because it has a dash in its
 				// name and we can't use dot notation to refer to it as a default param
 				saveMe.$delete({id: item['location-name']}, function() {
 					// Watch the item list
-					const cancelWatch = $scope.$watch('items', function() {
-						for (let i = 0; i < $scope.items.length; i++) {
+					var cancelWatch = $scope.$watch('items', function() {
+						for (var i = 0; i < $scope.items.length; i++) {
 							// If it still contains the deleted item, then call refresh()
 							if ($scope.items[i]['location-name'] === item['location-name']) {
 								$scope.refresh();

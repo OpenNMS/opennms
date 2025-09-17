@@ -28,7 +28,7 @@ $(function() {
     if ('Notification' in window) {
         let notificationSocket = null;
 
-        const connect = function () {
+        let connect = function () {
             notificationSocket = new WebSocket((Util.getBaseHref() + 'notification/stream').replace(/^http/, 'ws'));
 
             notificationSocket.onclose = function (event) {
@@ -39,8 +39,8 @@ $(function() {
             };
 
             notificationSocket.onmessage = function (event) {
-                const message = JSON.parse(event.data);
-                const notification = new Notification(message.head, {
+                let message = JSON.parse(event.data);
+                let notification = new Notification(message.head, {
                     body: message.body,
                     icon: Util.getBaseHref() + 'images/o-512.png',
                     badge: Util.getBaseHref() + 'favicon.ico',

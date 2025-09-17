@@ -116,7 +116,7 @@ angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'minionL
 				$scope.$parent.items = value;
 
 				if (value && value.length > 0) {
-					const query = '(' + value.map(function(minion) {
+					var query = '(' + value.map(function(minion) {
 						return 'foreignId==' + minion.id;
 					}).join(',') + ')';
 
@@ -125,13 +125,12 @@ angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'minionL
 							_s: query
 						}
 					}).then(function(response) {
-						const minionNodes = {};
-						let node;
+						var minionNodes = {}, node;
 						if (response && response.data && response.data.node) {
 							if (!angular.isArray(response.data.node)) {
 								response.data.node = [response.data.node];
 							}
-							for (let i=0; i < response.data.node.length; i++) {
+							for (var i=0; i < response.data.node.length; i++) {
 								node = response.data.node[i];
 								minionNodes[node.foreignId + '\0' + node.location] = node;
 							}
@@ -139,7 +138,7 @@ angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'minionL
 						}
 					});
 				}
-				const contentRange = elementList.parseContentRange(headers('Content-Range'));
+				var contentRange = elementList.parseContentRange(headers('Content-Range'));
 				$scope.$parent.query.lastOffset = contentRange.end;
 				// Subtract 1 from the value since offsets are zero-based
 				$scope.$parent.query.maxOffset = contentRange.total - 1;
@@ -170,11 +169,11 @@ angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'minionL
 	};
 
 	$scope.$parent.deleteItem = function(item) {
-		const saveMe = minionFactory.get({id: item.id}, function() {
+		var saveMe = minionFactory.get({id: item.id}, function() {
 			if ($window.confirm('Are you sure you want to remove minion "' + item['id'] + '"?')) {
 				saveMe.$delete({id: item['id']}, function() {
-					const cancelWatch = $scope.$watch('items', function() {
-						for (let i = 0; i < $scope.items.length; i++) {
+					var cancelWatch = $scope.$watch('items', function() {
+						for (var i = 0; i < $scope.items.length; i++) {
 							// If it still contains the deleted item, then call refresh()
 							if ($scope.items[i]['id'] === item['id']) {
 								$scope.refresh();
@@ -196,7 +195,7 @@ angular.module(MODULE_NAME, [ 'onms.restResources', 'onms.elementList', 'minionL
 
 	// Save an item by using $resource.$update
 	$scope.$parent.update = function(item) {
-		const saveMe = minionFactory.get({id: item.id}, function() {
+		var saveMe = minionFactory.get({id: item.id}, function() {
 			saveMe.label = item.label;
 			saveMe.location = item.location;
 			saveMe.properties = item.properties;

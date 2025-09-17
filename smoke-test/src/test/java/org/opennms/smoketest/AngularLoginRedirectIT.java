@@ -111,7 +111,7 @@ public class AngularLoginRedirectIT extends OpenNMSSeleniumIT {
         setImplicitWait();
     }
 
-    @Ignore("This test is flaky due to the simulated logout process, ignoring for now.")
+    @Test
     public void testAngularLogout() throws IOException {
         for (Check eachCheck : checks) {
             LOG.info("{}: Run test for page", eachCheck.url);

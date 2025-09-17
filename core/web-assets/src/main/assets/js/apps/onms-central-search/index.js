@@ -31,14 +31,14 @@ const globalErrorHandling = function(scope, errorResponse) {
     if (errorResponse.data) {
         scope.error = errorResponse.data;
     } else {
-        scope.error = 'An unexpected error occurred while handling the request';
+        scope.error = "An unexpected error occurred while handling the request";
     }
 };
 
 (function() {
     'use strict';
 
-    const MODULE_NAME = 'onms.central.search';
+    var MODULE_NAME = 'onms.central.search';
 
     angular.module(MODULE_NAME, [
         'angular-loading-bar',
@@ -49,6 +49,7 @@ const globalErrorHandling = function(scope, errorResponse) {
         .config(['$locationProvider', function($locationProvider) {
             $locationProvider.hashPrefix('');
         }])
+
         .directive('onmsCentralSearch', function() {
             return {
                 restrict: 'E',
@@ -63,7 +64,7 @@ const globalErrorHandling = function(scope, errorResponse) {
             });
         })
         .controller('QuickSearchController', ['$scope', 'SearchResource', '$timeout', '$document', function($scope, SearchResource, $timeout, $document) {
-            const KeyCodes = {
+            var KeyCodes = {
                 ENTER: 13,
                 SHIFT: 16,
                 ESC: 27,
@@ -73,7 +74,7 @@ const globalErrorHandling = function(scope, errorResponse) {
                 KEY_DOWN: 40,
             };
 
-            const Types = {
+            var Types = {
                 Group: 'Group',
                 Item: 'Item',
                 More: 'More'
@@ -92,9 +93,9 @@ const globalErrorHandling = function(scope, errorResponse) {
             $scope.selectedIndex = 0;
 
             $document.bind('mousedown', function(event) {
-                const isChild = $('#onms-search-form').has(event.target).length > 0;
-                const isSelf = $('#onms-search-form').is(event.target);
-                const isInside = isChild || isSelf;
+                var isChild = $('#onms-search-form').has(event.target).length > 0;
+                var isSelf = $('#onms-search-form').is(event.target);
+                var isInside = isChild || isSelf;
                 if (!isInside) {
                     $timeout(function() {
                         $scope.resetQuery();
@@ -125,18 +126,18 @@ const globalErrorHandling = function(scope, errorResponse) {
             $document.bind('keydown', function(e) {
                 $timeout(function() {
                     if ($scope.results.length > 0) {
-                        const element = document.getElementById('onms-search-result-item-' + $scope.selectedIndex);
+                        var element = document.getElementById('onms-search-result-item-' + $scope.selectedIndex);
                         if (e.keyCode === KeyCodes.KEY_UP || e.keyCode === KeyCodes.KEY_DOWN) {
                             $scope.navigateSearchResult(e.keyCode);
 
                             // Ideally we would use scrollToView(), but that will also scroll the body, which
                             // results in the header scrolling down slightly, which looks weird when using the search
                             // So instead scrolling is implemented manually
-                            const parentComponent = document.getElementById('onms-search-result');
-                            const parentHeight = parentComponent.clientHeight;
-                            const resultHeight = element.clientHeight;
-                            const resultOffset = element.offsetTop;
-                            const padding = 25;
+                            var parentComponent = document.getElementById('onms-search-result');
+                            var parentHeight = parentComponent.clientHeight;
+                            var resultHeight = element.clientHeight;
+                            var resultOffset = element.offsetTop;
+                            var padding = 25;
 
                             // Scroll down
                             if (resultOffset + resultHeight + padding >= parentHeight + parentComponent.scrollTop) {
@@ -210,7 +211,7 @@ const globalErrorHandling = function(scope, errorResponse) {
 
             // Ensure there is no difference between selected and mouseover
             $scope.select = function(index) {
-                const selectIndex = index || 1;
+                var selectIndex = index || 1;
                 if ($scope.selectedIndex >= 1) {
                     $scope.results[$scope.selectedIndex].selected = false;
                 }
@@ -219,7 +220,7 @@ const globalErrorHandling = function(scope, errorResponse) {
             };
 
             $scope.onQueryChange = function() {
-                if ($scope.query.length === 0) {
+                if ($scope.query.length == 0) {
                     $scope.resetQuery();
                     return;
                 }
@@ -255,7 +256,7 @@ const globalErrorHandling = function(scope, errorResponse) {
                             $scope.cancelRequest();
                             $scope.performSearchExecuted = true;
 
-                            const results = [];
+                            var results = [];
                             data.forEach(function(eachResult) {
                                 // Create the header
                                 results.push({
@@ -274,18 +275,18 @@ const globalErrorHandling = function(scope, errorResponse) {
                                 });
 
                                 if (eachResult.more === true) {
-                                    const showMoreElement = {
+                                    var showMoreElement = {
                                         context: eachResult.context.name,
                                         count: eachResult.results.length,
                                         type: Types.More,
                                         loadMore: function() {
                                             $scope.error = undefined;
                                             SearchResource.query({'_s': $scope.query, '_l': this.count + 10, '_c' : this.context}, function(response) {
-                                                const endIndex = $scope.results.indexOf(showMoreElement);
+                                                var endIndex = $scope.results.indexOf(showMoreElement);
 
                                                 // The result is context focused, so there is only one search result anyways
-                                                const searchResult = response[0];
-                                                const results = searchResult.results.slice(endIndex - 1); // Remove first elements, as they are already being showed
+                                                var searchResult = response[0];
+                                                var results = searchResult.results.slice(endIndex - 1); // Remove first elements, as they are already being showed
                                                 results.forEach(function(item, i) {
                                                     // Add item
                                                     item.type = Types.Item;
@@ -311,7 +312,7 @@ const globalErrorHandling = function(scope, errorResponse) {
                                 }
                             });
                             $scope.results = results;
-                            if ($scope.results.length !== 0) {
+                            if ($scope.results.length != 0) {
                                 $scope.selectedIndex = 1;
                                 $scope.results[$scope.selectedIndex].selected = true;
                             }

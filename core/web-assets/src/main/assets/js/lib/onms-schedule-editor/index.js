@@ -61,7 +61,6 @@ angular.module(MODULE_NAME, [])
                             scope.errors = {};
                             scope.errors[e.context] = e.message;
                         } else {
-                            // eslint-disable-next-line no-console
                             console.log('Unexpected error occurred', e);
                         }
                         scope.options.errors = scope.errors;
@@ -172,9 +171,9 @@ angular.module(MODULE_NAME, [])
                 // Enforce correct time visualization
                 scope.model.convert(scope.options.mode);
 
-                const initMinutes = function() {
+                var initMinutes = function() {
                     scope.minutes = [];
-                    for (let i=0; i<60; i+=scope.options.minutesStep) {
+                    for (var i=0; i<60; i+=scope.options.minutesStep) {
                         scope.minutes.push(i);
                     }
                     // Ensure the defined minutes are available
@@ -185,11 +184,11 @@ angular.module(MODULE_NAME, [])
                         return parseInt(left, 10) - parseInt(right, 10);
                     });
                 };
-                const initHours = function() {
+                var initHours = function() {
                     scope.hours = [];
-                    const start = scope.model.mode === ClockMode.HALF_CLOCK_SYSTEM ? 1: 0;
-                    const end = scope.model.mode === ClockMode.HALF_CLOCK_SYSTEM ? 12 : 23;
-                    for (let i=start; i<=end; i++) {
+                    var start = scope.model.mode === ClockMode.HALF_CLOCK_SYSTEM ? 1: 0;
+                    var end = scope.model.mode === ClockMode.HALF_CLOCK_SYSTEM ? 12 : 23;
+                    for (var i=start; i<=end; i++) {
                         scope.hours.push(i);
                     }
                 };

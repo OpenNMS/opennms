@@ -33,12 +33,12 @@ const createMenuItem = (id: string, name: string) => {
   } as MenuItem
 }
 
-const createTopMenuItem = (id: string, name: string, items: MenuItem[], url?: string) => {
+const createTopMenuItem = (id: string, name: string, items: MenuItem[]) => {
   return {
     id,
     name,
     items,
-    url: (url && url.length > 0) ? url : null,
+    url: null,
     locationMatch: null,
     roles: null
   } as MenuItem

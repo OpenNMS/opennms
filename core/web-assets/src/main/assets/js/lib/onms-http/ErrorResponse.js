@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-import ContextError from './ContextError';
+import ContextError from "./ContextError";
 
 export default class ErrorResponse {
 

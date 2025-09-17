@@ -43,7 +43,8 @@ import org.opennms.web.rest.support.menu.model.MainMenu;
 import org.opennms.web.rest.support.menu.model.MenuEntry;
 
 public class MenuProviderTest {
-    final static String MENU_TEMPLATE_PATH = "src/test/resources/menu/menu-template.json";
+    final static String RESOURCE_PATH = "src/test/resources/dispatcher-servlet.xml";
+    final static String MENU_TEMPLATE_PATH = "src/test/resources/menu-template.json";
 
     final static String[] ADMIN_ROLES = new String[] { "ROLE_ADMIN", "ROLE_FLOW_MANAGER" };
 
@@ -165,12 +166,17 @@ public class MenuProviderTest {
         assertThat(actualNames, containsInAnyOrder(expectedNames));
     }
 
+    private String getResourcePath() {
+        Path p = Paths.get(RESOURCE_PATH);
+        return p.toFile().getAbsolutePath();
+    }
+
     private MainMenu parseMainMenu(boolean isZenithConnectEnabled, String[] roles) {
         MainMenu mainMenu = null;
         List<String> roleList = Arrays.stream(roles).toList();
 
         try {
-            MenuProvider provider = new MenuProvider(MENU_TEMPLATE_PATH);
+            MenuProvider provider = new MenuProvider(getResourcePath(), MENU_TEMPLATE_PATH);
 
             provider.setMenuRequestContext(
                     new MenuProviderTest.TestMenuRequestContext(isZenithConnectEnabled, roleList));

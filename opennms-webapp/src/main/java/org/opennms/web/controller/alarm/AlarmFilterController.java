@@ -123,7 +123,7 @@ public class AlarmFilterController extends MultiActionController implements Init
                 //AlertTag.addAlertToRequest(successView, "Favorite was created successfully", AlertType.SUCCESS);
                 return successView;
             }
-            error = "An error occurred while creating the favorite";
+            error = "An error occured while creating the favorite";
         } catch (FilterFavoriteService.FilterFavoriteException ex) {
             error = ex.getMessage();
         }

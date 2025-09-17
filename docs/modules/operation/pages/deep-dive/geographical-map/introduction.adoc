@@ -57,30 +57,27 @@ To select among tile providers, follow these steps:
 
 image:geographical-map/tile-provider-list.png[Radio button menu with three map options.]
 
-=== User defined tile provider configuration
+=== Tile provider configuration
 
 To configure a user-defined tile provider, follow these steps:
 
 . In `etc/opennms.properties`, use the configuration below.
 In this case the local tile provider is found at `192.168.0.99`.
 
-. Set `gwt.openlayers.name` to provide a display name
-
-If you specify a user-defined tile provider, it will be the default (displays as the first one, and loads by default instead of the built-in providers).
-
-NOTE: The `opennms.properties` file that is installed with {page-component-title} already contains an entry for the OpenNMS tile provider.
-
-NOTE: Instead of editing the `opennms.properties` file directly, you should create a `.properties` file in the `etc/opennms.properties.d` folder with your override properties.
+. Set `gwt.openlayers.name` to provide a display name, and specify `gwt.openlayers.userDefinedAsDefault=true` if you want this tile provider to be the default (displays as the first one, and loads by default instead of the built-in providers).
 
 ```
 ###### MAPPING AND GEOCODING ######
 
 # The tile server URL to use for OpenLayers. This can be any mapnik-style tile server URL.
 # (Sorry, no support for multiple URLs yet.)
+# If 'gwt.openlayers.userDefinedAsDefault' is true, use this tile server as the default one on the Geographical Map page
 # OpenNMS default tile server
+
 gwt.openlayers.name=My Street Map
 gwt.openlayers.url=http://192.168.0.99/{z}/{x}/{y}.png
 gwt.openlayers.options.attribution=Map data &copy; <a tabindex="-1" target="_blank" href="http://192.168.0.99/copyright">My Street Map</a> contributors under <a tabindex="-1" target="_blank" href="192.168.0.99/licenses/odbl/">ODbL</a>, <a tabindex="-1" target="_blank" href="http://192.168.0.99/licenses/by-sa/2.0/">CC BY-SA 2.0</a>
+gwt.openlayers.userDefinedAsDefault=true
 ```
 
 [start=3]

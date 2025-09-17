@@ -21,11 +21,9 @@
  */
 package org.opennms.netmgt.snmpinterfacepoller;
 
-import static org.awaitility.Awaitility.await;
 import static org.junit.Assert.assertEquals;
 
 import java.io.InputStream;
-import java.time.Duration;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -95,16 +93,13 @@ public class SnmpPollerIT implements TemporaryDatabaseAware<MockDatabase> {
     public void testIgnoredInterfaces() throws Exception {
         SnmpInterfaceDao snmpInterfaceDao = ((DefaultPollContext)m_pollableNetwork.getContext()).getSnmpInterfaceDao();
 
-        await().atMost(Duration.ofSeconds(10)).pollInterval(Duration.ofMillis(500)).untilAsserted(() -> {
-            var interfaces = snmpInterfaceDao.findAll();
+        var interfaces = snmpInterfaceDao.findAll();
 
-            OnmsSnmpInterface ethIf = interfaces.stream().filter(snmpIf -> snmpIf.getIfType() == 6).findFirst().orElseThrow();
-            OnmsSnmpInterface otherIf = interfaces.stream().filter(snmpIf -> snmpIf.getIfType() == 2).findFirst().orElseThrow();
+        OnmsSnmpInterface ethIf = interfaces.stream().filter(snmpIf -> snmpIf.getIfType() == 6).findFirst().orElseThrow();
+        OnmsSnmpInterface otherIf = interfaces.stream().filter(snmpIf -> snmpIf.getIfType() == 2).findFirst().orElseThrow();
 
-            assertEquals(ethIf.getPoll(), "P");
-            assertEquals(otherIf.getPoll(), "I");
-        });
-
+        assertEquals(ethIf.getPoll(), "P");
+        assertEquals(otherIf.getPoll(), "I");
     }
 
     @Override

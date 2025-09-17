@@ -130,11 +130,6 @@ public abstract class AbstractOpenNMSSeleniumHelper {
 
     public static final File DOWNLOADS_FOLDER = new File("target/downloads");
 
-    private enum SelfServiceMenuType {
-        LOGOUT,
-        CHANGE_PASSWORD
-    }
-
     public WebDriverWait wait = null;
     public WebDriverWait requisitionWait = null;
 
@@ -542,16 +537,6 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         }
     }
 
-    protected void clickTopMenuItem(final String menuItemId) {
-        LOG.debug("Clicking top menu item with id '{}'", menuItemId);
-
-        WebElement link = findTopMenuItemLink(menuItemId);
-
-        if (link != null) {
-            link.click();
-        }
-    }
-
     protected void clickMenuItem(final String menuItemId, final String subMenuText) {
         clickMenuItem(menuItemId, subMenuText, MENU_ITEM_TIMEOUT);
     }
@@ -566,19 +551,15 @@ public abstract class AbstractOpenNMSSeleniumHelper {
     protected void clickMenuItem(final String menuItemId, final String subMenuText, int timeout) {
         LOG.debug("Clicking menu item with id '{}' and text '{}'", menuItemId, subMenuText);
 
-        WebElement link = findMenuItemLink(menuItemId, subMenuText, false, timeout);
+        WebElement link = findMenuItemLink(menuItemId, subMenuText, timeout);
 
         if (link != null) {
             link.click();
         }
     }
 
-    protected WebElement findTopMenuItemLink(final String menuItemId) {
-        return findMenuItemLink(menuItemId, "", true, MENU_ITEM_TIMEOUT);
-    }
-
     protected WebElement findMenuItemLink(final String menuItemId, final String subMenuText) {
-        return findMenuItemLink(menuItemId, subMenuText, false, MENU_ITEM_TIMEOUT);
+        return findMenuItemLink(menuItemId, subMenuText, MENU_ITEM_TIMEOUT);
     }
 
     /**
@@ -587,13 +568,9 @@ public abstract class AbstractOpenNMSSeleniumHelper {
      * Note that the UI adds a prefix to the IDs to make sure they are unique.
      * @param menuItemId the 'id' of the top-level menu item (not including the prefix)
      * @param subMenuText the text of the sub menu item under the menu item
-     * @param isTopMenuItem if true, the item to find is a top menu item, not a submenu item. In
-     *                      this case, only 'menuItemId' is needed and 'subMenuText' should be left empty.
      */
-    protected WebElement findMenuItemLink(final String menuItemId, final String subMenuText,
-                                          boolean isTopMenuItem, int timeout) {
-        LOG.debug("Finding {} menu item with id '{}' and text '{}'",
-                isTopMenuItem ? "top" : "", menuItemId, subMenuText);
+    protected WebElement findMenuItemLink(final String menuItemId, final String subMenuText, int timeout) {
+        LOG.debug("Finding menu item with id '{}' and text '{}'", menuItemId, subMenuText);
 
         if (timeout <= 0) {
             timeout = MENU_ITEM_TIMEOUT;
@@ -614,12 +591,6 @@ public abstract class AbstractOpenNMSSeleniumHelper {
             final WebElement topMenuElement = findElementByXpath(topMenuXpath);
 
             shortWait.until(ExpectedConditions.visibilityOf(topMenuElement));
-
-            if (isTopMenuItem) {
-                foundElement[0] = topMenuElement;
-                return true;
-            }
-
             topMenuElement.click();
 
             final String popupMenuItemsXpath = POPUP_MENU_ITEMS_XPATH.replace("$ID", menuItemId);
@@ -638,51 +609,32 @@ public abstract class AbstractOpenNMSSeleniumHelper {
         return foundElement[0];
     }
 
-    private void clickSelfServiceItem(final SelfServiceMenuType itemType) {
-        LOG.debug("Clicking self service item: {}", itemType);
-
-        final String SELF_SERVICE_BUTTON_XPATH = "//div[@id='opennms-sidemenu-container']//div[contains(@class, 'self-service-menubar-dropdown')]//featherbutton[@class='self-service-menubar-dropdown-button-dark']";
-        final String LOGOUT_XPATH = "//div[@id='opennms-sidemenu-container']//div[@class='self-service-menubar-dropdown-item-content']//a[@name='self-service-logout']";
-        final String CHANGE_PASSWORD_XPATH = "//div[@id='opennms-sidemenu-container']//div[@class='self-service-menubar-dropdown-item-content']//a[@name='self-service-changePassword']";
+    protected void clickLogout() {
+        LOG.debug("Clicking logout");
 
         final int timeout = 5;
         final WebDriverWait shortWait = new WebDriverWait(getDriver(), Duration.ofSeconds(1));
 
+        final String SELF_SERVICE_BUTTON_XPATH = "//div[@id='opennms-sidemenu-container']//div[contains(@class, 'self-service-menubar-dropdown')]//featherbutton[@class='self-service-menubar-dropdown-button-dark']";
+        final String LOGOUT_XPATH = "//div[@id='opennms-sidemenu-container']//div[@class='self-service-menubar-dropdown-item-content']//a[@name='self-service-logout']";
+
         Unreliables.retryUntilSuccess(timeout, TimeUnit.SECONDS, () -> {
-            String itemXpath = LOGOUT_XPATH;
-
-            if (itemType == SelfServiceMenuType.LOGOUT) {
-                itemXpath = LOGOUT_XPATH;
-            } else if (itemType == SelfServiceMenuType.CHANGE_PASSWORD) {
-                itemXpath = CHANGE_PASSWORD_XPATH;
-            }
-
             final Actions action = new Actions(getDriver());
 
-            // Find the self service menu and hover over it so that the dropdown menu appears
+            // Find the self service menu and hover over it so that the dropdown menu appears`
             final WebElement selfServiceMenu = findElementByXpath(SELF_SERVICE_BUTTON_XPATH);
             shortWait.until(ExpectedConditions.visibilityOf(selfServiceMenu ));
 
             action.moveToElement(selfServiceMenu).build().perform();
 
-            // Find and click the link item on the dropdown menu
-            WebElement linkToClick = findElementByXpath(itemXpath);
+            // Find and click the logout link item on the dropdown menu
+            final WebElement logoutLink = findElementByXpath(LOGOUT_XPATH);
 
-            shortWait.until(ExpectedConditions.visibilityOf(linkToClick));
-            linkToClick.click();
+            shortWait.until(ExpectedConditions.visibilityOf(logoutLink));
+            logoutLink.click();
 
             return null;
         });
-    }
-
-    protected void clickLogout() {
-        LOG.debug("Clicking logout");
-        clickSelfServiceItem(SelfServiceMenuType.LOGOUT);
-    }
-
-    protected void clickChangePassword() {
-        LOG.debug("Clicking self service menu, change password item");
-        clickSelfServiceItem(SelfServiceMenuType.CHANGE_PASSWORD);
     }
 
     protected void frontPage() {

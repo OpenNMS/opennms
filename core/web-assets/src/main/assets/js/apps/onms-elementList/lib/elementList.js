@@ -125,9 +125,9 @@ const toFiql = (clauses) => {
  * TODO: Expand this to cover more FIQL syntax
  */
 const fromFiql = (fiql) => {
-	const statements = fiql.split(';');
+	let statements = fiql.split(';');
 	let segments = [];
-	const clauses = [];
+	let clauses = [];
 	for (let i = 0; i < statements.length; i++) {
 		if (statements[i].indexOf('==') > 0) {
 			segments = statements[i].split('==');
@@ -229,7 +229,7 @@ angular.module('onmsListFilters', [])
 .filter('operator', function() {
 	return function(input, value) {
 		// See if the string contains a wildcard
-		const fuzzy = (typeof value === 'string' && value.indexOf('*') > -1);
+		var fuzzy = (typeof value === 'string' && value.indexOf('*') > -1);
 
 		switch (input) {
 		case 'EQ':
@@ -456,7 +456,7 @@ angular.module(MODULE_NAME, [])
 		order: 'asc'
 	}
 
-	const initialLimit = typeof $location.search().limit === 'undefined' ? $scope.defaults.limit : (Number($location.search().limit) > 0 ? Number($location.search().limit) : $scope.defaults.limit);
+	var initialLimit = typeof $location.search().limit === 'undefined' ? $scope.defaults.limit : (Number($location.search().limit) > 0 ? Number($location.search().limit) : $scope.defaults.limit);
 
 	// Restore any query parameters that you can from the 
 	// query string, blank out the rest
@@ -477,7 +477,7 @@ angular.module(MODULE_NAME, [])
 
 	// Sync the query hash with the $location query string
 	$scope.$watch('query', function() {
-		const queryParams = angular.copy($scope.query);
+		var queryParams = angular.copy($scope.query);
 
 		// Delete derived values that we don't need in the query string
 		delete queryParams.searchClauses;
@@ -524,7 +524,7 @@ angular.module(MODULE_NAME, [])
 	}
 
 	$scope.getSearchClause = function(clause) {
-		for (let i = 0; i < $scope.query.searchClauses.length; i++) {
+		for (var i = 0; i < $scope.query.searchClauses.length; i++) {
 			if ($scope.clauseEquals(clause, $scope.query.searchClauses[i])) {
 				return $scope.query.searchClauses[i];
 			}
@@ -553,8 +553,8 @@ angular.module(MODULE_NAME, [])
 	}
 
 	$scope.removeSearchClauses = function(clauses) {
-		for (let i = 0; i < clauses.length; i++) {
-			const index = $scope.query.searchClauses.indexOf(clauses[i]);
+		for (var i = 0; i < clauses.length; i++) {
+			var index = $scope.query.searchClauses.indexOf(clauses[i]);
 			if (index >= 0) {
 				$scope.query.searchClauses.splice(index, 1);
 			}
@@ -575,8 +575,8 @@ angular.module(MODULE_NAME, [])
 		}
 
 		// TODO: Add validation?
-		const scopeOldClause = $scope.getSearchClause(oldClause);
-		const scopeNewClause = $scope.getSearchClause(newClause);
+		var scopeOldClause = $scope.getSearchClause(oldClause);
+		var scopeNewClause = $scope.getSearchClause(newClause);
 		if (!scopeOldClause) {
 			if (!scopeNewClause) {
 				// If the old clause is not present, simply add the new clause

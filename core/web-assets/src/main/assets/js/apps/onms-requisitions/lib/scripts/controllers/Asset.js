@@ -112,7 +112,7 @@ require('../services/Requisitions');
     * @returns {array} the unused available assets
     */
     $scope.getAvailableAssetFields = function() {
-      const assets = [];
+      var assets = [];
       angular.forEach($scope.assetFields, function(asset) {
         if ($scope.assetsBlackList.indexOf(asset) === -1) {
           assets.push(asset);

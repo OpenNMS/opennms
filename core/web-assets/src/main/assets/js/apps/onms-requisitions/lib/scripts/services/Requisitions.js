@@ -59,7 +59,7 @@ const RequisitionNode  = require('../model/RequisitionNode');
 
     $log.debug('Initializing RequisitionsService');
 
-    const requisitionsService = {};
+    var requisitionsService = {};
     requisitionsService.internal = {};
 
     // Cache Configuration
@@ -185,7 +185,7 @@ const RequisitionNode  = require('../model/RequisitionNode');
     * @param {object} node the QuickNode object
     */
     requisitionsService.internal.addQuickNode = function(quickNode) {
-      const node = quickNode.createRequisitionedNode();
+      var node = quickNode.createRequisitionedNode();
 
       return requisitionsService.saveNode(node).then(
         function() { // saveNode:success
@@ -218,12 +218,12 @@ const RequisitionNode  = require('../model/RequisitionNode');
     */
     requisitionsService.internal.updateRequisition = function(existingReq, deployedReq) {
       $log.debug('updateRequisition: updating deployed statistics for requisition ' + deployedReq.name + '.');
-      const foreignIds = deployedReq['foreign-id'];
+      var foreignIds = deployedReq['foreign-id'];
       existingReq.nodesInDatabase = foreignIds.length;
       existingReq.deployed = foreignIds.length > 0;
       existingReq.lastImport = deployedReq['last-imported'];
-      for (let idx = 0; idx < foreignIds.length; idx++) {
-        const existingNode = existingReq.getNode(foreignIds[idx]);
+      for (var idx = 0; idx < foreignIds.length; idx++) {
+        var existingNode = existingReq.getNode(foreignIds[idx]);
         if (existingNode) {
           existingNode.deployed = true;
         }
@@ -259,7 +259,7 @@ const RequisitionNode  = require('../model/RequisitionNode');
     requisitionsService.removeRequisitionFromCache = function(foreignSource) {
       const requisitionsData = requisitionsService.internal.getCachedRequisitionsData();
       if (requisitionsData) {
-        const reqIdx = requisitionsData.indexOf(foreignSource);
+        var reqIdx = requisitionsData.indexOf(foreignSource);
         if (reqIdx >= 0) {
           $log.debug('clearRequisitionCache: removing requisition ' + foreignSource + ' from the internal cache');
           requisitionsData.requisitions.splice(reqIdx, 1);
@@ -322,15 +322,15 @@ const RequisitionNode  = require('../model/RequisitionNode');
         return $q.when(rd);
       }
 
-      const deferred = $q.defer();
-      const url = requisitionsService.internal.requisitionsUrl;
+      var deferred = $q.defer();
+      var url = requisitionsService.internal.requisitionsUrl;
       $log.debug('getRequisitions: retrieving requisitions.');
       $http.get(url)
       .then(function getRequisitionsSuccess(response) {
         const data = response.data;
-        const requisitionsData = new RequisitionsData();
+        var requisitionsData = new RequisitionsData();
         angular.forEach(data['model-import'], function(onmsRequisition) {
-          const requisition = new Requisition(onmsRequisition, false);
+          var requisition = new Requisition(onmsRequisition, false);
           $log.debug('getRequisitions: adding requisition ' + requisition.foreignSource + '.');
           requisitionsData.requisitions.push(requisition);
         });
@@ -373,8 +373,8 @@ const RequisitionNode  = require('../model/RequisitionNode');
         return $q.when(config);
       }
 
-      const deferred = $q.defer();
-      const url = requisitionsService.internal.requisitionNamesUrl;
+      var deferred = $q.defer();
+      var url = requisitionsService.internal.requisitionNamesUrl;
       $log.debug('getRequisitionNames: getting requisition names');
       $http.get(url)
       .then(function getRequisitionNamesSuccess(response) {
@@ -404,14 +404,14 @@ const RequisitionNode  = require('../model/RequisitionNode');
     * @returns {object} a promise. On success, it provides the updated RequisitionsData object.
     */
     requisitionsService.updateDeployedStats = function(requisitionsData) {
-      const deferred = $q.defer();
-      const url = requisitionsService.internal.requisitionsUrl + '/deployed/stats';
+      var deferred = $q.defer();
+      var url = requisitionsService.internal.requisitionsUrl + '/deployed/stats';
       $log.debug('updateDeployedStats: retrieving deployed statistics.');
       $http.get(url)
       .then(function updateDeployedStatsSuccess(response) {
         const data = response.data;
         angular.forEach(requisitionsData.requisitions, function(existingReq) {
-          let deployedReq = null;
+          var deployedReq = null;
           angular.forEach(data['foreign-source'], function(r) {
             if (r.name === existingReq.foreignSource) {
               deployedReq = r;
@@ -446,8 +446,8 @@ const RequisitionNode  = require('../model/RequisitionNode');
     * @returns {object} a promise. On success, it provides a Requisition object.
     */
     requisitionsService.updateDeployedStatsForRequisition = function(existingReq) {
-      const deferred = $q.defer();
-      const url = requisitionsService.internal.requisitionsUrl + '/deployed/stats/' + encodeURIComponent(existingReq.foreignSource);
+      var deferred = $q.defer();
+      var url = requisitionsService.internal.requisitionsUrl + '/deployed/stats/' + encodeURIComponent(existingReq.foreignSource);
       $log.debug('updateDeployedStatsForRequisition: retrieving deployed statistics for requisition ' + existingReq.foreignSource);
       $http.get(url)
       .then(function updateDeployedStatsForRequisitionSuccess(response) {
@@ -484,8 +484,8 @@ const RequisitionNode  = require('../model/RequisitionNode');
         return $q.when(requisition);
       }
 
-      const deferred = $q.defer();
-      const url = requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(foreignSource);
+      var deferred = $q.defer();
+      var url = requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(foreignSource);
       $log.debug('getRequisition: getting requisition ' + foreignSource);
       $http.get(url)
       .then(function getRequisitionSuccess(response) {
@@ -528,14 +528,14 @@ const RequisitionNode  = require('../model/RequisitionNode');
     requisitionsService.synchronizeRequisition = function(foreignSource, rescanExisting) {
       const requisitionsData = requisitionsService.internal.getCachedRequisitionsData();
       if (requisitionsData) {
-        const reqIdx = requisitionsData.indexOf(foreignSource);
+        var reqIdx = requisitionsData.indexOf(foreignSource);
         if (reqIdx < 0) {
           return $q.reject('The foreignSource ' + foreignSource + ' does not exist.');
         }
       }
 
-      const deferred = $q.defer();
-      const url = requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(foreignSource) + '/import';
+      var deferred = $q.defer();
+      var url = requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(foreignSource) + '/import';
       $log.debug('synchronizeRequisition: synchronizing requisition ' + foreignSource + ' with rescanExisting=' + rescanExisting);
       $http({ method: 'PUT', url: url, params: { rescanExisting: rescanExisting }})
       .then(function(response) {
@@ -575,13 +575,13 @@ const RequisitionNode  = require('../model/RequisitionNode');
         return $q.reject('Invalid foreignSource ' + foreignSource + ', it already exist.');
       }
 
-      const deferred = $q.defer();
-      const emptyReq = { 'foreign-source': foreignSource, node: [] };
-      const url = requisitionsService.internal.requisitionsUrl;
+      var deferred = $q.defer();
+      var emptyReq = { 'foreign-source': foreignSource, node: [] };
+      var url = requisitionsService.internal.requisitionsUrl;
       $log.debug('addRequisition: adding requisition ' + foreignSource);
       $http.post(url, emptyReq)
       .then(function addRequisitionSuccess() {
-        const requisition = new Requisition(emptyReq, false);
+        var requisition = new Requisition(emptyReq, false);
         $log.debug('addRequisition: added requisition ' + requisition.foreignSource);
         const data = requisitionsService.internal.getCachedRequisitionsData();
         if (data) {
@@ -616,23 +616,23 @@ const RequisitionNode  = require('../model/RequisitionNode');
     requisitionsService.deleteRequisition = function(foreignSource) {
       const requisitionsData = requisitionsService.internal.getCachedRequisitionsData();
       if (requisitionsData) {
-        const reqIdx = requisitionsData.indexOf(foreignSource);
+        var reqIdx = requisitionsData.indexOf(foreignSource);
         if (reqIdx < 0) {
           return $q.reject('The foreignSource ' + foreignSource + ' does not exist.');
         }
-        const req = requisitionsData.requisitions[reqIdx];
+        var req = requisitionsData.requisitions[reqIdx];
         if (req.nodesInDatabase > 0) {
           return $q.reject('The foreignSource ' + foreignSource + ' contains ' + req.nodesInDatabase + ' nodes on the database, it cannot be deleted.');
         }
       }
 
-      const deferred = $q.defer();
+      var deferred = $q.defer();
 
       $log.debug('deleteRequisition: deleting requisition ' + foreignSource);
-      const deferredReqPending  = $http.delete(requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(foreignSource));
-      const deferredReqDeployed = $http.delete(requisitionsService.internal.requisitionsUrl + '/deployed/' + encodeURIComponent(foreignSource));
-      const deferredFSPending  = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/' + encodeURIComponent(foreignSource));
-      const deferredFSDeployed = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/deployed/' + encodeURIComponent(foreignSource));
+      var deferredReqPending  = $http.delete(requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(foreignSource));
+      var deferredReqDeployed = $http.delete(requisitionsService.internal.requisitionsUrl + '/deployed/' + encodeURIComponent(foreignSource));
+      var deferredFSPending  = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/' + encodeURIComponent(foreignSource));
+      var deferredFSDeployed = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/deployed/' + encodeURIComponent(foreignSource));
 
       $q.all([ deferredReqPending, deferredReqDeployed, deferredFSPending, deferredFSDeployed ])
       .then(function deleteRequisitionSuccess(response) {
@@ -672,10 +672,10 @@ const RequisitionNode  = require('../model/RequisitionNode');
         }
       }
 
-      const deferred = $q.defer();
-      const requisition = {'foreign-source': foreignSource, node: []};
+      var deferred = $q.defer();
+      var requisition = {'foreign-source': foreignSource, node: []};
       $log.debug('removeAllNodesFromRequisition: removing nodes from requisition ' + foreignSource);
-      const url = requisitionsService.internal.requisitionsUrl;
+      var url = requisitionsService.internal.requisitionsUrl;
       $http.post(url, requisition)
       .then(function removeAllNodesFromRequisitionSuccess(response) {
         const data = response.data;
@@ -726,8 +726,8 @@ const RequisitionNode  = require('../model/RequisitionNode');
         return $q.when(node);
       }
 
-      const deferred = $q.defer();
-      const url  = requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(foreignSource) + '/nodes/' + encodeURIComponent(foreignId);
+      var deferred = $q.defer();
+      var url  = requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(foreignSource) + '/nodes/' + encodeURIComponent(foreignId);
       $log.debug('getNode: getting node ' + foreignId + '@' + foreignSource);
       $http.get(url)
       .then(function getNodeSuccess(response) {
@@ -764,10 +764,10 @@ const RequisitionNode  = require('../model/RequisitionNode');
     */
     // TODO If the parent properties are updated, verify they are valid through ReST prior, adding the node.
     requisitionsService.saveNode = function(node) {
-      const deferred = $q.defer();
-      const requisitionNode = node.getOnmsRequisitionNode();
+      var deferred = $q.defer();
+      var requisitionNode = node.getOnmsRequisitionNode();
 
-      const url = requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(node.foreignSource) + '/nodes';
+      var url = requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(node.foreignSource) + '/nodes';
       $log.debug('saveNode: saving node ' + node.nodeLabel + ' on requisition ' + node.foreignSource);
       $http.post(url, requisitionNode)
       .then(function saveNodeSuccess(response) {
@@ -779,9 +779,9 @@ const RequisitionNode  = require('../model/RequisitionNode');
           requisition.setNode(node);
         }
         // Updating categories cache
-        const categories = requisitionsService.internal.getCatchedConfigData('categoriesConfig');
+        var categories = requisitionsService.internal.getCatchedConfigData('categoriesConfig');
         if (categories) {
-          let categoriesChanged = false;
+          var categoriesChanged = false;
           angular.forEach(node.categories, function(cat) {
             if (categories.indexOf(cat.name) === -1) {
               categoriesChanged = true;
@@ -793,9 +793,9 @@ const RequisitionNode  = require('../model/RequisitionNode');
           }
         }
         // Updating services cache
-        const services = requisitionsService.internal.getCatchedConfigData('servicesConfig');
+        var services = requisitionsService.internal.getCatchedConfigData('servicesConfig');
         if (services) {
-          let servicesChanged = false;
+          var servicesChanged = false;
           angular.forEach(node.interfaces, function(intf) {
             angular.forEach(intf.services, function(svc) {
               if (services.indexOf(svc.name) === -1) {
@@ -831,9 +831,9 @@ const RequisitionNode  = require('../model/RequisitionNode');
     * @returns {object} a promise.
     */
     requisitionsService.deleteNode = function(node) {
-      const deferred = $q.defer();
+      var deferred = $q.defer();
 
-      const url = requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(node.foreignSource) + '/nodes/' + encodeURIComponent(node.foreignId);
+      var url = requisitionsService.internal.requisitionsUrl + '/' + encodeURIComponent(node.foreignSource) + '/nodes/' + encodeURIComponent(node.foreignId);
       $log.debug('deleteNode: deleting node ' + node.nodeLabel + ' from requisition ' + node.foreignSource);
       $http.delete(url)
       .then(function deleteNodeSuccess(response) {
@@ -841,7 +841,7 @@ const RequisitionNode  = require('../model/RequisitionNode');
         $log.debug('deleteNode: deleted node ' + node.nodeLabel + ' on requisition ' + node.foreignSource);
         const r = requisitionsService.internal.getCachedRequisition(node.foreignSource);
         if (r) {
-          const idx = r.indexOf(node.foreignId);
+          var idx = r.indexOf(node.foreignId);
           if (idx > -1) {
             $log.debug('deleteNode: removing node ' + node.foreignId + '@' + node.foreignSource + ' from the internal cache');
             r.nodes.splice(idx, 1);
@@ -874,9 +874,9 @@ const RequisitionNode  = require('../model/RequisitionNode');
     * @returns {object} a promise. On success, it provides a foreign source object.
     */
     requisitionsService.getForeignSourceDefinition = function(foreignSource) {
-      const deferred = $q.defer();
+      var deferred = $q.defer();
 
-      const url = requisitionsService.internal.foreignSourcesUrl + '/' + encodeURIComponent(foreignSource);
+      var url = requisitionsService.internal.foreignSourcesUrl + '/' + encodeURIComponent(foreignSource);
       $log.debug('getForeignSourceDefinition: getting definition for requisition ' + foreignSource);
       $http.get(url)
       .then(function getForeignSourceDefinitionSuccess(response) {
@@ -904,10 +904,10 @@ const RequisitionNode  = require('../model/RequisitionNode');
     * @returns {object} a promise.
     */
     requisitionsService.saveForeignSourceDefinition = function(foreignSourceDef) {
-      const deferred = $q.defer();
-      const foreignSource = foreignSourceDef.name;
+      var deferred = $q.defer();
+      var foreignSource = foreignSourceDef.name;
 
-      const url = requisitionsService.internal.foreignSourcesUrl;
+      var url = requisitionsService.internal.foreignSourcesUrl;
       $log.debug('saveForeignSourceDefinition: saving definition for requisition ' + foreignSource);
       $http.post(url, foreignSourceDef)
       .then(function saveForeignSourceDefinitionSuccess(response) {
@@ -938,7 +938,7 @@ const RequisitionNode  = require('../model/RequisitionNode');
     * @returns {object} a promise.
     */
     requisitionsService.cloneForeignSourceDefinition = function(sourceRequisition, targetRequisition) {
-      const deferred = $q.defer();
+      var deferred = $q.defer();
 
       requisitionsService.getRequisitionNames().then(
         function(requisitions) { // success
@@ -985,11 +985,11 @@ const RequisitionNode  = require('../model/RequisitionNode');
     * @returns {object} a promise.
     */
     requisitionsService.deleteForeignSourceDefinition = function(foreignSource) {
-      const deferred = $q.defer();
+      var deferred = $q.defer();
 
       $log.debug('deleteForeignSourceDefinition: deleting foreign source definition ' + foreignSource);
-      const deferredFSPending  = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/' + encodeURIComponent(foreignSource));
-      const deferredFSDeployed = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/deployed/' + encodeURIComponent(foreignSource));
+      var deferredFSPending  = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/' + encodeURIComponent(foreignSource));
+      var deferredFSDeployed = $http.delete(requisitionsService.internal.foreignSourcesUrl + '/deployed/' + encodeURIComponent(foreignSource));
 
       $q.all([ deferredFSPending, deferredFSDeployed ])
       .then(function deleteForeignSourceDefinitionSuccess(response) {
@@ -1028,8 +1028,8 @@ const RequisitionNode  = require('../model/RequisitionNode');
         return $q.when(config);
       }
 
-      const deferred = $q.defer();
-      const url = requisitionsService.internal.foreignSourcesConfigUrl + '/detectors';
+      var deferred = $q.defer();
+      var url = requisitionsService.internal.foreignSourcesConfigUrl + '/detectors';
       $log.debug('getAvailableDetectors: getting available detectors');
       $http.get(url)
       .then(function getAvailableDetectorsSuccess(response) {
@@ -1064,14 +1064,14 @@ const RequisitionNode  = require('../model/RequisitionNode');
     * @returns {object} a promise. On success, it provides a list of available polict objects.
     */
     requisitionsService.getAvailablePolicies = function() {
-      const config = requisitionsService.internal.getCatchedConfigData('policiesConfig');
+      var config = requisitionsService.internal.getCatchedConfigData('policiesConfig');
       if (config) {
         $log.debug('getAvailablePolicies: returning a cached copy of policies configuration');
         return $q.when(config);
       }
 
-      const deferred = $q.defer();
-      const url = requisitionsService.internal.foreignSourcesConfigUrl + '/policies';
+      var deferred = $q.defer();
+      var url = requisitionsService.internal.foreignSourcesConfigUrl + '/policies';
       $log.debug('getAvailablePolicies: getting available policies');
       $http.get(url)
       .then(function getAvailablePoliciesSuccess(response) {
@@ -1109,14 +1109,14 @@ const RequisitionNode  = require('../model/RequisitionNode');
     * @returns {object} a promise. On success, it provides a list of available services.
     */
     requisitionsService.getAvailableServices = function(foreignSource) {
-      const config = requisitionsService.internal.getCatchedConfigData('servicesConfig');
+      var config = requisitionsService.internal.getCatchedConfigData('servicesConfig');
       if (config) {
         $log.debug('getAvailableServices: returning a cached copy of services configuration');
         return $q.when(config);
       }
 
-      const deferred = $q.defer();
-      const url = requisitionsService.internal.foreignSourcesConfigUrl + '/services/' + encodeURIComponent(foreignSource);
+      var deferred = $q.defer();
+      var url = requisitionsService.internal.foreignSourcesConfigUrl + '/services/' + encodeURIComponent(foreignSource);
       $log.debug('getAvailableServices: getting available services');
       $http.get(url)
       .then(function getAvailableServicesSuccess(response) {
@@ -1153,14 +1153,14 @@ const RequisitionNode  = require('../model/RequisitionNode');
     * @returns {object} a promise. On success, it provides a list of available assets.
     */
     requisitionsService.getAvailableAssets = function() {
-      const config = requisitionsService.internal.getCatchedConfigData('assetsConfig');
+      var config = requisitionsService.internal.getCatchedConfigData('assetsConfig');
       if (config) {
         $log.debug('getAvailableAssets: returning a cached copy of assets configuration');
         return $q.when(config);
       }
 
-      const deferred = $q.defer();
-      const url = requisitionsService.internal.foreignSourcesConfigUrl + '/assets';
+      var deferred = $q.defer();
+      var url = requisitionsService.internal.foreignSourcesConfigUrl + '/assets';
       $log.debug('getAvailableAssets: getting available assets');
       $http.get(url)
       .then(function getAvailableAssetsSuccess(response) {
@@ -1197,14 +1197,14 @@ const RequisitionNode  = require('../model/RequisitionNode');
     * @returns {object} a promise. On success, it provides a list of available categories.
     */
     requisitionsService.getAvailableCategories = function() {
-      const config = requisitionsService.internal.getCatchedConfigData('categoriesConfig');
+      var config = requisitionsService.internal.getCatchedConfigData('categoriesConfig');
       if (config) {
         $log.debug('getAvailableCategories: returning a cached copy of categories configuration');
         return $q.when(config);
       }
 
-      const deferred = $q.defer();
-      const url = requisitionsService.internal.foreignSourcesConfigUrl + '/categories';
+      var deferred = $q.defer();
+      var url = requisitionsService.internal.foreignSourcesConfigUrl + '/categories';
       $log.debug('getAvailableCategories: getting available categories');
       $http.get(url)
       .then(function getAvailableCategoriesSuccess(response) {
@@ -1234,8 +1234,8 @@ const RequisitionNode  = require('../model/RequisitionNode');
     * @returns {object} a promise. On success, it provides a list of available locations.
     */
     requisitionsService.getAvailableLocations = function() {
-      const deferred = $q.defer();
-      const url = requisitionsService.internal.monitoringLocationsUrl;
+      var deferred = $q.defer();
+      var url = requisitionsService.internal.monitoringLocationsUrl;
       $log.debug('getAvailableLocations: getting available locations');
       $http.get(url)
       .then(function getAvailableLocationsSuccess(response) {
@@ -1268,11 +1268,11 @@ const RequisitionNode  = require('../model/RequisitionNode');
     * @returns {object} a promise. On success, return true if the foreignId exists on the requisition.
     */
     requisitionsService.isForeignIdOnRequisition = function(foreignSource, foreignId) {
-      const deferred = $q.defer();
+      var deferred = $q.defer();
 
       requisitionsService.getRequisition(foreignSource)
       .then(function(req) {
-        let found = false;
+        var found = false;
         angular.forEach(req.nodes, function(n) {
           if (n.foreignId === foreignId) {
             found = true;
@@ -1280,7 +1280,7 @@ const RequisitionNode  = require('../model/RequisitionNode');
         });
         deferred.resolve(found);
       }, function(err) {
-        const message = 'cannot verify foreignId ' + foreignId + '@' + foreignSource + '. ';
+        var message = 'cannot verify foreignId ' + foreignId + '@' + foreignSource + '. ';
         $log.error('isForeignIdOnRequisition: ' + message, err);
         deferred.reject(message + requisitionsService.internal.errorHelp);
       });
@@ -1299,11 +1299,11 @@ const RequisitionNode  = require('../model/RequisitionNode');
     * @returns {object} a promise. On success, return true if the nodeLabel exists on the requisition.
     */
     requisitionsService.isNodeLabelOnRequisition = function(foreignSource, nodeLabel) {
-      const deferred = $q.defer();
+      var deferred = $q.defer();
 
       requisitionsService.getRequisition(foreignSource)
       .then(function(req) {
-        let found = false;
+        var found = false;
         angular.forEach(req.nodes, function(n) {
           if (n.nodeLabel === nodeLabel) {
             found = true;
@@ -1311,7 +1311,7 @@ const RequisitionNode  = require('../model/RequisitionNode');
         });
         deferred.resolve(found);
       }, function(err) {
-        const message = 'cannot verify nodeLabel ' + nodeLabel + '@' + foreignSource + '. ';
+        var message = 'cannot verify nodeLabel ' + nodeLabel + '@' + foreignSource + '. ';
         $log.error('isForeignIdOnRequisition: ' + message, err);
         deferred.reject(message + requisitionsService.internal.errorHelp);
       });
@@ -1331,7 +1331,7 @@ const RequisitionNode  = require('../model/RequisitionNode');
     * @returns {object} a promise. On success, return  true if the IP Address exists on the node.
     */
     requisitionsService.isIpAddressOnNode = function(foreignSource, foreignId, ipAddress) {
-      const deferred = $q.defer();
+      var deferred = $q.defer();
 
       requisitionsService.getNode(foreignSource, foreignId)
       .then(function(node) {
@@ -1340,7 +1340,7 @@ const RequisitionNode  = require('../model/RequisitionNode');
         }).length > 0;
         deferred.resolve(found);
       }, function(err) {
-        const message = 'cannot verify ipAddress on node ' + foreignId + '@' + foreignSource + '. ';
+        var message = 'cannot verify ipAddress on node ' + foreignId + '@' + foreignSource + '. ';
         $log.error('isIpAddressOnNode: ' + message, err);
         deferred.reject(message + requisitionsService.internal.errorHelp);
       });
@@ -1360,7 +1360,7 @@ const RequisitionNode  = require('../model/RequisitionNode');
     * @returns {object} a promise. On success, return true if the category exists on the node.
     */
     requisitionsService.isCategoryOnNode = function(foreignSource, foreignId, category) {
-      const deferred = $q.defer();
+      var deferred = $q.defer();
 
       requisitionsService.getNode(foreignSource, foreignId)
       .then(function(node) {
@@ -1369,7 +1369,7 @@ const RequisitionNode  = require('../model/RequisitionNode');
         }).length > 0;
         deferred.resolve(found);
       }, function(err) {
-        const message = 'cannot verify category on node ' + foreignId + '@' + foreignSource + '. ';
+        var message = 'cannot verify category on node ' + foreignId + '@' + foreignSource + '. ';
         $log.error('isCategoryOnNode: ' + message, err);
         deferred.reject(message + requisitionsService.internal.errorHelp);
       });
@@ -1390,11 +1390,11 @@ const RequisitionNode  = require('../model/RequisitionNode');
     * @returns {object} a promise. On success, return true if the service exists on the Node/IP.
     */
     requisitionsService.isServiceOnNode = function(foreignSource, foreignId, ipAddress, service) {
-      const deferred = $q.defer();
+      var deferred = $q.defer();
 
       requisitionsService.getNode(foreignSource, foreignId)
       .then(function(node) {
-        const found = node.interfaces.filter((intf) => {
+        var found = node.interfaces.filter((intf) => {
           if (intf.ipAddress !== ipAddress) {
             return false;
           }
@@ -1404,7 +1404,7 @@ const RequisitionNode  = require('../model/RequisitionNode');
         }).length > 0;
         deferred.resolve(found);
       }, function(err) {
-        const message = 'cannot verify category on node ' + foreignId + '@' + foreignSource + '. ';
+        var message = 'cannot verify category on node ' + foreignId + '@' + foreignSource + '. ';
         $log.error('isIpAddressOnNode: ' + message, err);
         deferred.reject(message + requisitionsService.internal.errorHelp);
       });
@@ -1424,9 +1424,9 @@ const RequisitionNode  = require('../model/RequisitionNode');
     * @returns {object} a promise.
     */
     requisitionsService.updateSnmpCommunity = function(ipAddress, snmpCommunity, snmpVersion) {
-      const deferred = $q.defer();
+      var deferred = $q.defer();
 
-      const url = requisitionsService.internal.snmpConfigUrl + '/' + ipAddress;
+      var url = requisitionsService.internal.snmpConfigUrl + '/' + ipAddress;
       $log.debug('updateSnmpCommunity: updating snmp community for ' + ipAddress);
       $http.put(url, {'readCommunity' : snmpCommunity, 'version' : snmpVersion})
       .then(function updateSnmpCommunitySuccess() {
@@ -1453,7 +1453,7 @@ const RequisitionNode  = require('../model/RequisitionNode');
     */
     requisitionsService.quickAddNode = function(quickNode) {
       if (quickNode.noSnmp === false && quickNode.snmpCommunity && quickNode.snmpCommunity.trim() !== '') {
-        const deferred = $q.defer();
+        var deferred = $q.defer();
         requisitionsService.updateSnmpCommunity(quickNode.ipAddress, quickNode.snmpCommunity, quickNode.snmpVersion).then(
           function() { // updateSnmpCommunity:success
             requisitionsService.internal.addQuickNode(quickNode).then(

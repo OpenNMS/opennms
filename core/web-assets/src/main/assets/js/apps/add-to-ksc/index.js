@@ -110,10 +110,10 @@ angular.module('onms-ksc', [
   };
 
   $scope.updateReport = function(report, resourceId, resourceLabel, graphName, graphTitle, timespan) {
-    const url = 'rest/ksc/' + report.id;
+    var url = 'rest/ksc/' + report.id;
     $http.get(url).then(function (response) {
       const data = response.data;
-      let found = false;
+      var found = false;
       angular.forEach(data.kscGraph, function(r) {
         if (r.resourceId === resourceId && r.graphtype === graphName) {
           found = true;
@@ -143,10 +143,10 @@ angular.module('onms-ksc', [
   };
 }])
 .factory('flowsRestFactory', /* @ngInject */ function ($http, $q) {
-  const resources = {};
+  var resources = {};
 
   resources.getFlowGraphUrl = function(nodeId, ifIndex , start, end) {
-      const deferred = $q.defer();
+      var deferred = $q.defer();
       $http({
         url: 'rest/flows/flowGraphUrl',
         method: 'GET',
@@ -164,7 +164,7 @@ angular.module('onms-ksc', [
   return resources;
 })
 .factory('graphSearchFactory', function ($rootScope, $filter) {
-  const graphSearch = {};
+  var graphSearch = {};
   graphSearch.graphs = [];
   graphSearch.noMatchingGraphs = false;
   // Update search query and broadcast an update to controllers.
@@ -181,7 +181,7 @@ angular.module('onms-ksc', [
   graphSearch.updateGraphsWithSearchItem = function() {
     $rootScope.$broadcast('handleSearchQuery');
     // Check if there is atleast one matching graph else update correponding controller.
-    const matchingGraphs = $filter('filter')(graphSearch.graphs, graphSearch.searchQuery);
+    let matchingGraphs = $filter('filter')(graphSearch.graphs, graphSearch.searchQuery);
     if (!(matchingGraphs && matchingGraphs.length)) {
       graphSearch.noMatchingGraphs = true;
       $rootScope.$broadcast('handleNoMatchingGraphsFound');
@@ -236,16 +236,16 @@ angular.module('onms-ksc', [
 }])
 .controller('graphSearchCtrl', ['$scope', '$timeout', '$filter', '$attrs', '$element', 'graphSearchFactory', function($scope, $timeout, $filter, $attrs, $element, graphSearchFactory) {
 
-  const graphName = $attrs.graphname;
-  const graphTitle = $attrs.graphtitle;
+  let graphName = $attrs.graphname;
+  let graphTitle = $attrs.graphtitle;
   // Update service with graphname and graphtitle.
   graphSearchFactory.initialize(graphName, graphTitle);
   $scope.enableGraph = true;
   // Handle search query update and enable graphs with matching search query.
   $scope.$on('handleSearchQuery', function () {
-    const searchQuery = graphSearchFactory.searchQuery;
+    let searchQuery = graphSearchFactory.searchQuery;
     // Filter on graphName or graphTitle.
-    const matchingElements = $filter('filter')([graphName, graphTitle], searchQuery);
+    let matchingElements = $filter('filter')([graphName, graphTitle], searchQuery);
     if (matchingElements && matchingElements.length) {
       $scope.enableGraph = true;
       if(searchQuery) {

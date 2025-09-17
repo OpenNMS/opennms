@@ -267,7 +267,7 @@ public class TimeseriesRoundtripIT {
         when(collectionResource.getIpAddress()).thenReturn("10.0.1.1");
         when(collectionResource.getServiceName()).thenReturn("SNMP");
         var tags = metaTagDataLoader.load(collectionResource);
-        assertEquals(12, tags.size());
+        assertEquals(11, tags.size());
         assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("resource_label")));
         assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("node_location")));
         assertTrue(tags.stream().anyMatch(tag -> tag.getKey().equals("node_id") && tag.getValue().equals("1")));

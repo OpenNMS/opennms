@@ -35,7 +35,6 @@ const Scope = MetaDataConstants.Scope;
 const RequisitionMetaDataEntry = function RequisitionMetaDataEntry() {
   'use strict';
 
-  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
 
   // Default to the 'node' scope

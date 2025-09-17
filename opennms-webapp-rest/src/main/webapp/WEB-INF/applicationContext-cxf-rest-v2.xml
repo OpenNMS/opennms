@@ -30,10 +30,18 @@
     <bean id="springResourceContextProvider" class="org.opennms.web.rest.support.SpringResourceContextProvider"/>
 
     <!-- Used by MenuRestService -->
+    <bean id="dispatcherServletPath" class="java.lang.String">
+        <constructor-arg value="${opennms.home}/jetty-webapps/opennms/WEB-INF/dispatcher-servlet.xml" />
+    </bean>
     <bean id="menuTemplatePath" class="java.lang.String">
-        <constructor-arg value="${opennms.home}/jetty-webapps/opennms/WEB-INF/menu/menu-template.json" />
+        <constructor-arg value="${opennms.home}/jetty-webapps/opennms/WEB-INF/menu-template.json" />
     </bean>
     <bean id="menuProvider" class="org.opennms.web.rest.support.menu.MenuProvider">
+        <constructor-arg ref="dispatcherServletPath" />
+        <constructor-arg ref="menuTemplatePath" />
+    </bean>
+    <bean id="legacyMenuProvider" class="org.opennms.web.rest.support.menu.MenuProviderLegacy">
+        <constructor-arg ref="dispatcherServletPath" />
         <constructor-arg ref="menuTemplatePath" />
     </bean>
 

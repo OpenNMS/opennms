@@ -37,10 +37,10 @@ const nodesTemplate             = require('./views/nodes.html');
 const unknownTemplate           = require('./views/unknown.html');
 
 const toList = (severityFilter) => {
-    const list = [];
-    for (const property in severityFilter) {
+    let list = [];
+    for (let property in severityFilter) {
         if (severityFilter.hasOwnProperty(property)) {
-            const propertyValue = severityFilter[property];
+            let propertyValue = severityFilter[property];
             if (propertyValue === true) {
                 list.push(property);
             }
@@ -79,7 +79,7 @@ angular.module(MODULE_NAME, [
     .filter('severity', function() {
         return function(_input) {
             const input = _input || '';
-            let out = '';
+            var out = '';
             if (input.length > 0) {
                 out = input.charAt(0).toUpperCase();
             }
@@ -154,8 +154,8 @@ angular.module(MODULE_NAME, [
         };
 
         $scope.updateFilterAndRefreshIfNecessary = function() {
-            const newList = toList($scope.severityFilter);
-            const oldList = $scope.query.severityFilter;
+            var newList = toList($scope.severityFilter);
+            var oldList = $scope.query.severityFilter;
 
             // Otherwise only update if the severityFilter changed
             if (angular.equals(oldList, newList) === false) {
@@ -166,20 +166,20 @@ angular.module(MODULE_NAME, [
 
         $scope.updateLocation = function() {
             // Update URL parameters to make refresh work
-            const location = $location.search();
+            var location = $location.search();
             location['severityFilter'] =  $scope.query.severityFilter;
             location['strategy'] = $scope.query.strategy;
             $location.search(location);
         };
 
         $scope.loadData = function(itemTransformer) {
-            const parameters = $scope.query || {};
+            var parameters = $scope.query || {};
 
             // update severity filter
             parameters.severityFilter = [];
-            for (const property in $scope.severityFilter) {
+            for (var property in $scope.severityFilter) {
                 if ($scope.severityFilter.hasOwnProperty(property)) {
-                    const propertyValue = $scope.severityFilter[property];
+                    var propertyValue = $scope.severityFilter[property];
                     if (propertyValue === true) {
                         parameters.severityFilter.push(property);
                     }
@@ -206,7 +206,7 @@ angular.module(MODULE_NAME, [
                         $scope.items = data;
                     }
 
-                    const contentRange = elementList.parseContentRange(headers('Content-Range'));
+                    var contentRange = elementList.parseContentRange(headers('Content-Range'));
                     $scope.query.totalItems = contentRange.total;
                 },
                 function(response) {
@@ -251,7 +251,7 @@ angular.module(MODULE_NAME, [
 
         // Update severityFilter based on url query
         if ($location.search().severityFilter !== undefined) {
-            let severityFilter = $location.search().severityFilter;
+            var severityFilter = $location.search().severityFilter;
             if (typeof severityFilter === 'string') {
                 severityFilter = [severityFilter];
             }

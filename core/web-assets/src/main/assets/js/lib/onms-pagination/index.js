@@ -39,7 +39,7 @@ angular.module(MODULE_NAME, [ 'ui.bootstrap' ])
                 if (scope.model.totalItems === undefined) { throw new Error('No attribute model.totalItems defined'); }
                 if (scope.model.limit === undefined) { throw new Error('No attribute model.limit defined'); }
 
-                let currentPage = scope.model.page;
+                var currentPage = scope.model.page;
                 scope.onChange = function() {
                     if (currentPage !== scope.model.page) {
                         currentPage = scope.model.page;

@@ -23,7 +23,6 @@ const { Address4, Address6 } = require('ip-address');
 
 const verifyIPv4Address = function(ip) {
     try {
-        // eslint-disable-next-line no-new
         new Address4(ip);
     } catch (err) {
         return false;
@@ -33,7 +32,6 @@ const verifyIPv4Address = function(ip) {
 
 const verifyIPv6Address = function(ip) {
     try {
-        // eslint-disable-next-line no-new
         new Address6(ip);
     } catch (err) {
         return false;

@@ -33,7 +33,7 @@ const grafanaModalTemplate = require('./grafana/grafana-modal.html');
 (function() {
     'use strict';
 
-    const MODULE_NAME = 'onms.endpoints';
+    var MODULE_NAME = 'onms.endpoints';
 
     angular.module(MODULE_NAME, [
         'angular-loading-bar',
@@ -85,9 +85,8 @@ const grafanaModalTemplate = require('./grafana/grafana-modal.html');
             ];
 
             $scope.handleGlobalError = function(errorResponse) {
-                // eslint-disable-next-line no-console
-                console.log('An unexpected error occurred', errorResponse);
-                $scope.globalError = 'An unexpected error occurred: ' + errorResponse.statusText + '(' + errorResponse.status + ')';
+                console.log("An unexpected error occurred", errorResponse);
+                $scope.globalError = "An unexpected error occurred: " + errorResponse.statusText + "(" + errorResponse.status + ")";
                 $scope.globalErrorDetails = JSON.stringify(errorResponse, null, 2);
             };
         }])
@@ -130,8 +129,8 @@ const grafanaModalTemplate = require('./grafana/grafana-modal.html');
             };
 
             $scope.editEndpoint = function(endpoint) {
-                const clone = angular.copy(endpoint);
-                const modalInstance = $scope.openModal(clone);
+                var clone = angular.copy(endpoint);
+                var modalInstance = $scope.openModal(clone);
                 modalInstance.result.then(function () {
                     $scope.refresh();
                 },
@@ -141,7 +140,7 @@ const grafanaModalTemplate = require('./grafana/grafana-modal.html');
             };
 
             $scope.addNewEndpoint = function() {
-                const modalInstance = $scope.openModal();
+                var modalInstance = $scope.openModal();
                 modalInstance.closed.then(function () {
                     $scope.refresh(); // Success
                 }, function() {
@@ -163,9 +162,9 @@ const grafanaModalTemplate = require('./grafana/grafana-modal.html');
             $scope.defaultReadTimeout = 30;
             $scope.defaultConnectTimeout = 30;
 
-            const handleErrorResponse = function(response) {
+            var handleErrorResponse = function(response) {
                 if (response.status === 400 && response.data) {
-                    const errorObject = response.data;
+                    var errorObject = response.data;
                     if (errorObject.context && errorObject.message) {
                         $scope.error[errorObject.context] = errorObject.message;
                     } else if (errorObject.context) {
@@ -208,10 +207,10 @@ const grafanaModalTemplate = require('./grafana/grafana-modal.html');
                 $scope.verification.result = undefined;
 
                 // Close modal afterwards
-                const closeCallback = function() {
+                var closeCallback = function() {
                     $uibModalInstance.close();
                 };
-                const object = {
+                var object = {
                     id: $scope.endpoint.id,
                     uid: $scope.endpoint.uid,
                     url: $scope.endpoint.url,

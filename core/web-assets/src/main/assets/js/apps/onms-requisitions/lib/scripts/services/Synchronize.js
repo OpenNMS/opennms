@@ -63,7 +63,7 @@ require('./Requisitions');
         * @param {object} requisition The requisition object
         * @param {string} rescanExisting true to perform a full scan, false to only add/remove nodes without scan, dbonly for all DB operations without scan
         */
-        const doSynchronize = function(requisition, rescanExisting) {
+        var doSynchronize = function(requisition, rescanExisting) {
           RequisitionsService.startTiming();
           RequisitionsService.synchronizeRequisition(requisition.foreignSource, rescanExisting).then(
             function() { // success

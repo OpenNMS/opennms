@@ -12,7 +12,7 @@
         <property name="properties">
             <props>
                 <!-- General configuration -->
-                <prop key="org.opennms.rrd.strategyClass">org.opennms.netmgt.rrd.rrdtool.MultithreadedJniRrdStrategy</prop>
+                <prop key="org.opennms.rrd.strategyClass">org.opennms.netmgt.rrd.jrobin.JRobinRrdStrategy</prop>
                 <prop key="org.opennms.rrd.usequeue">true</prop>
                 <prop key="org.opennms.rrd.usetcp">false</prop>
                 <prop key="org.opennms.rrd.fileExtension" />

@@ -8,23 +8,13 @@
       <div @mouseenter="showMenu" class="self-service-menubar-icon-wrapper">
         <FeatherButton link href="#" v-bind="attrs" v-on="on" class="self-service-menubar-dropdown-button-dark">
           <FeatherIcon :icon="IconAccountCircle" class="self-service-top-icon" />
+          <span class="font-weight-bold">
+            {{ mainMenu.username }}
+          </span>
           <FeatherIcon class="self-service-arrow-dropdown" :icon="ArrowDropDown" />
         </FeatherButton>
       </div>
     </template>
-
-    <FeatherDropdownItem
-      @click="onUserProfileMenuClick"
-    >
-      <div class="self-service-menubar-dropdown-item-content">
-        <a :href="computeLink('')" class="dropdown-menu-link dropdown-menu-wrapper final-menu-wrapper" name="self-service-user">
-          <FeatherIcon :icon="IconAccountCircle" class="self-service-icon" />
-          <span class="left-margin-small">
-            {{ ellipsify(mainMenu.username || '', 40) }}
-          </span>
-        </a>
-      </div>
-    </FeatherDropdownItem>
 
     <FeatherDropdownItem
        v-for="item in menuItems"
@@ -52,7 +42,6 @@ import IconAccountCircle from '@featherds/icon/action/AccountCircle'
 import IconHelp from '@featherds/icon/action/Help'
 import IconLogout from '@featherds/icon/action/LogOut'
 import IconSecurity from '@featherds/icon/network/Security'
-import { ellipsify } from '@/lib/utils'
 import { performLogout } from '@/services/logoutService'
 import { useMenuStore } from '@/stores/menuStore'
 import {
@@ -104,11 +93,6 @@ const createIcon = (menuItem: MenuItem) => {
 const computeLink = (url: string) => {
   const baseLink = mainMenu.value?.baseHref || import.meta.env.VITE_BASE_URL || ''
   return `${baseLink}${url}`
-}
-
-const onUserProfileMenuClick = () => {
-  const link = computeLink('')
-  window.location.assign(link)
 }
 
 const onMenuItemClick = async (item: MenuItem) => {

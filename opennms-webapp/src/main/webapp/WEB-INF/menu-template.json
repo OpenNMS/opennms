@@ -13,6 +13,14 @@
   "sideMenuInitialExpand": false,
   "copyrightDates": "",
   "version": "",
+  "userTileProviders": [
+    {
+      "name": "OpenNMS Default",
+      "url": "https://tiles.opennms.org/${z}/${x}/${y}.png",
+      "attribution": "Map data &copy; <a tabindex=\"-1\" target=\"_blank\" href=\"http://openstreetmap.org/copyright\">OpenStreetMap</a> contributors under <a tabindex=\"-1\" target=\"_blank\" href=\"http://opendatacommons.org/licenses/odbl/\">ODbL</a>, <a tabindex=\"-1\" target=\"_blank\" href=\"http://creativecommons.org/licenses/by-sa/2.0/\">CC BY-SA 2.0</a>",
+      "userDefinedAsDefault": false
+    }
+  ],
   "menus": [
     {
       "id": "dashboardsMenu",
@@ -22,6 +30,13 @@
       "icon": "action/Dashboard",
       "roles": null,
       "items": [
+        {
+          "id": "dashboardsMain",
+          "name": "Dashboards",
+          "url": "dashboards.htm",
+          "locationMatch": "dashboard",
+          "roles": null
+        },
         {
           "id": "surveillanceDashboard",
           "name": "Surveillance Dashboard",
@@ -179,23 +194,37 @@
     },
     {
       "id": "mapsMenu",
-      "name": "Geographical Map",
-      "url": "ui/index.html#/map",
-      "action": "link",
-      "locationMatch": "geographical",
+      "name": "Maps",
+      "url": "#",
+      "locationMatch": null,
       "icon": "action/Location",
       "roles": null,
-      "items": null
+      "items": [
+        {
+          "id": "geographicalMap",
+          "name": "Geographical",
+          "url": "ui/index.html#/map",
+          "locationMatch": "ui/index.html#/map",
+          "roles": null
+        }
+      ]
     },
     {
       "id": "topologiesMenu",
-      "name": "Topology Map",
-      "url": "topology",
-      "action": "link",
-      "locationMatch": "topology",
+      "name": "Topologies",
+      "url": "#",
+      "locationMatch": null,
       "icon": "network/Instances",
       "roles": null,
-      "items": null
+      "items": [
+        {
+          "id": "topology",
+          "name": "Topology",
+          "url": "topology",
+          "locationMatch": "topology",
+          "roles": null
+        }
+      ]
     },
     {
       "id": "metricsMenu",
@@ -554,6 +583,31 @@
     },
     {
       "type": "separator"
+    },
+    {
+      "id": "userProfileMenu",
+      "name": "User Profile",
+      "url": "#",
+      "locationMatch": null,
+      "icon": "action/Person",
+      "roles": null,
+      "items": [
+       {
+         "id": "logout",
+         "name": "Log Out",
+         "url": "j_spring_security_logout",
+         "locationMatch": null,
+         "action": "logout",
+         "roles": null
+       },
+       {
+         "id": "changePassword",
+         "name": "Change Password",
+         "url": "account/selfService/newPasswordEntry",
+         "locationMatch": null,
+         "roles": null
+       }
+      ]
     },
     {
       "id": "apiDocumentationMenu",

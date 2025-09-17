@@ -73,7 +73,6 @@
       ref="clusterPopupContent" />
   </div>
 </template>
-
 <script setup lang ="ts">
 import 'leaflet/dist/leaflet.css'
 import { Map as LeafletMap, divIcon, LatLngTuple, MarkerCluster as Cluster, PopupOptions } from 'leaflet'
@@ -99,16 +98,13 @@ import SeverityFilter from './SeverityFilter.vue'
 import { numericSeverityLevel } from './utils'
 
 import { isNumber } from '@/lib/utils'
-import { useGeolocationStore } from '@/stores/geolocationStore'
 import { useIpInterfacesStore } from '@/stores/ipInterfacesStore'
 import { useMapStore } from '@/stores/mapStore'
 import { useMenuStore } from '@/stores/menuStore'
 import { useNodeStore } from '@/stores/nodeStore'
 import { Coordinates, IpInterface, Node } from '@/types'
-import { MainMenu } from '@/types/mainMenu'
-import { TileProviderItem } from '@/types'
+import { MainMenu, TileProviderItem } from '@/types/mainMenu'
 
-const geolocationStore = useGeolocationStore()
 const ipInterfaceStore = useIpInterfacesStore()
 const mapStore = useMapStore()
 const menuStore = useMenuStore()
@@ -139,7 +135,6 @@ const center = computed<number[]>(() => {
 
 const nodes = computed<Node[]>(() => mapStore.getNodes())
 const allNodes = computed<Node[]>(() => mapStore.nodesWithCoordinates)
-const tileProviders = computed<TileProviderItem[]>(() => geolocationStore.tileProviders)
 
 // get all valid coordinates from existing nodes
 const bounds = computed(() => {
@@ -344,12 +339,60 @@ const setBoundingBox = (nodeLabels: string[]) => {
 
 const invalidateSizeFn = () => leafletObject.value.invalidateSize()
 
+/***** Tile Layer *****/
+/**
+ * Tile provider for the Tile Layer menu. These are the default ones, but user can add an additional one
+ * in 'opennms/etc/opennms.properties' file, gwt.openlayers.url and gwt.openlayers.options.attribution
+ * properties.
+ */
+
+const defaultTileProviders: TileProviderItem[] = [
+  {
+    name: 'OpenStreetMap',
+    visible: true,
+    attribution:
+      '&copy; <a target="_blank" href="http://osm.org/copyright">OpenStreetMap</a> contributors',
+    url: 'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png'
+  },
+  {
+    name: 'OpenTopoMap',
+    visible: false,
+    url: 'https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png',
+    attribution:
+      'Map data: &copy; <a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>, <a href="http://viewfinderpanoramas.org">SRTM</a> | Map style: &copy; <a href="https://opentopomap.org">OpenTopoMap</a> (<a href="https://creativecommons.org/licenses/by-sa/3.0/">CC-BY-SA</a>)'
+  }
+]
+
+const tileProviders = ref<TileProviderItem[]>(defaultTileProviders)
+
+/**
+ * Check if there is a user-defined tile provider and update our list if so.
+ */
+const updateTileProviders = () => {
+  if (mainMenu.value.userTileProviders && mainMenu.value.userTileProviders?.length > 0) {
+    const userTileProvider = mainMenu.value.userTileProviders[0]
+
+    if (userTileProvider.userDefinedAsDefault) {
+      tileProviders.value = [
+        { ...userTileProvider, visible: true },
+        ...defaultTileProviders.map(p => ({ ...p, visible: false }))
+      ]
+    } else {
+      tileProviders.value.push({
+        ...userTileProvider,
+        visible: false
+      })
+    }
+  }
+}
+
 onMounted(async () => {
-  geolocationStore.fetchTileProviders()
   mapStore.fetchNodes()
   mapStore.fetchAlarms()
   nodeStore.getNodes()
   ipInterfaceStore.getAllIpInterfaces()
+
+  updateTileProviders()
 })
 
 defineExpose({ invalidateSizeFn })
@@ -381,7 +424,6 @@ defineExpose({ invalidateSizeFn })
     font: 12px "Helvetica Neue", Arial, Helvetica, sans-serif;
     border-radius: 15px;
     border: none;
-
     span {
       border-radius: 15px;
       line-height: 30px;
@@ -402,7 +444,6 @@ defineExpose({ invalidateSizeFn })
     }
   }
 }
-
 .leaflet-popup-content {
   min-width: 440px;
 }

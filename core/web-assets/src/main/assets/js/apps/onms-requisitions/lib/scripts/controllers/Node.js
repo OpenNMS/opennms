@@ -171,7 +171,7 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
     * @param {string} url The URL to go
     */
     $scope.goTo = function(url) {
-      const doGoTo = function() {
+      var doGoTo = function() {
         $window.location.href = url;
       };
       if (this.nodeForm.$dirty) {
@@ -276,14 +276,14 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
     * @param {boolean} isNew true, if the asset is new
     */
     $scope.editAsset = function(index, isNew) {
-      const form = this.nodeForm;
-      const assetToEdit = $scope.node.assets[index];
-      const assetsBlackList = [];
+      var form = this.nodeForm;
+      var assetToEdit = $scope.node.assets[index];
+      var assetsBlackList = [];
       angular.forEach($scope.node.assets, function(asset) {
         assetsBlackList.push(asset.name);
       });
 
-      const modalInstance = $uibModal.open({
+      var modalInstance = $uibModal.open({
         backdrop: 'static',
         keyboard: false,
         controller: 'AssetController',
@@ -428,16 +428,16 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
     * @param {boolean} isNew true, if the interface is new
     */
     $scope.editInterface = function(index, isNew) {
-      const form = this.nodeForm;
-      const intfToEdit = $scope.node.interfaces[index];
-      const foreignSource = $scope.foreignSource;
-      const foreignId = $scope.foreignId;
-      const ipBlackList = [];
+      var form = this.nodeForm;
+      var intfToEdit = $scope.node.interfaces[index];
+      var foreignSource = $scope.foreignSource;
+      var foreignId = $scope.foreignId;
+      var ipBlackList = [];
       angular.forEach($scope.node.interfaces, function(intf) {
         ipBlackList.push(intf.ipAddress);
       });
 
-      const modalInstance = $uibModal.open({
+      var modalInstance = $uibModal.open({
         backdrop: 'static',
         keyboard: false,
         controller: 'InterfaceController',
@@ -518,7 +518,7 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
     * @methodOf NodeController
     */
     $scope.save = function() {
-      const form = this.nodeForm;
+      var form = this.nodeForm;
       RequisitionsService.startTiming();
       RequisitionsService.saveNode($scope.node).then(
         function() { // success
@@ -556,9 +556,9 @@ const RequisitionMetaDataEntry = require('../model/RequisitionMetaDataEntry');
     * @returns {array} the unused available categories
     */
     $scope.getAvailableCategories = function() {
-      const categories = [];
+      var categories = [];
       angular.forEach($scope.availableCategories, function(category) {
-        let found = false;
+        var found = false;
         angular.forEach($scope.node.categories, function(c) {
           if (c.name === category) {
             found = true;
