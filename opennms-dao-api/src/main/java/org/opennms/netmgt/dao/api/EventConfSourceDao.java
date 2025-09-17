@@ -53,4 +53,6 @@ public interface EventConfSourceDao extends OnmsDao<EventConfSource, Long> {
                                               Integer offset, Integer limit);
 
     void deleteBySourceIds(List<Long> sourceIds);
+
+    List<String> findAllNames();
 }
