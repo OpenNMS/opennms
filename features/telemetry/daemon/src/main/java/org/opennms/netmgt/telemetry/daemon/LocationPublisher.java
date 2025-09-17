@@ -25,13 +25,11 @@ import org.opennms.core.ipc.twin.api.TwinPublisher;
 import org.opennms.netmgt.telemetry.config.model.ConnectorTwinConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.locks.ReentrantLock;
-
 
 public class LocationPublisher {
     private static final Logger LOG = LoggerFactory.getLogger(LocationPublisher.class);
@@ -56,9 +54,7 @@ public class LocationPublisher {
             }
         }
 
-
     }
-
 
     public void addConfigAndPublish(ConnectorTwinConfig.ConnectorConfig cfg) throws IOException {
         lock.lock();

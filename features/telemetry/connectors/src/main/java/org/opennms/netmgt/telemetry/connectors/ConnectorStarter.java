@@ -35,6 +35,8 @@ import org.opennms.netmgt.telemetry.common.ipc.TelemetrySinkModule;
 import org.opennms.netmgt.telemetry.distributed.common.MapBasedConnectorDef;
 import org.opennms.netmgt.telemetry.distributed.common.PropertyTree;
 import org.opennms.netmgt.telemetry.config.model.ConnectorTwinConfig;
+import org.osgi.service.cm.ConfigurationException;
+import org.osgi.service.cm.ManagedService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,11 +49,14 @@ import java.util.LinkedHashMap;
 import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.Dictionary;
 import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+import java.util.Collections;
 
-public class ConnectorStarter {
+public class ConnectorStarter implements ManagedService {
+
     private static final Logger LOG = LoggerFactory.getLogger(ConnectorStarter.class);
 
     Map<String, String> configMap = new HashMap<>();
@@ -63,7 +68,7 @@ public class ConnectorStarter {
     private TelemetryRegistry telemetryRegistry;
 
     @Autowired
-    private TwinSubscriber m_twinSubscriber;
+    private TwinSubscriber twinSubscriber;
 
     private Closeable m_twinSubscription;
 
@@ -132,8 +137,38 @@ public class ConnectorStarter {
         }
     }
 
+    @Override
+    public void updated(Dictionary<String, ?> properties) throws ConfigurationException {
+        if (properties == null) {
+            LOG.info("No configuration received, using defaults");
+            return;
+        }
+
+        LOG.info("here the configs will updated ");
+        Map<String, String> newConfigMap = new HashMap<>();
+        for (String key : Collections.list(properties.keys())) {
+            newConfigMap.put(key, properties.get(key).toString());
+        }
+
+        if (!newConfigMap.containsKey("connectorName")) {
+            newConfigMap.put("connectorName", "OpenConfig");
+        }
+        if (!newConfigMap.containsKey("className")) {
+            newConfigMap.put("className", "org.opennms.netmgt.telemetry.protocols.openconfig.connector.OpenConfigConnector");
+        }
+        if (!newConfigMap.containsKey("queueName")) {
+            newConfigMap.put("queueName", "OpenConfig");
+        }
+        if (!newConfigMap.containsKey("serviceName")) {
+            newConfigMap.put("serviceName", "OpenConfig");
+        }
+
+        // TODO Not sure when the configs are update then connectors which is running with old configs should be restarted or not
+    }
+
+
     public void subscribe() {
-        m_twinSubscription = m_twinSubscriber.subscribe(ConnectorTwinConfig.CONNECTOR_KEY, ConnectorTwinConfig.class, this::onConfig);
+        m_twinSubscription = twinSubscriber.subscribe(ConnectorTwinConfig.CONNECTOR_KEY, ConnectorTwinConfig.class, this::onConfig);
     }
 
     private void onConfig(ConnectorTwinConfig request) {
@@ -213,14 +248,14 @@ public class ConnectorStarter {
 
 
     public void bind(TwinSubscriber twinSubscriber) {
-        m_twinSubscriber = twinSubscriber;
+        this.twinSubscriber = twinSubscriber;
         subscribe();
     }
 
 
 
     public void unbind(TwinSubscriber twinSubscriber) {
-        m_twinSubscriber = null;
+        twinSubscriber = null;
     }
 
     public Map<String, Entity> getEntities() {
@@ -263,14 +298,12 @@ public class ConnectorStarter {
         this.telemetryRegistry = telemetryRegistry;
     }
 
-    public TwinSubscriber getM_twinSubscriber() {
-        return m_twinSubscriber;
+    public TwinSubscriber getTwinSubscriber() {
+        return twinSubscriber;
     }
-
-    @VisibleForTesting
-    public void setM_twinSubscriber(TwinSubscriber m_twinSubscriber) {
-        this.m_twinSubscriber = m_twinSubscriber;
-        subscribe();
+@VisibleForTesting
+    public void setTwinSubscriber(TwinSubscriber twinSubscriber) {
+        this.twinSubscriber = twinSubscriber;
+    subscribe();
     }
-
 }

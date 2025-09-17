@@ -448,8 +448,53 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
     }
 
     @Override
-    public Map<Integer, String> getNodeLocations() {
-        return nodeLocations;
+    public Map<Integer, String> getNodeLocations(final String rule) throws FilterParseException {
+        final Map<Integer, String> locations = new TreeMap<>(); // deterministic ordering by nodeId
+        String sqlString;
+        LOG.debug("Filter.getNodeLocations({})", rule);
+
+        final DBUtils d = new DBUtils(getClass());
+        try (Connection conn = getDataSource().getConnection()) {
+            d.watch(conn);
+
+            sqlString = getNodeLocationsStatement(rule);
+            LOG.debug("Filter.getNodeLocations({}): SQL statement: {}", rule, sqlString);
+
+            try (Statement stmt = conn.createStatement();
+                 ResultSet rset = stmt.executeQuery(sqlString)) {
+                d.watch(stmt);
+                d.watch(rset);
+
+                while (rset != null && rset.next()) {
+                    final int nodeId = rset.getInt(1);
+                    if (rset.wasNull()) {
+                        continue;
+                    }
+                    final String location = rset.getString(2);
+                    if (location != null) {
+                        // keep the first non-null location encountered (matches previous putIfAbsent behavior)
+                        locations.putIfAbsent(nodeId, location);
+                    }
+                }
+            }
+
+        } catch (final FilterParseException e) {
+            LOG.warn("Filter Parse Exception occurred getting node locations.", e);
+            throw new FilterParseException("Filter Parse Exception occurred getting node locations: " + e.getLocalizedMessage(), e);
+        } catch (final SQLException e) {
+            LOG.warn("SQL Exception occurred getting node locations.", e);
+            throw new FilterParseException("SQL Exception occurred getting node locations: " + e.getLocalizedMessage(), e);
+        } catch (final RuntimeException e) {
+            LOG.error("Unexpected exception getting database connection.", e);
+            throw e;
+        } catch (final Error e) {
+            LOG.error("Unexpected error getting database connection.", e);
+            throw e;
+        } finally {
+            d.cleanUp();
+        }
+
+        return Collections.unmodifiableMap(locations);
     }
 
     /**
@@ -492,6 +537,22 @@ public class JdbcFilterDao implements FilterDao, InitializingBean {
 
         return "SELECT " + columns.toString() + " " + from + " " + where;
     }
+
+    public String getNodeLocationsStatement(final String rule) throws FilterParseException {
+        final List<Table> tables = new ArrayList<>();
+
+
+        final StringBuilder columns = new StringBuilder();
+        columns.append(m_databaseSchemaConfigFactory.addColumn(tables, "nodeID"));
+        columns.append(", " + m_databaseSchemaConfigFactory.addColumn(tables, "location"));
+
+        final String where = parseRule(tables, rule);
+        final String from = m_databaseSchemaConfigFactory.constructJoinExprForTables(tables);
+
+        return "SELECT " + columns.toString() + " " + from + " " + where;
+    }
+
+
 
     /**
      * <p>getInterfaceWithServiceStatement</p>

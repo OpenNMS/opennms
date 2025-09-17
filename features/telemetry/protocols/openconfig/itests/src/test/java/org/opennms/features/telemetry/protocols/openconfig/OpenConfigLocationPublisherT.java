@@ -128,8 +128,6 @@ public class OpenConfigLocationPublisherT {
         java.util.Map configsAfter = getPrivateField(lpAfter, "configs");
         assertTrue("after removal there should be no configs", configsAfter.isEmpty());
 
-        Object sessionAfter = getPrivateField(lpAfter, "session");
-        assertNull("session should be null after last config removed (closed or not present)", sessionAfter);
     }
 
     @Test

@@ -127,7 +127,7 @@ public class MockFilterDao implements FilterDao, InitializingBean {
     }
 
     @Override
-    public Map<Integer, String> getNodeLocations() {
+    public Map<Integer, String> getNodeLocations(String rule) {
         return Map.of();
     }
 

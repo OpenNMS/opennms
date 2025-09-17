@@ -54,7 +54,7 @@
     <bean id="connectorStarter"
           class="org.opennms.netmgt.telemetry.connectors.ConnectorStarter"
         init-method="start">
-        <property name="M_twinSubscriber" ref="localTwinSubscriber"/>
+        <property name="twinSubscriber" ref="localTwinSubscriber"/>
         <property name="configMap">
             <map key-type="java.lang.String" value-type="java.lang.String">
                 <entry key="name"         value="OpenConfig"/>

@@ -53,11 +53,11 @@ public class ServiceRef {
         final String ipAddress = event.getInterface();
         final String serviceName = event.getService();
 
-        return new ServiceRef(nodeId, InetAddressUtils.addr(ipAddress), serviceName,null);
+        return new ServiceRef(nodeId, InetAddressUtils.addr(ipAddress), serviceName , null);
     }
 
     public static ServiceRef fromIpInterface(OnmsIpInterface ipInterface, String serviceName) {
-        return new ServiceRef(ipInterface.getNodeId(), ipInterface.getIpAddress(), serviceName,null);
+        return new ServiceRef(ipInterface.getNodeId(), ipInterface.getIpAddress(), serviceName , null);
     }
 
     public int getNodeId() {

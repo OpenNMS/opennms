@@ -119,7 +119,7 @@ public class ConfigTesterFilterDao implements FilterDao {
     }
 
     @Override
-    public Map<Integer, String> getNodeLocations() {
+    public Map<Integer, String> getNodeLocations(String rule) {
         return Map.of();
     }
 

@@ -234,6 +234,18 @@ public class JdbcFilterDaoIT implements InitializingBean {
     }
 
     @Test
+    public void testGetNodeLocationMatch() throws Exception {
+        Map<Integer, String> map = m_dao.getNodeLocations("ipaddr == '192.168.1.1'");
+        assertNotNull("returned map should not be null", map);
+        // ICMP, SNMP
+        assertEquals("map size", 1, map.size());
+        String location = map.values().iterator().next();
+        assertEquals("Default", location);
+    }
+
+
+
+    @Test
     public void testGetNodeIPAddressServiceMapMatch() throws Exception {
         Map<Integer, Map<InetAddress, Set<String>>> nodeMap = m_dao.getNodeIPAddressServiceMap("ipaddr == '192.168.1.1'");
         assertThat(nodeMap.entrySet(), hasSize(1));
