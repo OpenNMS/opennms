@@ -45,6 +45,7 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
 
   'use strict';
 
+  // eslint-disable-next-line @typescript-eslint/no-this-alias
   const self = this;
 
   /**
@@ -138,7 +139,7 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
    * @propertyOf RequisitionNode
    * @returns {string} The parent foreign ID
    */
-  var _parentForeignId = node['parent-foreign-id'];
+  const _parentForeignId = node['parent-foreign-id'];
   self.parentForeignId = isEmpty(_parentForeignId) ? null : _parentForeignId;
 
   /**
@@ -148,7 +149,7 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
    * @propertyOf RequisitionNode
    * @returns {string} The parent foreign Label
    */
-  var _parentNodeLabel = node['parent-node-label'];
+  const _parentNodeLabel = node['parent-node-label'];
   self.parentNodeLabel = isEmpty(_parentNodeLabel) ? null : _parentNodeLabel;
 
   /**
@@ -225,7 +226,7 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
   * @returns {object} the new interface Object
   */
   self.addNewInterface = function() {
-    var found = false;
+    let found = false;
     angular.forEach(self.interfaces, function(intf) {
       if (intf.snmpPrimary === 'P') {
         found = true;
@@ -277,7 +278,7 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
   * @returns {string} the primary IP address (null if it doesn't exist)
   */
   self.getPrimaryIpAddress = function() {
-    var ip = null;
+    let ip = null;
     angular.forEach(self.interfaces, function(intf) {
       if (intf.snmpPrimary === 'P') {
         ip = intf.ipAddress;
@@ -316,7 +317,7 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
   * @returns {object} the requisition Object
   */
   self.getOnmsRequisitionNode = function() {
-    var nodeObject = {
+    const nodeObject = {
       'foreign-id': self.foreignId,
       'node-label': self.nodeLabel,
       'location': self.location,
@@ -332,7 +333,7 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
     };
 
     angular.forEach(self.interfaces, function(intf) {
-      var interfaceObject = {
+      const interfaceObject = {
         'ip-addr': intf.ipAddress,
         'descr': intf.description,
         'snmp-primary': intf.snmpPrimary,
@@ -342,7 +343,7 @@ const RequisitionNode = function RequisitionNode(foreignSource, node, isDeployed
       };
 
       angular.forEach(intf.services, function(service) {
-        var serviceObject = {
+        const serviceObject = {
           'service-name': service.name,
           'meta-data': self.metaData.getOnmsMetaDataForService(intf, service)
         };

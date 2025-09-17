@@ -19,14 +19,27 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.web.rest.support.menu.model;
 
-/**
- * Geographical Map tile provider info for adding additional tile maps.
- */
-public class TileProviderItem {
-    public String name;
-    public String url;
-    public String attribution;
-    public Boolean userDefinedAsDefault;
+package org.opennms.core.ipc.twin.shell;
+
+import org.apache.karaf.shell.api.action.Action;
+import org.apache.karaf.shell.api.action.Command;
+import org.apache.karaf.shell.api.action.lifecycle.Reference;
+import org.apache.karaf.shell.api.action.lifecycle.Service;
+import org.opennms.core.ipc.twin.api.TwinPublisher;
+
+
+@Command(scope = "opennms", name = "twin-publisher", description = "Validates whether Twin publisher is available")
+@Service
+public class TwinPublisherCommand implements Action {
+
+    @Reference
+    private TwinPublisher twinPublisher;
+
+    @Override
+    public Object execute() throws Exception {
+        twinPublisher.register("test.publisher", String.class).publish("Testing publisher");
+        System.out.println("Published test key, this is just to validate if publisher is available \n");
+        return null;
+    }
 }

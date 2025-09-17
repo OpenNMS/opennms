@@ -26,11 +26,10 @@ require('../services/Synchronize');
 
 /**
 * @author Alejandro Galue <agalue@opennms.org>
-* @copyright 2014-2022 The OpenNMS Group, Inc.
+* @copyright 2014-2025 The OpenNMS Group, Inc.
 */
 
 (function() {
-
   'use strict';
 
   const quickAddNodeView = require('../../views/quick-add-node.html');
@@ -151,11 +150,14 @@ require('../services/Synchronize');
     * @methodOf RequisitionsController
     */
     $scope.quickAddNode = function() {
-      var availableForeignSources = [];
+      const availableForeignSources = [];
       angular.forEach($scope.requisitionsData.requisitions, function(r) {
-        availableForeignSources.push(r.foreignSource);
+        if (r.foreignSource && !RequisitionsService.isExcludedRequisitionName(r.foreignSource)) {
+          availableForeignSources.push(r.foreignSource);
+        }
       });
-      var modalInstance = $uibModal.open({
+
+      const modalInstance = $uibModal.open({
         backdrop: 'static',
         keyboard: false,
         controller: 'QuickAddNodeModalController',
@@ -166,7 +168,7 @@ require('../services/Synchronize');
         }
       });
       modalInstance.result.then(function(node) {
-        var r = $scope.requisitionsData.getRequisition(node.foreignSource);
+        const r = $scope.requisitionsData.getRequisition(node.foreignSource);
         r.setNode(node);
       });
     };
@@ -180,13 +182,18 @@ require('../services/Synchronize');
     * @param {string} foreignSource The name of the requisition
     */
     $scope.clone = function(foreignSource) {
-      var availableForeignSources = [];
+      if (RequisitionsService.isExcludedRequisitionName(foreignSource)) {
+        $scope.errorHandler('Cannot clone a requisition with this name.');
+        return;
+      }
+
+      const availableForeignSources = [];
       angular.forEach($scope.requisitionsData.requisitions, function(r) {
         if (r.foreignSource !== foreignSource) {
           availableForeignSources.push(r.foreignSource);
         }
       });
-      var modalInstance = $uibModal.open({
+      const modalInstance = $uibModal.open({
         backdrop: 'static',
         keyboard: false,
         controller: 'CloneForeignSourceController',
@@ -229,7 +236,13 @@ require('../services/Synchronize');
             bootbox.alert('Cannot add the requisition ' + _.escape(foreignSource) + ' because the following characters are invalid:<br/>:, /, \\, ?, &, *, \', "');
             return;
           }
-          var r = $scope.requisitionsData.getRequisition(foreignSource);
+
+          if (RequisitionsService.isExcludedRequisitionName(foreignSource)) {
+            bootbox.alert('Cannot add a requisition with this name.');
+            return;
+          }
+
+          const r = $scope.requisitionsData.getRequisition(foreignSource);
           if (r) {
             bootbox.alert('Cannot add the requisition ' + _.escape(foreignSource) + ' because there is already a requisition with that name');
             return;
@@ -296,7 +309,7 @@ require('../services/Synchronize');
       RequisitionsService.startTiming();
       RequisitionsService.updateDeployedStatsForRequisition(requisition).then(
         function() { // success
-          growl.success('The deployed statistics for ' + _.escape(requisition.foreignSource) + ' has been updated.');
+          growl.success('The deployed statistics for ' + _.escape(requisition.foreignSource) + ' have been updated.');
         },
         $scope.errorHandler
       );
@@ -317,7 +330,7 @@ require('../services/Synchronize');
           RequisitionsService.removeAllNodesFromRequisition(foreignSource).then(
             function() { // success
               growl.success('All the nodes from ' + _.escape(foreignSource) + ' have been removed, and the requisition has been synchronized.');
-              var req = $scope.requisitionsData.getRequisition(foreignSource);
+              const req = $scope.requisitionsData.getRequisition(foreignSource);
               req.reset();
             },
             $scope.errorHandler
@@ -372,7 +385,7 @@ require('../services/Synchronize');
           RequisitionsService.startTiming();
           RequisitionsService.deleteForeignSourceDefinition('default').then(
             function() { // success
-              growl.success('The default foreign source definition has been reseted.');
+              growl.success('The default foreign source definition has been reset.');
               $scope.initialize();
             },
             $scope.errorHandler
@@ -394,7 +407,7 @@ require('../services/Synchronize');
     */
     $scope.refreshData = function() {
       bootbox.dialog({
-        message: 'Are you sure you want to refresh the content of the page ?<br/><hr/>' +
+        message: 'Are you sure you want to refresh the content of the page?<br/><hr/>' +
                  'Choose <b>Reload Everything</b> to retrieve all the requisitions from the server (any existing unsaved change will be lost).<br/>' +
                  'Choose <b>Reload Deployed Data</b> to retrieve the deployed statistics and update the UI.<br/>' +
                  'Choose <b>Cancel</b> to abort the request.',
@@ -434,7 +447,7 @@ require('../services/Synchronize');
       growl.success('Refreshing deployed statistics...');
       RequisitionsService.updateDeployedStats($scope.requisitionsData).then(
         function() { // success
-          growl.success('The deployed statistics has been updated.');
+          growl.success('The deployed statistics have been updated.');
         },
         $scope.errorHandler
       );
@@ -490,7 +503,7 @@ require('../services/Synchronize');
     * @methodOf RequisitionsController
     */
     $scope.initialize = function() {
-      var value = $cookies.get('requisitions_page_size');
+      const value = $cookies.get('requisitions_page_size');
       if (value) {
         $scope.pageSize = value;
       }
@@ -522,11 +535,8 @@ require('../services/Synchronize');
     });
 
     // Initialization
-
     if ($scope.filteredRequisitions.length === 0) {
       $scope.initialize();
     }
-
   }]);
-
 }());

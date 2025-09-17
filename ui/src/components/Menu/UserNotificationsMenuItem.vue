@@ -1,6 +1,6 @@
 <template>
   <FeatherDropdown
-    class="menubar-dropdown"
+    class="user-notification-menubar-dropdown"
     :modelValue="displayMenu"
     @update:modelValue="(val: any) => updateDisplay(val)"
   >
@@ -264,11 +264,7 @@ const onNotificationItemClick = (item: OnmsNotification) => {
   }
 }
 
-.feather-menu.menubar-dropdown {
-  margin-right: 1em;
-}
-
-.menubar-dropdown {
+.user-notification-menubar-dropdown {
   margin-left: 2px;
 
   :deep(.feather-dropdown) {

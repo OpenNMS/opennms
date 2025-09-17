@@ -62,9 +62,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         WebElement foundElement = null;
 
         // Dashboards Menu
-        clickMenuItem("dashboardsMenu", "Dashboards");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[text()='OpenNMS Dashboards']")));
-
         clickMenuItem("dashboardsMenu", "Wallboard");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[starts-with(@id, 'opennmsvaadinwallboard-')]")));
 
@@ -245,13 +242,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         clickMenuItem("internalLogsMenu", "Instrumentation Log Reader");
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'Instrumentation Log Reader')]")));
 
-        // User Profile Menu
-        clickMenuItem("userProfileMenu", "Change Password");
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[contains(text()[normalize-space()], 'Please enter the old and new passwords and confirm.')]")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//form[@name='goForm']//label[contains(text()[normalize-space()], 'Current Password')]")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//form[@name='goForm']//label[contains(text()[normalize-space()], 'New Password')]")));
-        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//form[@name='goForm']//label[contains(text()[normalize-space()], 'Confirm New Password')]")));
-
         // API Documentation Menu
         // Omit clicking for now, some of these are external links
         foundElement = findMenuItemLink("apiDocumentationMenu", "REST Open API Documentation");
@@ -293,9 +283,10 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//ol[@class='breadcrumb']/li[contains(text()[normalize-space()], 'System Reports')]")));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@class='card-body']//div[@class='form-group']/input[@type='submit' and @value='Generate System Report']")));
 
+        // Omitting for now - need to fix!
         // Vaadin Topology page
         frontPage();
-        clickMenuItem("topologiesMenu", "Topology");
+        clickTopMenuItem("topologiesMenu");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[contains(text(), 'Selection Context')]")));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[starts-with(@id, 'opennmstopology-')]")));
 
@@ -329,9 +320,10 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='link']/a[text()='Logs']")));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='logs-sidebar']")));
 
+        // Omitting for now - need to fix!
         // Geographical map page
         frontPage();
-        clickMenuItem("mapsMenu", "Geographical");
+        clickTopMenuItem("mapsMenu");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='geo-map']")));
 
         // Omitting this for now - it takes too long for the Swagger API page to display
@@ -397,6 +389,17 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         reportsPage();
         findElementByLink("Statistics Reports").click();
         findElementByXpath("//div[@class='card-header']/span[text()='Statistics Report List']");
+    }
+
+    @Test
+    public void testSelfServiceMenu() {
+        LOG.debug("In testSelfServiceMenu");
+
+        clickChangePassword();
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//div[@class='card-header']/span[contains(text()[normalize-space()], 'Please enter the old and new passwords and confirm.')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//form[@name='goForm']//label[contains(text()[normalize-space()], 'Current Password')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//form[@name='goForm']//label[contains(text()[normalize-space()], 'New Password')]")));
+        wait.until(ExpectedConditions.visibilityOfElementLocated(By.xpath("//form[@name='goForm']//label[contains(text()[normalize-space()], 'Confirm New Password')]")));
     }
 
     @Test

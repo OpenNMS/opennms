@@ -306,7 +306,7 @@ org.jolokia.authMode=jaas
         <bundle>mvn:io.netty/netty-buffer/${netty4Version}</bundle>
         <bundle>mvn:io.netty/netty-codec/${netty4Version}</bundle>
         <bundle>mvn:io.netty/netty-codec-dns/${netty4Version}</bundle>
-        <bundle>mvn:io.netty/netty-common/${netty4Version}</bundle>
+        <bundle dependency="true">wrap:mvn:io.netty/netty-common/${netty4Version}$overwrite=merge&amp;Import-Package=com.oracle.svm.core.annotate;resolution:=optional</bundle>
         <bundle>mvn:io.netty/netty-handler/${netty4Version}</bundle>
         <bundle>mvn:io.netty/netty-resolver/${netty4Version}</bundle>
         <bundle>mvn:io.netty/netty-resolver-dns/${netty4Version}</bundle>

@@ -63,7 +63,7 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
 
     private final AsyncDispatcher<TelemetryMessage> dispatcher;
 
-    private final SampleDatagramEnricher enricher;
+    private SampleDatagramEnricher enricher;
 
     private int threads = DEFAULT_NUM_THREADS;
 	
@@ -71,11 +71,14 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
 	
     private ExecutorService executor;
 
+    private final DnsResolver dnsResolver;
+
     public SFlowUdpParser(final String name,
                           final AsyncDispatcher<TelemetryMessage> dispatcher,
                           final DnsResolver dnsResolver) {
         this.name = Objects.requireNonNull(name);
         this.dispatcher = Objects.requireNonNull(dispatcher);
+        this.dnsResolver = Objects.requireNonNull(dnsResolver);
 
         // Create a thread factory that sets a thread local variable when the thread is created
         // This variable is used to identify the thread as one that belongs to this class
@@ -89,8 +92,6 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
                 });
             }
         };
-
-        enricher = new SampleDatagramEnricher(dnsResolver, getDnsLookupsEnabled());
     }
 
     @Override
@@ -203,6 +204,8 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
                         throw new RejectedExecutionException("Executor interrupted while waiting for capacity in the work queue.", e);
                     }
                 });
+
+        enricher = new SampleDatagramEnricher(dnsResolver, getDnsLookupsEnabled());
     }
 
     @Override
@@ -221,4 +224,7 @@ public class SFlowUdpParser implements UdpParser, Dispatchable {
         this.threads = threads;
     }
 
+    SampleDatagramEnricher getEnricher() {
+        return enricher;
+    }
 }
