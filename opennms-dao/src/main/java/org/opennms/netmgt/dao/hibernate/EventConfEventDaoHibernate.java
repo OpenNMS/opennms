@@ -131,8 +131,7 @@ public class EventConfEventDaoHibernate
 
     @Override
     public EventConfEvent findByEventId( Long eventId) {
-        List<EventConfEvent> list = find("from EventConfEvent e where e.id = ? ", eventId);
-        return list.isEmpty() ? null : list.get(0);
+        return findUnique("from EventConfEvent e where e.id = ? ", eventId);
     }
 
 

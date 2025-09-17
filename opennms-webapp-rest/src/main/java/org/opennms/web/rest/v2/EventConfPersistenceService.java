@@ -25,7 +25,6 @@ package org.opennms.web.rest.v2;
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
-import org.opennms.netmgt.EventConfEventPayload;
 import org.opennms.netmgt.config.api.EventConfDao;
 import org.opennms.netmgt.dao.api.EventConfEventDao;
 import org.opennms.netmgt.dao.api.EventConfSourceDao;
@@ -134,6 +133,8 @@ public class EventConfPersistenceService {
             }
 
             eventConfEventDao.saveOrUpdate(eventConfEvent);
+            // Asynchronously load event conf from DB.
+            //eventConfExecutor.execute(this::reloadEventsFromDB);
 
         } catch (Exception e) {
             throw new RuntimeException("Failed to update EventConfEvent XML for eventId=" + eventId, e);

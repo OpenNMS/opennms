@@ -19,7 +19,7 @@
  * language governing permissions and limitations under the
  * License.
  */
-package org.opennms.netmgt;
+package org.opennms.web.rest.v2;
 
 public class EventConfEventPayload {
     private String eventLabel;
@@ -29,7 +29,6 @@ public class EventConfEventPayload {
     public EventConfEventPayload() {
 
     }
-
 
     public String getEventLabel() {
         return eventLabel;
