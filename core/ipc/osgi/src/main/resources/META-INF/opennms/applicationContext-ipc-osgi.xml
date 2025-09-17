@@ -44,6 +44,12 @@
   </bean>
 
 
+    <onmsgi:service  interface="org.opennms.core.ipc.sink.api.MessageDispatcherFactory" ref="osgiLocalDispatcherFactory">
+        <onmsgi:service-properties>
+            <entry key="registration.export" value="true" />
+        </onmsgi:service-properties>
+    </onmsgi:service>
+
   <!-- Sink Metrics -->
   <bean id="osgiLocalSinkMetricRegistry" class="com.codahale.metrics.MetricRegistry"/>
   <onmsgi:service ref="osgiLocalSinkMetricRegistry" interface="com.codahale.metrics.MetricSet" >
