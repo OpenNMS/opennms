@@ -7,28 +7,23 @@
       <div class="action-container">
         <div class="search-container">
           <FeatherInput
-            label="Search"
+            label="Search by UEI, Event Label or Description"
             type="search"
             data-test="search-input"
+            v-model.trim="store.eventsSearchTerm"
+            placeholder="Search by UEI, Event Label or Description"
+            @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
           >
             <template #pre>
               <FeatherIcon :icon="Search" />
             </template>
           </FeatherInput>
         </div>
-        <div class="download-csv">
-          <FeatherButton
-            primary
-            icon="Download"
-            data-test="download-button"
-          >
-            <FeatherIcon :icon="DownloadFile"> </FeatherIcon>
-          </FeatherButton>
-        </div>
         <div class="refresh">
           <FeatherButton
             primary
             icon="Refresh"
+            @click="store.refreshEventConfigEvents()"
           >
             <FeatherIcon :icon="Refresh"> </FeatherIcon>
           </FeatherButton>
@@ -66,7 +61,7 @@
           >
             <td>{{ event.uei }}</td>
             <td>{{ event.eventLabel }}</td>
-            <td>{{ event.description }}</td>
+            <td><p v-html="event.description"></p></td>
             <td>{{ event.enabled ? 'Enabled' : 'Disabled' }}</td>
             <td>
               <div class="action-container">
@@ -108,7 +103,7 @@
           </tr>
         </TransitionGroup>
       </table>
-      <div class="alerts-pagination">
+      <div class="alerts-pagination" v-if="store.events.length">
         <FeatherPagination
           :modelValue="store.eventsPagination.page"
           :pageSize="store.eventsPagination.pageSize"
@@ -117,7 +112,6 @@
           @update:modelValue="store.onEventsPageChange"
           @update:pageSize="store.onEventsPageSizeChange"
           data-test="FeatherPagination"
-          v-if="store.events.length"
         />
       </div>
       <div v-if="!store.events.length">
@@ -139,7 +133,6 @@ import { EventConfigEvent } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
-import DownloadFile from '@featherds/icon/action/DownloadFile'
 import Edit from '@featherds/icon/action/Edit'
 import Search from '@featherds/icon/action/Search'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
@@ -147,6 +140,8 @@ import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
+import { debounce } from 'lodash'
+import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigEventStatusDialog from './Dialog/ChangeEventConfigEventStatusDialog.vue'
 import DeleteEventConfigEventDialog from './Dialog/DeleteEventConfigEventDialog.vue'
@@ -178,11 +173,21 @@ const openEventDrawer = (event: EventConfigEvent) => {
 }
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
+  if (sortObj.value === 'asc' || sortObj.value === 'desc') {
+    store.onEventsSortChange(sortObj.property, sortObj.value)
+  } else {
+    store.onEventsSortChange('createdTime', 'desc')
+  }
+
   for (const prop in sort) {
     sort[prop] = SORT.NONE
   }
   sort[sortObj.property] = sortObj.value
 }
+
+const onChangeSearchTerm = debounce(async (value: string) => {
+  await store.onChangeEventsSearchTerm(value)
+}, 500)
 </script>
 
 <style lang="scss" scoped>
