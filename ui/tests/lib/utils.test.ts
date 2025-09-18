@@ -76,8 +76,8 @@ describe('lib/utils test', () => {
     expect(ellipsify('', 1)).toBe('')
     expect(ellipsify('', 4)).toBe('')
     expect(ellipsify('abc', 4)).toBe('abc')
-    expect(ellipsify('abcdef', 4)).toBe('abcd...')
-    expect(ellipsify('Lorem ipsum dolor sit amet', 20)).toBe('Lorem ipsum dolor si...')
+    expect(ellipsify('abcdef', 4)).toBe(`abc${'\u2026'}`)
+    expect(ellipsify('Lorem ipsum dolor sit amet', 20)).toBe(`Lorem ipsum dolor s${'\u2026'}`)
   })
 
   test('test hasNonEmptyProperty', async () => {

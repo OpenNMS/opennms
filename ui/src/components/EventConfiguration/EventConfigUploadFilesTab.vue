@@ -6,7 +6,7 @@
       </div>
       <div class="section">
         <div class="selected-files-section">
-          <div v-if="eventFiles.length > 0 || invalidFiles.length > 0">
+          <div v-if="eventFiles.length > 0">
             <Draggable
               v-model="eventFiles"
               item-key="value"
@@ -17,9 +17,48 @@
                 <div class="file">
                   <div class="file-icon">
                     <FeatherIcon :icon="Text" />
-                    <span>{{ element.name.length > 39 ? element.name.slice(0, 36) + "..." : element.name }}</span>
+                    <span>
+                      {{ ellipsify(element.file.name, 39) }}
+                    </span>
                   </div>
                   <div class="actions">
+                    <FeatherTooltip
+                      v-if="element.isDuplicate"
+                      :title="'File is a duplicate of another file that has been already uploaded.'"
+                      v-slot="{ attrs, on }"
+                    >
+                      <FeatherIcon
+                        :icon="Warning"
+                        v-bind="attrs"
+                        v-on="on"
+                        class="warning-icon"
+                        @click="openFileRenameDialog(index)"
+                      />
+                    </FeatherTooltip>
+                    <FeatherTooltip
+                      v-if="element.isValid && !element.isDuplicate"
+                      :title="'File is valid'"
+                      v-slot="{ attrs, on }"
+                    >
+                      <FeatherIcon
+                        :icon="CheckCircle"
+                        v-bind="attrs"
+                        v-on="on"
+                        class="success-icon"
+                      />
+                    </FeatherTooltip>
+                    <FeatherTooltip
+                      v-if="!element.isValid"
+                      :title="element.errors.map((error: string) => `${error}. `).join('\n')"
+                      v-slot="{ attrs, on }"
+                    >
+                      <FeatherIcon
+                        :icon="Error"
+                        v-bind="attrs"
+                        v-on="on"
+                        class="error-icon"
+                      />
+                    </FeatherTooltip>
                     <FeatherButton
                       icon="Apps"
                       text
@@ -40,32 +79,6 @@
                 </div>
               </template>
             </Draggable>
-            <div
-              v-for="(file, index) in invalidFiles"
-              class="file"
-              :key="file.name"
-            >
-              <div class="file-icon">
-                <FeatherIcon :icon="Text" />
-                <span class="invalid-text">{{ file.name }}</span>
-              </div>
-              <div class="actions">
-                <FeatherTooltip :title="file.reason" v-slot="{ attrs, on }">
-                  <FeatherIcon
-                    :icon="Info"
-                    v-bind="attrs"
-                    v-on="on"
-                    class="info-icon"
-                  />
-                </FeatherTooltip>
-                <FeatherButton
-                  icon="Trash"
-                  @click="removeInvalidFile(index)"
-                >
-                  <FeatherIcon :icon="Delete" />
-                </FeatherButton>
-              </div>
-            </div>
           </div>
           <div v-else>
             <p>No files selected</p>
@@ -88,73 +101,134 @@
           </FeatherButton>
           <FeatherButton
             primary
-            :disabled="eventFiles.length === 0 || isLoading"
+            :disabled="shouldUploadDisabled"
             @click="uploadFiles"
             data-test="upload-button"
           >
             <FeatherSpinner v-if="isLoading" />
-            <span v-else>Upload Files </span>
+            <span v-else>Upload Files</span>
           </FeatherButton>
         </div>
       </div>
+      <div class="info-section">
+        <h3>Instructions:</h3>
+        <ul>
+          <li>Event configuration files must be in XML format with a .events.xml extension.</li>
+          <li>Each event configuration file should contain a single event configuration.</li>
+          <li>Maximum number of files that can be uploaded at once is {{ MAX_FILES_UPLOAD }}.</li>
+          <li>Ensure that the XML files are well-formed and adhere to the expected schema.</li>
+          <li>
+            Files that are valid and ready for upload will be flagged with icon
+            <FeatherIcon
+              :icon="CheckCircle"
+              class="success-icon"
+            />.
+          </li>
+          <li>
+            Files with duplicate names (excluding the .events.xml extension) will be flagged with icon
+            <FeatherIcon
+              :icon="Warning"
+              class="warning-icon"
+            />
+            indicating renaming or overwriting is required. It can be done by clicking on the icon.
+          </li>
+          <li>
+            Invalid files will be flagged with icon
+            <FeatherIcon
+              :icon="Error"
+              class="error-icon"
+            />
+            and error messages indicating the issues found during validation of the file contents and schema compliance.
+          </li>
+        </ul>
+      </div>
     </div>
     <EventConfigFilesUploadReportDialog :report="uploadFilesReport" />
+    <UploadedFileRenameDialog
+      :visible="displayRenameDialog"
+      :fileBucket="eventFiles"
+      :index="eventFiles.findIndex(f => f.isDuplicate)"
+      :alreadyExistsNames="store.uploadedSourceNames"
+      @close="closeRenameDialog"
+      @rename="renameFile"
+      @overwrite="overwriteFile"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+import useSnackbar from '@/composables/useSnackbar'
+import { ellipsify } from '@/lib/utils'
 import { uploadEventConfigFiles } from '@/services/eventConfigService'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
-import { EventConfigFilesUploadReponse } from '@/types/eventConfig'
+import { EventConfigFilesUploadResponse, UploadEventFileType } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherIcon } from '@featherds/icon'
+import CheckCircle from '@featherds/icon/action/CheckCircle'
 import Delete from '@featherds/icon/action/Delete'
-import Info from '@featherds/icon/action/Info'
 import Text from '@featherds/icon/file/Text'
 import Apps from '@featherds/icon/navigation/Apps'
+import Error from '@featherds/icon/notification/Error'
+import Warning from '@featherds/icon/notification/Warning'
 import { FeatherSpinner } from '@featherds/progress'
 import { FeatherTooltip } from '@featherds/tooltip'
-import { ref } from 'vue'
 import Draggable from 'vuedraggable'
 import EventConfigFilesUploadReportDialog from './Dialog/EventConfigFilesUploadReportDialog.vue'
-import { isDuplicateFile, validateEventConfigFile } from './eventConfigXmlValidator'
+import UploadedFileRenameDialog from './Dialog/UploadedFileRenameDialog.vue'
+import { isDuplicateFile, MAX_FILES_UPLOAD, validateEventConfigFile } from './eventConfigXmlValidator'
 
 const eventConfFileInput = ref<HTMLInputElement | null>(null)
-const uploadFilesReport = ref<EventConfigFilesUploadReponse>({} as EventConfigFilesUploadReponse)
+const uploadFilesReport = ref<EventConfigFilesUploadResponse>({} as EventConfigFilesUploadResponse)
 const store = useEventConfigStore()
-const eventFiles = ref<File[]>([])
-const invalidFiles = ref<{ name: string; reason: string }[]>([])
 const isLoading = ref(false)
+const snackbar = useSnackbar()
+const eventFiles = ref<UploadEventFileType[]>([])
+const displayRenameDialog = ref(false)
+const selectedIndex = ref<number | null>(null)
+const shouldUploadDisabled = computed(() => {
+  return (
+    eventFiles.value.length === 0 ||
+    isLoading.value ||
+    !eventFiles.value.every(f => f.isValid) ||
+    eventFiles.value.some(f => f.isDuplicate)
+  )
+})
 
 const handleEventConfUpload = async (e: Event) => {
   const input = e.target as HTMLInputElement
   if (input.files && input.files.length > 0) {
     const files = Array.from(input.files)
-
     for (const file of files) {
-      if (isDuplicateFile(file.name, eventFiles.value, invalidFiles.value)) {
-        continue
-      }
-
       try {
-        const validationResult = await validateEventConfigFile(file)        
-        if (validationResult.isValid) {
-          eventFiles.value.push(file)
+        if (isDuplicateFile(file.name, eventFiles.value)) {
+          continue
+        }
+        const validationResult = await validateEventConfigFile(file)
+        if (eventFiles.value.length >= MAX_FILES_UPLOAD) {
+          snackbar.showSnackBar({
+            msg: `You can upload a maximum of ${MAX_FILES_UPLOAD} files at a time.`,
+            error: true
+          })
+          break
         } else {
-          invalidFiles.value.push({ 
-            name: file.name, 
-            reason: validationResult.errors.join('; ') 
+          eventFiles.value.push({
+            file,
+            isValid: validationResult.isValid,
+            errors: validationResult.errors,
+            isDuplicate: store.uploadedSourceNames.map(name => name.replace('.xml', '').toLowerCase()).includes(file.name.replace('.xml', '').toLowerCase())
           })
         }
-        
       } catch (error) {
         console.error(`Error processing file ${file.name}:`, error)
-        invalidFiles.value.push({ 
-          name: file.name, 
-          reason: `Unexpected error processing file: ${error instanceof Error ? error.message : 'Unknown error'}` 
+        snackbar.showSnackBar({
+          msg: `Error processing file ${file.name}.`,
+          error: true
         })
       }
     }
+    // Reset the input value to allow re-uploading the same file if needed
+    input.value = ''
+    input.files = null
   } else {
     console.warn('No files selected')
   }
@@ -164,12 +238,44 @@ const openFileDialog = () => {
   eventConfFileInput.value?.click()
 }
 
-const removeFile = (index: number) => {
-  eventFiles.value.splice(index, 1)
+const openFileRenameDialog = (index: number) => {
+  displayRenameDialog.value = true
+  selectedIndex.value = index
 }
 
-const removeInvalidFile = (index: number) => {
-  invalidFiles.value.splice(index, 1)
+const closeRenameDialog = () => {
+  displayRenameDialog.value = false
+  selectedIndex.value = null
+}
+
+const renameFile = async (newFileName: string) => {
+  if (selectedIndex.value !== null && selectedIndex.value >= 0 && selectedIndex.value < eventFiles.value.length) {
+    const fileToRename = eventFiles.value[selectedIndex.value]
+    const newFile = new File([fileToRename.file], newFileName, { type: fileToRename.file.type })
+    const validationResult = await validateEventConfigFile(newFile)
+    eventFiles.value[selectedIndex.value] = {
+      file: newFile,
+      isValid: validationResult.isValid,
+      errors: validationResult.errors,
+      isDuplicate: store.uploadedSourceNames.map(name => name.replace('.xml', '').toLowerCase()).includes(newFileName.replace('.xml', '').toLowerCase())
+    }
+    closeRenameDialog()
+  } else {
+    console.error('Invalid index for renaming file')
+  }
+}
+
+const overwriteFile = () => {
+  if (selectedIndex.value !== null && selectedIndex.value >= 0 && selectedIndex.value < eventFiles.value.length) {
+    eventFiles.value[selectedIndex.value].isDuplicate = false
+    closeRenameDialog()
+  } else {
+    console.error('Invalid index for overwriting file')
+  }
+}
+
+const removeFile = (index: number) => {
+  eventFiles.value.splice(index, 1)
 }
 
 const uploadFiles = async () => {
@@ -177,25 +283,19 @@ const uploadFiles = async () => {
     console.warn('No files to upload')
     return
   }
-  if (!eventFiles.value.every(
-    file => file.name.endsWith('.events.xml') || file.name === 'eventconf.xml')) {
+  if (!eventFiles.value.every(f => f.file.name.endsWith('.events.xml'))) {
     console.error('All files must be XML files')
     return
   }
   isLoading.value = true
   try {
-    const response = await uploadEventConfigFiles(eventFiles.value)
+    const response = await uploadEventConfigFiles(eventFiles.value.filter(f => f.isValid).map(f => f.file))
     uploadFilesReport.value = {
       errors: [...response.errors],
-      success: [...response.success],
-      invalid: invalidFiles.value.map(f => ({
-        file: f.name,
-        reason: f.reason
-      }))
+      success: [...response.success]
     }
     isLoading.value = false
-    eventFiles.value = [] 
-    invalidFiles.value = []
+    eventFiles.value = []
     eventConfFileInput.value!.value = ''
     store.uploadedEventConfigFilesReportDialogState.visible = true
   } catch (err) {
@@ -227,6 +327,29 @@ const uploadFiles = async () => {
       display: flex;
       align-items: flex-start;
       gap: 10px;
+    }
+
+    .info-section {
+      .success-icon {
+        color: var(variables.$success);
+        vertical-align: middle;
+        height: 2em;
+        width: 2em;
+      }
+
+      .error-icon {
+        color: var(variables.$error);
+        vertical-align: middle;
+        height: 2em;
+        width: 2em;
+      }
+
+      .warning-icon {
+        color: var(variables.$major);
+        vertical-align: middle;
+        height: 2em;
+        width: 2em;
+      }
     }
 
     .selected-files-section {
@@ -272,11 +395,25 @@ const uploadFiles = async () => {
             margin: 0px;
           }
 
-          .info-icon {
+          .success-icon {
+            color: var(variables.$success);
+            cursor: pointer;
+            height: 2em;
+            width: 2em;
+          }
+
+          .error-icon {
             color: var(variables.$error);
             cursor: pointer;
-            height: 1.5em;
-            width: 1.5em;
+            height: 2em;
+            width: 2em;
+          }
+
+          .warning-icon {
+            color: var(variables.$major);
+            cursor: pointer;
+            height: 2em;
+            width: 2em;
           }
         }
       }
@@ -306,3 +443,4 @@ const uploadFiles = async () => {
   }
 }
 </style>
+

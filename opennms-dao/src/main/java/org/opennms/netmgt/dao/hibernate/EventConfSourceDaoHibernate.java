@@ -29,6 +29,9 @@ import org.slf4j.LoggerFactory;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 public class EventConfSourceDaoHibernate
@@ -106,6 +109,67 @@ public class EventConfSourceDaoHibernate
         LOG.info("Set enabled={} for sources {} (cascadeToEvents={})", enabled, sourceIds, cascadeToEvents);
     }
 
+    @Override
+    public Map<String, Object> filterEventConfSource(final String filter, final String sortBy, final String order,
+                                                     final Integer totalRecords, final Integer offset, Integer limit) {
+
+        int resultCount = (totalRecords != null) ? totalRecords : 0;
+        List<EventConfSource> eventConfSourceList = Collections.emptyList();
+        try {
+            List<Object> queryParams = new ArrayList<>();
+            List<String> conditions = new ArrayList<>();
+
+            // Add filter conditions dynamically
+            if (filter != null && !filter.trim().isEmpty()) {
+                String escapedFilter = "%" + escapeLike(filter.trim().toLowerCase()) + "%";
+                conditions.add("lower(s.name) like ? escape '\\'");
+                queryParams.add(escapedFilter);
+
+                conditions.add("lower(s.vendor) like ? escape '\\'");
+                queryParams.add(escapedFilter);
+
+                conditions.add("lower(s.description) like ? escape '\\'");
+                queryParams.add(escapedFilter);
+
+            }
+
+            String whereClause = conditions.isEmpty() ? "" : " where " + String.join(" OR ", conditions);
+
+            // COUNT QUERY: get total matching records if not already provided
+            if (resultCount == 0) {
+                String countQuery = "select count(s.id) from EventConfSource s " + whereClause;
+                resultCount = super.queryInt(countQuery, queryParams.toArray());
+            }
+
+            // DATA QUERY: fetch paginated results
+            if (resultCount > 0) {
+
+                String orderBy = "";
+                String sortField = sortBy;
+
+                String sortOrder = "ASC".equalsIgnoreCase(order) ? "ASC" : "DESC";
+
+                Set<String> allowedSortFields = Set.of("name", "vendor", "description", "fileOrder", "eventCount");
+
+                if (!allowedSortFields.contains(sortBy)) {
+                    sortField = "createdTime";
+                }
+
+                orderBy = " order by " + sortField + " " + sortOrder;
+
+                String dataQuery = "from EventConfSource s " + whereClause + orderBy;
+                eventConfSourceList = findWithPagination(dataQuery, queryParams.toArray(), offset, limit);
+            }
+
+        } catch (Exception e ) {
+            LOG.debug("Error filterEventConfSource method while fetching the records {} ", e);
+        }
+
+        // Return map with results
+        return Map.of("totalRecords", resultCount, "eventConfSourceList", eventConfSourceList);
+
+    }
+
 
     @Override
     public void deleteBySourceIds(List<Long> sourceIds) {
@@ -116,6 +180,16 @@ public class EventConfSourceDaoHibernate
         );
         LOG.info("Deleted {} EventConfSource(s) with IDs: {}", deletedCount, sourceIds);
     }
+    @Override
+    public List<String> findAllNames() {
+        return findObjects(
+                String.class,
+                "select distinct s.name from EventConfSource s "
+
+        );
+    }
+
+
 
     @Override
     public void saveOrUpdate(EventConfSource source) {
@@ -125,5 +199,24 @@ public class EventConfSourceDaoHibernate
     @Override
     public void delete(EventConfSource source) {
         super.delete(source);
+    }
+
+    /**
+     * Escapes special characters (%, _, \, /, [, ]) in a string
+     * to make it safe for SQL LIKE queries.
+     *
+     * @param input the input string
+     * @return the escaped string
+     */
+    private String escapeLike(String input) {
+        return input
+                .replace("\\", "\\\\")
+                .replace("%", "\\%")
+                .replace("_", "\\_")
+                .replace("@", "\\@")
+                .replace("/", "\\/")
+                .replace("[", "\\[")
+                .replace("]", "\\]")
+                .replace(".", "\\.");
     }
 }

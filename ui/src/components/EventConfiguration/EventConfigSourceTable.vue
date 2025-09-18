@@ -7,7 +7,7 @@
       <div class="action-container">
         <div class="search-container">
           <FeatherInput
-            label="Search"
+            label="Search by Name, Vendor or Description"
             type="search"
             data-test="search-input"
             v-model.trim="store.sourcesSearchTerm"
@@ -19,19 +19,11 @@
             </template>
           </FeatherInput>
         </div>
-        <div class="download-csv">
-          <FeatherButton
-            primary
-            icon="Download"
-            data-test="download-button"
-          >
-            <FeatherIcon :icon="DownloadFile"> </FeatherIcon>
-          </FeatherButton>
-        </div>
         <div class="refresh">
           <FeatherButton
             primary
             icon="Refresh"
+            @click="store.refreshEventsSources()"
           >
             <FeatherIcon :icon="Refresh"> </FeatherIcon>
           </FeatherButton>
@@ -113,7 +105,7 @@
           </tr>
         </TransitionGroup>
       </table>
-      <div class="alerts-pagination">
+      <div class="alerts-pagination" v-if="store.sources.length">
         <FeatherPagination
           :modelValue="store.sourcesPagination.page"
           :pageSize="store.sourcesPagination.pageSize"
@@ -122,7 +114,6 @@
           @update:modelValue="store.onSourcePageChange"
           @update:pageSize="store.onSourcePageSizeChange"
           data-test="FeatherPagination"
-          v-if="store.sources.length"
         />
       </div>
       <div v-if="!store.sources.length">
@@ -144,7 +135,6 @@ import { EventConfigSource } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
-import DownloadFile from '@featherds/icon/action/DownloadFile'
 import Search from '@featherds/icon/action/Search'
 import ViewDetails from '@featherds/icon/action/ViewDetails'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
@@ -153,6 +143,7 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherPagination } from '@featherds/pagination'
 import { FeatherSortHeader, SORT } from '@featherds/table'
 import { debounce } from 'lodash'
+import EmptyList from '../Common/EmptyList.vue'
 import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigSourceStatusDialog from './Dialog/ChangeEventConfigSourceStatusDialog.vue'
 import DeleteEventConfigSourceDialog from './Dialog/DeleteEventConfigSourceDialog.vue'

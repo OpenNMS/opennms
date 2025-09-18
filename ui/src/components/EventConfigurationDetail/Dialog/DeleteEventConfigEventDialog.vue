@@ -56,13 +56,5 @@ const deleteEventConfigEvent = async () => {
 }
 </script>
 
-<style scoped lang="scss">
-.delete-event-config-event-dialog {
-  .modal-body {
-    display: flex;
-    flex-direction: column;
-    gap: 15px;
-  }
-}
-</style>
+<style scoped lang="scss"></style>
 
