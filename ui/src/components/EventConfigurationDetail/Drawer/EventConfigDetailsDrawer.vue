@@ -51,7 +51,7 @@
         >
           Save Changes
         </FeatherButton>
-        <FeatherButton secondary @click="eventConfigStore.closeEventDrawerModal()">Close</FeatherButton>
+        <FeatherButton secondary @click="handleClose()">Close</FeatherButton>
       </div>
     </div>
   </FeatherDrawer>
@@ -115,6 +115,13 @@ const handleSave = async () => {
   } else {
     snackbar.showSnackBar({ msg: 'Something went wrong', error: true })
   }
+}
+
+const handleClose = () => {
+  eventDescription.value = ''
+  eventLabel.value = ''
+  selectedEventStatus.value = undefined
+  eventConfigStore.closeEventDrawerModal()
 }
 
 const setIntialEventInfo = (val: EventConfigEvent) => {
