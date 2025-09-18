@@ -24,13 +24,13 @@
         <div class="spacer-medium"></div>
         <h4>Description</h4>
         <div class="spacer-medium"></div>
-        <textarea
+        <FeatherTextarea
           v-model="eventDescription"
           placeholder="Type your event description here..."
           rows="5"
           cols="40"
           class="textarea"
-        ></textarea>
+        ></FeatherTextarea>
         <div class="spacer-medium"></div>
         <h4>Status</h4>
         <div class="spacer-medium"></div>
@@ -68,6 +68,7 @@ import { FeatherInput } from '@featherds/input'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import { updateEventConfigById } from '@/services/eventConfigService'
 import useSnackbar from '@/composables/useSnackbar'
+import { FeatherTextarea } from '@featherds/textarea'
 
 const snackbar = useSnackbar()
 const eventConfigStore = useEventConfigDetailStore()
