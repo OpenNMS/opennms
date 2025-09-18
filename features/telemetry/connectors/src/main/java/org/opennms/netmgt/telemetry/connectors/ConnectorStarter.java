@@ -59,7 +59,7 @@ public class ConnectorStarter implements ManagedService {
 
     private static final Logger LOG = LoggerFactory.getLogger(ConnectorStarter.class);
 
-    Map<String, String> configMap = new HashMap<>();
+    private Map<String, String> configMap = new HashMap<>();
 
     private MessageDispatcherFactory messageDispatcherFactory;
 
@@ -85,13 +85,12 @@ public class ConnectorStarter implements ManagedService {
     // we should not remove the shared dispatcher . This is used to track it
     private final AtomicInteger queueReferenceCount = new AtomicInteger(0);
 
-
-    public ConnectorStarter() {}
+    public ConnectorStarter() {
+    }
 
     public void start() {
         final PropertyTree definition = PropertyTree.from(configMap);
         baseDef = new MapBasedConnectorDef(definition);
-
     }
 
     public void stop() {
@@ -150,28 +149,15 @@ public class ConnectorStarter implements ManagedService {
             newConfigMap.put(key, properties.get(key).toString());
         }
 
-        if (!newConfigMap.containsKey("connectorName")) {
-            newConfigMap.put("connectorName", "OpenConfig");
-        }
-        if (!newConfigMap.containsKey("className")) {
-            newConfigMap.put("className", "org.opennms.netmgt.telemetry.protocols.openconfig.connector.OpenConfigConnector");
-        }
-        if (!newConfigMap.containsKey("queueName")) {
-            newConfigMap.put("queueName", "OpenConfig");
-        }
-        if (!newConfigMap.containsKey("serviceName")) {
-            newConfigMap.put("serviceName", "OpenConfig");
-        }
-
         // TODO Not sure when the configs are update then connectors which is running with old configs should be restarted or not
     }
 
 
     public void subscribe() {
-        m_twinSubscription = twinSubscriber.subscribe(ConnectorTwinConfig.CONNECTOR_KEY, ConnectorTwinConfig.class, this::onConfig);
+        m_twinSubscription = twinSubscriber.subscribe(ConnectorTwinConfig.CONNECTOR_KEY, ConnectorTwinConfig.class, this::handleTwinUpdate);
     }
 
-    private void onConfig(ConnectorTwinConfig request) {
+    private void handleTwinUpdate(ConnectorTwinConfig request) {
         try (Logging.MDCCloseable mdc = Logging.withPrefixCloseable("telemetryd")) {
             LOG.info("Got connectors config update - reloading");
             synchronized (configuredLock) {
@@ -193,9 +179,9 @@ public class ConnectorStarter implements ManagedService {
 
                     if (existingEntity != null && hasConfigChanged(existingEntity.config, config)) {
                         // if config changed -> restart connector
-                            LOG.info("Configuration changed for key: {}, updating", config.getNodeConnectorKey());
-                            delete(config.getNodeConnectorKey());
-                            startConnector(config);
+                        LOG.info("Configuration changed for key: {}, updating", config.getNodeConnectorKey());
+                        delete(config.getNodeConnectorKey());
+                        startConnector(config);
                     } else {
                         // new config found in list -> start connector
                         startConnector(config);
@@ -210,22 +196,7 @@ public class ConnectorStarter implements ManagedService {
             final Entity entity = new Entity();
             entity.config = config;
             final String queueName = Objects.requireNonNull(baseDef.getQueueName());
-            AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(baseDef.getQueueName());
-            if (dispatcher == null) {
-                // No dispatcher in registry, check if we have a local instance
-                if (sharedQueueDispatcher == null) {
-                    // Create new dispatcher and register it
-                    TelemetrySinkModule sinkModule = new TelemetrySinkModule(baseDef);
-                    sinkModule.setDistPollerDao(distPollerDao);
-                    sharedQueueDispatcher = messageDispatcherFactory.createAsyncDispatcher(sinkModule);
-                    telemetryRegistry.registerDispatcher(queueName, sharedQueueDispatcher);
-                }
-                dispatcher = sharedQueueDispatcher;
-            } else {
-                // Dispatcher exists in registry
-                sharedQueueDispatcher = dispatcher;
-            }
-            queueReferenceCount.incrementAndGet();
+            ensureDispatcherForQueue(queueName);
             entity.queueName = queueName;
             entity.connector = telemetryRegistry.getConnector(baseDef);
 
@@ -237,6 +208,28 @@ public class ConnectorStarter implements ManagedService {
         } catch (Exception e) {
             LOG.error("Failed to start connector for key: {}", config.getNodeConnectorKey(), e);
         }
+    }
+
+    private void ensureDispatcherForQueue(String queueName) {
+
+        AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(queueName);
+        if (dispatcher != null) {
+            sharedQueueDispatcher = dispatcher;
+            return;
+        }
+        dispatcher = telemetryRegistry.getDispatcher(queueName);
+        if (dispatcher != null) {
+            sharedQueueDispatcher = dispatcher;
+            return;
+        }
+
+        if (sharedQueueDispatcher == null) {
+            TelemetrySinkModule sinkModule = new TelemetrySinkModule(baseDef);
+            sinkModule.setDistPollerDao(distPollerDao);
+            sharedQueueDispatcher = messageDispatcherFactory.createAsyncDispatcher(sinkModule);
+            telemetryRegistry.registerDispatcher(queueName, sharedQueueDispatcher);
+        }
+
     }
 
     private boolean hasConfigChanged(ConnectorTwinConfig.ConnectorConfig oldConfig,
@@ -251,7 +244,6 @@ public class ConnectorStarter implements ManagedService {
         this.twinSubscriber = twinSubscriber;
         subscribe();
     }
-
 
 
     public void unbind(TwinSubscriber twinSubscriber) {
@@ -301,9 +293,10 @@ public class ConnectorStarter implements ManagedService {
     public TwinSubscriber getTwinSubscriber() {
         return twinSubscriber;
     }
-@VisibleForTesting
+
+    @VisibleForTesting
     public void setTwinSubscriber(TwinSubscriber twinSubscriber) {
         this.twinSubscriber = twinSubscriber;
-    subscribe();
+        subscribe();
     }
 }

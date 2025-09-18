@@ -126,11 +126,6 @@ public class MockFilterDao implements FilterDao, InitializingBean {
         throw new UnsupportedOperationException("Not yet implemented!");
     }
 
-    @Override
-    public Map<Integer, String> getNodeLocations(String rule) {
-        return Map.of();
-    }
-
     public IpInterfaceDao getIpInterfaceDao() {
         return m_ipInterfaceDao;
     }

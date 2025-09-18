@@ -118,9 +118,4 @@ public class ConfigTesterFilterDao implements FilterDao {
     public void validateRule(String rule) throws FilterParseException {
     }
 
-    @Override
-    public Map<Integer, String> getNodeLocations(String rule) {
-        return Map.of();
-    }
-
 }
