@@ -56,15 +56,29 @@ export const deleteEventConfigSourceById = async (id: number): Promise<boolean> 
   }
 }
 
-export const updateEventConfigById = async (id: number, eventLabel:string, description:string, enabled:boolean): Promise<boolean> => {
+/**
+ * Makes a PUT request to the REST endpoint to update an event configuration source.
+ *
+ * @param id The ID of the event configuration source to update.
+ * @param eventLabel The new event label for the source.
+ * @param description The new description for the source.
+ * @param enabled Whether to enable or disable the source.
+ * @returns A promise that resolves to a boolean indicating whether the source was updated successfully.
+ */
+export const updateEventConfigById = async (
+  id: number,
+  eventLabel: string,
+  description: string,
+  enabled: boolean
+): Promise<boolean> => {
   const endpoint = `eventconf/sources/events/${id}`
   const payload = {
-    eventLabel:eventLabel,
-    description:description,
-    enabled:enabled
+    eventLabel: eventLabel,
+    description: description,
+    enabled: enabled
   }
   try {
-    const response = await v2.put(endpoint, payload )
+    const response = await v2.put(endpoint, payload)
     return response.status === 200
   } catch (error) {
     console.error('Error Updating event config source:', error)
