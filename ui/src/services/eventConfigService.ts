@@ -57,15 +57,15 @@ export const deleteEventConfigSourceById = async (id: number): Promise<boolean> 
 }
 
 /**
- * Makes a PUT request to the REST endpoint to update an event configuration source.
+ * Makes a PUT request to the REST endpoint to update an event configuration event.
  *
- * @param id The ID of the event configuration source to update.
- * @param eventLabel The new event label for the source.
- * @param description The new description for the source.
- * @param enabled Whether to enable or disable the source.
- * @returns A promise that resolves to a boolean indicating whether the source was updated successfully.
+ * @param id The ID of the event configuration event to update.
+ * @param eventLabel The new event label of the event configuration event.
+ * @param description The new description of the event configuration event.
+ * @param enabled Whether the event configuration event is enabled or not.
+ * @returns A promise that resolves to a boolean indicating whether the event configuration event was updated successfully.
  */
-export const updateEventConfigById = async (
+export const updateEventConfigEventById = async (
   id: number,
   eventLabel: string,
   description: string,

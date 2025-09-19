@@ -65,7 +65,7 @@
 
 <script lang="ts" setup>
 import useSnackbar from '@/composables/useSnackbar'
-import { updateEventConfigById } from '@/services/eventConfigService'
+import { updateEventConfigEventById } from '@/services/eventConfigService'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDrawer } from '@featherds/drawer'
@@ -118,7 +118,7 @@ const handleSave = async () => {
     return
   }
 
-  const response = await updateEventConfigById(
+  const response = await updateEventConfigEventById(
     store.eventModificationDrawerState.eventConfigEvent.id,
     eventLabel.value,
     eventDescription.value,
