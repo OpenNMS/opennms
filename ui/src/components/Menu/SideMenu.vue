@@ -2,6 +2,7 @@
   <div id="opennms-sidemenu-vue-container">
     <FeatherSidenav
       id="opennms-sidebar-control"
+      :hoverMode="true"
       :items="topPanels"
       v-model="isExpanded"
       @update:modelValue="(val: any) => isExpanded = !!val"
