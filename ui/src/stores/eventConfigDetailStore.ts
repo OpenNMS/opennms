@@ -142,9 +142,9 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       this.deleteEventConfigSourceDialogState.visible = true
       this.deleteEventConfigSourceDialogState.eventConfigSource = eventConfigSource
     },
-    hideDeleteEventConfigSourceDialog() {
-      this.deleteEventConfigSourceDialogState.visible = false
+    async hideDeleteEventConfigSourceDialog() {
       this.deleteEventConfigSourceDialogState.eventConfigSource = null
+      this.deleteEventConfigSourceDialogState.visible = false
     },
     showChangeEventConfigSourceStatusDialog(eventConfigSource: EventConfigSource) {
       this.changeEventConfigSourceStatusDialogState.visible = true
@@ -159,6 +159,7 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
         const response = await changeEventConfigSourceStatus(sourceId, false)
         if (response) {
           this.selectedSource.enabled = false
+          await this.fetchEventsBySourceId()
         }
       } else {
         console.error('No source selected')
@@ -169,6 +170,7 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
         const response = await changeEventConfigSourceStatus(sourceId, true)
         if (response) {
           this.selectedSource.enabled = true
+          await this.fetchEventsBySourceId()
         }
       } else {
         console.error('No source selected')

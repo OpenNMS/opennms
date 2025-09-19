@@ -48,7 +48,8 @@ const props = defineProps<{
   report: EventConfigFilesUploadResponse
 }>()
 
-const closeDialog = () => {
+const closeDialog = async () => {
+  await store.fetchEventConfigs()
   store.uploadedEventConfigFilesReportDialogState.visible = false
 }
 
