@@ -69,7 +69,7 @@
                   icon="Edit"
                   :title="`Edit ${event.eventLabel}`"
                   data-test="edit-button"
-                  @click="openEventDrawer(event)"
+                  @click="store.openEventModificationDrawer(CreateEditMode.Edit, event)"
                 >
                   <FeatherIcon :icon="Edit" />
                 </FeatherButton>
@@ -124,12 +124,12 @@
     <DeleteEventConfigEventDialog />
     <ChangeEventConfigEventStatusDialog />
   </TableCard>
-  <EventConfigDetailsDrawer :event="selectedEvent" />
+  <EventConfigDetailsDrawer />
 </template>
 
 <script setup lang="ts">
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
-import { EventConfigEvent } from '@/types/eventConfig'
+import { CreateEditMode } from '@/types'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
@@ -151,7 +151,7 @@ const store = useEventConfigDetailStore()
 const emptyListContent = {
   msg: 'No results found.'
 }
-const selectedEvent = ref<EventConfigEvent | null>(null)
+
 const columns = computed(() => [
   { id: 'uei', label: 'UEI' },
   { id: 'eventLabel', label: 'Event Label' },
@@ -166,11 +166,6 @@ const sort = reactive({
   vendor: SORT.NONE,
   eventCount: SORT.NONE
 }) as any
-
-const openEventDrawer = (event: EventConfigEvent) => {
-  selectedEvent.value = event
-  store.openEventDrawerModal()
-}
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
   if (sortObj.value === 'asc' || sortObj.value === 'desc') {

@@ -2,13 +2,16 @@
   <FeatherDrawer
     id="column-selection-drawer"
     data-test="column-selection-drawer"
-    @shown="() => eventConfigStore.drawerState.visible = true"
-    @hidden="() => eventConfigStore.drawerState.visible = false"
-    v-model="eventConfigStore.drawerState.visible"
+    @shown="() => store.eventModificationDrawerState.visible"
+    @hidden="() => store.eventModificationDrawerState.visible"
+    v-model="store.eventModificationDrawerState.visible"
     :labels="{ close: 'close', title: 'Customize Columns' }"
     width="55em"
   >
-    <div class="feather-drawer-custom-padding">
+    <div
+      class="feather-drawer-custom-padding"
+      v-if="store.eventModificationDrawerState.eventConfigEvent"
+    >
       <section>
         <h3>Customize the Event Details</h3>
       </section>
@@ -18,25 +21,23 @@
           label="Event Label"
           type="search"
           data-test="event-label"
-          v-model="eventLabel"
-        >
-        </FeatherInput>
+          v-model.trim="eventLabel"
+          clear="false"
+        ></FeatherInput>
         <div class="spacer-medium"></div>
-        <h4>Description</h4>
         <div class="spacer-medium"></div>
         <FeatherTextarea
-          v-model="eventDescription"
+          v-model.trim="eventDescription"
+          label="Event Description"
           placeholder="Type your event description here..."
-          rows="5"
+          rows="10"
           cols="40"
-          class="textarea"
         ></FeatherTextarea>
         <div class="spacer-medium"></div>
-        <h4>Status</h4>
         <div class="spacer-medium"></div>
         <FeatherSelect
           label="Select Status"
-          :options="mapTriggerTypeOptions()"
+          :options="statusOptions"
           v-model="selectedEventStatus"
           clear="Clear Selection"
         >
@@ -51,99 +52,106 @@
         >
           Save Changes
         </FeatherButton>
-        <FeatherButton secondary @click="handleClose()">Close</FeatherButton>
+        <FeatherButton
+          secondary
+          @click="store.closeEventModificationDrawer()"
+        >
+          Close
+        </FeatherButton>
       </div>
     </div>
   </FeatherDrawer>
 </template>
 
 <script lang="ts" setup>
+import useSnackbar from '@/composables/useSnackbar'
+import { updateEventConfigById } from '@/services/eventConfigService'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
-import { EventConfigEvent } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDrawer } from '@featherds/drawer'
 import { FeatherIcon } from '@featherds/icon'
 import MoreVert from '@featherds/icon/navigation/MoreVert'
 import { FeatherInput } from '@featherds/input'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
-import { updateEventConfigById } from '@/services/eventConfigService'
-import useSnackbar from '@/composables/useSnackbar'
 import { FeatherTextarea } from '@featherds/textarea'
 
-const snackbar = useSnackbar()
-const eventConfigStore = useEventConfigDetailStore()
-const eventDescription = ref('')
-const eventLabel = ref('')
-const selectedEventStatus = ref<ISelectItemType | undefined>()
-
-const props = defineProps<{
-  event: EventConfigEvent | null
-}>()
-
-const categoryOptions = [
-  { label: 'Enable', value: 'enable' },
-  { label: 'Disable', value: 'disable' }
+const statusOptions: ISelectItemType[] = [
+  { _text: 'Enable', _value: 'enable' },
+  { _text: 'Disable', _value: 'disable' }
 ]
+const snackbar = useSnackbar()
+const store = useEventConfigDetailStore()
+console.log('eventConfigEvent', store.eventModificationDrawerState.eventConfigEvent)
+const eventDescription = ref(store.eventModificationDrawerState.eventConfigEvent?.description || '')
+const eventLabel = ref(store.eventModificationDrawerState.eventConfigEvent?.eventLabel || '')
+const selectedEventStatus = ref<ISelectItemType>({
+  _text: store.eventModificationDrawerState.eventConfigEvent?.enabled ? 'Enable' : 'Disable',
+  _value: store.eventModificationDrawerState.eventConfigEvent?.enabled ? 'enable' : 'disable'
+})
 
-const mapTriggerTypeOptions = (): ISelectItemType[] => {
-  return (categoryOptions ?? []).map((trigger) => ({
-    _text: trigger.label,
-    _value: trigger.value
-  }))
+const validateEventDetails = (): boolean => {
+  if (!store.eventModificationDrawerState.eventConfigEvent) {
+    snackbar.showSnackBar({ msg: 'No event selected', error: true })
+    return false
+  }
+  if (!eventLabel.value) {
+    snackbar.showSnackBar({ msg: 'Event label is required', error: true })
+    return false
+  }
+  if (!eventDescription.value) {
+    snackbar.showSnackBar({ msg: 'Event description is required', error: true })
+    return false
+  }
+  if (selectedEventStatus.value === undefined) {
+    snackbar.showSnackBar({ msg: 'Event status is required', error: true })
+    return false
+  }
+  return true
 }
 
 const handleSave = async () => {
-  if (!props.event) {
+  if (!store.eventModificationDrawerState.eventConfigEvent) {
     return
   }
 
-  const enabled = selectedEventStatus.value
-    ? selectedEventStatus.value._value === 'enable'
-    : props.event.enabled
+  if (!validateEventDetails()) {
+    return
+  }
 
   const response = await updateEventConfigById(
-    props.event.id,
+    store.eventModificationDrawerState.eventConfigEvent.id,
     eventLabel.value,
     eventDescription.value,
-    enabled
+    selectedEventStatus.value._value === 'enable'
   )
 
   if (response) {
     snackbar.showSnackBar({ msg: 'Event Updated.', error: false })
-    await eventConfigStore.fetchEventsBySourceId()
-    eventConfigStore.closeEventDrawerModal()
+    await store.fetchEventsBySourceId()
+    store.closeEventModificationDrawer()
   } else {
     snackbar.showSnackBar({ msg: 'Something went wrong', error: true })
   }
 }
 
-const handleClose = () => {
-  eventDescription.value = ''
-  eventLabel.value = ''
-  selectedEventStatus.value = undefined
-  eventConfigStore.closeEventDrawerModal()
-}
-
-const setIntialEventInfo = (val: EventConfigEvent) => {
-  eventDescription.value = val.description ?? ''
-  eventLabel.value = val.eventLabel ?? ''
-  selectedEventStatus.value = {
-    _text: val.enabled ? 'Enable' : 'Disable',
-    _value: val.enabled ? 'enable' : 'disable'
-  }
-}
-
 watch(
-  () => props.event,
-  (val) => {
-    if (val) {
-      setIntialEventInfo(val)
+  () => store.eventModificationDrawerState.eventConfigEvent,
+  (newVal) => {
+    if (newVal) {
+      eventDescription.value = newVal.description || ''
+      eventLabel.value = newVal.eventLabel || ''
+      selectedEventStatus.value = {
+        _text: newVal.enabled ? 'Enable' : 'Disable',
+        _value: newVal.enabled ? 'enable' : 'disable'
+      }
+    } else {
+      eventDescription.value = ''
+      eventLabel.value = ''
+      selectedEventStatus.value = { _text: '', _value: '' }
     }
-  },
-  { immediate: true, deep: true }
+  }, { immediate: true, deep: true }
 )
 </script>
-
 
 <style lang="scss" scoped>
 @import "@featherds/table/scss/table";
@@ -162,7 +170,7 @@ watch(
 }
 
 .spacer-medium {
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.5rem;
 }
 
 .footer {
@@ -192,3 +200,4 @@ button.primary {
   padding: 5px;
 }
 </style>
+
