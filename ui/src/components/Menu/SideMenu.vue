@@ -186,8 +186,6 @@ const topPanels = computed<MenuListEntry[]>(() => {
   // Plugins menu
   if (plugins.value && plugins.value.length > 0) {
     allMenus.push(createPluginsMenu(false))
-  } else {
-    allMenus.push(createPluginsMenu(true))
   }
 
   return allMenus.map(i => createTopMenuListEntry(i) as MenuListEntry)
