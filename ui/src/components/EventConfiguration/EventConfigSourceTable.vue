@@ -75,7 +75,7 @@
                 >
                   <FeatherIcon :icon="ViewDetails"> </FeatherIcon>
                 </FeatherButton>
-                <FeatherDropdown>
+                <FeatherDropdown v-if="config.vendor !== VENDOR_OPENNMS">
                   <template v-slot:trigger="{ attrs, on }">
                     <FeatherButton
                       link
@@ -129,6 +129,7 @@
 </template>
 
 <script lang="ts" setup>
+import { VENDOR_OPENNMS } from '@/lib/utils'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { useEventConfigStore } from '@/stores/eventConfigStore'
 import { EventConfigSource } from '@/types/eventConfig'
