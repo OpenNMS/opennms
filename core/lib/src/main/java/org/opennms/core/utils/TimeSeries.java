@@ -32,7 +32,7 @@ public abstract class TimeSeries {
 
     private static final String NEWTS_TIME_SERIES_STRATEGY_NAME = "newts";
 
-    private static final String EVALUETE_TIME_SERIES_STRATEGY_NAME = "evaluate";
+    private static final String EVALUATE_TIME_SERIES_STRATEGY_NAME = "evaluate";
 
     private static final String TCP_TIME_SERIES_STRATEGY_NAME = "tcp";
 
@@ -41,7 +41,7 @@ public abstract class TimeSeries {
     public static enum Strategy {
         RRD(RRD_TIME_SERIES_STRATEGY_NAME, "RRDTool or JRobin"),
         NEWTS(NEWTS_TIME_SERIES_STRATEGY_NAME, "Newts"),
-        EVALUATE(EVALUETE_TIME_SERIES_STRATEGY_NAME, "Evaluate (Sizing mode, all data discarded)"),
+        EVALUATE(EVALUATE_TIME_SERIES_STRATEGY_NAME, "Evaluate (Sizing mode, all data discarded)"),
         TCP(TCP_TIME_SERIES_STRATEGY_NAME, "TCP (protobuf)"),
         INTEGRATION(INTEGRATION_LAYER_TIME_SERIES_STRATEGY_NAME, "Integration (the timeseries integration layer, to be used for TimeseriesStorage implementations)");
 
