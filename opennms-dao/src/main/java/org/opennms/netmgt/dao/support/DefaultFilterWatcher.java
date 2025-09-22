@@ -274,6 +274,10 @@ public class DefaultFilterWatcher implements FilterWatcher, InitializingBean, Di
         this.filterDao = filterDao;
     }
 
+    public void setNodeDao(NodeDao nodeDao) {
+        this.nodeDao = nodeDao;
+    }
+
     public void setSessionUtils(SessionUtils sessionUtils) {
         this.sessionUtils = sessionUtils;
     }
