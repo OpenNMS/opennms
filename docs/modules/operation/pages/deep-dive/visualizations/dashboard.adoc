@@ -4,6 +4,8 @@
 
 This section describes the {page-component-title} dashboard and its customization options.
 
+To view the dashboard, click menu:Dashboards[Surveillance Dashboard] in the side menu.
+
 == Components
 
 The dashboard includes the following components:
@@ -119,10 +121,11 @@ This procedure shows how to assign the Dashboard role to the `drv4doe` user:
 . xref:quick-start/users.adoc#create-user[Create a new user] named `drv4doe`.
 The user represents a router and switch jockey.
 . Add the `ROLE_PROVISION` role to the account through the web UI or by manually editing `$\{OPENNMS_HOME}/etc/users.xml`:
+
 ** *Web UI:*
-... Click the *gear* symbol at the top-right of the page.
-... Under OpenNMS System, click *Configure Users, Groups and On-Call Roles*.
-... On the Users and Groups page, click *Configure Users*.
+
+... Click menu:User Management[Manage Users] in the side menu.
+... Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure Users].
 ... Click *Modify* beside the `drv4doe` account.
 ... In the Security Roles section, select `ROLE_PROVISION` in the *Available Roles* list and click *Add >>* to add it to the account.
 ... Click *Finish* at the bottom of the page to update the account.

@@ -24,7 +24,7 @@ The example uses the name _my-minion-user_ with password _my-minion-password_.
 Make sure to use an alternate, more secure password. 
 
 . Log in to the web UI as an administrative user.
-. Click the gears icon and click btn:[Configure Users, Groups and On-Call Roles] -> btn:[Configure Users].
+. Click menu:Administration[Configure OpenNMS] in the side menu, then click btn:[Configure Users, Groups and On-Call Roles] -> btn:[Configure Users].
 . Click *Add new user*.
 . Type a login name (my-minion-user) and password (my-minion-password) and click btn:[OK].
 +

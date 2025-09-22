@@ -45,6 +45,7 @@
 *** xref:rest/ksc_reports.adoc[]
 *** xref:rest/maps.adoc[]
 *** xref:rest/measurements.adoc[]
+*** xref:rest/menu.adoc[]
 *** xref:rest/meta-data.adoc[]
 *** xref:rest/monitoring_systems.adoc[]
 *** xref:rest/newsfeed.adoc[]
