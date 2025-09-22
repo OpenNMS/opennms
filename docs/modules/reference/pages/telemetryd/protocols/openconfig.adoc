@@ -70,18 +70,20 @@ The data contains metadata and is structured as a list of `key:value` pairs.
     <package name="OpenConfig-Default">
         <filter>IPADDR != '0.0.0.0'</filter>
         <parameter key="port" value="${requisition:oc.port|9000}"/>
+        <parameter key="paths" value="${requisition:oc.paths|/network-instances/network-instance[instance-name='master'],/protocols/protocol/bgp}"/>
+        <parameter key="mode" value="${requisition:oc.mode|jti}"/>
         <parameter key="retries" value="12"/>
         <parameter key="interval" value="300"/>
         <parameter key="username" value="admin"/>
         <parameter key="password" value="admin"/>
         <parameter key="tls.enabled" value="${requisition:oc.tls.enabled}"/>
         <parameter key="tls.trust.cert.path" value="${requisition:trust.cert.path}"/>
-        <!-- Use groups to separate paths that need to be streamed at different frequencies -->
-        <parameter group="group1" key="paths" value="/network-instances/network-instance[instance-name=master]"/>
+       <!-- Use groups to separate paths that need to be streamed at different frequencies -->
+        <parameter group="group1" key="paths" value="${requisition:oc.paths|/network-instances/network-instance[instance-name=master]}"/>
         <parameter group="group1" key="frequency" value="5000"/>
-        <parameter group="group2" key="paths" value="/protocols/protocol/bgp"/>
+        <parameter group="group2" key="paths" value="${requisition:oc.paths|/protocols/protocol/bgp}"/>
         <parameter group="group2" key="frequency" value="30000"/>
-        <parameter group="group3" key="paths" value="/interfaces/interface[name=Ethernet1][ifIndex=25]/state/counters"/>
+        <parameter group="group3" key="paths" value="${requisition:oc.paths|/interfaces/interface[name=Ethernet1][ifIndex=25]/state/counters}"/>
         <parameter group="group3" key="frequency" value="60000"/>
     </package>
 </connector>
@@ -115,11 +117,16 @@ Parameters are passed to the connector and are interpolated for node/interface a
 
 | port
 | Port that OpenConfig client can connect to.
-| none
+| 9000
 
 | paths
 | Paths that need to be subscribed to.
-| none
+| /network-instances/network-instance[instance-name='master'],/protocols/protocol/bgp}
+
+| Mode
+| type of open-config flow primarily there are two types .
+| jti
+
 
 | frequency
 | Frequency at which OpenConfig data can be streamed. This is parsed as milliseconds(ms) for jti and nanoseconds(ns) for gnmi
@@ -176,6 +183,24 @@ Parameters are passed to the connector and are interpolated for node/interface a
 | Specify mode for stream format. Options include gnmi or jti.
 | gnmi
 |===
+
+=== Create Requisition for OpenConfig
+
+To activate the open-config on a device you must add metadata that defines the open-config configuration .
+
+. In the web UI, click the *Gear* symbol at the top-right of the screen.
+. Choose menu:Provisioning[Manage Provisioning Requisitions].
+. Click *Add Requisition* and enter a name for the requisition.
+If you want to enable open-config  on existing nodes in a requisition, select the desired requisition and edit the node definition.
+. Click on the edit icon and click Add Node.
+. Add   OpenConfig service on the interface which you want to use to open-config flow.
+. Click *Add Meta-Data*, and define the following key-value pairs:
+.. `oc:port`: port of the OpenConfig gRPC serve .
+.. `oc:paths`:  one or more OpenConfig paths to subscribe to; multiple paths comma-separated .
+.. `oc:mode`: stream format .
+. Click *Save* to save the metadata and then *Save* to save the requisition.
+. Click *Return* and click *Synchronize*.
+. Choose a scan option and click *Synchronize*.
 
 == OpenConfig adapter
 
@@ -258,3 +283,21 @@ The following globals will be passed to the script:
 | Decoded message from which the metrics should be extracted.
 | org.opennms.features.openconfig.proto.jti.Telemetry.OpenConfigData
 |===
+
+=== Setup OpenConfig On Minion
+
+Before setting up OpenConfig on Minion, ensure that a Message Broker is configured with minion .
+xref:deployment:core/setup-message-broker.adoc#setup-message-broker[Set up Message Broker]
+On the Minion, install the following feature to enable OpenConfig support:
+[source, console]
+----
+feature:install minion-telemetryd-connectors
+----
+
+Verify weather all is setup
+[source, console]
+----
+admin@minion()> feature:status minion-telemetryd-connectors
+Started
+----
+
