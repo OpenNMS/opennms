@@ -35,6 +35,7 @@ import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
+import org.opennms.web.rest.v2.model.EventConfEventRequest;
 import org.opennms.web.rest.v2.model.EventConfSourceDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -264,6 +265,30 @@ public class EventConfRestService implements EventConfRestApi {
                     .entity("Failed to fetch EventConf source names: " + e.getMessage()).build();
         }
     }
+
+    @Override
+    public Response addEventConfSourceEvent(Long sourceId, EventConfEventRequest eventPayload, SecurityContext securityContext) throws Exception {
+        try {
+            final String username = getUsername(securityContext);
+            eventPayload.setModifiedBy(username);
+            final var id = eventConfPersistenceService.addEventConfSourceEvent(sourceId, eventPayload);
+            return Response
+                    .status(Response.Status.CREATED)
+                    .entity(id)
+                    .build();
+        } catch (EntityNotFoundException ex) {
+            return Response
+                    .status(Response.Status.NOT_FOUND)
+                    .entity("Source with ID " + sourceId + " not found")
+                    .build();
+        } catch (IllegalArgumentException ex) {
+            return Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid event payload: " + ex.getMessage())
+                    .build();
+        }
+    }
+
 
     private List<String> determineFileOrder(final Attachment eventconfXmlAttachment, final Set<String> uploadedFiles) {
         List<String> ordered = new ArrayList<>();

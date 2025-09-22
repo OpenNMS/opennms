@@ -34,7 +34,11 @@ import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
+import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.opennms.netmgt.xml.eventconf.LogDestType;
+import org.opennms.netmgt.xml.eventconf.Logmsg;
+import org.opennms.web.rest.v2.model.EventConfEventRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -85,6 +89,18 @@ public class EventConfPersistenceService {
         saveEvents(source, events, eventConfSourceMetadataDto.getUsername(), eventConfSourceMetadataDto.getNow());
         // Asynchronously load event conf from DB.
         //eventConfExecutor.execute(this::reloadEventsFromDB);
+    }
+
+    @Transactional
+    public Long addEventConfSourceEvent(final Long sourceId, EventConfEventRequest request) {
+        final Date now = new Date();
+        EventConfSource eventConfSource = eventConfSourceDao.get(sourceId);
+        final var  event = toXmlEvent(request);
+        saveEvent(eventConfSource, event, request.getModifiedBy(), now);
+        eventConfSource.setEventCount(eventConfSource.getEventCount() + 1);
+        // Asynchronously load event conf from DB.
+        //eventConfExecutor.execute(this::reloadEventsFromDB);
+        return eventConfSourceDao.save(eventConfSource);
     }
 
     public List<EventConfEvent>  findEventConfByFilters(String uei, String vendor, String sourceName, int offset, int limit) {
@@ -145,6 +161,20 @@ public class EventConfPersistenceService {
         eventEntities.forEach(eventConfEventDao::save);
     }
 
+    private void saveEvent(EventConfSource source, Event event, String username, Date now) {
+        EventConfEvent eventConfEvent = new EventConfEvent();
+        eventConfEvent.setSource(source);
+        eventConfEvent.setUei(event.getUei());
+        eventConfEvent.setEventLabel(event.getEventLabel());
+        eventConfEvent.setDescription(event.getDescr());
+        eventConfEvent.setEnabled(true);
+        eventConfEvent.setXmlContent(JaxbUtils.marshal(event));
+        eventConfEvent.setCreatedTime(now);
+        eventConfEvent.setLastModified(now);
+        eventConfEvent.setModifiedBy(username);
+        eventConfEventDao.save(eventConfEvent);
+    }
+
     protected void reloadEventsFromDB() {
         List<EventConfEvent> dbEvents = eventConfEventDao.findEnabledEvents();
         if (dbEvents.isEmpty()) {
@@ -186,6 +216,22 @@ public class EventConfPersistenceService {
 
     public Map<String, Object> filterEventConfSource(String filter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
         return eventConfSourceDao.filterEventConfSource(filter, sortBy, order, totalRecords, offset, limit);
+    }
+
+    private Event toXmlEvent(EventConfEventRequest dto) {
+        Event event = new Event();
+
+        event.setUei(dto.getUei());
+        event.setEventLabel(dto.getEventLabel());
+        event.setDescr(dto.getDescription());
+
+        Logmsg logmsg = new Logmsg();
+        logmsg.setContent(dto.getDescription() != null ? dto.getDescription() : "No description provided");
+        logmsg.setDest(LogDestType.LOGNDISPLAY);  // OpenNMS default
+        event.setLogmsg(logmsg);
+        event.setSeverity(dto.getSeverity());
+
+        return event;
     }
 
 }

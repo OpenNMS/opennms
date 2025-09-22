@@ -40,6 +40,7 @@ import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
+import org.opennms.web.rest.v2.model.EventConfEventRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -535,4 +536,46 @@ public class EventConfRestServiceIT {
     }
 
 
+    @Test
+    @Transactional
+    public void testAddEventConfSourceEvent_ShouldAddNewEventConfEvent() throws Exception {
+        String[] filenames = {"opennms.alarm.events.xml", "Cisco.airespace.xml"};
+        List<Attachment> attachments = new ArrayList<>();
+
+        for (final var name : filenames) {
+            final var path = "/EVENTS-CONF/" + name;
+            final var is = getClass().getResourceAsStream(path);
+            assertNotNull("Resource not found: " + path, is);
+            Attachment att = mock(Attachment.class);
+            ContentDisposition cd = mock(ContentDisposition.class);
+            when(cd.getParameter("filename")).thenReturn(name);
+            when(att.getContentDisposition()).thenReturn(cd);
+            when(att.getObject(InputStream.class)).thenReturn(is);
+            attachments.add(att);
+        }
+
+        Response uploadResp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), uploadResp.getStatus());
+
+        EventConfSource eventConfSource = eventConfSourceDao.findByName("Cisco.airespace.xml");
+        assertNotNull("Event Source not found against name Cisco.airespace ", eventConfSource);
+
+        EventConfEventRequest eventConfEventRequest = new EventConfEventRequest();
+        eventConfEventRequest.setUei("uei.opennms.org/vendor/test/test1");
+        eventConfEventRequest.setEventLabel("test1 event");
+        eventConfEventRequest.setDescription("test1 description");
+        eventConfEventRequest.setSeverity("Normal");
+        eventConfEventRequest.setEnabled(true);
+        eventConfEventRequest.setXmlContent("""
+                <event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+                   <uei>uei.opennms.org/vendor/test/test1</uei>
+                   <event-label>Test1:  Adding new test  event</event-label>
+                   <descr>Add new test event</descr>
+                   <severity>Warning</severity>
+                </event>
+                """);
+
+        Response resp = eventConfRestApi.addEventConfSourceEvent(eventConfSource.getId(), eventConfEventRequest, securityContext);
+        assertEquals(Response.Status.CREATED.getStatusCode(), resp.getStatus());
+    }
 }

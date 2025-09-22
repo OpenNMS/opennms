@@ -20,6 +20,7 @@ import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
+import org.opennms.web.rest.v2.model.EventConfEventRequest;
 
 
 import javax.ws.rs.QueryParam;
@@ -194,5 +195,20 @@ public interface EventConfRestApi {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     Response getEventConfSourcesNames(@Context SecurityContext securityContext) throws Exception;
+
+    @POST
+    @Path("/sources/{sourceId}/events")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Add a new event to an EventConfSource",
+            description = "Creates and adds a new event under the given EventConfSource by its ID.",
+            operationId = "addEventConfSourceEvent")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Event created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid data)"),
+            @ApiResponse(responseCode = "404", description = "EventConfSource not found")})
+    Response addEventConfSourceEvent(@PathParam("sourceId") final Long sourceId, EventConfEventRequest eventPayload, @Context SecurityContext securityContext) throws Exception;
+
 
 }

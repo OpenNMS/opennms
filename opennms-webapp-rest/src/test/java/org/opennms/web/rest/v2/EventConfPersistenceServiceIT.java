@@ -40,11 +40,13 @@ import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.web.rest.v2.model.EventConfEventRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
+import javax.validation.constraints.AssertTrue;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -609,6 +611,58 @@ public class EventConfPersistenceServiceIT {
         EventConfEvent enabledTriggerEvent = eventConfEventDao.findByUei("uei.opennms.org/test/trigger/1");
 
         assertTrue(enabledTriggerEvent.getEnabled());
+    }
+
+    @Test
+    @JUnitTemporaryDatabase
+    public void testaddEventConfSourceEvent() {
+        String username = "test_user";
+        Date now = new Date();
+        String filename1 = "source-file-1.xml";
+        EventConfSourceMetadataDto metadata1 = new EventConfSourceMetadataDto
+                .Builder()
+                .filename(filename1)
+                .eventCount(1)
+                .fileOrder(1)
+                .username(username)
+                .now(now)
+                .vendor("vendor-1")
+                .description("first entry")
+                .build();
+
+        Event event1 = new Event();
+        event1.setUei("uei.opennms.org/test/trigger/1");
+        event1.setEventLabel("Event One");
+        event1.setDescr("Description for Event One");
+        event1.setSeverity("Normal");
+
+        Events events1 = new Events();
+        events1.getEvents().add(event1);
+
+        eventConfPersistenceService.persistEventConfFile(events1, metadata1);
+
+        EventConfSource eventConfSource = eventConfSourceDao.findByName("source-file-1.xml");
+        assertNotNull("Event Source not found against name Cisco.airespace ", eventConfSource);
+
+        EventConfEventRequest eventConfEventRequest = new EventConfEventRequest();
+        eventConfEventRequest.setUei("uei.opennms.org/vendor/test/test1");
+        eventConfEventRequest.setEventLabel("test1 event");
+        eventConfEventRequest.setDescription("test1 description");
+        eventConfEventRequest.setSeverity("Normal");
+        eventConfEventRequest.setEnabled(true);
+        eventConfEventRequest.setXmlContent("""
+                <event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+                   <uei>uei.opennms.org/vendor/test/test1</uei>
+                   <event-label>Test1:  Adding new test  event</event-label>
+                   <descr>Add new test event</descr>
+                   <severity>Warning</severity>
+                </event>
+                """);
+
+        eventConfPersistenceService.addEventConfSourceEvent(eventConfSource.getId(), eventConfEventRequest);
+
+        EventConfEvent newlyAddedEvent = eventConfEventDao.findByUei("uei.opennms.org/vendor/test/test1");
+        assertNotNull(newlyAddedEvent);
     }
 
 }
