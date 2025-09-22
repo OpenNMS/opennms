@@ -21,7 +21,7 @@
  */
 /**
 * @author Alejandro Galue <agalue@opennms.org>
-* @copyright 2014-2022 The OpenNMS Group, Inc.
+* @copyright 2014-2025 The OpenNMS Group, Inc.
 */
 
 const RequisitionsData = require('../model/RequisitionsData');
@@ -76,6 +76,8 @@ const RequisitionNode  = require('../model/RequisitionNode');
     requisitionsService.internal.monitoringLocationsUrl = 'rest/monitoringLocations';
     requisitionsService.internal.snmpConfigUrl = 'rest/snmpConfig';
     requisitionsService.internal.errorHelp = ' Check the OpenNMS logs for more details, or try again later.';
+
+    requisitionsService.internal.excludedRequisitionNames = ['selfmonitor', 'minions'];
 
     // Timeouts
 
@@ -1474,7 +1476,22 @@ const RequisitionNode  = require('../model/RequisitionNode');
       return requisitionsService.internal.addQuickNode(quickNode);
     };
 
+    /**
+    * @description Checks whether a requisition name should not be used to add a node to.
+    * We do not want users adding a node via "Quick Add Node" to these specific requisitions.
+    *
+    * @name RequisitionsService:isExcludedRequisitionName
+    * @ngdoc method
+    * @methodOf RequisitionsService
+    * @param {string} reqName The requisition name to check.
+    * @returns {boolean}
+    */
+    requisitionsService.isExcludedRequisitionName = function(reqName) {
+      const lowerName = (reqName || '').toLowerCase();
+
+      return requisitionsService.internal.excludedRequisitionNames.includes(lowerName);
+    };
+
     return requisitionsService;
   }]);
-
 }());
