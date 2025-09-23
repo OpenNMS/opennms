@@ -20,7 +20,7 @@ import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
-import org.opennms.web.rest.v2.EventConfEventPayload;
+import org.opennms.web.rest.v2.EventConfEventEditRequest;
 
 
 import javax.ws.rs.QueryParam;
@@ -211,6 +211,6 @@ public interface EventConfRestApi {
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "404", description = "One or more sources not found")
     })
-    Response updateEventConfEvent(@PathParam("eventId") final Long eventId, EventConfEventPayload payload,
+    Response updateEventConfEvent(@PathParam("eventId") final Long eventId, EventConfEventEditRequest payload,
                                   @Context SecurityContext securityContext) throws Exception;
 }

@@ -113,25 +113,19 @@ public class EventConfPersistenceService {
 
 
     @Transactional
-    public void updateEventConfEvent(final Long eventId, EventConfEventPayload payload) {
-        EventConfEvent eventConfEvent = eventConfEventDao.findByEventId(eventId);
-        if (eventConfEvent == null) {
-            throw new EntityNotFoundException(
-                    String.format("EventConfEvent not found for eventId=%d", eventId));
-        }
-        eventConfEvent.setEventLabel(payload.getEventLabel());
-        eventConfEvent.setDescription(payload.getDescription());
-        eventConfEvent.setEnabled(payload.getEnabled());
-        try {
-            Event event = JaxbUtils.unmarshal(Event.class, eventConfEvent.getXmlContent());
-            if (event != null) {
-                event.setEventLabel(payload.getEventLabel());
-                event.setDescr(payload.getDescription());
+    public void updateEventConfEvent(final Long eventId, EventConfEventEditRequest payload) {
 
-                eventConfEvent.setXmlContent(JaxbUtils.marshal(event));
-            } else {
-                throw new IllegalStateException("No events found in XML content for eventId=" + eventId);
+        try {
+            EventConfEvent eventConfEvent = eventConfEventDao.findByEventId(eventId);
+            if (eventConfEvent == null) {
+                throw new EntityNotFoundException(String.format("EventConfEvent not found for eventId=%d", eventId));
             }
+            eventConfEvent.setUei(payload.getUei());
+            eventConfEvent.setEventLabel(payload.getEventLabel());
+            eventConfEvent.setDescription(payload.getDescription());
+            eventConfEvent.setEnabled(payload.getEnabled());
+            eventConfEvent.setXmlContent(payload.getXmlContent());
+            eventConfEvent.setLastModified(new Date());
 
             eventConfEventDao.saveOrUpdate(eventConfEvent);
             // Asynchronously load event conf from DB.

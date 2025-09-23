@@ -21,14 +21,51 @@
  */
 package org.opennms.web.rest.v2;
 
-public class EventConfEventPayload {
+public class EventConfEventEditRequest {
+    private String uei;
     private String eventLabel;
     private String description;
     private Boolean enabled;
+    private String xmlContent;
+    private String modifiedBy;
+    private String severity;
 
-    public EventConfEventPayload() {
+    public EventConfEventEditRequest() {
 
     }
+
+    public String getModifiedBy() {
+        return modifiedBy;
+    }
+
+    public void setModifiedBy(String modifiedBy) {
+        this.modifiedBy = modifiedBy;
+    }
+
+    public String getSeverity() {
+        return severity;
+    }
+
+    public void setSeverity(String severity) {
+        this.severity = severity;
+    }
+
+    public String getXmlContent() {
+        return xmlContent;
+    }
+
+    public void setXmlContent(String xmlContent) {
+        this.xmlContent = xmlContent;
+    }
+
+    public String getUei() {
+        return uei;
+    }
+
+    public void setUei(String uei) {
+        this.uei = uei;
+    }
+
 
     public String getEventLabel() {
         return eventLabel;

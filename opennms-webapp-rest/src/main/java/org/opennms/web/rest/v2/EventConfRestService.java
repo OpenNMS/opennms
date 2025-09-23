@@ -267,7 +267,7 @@ public class EventConfRestService implements EventConfRestApi {
 
     @Transactional
     @Override
-    public Response updateEventConfEvent(Long eventId, EventConfEventPayload payload, SecurityContext securityContext) throws Exception {
+    public Response updateEventConfEvent(Long eventId, EventConfEventEditRequest payload, SecurityContext securityContext) throws Exception {
         if (payload == null) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
         }

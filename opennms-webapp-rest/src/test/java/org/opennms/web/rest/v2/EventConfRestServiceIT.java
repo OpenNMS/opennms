@@ -560,14 +560,21 @@ public class EventConfRestServiceIT {
         insertEvent(m_source,"uei.opennms.org/internal/clear", "Clear discovery failed testing", "The Clear discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.", "Minor");
 
         EventConfSource source = eventConfSourceDao.findByName("testEventEnabledFlagTest");
-
-        EventConfEvent triggerEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/trigger");
         EventConfEvent clearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
 
-        // update description and event-label events
-        EventConfEventPayload payload = new EventConfEventPayload();
+        EventConfEventEditRequest payload = new EventConfEventEditRequest();
         payload.setEventLabel("Clear label changed.");
+        payload.setUei("uei.opennms.org/internal/clear");
         payload.setDescription("Clear Description changed.");
+        payload.setSeverity("Major");
+        payload.setXmlContent("""
+                <event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+                   <uei>uei.opennms.org/internal/clear</uei>
+                   <event-label>Clear label changed.</event-label>
+                   <descr>Clear Description changed.</descr>
+                   <severity>Major</severity>
+                </event>
+                """);
         payload.setEnabled(true);
 
         Response response = eventConfRestApi.updateEventConfEvent(clearEvent.getId(),payload,securityContext);
