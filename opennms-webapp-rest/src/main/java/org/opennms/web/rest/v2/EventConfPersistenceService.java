@@ -95,7 +95,7 @@ public class EventConfPersistenceService {
     public Long addEventConfSourceEvent(final Long sourceId, EventConfEventRequest request) {
         final Date now = new Date();
         EventConfSource eventConfSource = eventConfSourceDao.get(sourceId);
-        final var  event = toXmlEvent(request);
+        final Event event = JaxbUtils.unmarshal(Event.class,request.getXmlContent());
         saveEvent(eventConfSource, event, request.getModifiedBy(), now);
         eventConfSource.setEventCount(eventConfSource.getEventCount() + 1);
         // Asynchronously load event conf from DB.
