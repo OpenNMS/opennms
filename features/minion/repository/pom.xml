@@ -508,7 +508,6 @@
             <artifactId>opennms-util</artifactId>
             <version>${project.version}</version>
         </dependency>
-
         <dependency>
             <groupId>org.opennms.features.telemetry.protocols.openconfig</groupId>
             <artifactId>org.opennms.features.telemetry.protocols.openconfig.connector</artifactId>

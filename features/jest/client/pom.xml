@@ -106,6 +106,10 @@
       <artifactId>opennms-model</artifactId>
     </dependency>
     <dependency>
+      <groupId>org.opennms</groupId>
+      <artifactId>opennms-model</artifactId>
+    </dependency>
+    <dependency>
       <groupId>org.opennms.core.mate</groupId>
       <artifactId>org.opennms.core.mate.api</artifactId>
     </dependency>

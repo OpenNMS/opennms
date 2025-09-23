@@ -295,7 +295,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
 
         // Vaadin Topology page
         frontPage();
-
         clickMenuItem("topologiesMenu", "Topology");
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[contains(text(), 'Selection Context')]")));
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[starts-with(@id, 'opennmstopology-')]")));
@@ -333,7 +332,6 @@ public class MenuHeaderIT extends OpenNMSSeleniumIT {
         // Geographical map page
         frontPage();
         clickMenuItem("mapsMenu", "Geographical");
-
         wait.until(ExpectedConditions.presenceOfElementLocated(By.xpath("//div[@id='app']//div[@class='geo-map']")));
 
         // Omitting this for now - it takes too long for the Swagger API page to display

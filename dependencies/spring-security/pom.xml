@@ -92,7 +92,7 @@
         </exclusion>
         <exclusion>
           <groupId>org.bouncycastle</groupId>
-          <artifactId>bcpkix-jdk15on</artifactId>
+          <artifactId>org.bouncycastle:bcpkix-jdk15on</artifactId>
         </exclusion>
         <exclusion>
           <groupId>org.apache.santuario</groupId>

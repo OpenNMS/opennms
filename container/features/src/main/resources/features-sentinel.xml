@@ -23,7 +23,6 @@
     </feature>
 
     <feature name="sentinel-jms" description="Sentinel :: Core :: JMS" version="${project.version}">
-        <feature prerequisite="true" version="${netty4Version}">netty</feature>
         <feature prerequisite="true">opennms-distributed-core-jms</feature>
 
         <feature>opennms-core-ipc-sink-camel-server</feature>
@@ -33,7 +32,6 @@
     </feature>
 
     <feature name="sentinel-kafka" description="Sentinel :: Core :: Kafka" version="${project.version}">
-        <feature prerequisite="true" version="${netty4Version}">netty</feature>
         <feature>sentinel-core</feature>
         <!-- Sink Client-->
         <feature>opennms-core-ipc-sink-kafka</feature>

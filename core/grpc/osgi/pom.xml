@@ -28,10 +28,6 @@
             </goals>
             <configuration>
               <artifactSet>
-                <excludes>
-                  <!-- Do not embed protobuf to avoid split package in OSGi -->
-                  <exclude>com.google.protobuf:protobuf-java</exclude>
-                </excludes>
               </artifactSet>
               <filters>
                 <filter>
@@ -58,9 +54,9 @@
               javax.net.ssl,
               javax.security.cert,
               javax.security.auth.x500,
-              com.google.protobuf;version="[3.25,4)"
             </Import-Package>
             <Export-Package>
+              com.google.protobuf,
               io.grpc,
               io.grpc.stub,
               io.grpc.protobuf,
@@ -108,7 +104,6 @@
       <groupId>com.google.protobuf</groupId>
       <artifactId>protobuf-java</artifactId>
       <version>${protobufVersion}</version>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
 

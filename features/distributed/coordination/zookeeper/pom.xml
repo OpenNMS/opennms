@@ -91,6 +91,10 @@
         </dependency>
         <dependency>
             <groupId>org.opennms.core.test-api</groupId>
+            <artifactId>org.opennms.core.test-api.lib</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.opennms.core.test-api</groupId>
             <artifactId>org.opennms.core.test-api.kafka</artifactId>
         </dependency>
     </dependencies>

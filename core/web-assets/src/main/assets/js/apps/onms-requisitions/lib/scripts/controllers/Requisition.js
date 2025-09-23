@@ -200,11 +200,6 @@ require('../services/Synchronize');
     * @methodOf RequisitionController
     */
     $scope.addNode = function() {
-      if (RequisitionsService.isExcludedRequisitionName($scope.foreignSource)) {
-        bootbox.alert('Cannot add a node to a requisition with this name.');
-        return;
-      }
-
       $window.location.href = Configuration.baseHref + '#/requisitions/' + encodeURIComponent($scope.foreignSource) + '/nodes/__new__' + $scope.getVerticalLayout();
     };
 
