@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Collections;
 
 public class EventConfEventDaoHibernate
         extends AbstractDaoHibernate<EventConfEvent, Long>
@@ -73,6 +75,29 @@ public class EventConfEventDaoHibernate
         queryBuilder.append(" order by e.createdTime desc ");
 
         return findWithPagination(queryBuilder.toString(), queryParamList.toArray(), offset, limit);
+    }
+
+    @Override
+    public Map<String, Object> findBySourceId(Long sourceId, Integer totalRecords, Integer offset, Integer limit) {
+        int resultCount = (totalRecords != null) ? totalRecords : 0;
+        String whereClause = "where e.source.id = ?";
+
+        // COUNT QUERY: get total matching records if not already provided
+        if (resultCount == 0) {
+            String countQuery = "select count(e.id) from EventConfEvent e " + whereClause;
+            resultCount = super.queryInt(countQuery, List.of(sourceId).toArray());
+        }
+
+        // DATA QUERY: fetch paginated results if resultCount > 0
+        List<EventConfEvent> eventConfEventList = Collections.emptyList();
+        if (resultCount > 0) {
+            String orderBy = " order by e.createdTime desc";
+            String dataQuery = "from EventConfEvent e " + whereClause + orderBy;
+            eventConfEventList = findWithPagination(dataQuery, List.of(sourceId).toArray(), offset, limit);
+        }
+
+        // Return map with results
+        return Map.of("totalRecords", resultCount, "eventConfEventList", eventConfEventList);
     }
 
     @Override

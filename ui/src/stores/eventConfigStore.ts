@@ -1,4 +1,8 @@
-import { changeEventConfigSourceStatus, filterEventConfigSources } from '@/services/eventConfigService'
+import {
+  changeEventConfigSourceStatus,
+  filterEventConfigSources,
+  getAllSourceNames
+} from '@/services/eventConfigService'
 import { EventConfigSource, EventConfigStoreState } from '@/types/eventConfig'
 import { defineStore } from 'pinia'
 
@@ -19,6 +23,7 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     },
     isLoading: false,
     activeTab: 0,
+    uploadedSourceNames: [],
     uploadedEventConfigFilesReportDialogState: {
       visible: false
     },
@@ -32,17 +37,28 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     }
   }),
   actions: {
+    async fetchAllSourcesNames() {
+      this.isLoading = true
+      try {
+        const response = await getAllSourceNames()
+        this.uploadedSourceNames = response
+        this.isLoading = false
+      } catch (error) {
+        console.error('Error fetching all event configuration source names:', error)
+        this.isLoading = false
+      }
+    },
     async fetchEventConfigs() {
       this.isLoading = true
       try {
         const response = await filterEventConfigSources(
           (this.sourcesPagination.page - 1) * this.sourcesPagination.pageSize,
           this.sourcesPagination.pageSize,
-          this.sourcesPagination.total,
           this.sourcesSearchTerm,
           this.sourcesSorting.sortKey,
           this.sourcesSorting.sortOrder
         )
+        await this.fetchAllSourcesNames()
         this.sources = response.sources
         this.sourcesPagination.total = response.totalRecords
         this.isLoading = false
@@ -56,6 +72,7 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
       await this.fetchEventConfigs()
     },
     async onSourcePageSizeChange(pageSize: number) {
+      this.sourcesPagination.page = 1
       this.sourcesPagination.pageSize = pageSize
       await this.fetchEventConfigs()
     },
@@ -82,6 +99,13 @@ export const useEventConfigStore = defineStore('useEventConfigStore', {
     },
     resetSourcesPagination() {
       this.sourcesPagination = { ...defaultPagination }
+    },
+    async refreshEventsSources() {
+      this.resetSourcesPagination()
+      this.sourcesSearchTerm = ''
+      this.sourcesSorting.sortKey = 'createdTime'
+      this.sourcesSorting.sortOrder = 'desc'
+      await this.fetchEventConfigs()
     },
     showChangeEventConfigSourceStatusDialog(eventConfigSource: EventConfigSource) {
       this.changeEventConfigSourceStatusDialogState.visible = true

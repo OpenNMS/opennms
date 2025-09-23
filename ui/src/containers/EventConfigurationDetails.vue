@@ -13,7 +13,7 @@
         </div>
       </div>
 
-      <div class="action-container">
+      <div class="action-container" v-if="config.vendor !== VENDOR_OPENNMS">
         <FeatherButton @click="store.showChangeEventConfigSourceStatusDialog(config)">
           {{ config.enabled ? 'Disable Source' : 'Enable Source' }}
         </FeatherButton>
@@ -85,6 +85,7 @@
 import ChangeEventConfigSourceStatusDialog from '@/components/EventConfigurationDetail/Dialog/ChangeEventConfigSourceStatusDialog.vue'
 import DeleteEventConfigSourceDialog from '@/components/EventConfigurationDetail/Dialog/DeleteEventConfigSourceDialog.vue'
 import EventConfigEventTable from '@/components/EventConfigurationDetail/EventConfigEventTable.vue'
+import { VENDOR_OPENNMS } from '@/lib/utils'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { EventConfigSource } from '@/types/eventConfig'
 import { FeatherBackButton } from '@featherds/back-button'

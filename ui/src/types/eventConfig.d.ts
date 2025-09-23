@@ -1,4 +1,4 @@
-import { Pagination, Sorting } from '.'
+import { CreateEditMode, Pagination, Sorting } from '.'
 
 export type EventConfigSource = {
   id: number
@@ -35,6 +35,7 @@ export type EventConfigStoreState = {
   sourcesSorting: Sorting
   isLoading: boolean
   activeTab: number
+  uploadedSourceNames: string[]
   uploadedEventConfigFilesReportDialogState: {
     visible: boolean
   }
@@ -51,7 +52,14 @@ export type EventConfigStoreState = {
 export type EventConfigDetailStoreState = {
   events: EventConfigEvent[]
   eventsPagination: Pagination
+  eventsSearchTerm: string
+  eventsSorting: Sorting
   selectedSource: EventConfigSource | null
+  eventModificationDrawerState: {
+    visible: boolean
+    isEditMode: CreateEditMode
+    eventConfigEvent: EventConfigEvent | null
+  }
   isLoading: boolean
   deleteEventConfigEventDialogState: {
     visible: boolean
@@ -69,10 +77,9 @@ export type EventConfigDetailStoreState = {
     visible: boolean
     eventConfigSource: EventConfigSource | null
   }
-  drawerState: DrawerState
 }
 
-export type EventConfigFilesUploadReponse = {
+export type EventConfigFilesUploadResponse = {
   errors: [
     {
       file: string
@@ -84,17 +91,27 @@ export type EventConfigFilesUploadReponse = {
       file: string
     }
   ]
-  invalid?: {
-    file: string
-    reason: string
-  }[]
 }
 
 export type EventConfigSourcesResponse = {
   sources: EventConfigSource[]
   totalRecords: number
 }
+
+export type EventConfigEventsResponse = {
+  events: EventConfigEvent[]
+  totalRecords: number
+}
+
 export interface DrawerState {
   visible: boolean
   isEventEditorModal: boolean
 }
+
+export type UploadEventFileType = {
+  file: File
+  isValid: boolean
+  errors: string[]
+  isDuplicate: boolean
+}
+

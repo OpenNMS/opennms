@@ -1,7 +1,9 @@
-import { eventConfigEvents } from '@/components/EventConfiguration/data'
-import { changeEventConfigEventStatus, changeEventConfigSourceStatus } from '@/services/eventConfigService'
-import { DrawerState, EventConfigDetailStoreState, EventConfigEvent, EventConfigSource } from '@/types/eventConfig'
-import { cloneDeep } from 'lodash'
+import {
+  changeEventConfigEventStatus,
+  changeEventConfigSourceStatus,
+  filterEventConfigEvents
+} from '@/services/eventConfigService'
+import { EventConfigDetailStoreState, EventConfigEvent, EventConfigSource } from '@/types/eventConfig'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
@@ -10,18 +12,21 @@ const defaultPagination = {
   total: 0
 }
 
-const getDefaultDrawerState = (): DrawerState => {
-  return {
-    visible: false,
-    isEventEditorModal: false
-  }
-}
-
 export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore', {
   state: (): EventConfigDetailStoreState => ({
     events: [],
     eventsPagination: { ...defaultPagination },
+    eventsSearchTerm: '',
+    eventsSorting: {
+      sortOrder: 'desc',
+      sortKey: 'createdTime'
+    },
     selectedSource: null,
+    eventModificationDrawerState: {
+      visible: false,
+      isEditMode: 0,
+      eventConfigEvent: null
+    },
     isLoading: false,
     deleteEventConfigEventDialogState: {
       visible: false,
@@ -38,32 +43,61 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     changeEventConfigSourceStatusDialogState: {
       visible: false,
       eventConfigSource: null
-    },
-    drawerState: getDefaultDrawerState()
+    }
   }),
   actions: {
     async fetchEventsBySourceId() {
+      if (!this.selectedSource) {
+        console.error('No source selected')
+        return
+      }
       this.isLoading = true
-      const id = this.selectedSource?.id
+      const id = this.selectedSource.id
       try {
-        console.log('Fetching events for source ID:', this.events)
-
-        this.events = cloneDeep(eventConfigEvents) // Using static data for now
-        this.eventsPagination.total = this.events.length
+        const response = await filterEventConfigEvents(
+          id,
+          (this.eventsPagination.page - 1) * this.eventsPagination.pageSize,
+          this.eventsPagination.pageSize,
+          this.eventsSearchTerm,
+          this.eventsSorting.sortKey,
+          this.eventsSorting.sortOrder
+        )
+        this.events = response.events
+        this.eventsPagination.total = response.totalRecords
+        this.isLoading = false
       } catch (error) {
         console.error('Error fetching events for source ID:', id, error)
-      } finally {
         this.isLoading = false
       }
     },
     setSelectedEventConfigSource(eventConfigSource: EventConfigSource) {
       this.selectedSource = eventConfigSource
     },
-    onEventsPageChange(page: number) {
+    async onEventsPageChange(page: number) {
       this.eventsPagination.page = page
+      await this.fetchEventsBySourceId()
     },
-    onEventsPageSizeChange(pageSize: number) {
+    async onEventsPageSizeChange(pageSize: number) {
+      this.eventsPagination.page = 1
       this.eventsPagination.pageSize = pageSize
+      await this.fetchEventsBySourceId()
+    },
+    async onChangeEventsSearchTerm(value: string) {
+      this.eventsSearchTerm = value ?? ''
+      this.eventsPagination.page = 1
+      await this.fetchEventsBySourceId()
+    },
+    async onEventsSortChange(sortKey: string, sortOrder: string) {
+      this.eventsSorting.sortKey = sortKey
+      this.eventsSorting.sortOrder = sortOrder
+      await this.fetchEventsBySourceId()
+    },
+    async refreshEventConfigEvents() {
+      this.resetEventsPagination()
+      this.eventsSearchTerm = ''
+      this.eventsSorting.sortKey = 'createdTime'
+      this.eventsSorting.sortOrder = 'desc'
+      await this.fetchEventsBySourceId()
     },
     showDeleteEventConfigEventDialog(eventConfigSource: EventConfigEvent) {
       this.deleteEventConfigEventDialogState.visible = true
@@ -109,9 +143,9 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       this.deleteEventConfigSourceDialogState.visible = true
       this.deleteEventConfigSourceDialogState.eventConfigSource = eventConfigSource
     },
-    hideDeleteEventConfigSourceDialog() {
-      this.deleteEventConfigSourceDialogState.visible = false
+    async hideDeleteEventConfigSourceDialog() {
       this.deleteEventConfigSourceDialogState.eventConfigSource = null
+      this.deleteEventConfigSourceDialogState.visible = false
     },
     showChangeEventConfigSourceStatusDialog(eventConfigSource: EventConfigSource) {
       this.changeEventConfigSourceStatusDialogState.visible = true
@@ -126,6 +160,7 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
         const response = await changeEventConfigSourceStatus(sourceId, false)
         if (response) {
           this.selectedSource.enabled = false
+          await this.fetchEventsBySourceId()
         }
       } else {
         console.error('No source selected')
@@ -136,16 +171,21 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
         const response = await changeEventConfigSourceStatus(sourceId, true)
         if (response) {
           this.selectedSource.enabled = true
+          await this.fetchEventsBySourceId()
         }
       } else {
         console.error('No source selected')
       }
     },
-    openEventDrawerModal() {
-      this.drawerState.visible  = true      
+    openEventModificationDrawer(isEditMode: number, eventConfigEvent: EventConfigEvent) {
+      this.eventModificationDrawerState.visible = true
+      this.eventModificationDrawerState.isEditMode = isEditMode
+      this.eventModificationDrawerState.eventConfigEvent = eventConfigEvent
     },
-    closeEventDrawerModal() {
-      this.drawerState.visible  = false
+    closeEventModificationDrawer() {
+      this.eventModificationDrawerState.visible = false
+      this.eventModificationDrawerState.isEditMode = 0
+      this.eventModificationDrawerState.eventConfigEvent = null
     }
   }
 })
