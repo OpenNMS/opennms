@@ -3,7 +3,8 @@
 :description: Learn how to use the Trend feature in {page-component-title} to visualize smal inline charts of database-related statistics like node outages.
 
 The Trend feature visualizes small, inline charts of database-related statistics (nodes experiencing outages, unacknowledged alarms, and so on).
-Click menu:Status[Trend] in the top menu bar to view them.
+
+Click menu:Dashboards[Trends] in the side menu to view them.
 
 .Example of a trend chart
 image::visualizations/trend-chart.png["{page-component-title} UI displaying an example trend chart.", 700]

@@ -30,8 +30,8 @@ Before using metadata in a threshold, you need to add the metadata context pairâ
 
 Follow these steps to create the expression-based threshold:
 
-. Click the *gear* symbol in the top-right of the screen.
-. Under Performance Measurement, click *Configure Thresholds*.
+. Click menu:Administration[Configure Thresholds] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under *Performance Management*, click *Configure Thresholds*.
 . Click *Edit* beside the `netsnmp` group.
 . Click *Create New Expression-based Threshold*.
 . Fill in the following information:
@@ -58,7 +58,7 @@ image::metadata/meta-expression2.png["{page-component-title} dashboard displayin
 
 Before creating a threshold, you should make sure that you are collecting the metric against which you want to threshold:
 
-. Choose menu:Reports[Resource Graphs].
+. Choose menu:Metrics (Resource Graphs)[Resource Graphs] in the side menu.
 . Select one of the listed resources.
 . Under SNMP Node Data, select menu:Node-Level Performance Data[Graph Selection].
 . Scroll to find the graph for the metric you want to threshold.
@@ -73,7 +73,7 @@ Data source names for the SNMP protocol appear in `etc/snmp-graph.properties.d`.
 
 To determine the name of the data source, navigate to the *Resource Graphs* screen:
 
-. Choose menu:Reports[Resource Graphs].
+. Choose menu:Metrics (Resource Graphs)[Resource Graphs] in the side menu.
 . Select one of the listed resources.
 . Under SNMP Node Data, select menu:Node-Level Performance Data[Graph Selection].
 . Scroll through the graphs to find the title of the graph that displays the metric on which you want to threshold.

@@ -42,7 +42,7 @@ The element's operational status is calculated using the given map and reduce fu
 
 Follow these steps to enter simulation mode:
 
-. Click menu:Maps[Topology] in the top menu bar.
+. Click *Topology Map* in the side menu.
 . Click *View* and select *Business Service View*.
 . Click *Simulate* and select *Simulation Mode* to enable the feature.
 ** Select *Inherit State* to use the severities and operational status from your monitoring environment in simulation mode.

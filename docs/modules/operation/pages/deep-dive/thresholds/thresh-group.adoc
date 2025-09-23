@@ -28,8 +28,9 @@ This procedure creates a threshold group called "demo_group":
 </group>
 ----
 
-. Log in to the web UI and click the *gear* symbol in the top-right of the screen.
-. Under Performance Measurement, click *Configure Thresholds*.
+. Log in to the web UI.
+. Click menu:Administration[Configure Thresholds] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then click menu:Performance Measurement[Configure Thresholds].
 +
 The group you created should appear in the UI.
 

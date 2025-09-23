@@ -27,8 +27,8 @@ In most cases, you would do this to reload daemon configuration without having t
 [[send-event-ui]]
 To manually send an event in the web UI, follow these steps:
 
-. Click the *gear* symbol in the top-right corner of the screen.
-. Under Event Management, select *Manually Send an Event*.
+. Click menu:Tools[Send Custom Events] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under Event Management, select *Manually Send an Event*.
 . Select an event from the *Event* list, and specify additional information (UUID, node ID, parameters, severity, and so on).
 . Click *Send Event*.
 . To view the event, click menu:Status[Events] in the top menu bar, and click *All Events*.

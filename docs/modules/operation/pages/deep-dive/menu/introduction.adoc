@@ -68,9 +68,4 @@ Clicking on them opens a flyout menu with the individual menu items.
 The provided `default` menu, for example, has operations more often
 performed by users at the top; more advanced options below;
 administrative options below that; and the Lock Menu option at the bottom.
-
-| Lock Menu
-| Clicking on this will lock/unlock the menu.
-Locking means it will stay expanded even when navigating to different
-pages.
 |===

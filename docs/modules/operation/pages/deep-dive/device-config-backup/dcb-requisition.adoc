@@ -13,8 +13,8 @@ Specify a backup schedule in the form of a cron expression to overwrite default 
 To prevent all devices fetching the configuration at the same time, it is better to space out the schedule.
 For example, `0 0 0 * * ?` runs every 24 hrs at 12:00 a.m., and `0 0 1 * * ?` runs every 24 hrs at 1:00 a.m.
 
-. In the web UI, click the *Gear* symbol at the top-right of the screen.
-. Choose menu:Provisioning[Manage Provisioning Requisitions].
+. In the web UI, click menu:Manage Inventory[Provisioning Requisitions] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then choose menu:Provisioning[Manage Provisioning Requisitions].
 . Click *Add Requisition* and enter a name for the requisition.
 If you want to enable device config backup on existing nodes in a requisition, select the desired requisition and edit the node definition.
 . Click the *Edit* symbol and click *Add Node*.
