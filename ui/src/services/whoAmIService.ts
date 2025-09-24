@@ -25,14 +25,12 @@ import { WhoAmIResponse } from '@/types'
 
 const endpoint = '/whoami'
 
-const getWhoAmI = async (): Promise<WhoAmIResponse> => {
+const getWhoAmI = async (): Promise<WhoAmIResponse | false> => {
   try {
     const resp = await rest.get(endpoint)
-    return resp.data
+    return resp.data as WhoAmIResponse
   } catch (err) {
-    return {
-      roles: [] as string[]
-    } as WhoAmIResponse
+    return false
   }
 }
 
