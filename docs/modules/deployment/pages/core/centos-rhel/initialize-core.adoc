@@ -3,12 +3,14 @@
 You can store your PostgreSQL credentials in the secure credentials vault.
 To do this, use the `scvcli` command line utility to add the credentials, and reference these credentials in `opennms-datasources.xml`:
 
+IMPORTANT: Don't remove the prefixed space before the command. Otherwise, the password will be stored in the history.
+
 . Create encrypted credentials for the PostgreSQL database connections:
 +
 [source, console]
 ----
-sudo -u opennms ${OPENNMS_HOME}/bin/scvcli set postgres opennms password <1>
-sudo -u opennms ${OPENNMS_HOME}/bin/scvcli set postgres-admin postgres password
+ sudo -u opennms /opt/opennms/bin/scvcli set postgres opennms password <1>
+ sudo -u opennms /opt/opennms/bin/scvcli set postgres-admin postgres password
 ----
 <1> Replace both `password` instances with the actual passwords for your `opennms` and `postgres` database accounts.
 
@@ -70,8 +72,8 @@ sudo /opt/opennms/bin/install -dis
 .Define any necessary xref:operation:deep-dive/admin/configuration/startup.adoc[startup configuration], such as open file descriptors or maximum Java heap
 [source, console]
 ----
-echo "JAVA_HEAP_SIZE=16384" | sudo tee ${OPENNMS_HOME}/etc/opennms.conf
-echo "MAXIMUM_FILE_DESCRIPTORS=512000" | sudo tee ${OPENNMS_HOME}/etc/opennms.conf
+echo "JAVA_HEAP_SIZE=16384" | sudo tee /opt/opennms/etc/opennms.conf
+echo "MAXIMUM_FILE_DESCRIPTORS=512000" | sudo tee /opt/opennms/etc/opennms.conf
 ----
 NOTE: These values are provided as examples; ideal values will vary based on your environment and workload
 

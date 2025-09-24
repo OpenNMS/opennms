@@ -20,32 +20,9 @@ We recommend that you exclude the {page-component-title} packages from updates e
 [source, console]
 ----
 ifeval::["{page-component-title}" == "Horizon"]
-sudo dnf config-manager --disable opennms-repo-stable-*
+sudo dnf config-manager --disable opennms-stable opennms-common
 endif::[]
 ifeval::["{page-component-title}" == "Meridian"]
 sudo dnf config-manager --disable meridian
 endif::[]
-----
-
-.Verify directory structure with the tree command
-[source, console]
-----
-sudo dnf -y install tree
-tree /opt/opennms -L 1
-----
-
-.Directory structure after successful installation
-[source, output]
-----
-/opt/opennms
-├── bin
-├── contrib
-├── data
-├── deploy
-├── etc
-├── jetty-webapps
-├── lib
-├── logs -> /var/log/opennms
-├── share -> /var/opennms
-└── system
 ----
