@@ -101,6 +101,12 @@
     <intercept-url pattern="/rest/filesystem/**" method="POST" access="ROLE_FILESYSTEM_EDITOR"/>
     <intercept-url pattern="/rest/filesystem/**" method="PUT" access="ROLE_FILESYSTEM_EDITOR"/>
 
+    <!-- SCV should be admin-only -->
+    <intercept-url pattern="/rest/scv/**" method="GET" access="ROLE_ADMIN" />
+    <intercept-url pattern="/rest/scv/**" method="DELETE" access="ROLE_ADMIN" />
+    <intercept-url pattern="/rest/scv/**" method="POST" access="ROLE_ADMIN" />
+    <intercept-url pattern="/rest/scv/**" method="PUT" access="ROLE_ADMIN" />
+
     <!-- Allow certain actions for the ROLE_USER role -->
     <intercept-url pattern="/rest/resources/generateId" method="POST" access="ROLE_REST,ROLE_ADMIN,ROLE_USER" />
 
