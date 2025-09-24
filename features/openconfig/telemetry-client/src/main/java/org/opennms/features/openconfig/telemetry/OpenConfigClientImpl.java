@@ -77,7 +77,8 @@ public class OpenConfigClientImpl implements OpenConfigClient {
     private static final int DEFAULT_INTERNAL_RETRIES = 5;
     private static final int DEFAULT_INTERNAL_TIMEOUT = 1000;
     private static final int DEFAULT_FREQUENCY = 300000; //5min
-    private static final long DEFAULT_FREQUENCY_FOR_GNMI = 300 * 10^9; // 5mins in nano seconds
+    private static final long DEFAULT_FREQUENCY_FOR_GNMI = 30L * 1_000_000_000L; // 5 min in ns
+    // 5mins in nano seconds
     private static final int DEFAULT_INTERVAL_IN_SEC = 300; //5min
     private static final String PORT = "port";
     private static final String HOSTNAME = "hostname";

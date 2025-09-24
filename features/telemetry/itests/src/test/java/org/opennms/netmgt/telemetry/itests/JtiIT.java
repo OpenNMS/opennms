@@ -93,6 +93,7 @@ import com.google.common.io.Resources;
         "classpath:/META-INF/opennms/applicationContext-noOpBlobStore.xml",
         "classpath:/META-INF/opennms/applicationContext-testPollerConfigDaos.xml",
         "classpath:/META-INF/opennms/applicationContext-testThresholdingDaos.xml",
+        "classpath:/META-INF/opennms/applicationContext-openconfig-components.xml"
 })
 @JUnitConfigurationEnvironment(systemProperties={ // We don't need a real pinger here
         "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.NullPinger"})

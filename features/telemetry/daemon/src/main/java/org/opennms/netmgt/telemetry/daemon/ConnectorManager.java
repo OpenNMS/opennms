@@ -74,6 +74,8 @@ public class ConnectorManager {
     @Autowired
     private ServiceTracker serviceTracker;
 
+    @Autowired
+    private OpenConfigTwinPublisher openConfigTwinPublisher;
     private final Map<ConnectorKey, Connector> connectorsByKey = new LinkedHashMap<>();
 
     private final List<Closeable> serviceTrackerSessions = new LinkedList<>();
@@ -85,11 +87,12 @@ public class ConnectorManager {
                 LOG.debug("Connector already exists. Ignoring.");
             }
             List<Map<String, String>> interpolatedMapList = getGroupedParams(packageConfig, serviceRef);
-            // Create a new connector
-            LOG.debug("Starting connector for: {}", key);
-            final Connector connector = telemetryRegistry.getConnector(connectorConfig);
-            connectorsByKey.put(key, connector);
-            connector.stream(serviceRef.getNodeId(), serviceRef.getIpAddress(), interpolatedMapList);
+
+            try {
+                openConfigTwinPublisher.publishConfig(serviceRef,interpolatedMapList,key.stringKey());
+            } catch (IOException e) {
+                LOG.error("Failed to publish config for connector: {}", key, e);
+            }
         }
     }
 
@@ -123,14 +126,10 @@ public class ConnectorManager {
     private void stopStreamingFor(ConnectorConfig connectorConfig, PackageConfig packageConfig, ServiceRef serviceRef) {
         synchronized (connectorsByKey) {
             final ConnectorKey key = toKey(connectorConfig, packageConfig, serviceRef);
-            final Connector connector = connectorsByKey.remove(key);
-            if (connector != null) {
-                try {
-                    LOG.debug("Closing connector for: {}", key);
-                    connector.close();
-                } catch (IOException e) {
-                    LOG.warn("Error closing connector: {}", key, e);
-                }
+            try {
+                openConfigTwinPublisher.removeConfig(serviceRef, key.stringKey());
+            } catch (IOException e) {
+                LOG.warn("Error closing connector: {}.", key, e);
             }
         }
     }
@@ -157,7 +156,7 @@ public class ConnectorManager {
                                 public void onServiceStoppedMatching(ServiceRef serviceRef) {
                                     stopStreamingFor(connectorConfig, packageConfig, serviceRef);
                                 }
-                    });
+                            });
                     serviceTrackerSessions.add(session);
                 }
             }
@@ -175,15 +174,10 @@ public class ConnectorManager {
         });
         serviceTrackerSessions.clear();
 
-        // Close the connectors
-        synchronized (connectorsByKey) {
-            connectorsByKey.forEach((key,connector) -> {
-                try {
-                    connector.close();
-                } catch (IOException e) {
-                    LOG.warn("Error closing connector: {}. Resources may not be properly recovered.", key, e);
-                }
-            });
+        try {
+            openConfigTwinPublisher.close();
+        } catch (IOException e) {
+            LOG.error("Stopping Twin Location publishers and configs :", e);
         }
     }
 
@@ -228,6 +222,15 @@ public class ConnectorManager {
                     ", nodeId=" + nodeId +
                     ", interfaceAddress=" + interfaceAddress +
                     '}';
+        }
+
+        public String stringKey() {
+            String sb;
+            sb = connectorName +
+                    packageName +
+                    interfaceAddress.getHostAddress() + "_"+
+                    nodeId;
+            return sb;
         }
     }
 
