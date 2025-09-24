@@ -123,7 +123,7 @@
               v-if="expandedRows.includes(event.id)"
               class="expanded-content"
             >
-              <td>
+              <td :colspan="4">
                 <h6>Description:</h6>
                 <p v-html="event.description"></p>
               </td>
@@ -306,16 +306,6 @@ const onChangeSearchTerm = debounce(async (value: string) => {
                   padding: 8px 16px !important;
                 }
               }
-            }
-          }
-        }
-      }
-
-      :deep(.expanded-content) {
-        td {
-          p {
-            p {
-              white-space: break-spaces !important;
             }
           }
         }

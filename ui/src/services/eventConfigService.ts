@@ -4,6 +4,7 @@ import {
   mapUploadedEventConfigFilesResponseFromServer
 } from '@/mappers/eventConfig.mapper'
 import {
+  EventConfigEventRequest,
   EventConfigEventsResponse,
   EventConfigFilesUploadResponse,
   EventConfigSourcesResponse
@@ -65,18 +66,9 @@ export const deleteEventConfigSourceById = async (id: number): Promise<boolean> 
  * @param enabled Whether the event configuration event is enabled or not.
  * @returns A promise that resolves to a boolean indicating whether the event configuration event was updated successfully.
  */
-export const updateEventConfigEventById = async (
-  id: number,
-  eventLabel: string,
-  description: string,
-  enabled: boolean
-): Promise<boolean> => {
-  const endpoint = `eventconf/sources/events/${id}`
-  const payload = {
-    eventLabel: eventLabel,
-    description: description,
-    enabled: enabled
-  }
+export const updateEventConfigEventById = async (event: EventConfigEventRequest): Promise<boolean> => {
+  const endpoint = `eventconf/sources/events/${event.id}`
+  const payload = { ...event }
   try {
     const response = await v2.put(endpoint, payload)
     return response.status === 200

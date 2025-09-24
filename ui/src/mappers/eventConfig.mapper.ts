@@ -1,5 +1,7 @@
+import { CreateEditMode } from '@/types'
 import {
   EventConfigEvent,
+  EventConfigEventRequest,
   EventConfigEventsResponse,
   EventConfigFilesUploadResponse,
   EventConfigSource,
@@ -62,5 +64,21 @@ export const mapEventConfigEventsResponseFromServer = (response: any): EventConf
     events: response.eventConfSourceList.map((event: any) => mapEventConfigEventFromServer(event)),
     totalRecords: response.totalRecords
   }
+}
+
+export const mapEventConfigEventToServer = (event: EventConfigEvent, mode: CreateEditMode): EventConfigEventRequest => {
+  const newEvent: Partial<EventConfigEventRequest> = {
+    id: event.id,
+    uei: event.uei,
+    eventLabel: event.eventLabel,
+    description: event.description,
+    enabled: event.enabled
+  }
+
+  if (mode === CreateEditMode.Create) {
+    delete newEvent.id
+  }
+
+  return newEvent as EventConfigEventRequest
 }
 

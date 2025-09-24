@@ -28,6 +28,14 @@ export type EventConfigEvent = {
   fileOrder: number
 }
 
+export type EventConfigEventRequest = {
+  id?: number
+  uei: string
+  eventLabel: string
+  description: string
+  enabled: boolean
+}
+
 export type EventConfigStoreState = {
   sources: EventConfigSource[]
   sourcesPagination: Pagination

@@ -13,17 +13,27 @@
       v-if="store.eventModificationDrawerState.eventConfigEvent"
     >
       <section>
-        <h3>Customize the Event Details</h3>
+        <h3>
+          {{ store.eventModificationDrawerState.isEditMode === CreateEditMode.Create ? 'Create New Event' : 'Edit Event Details' }}
+        </h3>
       </section>
       <div class="spacer-large"></div>
       <div class="drawer-content">
+        <FeatherInput
+          label="Event UEI"
+          type="search"
+          data-test="event-label"
+          v-model.trim="eventUei"
+        ></FeatherInput>
+        <div class="spacer-medium"></div>
+        <div class="spacer-medium"></div>
         <FeatherInput
           label="Event Label"
           type="search"
           data-test="event-label"
           v-model.trim="eventLabel"
-          clear="false"
-        ></FeatherInput>
+        >
+        </FeatherInput>
         <div class="spacer-medium"></div>
         <div class="spacer-medium"></div>
         <FeatherTextarea
@@ -32,6 +42,8 @@
           placeholder="Type your event description here..."
           rows="10"
           cols="40"
+          auto
+          clear
         ></FeatherTextarea>
         <div class="spacer-medium"></div>
         <div class="spacer-medium"></div>
@@ -39,7 +51,6 @@
           label="Select Status"
           :options="statusOptions"
           v-model="selectedEventStatus"
-          clear="Clear Selection"
         >
           <FeatherIcon :icon="MoreVert" />
         </FeatherSelect>
@@ -65,8 +76,11 @@
 
 <script lang="ts" setup>
 import useSnackbar from '@/composables/useSnackbar'
+import { mapEventConfigEventToServer } from '@/mappers/eventConfig.mapper'
 import { updateEventConfigEventById } from '@/services/eventConfigService'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
+import { CreateEditMode } from '@/types'
+import { EventConfigEvent } from '@/types/eventConfig'
 import { FeatherButton } from '@featherds/button'
 import { FeatherDrawer } from '@featherds/drawer'
 import { FeatherIcon } from '@featherds/icon'
@@ -81,9 +95,9 @@ const statusOptions: ISelectItemType[] = [
 ]
 const snackbar = useSnackbar()
 const store = useEventConfigDetailStore()
-console.log('eventConfigEvent', store.eventModificationDrawerState.eventConfigEvent)
 const eventDescription = ref(store.eventModificationDrawerState.eventConfigEvent?.description || '')
 const eventLabel = ref(store.eventModificationDrawerState.eventConfigEvent?.eventLabel || '')
+const eventUei = ref(store.eventModificationDrawerState.eventConfigEvent?.uei || '')
 const selectedEventStatus = ref<ISelectItemType>({
   _text: store.eventModificationDrawerState.eventConfigEvent?.enabled ? 'Enable' : 'Disable',
   _value: store.eventModificationDrawerState.eventConfigEvent?.enabled ? 'enable' : 'disable'
@@ -92,6 +106,10 @@ const selectedEventStatus = ref<ISelectItemType>({
 const validateEventDetails = (): boolean => {
   if (!store.eventModificationDrawerState.eventConfigEvent) {
     snackbar.showSnackBar({ msg: 'No event selected', error: true })
+    return false
+  }
+  if (!eventUei.value) {
+    snackbar.showSnackBar({ msg: 'Event UEI is required', error: true })
     return false
   }
   if (!eventLabel.value) {
@@ -118,12 +136,17 @@ const handleSave = async () => {
     return
   }
 
-  const response = await updateEventConfigEventById(
-    store.eventModificationDrawerState.eventConfigEvent.id,
-    eventLabel.value,
-    eventDescription.value,
-    selectedEventStatus.value._value === 'enable'
-  )
+  const event = {
+    ...store.eventModificationDrawerState.eventConfigEvent,
+    uei: eventUei.value,
+    eventLabel: eventLabel.value,
+    description: eventDescription.value,
+    enabled: selectedEventStatus.value._value === 'enable'
+  } as EventConfigEvent
+
+  const newEvent = mapEventConfigEventToServer(event, store.eventModificationDrawerState.isEditMode)
+
+  const response = await updateEventConfigEventById(newEvent)
 
   if (response) {
     snackbar.showSnackBar({ msg: 'Event Updated.', error: false })
@@ -139,14 +162,16 @@ watch(
   (newVal) => {
     if (newVal) {
       eventDescription.value = newVal.description || ''
+      eventUei.value = newVal.uei || ''
       eventLabel.value = newVal.eventLabel || ''
       selectedEventStatus.value = {
         _text: newVal.enabled ? 'Enable' : 'Disable',
         _value: newVal.enabled ? 'enable' : 'disable'
       }
     } else {
-      eventDescription.value = ''
+      eventUei.value = ''
       eventLabel.value = ''
+      eventDescription.value = ''
       selectedEventStatus.value = { _text: '', _value: '' }
     }
   }, { immediate: true, deep: true }

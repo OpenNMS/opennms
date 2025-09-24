@@ -3,7 +3,11 @@ import {
   changeEventConfigSourceStatus,
   filterEventConfigEvents
 } from '@/services/eventConfigService'
-import { EventConfigDetailStoreState, EventConfigEvent, EventConfigSource } from '@/types/eventConfig'
+import {
+  EventConfigDetailStoreState,
+  EventConfigEvent,
+  EventConfigSource
+} from '@/types/eventConfig'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
@@ -11,6 +15,21 @@ const defaultPagination = {
   pageSize: 10,
   total: 0
 }
+
+export const getDefaultEventConfigEvent = (): EventConfigEvent => ({
+  id: new Date().getTime(), // Temporary ID for new events
+  uei: '',
+  eventLabel: '',
+  description: '',
+  enabled: true,
+  xmlContent: '',
+  createdTime: new Date(),
+  lastModified: new Date(),
+  modifiedBy: '',
+  sourceName: '',
+  vendor: '',
+  fileOrder: 0
+})
 
 export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore', {
   state: (): EventConfigDetailStoreState => ({
