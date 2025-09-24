@@ -75,6 +75,13 @@ export const updateEventConfigEventById = async (event: EventConfigEventRequest)
   }
 }
 
+/**
+ * Makes a POST request to the REST endpoint to create an event configuration event.
+ *
+ * @param event The event configuration event to create, represented as an `EventConfigEventRequest`.
+ * @param sourceId The ID of the event configuration source to create the event in.
+ * @returns A promise that resolves to a boolean indicating whether the event was created successfully.
+ */
 export const createEventConfigEvent = async (event: EventConfigEventRequest, sourceId: number): Promise<boolean> => {
   const endpoint = `/eventconf/sources/${sourceId}/events`
   const payload = { ...event }
