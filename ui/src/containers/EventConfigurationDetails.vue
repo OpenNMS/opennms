@@ -17,10 +17,16 @@
         class="action-container"
         v-if="config.vendor !== VENDOR_OPENNMS"
       >
-        <FeatherButton @click="store.openEventModificationDrawer(CreateEditMode.Create, getDefaultEventConfigEvent())">
+        <FeatherButton
+          primary
+          @click="store.openEventModificationDrawer(CreateEditMode.Create, getDefaultEventConfigEvent())"
+        >
           Add Event
         </FeatherButton>
-        <FeatherButton @click="store.showChangeEventConfigSourceStatusDialog(config)">
+        <FeatherButton
+          primary
+          @click="store.showChangeEventConfigSourceStatusDialog(config)"
+        >
           {{ config.enabled ? 'Disable Source' : 'Enable Source' }}
         </FeatherButton>
         <FeatherButton

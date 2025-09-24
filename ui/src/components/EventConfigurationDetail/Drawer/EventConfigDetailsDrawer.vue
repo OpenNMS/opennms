@@ -77,7 +77,7 @@
 <script lang="ts" setup>
 import useSnackbar from '@/composables/useSnackbar'
 import { mapEventConfigEventToServer } from '@/mappers/eventConfig.mapper'
-import { updateEventConfigEventById } from '@/services/eventConfigService'
+import { createEventConfigEvent, updateEventConfigEventById } from '@/services/eventConfigService'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { CreateEditMode } from '@/types'
 import { EventConfigEvent } from '@/types/eventConfig'
@@ -128,7 +128,7 @@ const validateEventDetails = (): boolean => {
 }
 
 const handleSave = async () => {
-  if (!store.eventModificationDrawerState.eventConfigEvent) {
+  if (!store.eventModificationDrawerState.eventConfigEvent || !store.selectedSource) {
     return
   }
 
@@ -145,8 +145,13 @@ const handleSave = async () => {
   } as EventConfigEvent
 
   const newEvent = mapEventConfigEventToServer(event, store.eventModificationDrawerState.isEditMode)
-
-  const response = await updateEventConfigEventById(newEvent)
+  let response
+  if (store.eventModificationDrawerState.isEditMode === CreateEditMode.Edit) {
+    response = await updateEventConfigEventById(newEvent)
+  }
+  if (store.eventModificationDrawerState.isEditMode === CreateEditMode.Create) {
+    response = await createEventConfigEvent(newEvent, store.selectedSource.id)
+  }
 
   if (response) {
     snackbar.showSnackBar({ msg: 'Event Updated.', error: false })
