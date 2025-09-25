@@ -30,7 +30,7 @@ export const useAuthStore = defineStore('authStore', () => {
 
   const getWhoAmI = async () => {
     const resp = await API.getWhoAmI()
-
+    
     if (resp) {
       whoAmI.value = resp
       loaded.value = true
