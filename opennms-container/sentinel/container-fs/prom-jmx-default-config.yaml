@@ -10,6 +10,7 @@ includeObjectNames:
   - "java.lang:*"
   - "org.opennms.*:*"
   - "kafka.producer:*"
+  - "kafka.consumer:*"
   - "org.apache.camel:*"
 
 rules:
