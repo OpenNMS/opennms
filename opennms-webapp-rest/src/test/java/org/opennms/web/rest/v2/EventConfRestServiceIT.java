@@ -30,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.opennms.core.test.OpenNMSJUnit4ClassRunner;
 import org.opennms.core.test.db.annotations.JUnitTemporaryDatabase;
+import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.EventConfEventDto;
 import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
@@ -38,9 +39,9 @@ import org.opennms.netmgt.dao.api.EventConfSourceDao;
 import org.opennms.netmgt.model.EventConfSource;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
+import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.test.JUnitConfigurationEnvironment;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
-import org.opennms.web.rest.v2.model.EventConfEventRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -560,22 +561,18 @@ public class EventConfRestServiceIT {
         EventConfSource eventConfSource = eventConfSourceDao.findByName("Cisco.airespace.xml");
         assertNotNull("Event Source not found against name Cisco.airespace ", eventConfSource);
 
-        EventConfEventRequest eventConfEventRequest = new EventConfEventRequest();
-        eventConfEventRequest.setUei("uei.opennms.org/vendor/test/test1");
-        eventConfEventRequest.setEventLabel("test1 event");
-        eventConfEventRequest.setDescription("test1 description");
-        eventConfEventRequest.setSeverity("Normal");
-        eventConfEventRequest.setEnabled(true);
-        eventConfEventRequest.setXmlContent("""
-                <event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+        String xmlEvent = """
+                        <event xmlns="http://xmlns.opennms.org/xsd/eventconf">
                    <uei>uei.opennms.org/vendor/test/test1</uei>
                    <event-label>Test1:  Adding new test  event</event-label>
                    <descr>Add new test event</descr>
                    <severity>Warning</severity>
                 </event>
-                """);
+                """;
 
-        Response resp = eventConfRestApi.addEventConfSourceEvent(eventConfSource.getId(), eventConfEventRequest, securityContext);
+        Event event = JaxbUtils.unmarshal(Event.class, xmlEvent);
+
+        Response resp = eventConfRestApi.addEventConfSourceEvent(eventConfSource.getId(), event, securityContext);
         assertEquals(Response.Status.CREATED.getStatusCode(), resp.getStatus());
     }
 }

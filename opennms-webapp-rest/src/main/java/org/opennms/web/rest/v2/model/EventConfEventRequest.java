@@ -10,70 +10,25 @@
  */
 package org.opennms.web.rest.v2.model;
 
+import org.opennms.netmgt.xml.eventconf.Event;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
+@XmlRootElement(name = "addEvent")
+@XmlAccessorType(XmlAccessType.FIELD)
 public class EventConfEventRequest {
+    @XmlElement(name = "event", namespace = "http://xmlns.opennms.org/xsd/eventconf")
+    private org.opennms.netmgt.xml.eventconf.Event event;
 
-    private String uei;
-    private String eventLabel;
-    private String description;
-    private Boolean enabled;
-    private String xmlContent;
-    private String modifiedBy;
-    private String severity;
-
-    public String getSeverity() {
-        return severity;
+    public Event getEvent() {
+        return event;
     }
 
-    public void setSeverity(String severity) {
-        this.severity = severity;
-    }
-
-    public String getEventLabel() {
-        return eventLabel;
-    }
-
-    public void setEventLabel(String eventLabel) {
-        this.eventLabel = eventLabel;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    public Boolean getEnabled() {
-        return enabled;
-    }
-
-    public void setEnabled(Boolean enabled) {
-        this.enabled = enabled;
-    }
-
-    public String getModifiedBy() {
-        return modifiedBy;
-    }
-
-    public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
-
-    public String getUei() {
-        return uei;
-    }
-
-    public void setUei(String uei) {
-        this.uei = uei;
-    }
-
-    public String getXmlContent() {
-        return xmlContent;
-    }
-
-    public void setXmlContent(String xmlContent) {
-        this.xmlContent = xmlContent;
+    public void setEvent(Event event) {
+        this.event = event;
     }
 
 }

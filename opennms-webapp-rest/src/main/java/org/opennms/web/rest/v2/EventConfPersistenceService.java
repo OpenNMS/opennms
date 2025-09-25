@@ -92,11 +92,10 @@ public class EventConfPersistenceService {
     }
 
     @Transactional
-    public Long addEventConfSourceEvent(final Long sourceId, EventConfEventRequest request) {
+    public Long addEventConfSourceEvent(final Long sourceId,final String userName, Event event) {
         final Date now = new Date();
         EventConfSource eventConfSource = eventConfSourceDao.get(sourceId);
-        final Event event = JaxbUtils.unmarshal(Event.class,request.getXmlContent());
-        saveEvent(eventConfSource, event, request.getModifiedBy(), now);
+        saveEvent(eventConfSource, event, userName, now);
         eventConfSource.setEventCount(eventConfSource.getEventCount() + 1);
         // Asynchronously load event conf from DB.
         //eventConfExecutor.execute(this::reloadEventsFromDB);
@@ -216,22 +215,6 @@ public class EventConfPersistenceService {
 
     public Map<String, Object> filterEventConfSource(String filter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
         return eventConfSourceDao.filterEventConfSource(filter, sortBy, order, totalRecords, offset, limit);
-    }
-
-    private Event toXmlEvent(EventConfEventRequest dto) {
-        Event event = new Event();
-
-        event.setUei(dto.getUei());
-        event.setEventLabel(dto.getEventLabel());
-        event.setDescr(dto.getDescription());
-
-        Logmsg logmsg = new Logmsg();
-        logmsg.setContent(dto.getDescription() != null ? dto.getDescription() : "No description provided");
-        logmsg.setDest(LogDestType.LOGNDISPLAY);  // OpenNMS default
-        event.setLogmsg(logmsg);
-        event.setSeverity(dto.getSeverity());
-
-        return event;
     }
 
 }

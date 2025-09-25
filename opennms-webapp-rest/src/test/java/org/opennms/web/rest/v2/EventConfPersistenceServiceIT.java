@@ -644,22 +644,16 @@ public class EventConfPersistenceServiceIT {
         EventConfSource eventConfSource = eventConfSourceDao.findByName("source-file-1.xml");
         assertNotNull("Event Source not found against name Cisco.airespace ", eventConfSource);
 
-        EventConfEventRequest eventConfEventRequest = new EventConfEventRequest();
-        eventConfEventRequest.setUei("uei.opennms.org/vendor/test/test1");
-        eventConfEventRequest.setEventLabel("test1 event");
-        eventConfEventRequest.setDescription("test1 description");
-        eventConfEventRequest.setSeverity("Normal");
-        eventConfEventRequest.setEnabled(true);
-        eventConfEventRequest.setXmlContent("""
-                <event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+        String xmlEvent = """
+                 <event xmlns="http://xmlns.opennms.org/xsd/eventconf">
                    <uei>uei.opennms.org/vendor/test/test1</uei>
                    <event-label>Test1:  Adding new test  event</event-label>
                    <descr>Add new test event</descr>
                    <severity>Warning</severity>
                 </event>
-                """);
-
-        eventConfPersistenceService.addEventConfSourceEvent(eventConfSource.getId(), eventConfEventRequest);
+                """;
+        Event event = JaxbUtils.unmarshal(Event.class, xmlEvent);
+        eventConfPersistenceService.addEventConfSourceEvent(eventConfSource.getId(), username, event);
 
         EventConfEvent newlyAddedEvent = eventConfEventDao.findByUei("uei.opennms.org/vendor/test/test1");
         assertNotNull(newlyAddedEvent);

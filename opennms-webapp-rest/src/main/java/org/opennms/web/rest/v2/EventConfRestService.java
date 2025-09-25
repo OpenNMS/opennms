@@ -33,9 +33,9 @@ import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfEventDto;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
+import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
-import org.opennms.web.rest.v2.model.EventConfEventRequest;
 import org.opennms.web.rest.v2.model.EventConfSourceDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -267,11 +267,10 @@ public class EventConfRestService implements EventConfRestApi {
     }
 
     @Override
-    public Response addEventConfSourceEvent(Long sourceId, EventConfEventRequest eventPayload, SecurityContext securityContext) throws Exception {
+    public Response addEventConfSourceEvent(Long sourceId, Event event, SecurityContext securityContext) throws Exception {
         try {
             final String username = getUsername(securityContext);
-            eventPayload.setModifiedBy(username);
-            final var id = eventConfPersistenceService.addEventConfSourceEvent(sourceId, eventPayload);
+            final var id = eventConfPersistenceService.addEventConfSourceEvent(sourceId,username, event);
             return Response
                     .status(Response.Status.CREATED)
                     .entity(id)

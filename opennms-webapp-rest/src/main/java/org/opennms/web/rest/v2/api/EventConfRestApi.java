@@ -20,7 +20,7 @@ import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
-import org.opennms.web.rest.v2.model.EventConfEventRequest;
+import org.opennms.netmgt.xml.eventconf.Event;
 
 
 import javax.ws.rs.QueryParam;
@@ -30,7 +30,6 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PATCH;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.core.Context;
@@ -198,7 +197,7 @@ public interface EventConfRestApi {
 
     @POST
     @Path("/sources/{sourceId}/events")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces(MediaType.APPLICATION_JSON)
     @Operation(
             summary = "Add a new event to an EventConfSource",
@@ -208,7 +207,7 @@ public interface EventConfRestApi {
             @ApiResponse(responseCode = "201", description = "Event created successfully"),
             @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid data)"),
             @ApiResponse(responseCode = "404", description = "EventConfSource not found")})
-    Response addEventConfSourceEvent(@PathParam("sourceId") final Long sourceId, EventConfEventRequest eventPayload, @Context SecurityContext securityContext) throws Exception;
+    Response addEventConfSourceEvent(@PathParam("sourceId") final Long sourceId, Event event, @Context SecurityContext securityContext) throws Exception;
 
 
 }
