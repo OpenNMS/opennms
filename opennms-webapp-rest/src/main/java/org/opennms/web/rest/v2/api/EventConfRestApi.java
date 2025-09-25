@@ -199,7 +199,7 @@ public interface EventConfRestApi {
 
     @PUT
     @Path("/sources/events/{eventId}")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces("application/json")
     @Operation(
             summary = "Update EventConf  Event",

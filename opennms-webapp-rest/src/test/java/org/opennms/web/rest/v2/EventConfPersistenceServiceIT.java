@@ -21,6 +21,7 @@
  */
 package org.opennms.web.rest.v2;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -55,7 +56,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.assertEquals;
 
 @RunWith(OpenNMSJUnit4ClassRunner.class)
 @WebAppConfiguration
@@ -614,8 +614,8 @@ public class EventConfPersistenceServiceIT {
 
     @Test
     @Transactional
-    public void testUpdateEventConfEvent() throws Exception {
-        EventConfSource  m_source = new EventConfSource();
+    public void testUpdateEventConfEventWithXml() throws Exception {
+        EventConfSource m_source = new EventConfSource();
         m_source.setName("testEventEnabledFlagTest");
         m_source.setEnabled(true);
         m_source.setCreatedTime(new Date());
@@ -629,44 +629,92 @@ public class EventConfPersistenceServiceIT {
         eventConfSourceDao.saveOrUpdate(m_source);
         eventConfSourceDao.flush();
 
-        insertEvent(m_source,"uei.opennms.org/internal/trigger", "Trigger configuration changed testing", "The Trigger configuration has been changed and should be reloaded", "Normal");
+        insertEvent(m_source, "uei.opennms.org/internal/trigger", "Trigger configuration changed testing", "The Trigger configuration has been changed and should be reloaded", "Normal");
 
-        insertEvent(m_source,"uei.opennms.org/internal/clear", "Clear discovery failed testing", "The Clear discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.", "Minor");
+        insertEvent(m_source, "uei.opennms.org/internal/clear", "Clear discovery failed testing", "The Clear discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.", "Minor");
 
         EventConfSource source = eventConfSourceDao.findByName("testEventEnabledFlagTest");
 
         EventConfEvent triggerEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/trigger");
         EventConfEvent clearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
 
-        // update description and event-label events
+        // xml payload
         EventConfEventEditRequest payload = new EventConfEventEditRequest();
-        payload.setEventLabel("Clear label changed.");
-        payload.setUei("uei.opennms.org/internal/clear");
-        payload.setDescription("Clear Description changed.");
-        payload.setSeverity("Major");
-        payload.setXmlContent("""
+        String xmlPayload = """
                 <event xmlns="http://xmlns.opennms.org/xsd/eventconf">
                    <uei>uei.opennms.org/internal/clear</uei>
                    <event-label>Clear label changed.</event-label>
                    <descr>Clear Description changed.</descr>
                    <severity>Major</severity>
                 </event>
-                """);
+                """;
+        Event event = JaxbUtils.unmarshal(Event.class, xmlPayload);
+        payload.setEvent(event);
         payload.setEnabled(true);
 
-        eventConfPersistenceService.updateEventConfEvent(clearEvent.getId(),payload);
+        eventConfPersistenceService.updateEventConfEvent(clearEvent.getId(), payload);
 
         EventConfEvent updatedClearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
         assertEquals("Clear label changed.", updatedClearEvent.getEventLabel());
         assertEquals("Clear Description changed.", updatedClearEvent.getDescription());
 
         // verify xml content updated or not.
-        Event event = JaxbUtils.unmarshal(Event.class,updatedClearEvent.getXmlContent());
-        assertEquals("Clear label changed.", event.getEventLabel());
-        assertEquals("Clear Description changed.", event.getDescr());
+        Event dbEvent = JaxbUtils.unmarshal(Event.class, updatedClearEvent.getXmlContent());
+        assertEquals("Clear label changed.", dbEvent.getEventLabel());
+        assertEquals("Clear Description changed.", dbEvent.getDescr());
 
     }
 
+    @Test
+    @Transactional
+    public void testUpdateEventConfEventWithJson() throws Exception {
+        EventConfSource m_source = new EventConfSource();
+        m_source.setName("testEventJsonPayload");
+        m_source.setEnabled(true);
+        m_source.setCreatedTime(new Date());
+        m_source.setFileOrder(1);
+        m_source.setDescription("Test event source");
+        m_source.setVendor("TestVendor1");
+        m_source.setUploadedBy("JUnitTest");
+        m_source.setEventCount(2);
+        m_source.setLastModified(new Date());
+
+        eventConfSourceDao.saveOrUpdate(m_source);
+        eventConfSourceDao.flush();
+
+        insertEvent(m_source, "uei.opennms.org/internal/trigger", "Trigger configuration changed testing", "The Trigger configuration has been changed and should be reloaded", "Normal");
+
+        insertEvent(m_source, "uei.opennms.org/internal/clear", "Clear discovery failed testing", "The Clear discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.", "Minor");
+
+        EventConfSource source = eventConfSourceDao.findByName("testEventJsonPayload");
+
+        EventConfEvent clearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
+
+        String jsonPayload = """
+                {
+                  "enabled": true,
+                  "event": {
+                    "uei": "uei.opennms.org/internal/clear",
+                    "eventLabel": "Clear label changed.",
+                    "descr": "Clear Description changed.",
+                    "severity": "Major"
+                  }
+                }
+                """;
+        ObjectMapper mapper = new ObjectMapper();
+        EventConfEventEditRequest payload = mapper.readValue(jsonPayload, EventConfEventEditRequest.class);
+
+        eventConfPersistenceService.updateEventConfEvent(clearEvent.getId(), payload);
+
+        EventConfEvent updatedClearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
+        assertEquals("Clear label changed.", updatedClearEvent.getEventLabel());
+        assertEquals("Clear Description changed.", updatedClearEvent.getDescription());
+
+        // verify xml content updated correctly
+        Event dbEvent = JaxbUtils.unmarshal(Event.class, updatedClearEvent.getXmlContent());
+        assertEquals("Clear label changed.", dbEvent.getEventLabel());
+        assertEquals("Clear Description changed.", dbEvent.getDescr());
+    }
 
     private void insertEvent(EventConfSource m_source,String uei, String label, String description, String severity) {
         EventConfEvent event = new EventConfEvent();

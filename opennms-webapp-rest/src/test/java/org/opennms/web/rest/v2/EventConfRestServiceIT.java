@@ -563,11 +563,7 @@ public class EventConfRestServiceIT {
         EventConfEvent clearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
 
         EventConfEventEditRequest payload = new EventConfEventEditRequest();
-        payload.setEventLabel("Clear label changed.");
-        payload.setUei("uei.opennms.org/internal/clear");
-        payload.setDescription("Clear Description changed.");
-        payload.setSeverity("Major");
-        payload.setXmlContent("""
+        Event event = JaxbUtils.unmarshal(Event.class,"""
                 <event xmlns="http://xmlns.opennms.org/xsd/eventconf">
                    <uei>uei.opennms.org/internal/clear</uei>
                    <event-label>Clear label changed.</event-label>
@@ -575,6 +571,7 @@ public class EventConfRestServiceIT {
                    <severity>Major</severity>
                 </event>
                 """);
+        payload.setEvent(event);
         payload.setEnabled(true);
 
         Response response = eventConfRestApi.updateEventConfEvent(clearEvent.getId(),payload,securityContext);
@@ -585,9 +582,9 @@ public class EventConfRestServiceIT {
         assertEquals("Clear Description changed.", updatedClearEvent.getDescription());
 
         // verify xml content updated or not.
-        Event event = JaxbUtils.unmarshal(Event.class,updatedClearEvent.getXmlContent());
-        assertEquals("Clear label changed.", event.getEventLabel());
-        assertEquals("Clear Description changed.", event.getDescr());
+        Event dbEvent = JaxbUtils.unmarshal(Event.class,updatedClearEvent.getXmlContent());
+        assertEquals("Clear label changed.", dbEvent.getEventLabel());
+        assertEquals("Clear Description changed.", dbEvent.getDescr());
 
     }
 

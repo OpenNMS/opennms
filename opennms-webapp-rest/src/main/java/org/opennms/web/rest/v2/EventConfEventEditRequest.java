@@ -21,66 +21,29 @@
  */
 package org.opennms.web.rest.v2;
 
-public class EventConfEventEditRequest {
-    private String uei;
-    private String eventLabel;
-    private String description;
+import org.opennms.netmgt.xml.eventconf.Event;
+
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+
+@XmlRootElement(name = "eventEdit")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class EventConfEventEditRequest implements Serializable {
+
     private Boolean enabled;
-    private String xmlContent;
-    private String modifiedBy;
-    private String severity;
 
-    public EventConfEventEditRequest() {
+    @XmlElement(name = "event", namespace = "http://xmlns.opennms.org/xsd/eventconf")
+    private org.opennms.netmgt.xml.eventconf.Event event;
 
+    public Event getEvent() {
+        return event;
     }
 
-    public String getModifiedBy() {
-        return modifiedBy;
-    }
-
-    public void setModifiedBy(String modifiedBy) {
-        this.modifiedBy = modifiedBy;
-    }
-
-    public String getSeverity() {
-        return severity;
-    }
-
-    public void setSeverity(String severity) {
-        this.severity = severity;
-    }
-
-    public String getXmlContent() {
-        return xmlContent;
-    }
-
-    public void setXmlContent(String xmlContent) {
-        this.xmlContent = xmlContent;
-    }
-
-    public String getUei() {
-        return uei;
-    }
-
-    public void setUei(String uei) {
-        this.uei = uei;
-    }
-
-
-    public String getEventLabel() {
-        return eventLabel;
-    }
-
-    public void setEventLabel(String eventLabel) {
-        this.eventLabel = eventLabel;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
+    public void setEvent(Event event) {
+        this.event = event;
     }
 
     public Boolean getEnabled() {
@@ -90,6 +53,4 @@ public class EventConfEventEditRequest {
     public void setEnabled(Boolean enabled) {
         this.enabled = enabled;
     }
-
-
 }

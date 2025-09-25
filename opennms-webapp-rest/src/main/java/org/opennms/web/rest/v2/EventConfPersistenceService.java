@@ -120,11 +120,11 @@ public class EventConfPersistenceService {
             if (eventConfEvent == null) {
                 throw new EntityNotFoundException(String.format("EventConfEvent not found for eventId=%d", eventId));
             }
-            eventConfEvent.setUei(payload.getUei());
-            eventConfEvent.setEventLabel(payload.getEventLabel());
-            eventConfEvent.setDescription(payload.getDescription());
+            eventConfEvent.setUei(payload.getEvent().getUei());
+            eventConfEvent.setEventLabel(payload.getEvent().getEventLabel());
+            eventConfEvent.setDescription(payload.getEvent().getDescr());
             eventConfEvent.setEnabled(payload.getEnabled());
-            eventConfEvent.setXmlContent(payload.getXmlContent());
+            eventConfEvent.setXmlContent(JaxbUtils.marshal(payload.getEvent()));
             eventConfEvent.setLastModified(new Date());
 
             eventConfEventDao.saveOrUpdate(eventConfEvent);
