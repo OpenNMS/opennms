@@ -534,7 +534,7 @@
       "url": "#",
       "locationMatch": null,
       "icon": "network/LogsAlt",
-      "roles": null,
+      "roles": ["ROLE_ADMIN"],
       "items": [
         {
           "id": "logViewer",
