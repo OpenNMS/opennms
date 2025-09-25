@@ -14,8 +14,8 @@ This section describes how to edit the default foreign source definition.
 To edit service detectors and set an automatic scan interval, follow these steps:
 
 . Log in to the {page-component-title} web UI.
-. Click the *gear* symbol in the top-right of the screen.
-. Under Provisioning, click menu:Manage Provisioning Requisitions[Edit Default FS].
+. Click menu:Manage Inventory[Provisioning Requisitions] in the side menu, then click *Edit Default FS*.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under Provisioning, click menu:Manage Provisioning Requisitions[Edit Default FS].
 +
 .Default foreign source definition page
 image::provisioning/FS_def.png["Page displaying detectors included in the default foreign source definition"]
@@ -51,8 +51,8 @@ Type `0` to disable automatic scanning.
 To create a policy for a foreign source definition, follow these steps:
 
 . Log in to the {page-component-title} web UI.
-. Click the *gear* symbol in the top-right of the screen.
-. Under Provisioning, click menu:Manage Provisioning Requisitions[Edit Default FS].
+. Click menu:Manage Inventory[Provisioning Requisitions] in the side menu, then click *Edit Default FS*.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under Provisioning, click menu:Manage Provisioning Requisitions[Edit Default FS].
 . Navigate to the Policies tab.
 . Click *Add Policy*, type a name for the new policy, select its class from the *Class* list, and enter any required information.
 +

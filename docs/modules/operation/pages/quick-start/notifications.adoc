@@ -17,7 +17,7 @@ image::notifications/red-bell-notifications.png["Portion of Horizon top menu bar
 Follow these steps to enable notifications:
 
 . Log out of the `admin` account and log in as the user that you created in xref:quick-start/users.adoc[].
-. Click the *gear* symbol in the top-right of the screen.
+. Click menu:Administration[Configure OpenNMS] in the side menu.
 . Under Event Management, select *On* beside Notification Status, and click *Update*.
 
 The bell symbol in the top menu bar turns green, indicating that notifications are enabled globally.
@@ -81,7 +81,7 @@ Instructions for this are beyond the scope of the Quick Start guide.
 
 For this example, we will specify a destination path that sends browser pop-up notifications to users in the Admin group (currently, the default `admin` account and the personalized user account that you created in <<quick-start/users.adoc#create-user, Step 1: First-Time Sign In>>).
 
-. Click the *gear* symbol in the top-right of the screen.
+. Click menu:Administration[Configure OpenNMS] in the side menu.
 . Under Event Management, click menu:Configure Notifications[Configure Destination Paths].
 . Click *New Path* and configure it:
 ** Specify a name for the path (for example, "Browser") and define an initial delay.

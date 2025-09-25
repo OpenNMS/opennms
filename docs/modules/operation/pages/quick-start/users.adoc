@@ -19,7 +19,7 @@ You will need this account for the next step in this guide.
 
 Follow these steps to create your user account:
 
-. Click the *gear* symbol at the top-right of the screen.
+. Click menu:Administration[Configure OpenNMS] in the side menu.
 . Under OpenNMS System, click *Configure Users, Groups and On-Call Roles*.
 . On the Users and Groups page, click *Configure Users*.
 . Click *Add New User*.

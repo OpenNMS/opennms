@@ -30,8 +30,7 @@ opennms.zenithConnect.zenithRelativeUrl=/zenith-connect
 
 == Using Zenith Connect
 
-When Zenith Connect is enabled, links will appear both under the Info menu as well
-as the Admin page.
+When Zenith Connect is enabled, links will appear both under the *Integrations* menu as well as the Admin page.
 
 Going to the Zenith Connect page will display current registration/connection
 information as well as allow you to register your {page-component-title} instance

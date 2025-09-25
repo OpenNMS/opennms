@@ -109,7 +109,7 @@
     <init-param>
       <description>Sets the header value.</description>
       <param-name>value</param-name>
-      <param-value>default-src 'none' ; frame-src 'self' ; manifest-src 'self' ; media-src 'self' ; script-src 'self' 'unsafe-inline' 'unsafe-eval'; font-src 'self' https://fonts.googleapis.com  https://fonts.gstatic.com; connect-src 'self' ; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; base-uri 'self' ; form-action 'self' ; img-src 'self' https://tiles.opennms.org https://*.tile.openstreetmap.org https://*.tile.opentopomap.org data:</param-value>
+      <param-value>default-src 'none' ; frame-src 'self' ; manifest-src 'self' ; media-src 'self' ; script-src 'self' 'unsafe-inline' 'unsafe-eval'; font-src 'self' https://fonts.googleapis.com  https://fonts.gstatic.com; connect-src 'self' ; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; base-uri 'self' ; form-action 'self' ; img-src 'self' https://tiles.opennms.org https://tile.openstreetmap.org https://*.tile.openstreetmap.org https://tile.opentopomap.org https://*.tile.opentopomap.org data:</param-value>
     </init-param>
   </filter>
 

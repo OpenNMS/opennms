@@ -2,6 +2,7 @@
   <div id="opennms-sidemenu-vue-container">
     <FeatherSidenav
       id="opennms-sidebar-control"
+      :hoverMode="true"
       :items="topPanels"
       v-model="isExpanded"
       @update:modelValue="(val: any) => isExpanded = !!val"
@@ -186,8 +187,6 @@ const topPanels = computed<MenuListEntry[]>(() => {
   // Plugins menu
   if (plugins.value && plugins.value.length > 0) {
     allMenus.push(createPluginsMenu(false))
-  } else {
-    allMenus.push(createPluginsMenu(true))
   }
 
   return allMenus.map(i => createTopMenuListEntry(i) as MenuListEntry)

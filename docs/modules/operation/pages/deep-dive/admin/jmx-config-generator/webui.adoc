@@ -20,8 +20,8 @@ The JMX Configuration Generator supports the following collection settings:
 
 You can access the web-based configuration tool from the {page-component-title} web UI:
 
-. Click the *gear* symbol at the top-right of the page.
-. Under Additional Tools, select *JMX Configuration Generator*.
+. Click menu:Tools[JMX Metric Configuration Generator] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under *Additional Tools*, click *JMX Configuration Generator*.
 
 == Configure JMX connection
 

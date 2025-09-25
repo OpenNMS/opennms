@@ -15,8 +15,8 @@ Before you can assign a group to an on-call role, you must <<deep-dive/user-mana
 After you have created the group, follow these steps to assign it to an on-call role:
 
 . Log in as a user with admin permissions.
-. Click the *gear* symbol at the top-right of the screen.
-. Under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure On-Call Roles].
+. Click menu:User Management[Manage On-call Roles] in the side menu.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under OpenNMS System, click menu:Configure Users, Groups and On-Call Roles[Configure On-Call Roles].
 . Click *Add New On-Call Role* and specify a name, the associated group, a user to be designated as the supervisor, and a description.
 The description should be meaningful (for example, describe the team that the on-call role has been created for).
 . Click *Save*.

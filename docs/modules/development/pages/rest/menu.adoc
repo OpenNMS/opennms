@@ -1,0 +1,19 @@
+
+= Menu API
+
+The Menu API is used by the Web UI to retrieve information needed to display the top and side menus.
+It is not really meant to be consumed otherwise.
+See `ui/MENU_TEMPLATES.md` in the source code for detailed information.
+
+== GET (reading data)
+
+[caption=]
+.Menu API GET function
+[options="autowidth"]
+|===
+| Resource  | Description
+
+| /api/v2/menu
+| Retrieve the menu information.
+This is a combination of the configured menu template, along with runtime information.
+|===
