@@ -40,13 +40,11 @@ import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.JUnitConfigurationEnvironment;
-import org.opennms.web.rest.v2.model.EventConfEventRequest;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.constraints.AssertTrue;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
