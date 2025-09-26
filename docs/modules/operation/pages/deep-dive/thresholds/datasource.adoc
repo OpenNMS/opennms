@@ -93,7 +93,6 @@ As an example, the following configuration for the HTTP service will enable thre
 
 [source, xml]
 -----
-<parameter key="thresholding-enabled" value="true"/>
 
       <service name="HTTP" interval="300000" user-defined="false" status="on">
          <parameter key="retry" value="${requisition:poller-retry|requisition:retry|detector:retry|1}" />
