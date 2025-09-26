@@ -82,4 +82,52 @@ For example, "Number of Processes" or "System Uptime":
 image::thresholding/Graphs.png["Two example performance data metric graphs: one displays system uptime, and one displays the number of active processes over time"]
 
 . Go to `etc/snmp-graph.properties.d` and search for the title of the graph (for example, "System Uptime").
-. Note the name of the data source, and type it in the *Datasource* box when you xref:quick-start/thresholding.adoc[create your threshold].
+. Note the name of the data source (found as *columns* for the graph report properties), and type it in the *Datasource* box when you xref:quick-start/thresholding.adoc[create your threshold].
+
+[[thresholding-response-times]]
+== Thresholding on response times from polled services
+
+To leverage response times from polled services as part of a threshold, you must ensure that the service has thresholding enabled by setting a parameter in the `$OPENNMS_HOME/etc/pollerd-configuration.xml` file.
+
+As an example, the following configuration for the HTTP service will enable thresholding by setting the `thresholding-enabled` parameter to true:
+
+[source, xml]
+-----
+<parameter key="thresholding-enabled" value="true"/>
+
+      <service name="HTTP" interval="300000" user-defined="false" status="on">
+         <parameter key="retry" value="${requisition:poller-retry|requisition:retry|detector:retry|1}" />
+         <parameter key="timeout" value="${requisition:poller-timeout|requisition:timeout|detector:timeout|3000}" />
+         <parameter key="port" value="${requisition:port|detector:port|80}" />
+         <parameter key="url" value="${requisition:url|detector:url|/}" />
+         <parameter key="rrd-repository" value="/opt/opennms/share/rrd/response" />
+         <parameter key="rrd-base-name" value="http" />
+         <parameter key="ds-name" value="http" />
+         <parameter key="thresholding-enabled" value="true"/>
+      </service>
+-----
+
+In addition to setting this parameter, the correct RRD path for the thresholding group should be set in the `$OPENNMS_HOME/etc/thresholds.xml` file for the group.  In the case of the example here, `/opt/opennms/share/rrd/response`.
+
+Additionally, response times are stored by interface so the Datastore Type for the threshold should be set as such. The below is an example from the `$OPENNMS_HOME/etc/thresholds.xml` file:
+
+[source, xml]
+-----
+   <group name="high-network-latency" rrdRepository="/opt/opennms/share/rrd/response/">
+      <threshold description="High Latency for Interface" type="high" ds-type="if" value="1000" rearm="200" trigger="3" filterOperator="OR" ds-name="http"/>
+   </group>
+-----
+
+For completeness of this example, the package definition from the `$OPENNMS_HOME/etc/threshd-configuration.xml` was defined as such:
+
+[source, xml]
+-----
+   <package name="iot-network-latency">
+      <filter>IPADDR != '0.0.0.0' </filter>
+      <include-range begin="1.1.1.1" end="254.254.254.254"/>
+      <include-range begin="::1" end="ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff"/>
+      <service name="HTTP" interval="300000" user-defined="false" status="on">
+         <parameter key="thresholding-group" value="high-network-latency"/>
+      </service>
+   </package>
+-----
