@@ -82,7 +82,7 @@ For example, "Number of Processes" or "System Uptime":
 image::thresholding/Graphs.png["Two example performance data metric graphs: one displays system uptime, and one displays the number of active processes over time"]
 
 . Go to `etc/snmp-graph.properties.d` and search for the title of the graph (for example, "System Uptime").
-. Note the name of the data source (found as *columns* for the graph report properties), and type it in the *Datasource* box when you xref:quick-start/thresholding.adoc[create your threshold].
+. Note the name of the data source (found as *columns* for the graph report properties), and enter it as the *Datasource* box when you xref:quick-start/thresholding.adoc[create your threshold].
 
 [[thresholding-response-times]]
 == Thresholding on response times from polled services
