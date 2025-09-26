@@ -118,7 +118,7 @@ Below is an example section from `$OPENNMS_HOME/etc/thresholds.xml`:
    </group>
 -----
 
-For completeness of this example, the package definition from the `$OPENNMS_HOME/etc/threshd-configuration.xml` was defined as such:
+To complete the example, the thresholding package definition from `$OPENNMS_HOME/etc/threshd-configuration.xml` :
 
 [source, xml]
 -----
