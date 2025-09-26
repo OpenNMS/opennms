@@ -35,6 +35,7 @@ import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Events;
+import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -186,6 +187,11 @@ public class EventConfPersistenceService {
 
     public Map<String, Object> filterEventConfSource(String filter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {
         return eventConfSourceDao.filterEventConfSource(filter, sortBy, order, totalRecords, offset, limit);
+    }
+
+    @Transactional
+    public void deleteEventsForSource(Long sourceId,EventConfEventDeletePayload eventConfEventDeletePayload) throws Exception {
+        eventConfEventDao.deleteByEventIds(sourceId,eventConfEventDeletePayload.getEventIds());
     }
 
 }

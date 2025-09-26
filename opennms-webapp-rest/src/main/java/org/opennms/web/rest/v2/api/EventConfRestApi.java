@@ -20,6 +20,7 @@ import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
+import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
 
 
 import javax.ws.rs.QueryParam;
@@ -194,5 +195,26 @@ public interface EventConfRestApi {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     Response getEventConfSourcesNames(@Context SecurityContext securityContext) throws Exception;
+
+    @DELETE
+    @Path("/sources/{sourceId}/events")
+    @Consumes(MediaType.APPLICATION_JSON)
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Delete Events for a Source",
+            description = "Delete one or more events belonging to the specified eventConf source.",
+            operationId = "deleteEventsForSource"
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Events deleted successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid event IDs)"),
+            @ApiResponse(responseCode = "404", description = "Source or one or more events not found")
+    })
+    Response deleteEventsForSource(
+            @PathParam("sourceId") Long sourceId,
+            EventConfEventDeletePayload eventConfEventDeletePayload,
+            @Context SecurityContext securityContext
+    ) throws Exception;
+
 
 }

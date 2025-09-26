@@ -154,6 +154,15 @@ public class EventConfEventDaoHibernate
         LOG.info("Updated {} events (enabled={}) for sourceId={}", updatedCount, enabled, sourceId);
     }
 
-
+    @Override
+    public void deleteByEventIds(Long sourceId, List<Long> eventIds) {
+        int deletedCount = getHibernateTemplate().execute(session ->
+                session.createQuery("delete from EventConfEvent e where e.source.id = :sourceId and  e.id in (:ids)")
+                        .setParameter("sourceId", sourceId)
+                        .setParameterList("ids", eventIds)
+                        .executeUpdate()
+        );
+        LOG.info("Deleted {} EventConfEvent(s) with IDs: {} for sourceId: {}", deletedCount, eventIds, sourceId);
+    }
 
 }

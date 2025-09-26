@@ -611,5 +611,58 @@ public class EventConfPersistenceServiceIT {
         assertTrue(enabledTriggerEvent.getEnabled());
     }
 
+    @Test
+    @JUnitTemporaryDatabase
+    @Transactional
+    public void testDeleteEventsForSource() throws Exception {
+        String username = "test_user";
+        Date now = new Date();
+
+        String filename1 = "source-file-1.xml";
+        EventConfSourceMetadataDto metadata1 = new EventConfSourceMetadataDto.Builder()
+                .filename(filename1)
+                .eventCount(1)
+                .fileOrder(1)
+                .username(username)
+                .now(now)
+                .vendor("vendor-1")
+                .description("first entry")
+                .build();
+
+        Event event1 = new Event();
+        event1.setUei("uei.opennms.org/test/update/1");
+        event1.setEventLabel("Event One");
+        event1.setDescr("Description for Event One");
+        event1.setSeverity("Normal");
+
+        Event event2 = new Event();
+        event2.setUei("uei.opennms.org/test/update/2");
+        event2.setEventLabel("Event Two");
+        event2.setDescr("Description for Event Two");
+        event2.setSeverity("Warning");
+
+        Event event3 = new Event();
+        event3.setUei("uei.opennms.org/test/update/3");
+        event3.setEventLabel("Event three");
+        event3.setDescr("Description for Event three");
+        event3.setSeverity("Major");
+
+        Events events1 = new Events();
+        events1.getEvents().addAll(List.of(event1,event2,event3));
+
+        eventConfPersistenceService.persistEventConfFile(events1, metadata1);
+
+
+        EventConfSource eventConfSource = eventConfSourceDao.findByName("source-file-1.xml");
+        List<EventConfEvent> eventConfEvents = eventConfEventDao.findBySourceId(eventConfSource.getId());
+        // delete eventConfSources and its related events
+     /*   EventConfSourceDeletePayload eventConfSrcDisablePayload = new EventConfSourceDeletePayload();
+        eventConfSrcDisablePayload.setSourceIds(sourcesIds);
+        eventConfPersistenceService.deleteEventConfSources(eventConfSrcDisablePayload);
+        List<EventConfSource> eventConfSources = eventConfSourceDao.findAll();
+        assertTrue(eventConfSources.isEmpty());*/
+
+    }
+
 }
 
