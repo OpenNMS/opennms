@@ -106,7 +106,7 @@ As an example, the following configuration for the HTTP service will enable thre
       </service>
 -----
 
-In addition to setting this parameter, the correct RRD path for the thresholding group should be set in the `$OPENNMS_HOME/etc/thresholds.xml` file for the group.  In the case of the example here, `/opt/opennms/share/rrd/response`.
+The `rrdRepository` attribute of the thresholding group in `$OPENNMS_HOME/etc/thresholds.xml` must contain the appropriate path to the `response` repository.  In the the example below, the path is `/opt/opennms/share/rrd/response`.
 
 Additionally, response times are stored by interface so the Datastore Type for the threshold should be set as such. The below is an example from the `$OPENNMS_HOME/etc/thresholds.xml` file:
 
