@@ -269,6 +269,7 @@ public class EventConfRestService implements EventConfRestApi {
     @Override
     public Response addEventConfSourceEvent(Long sourceId, Event event, SecurityContext securityContext) throws Exception {
         try {
+            validateAddEvent(sourceId,event);
             final String username = getUsername(securityContext);
             final var id = eventConfPersistenceService.addEventConfSourceEvent(sourceId,username, event);
             return Response
@@ -346,4 +347,26 @@ public class EventConfRestService implements EventConfRestApi {
         return entry;
     }
 
+    private void validateAddEvent(Long sourceId, Event event) {
+        if (sourceId == null || sourceId <= 0) {
+            throw new IllegalArgumentException("Invalid sourceId: must be a positive number");
+        }
+        EventConfSource eventConfSource = eventConfSourceDao.get(sourceId);
+        if (eventConfSource == null) {
+            throw new EntityNotFoundException("Source with id " + sourceId + " does not exist");
+        }
+        if (event == null) {
+            throw new IllegalArgumentException("Event payload is missing");
+        }
+        requireNonBlank(event.getUei(), "Event 'uei' is required");
+        requireNonBlank(event.getEventLabel(), "Event 'event-label' is required");
+        requireNonBlank(event.getDescr(), "Event 'descr' is required");
+        requireNonBlank(event.getSeverity(), "Event 'severity' is required");
+    }
+
+    private void requireNonBlank(String value, String message) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException(message);
+        }
+    }
 }
