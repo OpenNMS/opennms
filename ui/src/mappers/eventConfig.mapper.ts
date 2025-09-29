@@ -63,3 +63,4 @@ export const mapEventConfigEventsResponseFromServer = (response: any): EventConf
     totalRecords: response.totalRecords
   }
 }
+

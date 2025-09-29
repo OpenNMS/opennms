@@ -22,6 +22,11 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       sortKey: 'createdTime'
     },
     selectedSource: null,
+    eventModificationDrawerState: {
+      visible: false,
+      isEditMode: 0,
+      eventConfigEvent: null
+    },
     isLoading: false,
     deleteEventConfigEventDialogState: {
       visible: false,
@@ -38,10 +43,6 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     changeEventConfigSourceStatusDialogState: {
       visible: false,
       eventConfigSource: null
-    },
-    drawerState: {
-      visible: false,
-      isEventEditorModal: false
     }
   }),
   actions: {
@@ -176,11 +177,15 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
         console.error('No source selected')
       }
     },
-    openEventDrawerModal() {
-      this.drawerState.visible = true
+    openEventModificationDrawer(isEditMode: number, eventConfigEvent: EventConfigEvent) {
+      this.eventModificationDrawerState.visible = true
+      this.eventModificationDrawerState.isEditMode = isEditMode
+      this.eventModificationDrawerState.eventConfigEvent = eventConfigEvent
     },
-    closeEventDrawerModal() {
-      this.drawerState.visible = false
+    closeEventModificationDrawer() {
+      this.eventModificationDrawerState.visible = false
+      this.eventModificationDrawerState.isEditMode = 0
+      this.eventModificationDrawerState.eventConfigEvent = null
     }
   }
 })
