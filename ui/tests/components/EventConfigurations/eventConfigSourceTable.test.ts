@@ -40,7 +40,8 @@ describe('EventConfigSourceTable.vue', () => {
     store.onSourcesSortChange = vi.fn().mockResolvedValue(undefined)
     store.showDeleteEventConfigSourceModal = vi.fn()
     store.showChangeEventConfigSourceStatusDialog = vi.fn()
-
+    store.showDeleteEventConfigSourceModal = vi.fn().mockResolvedValue(true)
+    store.showChangeEventConfigSourceStatusDialog = vi.fn().mockResolvedValue(true)
     detailStore.setSelectedEventConfigSource = vi.fn()
 
     mockSource = {
@@ -122,5 +123,13 @@ describe('EventConfigSourceTable.vue', () => {
   it('handles page size changes', () => {
     store.onSourcePageSizeChange(20)
     expect(store.onSourcePageSizeChange).toHaveBeenCalledWith(20)
+  })
+  it('handles delete source action', async () => {
+    await store.showDeleteEventConfigSourceModal(mockSource)
+    expect(store.showDeleteEventConfigSourceModal).toHaveBeenCalledWith(mockSource)
+  })
+  it('handles enable/disable source action', async () => {
+    await store.showChangeEventConfigSourceStatusDialog(mockSource)
+    expect(store.showChangeEventConfigSourceStatusDialog).toHaveBeenCalledWith(mockSource)
   })
 })
