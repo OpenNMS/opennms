@@ -360,7 +360,6 @@ public class EventConfRestService implements EventConfRestApi {
         }
         requireNonBlank(event.getUei(), "Event 'uei' is required");
         requireNonBlank(event.getEventLabel(), "Event 'event-label' is required");
-        requireNonBlank(event.getDescr(), "Event 'descr' is required");
         requireNonBlank(event.getSeverity(), "Event 'severity' is required");
     }
 
