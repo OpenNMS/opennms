@@ -188,8 +188,9 @@ Parameters are passed to the connector and are interpolated for node/interface a
 
 To activate the open-config on a device you must add metadata that defines the open-config configuration .
 
-. In the web UI, click the *Gear* symbol at the top-right of the screen.
-. Choose menu:Provisioning[Manage Provisioning Requisitions].
+
+. Click menu:Manage Inventory[Provisioning Requisitions] in the side menu, then click *Edit Default FS*.
+. Or, click menu:Administration[Configure OpenNMS] in the side menu, then under Provisioning, click menu:Manage Provisioning Requisitions[Edit Default FS].
 . Click *Add Requisition* and enter a name for the requisition.
 If you want to enable open-config  on existing nodes in a requisition, select the desired requisition and edit the node definition.
 . Click on the edit icon and click Add Node.
@@ -291,13 +292,13 @@ xref:deployment:core/setup-message-broker.adoc#setup-message-broker[Set up Messa
 On the Minion, install the following feature to enable OpenConfig support:
 [source, console]
 ----
-feature:install minion-telemetryd-connectors
+feature:install minion-telemetry-opencofig-client
 ----
 
 Verify weather all is setup
 [source, console]
 ----
-admin@minion()> feature:status minion-telemetryd-connectors
+admin@minion()> feature:status minion-telemetry-opencofig-client
 Started
 ----
 
