@@ -1,27 +1,17 @@
 # Vue 3 + Typescript + Vite
 
-This template should help you start developing with Vue 3, Typescript 4.9, and Vite 4.
+This template should help you start developing with Vue 3, Typescript 5, and Vite 4.
 
 ## Build instructions
 
-This project requires Node 18+.
+This project requires Node 18+. Node 22+ is recommended. npm 10.8+ is recommended.
 
 You will also need [yarn](https://yarnpkg.com/getting-started/install)
 
-To install packages and run dev server
+To install packages and build (see Developer workflow below for more):
 ```
 yarn install
-yarn dev
-```
-
-Build for prod
-```
-yarn build
-```
-
-Build/watch in dev mode
-```
-yarn watch:dev
+yarn build:all
 ```
 
 Run unit tests
@@ -51,17 +41,35 @@ Developer workflow for development -> build -> fast deploy. There may be issues 
 
 - write your code
 
-- from your `~/projects/opennms/ui` directory, run `yarn dev` or `yarn watch:dev` to build in development mode (or `yarn build` for production / minified mode)
+- any time you update dependencies, or on initial build, from your `~/projects/opennms/ui` directory, run `yarn install`
 
-- have a console window open in the target directory where the built/deployed files need to be, e.g., `~/projects/opennms/target/opennms-XX.X.X-SNAPSHOT/jetty-webapps/opennms/ui`
+- from your `~/projects/opennms/ui` directory, run `yarn build:all` (or `yarn build:all:dev` for non-minified mode)
 
-- after build completes, run `cp ~/projects/opennms/ui/dist/assets/*.* assets` to copy all the built JS and other asset files, then run `cp ~/projects/opennms/ui/dist/index.html .` to copy the new `index.html` file
+- have a console window open in the target directory where the built/deployed files need to be, e.g., `~/projects/opennms/target/opennms-XX.X.X-SNAPSHOT/jetty-webapps/opennms/ui` and `~/projects/opennms/target/opennms-XX.X.X-SNAPSHOT/jetty-webapps/opennms/ui-components`
 
-- from `target/snapshot/jetty-webapps/opennms/ui`, occasionally run `rm assets/*.*` to clear out old files
+- after build completes, run the following to copy all the built JS and CSS asset files and new `index.html` files into your OpenNMS instance.
 
-- refresh your browser, which points at `http://localhost:8980/opennms/ui/index.html#/nodes` or similar
+`ui` is for the Vue SPA UI app, `ui-components` is for the Vue menu app that is embedded in legacy JSP/Vaadin pages
+
+```
+cd ~/projects/opennms/target/opennms-XX.X.X-SNAPSHOT/jetty-webapps/opennms/ui
+cp ~/projects/opennms/ui/src/main/dist/assets/*.* assets
+cp ~/projects/opennms/ui/src/main/dist/index.html .
+
+cd ~/projects/opennms/target/opennms-XX.X.X-SNAPSHOT/jetty-webapps/opennms/ui-components
+cp ~/projects/opennms/ui/src/menu/dist-menu/assets/*.* assets
+cp ~/projects/opennms/ui/src/menu/dist-menu/index.html .
+```
+
+- from `target/snapshot/jetty-webapps/opennms/ui` and `target/snapshot/jetty-webapps/opennms/ui-components`, occasionally run `rm assets/*.*` to clear out old files
+
+- refresh your browser, which points at `http://localhost:8980/opennms` and choose a menu item to go to a Vue SPA page, or else see the Vue Menu on legacy pages
 
 - test and debug code, use browser `F12 Developer Tools` to set breakpoints, view console output, inspect elements, etc.
+
+- often `console.log` or `console.dir` statements in the code are more helpful for debugging than the browser debugger
+
+- run `yarn lint` to check for any linting/formatting errors. `yarn lint --fix` may fix them, but you should always double check
 
 ## Prettier
 Formatting should use the .prettierrc file. For VSCode, install the Prettier extension, go to the IDE Settings and set this formatter to take precedence.
@@ -75,4 +83,3 @@ Formatting should use the .prettierrc file. For VSCode, install the Prettier ext
 The SPA assets are currently hosted on Jetty via the /opennms application.
 
 The [SpaRoutingFilter](opennms-web-api/src/main/java/org/opennms/web/servlet/SpaRoutingFilter.java) serve up the `index.html` page for URLs that do not refer to project assets.
-

@@ -71,7 +71,7 @@
       "name": "Inventory",
       "url": "#",
       "locationMatch": null,
-      "icon": "network/Server",
+      "icon": "network/Inventory",
       "roles": null,
       "items": [
         {
@@ -320,7 +320,7 @@
       "name": "Distributed Monitoring",
       "url": "#",
       "locationMatch": null,
-      "icon": "action/ViewDetails",
+      "icon": "network/DistributedMonitoring",
       "roles": null,
       "items": [
         {
@@ -440,7 +440,7 @@
       "name": "Administration",
       "url": "#",
       "locationMatch": null,
-      "icon": "action/ManageProfile",
+      "icon": "network/Configuration",
       "roles": null,
       "items": [
         {
