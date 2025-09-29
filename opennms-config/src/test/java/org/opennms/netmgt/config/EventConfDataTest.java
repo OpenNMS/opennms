@@ -28,6 +28,7 @@ import static org.opennms.core.utils.InetAddressUtils.addr;
 
 import java.util.Collections;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.After;
@@ -38,6 +39,7 @@ import org.opennms.core.test.ConfigurationTestUtils;
 import org.opennms.core.test.MockLogAppender;
 import org.opennms.core.utils.Base64;
 import org.opennms.netmgt.eventd.datablock.EventConfData;
+import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.events.EventBuilder;
 import org.opennms.netmgt.xml.event.Event;
 import org.opennms.netmgt.xml.eventconf.LogDestType;
@@ -53,8 +55,9 @@ public class EventConfDataTest {
         MockLogAppender.setupLogging(false);
 
         eventConfDao = new DefaultEventConfDao();
-        eventConfDao.setConfigResource(new FileSystemResource(ConfigurationTestUtils.getFileForResource(this, "eventconf.xml")));
-        eventConfDao.afterPropertiesSet();
+        List<EventConfEvent> eventConfEventList = EventConfUtil.parseResourcesAsEventConfEvents(new FileSystemResource(ConfigurationTestUtils.getFileForResource(this, "eventconf.xml")));
+        eventConfDao.loadEventsFromDB(eventConfEventList);
+
     }
 
 

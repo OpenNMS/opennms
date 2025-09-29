@@ -75,7 +75,7 @@ public class EventConfPersistenceService {
     public void init() {
         // Asynchronously load events from DB in order to not to block startup
         // TODO: Uncomment when we are ready to disable loading from filesystem
-        //eventConfExecutor.execute(this::reloadEventsFromDB);
+        eventConfExecutor.execute(this::reloadEventsFromDB);
     }
 
     @Transactional(propagation = Propagation.REQUIRES_NEW)
