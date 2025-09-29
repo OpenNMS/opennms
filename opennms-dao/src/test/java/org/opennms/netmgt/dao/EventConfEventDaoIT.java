@@ -257,6 +257,44 @@ public class EventConfEventDaoIT implements InitializingBean {
         assertTrue(refreshedHardwareEvent.getEnabled());
     }
 
+    @Test
+    @Transactional
+    public void testDeleteByEventIds() {
+        m_source = new EventConfSource();
+        m_source.setName("testDeleteEvents");
+        m_source.setEnabled(true);
+        m_source.setCreatedTime(new Date());
+        m_source.setFileOrder(1);
+        m_source.setDescription("Test events from a source");
+        m_source.setVendor("TestVendor1");
+        m_source.setUploadedBy("JUnitTest");
+        m_source.setEventCount(3);
+        m_source.setLastModified(new Date());
+
+        List<EventConfEvent> event = m_eventDao.findAll();
+        defaultEventConfEventCount = event.size();
+
+        m_eventSourceDao.saveOrUpdate(m_source);
+        m_eventSourceDao.flush();
+
+        insertEvent("uei.opennms.org/internal/discovery/hardwareInventoryFailed11", "Hardware discovery failed testing11", "The hardware discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed 11.", "Minor");
+        insertEvent("uei.opennms.org/internal/discovery/hardwareInventoryFailed22", "Hardware discovery failed testing22", "The hardware discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed 22.", "Minor");
+        insertEvent("uei.opennms.org/internal/discovery/hardwareInventoryFailed33", "Hardware discovery failed testing33", "The hardware discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed 33.", "Minor");
+        EventConfSource source = m_eventSourceDao.findByName("testDeleteEvents");
+
+        EventConfEvent hardwareInventoryFailed11 = m_eventDao.findByUei("uei.opennms.org/internal/discovery/hardwareInventoryFailed11");
+        EventConfEvent hardwareInventoryFailed22 = m_eventDao.findByUei("uei.opennms.org/internal/discovery/hardwareInventoryFailed22");
+
+        // delete events for source "testDeleteEvents"
+        m_eventDao.deleteByEventIds(source.getId(), List.of(hardwareInventoryFailed11.getId(), hardwareInventoryFailed22.getId()));
+        sessionFactory.getCurrentSession().flush();
+        sessionFactory.getCurrentSession().clear();
+
+        // verify deleted events
+        List<EventConfEvent> updatedEvents = m_eventDao.findBySourceId(source.getId());
+        assertEquals(1, updatedEvents.size());
+    }
+
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public EventConfEvent reloadEvent(String uei) {
         return m_eventDao.findByUei(uei);

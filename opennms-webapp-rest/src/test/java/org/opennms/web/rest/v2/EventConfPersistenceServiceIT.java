@@ -40,6 +40,7 @@ import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.test.JUnitConfigurationEnvironment;
+import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -648,21 +649,31 @@ public class EventConfPersistenceServiceIT {
         event3.setSeverity("Major");
 
         Events events1 = new Events();
-        events1.getEvents().addAll(List.of(event1,event2,event3));
+        events1.getEvents().addAll(List.of(event1, event2, event3));
 
         eventConfPersistenceService.persistEventConfFile(events1, metadata1);
 
-
         EventConfSource eventConfSource = eventConfSourceDao.findByName("source-file-1.xml");
         List<EventConfEvent> eventConfEvents = eventConfEventDao.findBySourceId(eventConfSource.getId());
+
+        Long sourceId = eventConfSource.getId();
+        Long eventId1 = eventConfEvents.stream()
+                .filter(event -> event.getUei().equals("uei.opennms.org/test/update/2"))
+                .findFirst()
+                .get().getId();
+
+        Long eventId2 = eventConfEvents.stream()
+                .filter(event -> event.getUei().equals("uei.opennms.org/test/update/3"))
+                .findFirst()
+                .get().getId();
+
         // delete eventConfSources and its related events
-     /*   EventConfSourceDeletePayload eventConfSrcDisablePayload = new EventConfSourceDeletePayload();
-        eventConfSrcDisablePayload.setSourceIds(sourcesIds);
-        eventConfPersistenceService.deleteEventConfSources(eventConfSrcDisablePayload);
-        List<EventConfSource> eventConfSources = eventConfSourceDao.findAll();
-        assertTrue(eventConfSources.isEmpty());*/
+        EventConfEventDeletePayload eventConfEventDeletePayload = new EventConfEventDeletePayload();
+        eventConfEventDeletePayload.setEventIds(List.of(eventId1, eventId2));
+        eventConfPersistenceService.deleteEventsForSource(sourceId, eventConfEventDeletePayload);
 
+        List<EventConfEvent> updatedEventsBySource = eventConfEventDao.findBySourceId(eventConfSource.getId());
+        assertEquals(1, updatedEventsBySource.size());
     }
-
 }
 
