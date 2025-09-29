@@ -1,7 +1,6 @@
 import { mount } from '@vue/test-utils'
 import { describe, it, expect } from 'vitest'
 import EventConfigTabContainer from '@/components/EventConfiguration/EventConfigTabContainer.vue'
-
 import EventConfiguration from '@/containers/EventConfiguration.vue'
 
 describe('EventConfig.vue', () => {
