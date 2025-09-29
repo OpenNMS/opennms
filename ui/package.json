@@ -87,7 +87,7 @@
     "@types/splitpanes": "^2.2.1",
     "@typescript-eslint/eslint-plugin": "^6.21.0",
     "@typescript-eslint/parser": "^6.21.0",
-    "@vitejs/plugin-vue": "^4.0.0",
+    "@vitejs/plugin-vue": "^4.6.2",
     "@vue-leaflet/vue-leaflet": "^0.7.0",
     "@vue/test-utils": "^2.4.5",
     "diff": "^5.1.0",
