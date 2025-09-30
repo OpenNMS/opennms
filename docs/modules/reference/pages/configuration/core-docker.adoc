@@ -61,14 +61,14 @@
 .SNMP Trap receiver configuration in trapd-configuration.xml
 [options="header, %autowidth"]
 |===
-| Environment variable              | Description                                                       | Required | Default value
-| `OPENNMS_TRAPD_ADDRESS`           | Listen interface for SNMP Trapd                                 | optional | `*`
-| `OPENNMS_TRAPD_PORT`              | Port to listen for SNMP traps                                   | optional | `1162`
+| Environment variable              | Description                                                        | Required | Default value
+| `OPENNMS_TRAPD_ADDRESS`           | Listen interface for SNMP Trapd                                    | optional | `*`
+| `OPENNMS_TRAPD_PORT`              | Port to listen for SNMP traps                                      | optional | `1162`
 | `OPENNMS_TRAPD_NEWSUSPECTONTRAP`  | Create new suspect event-based trap recipient for unknown devices. | optional | `false`
-| `OPENNMS_TRAPD_INCLUDERAWMESSAGE` | Preserve raw messages in SNMP traps.                             | optional | `false`
+| `OPENNMS_TRAPD_INCLUDERAWMESSAGE` | Preserve raw messages in SNMP traps.                               | optional | `false`
 | `OPENNMS_TRAPD_THREADS`           | Set maximum thread size to process SNMP traps.                     | optional | `0`
-| `OPENNMS_TRAPD_QUEUESIZE`         | Set maximum queue for SNMP trap processing.                      | optional | `10000`
-| `OPENNMS_TRAPD_BATCHSIZE`         | Set batch size for SNMP trap processing.                         | optional | `1000`
+| `OPENNMS_TRAPD_QUEUESIZE`         | Set maximum queue for SNMP trap processing.                        | optional | `10000`
+| `OPENNMS_TRAPD_BATCHSIZE`         | Set batch size for SNMP trap processing.                           | optional | `1000`
 | `OPENNMS_TRAPD_BATCHINTERVAL`     | Set batch processing interval in milliseconds.                     | optional | `500`
 |===
 
@@ -83,14 +83,14 @@
 .Cassandra and Newts configuration in opennms.properties.d/_confd.newts.properties
 [options="header, %autowidth"]
 |===
-| Environment variable          | Description                                                                       | Required | Default value
-| `REPLICATION_FACTOR`          | Set Cassandra replication factor for the newts keyspace if Newts is used.      | optional | `1`
-| `OPENNMS_CASSANDRA_HOSTNAME`  | A comma-separated list with Cassandra hosts for Newts                         | optional | `localhost`
-| `OPENNMS_CASSANDRA_KEYSPACE`  | Name of the keyspace used by Newts                                              | optional | `newts`
-| `OPENNMS_CASSANDRA_PORT`      | Cassandra server port                                                           | optional | `9042`
-| `OPENNMS_CASSANDRA_USERNAME`  | Username with access to Cassandra                                              | optional | `cassandra`
-| `OPENNMS_CASSANDRA_PASSWORD`  | Password for user with access to Cassandra                                      | optional | `cassandra`
-| `OPENNMS_CASSANDRA_DATACENTER` | Set this to the value of your local datacenter for the best performance        | optional | `datacenter1`
+| Environment variable           | Description                                                               | Required | Default value
+| `REPLICATION_FACTOR`           | Set Cassandra replication factor for the newts keyspace if Newts is used. | optional | `1`
+| `OPENNMS_CASSANDRA_HOSTNAME`   | A comma-separated list with Cassandra hosts for Newts                     | optional | `localhost`
+| `OPENNMS_CASSANDRA_KEYSPACE`   | Name of the keyspace used by Newts                                        | optional | `newts`
+| `OPENNMS_CASSANDRA_PORT`       | Cassandra server port                                                     | optional | `9042`
+| `OPENNMS_CASSANDRA_USERNAME`   | Username with access to Cassandra                                         | optional | `cassandra`
+| `OPENNMS_CASSANDRA_PASSWORD`   | Password for user with access to Cassandra                                | optional | `cassandra`
+| `OPENNMS_CASSANDRA_DATACENTER` | Set this to the value of your local datacenter for the best performance   | optional | `datacenter1`
 |===
 
 == Directory conventions
