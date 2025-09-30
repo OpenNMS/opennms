@@ -53,11 +53,12 @@ const extractSeverity = (xmlContent: string): string | null => {
       return severity
     } catch (e) {
       severity = null
+      return severity
     }
   } else {
     severity = null
+    return severity
   }
-  return severity
 }
 
 export const mapEventConfigEventFromServer = (event: any): EventConfigEvent => {
@@ -88,8 +89,8 @@ export const mapEventConfigEventsResponseFromServer = (response: any): EventConf
 export const mapEventConfigEventToServer = (event: EventConfigEvent): EventConfigEventRequest => {
   const newEvent: Partial<EventConfigEventRequest> = {
     uei: event.uei,
-    eventLabel: event.eventLabel,
-    description: event.description,
+    ['event-label']: event.eventLabel,
+    descr: event.description,
     severity: event.severity
   }
 

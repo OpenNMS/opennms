@@ -87,7 +87,7 @@ export const createEventConfigEvent = async (event: EventConfigEventRequest, sou
   const payload = { ...event }
   try {
     const response = await v2.post(endpoint, payload)
-    return response.status === 200
+    return response.status === 200 || response.status === 201
   } catch (error) {
     console.error('Error Creating event config source:', error)
     return false

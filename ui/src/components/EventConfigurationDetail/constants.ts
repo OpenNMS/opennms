@@ -23,6 +23,5 @@ export const severityOptions: ISelectItemType[] = [
   { _text: Severity.Warning, _value: Severity.Warning },
   { _text: Severity.Normal, _value: Severity.Normal },
   { _text: Severity.Intermediate, _value: Severity.Intermediate },
-  { _text: Severity.Cleared, _value: Severity.Cleared },
-  { _text: Severity.Unrecognized, _value: Severity.Unrecognized }
+  { _text: Severity.Cleared, _value: Severity.Cleared }
 ]

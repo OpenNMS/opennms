@@ -31,8 +31,8 @@ export type EventConfigEvent = {
 
 export type EventConfigEventRequest = {
   uei: string
-  eventLabel: string
-  description: string
+  ['event-label']: string
+  descr: string
   severity: string
 }
 
