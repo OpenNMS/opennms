@@ -35,15 +35,16 @@
 | `OPENNMS_DBUSER`                           | Username with access to the database                                              | required | -
 | `OPENNMS_DBPASS`                           | Password for user with acccess to the database                                    | required | -
 | `POSTGRES_HOST`                            | Host with the PostgreSQL server instance running                                  | required | -
-| `POSTGRES_PORT`                            | PostgreSQL server port                                                            | optional | `5432`
 | `POSTGRES_USER`                            | PostgreSQL super user to initialize database schema specified in `OPENNMS_DBNAME` | required | -
 | `POSTGRES_PASSWORD`                        | PostgreSQL super user password                                                    | required | -
-| `OPENNMS_DATABASE_CONNECTION_POOLFACTORY`  | Database connection pool factory                                                  | optional | `org.opennms.core.db.HikariCPConnectionFactory`
-| `OPENNMS_DATABASE_CONNECTION_IDLETIMEOUT`  | Database connection pool idle timeout                                             | optional | `600`
-| `OPENNMS_DATABASE_CONNECTION_LOGINTIMEOUT` | Database connection pool login timeout                                            | optional | `3`
-| `OPENNMS_DATABASE_CONNECTION_MINPOOL`      | Minimal connection pool size                                                      | optional | `50`
-| `OPENNMS_DATABASE_CONNECTION_MAXPOOL`      | Maximum connection pool size                                                      | optional | `50`
-| `OPENNMS_DATABASE_CONNECTION_MAXSIZE`      | Maximum connections                                                               | optional | `50`
+| `POSTGRES_PORT`                            | PostgreSQL server port                                                            | optional | `5432`
+| `POSTGRES_SSL_MODE`                        | Encryption for database communication                                             | optional | `prefer`
+| `POSTGRES_SSL_FACTORY`                     | PostgreSQL SSL factory for certificate validation                                 | optional | `org.postgresql.ssl.LibPQFactory`
+| `OPENNMS_DATABASE_CONNECTION_IDLETIMEOUT`  | Global database connection pool idle timeout                                      | optional | `600`
+| `OPENNMS_DATABASE_CONNECTION_LOGINTIMEOUT` | Global database connection pool login timeout                                     | optional | `3`
+| `OPENNMS_DATABASE_CONNECTION_MINPOOL`      | Global minimal connection pool size                                               | optional | `25`
+| `OPENNMS_DATABASE_CONNECTION_MAXPOOL`      | Global maximum connection pool size                                               | optional | `50`
+| `OPENNMS_DATABASE_CONNECTION_MAXSIZE`      | Global maximum connections                                                        | optional | `50`
 |===
 
 .Timeseries storage configuration in opennms.properties.d/_confd.timeseries.properties
