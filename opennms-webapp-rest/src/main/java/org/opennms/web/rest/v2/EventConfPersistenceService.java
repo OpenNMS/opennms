@@ -206,8 +206,10 @@ public class EventConfPersistenceService {
         }
     }
 
-    public Map<String, Object> filterConfEventsBySourceId(Long sourceId, Integer totalRecords,  Integer offset, Integer limit) {
-        return eventConfEventDao.findBySourceId(sourceId, totalRecords,  offset, limit);
+    public Map<String, Object> filterConfEventsBySourceId(Long sourceId, String eventFilter, String eventSortBy,
+                                                          String eventOrder, Integer totalRecords,  Integer offset,
+                                                          Integer limit) {
+        return eventConfEventDao.findBySourceId(sourceId, eventFilter, eventSortBy, eventOrder, totalRecords,  offset, limit);
     }
 
     public Map<String, Object> filterEventConfSource(String filter, String sortBy, String order, Integer totalRecords, Integer offset, Integer limit) {

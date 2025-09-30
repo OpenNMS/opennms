@@ -406,7 +406,8 @@ public class EventConfPersistenceServiceIT {
         EventConfSource eventConfSource = eventConfSourceDao.findByName("vendor-hp.xml");
         Assert.assertNotNull(eventConfSource);
 
-        Map<String, Object> result = eventConfPersistenceService.filterConfEventsBySourceId(eventConfSource.getId(), 0, 0, 10);
+        Map<String, Object> result = eventConfPersistenceService.filterConfEventsBySourceId(eventConfSource.getId(),
+                "", "", "", 0, 0, 10);
         Assert.assertNotNull(result);
         Assert.assertTrue(result.containsKey("totalRecords"));
         Assert.assertEquals(1, result.get("totalRecords"));
@@ -423,7 +424,8 @@ public class EventConfPersistenceServiceIT {
         eventConfSource = eventConfSourceDao.findByName("vendor-cisco.xml");
         Assert.assertNotNull(eventConfSource);
 
-        result = eventConfPersistenceService.filterConfEventsBySourceId(eventConfSource.getId(), 0, 0, 10);
+        result = eventConfPersistenceService.filterConfEventsBySourceId(eventConfSource.getId(), "",
+                "", "", 0, 0, 10);
         Assert.assertNotNull(result);
         Assert.assertTrue(result.containsKey("totalRecords"));
         Assert.assertEquals(1, result.get("totalRecords"));
@@ -441,7 +443,8 @@ public class EventConfPersistenceServiceIT {
     @Transactional
     public void testFilterConfEventsBySourceId_ShouldReturnEmptyResults() {
         Long sourceId = 8000L;
-        Map<String, Object> result = eventConfPersistenceService.filterConfEventsBySourceId(sourceId, 0, 0, 10);
+        Map<String, Object> result = eventConfPersistenceService.filterConfEventsBySourceId(sourceId, "",
+                "", "" , 0, 0, 10);
         Assert.assertNotNull(result);
         Assert.assertTrue(result.containsKey("totalRecords"));
         Assert.assertEquals(0, result.get("totalRecords"));

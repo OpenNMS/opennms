@@ -387,15 +387,15 @@ public class EventConfRestServiceIT {
     @Transactional
     public void testFilterEventConfEventBySourceId_ShouldReturnBADRequest() {
         // Invalid Source Id
-        Response resp = eventConfRestApi.filterConfEventsBySourceId(-1L, 0, 0, 10, securityContext);
+        Response resp = eventConfRestApi.filterConfEventsBySourceId(-1L, "","","",0, 0, 10, securityContext);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
 
         // Invalid offset
-        resp = eventConfRestApi.filterConfEventsBySourceId(1L, 0, -1, 10, securityContext);
+        resp = eventConfRestApi.filterConfEventsBySourceId(1L, "","","",0, -1, 10, securityContext);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
 
         // Invalid limit
-        resp = eventConfRestApi.filterConfEventsBySourceId(1L, 0, 0, 0, securityContext);
+        resp = eventConfRestApi.filterConfEventsBySourceId(1L, "","","",0, 0, 0, securityContext);
         assertEquals(Response.Status.BAD_REQUEST.getStatusCode(), resp.getStatus());
     }
 
@@ -403,7 +403,7 @@ public class EventConfRestServiceIT {
     @Transactional
     public void testFilterEventConfEventBySourceId_ShouldReturnNoContent() {
         // Source Id not exits
-        Response resp = eventConfRestApi.filterConfEventsBySourceId(15200L, 0, 0, 10, securityContext);
+        Response resp = eventConfRestApi.filterConfEventsBySourceId(15200L, "","","",0, 0, 10, securityContext);
         assertEquals(Response.Status.NO_CONTENT.getStatusCode(), resp.getStatus());
     }
 
@@ -435,7 +435,7 @@ public class EventConfRestServiceIT {
         assertNotNull("Event Source not found against name Cisco.airespace ", eventConfSource);
 
         // Valid Source Id
-        Response resp = eventConfRestApi.filterConfEventsBySourceId(eventConfSource.getId(), 0, 0, 10, securityContext);
+        Response resp = eventConfRestApi.filterConfEventsBySourceId(eventConfSource.getId(), "","","",0, 0, 10, securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), resp.getStatus());
     }
 

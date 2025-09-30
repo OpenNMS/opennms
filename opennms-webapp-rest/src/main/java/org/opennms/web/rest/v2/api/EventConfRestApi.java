@@ -115,6 +115,9 @@ public interface EventConfRestApi {
     })
     Response filterConfEventsBySourceId(
             @PathParam("sourceId") Long sourceId,
+            @QueryParam("eventFilter") String eventFilter,
+            @QueryParam("eventSortBy") String eventSortBy,
+            @QueryParam("eventOrder") String eventOrder,
             @QueryParam("totalRecords") Integer totalRecords,
             @QueryParam("offset") Integer offset,
             @QueryParam("limit") Integer limit,
