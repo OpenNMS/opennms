@@ -96,8 +96,8 @@ const eventDescription = ref(store.eventModificationDrawerState.eventConfigEvent
 const eventLabel = ref(store.eventModificationDrawerState.eventConfigEvent?.eventLabel || '')
 const eventUei = ref(store.eventModificationDrawerState.eventConfigEvent?.uei || '')
 const selectedEventSeverity = ref<ISelectItemType>({
-  _text: store.eventModificationDrawerState.eventConfigEvent?.enabled ? 'Enable' : 'Disable',
-  _value: store.eventModificationDrawerState.eventConfigEvent?.enabled ? 'enable' : 'disable'
+  _text: store.eventModificationDrawerState.eventConfigEvent?.severity ? Severity[store.eventModificationDrawerState.eventConfigEvent?.severity as keyof typeof Severity] : '',
+  _value: store.eventModificationDrawerState.eventConfigEvent?.enabled ? Severity[store.eventModificationDrawerState.eventConfigEvent?.severity as keyof typeof Severity] : ''
 })
 
 const validateEventDetails = (): boolean => {
