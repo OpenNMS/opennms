@@ -26,11 +26,7 @@ import org.opennms.netmgt.model.EventConfEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.Collections;
+import java.util.*;
 
 public class EventConfEventDaoHibernate
         extends AbstractDaoHibernate<EventConfEvent, Long>
@@ -78,22 +74,56 @@ public class EventConfEventDaoHibernate
     }
 
     @Override
-    public Map<String, Object> findBySourceId(Long sourceId, Integer totalRecords, Integer offset, Integer limit) {
+    public Map<String, Object> findBySourceId(Long sourceId, String eventFilter, String eventSortBy, String eventOrder, Integer totalRecords, Integer offset, Integer limit) {
+
         int resultCount = (totalRecords != null) ? totalRecords : 0;
-        String whereClause = "where e.source.id = ?";
+        List<Object> queryParams = new ArrayList<>();
+        List<String> conditions = new ArrayList<>();
+
+        String whereClause = "where e.source.id = ? ";
+        queryParams.add(sourceId);
+
+        // Add filter conditions dynamically
+        if (eventFilter != null && !eventFilter.trim().isEmpty()) {
+            String escapedFilter = "%" + escapeLike(eventFilter.trim().toLowerCase()) + "%";
+            conditions.add("lower(e.uei) like ? escape '\\'");
+            queryParams.add(escapedFilter);
+
+            conditions.add("lower(e.eventLabel) like ? escape '\\'");
+            queryParams.add(escapedFilter);
+
+            conditions.add("lower(e.description) like ? escape '\\'");
+            queryParams.add(escapedFilter);
+
+        }
+
+         whereClause = whereClause + (conditions.isEmpty() ? "" : " AND ( " + String.join(" OR ", conditions)+ ")");
 
         // COUNT QUERY: get total matching records if not already provided
         if (resultCount == 0) {
             String countQuery = "select count(e.id) from EventConfEvent e " + whereClause;
-            resultCount = super.queryInt(countQuery, List.of(sourceId).toArray());
+            resultCount = super.queryInt(countQuery, queryParams.toArray());
         }
 
         // DATA QUERY: fetch paginated results if resultCount > 0
         List<EventConfEvent> eventConfEventList = Collections.emptyList();
         if (resultCount > 0) {
-            String orderBy = " order by e.createdTime desc";
+
+            String orderBy = "";
+            String sortField = eventSortBy;
+
+            String sortOrder = "ASC".equalsIgnoreCase(eventOrder) ? "ASC" : "DESC";
+
+            Set<String> allowedSortFields = Set.of("uei", "eventLabel", "description", "enabled");
+
+            if (!allowedSortFields.contains(eventSortBy)) {
+                sortField = "createdTime";
+            }
+
+            orderBy = " order by " + sortField + " " + sortOrder;
+
             String dataQuery = "from EventConfEvent e " + whereClause + orderBy;
-            eventConfEventList = findWithPagination(dataQuery, List.of(sourceId).toArray(), offset, limit);
+            eventConfEventList = findWithPagination(dataQuery, queryParams.toArray(), offset, limit);
         }
 
         // Return map with results
