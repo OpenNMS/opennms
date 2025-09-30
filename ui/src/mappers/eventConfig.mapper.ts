@@ -1,4 +1,3 @@
-import { CreateEditMode } from '@/types'
 import {
   EventConfigEvent,
   EventConfigEventRequest,
@@ -42,12 +41,32 @@ export const mapEventConfSourceResponseFromServer = (response: any): EventConfig
   }
 }
 
+const extractSeverity = (xmlContent: string): string | null => {
+  let severity: string | null
+
+  if (xmlContent) {
+    try {
+      const parser = new DOMParser()
+      const xmlDoc = parser.parseFromString(xmlContent, 'application/xml')
+      const severityElement = xmlDoc.getElementsByTagName('severity')[0]
+      severity = severityElement ? severityElement.textContent : null
+      return severity
+    } catch (e) {
+      severity = null
+    }
+  } else {
+    severity = null
+  }
+  return severity
+}
+
 export const mapEventConfigEventFromServer = (event: any): EventConfigEvent => {
   return {
     id: event.id,
     uei: event.uei,
     eventLabel: event.eventLabel,
     description: event.description,
+    severity: extractSeverity(event.xmlContent) || '',
     enabled: event.enabled,
     xmlContent: event.xmlContent,
     createdTime: new Date(event.createdTime),
@@ -66,17 +85,12 @@ export const mapEventConfigEventsResponseFromServer = (response: any): EventConf
   }
 }
 
-export const mapEventConfigEventToServer = (event: EventConfigEvent, mode: CreateEditMode): EventConfigEventRequest => {
+export const mapEventConfigEventToServer = (event: EventConfigEvent): EventConfigEventRequest => {
   const newEvent: Partial<EventConfigEventRequest> = {
-    id: event.id,
     uei: event.uei,
     eventLabel: event.eventLabel,
     description: event.description,
-    enabled: event.enabled
-  }
-
-  if (mode === CreateEditMode.Create) {
-    delete newEvent.id
+    severity: event.severity
   }
 
   return newEvent as EventConfigEventRequest

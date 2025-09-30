@@ -48,9 +48,9 @@
         <div class="spacer-medium"></div>
         <div class="spacer-medium"></div>
         <FeatherSelect
-          label="Select Status"
-          :options="statusOptions"
-          v-model="selectedEventStatus"
+          label="Select Severity"
+          :options="severityOptions"
+          v-model="selectedEventSeverity"
         >
           <FeatherIcon :icon="MoreVert" />
         </FeatherSelect>
@@ -88,17 +88,14 @@ import MoreVert from '@featherds/icon/navigation/MoreVert'
 import { FeatherInput } from '@featherds/input'
 import { FeatherSelect, ISelectItemType } from '@featherds/select'
 import { FeatherTextarea } from '@featherds/textarea'
+import { Severity, severityOptions } from '../constants'
 
-const statusOptions: ISelectItemType[] = [
-  { _text: 'Enable', _value: 'enable' },
-  { _text: 'Disable', _value: 'disable' }
-]
 const snackbar = useSnackbar()
 const store = useEventConfigDetailStore()
 const eventDescription = ref(store.eventModificationDrawerState.eventConfigEvent?.description || '')
 const eventLabel = ref(store.eventModificationDrawerState.eventConfigEvent?.eventLabel || '')
 const eventUei = ref(store.eventModificationDrawerState.eventConfigEvent?.uei || '')
-const selectedEventStatus = ref<ISelectItemType>({
+const selectedEventSeverity = ref<ISelectItemType>({
   _text: store.eventModificationDrawerState.eventConfigEvent?.enabled ? 'Enable' : 'Disable',
   _value: store.eventModificationDrawerState.eventConfigEvent?.enabled ? 'enable' : 'disable'
 })
@@ -120,8 +117,8 @@ const validateEventDetails = (): boolean => {
     snackbar.showSnackBar({ msg: 'Event description is required', error: true })
     return false
   }
-  if (selectedEventStatus.value === undefined) {
-    snackbar.showSnackBar({ msg: 'Event status is required', error: true })
+  if (!selectedEventSeverity.value._value) {
+    snackbar.showSnackBar({ msg: 'Event severity is required', error: true })
     return false
   }
   return true
@@ -141,20 +138,20 @@ const handleSave = async () => {
     uei: eventUei.value,
     eventLabel: eventLabel.value,
     description: eventDescription.value,
-    enabled: selectedEventStatus.value._value === 'enable'
+    severity: selectedEventSeverity.value._value
   } as EventConfigEvent
 
-  const newEvent = mapEventConfigEventToServer(event, store.eventModificationDrawerState.isEditMode)
+  const newEvent = mapEventConfigEventToServer(event)
   let response
   if (store.eventModificationDrawerState.isEditMode === CreateEditMode.Edit) {
-    response = await updateEventConfigEventById(newEvent)
+    response = await updateEventConfigEventById(newEvent, event.id)
   }
   if (store.eventModificationDrawerState.isEditMode === CreateEditMode.Create) {
     response = await createEventConfigEvent(newEvent, store.selectedSource.id)
   }
 
   if (response) {
-    snackbar.showSnackBar({ msg: 'Event Updated.', error: false })
+    snackbar.showSnackBar({ msg: store.eventModificationDrawerState.isEditMode === CreateEditMode.Create ? 'Event created successfully' : 'Event updated successfully', error: false })
     await store.fetchEventsBySourceId()
     store.closeEventModificationDrawer()
   } else {
@@ -169,15 +166,15 @@ watch(
       eventDescription.value = newVal.description || ''
       eventUei.value = newVal.uei || ''
       eventLabel.value = newVal.eventLabel || ''
-      selectedEventStatus.value = {
-        _text: newVal.enabled ? 'Enable' : 'Disable',
-        _value: newVal.enabled ? 'enable' : 'disable'
+      selectedEventSeverity.value = {
+        _text: newVal.severity ? Severity[newVal.severity as keyof typeof Severity] : '',
+        _value: newVal.enabled ? Severity[newVal.severity as keyof typeof Severity] : ''
       }
     } else {
       eventUei.value = ''
       eventLabel.value = ''
       eventDescription.value = ''
-      selectedEventStatus.value = { _text: '', _value: '' }
+      selectedEventSeverity.value = { _text: '', _value: '' }
     }
   }, { immediate: true, deep: true }
 )

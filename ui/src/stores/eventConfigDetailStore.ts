@@ -1,3 +1,4 @@
+import { Severity } from '@/components/EventConfigurationDetail/constants'
 import {
   changeEventConfigEventStatus,
   changeEventConfigSourceStatus,
@@ -21,6 +22,7 @@ export const getDefaultEventConfigEvent = (): EventConfigEvent => ({
   uei: '',
   eventLabel: '',
   description: '',
+  severity: Severity.Normal,
   enabled: true,
   xmlContent: '',
   createdTime: new Date(),
