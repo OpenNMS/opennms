@@ -108,11 +108,11 @@ public class InitializerServletContextListener implements ServletContextListener
                 return;
             }
 
-            LOG.info("OpenNMS is disconnected -- attempting RTC POST subscription");
+            LOG.debug("OpenNMS is disconnected -- attempting RTC POST subscription");
 
             try {
                 RTCPostSubscriber.subscribeAll("WebConsoleView");
-                LOG.info("RTC POST subscription event sent successfully");
+                LOG.debug("RTC POST subscription event sent successfully");
             } catch (Throwable e) {
                 LOG.error("Error subscribing to RTC POSTs: {}", e, e);
             }
