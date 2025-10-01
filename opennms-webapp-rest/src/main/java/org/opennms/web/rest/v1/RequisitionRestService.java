@@ -487,7 +487,7 @@ public class RequisitionRestService extends OnmsRestService {
             LOG.error("error validating incoming requisition with foreign source '{}'", requisition.getForeignSource(), e);
             throw getException(Status.BAD_REQUEST, e.getMessage());
         }
-        LOG.info("POST /requisitions: Adding requisition {} (containing {} nodes)", requisition.getForeignSource(), requisition.getNodeCount());
+        LOG.info("POST {}: Adding requisition {} (containing {} nodes)", uriInfo.getPath(), requisition.getForeignSource(), requisition.getNodeCount());
         m_accessService.addOrReplaceRequisition(requisition);
         return Response.accepted().header("Location", getRedirectUri(uriInfo, requisition.getForeignSource())).build();
     }
@@ -511,7 +511,7 @@ public class RequisitionRestService extends OnmsRestService {
             LOG.error("error validating incoming node '{}'", node, e);
             throw getException(Status.BAD_REQUEST, e.getMessage());
         }
-        LOG.info("POST /requisitions/{}/nodes: Adding node {} to requisition {}", foreignSource, node.getForeignId(), foreignSource);
+        LOG.info("POST {}: Adding node {} to requisition {}", uriInfo.getPath(), node.getForeignId(), foreignSource);
         m_accessService.addOrReplaceNode(foreignSource, node);
         return Response.accepted().header("Location", getRedirectUri(uriInfo, node.getForeignId())).build();
     }
@@ -537,7 +537,7 @@ public class RequisitionRestService extends OnmsRestService {
             LOG.error("error validating incoming interface '{}'", iface, e);
             throw getException(Status.BAD_REQUEST, e.getMessage());
         }
-        LOG.info("POST /requisitions/{}/nodes/{}/interfaces: Adding interface {} to node {}/{}", foreignSource, foreignId, iface, foreignSource, foreignId);
+        LOG.info("POST {}: Adding interface {} to node {}/{}", uriInfo.getPath(), iface, foreignSource, foreignId);
         m_accessService.addOrReplaceInterface(foreignSource, foreignId, iface);
         return Response.accepted().header("Location", getRedirectUri(uriInfo, InetAddressUtils.str(iface.getIpAddr()))).build();
     }
@@ -563,7 +563,7 @@ public class RequisitionRestService extends OnmsRestService {
             LOG.error("error validating incoming service '{}'", service, e);
             throw getException(Status.BAD_REQUEST, e.getMessage());
         }
-        LOG.info("POST /requisitions/{}/nodes/{}/interfaces/{}/services: Adding service {} to node {}/{}, interface {}", foreignSource, foreignId, ipAddress, service.getServiceName(), foreignSource, foreignId, ipAddress);
+        LOG.info("POST {}: Adding service {} to node {}/{}, interface {}", uriInfo.getPath(), service.getServiceName(), foreignSource, foreignId, ipAddress);
         m_accessService.addOrReplaceService(foreignSource, foreignId, ipAddress, service);
         return Response.accepted().header("Location", getRedirectUri(uriInfo, service.getServiceName())).build();
     }
@@ -588,7 +588,7 @@ public class RequisitionRestService extends OnmsRestService {
             LOG.error("error validating incoming category '{}'", category, e);
             throw getException(Status.BAD_REQUEST, e.getMessage());
         }
-        LOG.info("POST /requisitions/{}/nodes/{}/categories: Adding category {} to node {}/{}", foreignSource, foreignId, category.getName(), foreignSource, foreignId);
+        LOG.info("POST {}: Adding category {} to node {}/{}", uriInfo.getPath(), category.getName(), foreignSource, foreignId);
         m_accessService.addOrReplaceNodeCategory(foreignSource, foreignId, category);
         return Response.accepted().header("Location", getRedirectUri(uriInfo, category.getName())).build();
     }
@@ -613,7 +613,7 @@ public class RequisitionRestService extends OnmsRestService {
             LOG.error("error validating incoming asset '{}'", asset, e);
             throw getException(Status.BAD_REQUEST, e.getMessage());
         }
-        LOG.info("POST /requisitions/{}/nodes/{}/assets: Adding asset {} to node {}/{}", foreignSource, foreignId, asset.getName(), foreignSource, foreignId);
+        LOG.info("POST {}: Adding asset {} to node {}/{}", uriInfo.getPath(), asset.getName(), foreignSource, foreignId);
         m_accessService.addOrReplaceNodeAssetParameter(foreignSource, foreignId, asset);
         return Response.accepted().header("Location", getRedirectUri(uriInfo, asset.getName())).build();
     }
@@ -629,7 +629,7 @@ public class RequisitionRestService extends OnmsRestService {
     @Transactional
     @Operation(summary = "Performs an import or synchronize on the specified requisition.", responses = {@ApiResponse(headers = @Header(name = "Location"), responseCode = "202", description = "Performs an import or synchronize on the specified requisition. This turns the \"active\" requisition into a \"deployed\" requisition.")})
     public Response importRequisition(@Context final UriInfo uriInfo, @Parameter(required = true) @PathParam("foreignSource") final String foreignSource, @Parameter(description = "If it is newly added or removed. Existing nodes are not scanned until the next rescan interval. This request type is useful when applying changes to a subset of nodes in a requisition.") @QueryParam("rescanExisting") final String rescanExisting) {
-        LOG.info("PUT /requisitions/{}/import: Importing requisition for foreign source {}", foreignSource, foreignSource);
+        LOG.info("PUT {}: Importing requisition for foreign source {}", uriInfo.getPath(), foreignSource);
         m_accessService.importRequisition(foreignSource, rescanExisting);
         return Response.accepted().header("Location", uriInfo.getBaseUriBuilder().path(this.getClass()).path(this.getClass(), "getRequisition").build(foreignSource)).build();
     }
@@ -647,8 +647,8 @@ public class RequisitionRestService extends OnmsRestService {
     @Transactional
     @Operation(summary = "Update the specified requisition.", responses = {@ApiResponse(headers = @Header(name = "Location"), responseCode = "202", description = "Update the specified requisition.")})
     public Response updateRequisition(@Context final UriInfo uriInfo, @Parameter(required = true) @PathParam("foreignSource") final String foreignSource, @RequestBody(description = "Requisition key/value pairs") final MultivaluedMapImpl params) {
+        LOG.info("PUT {}: Updated {} with params '{}'", uriInfo.getPath(), foreignSource, params.isEmpty() ? "None" : params.toString());
         m_accessService.updateRequisition(foreignSource, params);
-        LOG.info("PUT /requisitions/{}: Updated {} with params '{}'", foreignSource, foreignSource, params.toString());
         return Response.accepted().header("Location", getRedirectUri(uriInfo)).build();
     }
 
@@ -666,7 +666,7 @@ public class RequisitionRestService extends OnmsRestService {
     @Transactional
     @Operation(summary = "Update the specified node for the given requisition.", responses = {@ApiResponse(headers = @Header(name = "Location"), responseCode = "202", description = "Update the specified node for the given requisition.")})
     public Response updateNode(@Context final UriInfo uriInfo, @Parameter(required = true) @PathParam("foreignSource") final String foreignSource, @Parameter(required = true) @PathParam("foreignId") final String foreignId, @RequestBody(description = "Node key/value pairs") final MultivaluedMapImpl params) {
-        LOG.info("PUT /requisitions/{}/nodes/{}: Updated node {}/{} with params '{}'", foreignSource, foreignId, foreignSource, foreignId, params.toString());
+        LOG.info("PUT {}: Updated node {}/{} with params '{}'", uriInfo.getPath(), foreignSource, foreignId, params.isEmpty() ? "None" : params.toString());
         m_accessService.updateNode(foreignSource, foreignId, params);
         return Response.accepted().header("Location", getRedirectUri(uriInfo)).build();
     }
@@ -686,7 +686,7 @@ public class RequisitionRestService extends OnmsRestService {
     @Transactional
     @Operation(summary = "Update the specified IP address for the given node and requisition.", responses = {@ApiResponse(headers = @Header(name = "Location"), responseCode = "202", description = "Update the specified IP address for the given node and requisition.")})
     public Response updateInterface(@Context final UriInfo uriInfo, @Parameter(required = true) @PathParam("foreignSource") final String foreignSource, @Parameter(required = true) @PathParam("foreignId") final String foreignId, @Parameter(required = true) @PathParam("ipAddress") final String ipAddress, @RequestBody(description = "Interface key/value pairs") final MultivaluedMapImpl params) {
-        LOG.info("PUT /requisitions/{}/nodes/{}/interfaces/{}: Updated node {}/{} address {} with params '{}'", foreignSource, foreignId, ipAddress, foreignSource, foreignId, ipAddress, params.toString());
+        LOG.info("PUT {}: Updated node {}/{} address {} with params '{}'", uriInfo.getPath(), foreignSource, foreignId, ipAddress, params.isEmpty() ? "None" : params.toString());
         m_accessService.updateInterface(foreignSource, foreignId, ipAddress, params);
         return Response.accepted().header("Location", getRedirectUri(uriInfo)).build();
     }
@@ -701,8 +701,8 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}")
     @Transactional
     @Operation(summary = "Delete the pending requisition for the named foreign source.", responses = @ApiResponse(responseCode = "202", description = "Delete the pending requisition for the named foreign source."))
-    public Response deletePendingRequisition(@Parameter(required = true) @PathParam("foreignSource") final String foreignSource) {
-        LOG.info("DELETE /requisitions/{}: Deleted the pending requisition for {}", foreignSource, foreignSource);
+    public Response deletePendingRequisition(@Context final UriInfo uriInfo, @Parameter(required = true) @PathParam("foreignSource") final String foreignSource) {
+        LOG.info("DELETE {}: Deleted the pending requisition for {}", uriInfo.getPath(), foreignSource);
         m_accessService.deletePendingRequisition(foreignSource);
         return Response.accepted().build();
     }
@@ -717,8 +717,8 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("deployed/{foreignSource}")
     @Transactional
     @Operation(summary = "Delete the active requisition for the named foreign source.", responses = @ApiResponse(responseCode = "202", description = "Delete the active requisition for the named foreign source."))
-    public Response deleteDeployedRequisition(@Parameter(required = true) @PathParam("foreignSource") final String foreignSource) {
-        LOG.info("DELETE /requisitions/deployed/{}: Deleted the deployed requisition for {}", foreignSource, foreignSource);
+    public Response deleteDeployedRequisition(@Context final UriInfo uriInfo, @Parameter(required = true) @PathParam("foreignSource") final String foreignSource) {
+        LOG.info("DELETE {}: Deleted the deployed requisition for {}", uriInfo.getPath(), foreignSource);
         m_accessService.deleteDeployedRequisition(foreignSource);
         return Response.accepted().build();
     }
@@ -734,8 +734,8 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes/{foreignId}")
     @Transactional
     @Operation(summary = "Delete the node with the given foreign ID from the given requisition.", responses = @ApiResponse(responseCode = "202", description = "Delete the node with the given foreign ID from the given requisition."))
-    public Response deleteNode(@Parameter(required = true) @PathParam("foreignSource") final String foreignSource, @Parameter(required = true) @PathParam("foreignId") final String foreignId) {
-        LOG.info("DELETE /requisitions/{}/nodes/{}: Deleted node {} from {}", foreignSource, foreignId, foreignSource, foreignId);
+    public Response deleteNode(@Context final UriInfo uriInfo, @Parameter(required = true) @PathParam("foreignSource") final String foreignSource, @Parameter(required = true) @PathParam("foreignId") final String foreignId) {
+        LOG.info("DELETE {}: Deleted node {} from {}", uriInfo.getPath(), foreignSource, foreignId);
         m_accessService.deleteNode(foreignSource, foreignId);
         return Response.accepted().build();
     }
@@ -752,8 +752,8 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}")
     @Transactional
     @Operation(summary = "Delete the IP address from the requisitioned node with the given foreign ID.", description = "Delete the IP address from the requisitioned node with the given foreign ID.", responses = @ApiResponse(responseCode = "202"))
-    public Response deleteInterface(@Parameter(required = true) @PathParam("foreignSource") final String foreignSource, @Parameter(required = true) @PathParam("foreignId") final String foreignId, @Parameter(required = true) @PathParam("ipAddress") String ipAddress) {
-        LOG.info("DELETE /requisitions/{}/nodes/{}/interfaces/{}: Deleted the IP address {} from node {}/{}", foreignSource, foreignId, ipAddress, foreignSource, foreignId, ipAddress);
+    public Response deleteInterface(@Context final UriInfo uriInfo, @Parameter(required = true) @PathParam("foreignSource") final String foreignSource, @Parameter(required = true) @PathParam("foreignId") final String foreignId, @Parameter(required = true) @PathParam("ipAddress") String ipAddress) {
+        LOG.info("DELETE {}: Deleted the IP address {} from node {}/{}", uriInfo.getPath(), ipAddress, foreignSource, foreignId);
         m_accessService.deleteInterface(foreignSource, foreignId, ipAddress);
         return Response.accepted().build();
     }
@@ -771,8 +771,8 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes/{foreignId}/interfaces/{ipAddress}/services/{service}")
     @Transactional
     @Operation(summary = "Delete the service from the requisitioned interface with the given IP address and foreign ID.", responses = @ApiResponse(responseCode = "202", description = "Delete the service from the requisitioned interface with the given IP address and foreign ID."))
-    public Response deleteInterfaceService(@Parameter(required = true) @PathParam("foreignSource") final String foreignSource, @Parameter(required = true) @PathParam("foreignId") final String foreignId, @Parameter(required = true) @PathParam("ipAddress") final String ipAddress, @Parameter(required = true) @PathParam("service") final String service) {
-        LOG.info("DELETE /requisitions/{}/nodes/{}/interfaces/{}/services/{}: Deleted the service {} from node {}/{} interface {}", foreignSource, foreignId, ipAddress, service, foreignSource, foreignId, ipAddress, service);
+    public Response deleteInterfaceService(@Context final UriInfo uriInfo, @Parameter(required = true) @PathParam("foreignSource") final String foreignSource, @Parameter(required = true) @PathParam("foreignId") final String foreignId, @Parameter(required = true) @PathParam("ipAddress") final String ipAddress, @Parameter(required = true) @PathParam("service") final String service) {
+        LOG.info("DELETE {}: Deleted the service {} from node {}/{} interface {}", uriInfo.getPath(), service, foreignSource, foreignId, ipAddress);
         m_accessService.deleteInterfaceService(foreignSource, foreignId, ipAddress, service);
         return Response.accepted().build();
     }
@@ -789,8 +789,8 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes/{foreignId}/categories/{category}")
     @Transactional
     @Operation(summary = "Delete the category from the node with the given foreign ID.", responses = @ApiResponse(responseCode = "202", description = "Delete the category from the node with the given foreign ID."))
-    public Response deleteCategory(@Parameter(required = true) @PathParam("foreignSource") final String foreignSource, @Parameter(required = true) @PathParam("foreignId") final String foreignId, @Parameter(required = true) @PathParam("category") final String category) {
-        LOG.info("DELETE /requisitions/{}/nodes/{}/categories/{}: Deleted category {} from node {}/{}", foreignSource, foreignId, category, foreignSource, foreignId, category);
+    public Response deleteCategory(@Context final UriInfo uriInfo, @Parameter(required = true) @PathParam("foreignSource") final String foreignSource, @Parameter(required = true) @PathParam("foreignId") final String foreignId, @Parameter(required = true) @PathParam("category") final String category) {
+        LOG.info("DELETE {}: Deleted category {} from node {}/{}", uriInfo.getPath(), category, foreignSource, foreignId);
         m_accessService.deleteCategory(foreignSource, foreignId, category);
         return Response.accepted().build();
     }
@@ -807,8 +807,8 @@ public class RequisitionRestService extends OnmsRestService {
     @Path("{foreignSource}/nodes/{foreignId}/assets/{parameter}")
     @Transactional
     @Operation(summary = "Delete the field from the node’s assets with the given foreign ID and asset name.", responses = @ApiResponse(responseCode = "202", description = "Delete the field from the node’s assets with the given foreign ID and asset name."))
-    public Response deleteAssetParameter(@Parameter(required = true) @PathParam("foreignSource") final String foreignSource, @Parameter(required = true) @PathParam("foreignId") final String foreignId, @Parameter(required = true) @PathParam("parameter") final String parameter) {
-        LOG.info("DELETE /requisitions/{}/nodes/{}/assets/{}: Deleted asset value {} from {}/{}", foreignSource, foreignId, parameter, parameter, foreignId, foreignSource);
+    public Response deleteAssetParameter(@Context final UriInfo uriInfo, @Parameter(required = true) @PathParam("foreignSource") final String foreignSource, @Parameter(required = true) @PathParam("foreignId") final String foreignId, @Parameter(required = true) @PathParam("parameter") final String parameter) {
+        LOG.info("DELETE {}: Deleted asset value {} from {}/{}", uriInfo.getPath(), parameter, foreignId, foreignSource);
         m_accessService.deleteAssetParameter(foreignSource, foreignId, parameter);
         return Response.accepted().build();
     }
