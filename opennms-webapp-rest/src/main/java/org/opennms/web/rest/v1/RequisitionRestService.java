@@ -735,7 +735,7 @@ public class RequisitionRestService extends OnmsRestService {
     @Transactional
     @Operation(summary = "Delete the node with the given foreign ID from the given requisition.", responses = @ApiResponse(responseCode = "202", description = "Delete the node with the given foreign ID from the given requisition."))
     public Response deleteNode(@Context final UriInfo uriInfo, @Parameter(required = true) @PathParam("foreignSource") final String foreignSource, @Parameter(required = true) @PathParam("foreignId") final String foreignId) {
-        LOG.info("DELETE {}: Deleted node {} from {}", uriInfo.getPath(), foreignSource, foreignId);
+        LOG.info("DELETE {}: Deleted node {} from {}", uriInfo.getPath(), foreignId, foreignSource);
         m_accessService.deleteNode(foreignSource, foreignId);
         return Response.accepted().build();
     }
@@ -808,7 +808,7 @@ public class RequisitionRestService extends OnmsRestService {
     @Transactional
     @Operation(summary = "Delete the field from the node’s assets with the given foreign ID and asset name.", responses = @ApiResponse(responseCode = "202", description = "Delete the field from the node’s assets with the given foreign ID and asset name."))
     public Response deleteAssetParameter(@Context final UriInfo uriInfo, @Parameter(required = true) @PathParam("foreignSource") final String foreignSource, @Parameter(required = true) @PathParam("foreignId") final String foreignId, @Parameter(required = true) @PathParam("parameter") final String parameter) {
-        LOG.info("DELETE {}: Deleted asset value {} from {}/{}", uriInfo.getPath(), parameter, foreignId, foreignSource);
+        LOG.info("DELETE {}: Deleted asset value {} from {}/{}", uriInfo.getPath(), parameter, foreignSource, foreignId);
         m_accessService.deleteAssetParameter(foreignSource, foreignId, parameter);
         return Response.accepted().build();
     }
