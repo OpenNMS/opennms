@@ -7,11 +7,11 @@
       <div class="action-container">
         <div class="search-container">
           <FeatherInput
-            label="Search by UEI, Event Label or Description"
+            label="Search by Event UEI or Event Label"
             type="search"
             data-test="search-input"
             v-model.trim="store.eventsSearchTerm"
-            placeholder="Search by UEI, Event Label or Description"
+            placeholder="Search by UEI or Event Label"
             @update:modelValue.self="((e: string) => onChangeSearchTerm(e))"
           >
             <template #pre>
@@ -33,7 +33,7 @@
     <div class="container">
       <table
         class="data-table"
-        aria-label="SNMP Interfaces Table"
+        aria-label="Events Table"
         v-if="store.events.length"
       >
         <thead>
@@ -48,6 +48,8 @@
             >
               {{ col.label }}
             </FeatherSortHeader>
+            <th>Severity</th>
+            <th>Status</th>
             <th>Actions</th>
           </tr>
         </thead>
@@ -55,55 +57,88 @@
           name="data-table"
           tag="tbody"
         >
-          <tr
+          <template
             v-for="event in store.events"
             :key="event.id"
           >
-            <td>{{ event.uei }}</td>
-            <td>{{ event.eventLabel }}</td>
-            <td><p v-html="event.description"></p></td>
-            <td>{{ event.enabled ? 'Enabled' : 'Disabled' }}</td>
-            <td>
-              <div class="action-container">
-                <FeatherButton
-                  icon="Edit"
-                  :title="`Edit ${event.eventLabel}`"
-                  data-test="edit-button"
-                  @click="openEventDrawer(event)"
-                >
-                  <FeatherIcon :icon="Edit" />
-                </FeatherButton>
-                <FeatherDropdown>
-                  <template v-slot:trigger="{ attrs, on }">
-                    <FeatherButton
-                      link
-                      href="#"
-                      v-bind="attrs"
-                      v-on="on"
-                      :icon="`More actions for ${event.eventLabel}`"
+            <tr>
+              <td>{{ event.uei }}</td>
+              <td>{{ event.eventLabel }}</td>
+              <td>
+                <FeatherChip :class="`${event.severity.toLowerCase()}-color severity`">{{ event.severity }}</FeatherChip>
+              </td>
+              <td>{{ event.enabled ? 'Enabled' : 'Disabled' }}</td>
+              <td>
+                <div class="action-container">
+                  <FeatherButton
+                    icon="Edit"
+                    :title="`Edit ${event.eventLabel}`"
+                    data-test="edit-button"
+                    @click="store.openEventModificationDrawer(CreateEditMode.Edit, event)"
+                  >
+                    <FeatherIcon :icon="Edit" />
+                  </FeatherButton>
+                  <FeatherDropdown v-if="store.selectedSource?.vendor !== VENDOR_OPENNMS">
+                    <template v-slot:trigger="{ attrs, on }">
+                      <FeatherButton
+                        link
+                        href="#"
+                        v-bind="attrs"
+                        v-on="on"
+                        :icon="`More Options`"
+                      >
+                        <FeatherIcon :icon="MenuIcon" />
+                      </FeatherButton>
+                    </template>
+                    <FeatherDropdownItem
+                      @click="store.showChangeEventConfigEventStatusDialog(event)"
+                      data-test="change-status-button"
                     >
-                      <FeatherIcon :icon="MenuIcon" />
-                    </FeatherButton>
-                  </template>
-                  <FeatherDropdownItem
-                    @click="store.showChangeEventConfigEventStatusDialog(event)"
-                    data-test="change-status-button"
+                      {{ event.enabled ? 'Disable Event' : 'Enable Event' }}
+                    </FeatherDropdownItem>
+                    <FeatherDropdownItem
+                      @click="store.showDeleteEventConfigEventDialog(event)"
+                      data-test="delete-event-button"
+                    >
+                      Delete Event
+                    </FeatherDropdownItem>
+                  </FeatherDropdown>
+                  <FeatherButton
+                    primary
+                    :icon="`${expandedRows.includes(event.id)
+                      ? 'Expand Less'
+                      : 'Expand More'
+                    }`"
+                    @click="toggleExpand(event.id)"
                   >
-                    {{ event.enabled ? 'Disable Event' : 'Enable Event' }}
-                  </FeatherDropdownItem>
-                  <FeatherDropdownItem
-                    @click="store.showDeleteEventConfigEventDialog(event)"
-                    data-test="delete-event-button"
-                  >
-                    Delete Event
-                  </FeatherDropdownItem>
-                </FeatherDropdown>
-              </div>
-            </td>
-          </tr>
+                    <FeatherIcon
+                      :icon="ExpandLess"
+                      v-if="expandedRows.includes(event.id)"
+                    />
+                    <FeatherIcon
+                      :icon="ExpandMore"
+                      v-else
+                    />
+                  </FeatherButton>
+                </div>
+              </td>
+            </tr>
+            <tr
+              v-if="expandedRows.includes(event.id)"
+              class="expanded-content"
+            >
+              <td :colspan="4">
+                <h6>Description:</h6>
+                <p v-html="event.description"></p>
+              </td>
+            </tr>
+          </template>
         </TransitionGroup>
       </table>
-      <div class="alerts-pagination" v-if="store.events.length">
+      <div
+        class="alerts-pagination"
+        v-if="store.events.length"
+      >
         <FeatherPagination
           :modelValue="store.eventsPagination.page"
           :pageSize="store.eventsPagination.pageSize"
@@ -124,17 +159,21 @@
     <DeleteEventConfigEventDialog />
     <ChangeEventConfigEventStatusDialog />
   </TableCard>
-  <EventConfigDetailsDrawer :event="selectedEvent" />
+  <EventConfigDetailsDrawer />
 </template>
 
 <script setup lang="ts">
+import { VENDOR_OPENNMS } from '@/lib/utils'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
-import { EventConfigEvent } from '@/types/eventConfig'
+import { CreateEditMode } from '@/types'
 import { FeatherButton } from '@featherds/button'
+import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import Edit from '@featherds/icon/action/Edit'
 import Search from '@featherds/icon/action/Search'
+import ExpandLess from '@featherds/icon/navigation/ExpandLess'
+import ExpandMore from '@featherds/icon/navigation/ExpandMore'
 import MenuIcon from '@featherds/icon/navigation/MoreHoriz'
 import Refresh from '@featherds/icon/navigation/Refresh'
 import { FeatherInput } from '@featherds/input'
@@ -151,26 +190,17 @@ const store = useEventConfigDetailStore()
 const emptyListContent = {
   msg: 'No results found.'
 }
-const selectedEvent = ref<EventConfigEvent | null>(null)
+
+const expandedRows = ref<number[]>([])
 const columns = computed(() => [
-  { id: 'uei', label: 'UEI' },
-  { id: 'eventLabel', label: 'Event Label' },
-  { id: 'description', label: 'Description' },
-  { id: 'enabled', label: 'Status' }
+  { id: 'uei', label: 'Event UEI' },
+  { id: 'eventLabel', label: 'Event Label' }
 ])
 
 const sort = reactive({
-  fileName: SORT.NONE,
-  description: SORT.NONE,
-  fileOrder: SORT.NONE,
-  vendor: SORT.NONE,
-  eventCount: SORT.NONE
+  uei: SORT.NONE,
+  eventLabel: SORT.NONE
 }) as any
-
-const openEventDrawer = (event: EventConfigEvent) => {
-  selectedEvent.value = event
-  store.openEventDrawerModal()
-}
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
   if (sortObj.value === 'asc' || sortObj.value === 'desc') {
@@ -185,6 +215,15 @@ const sortChanged = (sortObj: { property: string; value: SORT }) => {
   sort[sortObj.property] = sortObj.value
 }
 
+const toggleExpand = (id: number) => {
+  const index = expandedRows.value.indexOf(id)
+  if (index === -1) {
+    expandedRows.value.push(id)
+  } else {
+    expandedRows.value.splice(index, 1)
+  }
+}
+
 const onChangeSearchTerm = debounce(async (value: string) => {
   await store.onChangeEventsSearchTerm(value)
 }, 500)
@@ -195,6 +234,7 @@ const onChangeSearchTerm = debounce(async (value: string) => {
 @use '@featherds/styles/mixins/typography';
 @use '@featherds/table/scss/table';
 @use '@/styles/_transitionDataTable';
+@use '@/styles/_severities';
 
 .event-config-event-table {
   margin-top: 10px;
@@ -247,6 +287,11 @@ const onChangeSearchTerm = debounce(async (value: string) => {
         white-space: nowrap;
         box-shadow: none;
         border-bottom: 1px solid var(variables.$border-on-surface);
+
+        .severity {
+          @include typography.caption;
+          margin: 0 !important;
+        }
 
         div {
           border-radius: 5px;

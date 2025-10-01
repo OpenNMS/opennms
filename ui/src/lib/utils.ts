@@ -21,7 +21,7 @@
 ///
 
 export const isNumber = (value: any) => {
-  return value !== null && value !== undefined && typeof(value) === 'number'
+  return value !== null && value !== undefined && typeof value === 'number'
 }
 
 export const isConvertibleToInteger = (value: any) => {
@@ -38,7 +38,7 @@ export const isConvertibleToInteger = (value: any) => {
  * Returns true if value is non-null and is a primitive string or a String object
  */
 export const isString = (value: any) => {
-  return value !== null && (typeof(value) === 'string' || value instanceof String)
+  return value !== null && (typeof value === 'string' || value instanceof String)
 }
 
 export const ellipsify = (text: string, count: number) => {
@@ -61,8 +61,10 @@ export const hasNonEmptyProperty = (obj?: any) => {
 
   const keys = Object.getOwnPropertyNames(obj)
 
-  return keys.some(k => {
+  return keys.some((k) => {
     const value = (obj as any)[k]
     return value && isString(value) && value.length > 0
   })
 }
+
+export const VENDOR_OPENNMS = 'opennms'

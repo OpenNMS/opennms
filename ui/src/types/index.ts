@@ -619,3 +619,9 @@ export type Sorting = {
   sortOrder: string
   sortKey: string
 }
+
+export enum CreateEditMode {
+  None = 0,
+  Create = 1,
+  Edit = 2
+}

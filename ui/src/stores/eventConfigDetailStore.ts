@@ -1,9 +1,14 @@
+import { Severity } from '@/components/EventConfigurationDetail/constants'
 import {
   changeEventConfigEventStatus,
   changeEventConfigSourceStatus,
   filterEventConfigEvents
 } from '@/services/eventConfigService'
-import { EventConfigDetailStoreState, EventConfigEvent, EventConfigSource } from '@/types/eventConfig'
+import {
+  EventConfigDetailStoreState,
+  EventConfigEvent,
+  EventConfigSource
+} from '@/types/eventConfig'
 import { defineStore } from 'pinia'
 
 const defaultPagination = {
@@ -11,6 +16,22 @@ const defaultPagination = {
   pageSize: 10,
   total: 0
 }
+
+export const getDefaultEventConfigEvent = (): EventConfigEvent => ({
+  id: new Date().getTime(), // Temporary ID for new events
+  uei: '',
+  eventLabel: '',
+  description: '',
+  severity: Severity.Normal,
+  enabled: true,
+  xmlContent: '',
+  createdTime: new Date(),
+  lastModified: new Date(),
+  modifiedBy: '',
+  sourceName: '',
+  vendor: '',
+  fileOrder: 0
+})
 
 export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore', {
   state: (): EventConfigDetailStoreState => ({
@@ -22,6 +43,11 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       sortKey: 'createdTime'
     },
     selectedSource: null,
+    eventModificationDrawerState: {
+      visible: false,
+      isEditMode: 0,
+      eventConfigEvent: null
+    },
     isLoading: false,
     deleteEventConfigEventDialogState: {
       visible: false,
@@ -38,10 +64,6 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
     changeEventConfigSourceStatusDialogState: {
       visible: false,
       eventConfigSource: null
-    },
-    drawerState: {
-      visible: false,
-      isEventEditorModal: false
     }
   }),
   actions: {
@@ -142,9 +164,9 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
       this.deleteEventConfigSourceDialogState.visible = true
       this.deleteEventConfigSourceDialogState.eventConfigSource = eventConfigSource
     },
-    hideDeleteEventConfigSourceDialog() {
-      this.deleteEventConfigSourceDialogState.visible = false
+    async hideDeleteEventConfigSourceDialog() {
       this.deleteEventConfigSourceDialogState.eventConfigSource = null
+      this.deleteEventConfigSourceDialogState.visible = false
     },
     showChangeEventConfigSourceStatusDialog(eventConfigSource: EventConfigSource) {
       this.changeEventConfigSourceStatusDialogState.visible = true
@@ -159,6 +181,7 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
         const response = await changeEventConfigSourceStatus(sourceId, false)
         if (response) {
           this.selectedSource.enabled = false
+          await this.fetchEventsBySourceId()
         }
       } else {
         console.error('No source selected')
@@ -169,16 +192,21 @@ export const useEventConfigDetailStore = defineStore('useEventConfigDetailStore'
         const response = await changeEventConfigSourceStatus(sourceId, true)
         if (response) {
           this.selectedSource.enabled = true
+          await this.fetchEventsBySourceId()
         }
       } else {
         console.error('No source selected')
       }
     },
-    openEventDrawerModal() {
-      this.drawerState.visible = true
+    openEventModificationDrawer(isEditMode: number, eventConfigEvent: EventConfigEvent) {
+      this.eventModificationDrawerState.visible = true
+      this.eventModificationDrawerState.isEditMode = isEditMode
+      this.eventModificationDrawerState.eventConfigEvent = eventConfigEvent
     },
-    closeEventDrawerModal() {
-      this.drawerState.visible = false
+    closeEventModificationDrawer() {
+      this.eventModificationDrawerState.visible = false
+      this.eventModificationDrawerState.isEditMode = 0
+      this.eventModificationDrawerState.eventConfigEvent = null
     }
   }
 })

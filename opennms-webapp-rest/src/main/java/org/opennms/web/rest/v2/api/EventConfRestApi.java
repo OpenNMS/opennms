@@ -21,6 +21,7 @@ import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.web.rest.v2.EventConfEventEditRequest;
+import org.opennms.netmgt.xml.eventconf.Event;
 
 
 import javax.ws.rs.QueryParam;
@@ -30,6 +31,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PATCH;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.PUT;
 import javax.ws.rs.DELETE;
@@ -195,6 +197,21 @@ public interface EventConfRestApi {
             @ApiResponse(responseCode = "500", description = "Internal server error")
     })
     Response getEventConfSourcesNames(@Context SecurityContext securityContext) throws Exception;
+
+    @POST
+    @Path("/sources/{sourceId}/events")
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Produces(MediaType.APPLICATION_JSON)
+    @Operation(
+            summary = "Add a new event to an EventConfSource",
+            description = "Creates and adds a new event under the given EventConfSource by its ID.",
+            operationId = "addEventConfSourceEvent")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "201", description = "Event created successfully"),
+            @ApiResponse(responseCode = "400", description = "Invalid request (missing/invalid data)"),
+            @ApiResponse(responseCode = "404", description = "EventConfSource not found")})
+    Response addEventConfSourceEvent(@PathParam("sourceId") final Long sourceId, Event event, @Context SecurityContext securityContext) throws Exception;
+
 
 
     @PUT

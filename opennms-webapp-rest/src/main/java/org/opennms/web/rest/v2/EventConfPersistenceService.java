@@ -90,6 +90,17 @@ public class EventConfPersistenceService {
         //eventConfExecutor.execute(this::reloadEventsFromDB);
     }
 
+    @Transactional
+    public Long addEventConfSourceEvent(final Long sourceId,final String userName, Event event) {
+        final Date now = new Date();
+        EventConfSource eventConfSource = eventConfSourceDao.get(sourceId);
+        saveEvent(eventConfSource, event, userName, now);
+        eventConfSource.setEventCount(eventConfSource.getEventCount() + 1);
+        // Asynchronously load event conf from DB.
+        //eventConfExecutor.execute(this::reloadEventsFromDB);
+        return eventConfSourceDao.save(eventConfSource);
+    }
+
     public List<EventConfEvent>  findEventConfByFilters(String uei, String vendor, String sourceName, int offset, int limit) {
         return eventConfEventDao.filterEventConf(uei, vendor, sourceName, offset, limit);
     }
@@ -171,6 +182,20 @@ public class EventConfPersistenceService {
         }).toList();
 
         eventEntities.forEach(eventConfEventDao::save);
+    }
+
+    private void saveEvent(EventConfSource source, Event event, String username, Date now) {
+        EventConfEvent eventConfEvent = new EventConfEvent();
+        eventConfEvent.setSource(source);
+        eventConfEvent.setUei(event.getUei());
+        eventConfEvent.setEventLabel(event.getEventLabel());
+        eventConfEvent.setDescription(event.getDescr());
+        eventConfEvent.setEnabled(true);
+        eventConfEvent.setXmlContent(JaxbUtils.marshal(event));
+        eventConfEvent.setCreatedTime(now);
+        eventConfEvent.setLastModified(now);
+        eventConfEvent.setModifiedBy(username);
+        eventConfEventDao.save(eventConfEvent);
     }
 
     protected void reloadEventsFromDB() {

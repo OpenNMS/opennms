@@ -537,6 +537,44 @@ public class EventConfRestServiceIT {
     }
 
 
+    @Test
+    @Transactional
+    public void testAddEventConfSourceEvent_ShouldAddNewEventConfEvent() throws Exception {
+        String[] filenames = {"opennms.alarm.events.xml", "Cisco.airespace.xml"};
+        List<Attachment> attachments = new ArrayList<>();
+
+        for (final var name : filenames) {
+            final var path = "/EVENTS-CONF/" + name;
+            final var is = getClass().getResourceAsStream(path);
+            assertNotNull("Resource not found: " + path, is);
+            Attachment att = mock(Attachment.class);
+            ContentDisposition cd = mock(ContentDisposition.class);
+            when(cd.getParameter("filename")).thenReturn(name);
+            when(att.getContentDisposition()).thenReturn(cd);
+            when(att.getObject(InputStream.class)).thenReturn(is);
+            attachments.add(att);
+        }
+
+        Response uploadResp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), uploadResp.getStatus());
+
+        EventConfSource eventConfSource = eventConfSourceDao.findByName("Cisco.airespace.xml");
+        assertNotNull("Event Source not found against name Cisco.airespace ", eventConfSource);
+
+        String xmlEvent = """
+                        <event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+                   <uei>uei.opennms.org/vendor/test/test1</uei>
+                   <event-label>Test1:  Adding new test  event</event-label>
+                   <descr>Add new test event</descr>
+                   <severity>Warning</severity>
+                </event>
+                """;
+
+        Event event = JaxbUtils.unmarshal(Event.class, xmlEvent);
+
+        Response resp = eventConfRestApi.addEventConfSourceEvent(eventConfSource.getId(), event, securityContext);
+        assertEquals(Response.Status.CREATED.getStatusCode(), resp.getStatus());
+    }
 
     @Test
     @Transactional

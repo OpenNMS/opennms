@@ -57,7 +57,7 @@ const deleteEventConfigSource = async () => {
       return
     }
     store.hideDeleteEventConfigSourceDialog()
-    router.push({ name: 'EventConfiguration' })
+    router.push({ name: 'Event Configuration' })
   } catch (error) {
     console.error('Error deleting event configuration source:', error)
     showSnackBar({ msg: 'Failed to delete event configuration source', error: true })
