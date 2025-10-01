@@ -431,7 +431,7 @@ public class EventConfRestServiceIT {
 
         List<EventConfSource> eventConfSourceList = eventConfSourceDao.findAll();
 
-        EventConfSource eventConfSource = eventConfSourceDao.findByName("Cisco.airespace.xml");
+        EventConfSource eventConfSource = eventConfSourceDao.findByName("Cisco.airespace");
         assertNotNull("Event Source not found against name Cisco.airespace ", eventConfSource);
 
         // Valid Source Id
@@ -523,7 +523,7 @@ public class EventConfRestServiceIT {
 
         assertNotNull(sourceNames);
         assertFalse(sourceNames.isEmpty());
-        assertTrue(sourceNames.stream().anyMatch(name -> name.contains("Cisco.airespace.xml")));
+        assertTrue(sourceNames.stream().anyMatch(name -> name.contains("Cisco.airespace")));
 
         // test when no sources exists in db
         final var  eventConfSources = eventConfSourceDao.findAll();
@@ -558,7 +558,7 @@ public class EventConfRestServiceIT {
         Response uploadResp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), uploadResp.getStatus());
 
-        EventConfSource eventConfSource = eventConfSourceDao.findByName("Cisco.airespace.xml");
+        EventConfSource eventConfSource = eventConfSourceDao.findByName("Cisco.airespace");
         assertNotNull("Event Source not found against name Cisco.airespace ", eventConfSource);
 
         String xmlEvent = """
