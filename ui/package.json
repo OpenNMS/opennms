@@ -9,6 +9,8 @@
     "build:all": "yarn run build && yarn run build:menu",
     "build:menu": "vue-tsc --noEmit && vite build --config ./vite.config.menu.ts --base=/opennms/ui/",
     "build:dev": "vue-tsc --noEmit && vite build --base=/opennms/ui/ --minify false",
+    "watch": "vue-tsc --noEmit && vite build --base=/opennms/ui/ --watch",
+    "watch:dev": "vue-tsc --noEmit && vite build --base=/opennms/ui/ --minify false --watch",
     "serve": "vite preview",
     "test": "vitest run",
     "test:watch": "vitest watch",

@@ -259,7 +259,6 @@ const renameFile = async (newFileName: string) => {
     const fileToRename = eventFiles.value[selectedIndex.value]
     const newFile = new File([fileToRename.file], newFileName, { type: fileToRename.file.type })
     const validationResult = await validateEventConfigFile(newFile)
-    console.log('Validation result for renamed file:', newFileName, validationResult)
     eventFiles.value[selectedIndex.value] = {
       file: newFile,
       isValid: validationResult.isValid,
@@ -291,7 +290,6 @@ const uploadFiles = async () => {
     return
   }
   if (!eventFiles.value.every(f => f.file.name.endsWith('.events.xml'))) {
-    console.error('All files must be XML files with .events.xml extension')
     snackbar.showSnackBar({
       msg: 'All files must be XML files with .events.xml extension',
       error: true
