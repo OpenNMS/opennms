@@ -69,15 +69,6 @@ describe('eventConfigXmlValidator', () => {
       })
     })
 
-    // it('rejects invalid XML syntax', async () => {
-    //   mockFile = createMockFile('invalid.events.xml', '<events><event>unclosed')
-    //   const result = await validateEventConfigFile(mockFile)
-    //   expect(result).toEqual({
-    //     isValid: false,
-    //     errors: ['Invalid XML format - file contains syntax errors']
-    //   })
-    // })
-
     it('rejects missing <events> root element', async () => {
       mockFile = createMockFile('noevents.events.xml', '<root><event></event></root>')
       const result = await validateEventConfigFile(mockFile)
