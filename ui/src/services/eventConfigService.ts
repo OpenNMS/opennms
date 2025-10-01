@@ -63,8 +63,8 @@ export const deleteEventConfigSourceById = async (id: number): Promise<boolean> 
  * @param event The event configuration event to update, represented as an `EventConfigEventRequest`.
  * @returns A promise that resolves to a boolean indicating whether the event was updated successfully.
  */
-export const updateEventConfigEventById = async (event: EventConfigEventRequest): Promise<boolean> => {
-  const endpoint = `/eventconf/sources/events/${event.id}`
+export const updateEventConfigEventById = async (event: EventConfigEventRequest, eventId: number): Promise<boolean> => {
+  const endpoint = `/eventconf/sources/events/${eventId}`
   const payload = { ...event }
   try {
     const response = await v2.put(endpoint, payload)
@@ -87,7 +87,7 @@ export const createEventConfigEvent = async (event: EventConfigEventRequest, sou
   const payload = { ...event }
   try {
     const response = await v2.post(endpoint, payload)
-    return response.status === 200
+    return response.status === 200 || response.status === 201
   } catch (error) {
     console.error('Error Creating event config source:', error)
     return false

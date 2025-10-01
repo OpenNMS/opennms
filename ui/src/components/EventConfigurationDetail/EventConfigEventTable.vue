@@ -7,7 +7,7 @@
       <div class="action-container">
         <div class="search-container">
           <FeatherInput
-            label="Search by UEI or Event Label"
+            label="Search by Event UEI or Event Label"
             type="search"
             data-test="search-input"
             v-model.trim="store.eventsSearchTerm"
@@ -33,7 +33,7 @@
     <div class="container">
       <table
         class="data-table"
-        aria-label="SNMP Interfaces Table"
+        aria-label="Events Table"
         v-if="store.events.length"
       >
         <thead>
@@ -48,6 +48,7 @@
             >
               {{ col.label }}
             </FeatherSortHeader>
+            <th>Severity</th>
             <th>Status</th>
             <th>Actions</th>
           </tr>
@@ -63,6 +64,9 @@
             <tr>
               <td>{{ event.uei }}</td>
               <td>{{ event.eventLabel }}</td>
+              <td>
+                <FeatherChip :class="`${event.severity.toLowerCase()}-color severity`">{{ event.severity }}</FeatherChip>
+              </td>
               <td>{{ event.enabled ? 'Enabled' : 'Disabled' }}</td>
               <td>
                 <div class="action-container">
@@ -159,9 +163,11 @@
 </template>
 
 <script setup lang="ts">
+import { VENDOR_OPENNMS } from '@/lib/utils'
 import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
 import { CreateEditMode } from '@/types'
 import { FeatherButton } from '@featherds/button'
+import { FeatherChip } from '@featherds/chips'
 import { FeatherDropdown, FeatherDropdownItem } from '@featherds/dropdown'
 import { FeatherIcon } from '@featherds/icon'
 import Edit from '@featherds/icon/action/Edit'
@@ -179,7 +185,6 @@ import TableCard from '../Common/TableCard.vue'
 import ChangeEventConfigEventStatusDialog from './Dialog/ChangeEventConfigEventStatusDialog.vue'
 import DeleteEventConfigEventDialog from './Dialog/DeleteEventConfigEventDialog.vue'
 import EventConfigDetailsDrawer from './Drawer/EventConfigDetailsDrawer.vue'
-import { VENDOR_OPENNMS } from '@/lib/utils'
 
 const store = useEventConfigDetailStore()
 const emptyListContent = {
@@ -188,16 +193,13 @@ const emptyListContent = {
 
 const expandedRows = ref<number[]>([])
 const columns = computed(() => [
-  { id: 'uei', label: 'UEI' },
+  { id: 'uei', label: 'Event UEI' },
   { id: 'eventLabel', label: 'Event Label' }
 ])
 
 const sort = reactive({
-  fileName: SORT.NONE,
-  description: SORT.NONE,
-  fileOrder: SORT.NONE,
-  vendor: SORT.NONE,
-  eventCount: SORT.NONE
+  uei: SORT.NONE,
+  eventLabel: SORT.NONE
 }) as any
 
 const sortChanged = (sortObj: { property: string; value: SORT }) => {
@@ -232,6 +234,7 @@ const onChangeSearchTerm = debounce(async (value: string) => {
 @use '@featherds/styles/mixins/typography';
 @use '@featherds/table/scss/table';
 @use '@/styles/_transitionDataTable';
+@use '@/styles/_severities';
 
 .event-config-event-table {
   margin-top: 10px;
@@ -284,6 +287,11 @@ const onChangeSearchTerm = debounce(async (value: string) => {
         white-space: nowrap;
         box-shadow: none;
         border-bottom: 1px solid var(variables.$border-on-surface);
+
+        .severity {
+          @include typography.caption;
+          margin: 0 !important;
+        }
 
         div {
           border-radius: 5px;
