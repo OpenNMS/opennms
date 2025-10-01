@@ -33,6 +33,7 @@ import org.opennms.netmgt.model.EventConfEvent;
 import org.opennms.netmgt.model.EventConfEventDto;
 import org.opennms.netmgt.model.events.EventConfSourceMetadataDto;
 import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
+import org.opennms.netmgt.xml.eventconf.Event;
 import org.opennms.netmgt.xml.eventconf.Events;
 import org.opennms.web.rest.v2.api.EventConfRestApi;
 import org.opennms.web.rest.v2.model.EventConfEventDeletePayload;
@@ -267,6 +268,30 @@ public class EventConfRestService implements EventConfRestApi {
     }
 
     @Override
+    public Response addEventConfSourceEvent(Long sourceId, Event event, SecurityContext securityContext) throws Exception {
+        try {
+            validateAddEvent(sourceId,event);
+            final String username = getUsername(securityContext);
+            final var id = eventConfPersistenceService.addEventConfSourceEvent(sourceId,username, event);
+            return Response
+                    .status(Response.Status.CREATED)
+                    .entity(id)
+                    .build();
+        } catch (EntityNotFoundException ex) {
+            return Response
+                    .status(Response.Status.NOT_FOUND)
+                    .entity("Source with ID " + sourceId + " not found")
+                    .build();
+        } catch (IllegalArgumentException ex) {
+            return Response
+                    .status(Response.Status.BAD_REQUEST)
+                    .entity("Invalid event payload: " + ex.getMessage())
+                    .build();
+        }
+    }
+
+
+    @Override
     public Response deleteEventsForSource(Long sourceId, EventConfEventDeletePayload payload, SecurityContext securityContext) throws Exception {
         if (payload == null) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
@@ -346,4 +371,25 @@ public class EventConfRestService implements EventConfRestApi {
         return entry;
     }
 
+    private void validateAddEvent(Long sourceId, Event event) {
+        if (sourceId == null || sourceId <= 0) {
+            throw new IllegalArgumentException("Invalid sourceId: must be a positive number");
+        }
+        EventConfSource eventConfSource = eventConfSourceDao.get(sourceId);
+        if (eventConfSource == null) {
+            throw new EntityNotFoundException("Source with id " + sourceId + " does not exist");
+        }
+        if (event == null) {
+            throw new IllegalArgumentException("Event payload is missing");
+        }
+        requireNonBlank(event.getUei(), "Event 'uei' is required");
+        requireNonBlank(event.getEventLabel(), "Event 'event-label' is required");
+        requireNonBlank(event.getSeverity(), "Event 'severity' is required");
+    }
+
+    private void requireNonBlank(String value, String message) {
+        if (value == null || value.isBlank()) {
+            throw new IllegalArgumentException(message);
+        }
+    }
 }
