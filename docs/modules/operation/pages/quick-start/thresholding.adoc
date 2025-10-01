@@ -174,3 +174,4 @@ Refer to xref:deep-dive/thresholds/thresholding.adoc[] in the Deep Dive section 
 * <<deep-dive/thresholds/datasource.adoc#ga-threshold-metadata, Using metadata in a threshold>>.
 * <<deep-dive/thresholds/thresh-group.adoc#threshold-group, Creating a threshold group>>.
 * <<deep-dive/thresholds/troubleshoot.adoc#troubleshoot-thresholds, Troubleshooting and managing thresholds>>.
+* <<deep-dive/thresholds/datasource.adoc#thresholding-response-times, Thresholding on response times from polled services>>.
