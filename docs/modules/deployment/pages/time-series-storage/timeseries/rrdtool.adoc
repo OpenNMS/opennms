@@ -7,7 +7,7 @@ This section describes how to install RRDtool and how to configure your {page-co
 WARNING: This guide does not cover data migration from JRobin to RRDtool.
 
 Configurations must in the `etc` directory relative to the {page-component-title} Core home directory.
-Depending on your operating system, the home directory is `/usr/share/opennms` for Debian/Ubuntu or `/opt/opennms` for CentOS/RHEL.
+Depending on your operating system, the home directory is `/opt/opennms` for Debian/Ubuntu and for CentOS/RHEL.
 
 [{tabs}]
 ====
@@ -169,7 +169,7 @@ sudo systemctl restart opennms
 .Verify RRD files get created instead of JRobin files
 [source, console]
 ----
-find /usr/share/opennms/share/rrd -iname "*.rrd"
+find /opt/opennms/share/rrd -iname "*.rrd"
 ----
 
 NOTE: The first data collection creates RRDtool files with extension `.rrd`.

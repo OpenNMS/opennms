@@ -9,10 +9,10 @@ sudo systemctl stop opennms
 .Back up OpenNMS {page-component-title} binaries, RRD archives, configurations
 [source, console]
 ----
-sudo tar --exclude='/usr/share/opennms/data/cache' -cvzf /tmp/opennms-usr-share.tar.gz /usr/share/opennms && \
+sudo tar --exclude='/opt/opennms/data/cache' -cvzf /tmp/opennms-usr-share.tar.gz /opt/opennms && \
 sudo tar -cvzf /tmp/opennms-etc.tar.gz /etc/opennms && \
 sudo tar -cvzf /tmp/opennms-var-lib.tar.gz /var/lib/opennms && \
-sudo tar -cvzf /tmp/opennms-usr-share-java.tar.gz /usr/share/java/opennms
+sudo tar -cvzf /tmp/opennms-usr-share-java.tar.gz /opt/java/opennms
 ----
 
 .Create PostgreSQL database backup
