@@ -100,5 +100,5 @@ jobs:
               -DserverId="central-portal" \
               -DautoPublish=true \
               install \
-              org.sonatype.central:central-publishing-maven-plugin:publish \
+              org.sonatype.central:central-publishing-maven-plugin:0.8.0:publish \
               || exit 1
