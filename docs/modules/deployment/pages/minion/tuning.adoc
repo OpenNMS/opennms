@@ -37,7 +37,7 @@ systemctl restart minion
 +
 [source, console]
 ----
-systemctl edit --full minion
+systemctl edit minion
 ----
 
 . In the `[service]` section, add:
