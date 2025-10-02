@@ -82,11 +82,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
         this.m_partition = new EnterpriseIdPartition();
         this.m_lastModifiedEventFiles = new LinkedHashMap<>();
         m_events.initialize(m_partition, new EventOrdering());
-
-        // Initialize extension container so it’s never null
-        this.m_extContainer = new ConfigReloadContainer.Builder<>(Events.class)
-                .withFolder((accumulator, next) -> accumulator.getEvents().addAll(next.getEvents()))
-                .build();
     }
 
 	public String getProgrammaticStoreRelativeUrl() {
