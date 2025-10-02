@@ -1,0 +1,94 @@
+
+[[minion-tuning]]
+= Tuning Minion
+:description: How to adjust tuneable parameters on Minion, such as Java Heap, or open file descriptors.
+
+Minion's resource requirements scale with its workload. When assigned to locations with more nodes, interfaces, and services, the default settings may be insufficient.
+
+[[minion-heap]]
+== Tuning Java heap memory
+
+. Edit the file `/etc/sysconfig/minion` (RHEL) or `/etc/default/minion` (Debian)
+
+. Uncomment and modify the values for the `JAVA_MIN_MEM` and `JAVA_MAX_MEM` variables
++
+[source, console]
+----
+# minimum amount of memory for the Karaf container to allocate
+export JAVA_MIN_MEM=512M
+
+# maximum amount of memory for the Karaf container to allocate
+export JAVA_MAX_MEM=4096M
+----
+
+. If Minion is running when this change is made, it must be restarted to take effect.
++
+[source, console]
+----
+systemctl restart minion
+----
+
+
+[[minion-nofile]]
+== Tuning file descriptor limits
+
+. Edit the minion unit file: 
++
+[source, console]
+----
+systemctl edit --full minion
+----
+
+. In the `[service]` section, add:
++
+[source, console]
+----
+LimitNOFILE=100000
+----
+NOTE: the value `100000` is used as an example only.
+
+. Edit `/etc/sysconfig/minion` (RHEL) or `/etc/default/minion` (Debian)
+
+. Uncomment and modify the values for the `MAX_FD` variable:
++
+[source, console]
+----
+# maximum number of file descriptors to allocate
+export MAX_FD=100000
+----
+NOTE: the value `100000` is used as an example only.
+
+. Confirm the unit file reflects the changes:
++
+[source, console]
+----
+# systemctl daemon-reload
+# systemctl cat minion
+[Unit]
+Description=The OpenNMS Minion distributed client.
+Requires=network.target network-online.target
+After=network.target network-online.target
+
+[Service]
+LimitNOFILE=100000
+User=minion
+EnvironmentFile=-/opt/minion/etc/minion
+
+PIDFile=/opt/minion/data/log/minion.pid
+Type=forking
+
+ExecStart=/opt/minion/bin/minion start
+ExecStop=/opt/minion/bin/minion stop
+
+AmbientCapabilities=CAP_NET_RAW CAP_NET_BIND_SERVICE
+
+[Install]
+WantedBy=multi-user.target
+----
+
+. If the minion is running when this change is made, it must be restarted to take effect.
++
+[source, console]
+----
+systemctl restart minion
+----
