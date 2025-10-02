@@ -40,7 +40,7 @@ systemctl restart minion
 systemctl edit minion
 ----
 
-. In the `[service]` section, add:
+. In the area dictated by the comments in the editor, add:
 +
 [source, console]
 ----
@@ -71,7 +71,6 @@ Requires=network.target network-online.target
 After=network.target network-online.target
 
 [Service]
-LimitNOFILE=100000
 User=minion
 EnvironmentFile=-/opt/minion/etc/minion
 
@@ -85,6 +84,9 @@ AmbientCapabilities=CAP_NET_RAW CAP_NET_BIND_SERVICE
 
 [Install]
 WantedBy=multi-user.target
+
+# /etc/systemd/system/minion.service.d/override.conf
+LimitNOFILE=100000
 ----
 
 . If the minion is running when this change is made, it must be restarted to take effect.
@@ -93,3 +95,24 @@ WantedBy=multi-user.target
 ----
 systemctl restart minion
 ----
+
+[[minion-loglevel]]
+== Adjusting the minion log level
+
+In many situations it can be beneficial to change the log level to be more or less verbose.
+Follow these steps to change it.
+
+. Edit `$MINION_HOME/etc/org.ops4j.pax.logging.cfg`
++
+NOTE: `$MINION_HOME` is `/opt/minion` on RHEL, and `/etc/minion` on Debian.
+
+. Find and modify the `logger.opennms` section
++
+[source, console]
+----
+# OPENNMS: Display all INFO logs for OpenNMS code
+log4j2.logger.opennms.name = org.opennms
+log4j2.logger.opennms.level = DEBUG
+----
+
+. No restart is required to change the log level.
