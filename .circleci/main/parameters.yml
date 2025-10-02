@@ -8,27 +8,27 @@ parameters:
   previous_branch:
     description: the previous branch, if any
     type: string
-    default: foundation-2025
+    default: foundation-2024
   previous_branch_label:
     description: the previous branch, if any (escaped, no slashes)
     type: string
-    default: foundation-2025
+    default: foundation-2024
   main_branch:
     description: the auto-merge main branch
     type: string
-    default: release-34.x
+    default: foundation-2025
   main_branch_label:
     description: the auto-merge main branch (escaped, no slashes)
     type: string
-    default: release-34.x
+    default: foundation-2025
   next_branch:
     description: the auto-merge target branch
     type: string
-    default: develop
+    default: release-34.x
   next_branch_label:
     description: the auto-merge target branch (escaped, no slashes)
     type: string
-    default: develop
+    default: release-34.x
 
   ### sub-tree "module" build setup ###
   trigger-docs:
