@@ -41,8 +41,13 @@ import IconLineChart from '@featherds/icon/datavis/LineChart'
 import IconApiConfig from '@featherds/icon/network/ApiConfig'
 import IconApiEndpoints from '@featherds/icon/network/ApiEndpoints'
 import IconBuild from '@featherds/icon/network/Build'
+import IconConfiguration from '@featherds/icon/network/Configuration'
+import IconDistributedMonitoring from '@featherds/icon/network/DistributedMonitoring'
 import IconInstances from '@featherds/icon/network/Instances'
 import IconLogsAlt from '@featherds/icon/network/LogsAlt'
+import IconInventory from '@featherds/icon/network/Inventory'
+import IconInventoryAlt from '@featherds/icon/network/InventoryAlt'
+import IconMonitoring from '@featherds/icon/network/Monitoring'
 import IconNetworkConnection from '@featherds/icon/network/Connection'
 import IconNetworkServer from '@featherds/icon/network/Server'
 import IconNodes from '@featherds/icon/network/Nodes'
@@ -91,9 +96,14 @@ const useMenuIcons = () => {
             case 'ApiConfig': return IconApiConfig
             case 'ApiEndpoints': return IconApiEndpoints
             case 'Build': return IconBuild
+            case 'Configuration': return IconConfiguration
             case 'Connection': return IconNetworkConnection
+            case 'DistributedMonitoring': return IconDistributedMonitoring
             case 'Instances': return IconInstances
+            case 'Inventory': return IconInventory
+            case 'InventoryAlt': return IconInventoryAlt
             case 'LogsAlt': return IconLogsAlt
+            case 'Monitoring': return IconMonitoring
             case 'Server': return IconNetworkServer
             case 'Nodes': return IconNodes
             default: return null

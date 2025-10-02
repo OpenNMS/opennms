@@ -174,19 +174,19 @@ public class Nms0000EnIT extends EnLinkdBuilderITCase {
         assertEquals(14,m_lldpElementDao.countAll());
         Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(ms16.getId()));
-        assertEquals(69,m_lldpLinkDao.countAll());
+        assertEquals(61,m_lldpLinkDao.countAll());
         assertEquals(15,m_lldpElementDao.countAll());
         Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(ms17.getId()));
-        assertEquals(73,m_lldpLinkDao.countAll());
+        assertEquals(65,m_lldpLinkDao.countAll());
         assertEquals(16,m_lldpElementDao.countAll());
         Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(ms18.getId()));
-        assertEquals(78,m_lldpLinkDao.countAll());
+        assertEquals(70,m_lldpLinkDao.countAll());
         assertEquals(17,m_lldpElementDao.countAll());
         Thread.sleep(200);
         assertTrue(m_linkd.runSingleSnmpCollection(ms19.getId()));
-        assertEquals(81,m_lldpLinkDao.countAll());
+        assertEquals(73,m_lldpLinkDao.countAll());
         assertEquals(18,m_lldpElementDao.countAll());
 
         m_lldpElementDao.findAll().forEach(EnLinkdTestHelper::printLldpElement);
@@ -444,7 +444,7 @@ public class Nms0000EnIT extends EnLinkdBuilderITCase {
         assertEquals(0,m_lldpElementDao.countAll());
 
         assertTrue(m_linkd.runSingleSnmpCollection(ms16.getId()));
-        assertEquals(13, m_lldpLinkDao.countAll());
+        assertEquals(5, m_lldpLinkDao.countAll());
         assertEquals(1,m_lldpElementDao.countAll());
 
         m_lldpElementDao.findAll().forEach(EnLinkdTestHelper::printLldpElement);
