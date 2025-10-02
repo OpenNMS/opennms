@@ -13,8 +13,20 @@
         </div>
       </div>
 
-      <div class="action-container" v-if="config.vendor !== VENDOR_OPENNMS">
-        <FeatherButton @click="store.showChangeEventConfigSourceStatusDialog(config)">
+      <div
+        class="action-container"
+        v-if="config.vendor !== VENDOR_OPENNMS"
+      >
+        <FeatherButton
+          primary
+          @click="store.openEventModificationDrawer(CreateEditMode.Create, getDefaultEventConfigEvent())"
+        >
+          Add Event
+        </FeatherButton>
+        <FeatherButton
+          primary
+          @click="store.showChangeEventConfigSourceStatusDialog(config)"
+        >
           {{ config.enabled ? 'Disable Source' : 'Enable Source' }}
         </FeatherButton>
         <FeatherButton
@@ -45,12 +57,6 @@
         <div class="config-field">
           <span class="field-label">Status:</span>
           <span class="field-value">{{ config?.enabled ? 'Enabled' : 'Disabled' }}</span>
-        </div>
-      </div>
-      <div class="config-row">
-        <div class="config-field">
-          <span class="field-label">File Order:</span>
-          <span class="field-value">{{ config?.fileOrder }}</span>
         </div>
       </div>
       <div class="config-row">
@@ -86,7 +92,8 @@ import ChangeEventConfigSourceStatusDialog from '@/components/EventConfiguration
 import DeleteEventConfigSourceDialog from '@/components/EventConfigurationDetail/Dialog/DeleteEventConfigSourceDialog.vue'
 import EventConfigEventTable from '@/components/EventConfigurationDetail/EventConfigEventTable.vue'
 import { VENDOR_OPENNMS } from '@/lib/utils'
-import { useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
+import { getDefaultEventConfigEvent, useEventConfigDetailStore } from '@/stores/eventConfigDetailStore'
+import { CreateEditMode } from '@/types'
 import { EventConfigSource } from '@/types/eventConfig'
 import { FeatherBackButton } from '@featherds/back-button'
 import { FeatherButton } from '@featherds/button'

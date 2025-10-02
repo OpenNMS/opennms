@@ -1,0 +1,105 @@
+/* 
+  The class names are based on the `severity` type of the graphql schema.
+    enum Severity {
+      CLEARED
+      CRITICAL
+      INDETERMINATE
+      MAJOR
+      MINOR
+      NORMAL
+      SEVERITY_UNDEFINED
+      UNRECOGNIZED
+      WARNING
+    }
+*/
+
+@use '@featherds/styles/themes/utils';
+@use '@featherds/styles/themes/variables';
+
+$opacity: 0.2;
+$solid: 1;
+
+.critical {
+  background-color: utils.alpha(variables.$error, $solid);
+  color: var(variables.$error) !important;
+}
+
+.major {
+  background-color: utils.alpha(variables.$major, $solid);
+  color: var(variables.$major) !important;
+}
+
+.minor {
+  background-color: utils.alpha(variables.$minor, $solid);
+  color: var(variables.$secondary-text-on-surface) !important;
+}
+
+.warning {
+  background-color: utils.alpha(variables.$warning, $solid);
+  color: var(variables.$secondary-text-on-surface) !important;
+}
+
+.indeterminate,
+.acknowledged {
+  background-color: utils.alpha(variables.$indeterminate, $solid);
+  color: var(variables.$indeterminate) !important;
+}
+
+.normal {
+  background-color: utils.alpha(variables.$success, $solid);
+  color: var(variables.$success) !important;
+}
+
+.unacknowledged,
+.cleared {
+  background-color: utils.alpha(variables.$cleared, $solid);
+  color: var(variables.$cleared) !important;
+}
+
+.unrecognized,
+.severity_undefined {
+  border: 1px solid var(variables.$border-on-surface);
+}
+
+// with opacity
+.critical-color {
+  background-color: utils.alpha(variables.$error, $opacity);
+  color: var(variables.$error) !important;
+}
+
+.major-color {
+  background-color: utils.alpha(variables.$major, $opacity);
+  color: var(variables.$major) !important;
+}
+
+.minor-color {
+  background-color: utils.alpha(variables.$minor, $opacity);
+  color: var(variables.$secondary-text-on-surface) !important;
+}
+
+.warning-color {
+  background-color: utils.alpha(variables.$warning, $opacity);
+  color: var(variables.$secondary-text-on-surface) !important;
+}
+
+.indeterminate-color,
+.acknowledged-color {
+  background-color: utils.alpha(variables.$indeterminate, $opacity);
+  color: var(variables.$indeterminate) !important;
+}
+
+.normal-color {
+  background-color: utils.alpha(variables.$success, $opacity);
+  color: var(variables.$success) !important;
+}
+
+.cleared-color,
+.unacknowledged-color {
+  background-color: utils.alpha(variables.$cleared, $opacity);
+  color: var(variables.$cleared) !important;
+}
+
+.unrecognized-color,
+.severity_undefined-color {
+  border: 1px solid var(variables.$border-on-surface);
+}
