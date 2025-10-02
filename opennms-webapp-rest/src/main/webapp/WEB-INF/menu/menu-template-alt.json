@@ -15,6 +15,11 @@
   "version": "",
   "menus": [
     {
+      "id": "emptyHeader",
+      "name": "",
+      "type": "header"
+    },
+    {
       "id": "operationsMenu",
       "name": "Operations",
       "url": "#",
