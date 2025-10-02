@@ -89,7 +89,7 @@ public class ConnectorManager {
             List<Map<String, String>> interpolatedMapList = getGroupedParams(packageConfig, serviceRef);
 
             try {
-                openConfigTwinPublisher.publishConfig(serviceRef,interpolatedMapList,key.stringKey());
+                openConfigTwinPublisher.publishConfig(serviceRef, interpolatedMapList, key.stringKey());
             } catch (IOException e) {
                 LOG.error("Failed to publish config for connector: {}", key, e);
             }

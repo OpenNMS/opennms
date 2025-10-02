@@ -1,4 +1,24 @@
-
+/*
+ * Licensed to The OpenNMS Group, Inc (TOG) under one or more
+ * contributor license agreements.  See the LICENSE.md file
+ * distributed with this work for additional information
+ * regarding copyright ownership.
+ *
+ * TOG licenses this file to You under the GNU Affero General
+ * Public License Version 3 (the "License") or (at your option)
+ * any later version.  You may not use this file except in
+ * compliance with the License.  You may obtain a copy of the
+ * License at:
+ *
+ *      https://www.gnu.org/licenses/agpl-3.0.txt
+ *
+ * Unless required by applicable law or agreed to in writing,
+ * software distributed under the License is distributed on an
+ * "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND,
+ * either express or implied.  See the License for the specific
+ * language governing permissions and limitations under the
+ * License.
+ */
 package org.opennms.netmgt.telemetry.connectors;
 
 import com.google.common.annotations.VisibleForTesting;
@@ -25,7 +45,6 @@ import java.net.InetAddress;
 import java.util.Map;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.HashSet;
 import java.util.Dictionary;
@@ -49,7 +68,7 @@ public class ConnectorStarter implements ManagedService {
     @Autowired
     private TwinSubscriber twinSubscriber;
 
-    private Closeable m_twinSubscription;
+    private Closeable twinSubscription;
 
     private final Object configuredLock = new Object();
 
@@ -75,11 +94,11 @@ public class ConnectorStarter implements ManagedService {
     public void stop() {
         LOG.info("ConnectorListener stopping…");
         try {
-            m_twinSubscription.close();
+            twinSubscription.close();
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            LOG.error("Failed to  stop twin subscription: error '{}' ",e.getMessage());
         }
-        new ArrayList<>(this.entities.keySet()).forEach(this::delete);
+        this.entities.keySet().forEach(this::delete);
     }
 
     public void delete(String key) {
@@ -122,7 +141,6 @@ public class ConnectorStarter implements ManagedService {
             return;
         }
 
-        LOG.info("here the configs will updated ");
         Map<String, String> newConfigMap = new HashMap<>();
         for (String key : Collections.list(properties.keys())) {
             newConfigMap.put(key, properties.get(key).toString());
@@ -133,7 +151,7 @@ public class ConnectorStarter implements ManagedService {
 
 
     public void subscribe() {
-        m_twinSubscription = twinSubscriber.subscribe(ConnectorTwinConfig.CONNECTOR_KEY, ConnectorTwinConfig.class, this::handleTwinUpdate);
+        twinSubscription = twinSubscriber.subscribe(ConnectorTwinConfig.CONNECTOR_KEY, ConnectorTwinConfig.class, this::handleTwinUpdate);
     }
 
     private void handleTwinUpdate(ConnectorTwinConfig request) {
@@ -154,21 +172,32 @@ public class ConnectorStarter implements ManagedService {
 
                 for (ConnectorTwinConfig.ConnectorConfig config : request.getConfigurations()) {
                     LOG.debug("Processing connector config: {}", config.getNodeConnectorKey());
-                    Entity existingEntity = entities.get(config.getNodeConnectorKey());
-
-                    if (existingEntity != null && hasConfigChanged(existingEntity.config, config)) {
-                        // if config changed -> restart connector
-                        LOG.info("Configuration changed for key: {}, updating", config.getNodeConnectorKey());
-                        delete(config.getNodeConnectorKey());
-                        startConnector(config);
-                    } else {
-                        // new config found in list -> start connector
-                        startConnector(config);
-                    }
+                    processConfig(config);
                 }
             }
         }
     }
+
+    private void processConfig(ConnectorTwinConfig.ConnectorConfig config) {
+        String key = config.getNodeConnectorKey();
+        Entity existing = entities.get(key);
+        // start new connector
+        if (existing == null) {
+            startConnector(config);
+            return;
+        }
+
+        // if config are not changed
+        if (!hasConfigChanged(existing.config, config)) {
+            LOG.debug("No change for key: {}, skipping start", key);
+            return;
+        }
+
+        LOG.info("Configuration changed for key: {}, updating", key);
+        delete(key);
+        startConnector(config);
+    }
+
 
     private void startConnector(ConnectorTwinConfig.ConnectorConfig config) {
         try {
@@ -176,6 +205,7 @@ public class ConnectorStarter implements ManagedService {
             entity.config = config;
             final String queueName = Objects.requireNonNull(baseDef.getQueueName());
             ensureDispatcherForQueue(queueName);
+            queueReferenceCount.incrementAndGet();
             entity.queueName = queueName;
             entity.connector = telemetryRegistry.getConnector(baseDef);
 
@@ -192,11 +222,6 @@ public class ConnectorStarter implements ManagedService {
     private void ensureDispatcherForQueue(String queueName) {
 
         AsyncDispatcher<TelemetryMessage> dispatcher = telemetryRegistry.getDispatcher(queueName);
-        if (dispatcher != null) {
-            sharedQueueDispatcher = dispatcher;
-            return;
-        }
-        dispatcher = telemetryRegistry.getDispatcher(queueName);
         if (dispatcher != null) {
             sharedQueueDispatcher = dispatcher;
             return;
@@ -234,7 +259,7 @@ public class ConnectorStarter implements ManagedService {
     }
 
     private static class Entity {
-        public ConnectorTwinConfig.ConnectorConfig config;
+        private ConnectorTwinConfig.ConnectorConfig config;
         private Connector connector;
         private String queueName;
 

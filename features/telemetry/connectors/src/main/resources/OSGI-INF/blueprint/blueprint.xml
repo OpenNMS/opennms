@@ -55,7 +55,7 @@
              ref="connectorListener">
         <service-properties>
             <entry key="service.pid"
-                   value="org.opennms.features.telemetry.openconfig"/>
+                   value="org.opennms.netmgt.telemetry.protocols.openconfig"/>
         </service-properties>
     </service>
 

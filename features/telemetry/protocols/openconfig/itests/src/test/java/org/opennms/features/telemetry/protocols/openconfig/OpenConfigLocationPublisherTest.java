@@ -67,7 +67,7 @@ import static org.junit.Assert.*;
 @JUnitConfigurationEnvironment(systemProperties={ // We don't need a real pinger here
         "org.opennms.netmgt.icmp.pingerClass=org.opennms.netmgt.icmp.NullPinger"})
 @JUnitTemporaryDatabase(tempDbClass= MockDatabase.class,reuseDatabase=false)
-public class OpenConfigLocationPublisherT {
+public class OpenConfigLocationPublisherTest {
 
     @Autowired
     private LocationPublisherManager locationPublisherManager;
