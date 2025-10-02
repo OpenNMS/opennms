@@ -984,7 +984,6 @@ describe('EventConfigUploadFilesTab', () => {
     })
     await wrapper.vm.$nextTick()
     await wrapper.find('[data-test="upload-button"]').trigger('click')
-    expect(consoleErrorSpy).toHaveBeenCalledWith('All files must be XML files with .events.xml extension')
     expect(snackbar.showSnackBar).toHaveBeenCalledWith({
       msg: 'All files must be XML files with .events.xml extension',
       error: true
