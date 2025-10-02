@@ -121,14 +121,14 @@
             Files that are valid and ready for upload will be flagged with icon
             <FeatherIcon
               :icon="CheckCircle"
-              class="success-icon"
+              class="success-icon-text"
             />.
           </li>
           <li>
             Files with duplicate names (excluding the .events.xml extension) will be flagged with icon
             <FeatherIcon
               :icon="Warning"
-              class="warning-icon"
+              class="warning-icon-text"
             />
             indicating renaming or overwriting is required. It can be done by clicking on the icon.
           </li>
@@ -136,7 +136,7 @@
             Invalid files will be flagged with icon
             <FeatherIcon
               :icon="Error"
-              class="error-icon"
+              class="error-icon-text"
             />
             and error messages indicating the issues found during validation of the file contents and schema compliance.
           </li>
@@ -217,6 +217,12 @@ const handleEventConfUpload = async (e: Event) => {
             errors: validationResult.errors,
             isDuplicate: store.uploadedSourceNames.map(name => name.replace('.xml', '').toLowerCase()).includes(file.name.replace('.xml', '').toLowerCase())
           })
+          if (!validationResult.isValid) {
+            snackbar.showSnackBar({
+              msg: `Error processing file ${file.name}.`,
+              error: true
+            })
+          }
         }
       } catch (error) {
         console.error(`Error processing file ${file.name}:`, error)
@@ -284,7 +290,10 @@ const uploadFiles = async () => {
     return
   }
   if (!eventFiles.value.every(f => f.file.name.endsWith('.events.xml'))) {
-    console.error('All files must be XML files')
+    snackbar.showSnackBar({
+      msg: 'All files must be XML files with .events.xml extension',
+      error: true
+    })
     return
   }
   isLoading.value = true
@@ -301,8 +310,22 @@ const uploadFiles = async () => {
   } catch (err) {
     console.error(err)
     isLoading.value = false
+    snackbar.showSnackBar({
+      msg: 'Error uploading files',
+      error: true
+    })
   }
 }
+
+watch(
+  () => store.uploadedSourceNames,
+  (newNames) => {
+    eventFiles.value = eventFiles.value.map(file => ({
+      ...file,
+      isDuplicate: newNames.map(name => name.replace('.xml', '').toLowerCase()).includes(file.file.name.replace('.xml', '').toLowerCase())
+    }))
+  }, { immediate: true, deep: true }
+)
 </script>
 
 <style scoped lang="scss">
@@ -330,21 +353,21 @@ const uploadFiles = async () => {
     }
 
     .info-section {
-      .success-icon {
+      .success-icon-text {
         color: var(variables.$success);
         vertical-align: middle;
         height: 2em;
         width: 2em;
       }
 
-      .error-icon {
+      .error-icon-text {
         color: var(variables.$error);
         vertical-align: middle;
         height: 2em;
         width: 2em;
       }
 
-      .warning-icon {
+      .warning-icon-text {
         color: var(variables.$major);
         vertical-align: middle;
         height: 2em;
