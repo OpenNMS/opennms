@@ -3,7 +3,8 @@
 = Tuning Minion
 :description: How to adjust tuneable parameters on Minion, such as Java Heap, or open file descriptors.
 
-Minion's resource requirements scale with its workload. When assigned to locations with more nodes, interfaces, and services, the default settings may be insufficient.
+Minion's resource requirements scale with its workload.
+When assigned to locations with more nodes, interfaces, and services, the default settings may be insufficient.
 
 [[minion-heap]]
 == Tuning Java heap memory
