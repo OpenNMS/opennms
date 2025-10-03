@@ -162,11 +162,12 @@ public class JdbcDataSource implements java.io.Serializable {
 
     /**
      * Returns the value of field 'databaseName'.
-     * 
+     *
      * @return the value of field 'DatabaseName'.
      */
     public String getDatabaseName() {
-        return databaseName != null ? databaseName : "opennms";
+        String interpolated = interpolateAttribute(this.databaseName);
+        return interpolated != null ? interpolated : "opennms";
     }
 
     /**
@@ -249,11 +250,11 @@ public class JdbcDataSource implements java.io.Serializable {
 
     /**
      * Returns the value of field 'url'.
-     * 
+     *
      * @return the value of field 'Url'.
      */
     public String getUrl() {
-        return this.url;
+        return interpolateAttribute(this.url);
     }
 
     /**
