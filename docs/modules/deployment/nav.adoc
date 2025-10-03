@@ -9,6 +9,7 @@
 * xref:minion/introduction.adoc[]
 ** xref:minion/system-requirements.adoc[]
 ** xref:minion/install.adoc[]
+** xref:minion/tuning.adoc[]
 ** xref:minion/installing-jdbc-driver.adoc[]
 ** xref:minion/off-heap-storage.adoc[]
 * xref:sentinel/introduction.adoc[]
