@@ -215,7 +215,7 @@ public interface EventConfRestApi {
 
 
     @PUT
-    @Path("/sources/events/{eventId}")
+    @Path("/sources/{sourceId}/events/{eventId}")
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces("application/json")
     @Operation(
@@ -228,6 +228,6 @@ public interface EventConfRestApi {
             @ApiResponse(responseCode = "400", description = "Invalid request"),
             @ApiResponse(responseCode = "404", description = "One or more sources not found")
     })
-    Response updateEventConfEvent(@PathParam("eventId") final Long eventId, EventConfEventEditRequest payload,
+    Response updateEventConfEvent(@PathParam("sourceId") final Long sourceId,@PathParam("eventId") final Long eventId, EventConfEventEditRequest payload,
                                   @Context SecurityContext securityContext) throws Exception;
 }

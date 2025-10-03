@@ -698,7 +698,7 @@ public class EventConfPersistenceServiceIT {
         payload.setEvent(event);
         payload.setEnabled(true);
 
-        eventConfPersistenceService.updateEventConfEvent(clearEvent.getId(), payload);
+        eventConfPersistenceService.updateEventConfEvent(source.getId(), clearEvent.getId(), payload);
 
         EventConfEvent updatedClearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
         assertEquals("Clear label changed.", updatedClearEvent.getEventLabel());
@@ -750,7 +750,7 @@ public class EventConfPersistenceServiceIT {
         ObjectMapper mapper = new ObjectMapper();
         EventConfEventEditRequest payload = mapper.readValue(jsonPayload, EventConfEventEditRequest.class);
 
-        eventConfPersistenceService.updateEventConfEvent(clearEvent.getId(), payload);
+        eventConfPersistenceService.updateEventConfEvent(source.getId(),clearEvent.getId(), payload);
 
         EventConfEvent updatedClearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
         assertEquals("Clear label changed.", updatedClearEvent.getEventLabel());

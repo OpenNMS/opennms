@@ -612,7 +612,7 @@ public class EventConfRestServiceIT {
         payload.setEvent(event);
         payload.setEnabled(true);
 
-        Response response = eventConfRestApi.updateEventConfEvent(clearEvent.getId(),payload,securityContext);
+        Response response = eventConfRestApi.updateEventConfEvent(source.getId(),clearEvent.getId(),payload,securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
 
         EventConfEvent updatedClearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");

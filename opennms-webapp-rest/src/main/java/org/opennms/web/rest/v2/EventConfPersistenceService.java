@@ -124,10 +124,10 @@ public class EventConfPersistenceService {
 
 
     @Transactional
-    public void updateEventConfEvent(final Long eventId, EventConfEventEditRequest payload) {
+    public void updateEventConfEvent(final Long sourceId, final Long eventId, EventConfEventEditRequest payload) {
 
         try {
-            EventConfEvent eventConfEvent = eventConfEventDao.findByEventId(eventId);
+            EventConfEvent eventConfEvent = eventConfEventDao.findBySourceIdAndEventId(sourceId,eventId);
             if (eventConfEvent == null) {
                 throw new EntityNotFoundException(String.format("EventConfEvent not found for eventId=%d", eventId));
             }

@@ -47,5 +47,5 @@ public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
 
     void updateEventEnabledFlag(Long sourceId, List<Long> eventIds, boolean enabled);
 
-    EventConfEvent findByEventId(Long eventId);
+    EventConfEvent findBySourceIdAndEventId(Long sourceId,Long eventId);
 }

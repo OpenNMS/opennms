@@ -292,12 +292,12 @@ public class EventConfRestService implements EventConfRestApi {
 
     @Transactional
     @Override
-    public Response updateEventConfEvent(Long eventId, EventConfEventEditRequest payload, SecurityContext securityContext) throws Exception {
+    public Response updateEventConfEvent(Long sourceId, Long eventId, EventConfEventEditRequest payload, SecurityContext securityContext) throws Exception {
         if (payload == null) {
             return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
         }
         try {
-            eventConfPersistenceService.updateEventConfEvent(eventId, payload);
+            eventConfPersistenceService.updateEventConfEvent(sourceId,eventId, payload);
             return Response.ok().entity("EventConfEvent updated successfully.").build();
 
         } catch (EntityNotFoundException ex) {

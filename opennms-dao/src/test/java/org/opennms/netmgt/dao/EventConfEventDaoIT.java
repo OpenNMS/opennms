@@ -290,7 +290,7 @@ public class EventConfEventDaoIT implements InitializingBean {
         EventConfSource source = m_eventSourceDao.findByName("sourceAndEventTesting");
         EventConfEvent clearEvent = m_eventDao.findByUei("uei.opennms.org/internal/clear");
 
-        EventConfEvent dbEvent = m_eventDao.findByEventId(clearEvent.getId());
+        EventConfEvent dbEvent = m_eventDao.findBySourceIdAndEventId(source.getId(),clearEvent.getId());
         assertEquals("uei.opennms.org/internal/clear", dbEvent.getUei());
 
     }

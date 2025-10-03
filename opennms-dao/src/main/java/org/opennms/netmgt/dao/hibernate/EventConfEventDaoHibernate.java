@@ -155,7 +155,7 @@ public class EventConfEventDaoHibernate
     }
 
     @Override
-    public EventConfEvent findByEventId(Long eventId) {
-        return findUnique("from EventConfEvent e where e.id = ? ", eventId);
+    public EventConfEvent findBySourceIdAndEventId(Long sourceId, Long eventId) {
+        return findUnique("from EventConfEvent e where e.source.id = ? AND  e.id = ? ", sourceId, eventId);
     }
 }
