@@ -108,9 +108,7 @@ public class EventConfRestService implements EventConfRestApi {
 
                 eventConfPersistenceService.persistEventConfFile(
                         fileEvents,
-                        buildMetadata(fileName,"", fileEvents, fileOrder, username, now)
-                );
-
+                        buildMetadata(fileName, "", fileEvents, fileOrder, username, now));
                 successList.add(buildSuccessResponse(fileName, fileEvents));
             } catch (Exception e) {
                 errorList.add(buildErrorResponse(fileName, e));

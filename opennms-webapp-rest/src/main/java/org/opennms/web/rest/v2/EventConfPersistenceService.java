@@ -125,9 +125,8 @@ public class EventConfPersistenceService {
         if (source == null) {
             source = new EventConfSource();
             source.setCreatedTime(eventConfSourceMetadataDto.getNow());
-            source.setFileOrder(eventConfSourceMetadataDto.getFileOrder() );
+            source.setFileOrder(eventConfSourceMetadataDto.getFileOrder());
         }
-
         source.setName(eventConfSourceMetadataDto.getFilename());
         source.setEventCount(eventConfSourceMetadataDto.getEventCount());
         source.setEnabled(true);
