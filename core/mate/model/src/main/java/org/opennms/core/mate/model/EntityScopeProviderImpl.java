@@ -39,6 +39,7 @@ import java.util.stream.Collectors;
 import org.opennms.core.mate.api.ContextKey;
 import org.opennms.core.mate.api.EmptyScope;
 import org.opennms.core.mate.api.EntityScopeProvider;
+import org.opennms.core.mate.api.EnvironmentScope;
 import org.opennms.core.mate.api.FallbackScope;
 import org.opennms.core.mate.api.MapScope;
 import org.opennms.core.mate.api.ObjectScope;
@@ -87,6 +88,11 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
     @Override
     public Scope getScopeForScv() {
         return new SecureCredentialsVaultScope(this.scv);
+    }
+
+    @Override
+    public Scope getScopeForEnv() {
+        return new EnvironmentScope();
     }
 
     @Override
@@ -184,6 +190,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                 scopes.add(assetScope);
 
                 scopes.add(new SecureCredentialsVaultScope(this.scv));
+                scopes.add(new EnvironmentScope());
             }
 
             return new FallbackScope(scopes);
@@ -255,7 +262,8 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                     .map(INTERFACE, "if-description", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfDescr))
                     .map(INTERFACE, "if-name", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getIfName))
                     .map(INTERFACE, "phy-addr", (i) -> Optional.ofNullable(i.getSnmpInterface()).map(OnmsSnmpInterface::getPhysAddr)),
-                new SecureCredentialsVaultScope(this.scv)
+                new SecureCredentialsVaultScope(this.scv),
+                new EnvironmentScope()
             );
         });
     }
@@ -297,6 +305,7 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
                     });
 
             scopes.add(new SecureCredentialsVaultScope(this.scv));
+            scopes.add(new EnvironmentScope());
 
             return new FallbackScope(scopes);
         });
@@ -317,7 +326,8 @@ public class EntityScopeProviderImpl implements EntityScopeProvider {
             return new FallbackScope(transform(Scope.ScopeName.SERVICE, monitoredService.getMetaData()),
                     new ObjectScope<>(Scope.ScopeName.SERVICE, monitoredService)
                             .map(SERVICE, "name", (s) -> Optional.of(s.getServiceName())),
-                                     new SecureCredentialsVaultScope(this.scv)
+                    new SecureCredentialsVaultScope(this.scv),
+                    new EnvironmentScope()
             );
         });
     }
