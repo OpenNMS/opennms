@@ -46,12 +46,13 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.util.Set;
-import java.util.List;
-import java.util.Date;
-import java.util.ArrayList;
 import java.util.Map;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Set;
 import java.util.LinkedHashMap;
+import java.util.Date;
+import java.util.Optional;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -69,33 +70,48 @@ public class EventConfRestService implements EventConfRestApi {
     public Response uploadEventConfFiles(final List<Attachment> attachments, final SecurityContext securityContext) {
         final String username = getUsername(securityContext);
         final Date now = new Date();
-        int fileOrder = 1;
+        int maxFileOrder = Optional.ofNullable(eventConfSourceDao.findMaxFileOrder()).orElse(0);
 
-        List<Map<String, Object>> successList = new ArrayList<>();
-        List<Map<String, Object>> errorList = new ArrayList<>();
+        final Map<String, Attachment> fileMap = attachments.stream()
+                .collect(Collectors.toMap(
+                        a -> stripExtension(a.getContentDisposition().getParameter("filename")),
+                        a -> a,
+                        (a1, a2) -> a1, // keep first if duplicate
+                        LinkedHashMap::new
+                ));
 
-        Map<String, Attachment> fileMap = attachments.stream().collect(Collectors.toMap(a -> a.getContentDisposition().getParameter("filename"), a -> a, (a1, a2) -> a1, LinkedHashMap::new));
+        final Attachment eventConfXml = fileMap.remove("eventconf");
+        final List<String> orderedFiles = determineFileOrder(eventConfXml, fileMap.keySet());
 
-        final var eventconfXml = fileMap.remove("eventconf.xml");
-        final var orderedFiles = determineFileOrder(eventconfXml, fileMap.keySet());
+        final List<Map<String, Object>> successList = new ArrayList<>();
+        final List<Map<String, Object>> errorList = new ArrayList<>();
 
         for (final String fileName : orderedFiles) {
             final Attachment attachment = fileMap.get(fileName);
-            if (attachment == null) continue;
+            if (attachment == null) {
+                continue;
+            }
 
             Events fileEvents;
             try (InputStream stream = attachment.getObject(InputStream.class)) {
                 fileEvents = parseEventFile(stream);
             } catch (Exception e) {
                 errorList.add(buildErrorResponse(fileName, e));
-                continue; // Continue to next file
+                continue;
             }
 
             try {
-                eventConfPersistenceService.persistEventConfFile(fileEvents, new EventConfSourceMetadataDto.Builder().filename(fileName).eventCount(fileEvents.getEvents().size()).fileOrder(fileOrder++).username(username).now(now).vendor(StringUtils.substringBefore(fileName, ".")).description("").build());
+                final EventConfSource existingSource = eventConfSourceDao.findByName(fileName);
+                final int fileOrder = (existingSource != null)
+                        ? existingSource.getFileOrder()
+                        : ++maxFileOrder;
+
+                eventConfPersistenceService.persistEventConfFile(
+                        fileEvents,
+                        buildMetadata(fileName, "", fileEvents, fileOrder, username, now));
                 successList.add(buildSuccessResponse(fileName, fileEvents));
-            } catch (Exception ex) {
-                errorList.add(buildErrorResponse(fileName, ex));
+            } catch (Exception e) {
+                errorList.add(buildErrorResponse(fileName, e));
             }
         }
 
@@ -313,10 +329,14 @@ public class EventConfRestService implements EventConfRestApi {
         if (eventconfXmlAttachment != null) {
             try (InputStream stream = eventconfXmlAttachment.getObject(InputStream.class)) {
                 List<String> fromXmlRaw = parseOrderingFromEventconfXml(stream);
-                List<String> fromXml = fromXmlRaw.stream().map(path -> path.contains("/") ? path.substring(path.lastIndexOf("/") + 1) : path).toList();
+                List<String> fromXml = fromXmlRaw.stream()
+                        .map(path -> path.contains("/") ? path.substring(path.lastIndexOf("/") + 1) : path).toList();
 
                 // Identify files not listed in eventconf.xml
-                List<String> extraFiles = uploadedFiles.stream().filter(f -> !fromXml.contains(f)).collect(Collectors.toList());
+                List<String> extraFiles = uploadedFiles
+                        .stream()
+                        .filter(f -> !fromXml.contains(f))
+                        .collect(Collectors.toList());
 
                 // Add extra files first, then the ones in eventconf.xml
                 ordered.addAll(extraFiles);
@@ -351,7 +371,11 @@ public class EventConfRestService implements EventConfRestApi {
         entry.put("file", filename);
         entry.put("eventCount", events.getEvents().size());
         entry.put("vendor", StringUtils.substringBefore(filename, "."));
-        List<Map<String, ? extends Serializable>> eventSummaries = events.getEvents().stream().map(e -> Map.of("uei", e.getUei(), "label", e.getEventLabel(), "description", e.getEventLabel(), "enabled", true)).collect(Collectors.toList());
+        List<Map<String, ? extends Serializable>> eventSummaries = events
+                .getEvents()
+                .stream()
+                .map(e -> Map.of("uei", e.getUei(), "label", e.getEventLabel(), "description", e.getEventLabel(), "enabled", true))
+                .collect(Collectors.toList());
         entry.put("events", eventSummaries);
 
         return entry;
@@ -362,6 +386,25 @@ public class EventConfRestService implements EventConfRestApi {
         entry.put("file", filename);
         entry.put("error", ex.getClass().getSimpleName() + ": " + ex.getMessage());
         return entry;
+    }
+
+    private EventConfSourceMetadataDto buildMetadata(String fileName, String description, Events events, int fileOrder,
+                                                     String username, Date now) {
+        return new EventConfSourceMetadataDto.Builder()
+                .filename(fileName)
+                .eventCount(events.getEvents().size())
+                .fileOrder(fileOrder)
+                .username(username)
+                .now(now)
+                .vendor(StringUtils.substringBefore(fileName, "."))
+                .description(description)
+                .build();
+    }
+
+    private String stripExtension(final String filename) {
+        if (filename == null) return null;
+        int dotIndex = filename.lastIndexOf('.');
+        return (dotIndex == -1) ? filename : filename.substring(0, dotIndex);
     }
 
     private void validateAddEvent(Long sourceId, Event event) {

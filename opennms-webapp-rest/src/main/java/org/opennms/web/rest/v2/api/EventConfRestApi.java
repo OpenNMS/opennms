@@ -18,10 +18,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.apache.cxf.jaxrs.ext.multipart.Attachment;
 import org.apache.cxf.jaxrs.ext.multipart.Multipart;
 import org.opennms.netmgt.model.events.EnableDisableConfSourceEventsPayload;
-import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 import org.opennms.netmgt.model.events.EventConfSourceDeletePayload;
 import org.opennms.web.rest.v2.EventConfEventEditRequest;
 import org.opennms.netmgt.xml.eventconf.Event;
+import org.opennms.netmgt.model.events.EventConfSrcEnableDisablePayload;
 
 
 import javax.ws.rs.QueryParam;

@@ -11,9 +11,8 @@ export enum Severity {
   Minor = 'Minor',
   Warning = 'Warning',
   Normal = 'Normal',
-  Intermediate = 'Intermediate',
-  Cleared = 'Cleared',
-  Unrecognized = 'Unrecognized'
+  Indeterminate = 'Indeterminate',
+  Cleared = 'Cleared'
 }
 
 export const severityOptions: ISelectItemType[] = [
@@ -22,6 +21,6 @@ export const severityOptions: ISelectItemType[] = [
   { _text: Severity.Minor, _value: Severity.Minor },
   { _text: Severity.Warning, _value: Severity.Warning },
   { _text: Severity.Normal, _value: Severity.Normal },
-  { _text: Severity.Intermediate, _value: Severity.Intermediate },
+  { _text: Severity.Indeterminate, _value: Severity.Indeterminate },
   { _text: Severity.Cleared, _value: Severity.Cleared }
 ]
