@@ -18,3 +18,4 @@ describe('EventConfig.vue', () => {
     expect(wrapper.findComponent(EventConfigTabContainer).exists()).toBe(true)
   })
 })
+
