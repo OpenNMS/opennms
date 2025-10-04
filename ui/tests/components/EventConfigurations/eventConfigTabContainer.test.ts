@@ -63,5 +63,4 @@ describe('EventConfigTabContainer', () => {
     await tabContainer.setValue(1)
     expect(store.activeTab).toBe(1)
   })
-  
 })

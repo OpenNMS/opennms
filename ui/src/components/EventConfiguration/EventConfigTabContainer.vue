@@ -1,6 +1,9 @@
 <template>
   <div class="event-config-tab-container">
-    <FeatherTabContainer class="tabs" v-model="store.activeTab">
+    <FeatherTabContainer
+      class="tabs"
+      v-model="store.activeTab"
+    >
       <template v-slot:tabs>
         <FeatherTab>View</FeatherTab>
         <FeatherTab>Upload Files</FeatherTab>
