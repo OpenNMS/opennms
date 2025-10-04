@@ -1,5 +1,6 @@
 import {
   EventConfigEvent,
+  EventConfigEventRequest,
   EventConfigEventsResponse,
   EventConfigFilesUploadResponse,
   EventConfigSource,
@@ -40,12 +41,33 @@ export const mapEventConfSourceResponseFromServer = (response: any): EventConfig
   }
 }
 
+const extractSeverity = (xmlContent: string): string | null => {
+  let severity: string | null
+
+  if (xmlContent) {
+    try {
+      const parser = new DOMParser()
+      const xmlDoc = parser.parseFromString(xmlContent, 'application/xml')
+      const severityElement = xmlDoc.getElementsByTagName('severity')[0]
+      severity = severityElement ? severityElement.textContent : null
+      return severity
+    } catch (e) {
+      severity = null
+      return severity
+    }
+  } else {
+    severity = null
+    return severity
+  }
+}
+
 export const mapEventConfigEventFromServer = (event: any): EventConfigEvent => {
   return {
     id: event.id,
     uei: event.uei,
     eventLabel: event.eventLabel,
     description: event.description,
+    severity: extractSeverity(event.xmlContent) || '',
     enabled: event.enabled,
     xmlContent: event.xmlContent,
     createdTime: new Date(event.createdTime),
@@ -63,3 +85,15 @@ export const mapEventConfigEventsResponseFromServer = (response: any): EventConf
     totalRecords: response.totalRecords
   }
 }
+
+export const mapEventConfigEventToServer = (event: EventConfigEvent): EventConfigEventRequest => {
+  const newEvent: Partial<EventConfigEventRequest> = {
+    uei: event.uei,
+    ['event-label']: event.eventLabel,
+    descr: event.description,
+    severity: event.severity
+  }
+
+  return newEvent as EventConfigEventRequest
+}
+

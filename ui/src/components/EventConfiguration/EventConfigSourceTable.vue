@@ -174,7 +174,7 @@ const onEventClick = (source: EventConfigSource) => {
   const eventDetailsStore = useEventConfigDetailStore()
   eventDetailsStore.setSelectedEventConfigSource(source)
   router.push({
-    name: 'Event Configuration Details',
+    name: 'Event Configuration Detail',
     params: { id: source.id }
   })
 }

@@ -1,4 +1,4 @@
-import { Pagination, Sorting } from '.'
+import { CreateEditMode, Pagination, Sorting } from '.'
 
 export type EventConfigSource = {
   id: number
@@ -18,6 +18,7 @@ export type EventConfigEvent = {
   uei: string
   eventLabel: string
   description: string
+  severity: string
   enabled: boolean
   xmlContent: string
   createdTime: Date
@@ -26,6 +27,13 @@ export type EventConfigEvent = {
   sourceName: string
   vendor: string
   fileOrder: number
+}
+
+export type EventConfigEventRequest = {
+  uei: string
+  ['event-label']: string
+  descr: string
+  severity: string
 }
 
 export type EventConfigStoreState = {
@@ -55,6 +63,11 @@ export type EventConfigDetailStoreState = {
   eventsSearchTerm: string
   eventsSorting: Sorting
   selectedSource: EventConfigSource | null
+  eventModificationDrawerState: {
+    visible: boolean
+    isEditMode: CreateEditMode
+    eventConfigEvent: EventConfigEvent | null
+  }
   isLoading: boolean
   deleteEventConfigEventDialogState: {
     visible: boolean
@@ -72,7 +85,6 @@ export type EventConfigDetailStoreState = {
     visible: boolean
     eventConfigSource: EventConfigSource | null
   }
-  drawerState: DrawerState
 }
 
 export type EventConfigFilesUploadResponse = {
