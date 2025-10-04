@@ -18,6 +18,7 @@ export type EventConfigEvent = {
   uei: string
   eventLabel: string
   description: string
+  severity: string
   enabled: boolean
   xmlContent: string
   createdTime: Date
@@ -26,6 +27,13 @@ export type EventConfigEvent = {
   sourceName: string
   vendor: string
   fileOrder: number
+}
+
+export type EventConfigEventRequest = {
+  uei: string
+  ['event-label']: string
+  descr: string
+  severity: string
 }
 
 export type EventConfigStoreState = {
