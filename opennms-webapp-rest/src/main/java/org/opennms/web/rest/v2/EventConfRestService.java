@@ -306,6 +306,23 @@ public class EventConfRestService implements EventConfRestApi {
     }
 
 
+    @Transactional
+    @Override
+    public Response updateEventConfEvent(Long sourceId, Long eventId, EventConfEventEditRequest payload, SecurityContext securityContext) throws Exception {
+        if (payload == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
+        }
+        try {
+            eventConfPersistenceService.updateEventConfEvent(sourceId,eventId, payload);
+            return Response.ok().entity("EventConfEvent updated successfully.").build();
+
+        } catch (EntityNotFoundException ex) {
+            return Response.status(Response.Status.NOT_FOUND).entity("eventConfEvent were not found: " + ex.getMessage()).build();
+        } catch (Exception ex) {
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity("Unexpected error occurred: " + ex.getMessage()).build();
+        }
+    }
+
     private List<String> determineFileOrder(final Attachment eventconfXmlAttachment, final Set<String> uploadedFiles) {
         List<String> ordered = new ArrayList<>();
 

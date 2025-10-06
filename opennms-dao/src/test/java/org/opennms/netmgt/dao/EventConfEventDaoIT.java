@@ -296,6 +296,39 @@ public class EventConfEventDaoIT implements InitializingBean {
     }
 
 
+
+    @Test
+    @Transactional
+    public void testFindBySourceIdAndEventId() {
+        m_source = new EventConfSource();
+        m_source.setName("sourceAndEventTesting");
+        m_source.setEnabled(true);
+        m_source.setCreatedTime(new Date());
+        m_source.setFileOrder(1);
+        m_source.setDescription("Test event source");
+        m_source.setVendor("TestVendor2");
+        m_source.setUploadedBy("testCases");
+        m_source.setEventCount(2);
+        m_source.setLastModified(new Date());
+
+        List<EventConfEvent> event = m_eventDao.findAll();
+        defaultEventConfEventCount = event.size();
+
+        m_eventSourceDao.saveOrUpdate(m_source);
+        m_eventSourceDao.flush();
+
+        insertEvent("uei.opennms.org/internal/trigger", "Trigger event", "Trigger event testing description", "Normal");
+
+        insertEvent("uei.opennms.org/internal/clear", "Clear event testing", "The clear  (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.", "Minor");
+        m_eventDao.flush();
+        EventConfSource source = m_eventSourceDao.findByName("sourceAndEventTesting");
+        EventConfEvent clearEvent = m_eventDao.findByUei("uei.opennms.org/internal/clear");
+
+        EventConfEvent dbEvent = m_eventDao.findBySourceIdAndEventId(source.getId(),clearEvent.getId());
+        assertEquals("uei.opennms.org/internal/clear", dbEvent.getUei());
+
+    }
+
     @Override
     public void afterPropertiesSet() throws Exception {
         BeanUtils.assertAutowiring(this);
