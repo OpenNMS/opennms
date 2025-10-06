@@ -242,8 +242,21 @@ public class EventConfPersistenceService {
     }
 
     @Transactional
-    public void deleteEventsForSource(Long sourceId,EventConfEventDeletePayload eventConfEventDeletePayload) throws Exception {
-        eventConfEventDao.deleteByEventIds(sourceId,eventConfEventDeletePayload.getEventIds());
+    public void deleteEventsForSource(final Long sourceId, final EventConfEventDeletePayload eventConfEventDeletePayload) throws Exception {
+        EventConfSource source = eventConfSourceDao.get(sourceId);
+        if (source == null) {
+            throw new EntityNotFoundException("EventConfSource not found for id: " + sourceId);
+        }
+        int currentCount = source.getEventCount();
+        int deleteCount = eventConfEventDeletePayload.getEventIds().size();
+
+        if (deleteCount >= currentCount) {
+            eventConfSourceDao.delete(source);
+        } else {
+            eventConfEventDao.deleteByEventIds(sourceId, eventConfEventDeletePayload.getEventIds());
+            source.setEventCount(currentCount - deleteCount);
+            eventConfSourceDao.saveOrUpdate(source);
+        }
     }
 
 }

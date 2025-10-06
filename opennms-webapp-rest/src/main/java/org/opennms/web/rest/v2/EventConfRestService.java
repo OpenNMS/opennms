@@ -326,12 +326,12 @@ public class EventConfRestService implements EventConfRestApi {
 
     @Override
     public Response deleteEventsForSource(Long sourceId, EventConfEventDeletePayload payload, SecurityContext securityContext) throws Exception {
-        if (payload == null) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("Request body cannot be null").build();
+        if (sourceId == null || sourceId <= 0) {
+            throw new IllegalArgumentException("Invalid sourceId: must be a positive number");
         }
 
-        if (payload.getEventIds() == null || payload.getEventIds().isEmpty()) {
-            return Response.status(Response.Status.BAD_REQUEST).entity("At least one eventId must be provided.").build();
+        if (payload == null || payload.getEventIds() == null || payload.getEventIds().isEmpty()) {
+            throw new IllegalArgumentException("Event IDs to delete must not be null or empty");
         }
 
         try {
