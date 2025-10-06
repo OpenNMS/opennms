@@ -24,3 +24,18 @@ export const severityOptions: ISelectItemType[] = [
   { _text: Severity.Indeterminate, _value: Severity.Indeterminate },
   { _text: Severity.Cleared, _value: Severity.Cleared }
 ]
+
+export const TYPE_JSON = 'json'
+export const TYPE_XML = 'xml'
+
+export const OBJECT_TYPE = [
+  {
+    name: TYPE_JSON.toUpperCase(),
+    value: TYPE_JSON
+  },
+  {
+    name: TYPE_XML.toUpperCase(),
+    value: TYPE_XML
+  }
+]
+
