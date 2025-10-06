@@ -15,6 +15,11 @@
   "version": "",
   "menus": [
     {
+      "id": "emptyHeader",
+      "name": "",
+      "type": "header"
+    },
+    {
       "id": "dashboardsMenu",
       "name": "Dashboards",
       "url": "#",

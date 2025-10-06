@@ -245,6 +245,13 @@ const topPanels = computed<MenuListEntry[]>(() => {
         height: 1.25em;
         padding: 0 0.5rem;
       }
+
+      // tighten vertical space between expand/collapse button and first actual menu item
+      // note, menu-template.json has a "dummy" first menu item of type="header" so the the
+      // hard-coded "Menu" header is not emitted. This overrides the min-height of the empty li
+      li:first-child.feather-list-header {
+        min-height: 0.1rem;
+      }
     }
 
     // when dock is closed, want the separator not quite fully across horizontally, but closer to fully across than when it's open
