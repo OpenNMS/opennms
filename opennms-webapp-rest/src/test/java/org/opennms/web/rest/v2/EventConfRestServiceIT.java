@@ -130,12 +130,12 @@ public class EventConfRestServiceIT {
         @SuppressWarnings("unchecked") List<Map<String, Object>> success = (List<Map<String, Object>>) entity.get("success");
         @SuppressWarnings("unchecked") List<Map<String, Object>> errors = (List<Map<String, Object>>) entity.get("errors");
 
-        assertTrue("eventconf.xml should be excluded", success.stream().noneMatch(m -> "eventconf.xml".equals(m.get("file"))));
+        assertTrue("eventconf should be excluded", success.stream().noneMatch(m -> "eventconf".equals(m.get("file"))));
         assertEquals(2, success.size());
-        assertEquals("opennms.alarm.events.xml", success.get(0).get("file"));
+        assertEquals("opennms.alarm.events", success.get(0).get("file"));
         assertEquals(3, success.get(0).get("eventCount"));
         assertEquals("opennms", success.get(0).get("vendor"));
-        assertEquals("Cisco.airespace.xml", success.get(1).get("file"));
+        assertEquals("Cisco.airespace", success.get(1).get("file"));
         assertEquals(101, success.get(1).get("eventCount"));
         assertEquals("Cisco", success.get(1).get("vendor"));
         assertTrue(errors.isEmpty());
@@ -167,10 +167,10 @@ public class EventConfRestServiceIT {
         @SuppressWarnings("unchecked") List<Map<String, Object>> errors = (List<Map<String, Object>>) entity.get("errors");
 
         assertEquals(filenames.length, success.size());
-        assertEquals("opennms.alarm.events.xml", success.get(0).get("file"));
+        assertEquals("opennms.alarm.events", success.get(0).get("file"));
         assertEquals(3, success.get(0).get("eventCount"));
         assertEquals("opennms", success.get(0).get("vendor"));
-        assertEquals("Cisco.airespace.xml", success.get(1).get("file"));
+        assertEquals("Cisco.airespace", success.get(1).get("file"));
         assertEquals(101, success.get(1).get("eventCount"));
         assertEquals("Cisco", success.get(1).get("vendor"));
         assertTrue(errors.isEmpty());
@@ -236,7 +236,7 @@ public class EventConfRestServiceIT {
 
         assertTrue(success.isEmpty());
         assertEquals(1, errors.size());
-        assertEquals(filename, errors.get(0).get("file"));
+        assertEquals("test.invalid", errors.get(0).get("file"));
         assertTrue(errors.get(0).get("error").toString().contains("Exception"));
     }
 
@@ -431,7 +431,7 @@ public class EventConfRestServiceIT {
 
         List<EventConfSource> eventConfSourceList = eventConfSourceDao.findAll();
 
-        EventConfSource eventConfSource = eventConfSourceDao.findByName("Cisco.airespace.xml");
+        EventConfSource eventConfSource = eventConfSourceDao.findByName("Cisco.airespace");
         assertNotNull("Event Source not found against name Cisco.airespace ", eventConfSource);
 
         // Valid Source Id
@@ -523,7 +523,7 @@ public class EventConfRestServiceIT {
 
         assertNotNull(sourceNames);
         assertFalse(sourceNames.isEmpty());
-        assertTrue(sourceNames.stream().anyMatch(name -> name.contains("Cisco.airespace.xml")));
+        assertTrue(sourceNames.stream().anyMatch(name -> name.contains("Cisco.airespace")));
 
         // test when no sources exists in db
         final var  eventConfSources = eventConfSourceDao.findAll();
@@ -558,7 +558,7 @@ public class EventConfRestServiceIT {
         Response uploadResp = eventConfRestApi.uploadEventConfFiles(attachments, securityContext);
         assertEquals(Response.Status.OK.getStatusCode(), uploadResp.getStatus());
 
-        EventConfSource eventConfSource = eventConfSourceDao.findByName("Cisco.airespace.xml");
+        EventConfSource eventConfSource = eventConfSourceDao.findByName("Cisco.airespace");
         assertNotNull("Event Source not found against name Cisco.airespace ", eventConfSource);
 
         String xmlEvent = """
@@ -575,4 +575,55 @@ public class EventConfRestServiceIT {
         Response resp = eventConfRestApi.addEventConfSourceEvent(eventConfSource.getId(), event, securityContext);
         assertEquals(Response.Status.CREATED.getStatusCode(), resp.getStatus());
     }
+
+    @Test
+    @Transactional
+    public void testUpdateEventConfEvent() throws Exception {
+        EventConfSource  m_source = new EventConfSource();
+        m_source.setName("testEventEnabledFlagTest");
+        m_source.setEnabled(true);
+        m_source.setCreatedTime(new Date());
+        m_source.setFileOrder(1);
+        m_source.setDescription("Test event source");
+        m_source.setVendor("TestVendor1");
+        m_source.setUploadedBy("JUnitTest");
+        m_source.setEventCount(2);
+        m_source.setLastModified(new Date());
+
+        eventConfSourceDao.saveOrUpdate(m_source);
+        eventConfSourceDao.flush();
+
+        insertEvent(m_source,"uei.opennms.org/internal/trigger", "Trigger configuration changed testing", "The Trigger configuration has been changed and should be reloaded", "Normal");
+
+        insertEvent(m_source,"uei.opennms.org/internal/clear", "Clear discovery failed testing", "The Clear discovery (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.", "Minor");
+
+        EventConfSource source = eventConfSourceDao.findByName("testEventEnabledFlagTest");
+        EventConfEvent clearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
+
+        EventConfEventEditRequest payload = new EventConfEventEditRequest();
+        Event event = JaxbUtils.unmarshal(Event.class,"""
+                <event xmlns="http://xmlns.opennms.org/xsd/eventconf">
+                   <uei>uei.opennms.org/internal/clear</uei>
+                   <event-label>Clear label changed.</event-label>
+                   <descr>Clear Description changed.</descr>
+                   <severity>Major</severity>
+                </event>
+                """);
+        payload.setEvent(event);
+        payload.setEnabled(true);
+
+        Response response = eventConfRestApi.updateEventConfEvent(source.getId(),clearEvent.getId(),payload,securityContext);
+        assertEquals(Response.Status.OK.getStatusCode(), response.getStatus());
+
+        EventConfEvent updatedClearEvent = eventConfEventDao.findByUei("uei.opennms.org/internal/clear");
+        assertEquals("Clear label changed.", updatedClearEvent.getEventLabel());
+        assertEquals("Clear Description changed.", updatedClearEvent.getDescription());
+
+        // verify xml content updated or not.
+        Event dbEvent = JaxbUtils.unmarshal(Event.class,updatedClearEvent.getXmlContent());
+        assertEquals("Clear label changed.", dbEvent.getEventLabel());
+        assertEquals("Clear Description changed.", dbEvent.getDescr());
+
+    }
+
 }

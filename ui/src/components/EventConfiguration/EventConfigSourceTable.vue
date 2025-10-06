@@ -33,7 +33,7 @@
     <div class="container">
       <table
         class="data-table"
-        aria-label="SNMP Interfaces Table"
+        aria-label="Events Table"
         v-if="store.sources.length"
       >
         <thead>
@@ -174,7 +174,7 @@ const onEventClick = (source: EventConfigSource) => {
   const eventDetailsStore = useEventConfigDetailStore()
   eventDetailsStore.setSelectedEventConfigSource(source)
   router.push({
-    name: 'Event Configuration Details',
+    name: 'Event Configuration Detail',
     params: { id: source.id }
   })
 }

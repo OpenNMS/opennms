@@ -40,6 +40,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -298,6 +299,72 @@ public class EventConfEventDaoIT implements InitializingBean {
     @Transactional(propagation = Propagation.REQUIRES_NEW)
     public EventConfEvent reloadEvent(String uei) {
         return m_eventDao.findByUei(uei);
+    }
+
+
+    @Test
+    @Transactional
+    public void testSaveAllEvents() {
+        int totalEvents = 55;
+        List<EventConfEvent> bulkEvents = new ArrayList<>();
+        for (int i = 0; i < totalEvents; i++) {
+            EventConfEvent event = getEventConfEvent(i);
+            bulkEvents.add(event);
+        }
+
+        m_eventDao.saveAll(bulkEvents);
+
+        List<EventConfEvent> allEvents = m_eventDao.findBySourceId(m_source.getId());
+        assertNotNull(allEvents);
+        assertEquals(4 + totalEvents, allEvents.size());
+    }
+
+    private EventConfEvent getEventConfEvent(int i) {
+        EventConfEvent event = new EventConfEvent();
+        event.setUei("uei.opennms.org/test/bulk/" + i);
+        event.setEventLabel("Bulk Event " + i);
+        event.setDescription("Test bulk event " + i);
+        event.setXmlContent("<event><uei>uei.opennms.org/test/bulk/" + i + "</uei></event>");
+        event.setSource(m_source);
+        event.setEnabled(true);
+        event.setCreatedTime(new Date());
+        event.setLastModified(new Date());
+        event.setModifiedBy("testUser");
+        return event;
+    }
+
+
+
+    @Test
+    @Transactional
+    public void testFindBySourceIdAndEventId() {
+        m_source = new EventConfSource();
+        m_source.setName("sourceAndEventTesting");
+        m_source.setEnabled(true);
+        m_source.setCreatedTime(new Date());
+        m_source.setFileOrder(1);
+        m_source.setDescription("Test event source");
+        m_source.setVendor("TestVendor2");
+        m_source.setUploadedBy("testCases");
+        m_source.setEventCount(2);
+        m_source.setLastModified(new Date());
+
+        List<EventConfEvent> event = m_eventDao.findAll();
+        defaultEventConfEventCount = event.size();
+
+        m_eventSourceDao.saveOrUpdate(m_source);
+        m_eventSourceDao.flush();
+
+        insertEvent("uei.opennms.org/internal/trigger", "Trigger event", "Trigger event testing description", "Normal");
+
+        insertEvent("uei.opennms.org/internal/clear", "Clear event testing", "The clear  (%parm[method]%) on node %nodelabel% (IP address %interface%) has failed.", "Minor");
+        m_eventDao.flush();
+        EventConfSource source = m_eventSourceDao.findByName("sourceAndEventTesting");
+        EventConfEvent clearEvent = m_eventDao.findByUei("uei.opennms.org/internal/clear");
+
+        EventConfEvent dbEvent = m_eventDao.findBySourceIdAndEventId(source.getId(),clearEvent.getId());
+        assertEquals("uei.opennms.org/internal/clear", dbEvent.getUei());
+
     }
 
     @Override
