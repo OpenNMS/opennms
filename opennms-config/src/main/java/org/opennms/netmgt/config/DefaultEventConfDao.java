@@ -109,12 +109,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	@Override
 	public void reload() throws DataAccessException {
-		/*validateConfig(m_configResource);
-		try {
-		    reloadConfig();
-		} catch (Exception e) {
-			throw new DataRetrievalFailureException("Unable to load " + m_configResource, e);
-		}*/
 	}
 
 	@Override
@@ -327,8 +321,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws DataAccessException {
-		//loadConfig();
-        //initExtensions();
 	}
 
 	private static class EnterpriseIdPartition implements Partition {
