@@ -33,7 +33,7 @@
     <div class="container">
       <table
         class="data-table"
-        aria-label="SNMP Interfaces Table"
+        aria-label="Events Table"
         v-if="store.sources.length"
       >
         <thead>

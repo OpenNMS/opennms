@@ -170,6 +170,15 @@ public class EventConfSourceDaoHibernate
 
     }
 
+    @Override
+    public Integer findMaxFileOrder() {
+        Integer maxOrder = (Integer) getSessionFactory().getCurrentSession()
+                .createQuery("SELECT MAX(e.fileOrder) FROM EventConfSource e")
+                .uniqueResult();
+
+        return maxOrder != null ? maxOrder : 0;
+    }
+
 
     @Override
     public void deleteBySourceIds(List<Long> sourceIds) {

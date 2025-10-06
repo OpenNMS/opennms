@@ -46,4 +46,6 @@ public interface EventConfEventDao extends OnmsDao<EventConfEvent, Long> {
     Map<String, Object>  findBySourceId(Long sourceId, Integer totalRecords, Integer offset, Integer limit);
 
     void updateEventEnabledFlag(Long sourceId, List<Long> eventIds, boolean enabled);
+
+    void saveAll(Collection<EventConfEvent> events);
 }
