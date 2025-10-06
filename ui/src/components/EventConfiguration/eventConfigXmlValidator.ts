@@ -37,12 +37,10 @@ export const validateEventConfigFile = async (file: File) => {
         validationErrors.push('Missing <events> root element')
         return { isValid: false, errors: validationErrors }
       }
-      if (eventsElement) {
-        const xmlns = eventsElement.getAttribute('xmlns') || ''
-        if (xmlns !== 'http://xmlns.opennms.org/xsd/eventconf') {
-          validationErrors.push('Missing or invalid OpenNMS namespace in <events> element')
-          return { isValid: false, errors: validationErrors }
-        }
+      const xmlns = eventsElement.getAttribute('xmlns') || ''
+      if (xmlns !== 'http://xmlns.opennms.org/xsd/eventconf') {
+        validationErrors.push('Missing or invalid OpenNMS namespace in <events> element')
+        return { isValid: false, errors: validationErrors }
       }
 
       const eventElements = eventsElement.querySelectorAll('event')

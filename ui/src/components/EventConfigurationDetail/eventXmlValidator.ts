@@ -7,28 +7,28 @@ export const validateEventDetailsJson = (
   eventLabel: any,
   eventDescription: any,
   selectedEventSeverity: any
-): { isValid: boolean; error: string } => {
+): { isValid: boolean; error: string[] } => {
   let isValid = true
-  let error = ''
+  const error = []
   if (!event) {
-    isValid = false
-    error = 'No event selected'
+    isValid = true
+    error.push('No event selected')
   }
   if (!eventUei) {
-    isValid = false
-    error = 'Event UEI is required'
+    isValid = true
+    error.push('Event UEI is required')
   }
   if (!eventLabel) {
-    isValid = false
-    error = 'Event label is required'
+    isValid = true
+    error.push('Event label is required')
   }
   if (!eventDescription) {
-    isValid = false
-    error = 'Event description is required'
+    isValid = true
+    error.push('Event description is required')
   }
   if (!selectedEventSeverity) {
-    isValid = false
-    error = 'Event severity is required'
+    isValid = true
+    error.push('Event severity is required')
   }
 
   return {
@@ -40,89 +40,62 @@ export const validateEventDetailsJson = (
 export const validateEventDetailsXml = (
   event: EventConfigEvent,
   xmlContent: string
-): { isValid: boolean; error: string } => {
+): { isValid: boolean; error: string[] } => {
   let isValid = true
-  let error = ''
+  const error = []
   if (!event) {
     isValid = false
-    error = 'No event selected'
+    error.push('No event selected')
   }
   if (!xmlContent) {
-    return {
-      isValid: false,
-      error: 'Event XML is required'
-    }
+    isValid = false
+    error.push('Event XML is required')
   }
   const parser = new DOMParser()
   const xmlDoc = parser.parseFromString(xmlContent, 'application/xml')
   if (xmlDoc.querySelector('parsererror')) {
-    return {
-      isValid: false,
-      error: 'Invalid XML format - file contains syntax errors'
-    }
+    isValid = false
+    error.push('Invalid XML format - file contains syntax errors')
   }
   const result = XMLValidator.validate(xmlContent)
   if (!result) {
-    return {
-      isValid: false,
-      error: 'Invalid XML format - file contains syntax errors'
-    }
+    isValid = false
+    error.push('Invalid XML format - file contains syntax errors')
   }
-
-  console.log(xmlDoc)
-  
-
   const eventElement = xmlDoc.querySelector('event')
   if (!eventElement) {
-    return {
-      isValid: false,
-      error: 'Missing <event> root element'
-    }
+    isValid = false
+    error.push('Missing <event> root element')
   }
-  if (eventElement) {
-    const xmlns = eventElement.getAttribute('xmlns') || ''
-    if (xmlns !== 'http://xmlns.opennms.org/xsd/eventconf') {
-      return {
-        isValid: false,
-        error: 'Missing or invalid OpenNMS namespace in <event> element'
-      }
-    }
+  const xmlns = eventElement?.getAttribute('xmlns') || ''
+  if (xmlns !== 'http://xmlns.opennms.org/xsd/eventconf') {
+    isValid = false
+    error.push('Missing or invalid OpenNMS namespace in <event> element')
   }
   const eventChildren = eventElement?.children
   if (!eventChildren || eventChildren.length === 0) {
-    return {
-      isValid: false,
-      error: 'Empty <event> element'
-    }
+    isValid = false
+    error.push('Empty <event> element')
   } else {
     const uei = eventElement.querySelector('uei')?.textContent?.trim()
     const label = eventElement.querySelector('event-label')?.textContent?.trim()
     const severity = eventElement.querySelector('severity')?.textContent?.trim()
     const description = eventElement.querySelector('descr')?.textContent?.trim()
-
     if (!uei) {
-      return {
-        isValid: false,
-        error: 'Missing <uei>'
-      }
+      isValid = false
+      error.push('Missing <uei>')
     }
     if (!label) {
-      return {
-        isValid: false,
-        error: 'Missing <event-label>'
-      }
+      isValid = false
+      error.push('Missing <event-label>')
     }
     if (!severity) {
-      return {
-        isValid: false,
-        error: 'Missing <severity>'
-      }
+      isValid = false
+      error.push('Missing <severity>')
     }
     if (!description) {
-      return {
-        isValid: false,
-        error: 'Missing <descr>'
-      }
+      isValid = false
+      error.push('Missing <descr>')
     }
   }
 

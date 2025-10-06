@@ -3,7 +3,7 @@
     id="column-selection-drawer"
     data-test="column-selection-drawer"
     @shown="() => store.eventModificationDrawerState.visible"
-    @hidden="() => store.eventModificationDrawerState.visible"
+    @hidden="store.closeEventModificationDrawer()"
     v-model="store.eventModificationDrawerState.visible"
     :labels="{ close: 'close', title: 'Customize Columns' }"
     width="55em"
@@ -20,11 +20,11 @@
       <div>
         <div class="spacer-large"></div>
         <FeatherRadioGroup
-          :label="'Favourite object type?'"
+          :label="'Specify document format:'"
           v-model="selected"
         >
           <FeatherRadio
-            v-for="item in OBJECT_TYPE"
+            v-for="item in EventConfigurationDocTypes"
             :value="item.value"
             :key="item.name"
           >
@@ -34,7 +34,7 @@
         <div class="spacer-large"></div>
       </div>
       <div
-        v-if="selected === TYPE_JSON"
+        v-if="selected === EventConfigurationDocType.Json"
         class="drawer-content"
       >
         <div class="spacer-large"></div>
@@ -87,7 +87,7 @@
         <div class="spacer-large"></div>
       </div>
       <div
-        v-if="selected === TYPE_XML"
+        v-if="selected === EventConfigurationDocType.Xml"
         class="drawer-content"
       >
         <div class="spacer-large"></div>
@@ -140,7 +140,7 @@ import 'ace-builds/src-noconflict/theme-chrome'
 import { XMLValidator } from 'fast-xml-parser'
 import vkbeautify from 'vkbeautify'
 import { VAceEditor } from 'vue3-ace-editor'
-import { OBJECT_TYPE, Severity, severityOptions, TYPE_JSON, TYPE_XML } from '../constants'
+import { EventConfigurationDocTypes, Severity, severityOptions, EventConfigurationDocType } from '../constants'
 import { validateEventDetailsJson, validateEventDetailsXml } from '../eventXmlValidator'
 
 const snackbar = useSnackbar()
@@ -148,7 +148,7 @@ const store = useEventConfigDetailStore()
 const eventDescription = ref(store.eventModificationDrawerState.eventConfigEvent?.description || '')
 const eventLabel = ref(store.eventModificationDrawerState.eventConfigEvent?.eventLabel || '')
 const eventUei = ref(store.eventModificationDrawerState.eventConfigEvent?.uei || '')
-const selected = ref(TYPE_JSON)
+const selected = ref(EventConfigurationDocType.Json)
 const xmlContent = ref(store.eventModificationDrawerState.eventConfigEvent?.xmlContent || '')
 const selectedEventSeverity = ref<ISelectItemType>({
   _text: store.eventModificationDrawerState.eventConfigEvent?.severity ? Severity[store.eventModificationDrawerState.eventConfigEvent?.severity as keyof typeof Severity] : '',
@@ -170,7 +170,7 @@ const editorOptions = computed(() => {
     enableLiveAutocompletion: true,
     showLineNumbers: true,
     fontSize: 18,
-    readOnly: selected.value === TYPE_JSON
+    readOnly: selected.value === EventConfigurationDocType.Json
   }
 })
 
@@ -179,16 +179,16 @@ const handleSave = async () => {
     return
   }
 
-  if (selected.value === TYPE_JSON) {
-    await handleSaveJSONFormat()
+  if (selected.value === EventConfigurationDocType.Json) {
+    await handleSaveJsonFormat()
   }
 
-  if (selected.value === TYPE_XML) {
-    await handleSaveXMLFormat()
+  if (selected.value === EventConfigurationDocType.Xml) {
+    await handleSaveXmlFormat()
   }
 }
 
-const handleSaveJSONFormat = async () => {
+const handleSaveJsonFormat = async () => {
   if (!store.eventModificationDrawerState.eventConfigEvent || !store.selectedSource) {
     return
   }
@@ -200,7 +200,7 @@ const handleSaveJSONFormat = async () => {
   }
   const { isValid, error } = validateEventDetailsJson(store.eventModificationDrawerState.eventConfigEvent, eventUei.value, eventLabel.value, eventDescription.value, selectedEventSeverity.value._value)
   if (!isValid) {
-    snackbar.showSnackBar({ msg: error, error: true })
+    snackbar.showSnackBar({ msg: error.join(', '), error: true })
     return
   }
 
@@ -235,25 +235,25 @@ const handleSaveJSONFormat = async () => {
   }
 }
 
-const handleSaveXMLFormat = async () => {
+const handleSaveXmlFormat = async () => {
   if (!store.eventModificationDrawerState.eventConfigEvent || !store.selectedSource) {
     return
   }
 
   try {
-    const bueatifiedXml = vkbeautify.xml(xmlContent.value)
-    const { isValid, error } = validateEventDetailsXml(store.eventModificationDrawerState.eventConfigEvent, bueatifiedXml)
+    const beautifiedXml = vkbeautify.xml(xmlContent.value)
+    const { isValid, error } = validateEventDetailsXml(store.eventModificationDrawerState.eventConfigEvent, beautifiedXml)
     if (!isValid) {
-      snackbar.showSnackBar({ msg: error, error: true })
+      snackbar.showSnackBar({ msg: error.join(', '), error: true })
       return
     }
 
     let response
     if (store.eventModificationDrawerState.isEditMode === CreateEditMode.Edit) {
-      response = await updateEventConfigEventByIdXml(bueatifiedXml, store.eventModificationDrawerState.eventConfigEvent.id)
+      response = await updateEventConfigEventByIdXml(beautifiedXml, store.eventModificationDrawerState.eventConfigEvent.id)
     }
     if (store.eventModificationDrawerState.isEditMode === CreateEditMode.Create) {
-      response = await createEventConfigEventXml(bueatifiedXml, store.selectedSource.id)
+      response = await createEventConfigEventXml(beautifiedXml, store.selectedSource.id)
     }
 
     if (response) {
@@ -269,26 +269,30 @@ const handleSaveXMLFormat = async () => {
   }
 }
 
+const loadInitialValues = (val: any) => {
+  if (val) {
+    eventDescription.value = val.description || ''
+    eventUei.value = val.uei || ''
+    eventLabel.value = val.eventLabel || ''
+    xmlContent.value = vkbeautify.xml(val.xmlContent.trim().replaceAll('&lt;', '<').replaceAll('&gt;', '>')) || ''
+    selectedEventSeverity.value = {
+      _text: val.severity ? Severity[val.severity as keyof typeof Severity] : '',
+      _value: val.enabled ? Severity[val.severity as keyof typeof Severity] : ''
+    }
+  } else {
+    eventUei.value = ''
+    eventLabel.value = ''
+    eventDescription.value = ''
+    selectedEventSeverity.value = { _text: '', _value: '' }
+    xmlContent.value = ''
+    selected.value = EventConfigurationDocType.Json
+  }
+}
+
 watch(
   () => store.eventModificationDrawerState.eventConfigEvent,
   (newVal) => {
-    if (newVal) {
-      eventDescription.value = newVal.description || ''
-      eventUei.value = newVal.uei || ''
-      eventLabel.value = newVal.eventLabel || ''
-      xmlContent.value = vkbeautify.xml(newVal.xmlContent.trim().replaceAll('&lt;', '<').replaceAll('&gt;', '>')) || ''
-      selectedEventSeverity.value = {
-        _text: newVal.severity ? Severity[newVal.severity as keyof typeof Severity] : '',
-        _value: newVal.enabled ? Severity[newVal.severity as keyof typeof Severity] : ''
-      }
-    } else {
-      eventUei.value = ''
-      eventLabel.value = ''
-      eventDescription.value = ''
-      selectedEventSeverity.value = { _text: '', _value: '' }
-      xmlContent.value = ''
-      selected.value = TYPE_JSON
-    }
+    loadInitialValues(newVal)
   }, { immediate: true, deep: true }
 )
 </script>

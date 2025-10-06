@@ -25,17 +25,19 @@ export const severityOptions: ISelectItemType[] = [
   { _text: Severity.Cleared, _value: Severity.Cleared }
 ]
 
-export const TYPE_JSON = 'json'
-export const TYPE_XML = 'xml'
+export enum EventConfigurationDocType {
+  Json = 'json',
+  Xml = 'xml'
+}
 
-export const OBJECT_TYPE = [
+export const EventConfigurationDocTypes = [
   {
-    name: TYPE_JSON.toUpperCase(),
-    value: TYPE_JSON
+    name: EventConfigurationDocType.Json.toUpperCase(),
+    value: EventConfigurationDocType.Json
   },
   {
-    name: TYPE_XML.toUpperCase(),
-    value: TYPE_XML
-  }
+    name: EventConfigurationDocType.Xml.toUpperCase(),
+    value: EventConfigurationDocType.Xml
+  }  
 ]
 
