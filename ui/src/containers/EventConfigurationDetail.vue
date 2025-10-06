@@ -6,7 +6,7 @@
     <div class="header">
       <div class="title-container">
         <div>
-          <FeatherBackButton @click="router.push({ name: 'Event Configuration' })">Go Back</FeatherBackButton>
+          <FeatherBackButton data-test="back-button"  @click="router.push({ name: 'Event Configuration' })">Go Back</FeatherBackButton>
         </div>
         <div>
           <h1>Event Configuration Details</h1>
@@ -38,7 +38,7 @@
       </div>
     </div>
 
-    <div class="config-details-box">
+    <div class="config-details-box" data-test="config-box">
       <div class="config-row">
         <div class="config-field name-field">
           <span class="field-label">Name:</span>
