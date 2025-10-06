@@ -69,7 +69,7 @@ done
 
 RUN_FIX_KARAF=false;
 for i in ${@}; do
-        if [ "$i" != "--help" -a $i != "-h" ]; then
+        if [ "$i" != "--help" -a "$i" != "-h" ]; then
                 RUN_FIX_KARAF=true;
         else
                 RUN_FIX_KARAF=false;
