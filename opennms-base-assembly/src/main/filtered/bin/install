@@ -75,7 +75,7 @@ for i in ${@}; do
                 RUN_FIX_KARAF=false;
         fi
 done
-if [ $RUN_FIX_KARAF == true ]; then
+if [ "$RUN_FIX_KARAF" == true ]; then
         echo "Invoking fix-karaf-setup.sh script..."
         "$OPENNMS_BINDIR"/fix-karaf-setup.sh --yes
 fi
