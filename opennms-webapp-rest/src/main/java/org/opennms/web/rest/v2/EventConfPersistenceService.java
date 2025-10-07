@@ -42,6 +42,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityNotFoundException;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
@@ -118,6 +120,31 @@ public class EventConfPersistenceService {
     public void enableDisableConfSourcesEvents(final Long sourceId, final EnableDisableConfSourceEventsPayload enableDisableConfSourceEventsPayload) {
 
         eventConfEventDao.updateEventEnabledFlag(sourceId,enableDisableConfSourceEventsPayload.getEventsIds(),enableDisableConfSourceEventsPayload.isEnable());
+    }
+
+
+    @Transactional
+    public void updateEventConfEvent(final Long sourceId, final Long eventId, EventConfEventEditRequest payload) {
+
+        try {
+            EventConfEvent eventConfEvent = eventConfEventDao.findBySourceIdAndEventId(sourceId,eventId);
+            if (eventConfEvent == null) {
+                throw new EntityNotFoundException(String.format("EventConfEvent not found for eventId=%d", eventId));
+            }
+            eventConfEvent.setUei(payload.getEvent().getUei());
+            eventConfEvent.setEventLabel(payload.getEvent().getEventLabel());
+            eventConfEvent.setDescription(payload.getEvent().getDescr());
+            eventConfEvent.setEnabled(payload.getEnabled());
+            eventConfEvent.setXmlContent(JaxbUtils.marshal(payload.getEvent()));
+            eventConfEvent.setLastModified(new Date());
+
+            eventConfEventDao.saveOrUpdate(eventConfEvent);
+            // Asynchronously load event conf from DB.
+            //eventConfExecutor.execute(this::reloadEventsFromDB);
+
+        } catch (Exception e) {
+            throw new RuntimeException("Failed to update EventConfEvent XML for eventId=" + eventId, e);
+        }
     }
 
     private EventConfSource createOrUpdateSource(final EventConfSourceMetadataDto eventConfSourceMetadataDto) {
