@@ -21,6 +21,7 @@
  */
 package org.opennms.netmgt.config;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.lang.StringUtils;
 import org.opennms.core.xml.JaxbUtils;
 import org.opennms.netmgt.model.EventConfEvent;
@@ -42,6 +43,8 @@ public final class EventConfUtil {
     private static final AtomicLong sourceIdGenerator = new AtomicLong();
     private static final AtomicLong eventIdGenerator = new AtomicLong();
 
+    @VisibleForTesting
+    // This method should only be used in tests.
     public static List<EventConfEvent> parseResourcesAsEventConfEvents(Resource configResource) throws IOException {
         List<EventConfEvent> eventConfEventList = new ArrayList<>();
 

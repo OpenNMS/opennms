@@ -78,9 +78,9 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 	private ConfigReloadContainer<Events> m_extContainer;
 
     public DefaultEventConfDao() {
-        this.m_events = new Events();
-        this.m_partition = new EnterpriseIdPartition();
-        this.m_lastModifiedEventFiles = new LinkedHashMap<>();
+        m_events = new Events();
+        m_partition = new EnterpriseIdPartition();
+        m_lastModifiedEventFiles = new LinkedHashMap<>();
         m_events.initialize(m_partition, new EventOrdering());
     }
 
