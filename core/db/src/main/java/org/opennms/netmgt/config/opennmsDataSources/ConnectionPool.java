@@ -140,18 +140,18 @@ public class ConnectionPool implements java.io.Serializable {
     /**
      * Returns the value of field 'factory'. The field 'factory' has the following
      * description: The connection pool implementation to use.
-     * 
+     *
      * @return the value of field 'Factory'.
      */
     public String getFactory() {
-        return this.factory;
+        return this.factory != null ? this.factory : "org.opennms.core.db.HikariCPConnectionFactory";
     }
 
     /**
      * Returns the value of field 'idleTimeout'. The field 'idleTimeout' has the
      * following description: How long, in seconds, an idle connection is kept in
      * the pool before it is removed.
-     * 
+     *
      * @return the value of field 'IdleTimeout'.
      */
     public Integer getIdleTimeout() {
@@ -246,16 +246,16 @@ public class ConnectionPool implements java.io.Serializable {
 
     /**
      * Method hashCode.
-     * 
+     *
      * @return a hash code value for the object.
      */
     public int hashCode() {
         int hash = Objects.hash(
-            factory, 
-            idleTimeout, 
-            loginTimeout, 
-            minPool, 
-            maxPool, 
+            factory,
+            idleTimeout,
+            loginTimeout,
+            minPool,
+            maxPool,
             maxSize);
         return hash;
     }
@@ -263,7 +263,7 @@ public class ConnectionPool implements java.io.Serializable {
     /**
      * Sets the value of field 'factory'. The field 'factory' has the following
      * description: The connection pool implementation to use.
-     * 
+     *
      * @param factory the value of field 'factory'.
      */
     public void setFactory(final String factory) {
@@ -274,7 +274,7 @@ public class ConnectionPool implements java.io.Serializable {
      * Sets the value of field 'idleTimeout'. The field 'idleTimeout' has the
      * following description: How long, in seconds, an idle connection is kept in
      * the pool before it is removed.
-     * 
+     *
      * @param idleTimeout the value of field 'idleTimeout'.
      */
     public void setIdleTimeout(final Integer idleTimeout) {

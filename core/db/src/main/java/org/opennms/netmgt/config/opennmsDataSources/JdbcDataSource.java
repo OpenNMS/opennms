@@ -63,7 +63,7 @@ public class JdbcDataSource implements java.io.Serializable {
     @XmlAttribute(name = "url", required = true)
     private String url;
 
-    @XmlAttribute(name = "class-name", required = true)
+    @XmlAttribute(name = "class-name")
     private String className;
 
     @XmlAttribute(name = "user-name")
@@ -151,11 +151,11 @@ public class JdbcDataSource implements java.io.Serializable {
 
     /**
      * Returns the value of field 'className'.
-     * 
+     *
      * @return the value of field 'ClassName'.
      */
     public String getClassName() {
-        return this.className;
+        return this.className != null ? this.className : "org.postgresql.Driver";
     }
 
     /**
@@ -270,11 +270,11 @@ public class JdbcDataSource implements java.io.Serializable {
      */
     public int hashCode() {
         return Objects.hash(
-            name, 
-            databaseName, 
-            schemaName, 
-            url, 
-            className, 
+            name,
+            databaseName,
+            schemaName,
+            url,
+            className,
             rawUserName,
             rawPassword,
             paramList,
@@ -319,7 +319,7 @@ public class JdbcDataSource implements java.io.Serializable {
 
     /**
      * Sets the value of field 'className'.
-     * 
+     *
      * @param className the value of field 'className'.
      */
     public void setClassName(final String className) {
