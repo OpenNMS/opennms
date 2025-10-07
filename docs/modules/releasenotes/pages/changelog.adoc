@@ -2,6 +2,70 @@
 
 = Changelog
 
+[[releasenotes-changelog-34.0.2]]
+
+== Release 34.0.2
+
+Release 34.0.2 contains a couple of bug fixes, enhancements and a new feature.
+
+=== Epic
+
+* Remove EOL componts from our dependencies and docs (Issue https://opennms.atlassian.net/browse/NMS-17902[NMS-17902]) 
+
+=== Story
+
+* Remove end of life version CentOS 7/8 (Issue https://opennms.atlassian.net/browse/NMS-17901[NMS-17901]) 
+* Exclude selfmonitor requisition in the Quick Add Node page (Issue https://opennms.atlassian.net/browse/NMS-18184[NMS-18184]) 
+* Expose TwinPublishers on OSGi (Issue https://opennms.atlassian.net/browse/NMS-18310[NMS-18310]) 
+
+=== Task
+
+* Menu Redesign: Update all existing documentation (Issue https://opennms.atlassian.net/browse/NMS-18176[NMS-18176]) 
+* FE: Do not display menu on embedded Wallboard page (Issue https://opennms.atlassian.net/browse/NMS-18198[NMS-18198]) 
+* DevOps: Clean up `Some problems were encountered while building the effective model` warnings (Issue https://opennms.atlassian.net/browse/NMS-18316[NMS-18316]) 
+* FE: Update the Poweredby/Meridian Stylesheet and images (Issue https://opennms.atlassian.net/browse/NMS-18767[NMS-18767]) 
+* FE: Menu template fix to remove unwanted menu header (Issue https://opennms.atlassian.net/browse/NMS-18773[NMS-18773]) 
+
+=== Bug
+
+* BMP session terminated with an java.lang.IndexOutOfBoundsException (Issue https://opennms.atlassian.net/browse/NMS-18042[NMS-18042])
+* Same icons for different menus (Issue https://opennms.atlassian.net/browse/NMS-18195[NMS-18195])
+* Trivy Bug: Vulnerabilities in io.netty:netty-codec-http2 (Issue https://opennms.atlassian.net/browse/NMS-18232[NMS-18232])
+* Whitespace in the topology view (Issue https://opennms.atlassian.net/browse/NMS-18267[NMS-18267])
+* Whitespace and menu and navigation header should be ignored (Issue https://opennms.atlassian.net/browse/NMS-18268[NMS-18268])
+* FE: Ensure plugins menu item is only displayed if plugins are installed (Issue https://opennms.atlassian.net/browse/NMS-18285[NMS-18285])
+* Protobuf related linkage errors when using grpc shaded in openconfig/telemetry features (Issue https://opennms.atlassian.net/browse/NMS-18322[NMS-18322])
+* Update SCV Rest Service to only allow access to Admin users (Issue https://opennms.atlassian.net/browse/NMS-18325[NMS-18325])
+* FE: UI not checking roles during route validation (Issue https://opennms.atlassian.net/browse/NMS-18533[NMS-18533])
+* Update SCV Rest Service for admin only: foundation 2023 (Issue https://opennms.atlassian.net/browse/NMS-18535[NMS-18535])
+* Cannot Walk LLDP Remote Link Table for MICROSENS G6 Industrial Switch PLM (Issue https://opennms.atlassian.net/browse/NMS-18541[NMS-18541])
+* Prometheus JMX exporter doesn't expose database connection pool metrics by default (Issue https://opennms.atlassian.net/browse/NMS-18542[NMS-18542])
+* Update SCV Rest Service for admin only: foundation 2024 (Issue https://opennms.atlassian.net/browse/NMS-18548[NMS-18548])
+* FE: Update CSP in web.xml for tile provider (Issue https://opennms.atlassian.net/browse/NMS-18549[NMS-18549])
+* Running `install --help` invokes fix-karaf-setup on a running OpenNMS (Issue https://opennms.atlassian.net/browse/NMS-18771[NMS-18771])
+* Update netty library (Issues https://opennms.atlassian.net/browse/NMS-16722[NMS-16722] , https://opennms.atlassian.net/browse/NMS-16723[NMS-16723] , https://opennms.atlassian.net/browse/NMS-16815[NMS-16815] , https://opennms.atlassian.net/browse/NMS-16816[NMS-16816] , https://opennms.atlassian.net/browse/NMS-16865[NMS-16865])
+* Update netty-handler library (Issues https://opennms.atlassian.net/browse/NMS-17039[NMS-17039] , https://opennms.atlassian.net/browse/NMS-18225[NMS-18225])
+* Update netty-codec-http library (Issue https://opennms.atlassian.net/browse/NMS-17057[NMS-17057])
+* Update netty-codec-http2 library (Issue https://opennms.atlassian.net/browse/NMS-18315[NMS-18315])
+* Update jackson-core library (Issue https://opennms.atlassian.net/browse/NMS-18058[NMS-18058])
+* Update python3 library (Issues https://opennms.atlassian.net/browse/NMS-18069[NMS-18069] , https://opennms.atlassian.net/browse/NMS-18071[NMS-18071])
+* Update java-17-openjdk-headless (Issue https://opennms.atlassian.net/browse/NMS-18102[NMS-18102])
+* Update libarchive library (Issues https://opennms.atlassian.net/browse/NMS-18313[NMS-18313] , https://opennms.atlassian.net/browse/NMS-18338[NMS-18338])
+* Update expat library (Issue https://opennms.atlassian.net/browse/NMS-18337[NMS-18337])
+* Update pam library (Issues https://opennms.atlassian.net/browse/NMS-18314[NMS-18314] , https://opennms.atlassian.net/browse/NMS-18066[NMS-18066] , https://opennms.atlassian.net/browse/NMS-18339[NMS-18339])
+* Update jinjava libray (Issue https://opennms.atlassian.net/browse/NMS-18343[NMS-18343])
+* Update sqlite-libs library (Issues https://opennms.atlassian.net/browse/NMS-18340[NMS-18340] , https://opennms.atlassian.net/browse/NMS-18356[NMS-18356] , https://opennms.atlassian.net/browse/NMS-18368[NMS-18368] , https://opennms.atlassian.net/browse/NMS-18402[NMS-18402])
+* Update cups-libs library (Issues https://opennms.atlassian.net/browse/NMS-18312[NMS-18312], https://opennms.atlassian.net/browse/NMS-18873[NMS-18873] , https://opennms.atlassian.net/browse/NMS-18336[NMS-18336] , https://opennms.atlassian.net/browse/NMS-18922[NMS-18922] , https://opennms.atlassian.net/browse/NMS-18939[NMS-18939])
+
+=== Enhancement
+
+* Update JMX Prometheus exporter to 1.4.0 (Issue https://opennms.atlassian.net/browse/NMS-18544[NMS-18544]) 
+* Improve Confd template for opennms-datasources.xml and documentation (Issue https://opennms.atlassian.net/browse/NMS-18757[NMS-18757]) 
+
+=== New Feature
+
+* FE: Hover over menu items opens flyout menu (Issue https://opennms.atlassian.net/browse/NMS-18287[NMS-18287])
+
 [[releasenotes-changelog-34.0.1]]
 
 == Release 34.0.1
