@@ -179,7 +179,7 @@ public class ConnectionPool implements java.io.Serializable {
      */
     public Integer getIdleTimeout() {
         String interpolated = interpolateAttribute(this.rawIdleTimeout);
-        return interpolated != null ? Integer.valueOf(interpolated) : Integer.valueOf("600");
+        return interpolated != null ? Integer.parseInt(interpolated) : 600;
     }
 
     /**
@@ -191,7 +191,7 @@ public class ConnectionPool implements java.io.Serializable {
      */
     public Integer getLoginTimeout() {
         String interpolated = interpolateAttribute(this.rawLoginTimeout);
-        return interpolated != null ? Integer.valueOf(interpolated) : Integer.valueOf("3");
+        return interpolated != null ? Integer.parseInt(interpolated) : 3;
     }
 
     /**
@@ -202,7 +202,7 @@ public class ConnectionPool implements java.io.Serializable {
      */
     public Integer getMaxPool() {
         String interpolated = interpolateAttribute(this.rawMaxPool);
-        return interpolated != null ? Integer.valueOf(interpolated) : Integer.valueOf("50");
+        return interpolated != null ? Integer.parseInt(interpolated) : 50;
     }
 
     /**
@@ -213,7 +213,7 @@ public class ConnectionPool implements java.io.Serializable {
      */
     public Integer getMaxSize() {
         String interpolated = interpolateAttribute(this.rawMaxSize);
-        return interpolated != null ? Integer.valueOf(interpolated) : Integer.valueOf("500");
+        return interpolated != null ? Integer.parseInt(interpolated) : 500;
     }
 
     /**
@@ -224,7 +224,7 @@ public class ConnectionPool implements java.io.Serializable {
      */
     public Integer getMinPool() {
         String interpolated = interpolateAttribute(this.rawMinPool);
-        return interpolated != null ? Integer.valueOf(interpolated) : Integer.valueOf("10");
+        return interpolated != null ? Integer.parseInt(interpolated) : 10;
     }
 
     /**
