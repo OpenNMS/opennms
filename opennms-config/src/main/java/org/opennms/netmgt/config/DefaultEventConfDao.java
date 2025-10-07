@@ -80,7 +80,6 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
     public DefaultEventConfDao() {
         m_events = new Events();
         m_partition = new EnterpriseIdPartition();
-        m_lastModifiedEventFiles = new LinkedHashMap<>();
         m_events.initialize(m_partition, new EventOrdering());
     }
 
@@ -109,6 +108,7 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	@Override
 	public void reload() throws DataAccessException {
+		// Reload happens whenever DB gets updated, no need for explicit reload
 	}
 
 	@Override
@@ -321,6 +321,8 @@ public class DefaultEventConfDao implements EventConfDao, InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() throws DataAccessException {
+		// Event Conf gets loaded by loadEventsFromDB.
+		// Since this Class can't access DB at bean creation time, this is delegated to EventConfPersistenceService
 	}
 
 	private static class EnterpriseIdPartition implements Partition {
