@@ -175,6 +175,8 @@ public class EventConfEventDaoHibernate
         LOG.info("Updated {} events (enabled={}) for sourceId={}", updatedCount, enabled, sourceId);
     }
 
-
-
+    @Override
+    public EventConfEvent findBySourceIdAndEventId(Long sourceId, Long eventId) {
+        return findUnique("from EventConfEvent e where e.source.id = ? AND  e.id = ? ", sourceId, eventId);
+    }
 }
